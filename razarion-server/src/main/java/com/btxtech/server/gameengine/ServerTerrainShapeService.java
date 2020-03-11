@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -25,6 +26,8 @@ public class ServerTerrainShapeService {
     private PlanetCrudPersistence planetCrudPersistence;
     @Inject
     private TerrainTypeService terrainTypeService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
 
     public void start() {
@@ -39,8 +42,12 @@ public class ServerTerrainShapeService {
     }
 
     public void setupTerrainShape(PlanetConfig planetConfig) {
-        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetCrudPersistence.getTerrainSlopePositions(planetConfig.getId()), planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()));
-        terrainShapes.put(planetConfig.getId(), terrainShape.toNativeTerrainShape());
+        try {
+            TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetCrudPersistence.getTerrainSlopePositions(planetConfig.getId()), planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()));
+            terrainShapes.put(planetConfig.getId(), terrainShape.toNativeTerrainShape());
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 
     public NativeTerrainShape getNativeTerrainShape(int planetId) {
