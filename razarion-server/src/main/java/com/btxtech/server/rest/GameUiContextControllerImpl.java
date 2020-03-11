@@ -9,10 +9,10 @@ import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.rest.GameUiContextController;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -26,7 +26,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
     @Inject
     private SessionHolder sessionHolder;
     @Inject
-    private Logger logger;
+    private ExceptionHandler exceptionHandler;
 
     @Override
     @Transactional
@@ -35,7 +35,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
             UserContext userContext = userService.getUserContextFromSession();
             return gameUiControlConfigPersistence.load(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
-            logger.severe("Using fallback. No planets configured");
+            exceptionHandler.handleException("Using fallback. No ColdGameUiContext configured", e);
             return FallbackConfig.coldGameUiControlConfig(userService.getUserContextFromSession());
         }
     }
@@ -46,7 +46,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
             UserContext userContext = userService.getUserContextFromSession();
             return gameUiControlConfigPersistence.loadWarm(sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
-            logger.severe("Using fallback. No WarmGameUiContext configured");
+            exceptionHandler.handleException("Using fallback. No WarmGameUiContext configured", e);
             return FallbackConfig.warmGameUiControlConfig();
         }
     }
