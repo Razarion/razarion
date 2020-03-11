@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests;
+package com.btxtech.server.systemtests.mvpclient;
 
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.dto.FallbackConfig;

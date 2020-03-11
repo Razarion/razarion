@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests;
+package com.btxtech.server.systemtests.editors;
 
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.systemtests.framework.AbstractCrudTest;
