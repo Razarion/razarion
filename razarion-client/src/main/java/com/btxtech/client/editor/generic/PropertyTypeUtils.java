@@ -4,6 +4,7 @@ import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLInputElement;
 import elemental2.dom.Node;
+import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.databinding.client.PropertyType;
 
@@ -29,6 +30,15 @@ public final class PropertyTypeUtils {
             return true;
         } else {
             return propertyType.getType() == Double.class;
+        }
+    }
+
+    public static boolean isBindableProperty(PropertyType propertyType) {
+        try {
+            BindableProxyFactory.getBindableProxy(propertyType);
+            return true;
+        } catch (Throwable ignore) {
+            return false;
         }
     }
 
@@ -118,6 +128,5 @@ public final class PropertyTypeUtils {
         htmlInputElement.addEventListener("input", event -> writeStringValue(propertyName, htmlInputElement.value, propertyType, hasProperties), false);
         return htmlInputElement;
     }
-
 }
 

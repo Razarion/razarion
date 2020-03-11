@@ -31,10 +31,14 @@ public class PropertyPage implements IsElement {
                 PrimitivePropertyWidget primitivePropertyWidget = primitivePropertyWidgets.get();
                 primitivePropertyWidget.init(propertyName, propertyType, hasProperties);
                 propertyTable.appendChild(primitivePropertyWidget.getElement());
-            } else {
+            } else if(PropertyTypeUtils.isBindableProperty(propertyType)) {
                 ComplexPropertyWrapper complexPropertyWrapper = complexPropertyWrappers.get();
                 complexPropertyWrapper.init(propertyName, propertyType, hasProperties);
                 propertyTable.appendChild(complexPropertyWrapper.getElement());
+            } else {
+                PrimitivePropertyWidget primitivePropertyWidget = primitivePropertyWidgets.get();
+                primitivePropertyWidget.init(propertyName, propertyType, hasProperties);
+                propertyTable.appendChild(primitivePropertyWidget.getElement());
             }
         });
     }
