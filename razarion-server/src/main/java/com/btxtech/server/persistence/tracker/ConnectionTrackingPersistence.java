@@ -25,7 +25,7 @@ public class ConnectionTrackingPersistence {
     @Transactional
     public void onSystemConnectionOpened(String sessionId, PlayerSession playerSession) {
         try {
-            persist(ConnectionTrackerEntity.Type.SYSTEM_OPEN, sessionId, playerSession.getUserContext().getHumanPlayerId().getPlayerId());
+            persist(ConnectionTrackerEntity.Type.SYSTEM_OPEN, sessionId, humanPlayerId(playerSession));
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -34,7 +34,7 @@ public class ConnectionTrackingPersistence {
     @Transactional
     public void onSystemConnectionClosed(String sessionId, PlayerSession playerSession) {
         try {
-            persist(ConnectionTrackerEntity.Type.SYSTEM_CLOSE, sessionId, playerSession.getUserContext().getHumanPlayerId().getPlayerId());
+            persist(ConnectionTrackerEntity.Type.SYSTEM_CLOSE, sessionId, humanPlayerId(playerSession));
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -65,6 +65,13 @@ public class ConnectionTrackingPersistence {
         connectionTrackerEntity.setSessionId(sessionId);
         connectionTrackerEntity.setHumanPlayerId(humanPlayerId);
         entityManager.persist(connectionTrackerEntity);
+    }
+
+    private int humanPlayerId(PlayerSession playerSession) {
+        if (playerSession.getUserContext().getHumanPlayerId() == null) {
+            return -999999;
+        }
+        return playerSession.getUserContext().getHumanPlayerId().getPlayerId();
     }
 
 }
