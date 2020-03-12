@@ -1,9 +1,7 @@
 package com.btxtech.shared.datatypes;
 
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Beat
@@ -12,9 +10,10 @@ import java.util.Set;
 public class UserContext {
     private HumanPlayerId humanPlayerId;
     private String name;
+    private boolean registered;
     private boolean admin;
     private boolean emailNotVerified;
-    private int levelId;
+    private Integer levelId;
     private Map<Integer, Integer> unlockedItemLimit;
     private int xp;
 
@@ -36,6 +35,15 @@ public class UserContext {
         return this;
     }
 
+    public boolean isRegistered() {
+        return registered;
+    }
+
+    public UserContext setRegistered(boolean registered) {
+        this.registered = registered;
+        return this;
+    }
+
     public boolean isAdmin() {
         return admin;
     }
@@ -54,11 +62,11 @@ public class UserContext {
         return this;
     }
 
-    public int getLevelId() {
+    public Integer getLevelId() {
         return levelId;
     }
 
-    public UserContext setLevelId(int levelId) {
+    public UserContext setLevelId(Integer levelId) {
         this.levelId = levelId;
         return this;
     }
@@ -81,10 +89,6 @@ public class UserContext {
         return this;
     }
 
-    public boolean checkRegistered() {
-        return humanPlayerId.getUserId() != null;
-    }
-
     public boolean checkName() {
         return name != null;
     }
@@ -94,6 +98,7 @@ public class UserContext {
         return "UserContext{" +
                 "humanPlayerId=" + humanPlayerId +
                 ", name='" + name + '\'' +
+                ", registered=" + registered +
                 ", admin=" + admin +
                 ", emailNotVerified=" + emailNotVerified +
                 ", levelId=" + levelId +

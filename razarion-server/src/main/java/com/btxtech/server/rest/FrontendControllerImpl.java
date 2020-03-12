@@ -13,7 +13,7 @@ import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.dto.FrontendLoginState;
 import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.shared.dto.RegisterResult;
-import com.btxtech.shared.rest.FrontendProvider;
+import com.btxtech.shared.rest.FrontendController;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
   Created by Beat
   on 27.01.2018.
  */
-public class FrontendProviderImpl implements FrontendProvider {
+public class FrontendControllerImpl implements FrontendController {
     public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
     private static final int LOGIN_COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
     private static final int RAZARION_COOKIE_MAX_AGE = 10 * 365 * 24 * 60 * 60;
@@ -110,7 +110,7 @@ public class FrontendProviderImpl implements FrontendProvider {
 
     @Override
     public Response noScript() {
-        logger.warning("FrontendProvider no script. SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
+        logger.warning("FrontendController no script. SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
         return Response.ok(PIXEL_BYTES).build();
     }
 

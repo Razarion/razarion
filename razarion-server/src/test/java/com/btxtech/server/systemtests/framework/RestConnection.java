@@ -2,7 +2,7 @@ package com.btxtech.server.systemtests.framework;
 
 import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.shared.dto.LoginResult;
-import com.btxtech.shared.rest.FrontendProvider;
+import com.btxtech.shared.rest.FrontendController;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import javax.ws.rs.client.Client;
@@ -12,6 +12,10 @@ import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.ext.ContextResolver;
 
 public class RestConnection {
+    public static final String ADMIN_USER_EMAIL = "admin@admin.com";
+    public static final String ADMIN_USER_PASSWORD = "1234";
+    public static final String NORMAL_USER_EMAIL = "user@user.com";
+    public static final String NORMAL_USER_PASSWORD = "1234";
     public static String URL = "http://localhost:32778";
     public static String REST_URL = URL + "/rest/";
     private boolean loggedIn = false;
@@ -45,31 +49,31 @@ public class RestConnection {
     }
 
     public void loginAdmin() {
-        login("admin@admin.com", "1234");
+        login(ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD);
     }
 
     public void loginUser() {
-        login("user@user.com", "1234");
+        login(NORMAL_USER_EMAIL, NORMAL_USER_PASSWORD);
     }
 
     public void login(String email, String password) {
         logout();
-        LoginResult loginResult = target.proxy(FrontendProvider.class).loginUser(email, password, false);
+        LoginResult loginResult = target.proxy(FrontendController.class).loginUser(email, password, false);
         if (loginResult != LoginResult.OK) {
             throw new AssertionError("Can not login with email: " + email + " and password: " + password + ". Result: " + loginResult);
         }
         loggedIn = true;
     }
 
-    protected void logout() {
+    public void logout() {
         if (!loggedIn) {
             return;
         }
-        target.proxy(FrontendProvider.class).logout();
+        target.proxy(FrontendController.class).logout();
         loggedIn = false;
     }
 
-    protected <T> T proxy(Class<T> clazz) {
+    public <T> T proxy(Class<T> clazz) {
         return target.proxy(clazz);
     }
 }

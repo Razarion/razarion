@@ -16,14 +16,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Date;
 
 /**
  * Created by Beat
  * on 08.02.2018.
  */
 @Path(CommonUrl.FRONTEND_PATH)
-public interface FrontendProvider {
+public interface FrontendController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("isloggedin")

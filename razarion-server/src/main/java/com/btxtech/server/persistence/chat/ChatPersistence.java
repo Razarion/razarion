@@ -6,7 +6,6 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.ChatMessage;
 import com.btxtech.shared.datatypes.UserContext;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -55,7 +54,7 @@ public class ChatPersistence {
     @Transactional
     public void onMessage(PlayerSession playerSession, String message) {
         UserContext userContext = playerSession.getUserContext();
-        if (!userContext.checkRegistered()) {
+        if (!userContext.isRegistered()) {
             throw new IllegalStateException("User is not registered. Session id:" + playerSession.getHttpSessionId());
         }
         if (userContext.isEmailNotVerified()) {

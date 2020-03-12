@@ -115,10 +115,10 @@ public class UserEntity {
     /**
      * Should not be used for facebook email
      *
-     * @param email  Should not be used for facebook email
-     * @param passwordHash passwordHash
+     * @param email         Should not be used for facebook email
+     * @param passwordHash  passwordHash
      * @param humanPlayerId humanPlayerId
-     * @param locale locale
+     * @param locale        locale
      */
     public void fromEmailPasswordHash(String email, String passwordHash, HumanPlayerIdEntity humanPlayerId, Locale locale) {
         registerDate = new Date();
@@ -137,11 +137,26 @@ public class UserEntity {
     }
 
     public UserContext toUserContext() {
-        return new UserContext().setName(name).setHumanPlayerId(createHumanPlayerId()).setLevelId(level.getId()).setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities)).setAdmin(admin).setXp(xp).setEmailNotVerified(!isVerified());
+        UserContext userContext = new UserContext()
+                .setName(name)
+                .setHumanPlayerId(createHumanPlayerId())
+                .setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities))
+                .setRegistered(true)
+                .setAdmin(admin)
+                .setXp(xp)
+                .setEmailNotVerified(!isVerified());
+        if (level != null) {
+            userContext.setLevelId(level.getId());
+        }
+        return userContext;
     }
 
     public HumanPlayerId createHumanPlayerId() {
-        return new HumanPlayerId().setPlayerId(humanPlayerIdEntity.getId()).setUserId(id);
+        if (humanPlayerIdEntity != null) {
+            return new HumanPlayerId().setPlayerId(humanPlayerIdEntity.getId()).setUserId(id);
+        } else {
+            return null;
+        }
     }
 
     public HumanPlayerIdEntity getHumanPlayerIdEntity() {
@@ -278,6 +293,7 @@ public class UserEntity {
 
     /**
      * Only used in test
+     *
      * @param verificationStartedDate date
      */
     public void setVerificationStartedDate(Date verificationStartedDate) {

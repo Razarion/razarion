@@ -13,7 +13,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class TerrainShapeControllerTest extends AbstractSystemTest {
+public class MvpTerrainShapeControllerTest extends AbstractSystemTest {
     private TerrainShapeController terrainShapeController;
 
     @Before

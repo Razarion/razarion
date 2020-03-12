@@ -138,7 +138,7 @@ public class UserUiService {
     }
 
     public boolean isRegistered() {
-        return userContext.checkRegistered();
+        return userContext.isRegistered();
     }
 
     public boolean isEmailNotVerified() {

@@ -92,7 +92,7 @@ public class UserService {
     private UserContext createAnonymousUserContext() {
         UserContext userContext = new UserContext();
         userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
-        userContext.setLevelId(levelPersistence.getStarterLevel().getId());
+        userContext.setLevelId(levelPersistence.getStarterLevelId());
         userContext.setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelPersistence.getStartUnlockedItemLimit()));
         return userContext;
     }
@@ -622,7 +622,7 @@ public class UserService {
             return ErrorResult.TO_SHORT;
         }
         UserContext userContext = getUserContextFromSession();
-        if (!userContext.checkRegistered()) {
+        if (!userContext.isRegistered()) {
             throw new IllegalStateException("Only registered user chan set a name: " + userContext);
         }
         if (userContext.isEmailNotVerified()) {

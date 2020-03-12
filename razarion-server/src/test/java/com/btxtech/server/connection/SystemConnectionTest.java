@@ -5,7 +5,7 @@ import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.server.clienthelper.WebsocketTestHelper;
 import com.btxtech.server.mgmt.OnlineInfo;
 import com.btxtech.server.rest.BackendProvider;
-import com.btxtech.shared.rest.FrontendProvider;
+import com.btxtech.shared.rest.FrontendController;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.CommonUrl;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -77,9 +77,9 @@ public class SystemConnectionTest extends ClientArquillianBaseTest {
 
     private WebsocketTestHelper createConnection(int i) {
         TestSessionContext testSessionContext = new TestSessionContext().setAcceptLanguage("en-Us");
-        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, testSessionContext);
-        Assert.assertFalse(frontendProvider.isLoggedIn("", "").isLoggedIn());
-        Assert.assertEquals(RegisterResult.OK, frontendProvider.createUnverifiedUser("xxxx" + i + "@yyyy.com", "0123456789", false));
+        FrontendController frontendController = setupClient(FrontendController.class, testSessionContext);
+        Assert.assertFalse(frontendController.isLoggedIn("", "").isLoggedIn());
+        Assert.assertEquals(RegisterResult.OK, frontendController.createUnverifiedUser("xxxx" + i + "@yyyy.com", "0123456789", false));
         return new WebsocketTestHelper(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, testSessionContext);
     }
 }

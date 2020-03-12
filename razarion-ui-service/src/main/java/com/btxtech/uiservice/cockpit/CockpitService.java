@@ -40,6 +40,9 @@ public class CockpitService {
     }
 
     public void updateLevelAndXp(UserContext userContext) {
+        if(userContext.getLevelId() == null) {
+            return;
+        }
         LevelConfig levelConfig = levelService.getLevel(userContext.getLevelId());
         sideCockpit.displayXps(userContext.getXp(), levelConfig.getXp2LevelUp());
         sideCockpit.displayLevel(levelConfig.getNumber());

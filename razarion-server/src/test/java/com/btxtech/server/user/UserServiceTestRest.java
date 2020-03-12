@@ -68,7 +68,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
         UserEntity userEntity = userService.getUserForFacebookId("0000001");
 
         UserContext userContext = userService.getUserContextFromSession();
-        Assert.assertEquals(LEVEL_1_ID, userContext.getLevelId());
+        Assert.assertEquals(LEVEL_1_ID, userContext.getLevelId().intValue());
         Assert.assertEquals(0, userContext.getXp());
         Assert.assertEquals(userEntity.getId(), userContext.getHumanPlayerId().getUserId());
         Assert.assertNull(userContext.getName());
@@ -100,7 +100,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
         setupLevels();
 
         UserContext userContext = userService.getUserContextFromSession();
-        Assert.assertEquals(LEVEL_1_ID, userContext.getLevelId());
+        Assert.assertEquals(LEVEL_1_ID, userContext.getLevelId().intValue());
         Assert.assertEquals(0, userContext.getXp());
         Assert.assertNull(userContext.getHumanPlayerId().getUserId());
         Assert.assertNull(userContext.getName());
@@ -223,7 +223,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
         Assert.assertFalse(registerInfo.isUserAlreadyExits());
         UserContext newUserContext = sessionHolder.getPlayerSession().getUserContext();
         Assert.assertEquals(32, newUserContext.getXp());
-        Assert.assertEquals(LEVEL_4_ID, newUserContext.getLevelId());
+        Assert.assertEquals(LEVEL_4_ID, newUserContext.getLevelId().intValue());
         Assert.assertEquals(2, newUserContext.getUnlockedItemLimit().size());
         Assert.assertEquals(1, (int) newUserContext.getUnlockedItemLimit().get(BASE_ITEM_TYPE_BULLDOZER_ID));
         Assert.assertEquals(2, (int) newUserContext.getUnlockedItemLimit().get(BASE_ITEM_TYPE_ATTACKER_ID));
@@ -305,7 +305,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
         Assert.assertEquals(expectedHumanPlayerId.getPlayerId(), userContext.getHumanPlayerId().getPlayerId());
         Assert.assertEquals(expectedHumanPlayerId.getUserId(), userContext.getHumanPlayerId().getUserId());
         Assert.assertEquals("gegel", userContext.getName());
-        Assert.assertEquals(LEVEL_4_ID, userContext.getLevelId());
+        Assert.assertEquals(LEVEL_4_ID, userContext.getLevelId().intValue());
         Assert.assertEquals(123, userContext.getXp());
         Assert.assertEquals(2, userContext.getUnlockedItemLimit().size());
         Assert.assertEquals(1, (int) userContext.getUnlockedItemLimit().get(BASE_ITEM_TYPE_BULLDOZER_ID));
