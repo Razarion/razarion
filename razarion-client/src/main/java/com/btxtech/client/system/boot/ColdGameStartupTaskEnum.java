@@ -26,7 +26,7 @@ public enum ColdGameStartupTaskEnum implements StartupTaskEnum {
     COMPATIBILITY_CHECK(CompatibilityCheckerStartupTask.class),
     LOAD_AND_START_WORKER(LoadWorkerTask.class),
     LOAD_SHAPE3D_BUFFER(LoadShape3DBufferTask.class),
-    LOAD_GAME_UI_CONTROL_CONFIG(LoadGameUiControlTask.class),
+    LOAD_GAME_UI_CONTEXT_CONFIG(LoadGameUiContextlTask.class),
     LOAD_MEDIAS(LoadMediaControlTask.class),
     INIT_WORKER(InitWorkerTask.class) {
         @Override

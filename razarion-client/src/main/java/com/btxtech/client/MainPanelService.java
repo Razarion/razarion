@@ -1,7 +1,6 @@
 package com.btxtech.client;
 
 import com.btxtech.client.editor.sidebar.EditorPanel;
-import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
@@ -13,8 +12,6 @@ import javax.inject.Inject;
 public class MainPanelService {
     @Inject
     private MainPanel mainPanel;
-    @Inject
-    private ExceptionHandler exceptionHandler;
 
     public void init() {
         DomGlobal.document.body.appendChild(mainPanel.getElement());
@@ -46,7 +43,6 @@ public class MainPanelService {
 
     public void addPlaybackPanel(IsElement isElement) {
         throw new UnsupportedOperationException("MainPanelService.addPlaybackPanel() TODO");
-
     }
 
     public HTMLElement getMainPanelElement() {

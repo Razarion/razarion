@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.cdimock;
 
-import com.btxtech.uiservice.system.boot.ClientRunner;
+import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.StartupSeq;
 
 import javax.inject.Singleton;
@@ -10,7 +10,7 @@ import javax.inject.Singleton;
  * 25.04.2017.
  */
 @Singleton
-public class TestClientRunnerImpl extends ClientRunner {
+public class TestBootImpl extends Boot {
     @Override
     protected StartupSeq getWarm() {
         throw new UnsupportedOperationException();

@@ -21,7 +21,7 @@ import static org.easymock.EasyMock.verify;
  * Date: 18.02.2011
  * Time: 20:20:18
  */
-public class TestClientRunner {
+public class TestBoot {
     private static final String ERROR_TEXT = "error_wsxedcrfv";
     private WeldContainer weldContainer;
 
@@ -42,9 +42,9 @@ public class TestClientRunner {
         mockListener.onStartupFinished(eqStartupTaskInfo(StartupTestSeq.TEST_SIMPLE), geq(0L));
         replay(mockListener);
 
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_SIMPLE);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_SIMPLE);
         verify(mockListener);
         failOnException();
     }
@@ -66,9 +66,9 @@ public class TestClientRunner {
         mockListener.onStartupFinished(eqStartupTaskInfo(StartupTestSeq.TEST_DEFERRED), geq(0L));
         replay(mockListener);
 
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_DEFERRED);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_DEFERRED);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(0).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(1).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(2).finished();
@@ -101,9 +101,9 @@ public class TestClientRunner {
                 DeferredBackgroundTestTaskEnum.TEST_2_BACKGROUND}), geq(0L));
 
         replay(mockListener);
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_BACKGROUND);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_BACKGROUND);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(0).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(1).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(2).finished();
@@ -131,9 +131,9 @@ public class TestClientRunner {
         mockListener.onStartupFinished(eqStartupTaskInfo(StartupTestSeq.TEST_DEFERRED_FINISH), geq(0L));
 
         replay(mockListener);
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_DEFERRED_FINISH);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_DEFERRED_FINISH);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(0).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(1).finished();
         verify(mockListener);
@@ -165,9 +165,9 @@ public class TestClientRunner {
         }), geq(0L));
 
         replay(mockListener);
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_DEFERRED_BACKGROUND_FINISH);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_DEFERRED_BACKGROUND_FINISH);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(0).finished();
         getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(0).finished();
         verify(mockListener);
@@ -265,32 +265,32 @@ public class TestClientRunner {
         }), geq(0L));
 
         replay(mockListener);
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
 
         // 1
-        clientRunner.start(StartupTestSeq.TEST_SIMPLE);
+        boot.start(StartupTestSeq.TEST_SIMPLE);
 
         // 2
-        clientRunner.start(StartupTestSeq.TEST_DEFERRED);
+        boot.start(StartupTestSeq.TEST_DEFERRED);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(0).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(1).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(2).finished();
 
         // 3
-        clientRunner.start(StartupTestSeq.TEST_BACKGROUND);
+        boot.start(StartupTestSeq.TEST_BACKGROUND);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(3).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(4).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(5).finished();
         getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(0).finished();
 
         // 4
-        clientRunner.start(StartupTestSeq.TEST_DEFERRED_FINISH);
+        boot.start(StartupTestSeq.TEST_DEFERRED_FINISH);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(6).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(7).finished();
 
         // 5
-        clientRunner.start(StartupTestSeq.TEST_DEFERRED_BACKGROUND_FINISH);
+        boot.start(StartupTestSeq.TEST_DEFERRED_BACKGROUND_FINISH);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(8).finished();
         getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(1).finished();
 
@@ -311,9 +311,9 @@ public class TestClientRunner {
 
         mockListener.onStartupFailed(eqStartupTaskInfo(new StartupTaskEnum[]{SimpleExceptionTestTaskEnum.TEST_1, SimpleExceptionTestTaskEnum.TEST_2_EXCEPTION}), geq(0L));
         replay(mockListener);
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_SIMPLE_EXCEPTION);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_SIMPLE_EXCEPTION);
         verify(mockListener);
         failOnException();
     }
@@ -338,9 +338,9 @@ public class TestClientRunner {
                 geq(0L));
 
         replay(mockListener);
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_BACKGROUND);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_BACKGROUND);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(0).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(1).failed(ERROR_TEXT);
 
@@ -373,9 +373,9 @@ public class TestClientRunner {
                 geq(0L));
 
         replay(mockListener);
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_BACKGROUND);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_BACKGROUND);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(0).finished();
         getStartupTestTaskMonitor().getDeferredStartupTestTask(1).finished();
         getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(0).failed(exception);
@@ -408,9 +408,9 @@ public class TestClientRunner {
         mockListener.onStartupFinished(eqStartupTaskInfo(StartupTestSeq.TEST_MULTI), geq(0L));
 
         replay(mockListener);
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_MULTI);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_MULTI);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(0).finished();
         verify(mockListener);
         failOnException();
@@ -441,9 +441,9 @@ public class TestClientRunner {
         }), geq(0L));
         replay(mockListener);
 
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND_SIMPLE);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND_SIMPLE);
         getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(0).finished();
         verify(mockListener);
         failOnException();
@@ -494,14 +494,33 @@ public class TestClientRunner {
 
         replay(mockListener);
 
-        ClientRunner clientRunner = createClientRunner();
-        clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND_COMPLEX);
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND_COMPLEX);
         getStartupTestTaskMonitor().getDeferredStartupTestTask(0).finished();
         getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(0).finished();
         getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(1).finished();
         getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(3).finished();
         getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(2).finished();
+        verify(mockListener);
+        failOnException();
+    }
+
+    @Test
+    public void runDeferredFallback() {
+        StartupProgressListener mockListener = createStrictMock(StartupProgressListener.class);
+        mockListener.onStart(StartupTestSeq.TEST_DEFERRED_FALLBACK);
+
+        mockListener.onNextTask(DeferredFallbackTestTaskEnum.TEST_1);
+        mockListener.onFallback();
+
+        replay(mockListener);
+
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_DEFERRED_FALLBACK);
+        getStartupTestTaskMonitor().getDeferredStartupTestTask(0).fallback();
+
         verify(mockListener);
         failOnException();
     }
@@ -584,10 +603,10 @@ public class TestClientRunner {
         }
     }
 
-    private ClientRunner createClientRunner() {
+    private Boot createClientRunner() {
         Weld weld = new Weld();
         weldContainer = weld.initialize();
-        return weldContainer.instance().select(ClientRunner.class).get();
+        return weldContainer.instance().select(Boot.class).get();
     }
 
     public StartupTestTaskMonitor getStartupTestTaskMonitor() {

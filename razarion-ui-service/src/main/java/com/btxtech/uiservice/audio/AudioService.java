@@ -56,14 +56,14 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
     }
 
     public void onDialogClosed() {
-        if (audioConfig.getDialogClosed() != null) {
-            playAudio(audioConfig.getDialogClosed());
+        if (getAudioConfig().getDialogClosed() != null) {
+            playAudio(getAudioConfig().getDialogClosed());
         }
     }
 
     public void onQuestActivated() {
-        if (audioConfig.getOnQuestActivated() != null) {
-            playAudio(audioConfig.getOnQuestActivated());
+        if (getAudioConfig().getOnQuestActivated() != null) {
+            playAudio(getAudioConfig().getOnQuestActivated());
         }
     }
 
@@ -85,8 +85,8 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
     }
 
     public void onCommandSent() {
-        if (audioConfig.getOnCommandSent() != null) {
-            playAudio(audioConfig.getOnCommandSent());
+        if (getAudioConfig().getOnCommandSent() != null) {
+            playAudio(getAudioConfig().getOnCommandSent());
         }
     }
 
@@ -97,40 +97,44 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
         switch (selectionEvent.getType()) {
 
             case CLEAR:
-                if (audioConfig.getOnSelectionCleared() != null) {
-                    playAudio(audioConfig.getOnSelectionCleared());
+                if (getAudioConfig().getOnSelectionCleared() != null) {
+                    playAudio(getAudioConfig().getOnSelectionCleared());
                 }
                 break;
             case OWN:
                 if (selectionEvent.getSelectedGroup().getCount() > 1) {
-                    if (audioConfig.getOnOwnMultiSelection() != null) {
-                        playAudio(audioConfig.getOnOwnMultiSelection());
+                    if (getAudioConfig().getOnOwnMultiSelection() != null) {
+                        playAudio(getAudioConfig().getOnOwnMultiSelection());
                     }
                 } else {
-                    if (audioConfig.getOnOwnSingleSelection() != null) {
-                        playAudio(audioConfig.getOnOwnSingleSelection());
+                    if (getAudioConfig().getOnOwnSingleSelection() != null) {
+                        playAudio(getAudioConfig().getOnOwnSingleSelection());
                     }
                 }
                 break;
             case OTHER:
-                if (audioConfig.getOnOtherSelection() != null) {
-                    playAudio(audioConfig.getOnOtherSelection());
+                if (getAudioConfig().getOnOtherSelection() != null) {
+                    playAudio(getAudioConfig().getOnOtherSelection());
                 }
                 break;
         }
     }
 
     public AudioConfig getAudioConfig() {
+        if(audioConfig == null) {
+            logger.warning("Using Fallback. No audio config.");
+            return new AudioConfig();
+        }
         return audioConfig;
     }
 
     @Override
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
-        if(audioConfig.getTerrainLoopLand() == null) {
+        if(getAudioConfig().getTerrainLoopLand() == null) {
             logger.warning("audioConfig.getTerrainLoopLand() == null");
             return;
         }
-        if(audioConfig.getTerrainLoopWater() == null) {
+        if(getAudioConfig().getTerrainLoopWater() == null) {
             logger.warning("audioConfig.getTerrainLoopWater() == null");
             return;
         }
@@ -147,7 +151,7 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
 
         lastLandWaterProportion = landWaterProportion;
 
-        playTerrainLoopAudio(audioConfig.getTerrainLoopLand(), lastLandWaterProportion);
-        playTerrainLoopAudio(audioConfig.getTerrainLoopWater(), 1.0 - lastLandWaterProportion);
+        playTerrainLoopAudio(getAudioConfig().getTerrainLoopLand(), lastLandWaterProportion);
+        playTerrainLoopAudio(getAudioConfig().getTerrainLoopWater(), 1.0 - lastLandWaterProportion);
     }
 }

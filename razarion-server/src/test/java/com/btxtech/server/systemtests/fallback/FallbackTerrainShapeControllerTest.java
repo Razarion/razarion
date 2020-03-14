@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests.mvpclient;
+package com.btxtech.server.systemtests.fallback;
 
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.dto.FallbackConfig;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class MvpTerrainShapeControllerTest extends AbstractSystemTest {
+public class FallbackTerrainShapeControllerTest extends AbstractSystemTest {
     private TerrainShapeController terrainShapeController;
 
     @Before

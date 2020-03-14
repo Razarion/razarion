@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests.mvpclient;
+package com.btxtech.server.systemtests.fallback;
 
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.server.systemtests.framework.RestConnection;
@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class MvpFrontendControllerTest extends AbstractSystemTest {
+public class FallbackFrontendControllerTest extends AbstractSystemTest {
     private FrontendController frontendController;
 
     @Before

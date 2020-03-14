@@ -32,10 +32,8 @@ import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
-import com.btxtech.uiservice.system.boot.ClientRunner;
+import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
-import com.btxtech.uiservice.system.boot.StartupSeq;
-import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import com.google.gwt.user.client.Window;
 import elemental.client.Browser;
@@ -65,7 +63,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     @Inject
     private Caller<TrackerProvider> trackingProvider;
     @Inject
-    private ClientRunner clientRunner;
+    private Boot boot;
     @Inject
     private SimpleExecutorService detailedExecutionService;
     @Inject
@@ -88,7 +86,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     public void trackGameUiControl(Date startTimeStamp) {
         GameUiControlTrackerInfo gameUiControlTrackerInfo = new GameUiControlTrackerInfo();
         gameUiControlTrackerInfo.setStartTime(startTimeStamp);
-        gameUiControlTrackerInfo.setGameSessionUuid(clientRunner.getGameSessionUuid());
+        gameUiControlTrackerInfo.setGameSessionUuid(boot.getGameSessionUuid());
         gameUiControlTrackerInfo.setDuration((int) (startTimeStamp.getTime() - System.currentTimeMillis()));
         trackingProvider.call(response -> {
         }, exceptionHandler.restErrorHandler("TrackerProvider.gameUiControlTrackerInfo() trackGameUiControl")).gameUiControlTrackerInfo(gameUiControlTrackerInfo);
@@ -99,20 +97,10 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         SceneTrackerInfo sceneTrackerInfo = new SceneTrackerInfo();
         sceneTrackerInfo.setStartTime(startTimeStamp);
         sceneTrackerInfo.setInternalName(sceneInternalName);
-        sceneTrackerInfo.setGameSessionUuid(clientRunner.getGameSessionUuid());
+        sceneTrackerInfo.setGameSessionUuid(boot.getGameSessionUuid());
         sceneTrackerInfo.setDuration((int) (System.currentTimeMillis() - startTimeStamp.getTime()));
         trackingProvider.call(response -> {
         }, exceptionHandler.restErrorHandler("TrackerProvider.sceneTrackerInfo() trackScene")).sceneTrackerInfo(sceneTrackerInfo);
-    }
-
-    @Override
-    public void onStart(StartupSeq startupSeq) {
-        // Ignore
-    }
-
-    @Override
-    public void onNextTask(StartupTaskEnum taskEnum) {
-        // Ignore
     }
 
     @Override
@@ -143,7 +131,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
 
     private StartupTaskJson createStartupTaskJson(AbstractStartupTask task, String error) {
         StartupTaskJson startupTaskJson = new StartupTaskJson();
-        startupTaskJson.setGameSessionUuid(clientRunner.getGameSessionUuid());
+        startupTaskJson.setGameSessionUuid(boot.getGameSessionUuid());
         startupTaskJson.setStartTime(new Date(task.getStartTime())).setDuration((int) task.getDuration());
         startupTaskJson.setTaskEnum(task.getTaskEnum().name()).setError(error);
         return startupTaskJson;
@@ -151,7 +139,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
 
     private StartupTerminatedJson createStartupTerminatedJson(long totalTime, boolean success) {
         StartupTerminatedJson startupTerminatedJson = new StartupTerminatedJson();
-        startupTerminatedJson.setGameSessionUuid(clientRunner.getGameSessionUuid());
+        startupTerminatedJson.setGameSessionUuid(boot.getGameSessionUuid());
         startupTerminatedJson.setSuccessful(success).setTotalTime((int) totalTime);
         return startupTerminatedJson;
     }
@@ -170,7 +158,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         Browser.getDocument().addEventListener(Event.MOUSEUP, this::onMouseButtonUp, true);
         clientModalDialogManager.setTrackerCallback(this::trackDialog);
 
-        TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId).setGameSessionUuid(clientRunner.getGameSessionUuid());
+        TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId).setGameSessionUuid(boot.getGameSessionUuid());
         trackingStart.setBrowserWindowDimension(gameCanvas.getWindowDimenionForPlayback());
         initDetailedTracking(trackingStart);
         trackingProvider.call(response -> {
@@ -306,6 +294,6 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
 
     private void createTrackingContainer() {
         trackingContainer = new TrackingContainer();
-        trackingContainer.setGameSessionUuid(clientRunner.getGameSessionUuid());
+        trackingContainer.setGameSessionUuid(boot.getGameSessionUuid());
     }
 }

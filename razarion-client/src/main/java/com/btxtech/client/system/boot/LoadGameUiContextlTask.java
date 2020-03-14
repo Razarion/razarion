@@ -20,10 +20,10 @@ import javax.inject.Inject;
  * 07.02.2016.
  */
 @Dependent
-public class LoadGameUiControlTask extends AbstractStartupTask {
+public class LoadGameUiContextlTask extends AbstractStartupTask {
     private static final String GAME_SESSION_ID_KEY = "gameSessionUuid";
     private static final String SESSION_ID_KEY = "sessionId";
-    // private Logger logger = Logger.getLogger(LoadGameUiControlTask.class.getName());
+    // private Logger logger = Logger.getLogger(LoadGameUiContextlTask.class.getName());
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -36,8 +36,12 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        serviceCaller.call((RemoteCallback<ColdGameUiContext>) coldGameUiControlConfig -> {
-            gameUiControl.setColdGameUiContext(coldGameUiControlConfig);
+        serviceCaller.call((RemoteCallback<ColdGameUiContext>) coldGameUiContext -> {
+            if (coldGameUiContext.getWarmGameUiContext() == null && coldGameUiContext.getUserContext().isAdmin()) {
+                deferredStartup.fallback();
+                return;
+            }
+            gameUiControl.setColdGameUiContext(coldGameUiContext);
             facebookService.activateFacebookAppStartLogin();
             deferredStartup.finished();
         }, (message, throwable) -> {

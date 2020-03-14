@@ -65,7 +65,9 @@ public class GameUiControlConfigPersistence {
         ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
         coldGameUiContext.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         coldGameUiContext.setUserContext(userContext);
-        coldGameUiContext.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext.getHumanPlayerId(), userContext.getLevelId()));
+        if (userContext.getLevelId() != null) {
+            coldGameUiContext.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext.getHumanPlayerId(), userContext.getLevelId()));
+        }
         coldGameUiContext.setShape3Ds(shape3DPersistence.getShape3Ds());
         coldGameUiContext.setAudioConfig(setupAudioConfig());
         coldGameUiContext.setGameTipVisualConfig(setupGameTipVisualConfig());
@@ -80,6 +82,9 @@ public class GameUiControlConfigPersistence {
 
     @Transactional
     public WarmGameUiContext loadWarm(Locale locale, UserContext userContext) {
+        if(userContext.getLevelId() == null) {
+            return null;
+        }
         WarmGameUiContext warmGameUiContext = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);
         if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
             warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));

@@ -8,15 +8,24 @@ import java.util.List;
  * Time: 22:53:59
  */
 public interface StartupProgressListener {
-    void onStart(StartupSeq startupSeq);
+    default void onStart(StartupSeq startupSeq) {
+    }
 
-    void onNextTask(StartupTaskEnum taskEnum);
+    default void onNextTask(StartupTaskEnum taskEnum) {
+    }
 
-    void onTaskFinished(AbstractStartupTask task);
+    default void onTaskFinished(AbstractStartupTask task) {
+    }
 
-    void onTaskFailed(AbstractStartupTask task, String error, Throwable t);
+    default void onTaskFailed(AbstractStartupTask task, String error, Throwable t) {
+    }
 
-    void onStartupFinished(List<StartupTaskInfo> taskInfo, long totalTime);
+    default void onStartupFinished(List<StartupTaskInfo> taskInfo, long totalTime) {
+    }
 
-    void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime);
+    default void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
+    }
+
+    default void onFallback() {
+    }
 }

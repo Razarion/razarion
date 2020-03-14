@@ -6,7 +6,7 @@ import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
-import com.btxtech.uiservice.system.boot.ClientRunner;
+import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.user.UserUiService;
 
@@ -23,7 +23,7 @@ public class RunGameUiControlTask extends AbstractStartupTask {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private ClientRunner clientRunner;
+    private Boot boot;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -41,7 +41,7 @@ public class RunGameUiControlTask extends AbstractStartupTask {
         // gameEngineControl.enableTracking();
         gameUiControl.start();
         gameCanvas.startRenderLoop();
-        perfmonService.start(clientRunner.getGameSessionUuid());
+        perfmonService.start(boot.getGameSessionUuid());
         clientPerformanceTrackerService.start();
         userUiService.start();
     }

@@ -3,6 +3,7 @@ package com.btxtech.client.system;
 import com.btxtech.client.ClientTrackerService;
 import com.btxtech.client.cockpit.ClientScreenCoverImpl;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
+import com.btxtech.client.editor.EditorFallback;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
@@ -28,8 +29,9 @@ import com.btxtech.uiservice.mouse.CursorService;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
-import com.btxtech.uiservice.system.boot.ClientRunner;
+import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
+import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.http.client.Response;
@@ -55,7 +57,7 @@ public class LifecycleService {
     private static final int RESTART_DELAY = 3000;
     private Logger logger = Logger.getLogger(LifecycleService.class.getName());
     @Inject
-    private ClientRunner clientRunner;
+    private Boot boot;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -106,30 +108,38 @@ public class LifecycleService {
     private SimpleExecutorService simpleExecutorService;
     @Inject
     private Caller<ServerMgmtProvider> serverMgmt;
+    @Inject
+    private EditorFallback editorFallback;
     private Consumer<ServerState> serverRestartCallback;
     private SimpleScheduledFuture simpleScheduledFuture;
     private boolean beforeUnload;
 
     @PostConstruct
     public void postConstruct() {
-        clientRunner.addStartupProgressListener(clientTrackerService);
-        clientRunner.addStartupProgressListener(clientScreenCover);
+        boot.addStartupProgressListener(clientTrackerService);
+        boot.addStartupProgressListener(clientScreenCover);
+        boot.addStartupProgressListener(new StartupProgressListener() {
+            @Override
+            public void onFallback() {
+                editorFallback.activateButton();
+            }
+        });
         Browser.getDocument().addEventListener("beforeunload", evt -> beforeUnload = true);
     }
 
     public void startCold() {
         try {
-            clientRunner.start(GameStartupSeq.COLD);
-            // clientRunner.start(GameStartupSeq.COLD_EXPERIMENTAL);
+            boot.start(GameStartupSeq.COLD);
+            // boot.start(GameStartupSeq.COLD_EXPERIMENTAL);
         } catch (Throwable throwable) {
             exceptionHandler.handleException("Start failed", throwable);
         }
     }
 
     public void startWarm() {
-        // GameUiControl does not use LifecycleService. It uses the ClientRunner for startWarm() directly. This is wrong.
+        // GameUiControl does not use LifecycleService. It uses the Boot for startWarm() directly. This is wrong.
         try {
-            clientRunner.start(GameStartupSeq.WARM);
+            boot.start(GameStartupSeq.WARM);
         } catch (Throwable throwable) {
             exceptionHandler.handleException("Start failed", throwable);
         }

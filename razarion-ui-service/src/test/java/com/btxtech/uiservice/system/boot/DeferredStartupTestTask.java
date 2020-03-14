@@ -40,4 +40,8 @@ public class DeferredStartupTestTask extends AbstractStartupTask {
         deferredStartup.failed(error);
     }
 
+    public void fallback() {
+        deferredStartup.fallback();
+    }
+
 }

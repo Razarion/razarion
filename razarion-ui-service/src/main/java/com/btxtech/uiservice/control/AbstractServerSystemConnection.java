@@ -13,7 +13,7 @@ import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.inventory.InventoryUiService;
-import com.btxtech.uiservice.system.boot.ClientRunner;
+import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.inject.Inject;
@@ -32,7 +32,7 @@ public abstract class AbstractServerSystemConnection {
     @Inject
     private ChatUiService chatUiService;
     @Inject
-    private ClientRunner clientRunner;
+    private Boot boot;
 
     protected abstract void sendToServer(String text);
 
@@ -51,7 +51,7 @@ public abstract class AbstractServerSystemConnection {
     }
 
     public void sendGameSessionUuid() {
-        sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.SET_GAME_SESSION_UUID, toJson(clientRunner.getGameSessionUuid())));
+        sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.SET_GAME_SESSION_UUID, toJson(boot.getGameSessionUuid())));
     }
 
     public void onLevelChanged(LevelConfig levelConfig) {

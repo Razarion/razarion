@@ -35,7 +35,7 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.system.boot.ClientRunner;
+import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.btxtech.uiservice.user.UserUiService;
@@ -82,7 +82,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private UserUiService userUiService;
     @Inject
-    private ClientRunner clientRunner;
+    private Boot boot;
     @Inject
     private TrackerService trackerService;
     @Inject
@@ -235,7 +235,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             // TODO Temporary fix for showing move to first multiplayer planet. Pervents loading new planet if multiplayer planet is done. Because there is no new planet
             modalDialogManager.showLeaveStartTutorial(() -> {
                 screenCover.fadeInLoadingCover();
-                clientRunner.startWarm(); // Replace by LifecycleService. Move clientRunner back to client package. Not needed in DevTools.
+                boot.startWarm(); // Replace by LifecycleService. Move boot back to client package. Not needed in DevTools.
             });
         }
     }

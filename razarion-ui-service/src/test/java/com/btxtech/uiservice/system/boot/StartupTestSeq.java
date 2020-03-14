@@ -82,5 +82,12 @@ public enum StartupTestSeq implements StartupSeq {
             return WaitForBackgroundComplexTestTaskEnum.values();
         }
 
-    };
+    },
+    TEST_DEFERRED_FALLBACK {
+        @Override
+        public StartupTaskEnum[] getAbstractStartupTaskEnum() {
+            return DeferredFallbackTestTaskEnum.values();
+        }
+
+    }
 }

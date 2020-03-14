@@ -41,7 +41,7 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
-import com.btxtech.uiservice.system.boot.ClientRunner;
+import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.tip.GameTipService;
@@ -84,7 +84,7 @@ public abstract class GameEngineControl {
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private ClientRunner clientRunner;
+    private Boot boot;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -123,12 +123,12 @@ public abstract class GameEngineControl {
         this.deferredStartup = initializationReferredStartup;
         sendToWorker(GameEngineControlPackage.Command.INITIALIZE, coldGameUiContext.getStaticGameConfig(), coldGameUiContext.getWarmGameUiContext().getPlanetConfig(),
                 userUiService.getUserContext(), coldGameUiContext.getWarmGameUiContext().getGameEngineMode(), coldGameUiContext.getWarmGameUiContext().isDetailedTracking(),
-                clientRunner.getGameSessionUuid());
+                boot.getGameSessionUuid());
     }
 
     public void initWarm(PlanetConfig planetConfig, GameEngineMode gameEngineMode, DeferredStartup deferredStartup) {
         this.deferredStartup = deferredStartup;
-        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, userUiService.getUserContext(), gameEngineMode, clientRunner.getGameSessionUuid());
+        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, userUiService.getUserContext(), gameEngineMode, boot.getGameSessionUuid());
     }
 
     void startBots(List<BotConfig> botConfigs) {

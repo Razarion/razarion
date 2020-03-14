@@ -7,8 +7,6 @@ import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.system.boot.StartupSeq;
-import com.btxtech.uiservice.system.boot.StartupTaskEnum;
-import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import elemental.client.Browser;
 import elemental.dom.Element;
 import elemental.html.ProgressElement;
@@ -16,7 +14,6 @@ import elemental.html.ProgressElement;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -98,11 +95,6 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     }
 
     @Override
-    public void onNextTask(StartupTaskEnum taskEnum) {
-        // Ignore
-    }
-
-    @Override
     public void onTaskFinished(AbstractStartupTask task) {
         try {
             finishedStartupTasks++;
@@ -114,17 +106,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     }
 
     @Override
-    public void onTaskFailed(AbstractStartupTask task, String error, Throwable t) {
-        // Ignore
-    }
-
-    @Override
-    public void onStartupFinished(List<StartupTaskInfo> taskInfo, long totalTime) {
-        // Ignore
-    }
-
-    @Override
-    public void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
-        // Ignore
+    public void onFallback() {
+        removeLoadingCover();
     }
 }

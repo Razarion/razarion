@@ -16,8 +16,8 @@ import java.util.logging.Logger;
  * Date: 04.12.2010
  * Time: 10:56:33
  */
-public abstract class ClientRunner {
-    private Logger logger = Logger.getLogger(ClientRunner.class.getName());
+public abstract class Boot {
+    private Logger logger = Logger.getLogger(Boot.class.getName());
     private Collection<StartupProgressListener> listeners = new ArrayList<>();
     private List<AbstractStartupTask> startupList = new ArrayList<>();
     private List<DeferredStartup> deferredStartups = new ArrayList<>();
@@ -178,7 +178,7 @@ public abstract class ClientRunner {
         }
         failed = true;
         if (listeners.isEmpty()) {
-            logger.severe("ClientRunner.onTaskFailed(): " + error);
+            logger.severe("Boot.onTaskFailed(): " + error);
         } else {
             for (StartupProgressListener listener : listeners) {
                 listener.onTaskFailed(abstractStartupTask, error, t);
@@ -188,6 +188,18 @@ public abstract class ClientRunner {
             List<StartupTaskInfo> startupTaskInfos = createTaskInfo(abstractStartupTask, error);
             for (StartupProgressListener listener : listeners) {
                 listener.onStartupFailed(startupTaskInfos, totalTime);
+            }
+        }
+        cleanup();
+    }
+
+
+    public void onFallback() {
+        for (StartupProgressListener listener : listeners) {
+            try {
+                listener.onFallback();
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
             }
         }
         cleanup();

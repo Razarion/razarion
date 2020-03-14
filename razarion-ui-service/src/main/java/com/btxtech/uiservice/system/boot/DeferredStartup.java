@@ -22,12 +22,12 @@ public class DeferredStartup {
     private boolean isDeferred;
     private boolean isBackground;
     private AbstractStartupTask task;
-    private ClientRunner clientRunner;
+    private Boot boot;
     private boolean isFinished = false;
 
-    public DeferredStartup(AbstractStartupTask task, ClientRunner clientRunner) {
+    public DeferredStartup(AbstractStartupTask task, Boot boot) {
         this.task = task;
-        this.clientRunner = clientRunner;
+        this.boot = boot;
     }
 
     public void setDeferred() {
@@ -37,19 +37,23 @@ public class DeferredStartup {
     public void finished() {
         isFinished = true;
         task.correctDeferredDuration();
-        clientRunner.onTaskFinished(task, this);
+        boot.onTaskFinished(task, this);
     }
 
     public void failed(Throwable t) {
         isFinished = true;
         task.correctDeferredDuration();
-        clientRunner.onTaskFailed(task, t);
+        boot.onTaskFailed(task, t);
     }
 
     public void failed(String error) {
         isFinished = true;
         task.correctDeferredDuration();
-        clientRunner.onTaskFailed(task, error, null);
+        boot.onTaskFailed(task, error, null);
+    }
+
+    public void fallback() {
+        boot.onFallback();
     }
 
     public void setBackground() {
