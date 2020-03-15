@@ -44,7 +44,6 @@ public class EditorService {
     }
 
     public void activateFallbackEditorMenuButton() {
-        logger.severe("Using Fallback. Show Editor Menu.");
         HTMLButtonElement buttonElement = (HTMLButtonElement) DomGlobal.document.createElement("button");
         buttonElement.innerHTML = "Editor Menu";
         buttonElement.addEventListener("click", evt -> {

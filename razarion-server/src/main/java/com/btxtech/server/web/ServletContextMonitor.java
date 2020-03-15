@@ -6,11 +6,13 @@ import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.server.persistence.chat.ChatPersistence;
 import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.alarm.AlarmService;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -18,6 +20,8 @@ import javax.servlet.annotation.WebListener;
  */
 @WebListener
 public class ServletContextMonitor implements ServletContextListener {
+    @Inject
+    private Logger logger;
     @Inject
     private ServerTerrainShapeService serverTerrainShapeService;
     @Inject
@@ -28,10 +32,13 @@ public class ServletContextMonitor implements ServletContextListener {
     private ExceptionHandler exceptionHandler;
     @Inject
     private ServerMgmt serverMgmt;
+    @Inject
+    private AlarmService alarmService;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         serverMgmt.setServerState(ServerState.STARTING);
+        alarmService.addListener(alarm -> logger.severe(alarm.toString()));
         try {
             serverTerrainShapeService.start();
         } catch (Exception e) {

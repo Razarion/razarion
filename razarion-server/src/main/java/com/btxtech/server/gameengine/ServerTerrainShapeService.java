@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.alarm.AlarmService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -14,6 +15,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static com.btxtech.shared.system.alarm.Alarm.Type.NO_PLANETS;
 
 /**
  * Created by Beat
@@ -28,13 +31,15 @@ public class ServerTerrainShapeService {
     private TerrainTypeService terrainTypeService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private AlarmService alarmService;
     private Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
 
     public void start() {
         terrainShapes.clear();
         planetCrudPersistence.read().forEach(this::setupTerrainShape);
         if (terrainShapes.isEmpty()) {
-            logger.severe("Using fallback. No planets configured");
+            alarmService.riseAlarm(NO_PLANETS);
             PlanetConfig fallbackPlanet = FallbackConfig.setupPlanetConfig();
             TerrainShape terrainShape = new TerrainShape(fallbackPlanet, terrainTypeService, Collections.emptyList(), Collections.emptyList());
             terrainShapes.put(fallbackPlanet.getId(), terrainShape.toNativeTerrainShape());
