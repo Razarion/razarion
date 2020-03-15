@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.sidebar;
+package com.btxtech.client.editor.editorpanel;
 
 /**
  * Created by Beat

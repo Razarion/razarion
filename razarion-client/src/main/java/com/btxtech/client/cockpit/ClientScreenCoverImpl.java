@@ -106,7 +106,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     }
 
     @Override
-    public void onFallback() {
+    public void onFallback(String reason) {
         removeLoadingCover();
     }
 }

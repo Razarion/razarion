@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.i18n;
 
-import com.btxtech.client.editor.sidebar.AbstractEditor;
+import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.I18nStringEditor;
 import com.btxtech.shared.rest.CommonEditorProvider;

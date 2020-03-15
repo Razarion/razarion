@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.sidebar;
+package com.btxtech.client.editor.editorpanel;
 
 import com.btxtech.client.MainPanelService;
 import com.btxtech.client.editor.generic.GenericCrudEditor;
@@ -31,6 +31,9 @@ public class EditorPanel implements IsElement {
     private Instance<AbstractEditor> leftSideBarContentInstance;
     @Inject
     @DataField
+    private HTMLDivElement title;
+    @Inject
+    @DataField
     private HTMLDivElement editorPanel;
     @Inject
     @DataField
@@ -54,17 +57,18 @@ public class EditorPanel implements IsElement {
         return editorPanel;
     }
 
-    public void setContent(Class<? extends AbstractEditor> abstractEditorClass) {
+    public void setContent(Class<? extends AbstractEditor> abstractEditorClass, String title) {
         if (abstractEditor != null) {
             throw new IllegalStateException("abstractEditor != null");
         }
         abstractEditor = leftSideBarContentInstance.select(abstractEditorClass).get();
         abstractEditor.init(this);
+        this.title.textContent = title;
         content.setWidget(abstractEditor);
     }
 
-    public void setGenericCrud(Class<? extends CrudController> crudControllerClass) {
-        setContent(GenericCrudEditor.class);
+    public void setGenericCrud(Class<? extends CrudController> crudControllerClass, String title) {
+        setContent(GenericCrudEditor.class, title);
         ((GenericCrudEditor)abstractEditor).setCrudControllerClass(crudControllerClass);
     }
 

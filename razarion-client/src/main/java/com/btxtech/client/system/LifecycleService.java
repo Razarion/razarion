@@ -3,13 +3,14 @@ package com.btxtech.client.system;
 import com.btxtech.client.ClientTrackerService;
 import com.btxtech.client.cockpit.ClientScreenCoverImpl;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.client.editor.EditorFallback;
+import com.btxtech.client.editor.EditorService;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.rest.ServerMgmtProvider;
+import com.btxtech.shared.system.AlarmService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -109,7 +110,9 @@ public class LifecycleService {
     @Inject
     private Caller<ServerMgmtProvider> serverMgmt;
     @Inject
-    private EditorFallback editorFallback;
+    private EditorService editorService;
+    @Inject
+    private AlarmService alarmService;
     private Consumer<ServerState> serverRestartCallback;
     private SimpleScheduledFuture simpleScheduledFuture;
     private boolean beforeUnload;
@@ -120,8 +123,10 @@ public class LifecycleService {
         boot.addStartupProgressListener(clientScreenCover);
         boot.addStartupProgressListener(new StartupProgressListener() {
             @Override
-            public void onFallback() {
-                editorFallback.activateButton();
+            public void onFallback(String reason) {
+                alarmService.riseAlarm(reason);
+                editorService.activateFallbackEditorMenuButton();
+                editorService.openAlarmView();
             }
         });
         Browser.getDocument().addEventListener("beforeunload", evt -> beforeUnload = true);

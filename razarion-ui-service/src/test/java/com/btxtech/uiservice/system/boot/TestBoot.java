@@ -512,14 +512,14 @@ public class TestBoot {
         mockListener.onStart(StartupTestSeq.TEST_DEFERRED_FALLBACK);
 
         mockListener.onNextTask(DeferredFallbackTestTaskEnum.TEST_1);
-        mockListener.onFallback();
+        mockListener.onFallback("Alarm reason");
 
         replay(mockListener);
 
         Boot boot = createClientRunner();
         boot.addStartupProgressListener(mockListener);
         boot.start(StartupTestSeq.TEST_DEFERRED_FALLBACK);
-        getStartupTestTaskMonitor().getDeferredStartupTestTask(0).fallback();
+        getStartupTestTaskMonitor().getDeferredStartupTestTask(0).fallback("Alarm reason");
 
         verify(mockListener);
         failOnException();

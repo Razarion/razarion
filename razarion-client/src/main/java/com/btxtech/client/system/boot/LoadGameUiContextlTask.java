@@ -38,7 +38,7 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
         deferredStartup.setDeferred();
         serviceCaller.call((RemoteCallback<ColdGameUiContext>) coldGameUiContext -> {
             if (coldGameUiContext.getWarmGameUiContext() == null && coldGameUiContext.getUserContext().isAdmin()) {
-                deferredStartup.fallback();
+                deferredStartup.fallback("No warmGameUiContext in ColdGameUiContext");
                 return;
             }
             gameUiControl.setColdGameUiContext(coldGameUiContext);

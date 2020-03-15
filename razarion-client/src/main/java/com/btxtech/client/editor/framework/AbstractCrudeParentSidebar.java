@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.framework;
 
-import com.btxtech.client.editor.sidebar.AbstractEditor;
+import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.google.gwt.event.dom.client.ClickEvent;

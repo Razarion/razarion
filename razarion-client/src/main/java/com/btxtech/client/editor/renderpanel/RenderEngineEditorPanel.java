@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.renderpanel;
 
 import com.btxtech.client.editor.renderer.MonitorRenderTask;
-import com.btxtech.client.editor.sidebar.AbstractEditor;
+import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.datatypes.Vertex;

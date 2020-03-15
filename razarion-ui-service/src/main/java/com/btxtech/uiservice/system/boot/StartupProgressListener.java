@@ -26,6 +26,6 @@ public interface StartupProgressListener {
     default void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
     }
 
-    default void onFallback() {
+    default void onFallback(String reason) {
     }
 }

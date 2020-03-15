@@ -5,7 +5,7 @@ import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.inventory.InventoryDialog;
 import com.btxtech.client.dialog.unlock.UnlockDialog;
-import com.btxtech.client.editor.EditorMenuDialog;
+import com.btxtech.client.editor.EditorService;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
@@ -48,6 +48,8 @@ public class ClientSideCockpit implements IsElement, SideCockpit {
     private UnlockUiService unlockUiService;
     @Inject
     private MainPanelService mainPanelService;
+    @Inject
+    private EditorService editorService;
     @Inject
     @DataField
     private HTMLDivElement cockpit;
@@ -153,7 +155,7 @@ public class ClientSideCockpit implements IsElement, SideCockpit {
 
     @EventHandler("editorButton")
     private void onEditorButtonClick(ClickEvent event) {
-        modalDialogManager.show("Editor Menu", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null, null, DialogButton.Button.CLOSE);
+        editorService.openEditorMenu();
     }
 
     @EventHandler("scrollHomeButton")

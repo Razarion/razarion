@@ -1054,6 +1054,12 @@ a:active {
 }
 
 /** --- Left side bar ---*/
+.left-side-bar-title {
+    display: table-row;
+    border-spacing: 0;
+    border-collapse: separate;
+}
+
 .left-side-bar {
     position: fixed;
     top: 0;

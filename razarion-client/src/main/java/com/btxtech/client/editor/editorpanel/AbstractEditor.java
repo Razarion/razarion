@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.sidebar;
+package com.btxtech.client.editor.editorpanel;
 
 import com.google.gwt.user.client.ui.Composite;
 
@@ -49,5 +49,4 @@ public abstract class AbstractEditor extends Composite {
     protected void enableDeleteButton(boolean enabled) {
         editorPanel.getDeleteButton().disabled = !enabled;
     }
-
 }

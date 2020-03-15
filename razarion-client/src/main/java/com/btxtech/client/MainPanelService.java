@@ -1,6 +1,6 @@
 package com.btxtech.client;
 
-import com.btxtech.client.editor.sidebar.EditorPanel;
+import com.btxtech.client.editor.editorpanel.EditorPanel;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
 import org.jboss.errai.common.client.api.elemental2.IsElement;

@@ -1,6 +1,6 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.editor.sidebar.AbstractEditor;
+import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.editor.widgets.LightDirectionWidget;
 import com.btxtech.client.guielements.VertexRoBox;
 import com.btxtech.client.utils.HtmlColor2ColorConverter;

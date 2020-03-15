@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.framework;
 
-import com.btxtech.client.editor.sidebar.LeftSideBarStackContent;
+import com.btxtech.client.editor.editorpanel.LeftSideBarStackContent;
 import com.btxtech.shared.dto.ObjectNameId;
 
 /**

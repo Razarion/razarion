@@ -2,7 +2,7 @@ package com.btxtech.client.editor.client.scene;
 
 import com.btxtech.client.editor.framework.AbstractObjectNameIdEditor;
 import com.btxtech.client.editor.framework.ObjectNameIdTable;
-import com.btxtech.client.editor.sidebar.AbstractEditor;
+import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.rest.SceneEditorProvider;

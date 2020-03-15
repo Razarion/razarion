@@ -194,10 +194,10 @@ public abstract class Boot {
     }
 
 
-    public void onFallback() {
+    public void onFallback(String reason) {
         for (StartupProgressListener listener : listeners) {
             try {
-                listener.onFallback();
+                listener.onFallback(reason);
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }

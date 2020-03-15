@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.water;
 
-import com.btxtech.client.editor.sidebar.AbstractEditor;
+import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.editor.widgets.SpecularLightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;

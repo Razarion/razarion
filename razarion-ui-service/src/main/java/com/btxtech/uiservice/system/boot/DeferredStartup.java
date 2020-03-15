@@ -52,8 +52,8 @@ public class DeferredStartup {
         boot.onTaskFailed(task, error, null);
     }
 
-    public void fallback() {
-        boot.onFallback();
+    public void fallback(String reason) {
+        boot.onFallback(reason);
     }
 
     public void setBackground() {

@@ -2,7 +2,7 @@ package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.client.editor.sidebar.AbstractEditor;
+import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.common.DisplayUtils;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;

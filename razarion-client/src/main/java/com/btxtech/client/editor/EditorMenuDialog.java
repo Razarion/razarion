@@ -1,9 +1,9 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.MainPanelService;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.client.editor.AlarmServiceView.AlarmViewEditor;
 import com.btxtech.client.editor.audio.AudioGalleryDialog;
 import com.btxtech.client.editor.basemgmt.BaseMgmtEditorPanel;
 import com.btxtech.client.editor.client.scene.SceneConfigSidebar;
@@ -24,16 +24,12 @@ import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
 import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
-import com.btxtech.client.editor.sidebar.AbstractEditor;
-import com.btxtech.client.editor.sidebar.EditorPanel;
 import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
 import com.btxtech.client.editor.water.WaterSidebar;
-import com.btxtech.shared.rest.CrudController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -42,7 +38,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 /**
@@ -52,13 +47,12 @@ import javax.inject.Inject;
 @Templated("EditorMenuDialog.html#editor-menu-dialog")
 public class EditorMenuDialog extends Composite implements ModalDialogContent<Void> {
     @Inject
+    private EditorService editorService;
+    @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
-    private MainPanelService mainPanelService;
-    @Inject
-    private Instance<EditorPanel> editorPanelInstance;
+    @DataField
+    private Button alarmServiceButton;
     @Inject
     @DataField
     private Button perfmonButton;
@@ -145,6 +139,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button i18nPanelButton;
     private ModalDialogPanel<Void> modalDialogPanel;
 
+    @EventHandler("alarmServiceButton")
+    private void onAlarmServiceButtonClicked(ClickEvent event) {
+        editorService.openAlarmView();
+    }
+
     @EventHandler("perfmonButton")
     private void onPerfmonButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
@@ -153,107 +152,107 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("renderEngineButton")
     private void onRenderEngineButtonClicked(ClickEvent event) {
-        openEditor(RenderEngineEditorPanel.class);
+        editorService.openEditor(RenderEngineEditorPanel.class, "???Unknown");
     }
 
     @EventHandler("gameEngineButton")
     private void onGameEngineButtonClicked(ClickEvent event) {
-        openEditor(GameEngineEditorPanel.class);
+        editorService.openEditor(GameEngineEditorPanel.class, "???Unknown");
     }
 
     @EventHandler("baseMgmtButton")
     private void onBaseMgmtButtonClicked(ClickEvent event) {
-        openEditor(BaseMgmtEditorPanel.class);
+        editorService.openEditor(BaseMgmtEditorPanel.class, "???Unknown");
     }
 
     @EventHandler("planetButton")
     private void onPlanetButtonClicked(ClickEvent event) {
-        openGenericCrudEditor(PlanetEditorController.class);
+        editorService.openGenericCrudEditor(PlanetEditorController.class, "Planets");
     }
 
     @EventHandler("planetVisualConfigButton")
     private void onPanetVisualConfigButtonClicked(ClickEvent event) {
-        openEditor(PlanetVisualConfigPanel.class);
+        editorService.openEditor(PlanetVisualConfigPanel.class, "???Unknown");
     }
 
     @EventHandler("terrainButton")
     private void onTerrainButtonClicked(ClickEvent event) {
-        openEditor(TerrainEditorSidebar.class);
+        editorService.openEditor(TerrainEditorSidebar.class, "???Unknown");
     }
 
     @EventHandler("resourceRegionButton")
     private void onResourceRegionsButtonClicked(ClickEvent event) {
-        openEditor(ResourceRegionSidebar.class);
+        editorService.openEditor(ResourceRegionSidebar.class, "???Unknown");
     }
 
     @EventHandler("boxRegionButton")
     private void onBoxRegionsButtonClicked(ClickEvent event) {
-        openEditor(BoxRegionSidebar.class);
+        editorService.openEditor(BoxRegionSidebar.class, "???Unknown");
     }
 
     @EventHandler("startRegionsButton")
     private void startRegionsButtonClicked(ClickEvent event) {
-        openEditor(StartRegionSidebar.class);
+        editorService.openEditor(StartRegionSidebar.class, "???Unknown");
     }
 
     @EventHandler("levelQuestButton")
     private void levelQuestButtonClicked(ClickEvent event) {
-        openEditor(LevelQuestSidebar.class);
+        editorService.openEditor(LevelQuestSidebar.class, "???Unknown");
     }
 
     @EventHandler("inventoryItemButton")
     private void inventoryItemButtonClicked(ClickEvent event) {
-        openEditor(InventoryItemCrudSidebar.class);
+        editorService.openEditor(InventoryItemCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("botButton")
     private void botButtonClicked(ClickEvent event) {
-        openEditor(BotSidebar.class);
+        editorService.openEditor(BotSidebar.class, "???Unknown");
     }
 
     @EventHandler("botSceneButton")
     private void botSceneButtonClicked(ClickEvent event) {
-        openEditor(BotSceneSidebar.class);
+        editorService.openEditor(BotSceneSidebar.class, "???Unknown");
     }
 
     @EventHandler("sceneConfigButton")
     private void sceneConfigButtonClicked(ClickEvent event) {
-        openEditor(SceneConfigSidebar.class);
+        editorService.openEditor(SceneConfigSidebar.class, "???Unknown");
     }
 
     @EventHandler("slopeButton")
     private void onSlopeButtonClicked(ClickEvent event) {
-        openEditor(SlopeConfigCrudSidebar.class);
+        editorService.openEditor(SlopeConfigCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("groundButton")
     private void onGroundButtonClicked(ClickEvent event) {
-        openGenericCrudEditor(GroundEditorController.class);
+        editorService.openGenericCrudEditor(GroundEditorController.class, "Grounds");
     }
 
     @EventHandler("waterButton")
     private void onWaterButtonClicked(ClickEvent event) {
-        openEditor(WaterSidebar.class);
+        editorService.openEditor(WaterSidebar.class, "???Unknown");
     }
 
     @EventHandler("baseItemButton")
     private void onBaseItemButtonClicked(ClickEvent event) {
-        openEditor(BaseItemTypeCrudSidebar.class);
+        editorService.openEditor(BaseItemTypeCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("resourceItemButton")
     private void onResourceItemButtonClicked(ClickEvent event) {
-        openEditor(ResourceItemTypeCrudSidebar.class);
+        editorService.openEditor(ResourceItemTypeCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("boxItemButton")
     private void onBoxItemButtonClicked(ClickEvent event) {
-        openEditor(BoxItemTypeCrudSidebar.class);
+        editorService.openEditor(BoxItemTypeCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("terrainObjectButton")
     private void onTerrainObjectButtonClicked(ClickEvent event) {
-        openEditor(TerrainObjectCrudSidebar.class);
+        editorService.openEditor(TerrainObjectCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("imageButton")
@@ -270,22 +269,22 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("shape3DButton")
     private void onShape3DButtonClicked(ClickEvent event) {
-        openEditor(Shape3DCrudeSidebar.class);
+        editorService.openEditor(Shape3DCrudeSidebar.class, "???Unknown");
     }
 
     @EventHandler("particleButton")
     private void particleButtonClicked(ClickEvent event) {
-        openEditor(ParticleCrudeSidebar.class);
+        editorService.openEditor(ParticleCrudeSidebar.class, "???Unknown");
     }
 
     @EventHandler("levelConfigButton")
     private void levelConfigButtonClicked(ClickEvent event) {
-        openEditor(LevelConfigSidebar.class);
+        editorService.openEditor(LevelConfigSidebar.class, "???Unknown");
     }
 
     @EventHandler("i18nPanelButton")
     private void i18nPanelButtonClicked(ClickEvent event) {
-        openEditor(I18nPanel.class);
+        editorService.openEditor(I18nPanel.class, "???Unknown");
     }
 
     @Override
@@ -301,29 +300,5 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Override
     public void customize(ModalDialogPanel<Void> modalDialogPanel) {
         this.modalDialogPanel = modalDialogPanel;
-    }
-
-    private void openEditor(Class<? extends AbstractEditor> editorPanelClass) {
-        try {
-            modalDialogPanel.close();
-            EditorPanel editorPanel = editorPanelInstance.get();
-            editorPanel.setContent(editorPanelClass);
-            mainPanelService.addEditorPanel(editorPanel);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            modalDialogManager.showMessageDialog("Error open Editor", t.getMessage());
-        }
-    }
-
-    private void openGenericCrudEditor(Class<? extends CrudController> crudControllerClass) {
-        try {
-            modalDialogPanel.close();
-            EditorPanel editorPanel = editorPanelInstance.get();
-            editorPanel.setGenericCrud(crudControllerClass);
-            mainPanelService.addEditorPanel(editorPanel);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            modalDialogManager.showMessageDialog("Error open Editor", t.getMessage());
-        }
     }
 }
