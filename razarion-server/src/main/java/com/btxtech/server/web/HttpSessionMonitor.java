@@ -53,7 +53,7 @@ public class HttpSessionMonitor implements HttpSessionListener {
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         PlayerSession playerSession = sessionService.sessionDestroyed(se.getSession().getId());
-        if (playerSession.getUserContext() != null && playerSession.getUserContext().isRegistered()) {
+        if (playerSession.getUserContext() != null && playerSession.getUserContext().isRegistered() && playerSession.getUserContext().getHumanPlayerId() != null) {
             historyPersistence.onUserLoggedOut(playerSession.getUserContext().getHumanPlayerId().getUserId(), playerSession.getHttpSessionId());
         }
     }
