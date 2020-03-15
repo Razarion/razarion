@@ -3,14 +3,17 @@ package com.btxtech.shared.system.alarm;
 import java.util.Date;
 
 public class Alarm {
+
     public enum Type {
         NO_LEVELS,
         USER_HAS_NO_LEVEL,
         NO_WARM_GAME_UI_CONTEXT,
-        NO_PLANETS
+        NO_PLANETS,
+        FAIL_STARTING_PLANET
     }
     private Type type;
     private Date date;
+    private Integer id;
 
     public Type getType() {
         return type;
@@ -28,6 +31,14 @@ public class Alarm {
         this.date = date;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public Alarm type(Type type) {
         setType(type);
         return this;
@@ -38,11 +49,17 @@ public class Alarm {
         return this;
     }
 
+    public Alarm id(Integer id) {
+        setId(id);
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Alarm{" +
                 "type=" + type +
                 ", date=" + date +
+                ", id=" + id +
                 '}';
     }
 }

@@ -24,10 +24,17 @@ public class AlarmRow implements IsElement {
     @DataField
     @Named("td")
     private HTMLTableCellElement alarmDate;
+    @Inject
+    @DataField
+    @Named("td")
+    private HTMLTableCellElement alarmAdditional;
 
     public void init(Alarm alarm) {
         alarmText.textContent = alarm.getType().toString();
         alarmDate.textContent = alarm.getDate().toString();
+        if(alarm.getId() != null) {
+            alarmAdditional.textContent = Integer.toString(alarm.getId());
+        }
     }
 
     @Override

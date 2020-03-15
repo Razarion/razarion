@@ -21,24 +21,24 @@ public class PropertyPage implements IsElement {
     @DataField
     private HTMLTableElement propertyTable;
     @Inject
-    private Instance<PrimitivePropertyWidget> primitivePropertyWidgets;
+    private Instance<GenericPropertyRow> primitivePropertyWidgets;
     @Inject
     private Instance<ComplexPropertyWrapper> complexPropertyWrappers;
 
     public void init(HasProperties hasProperties) {
         hasProperties.getBeanProperties().forEach((propertyName, propertyType) -> {
-            if (PropertyTypeUtils.isPrimitiveProperty(propertyType)) {
-                PrimitivePropertyWidget primitivePropertyWidget = primitivePropertyWidgets.get();
-                primitivePropertyWidget.init(propertyName, propertyType, hasProperties);
-                propertyTable.appendChild(primitivePropertyWidget.getElement());
+            if (PropertyTypeUtils.isGenericProperty(propertyType)) {
+                GenericPropertyRow genericPropertyRow = primitivePropertyWidgets.get();
+                genericPropertyRow.init(propertyName, propertyType, hasProperties);
+                propertyTable.appendChild(genericPropertyRow.getElement());
             } else if(PropertyTypeUtils.isBindableProperty(propertyType)) {
                 ComplexPropertyWrapper complexPropertyWrapper = complexPropertyWrappers.get();
                 complexPropertyWrapper.init(propertyName, propertyType, hasProperties);
                 propertyTable.appendChild(complexPropertyWrapper.getElement());
             } else {
-                PrimitivePropertyWidget primitivePropertyWidget = primitivePropertyWidgets.get();
-                primitivePropertyWidget.init(propertyName, propertyType, hasProperties);
-                propertyTable.appendChild(primitivePropertyWidget.getElement());
+                GenericPropertyRow genericPropertyRow = primitivePropertyWidgets.get();
+                genericPropertyRow.init(propertyName, propertyType, hasProperties);
+                propertyTable.appendChild(genericPropertyRow.getElement());
             }
         });
     }

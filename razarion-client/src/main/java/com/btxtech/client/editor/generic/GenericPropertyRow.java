@@ -12,9 +12,9 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@Templated("PrimitivePropertyWidget.html#propertyTableRow")
-public class PrimitivePropertyWidget implements IsElement {
-    // private Logger logger = Logger.getLogger(PrimitivePropertyWidget.class.getName());
+@Templated("GenericPropertyRow.html#propertyTableRow")
+public class GenericPropertyRow implements IsElement {
+    // private Logger logger = Logger.getLogger(GenericPropertyRow.class.getName());
     @Inject
     @DataField
     private HTMLTableRowElement propertyTableRow;
@@ -30,7 +30,7 @@ public class PrimitivePropertyWidget implements IsElement {
     public void init(String propertyName, PropertyType propertyValue, HasProperties hasProperties) {
         this.propertyName.textContent = propertyName;
         Elemental2Utils.removeAllChildren(this.propertyValue);
-        this.propertyValue.appendChild(PropertyTypeUtils.setupPropertyWidget(propertyName, propertyValue, hasProperties));
+        this.propertyValue.appendChild(PropertyTypeUtils.setupGenericPropertyWidget(propertyName, propertyValue, hasProperties));
     }
 
     @Override

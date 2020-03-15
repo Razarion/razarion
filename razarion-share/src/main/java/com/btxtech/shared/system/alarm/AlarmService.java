@@ -11,7 +11,11 @@ public class AlarmService {
     private List<AlarmServiceListener> listeners = new ArrayList<>();
 
     public void riseAlarm(Alarm.Type type) {
-        Alarm alarm = new Alarm().type(type).date(new Date());
+        riseAlarm(type, null);
+    }
+
+    public void riseAlarm(Alarm.Type type, Integer id) {
+        Alarm alarm = new Alarm().type(type).date(new Date()).id(id);
         alarms.add(alarm);
         fire(alarm);
     }

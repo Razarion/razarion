@@ -14,8 +14,8 @@ import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
+import static com.btxtech.shared.system.alarm.Alarm.Type.FAIL_STARTING_PLANET;
 import static com.btxtech.shared.system.alarm.Alarm.Type.NO_PLANETS;
 
 /**
@@ -24,7 +24,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.NO_PLANETS;
  */
 @Singleton
 public class ServerTerrainShapeService {
-    private Logger logger = Logger.getLogger(ServerTerrainShapeService.class.getName());
+    // private Logger logger = Logger.getLogger(ServerTerrainShapeService.class.getName());
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
     @Inject
@@ -51,6 +51,7 @@ public class ServerTerrainShapeService {
             TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetCrudPersistence.getTerrainSlopePositions(planetConfig.getId()), planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()));
             terrainShapes.put(planetConfig.getId(), terrainShape.toNativeTerrainShape());
         } catch (Throwable t) {
+            alarmService.riseAlarm(FAIL_STARTING_PLANET, planetConfig.getId());
             exceptionHandler.handleException(t);
         }
     }
