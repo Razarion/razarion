@@ -13,6 +13,8 @@
 
 package com.btxtech.uiservice.system.boot;
 
+import com.btxtech.shared.system.alarm.Alarm;
+
 import javax.inject.Inject;
 
 /**
@@ -40,8 +42,8 @@ public class DeferredStartupTestTask extends AbstractStartupTask {
         deferredStartup.failed(error);
     }
 
-    public void fallback(String reason) {
-        deferredStartup.fallback(reason);
+    public void fallback(Alarm.Type alarmType) {
+        deferredStartup.fallback(alarmType);
     }
 
 }

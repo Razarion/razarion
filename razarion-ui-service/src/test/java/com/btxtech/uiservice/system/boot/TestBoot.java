@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.system.boot;
 
+import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.utils.ExceptionUtil;
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
@@ -512,14 +513,14 @@ public class TestBoot {
         mockListener.onStart(StartupTestSeq.TEST_DEFERRED_FALLBACK);
 
         mockListener.onNextTask(DeferredFallbackTestTaskEnum.TEST_1);
-        mockListener.onFallback("Alarm reason");
+        mockListener.onFallback(Alarm.Type.NO_LEVELS);
 
         replay(mockListener);
 
         Boot boot = createClientRunner();
         boot.addStartupProgressListener(mockListener);
         boot.start(StartupTestSeq.TEST_DEFERRED_FALLBACK);
-        getStartupTestTaskMonitor().getDeferredStartupTestTask(0).fallback("Alarm reason");
+        getStartupTestTaskMonitor().getDeferredStartupTestTask(0).fallback(Alarm.Type.NO_LEVELS);
 
         verify(mockListener);
         failOnException();

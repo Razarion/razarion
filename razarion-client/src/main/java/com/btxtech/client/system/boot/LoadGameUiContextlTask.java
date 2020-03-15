@@ -5,6 +5,7 @@ import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.GameUiContextController;
+import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -38,7 +39,7 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
         deferredStartup.setDeferred();
         serviceCaller.call((RemoteCallback<ColdGameUiContext>) coldGameUiContext -> {
             if (coldGameUiContext.getWarmGameUiContext() == null && coldGameUiContext.getUserContext().isAdmin()) {
-                deferredStartup.fallback("No warmGameUiContext in ColdGameUiContext");
+                deferredStartup.fallback(Alarm.Type.NO_WARM_GAME_UI_CONTEXT);
                 return;
             }
             gameUiControl.setColdGameUiContext(coldGameUiContext);

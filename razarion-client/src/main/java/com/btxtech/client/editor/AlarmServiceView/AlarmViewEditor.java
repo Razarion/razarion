@@ -1,7 +1,8 @@
 package com.btxtech.client.editor.AlarmServiceView;
 
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
-import com.btxtech.shared.system.AlarmService;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmService;
 import elemental2.dom.HTMLTableElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -25,7 +26,7 @@ public class AlarmViewEditor extends AbstractEditor {
         alarmService.getAlarms().forEach(this::displayAlarm);
     }
 
-    private void displayAlarm(String alarm) {
+    private void displayAlarm(Alarm alarm) {
         AlarmRow alarmRow = rowInstance.get();
         alarmRow.init(alarm);
         alarmTable.appendChild(alarmRow.getElement());

@@ -30,7 +30,7 @@ public class ImageProviderImpl implements ImageProvider {
         try {
             return Response.ok(imagePersistence.getImage(id)).lastModified(new Date()).build();
         } catch (Throwable e) {
-            exceptionHandler.handleException("Can not load image for id: " + id, e);
+            exceptionHandler.handleException("Can not loadCold image for id: " + id, e);
             throw e;
         }
     }

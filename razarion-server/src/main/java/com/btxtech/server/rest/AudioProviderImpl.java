@@ -28,7 +28,7 @@ public class AudioProviderImpl implements AudioProvider {
         try {
             return Response.ok(audioPersistence.getAudio(id)).lastModified(new Date()).build();
         } catch (Throwable e) {
-            exceptionHandler.handleException("Can not load audio for id: " + id, e);
+            exceptionHandler.handleException("Can not loadCold audio for id: " + id, e);
             throw e;
         }
     }

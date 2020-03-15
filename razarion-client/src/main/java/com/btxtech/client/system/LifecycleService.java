@@ -10,7 +10,8 @@ import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.rest.ServerMgmtProvider;
-import com.btxtech.shared.system.AlarmService;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -123,8 +124,8 @@ public class LifecycleService {
         boot.addStartupProgressListener(clientScreenCover);
         boot.addStartupProgressListener(new StartupProgressListener() {
             @Override
-            public void onFallback(String reason) {
-                alarmService.riseAlarm(reason);
+            public void onFallback(Alarm.Type alarmType) {
+                alarmService.riseAlarm(alarmType);
                 editorService.activateFallbackEditorMenuButton();
                 editorService.openAlarmView();
             }

@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.AlarmServiceView;
 
+import com.btxtech.shared.system.alarm.Alarm;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLTableCellElement;
 import elemental2.dom.HTMLTableRowElement;
@@ -19,9 +20,14 @@ public class AlarmRow implements IsElement {
     @DataField
     @Named("td")
     private HTMLTableCellElement alarmText;
+    @Inject
+    @DataField
+    @Named("td")
+    private HTMLTableCellElement alarmDate;
 
-    public void init(String alarm) {
-        alarmText.textContent = alarm;
+    public void init(Alarm alarm) {
+        alarmText.textContent = alarm.getType().toString();
+        alarmDate.textContent = alarm.getDate().toString();
     }
 
     @Override

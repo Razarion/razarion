@@ -3,6 +3,7 @@ package com.btxtech.client.cockpit;
 import com.btxtech.client.MainPanelService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
@@ -106,7 +107,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     }
 
     @Override
-    public void onFallback(String reason) {
+    public void onFallback(Alarm.Type alarmType) {
         removeLoadingCover();
     }
 }

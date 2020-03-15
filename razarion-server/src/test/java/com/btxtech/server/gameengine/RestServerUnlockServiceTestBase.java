@@ -173,7 +173,7 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
     }
 
     private void assertAvailableUnlocks(Integer... expectedLevelUnlockIds) throws Exception {
-        List<LevelUnlockConfig> actualLevelUnlockConfigs = gameUiControlConfigPersistence.load(new GameUiControlInput(), Locale.ENGLISH, userService.getUserContextFromSession()).getLevelUnlockConfigs();
+        List<LevelUnlockConfig> actualLevelUnlockConfigs = gameUiControlConfigPersistence.loadCold(new GameUiControlInput(), Locale.ENGLISH, userService.getUserContextFromSession()).getLevelUnlockConfigs();
         Assert.assertEquals(expectedLevelUnlockIds.length, actualLevelUnlockConfigs.size());
         Collection<Integer> expectedCollection = new ArrayList<>(Arrays.asList(expectedLevelUnlockIds));
         expectedCollection.removeAll(actualLevelUnlockConfigs.stream().map(LevelUnlockConfig::getId).collect(Collectors.toList()));

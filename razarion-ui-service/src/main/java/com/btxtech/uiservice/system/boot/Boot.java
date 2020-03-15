@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.utils.ExceptionUtil;
 import com.btxtech.shared.utils.MathHelper;
 
@@ -194,10 +195,10 @@ public abstract class Boot {
     }
 
 
-    public void onFallback(String reason) {
+    public void onFallback(Alarm.Type alarmType) {
         for (StartupProgressListener listener : listeners) {
             try {
-                listener.onFallback(reason);
+                listener.onFallback(alarmType);
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }

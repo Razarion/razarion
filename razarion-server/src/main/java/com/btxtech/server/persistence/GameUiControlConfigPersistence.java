@@ -17,6 +17,8 @@ import com.btxtech.shared.dto.InGameQuestVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmService;
 import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
@@ -59,13 +61,16 @@ public class GameUiControlConfigPersistence {
     private ServerUnlockService serverUnlockService;
     @Inject
     private BotService botService;
+    @Inject
+    private AlarmService alarmService;
 
     @Transactional
-    public ColdGameUiContext load(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
+    public ColdGameUiContext loadCold(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
         ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
         coldGameUiContext.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         coldGameUiContext.setUserContext(userContext);
         if (userContext.getLevelId() != null) {
+            alarmService.riseAlarm(Alarm.Type.NO_LEVELS);
             coldGameUiContext.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext.getHumanPlayerId(), userContext.getLevelId()));
         }
         coldGameUiContext.setShape3Ds(shape3DPersistence.getShape3Ds());
@@ -83,6 +88,7 @@ public class GameUiControlConfigPersistence {
     @Transactional
     public WarmGameUiContext loadWarm(Locale locale, UserContext userContext) {
         if(userContext.getLevelId() == null) {
+            alarmService.riseAlarm(Alarm.Type.USER_HAS_NO_LEVEL);
             return null;
         }
         WarmGameUiContext warmGameUiContext = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);

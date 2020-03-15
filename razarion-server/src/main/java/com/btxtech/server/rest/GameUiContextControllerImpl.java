@@ -33,7 +33,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
     public ColdGameUiContext loadColdGameUiContext(GameUiControlInput gameUiControlInput) {
         try {
             UserContext userContext = userService.getUserContextFromSession();
-            return gameUiControlConfigPersistence.load(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
+            return gameUiControlConfigPersistence.loadCold(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
             exceptionHandler.handleException("Using fallback. No ColdGameUiContext configured", e);
             return FallbackConfig.coldGameUiControlConfig(userService.getUserContextFromSession());
