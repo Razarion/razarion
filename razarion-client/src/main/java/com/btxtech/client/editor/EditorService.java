@@ -2,7 +2,8 @@ package com.btxtech.client.editor;
 
 import com.btxtech.client.MainPanelService;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.client.editor.AlarmServiceView.AlarmViewEditor;
+import com.btxtech.client.editor.AlarmServiceView.ClientAlarmView;
+import com.btxtech.client.editor.AlarmServiceView.ServerAlarmView;
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.editor.editorpanel.EditorPanel;
 import com.btxtech.shared.rest.CrudController;
@@ -54,8 +55,12 @@ public class EditorService {
         openEditorMenu();
     }
 
-    public void openAlarmView() {
-        openEditor(AlarmViewEditor.class, "Alarms");
+    public void openClientAlarmView() {
+        openEditor(ClientAlarmView.class, "Client Alarms");
+    }
+
+    public void openServerAlarmView() {
+        openEditor(ServerAlarmView.class, "Server Alarms");
     }
 
 

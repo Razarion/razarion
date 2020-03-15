@@ -3,7 +3,6 @@ package com.btxtech.client.editor;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
-import com.btxtech.client.editor.AlarmServiceView.AlarmViewEditor;
 import com.btxtech.client.editor.audio.AudioGalleryDialog;
 import com.btxtech.client.editor.basemgmt.BaseMgmtEditorPanel;
 import com.btxtech.client.editor.client.scene.SceneConfigSidebar;
@@ -141,7 +140,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("alarmServiceButton")
     private void onAlarmServiceButtonClicked(ClickEvent event) {
-        editorService.openAlarmView();
+        editorService.openClientAlarmView();
     }
 
     @EventHandler("perfmonButton")

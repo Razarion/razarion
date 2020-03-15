@@ -30,6 +30,7 @@ public class CommonUrl {
     public static final String IMAGE_SERVICE_PATH = "image";
     public static final String PLANET_MINI_MAP_PATH = "minimap";
     public static final String AUDIO_SERVICE_PATH = "audio";
+    public static final String ALARM_SERVICE_PATH = "alarm-service";
     public static final String SCENE_EDITOR_PATH = "sceneeditor";
     public static final String SERVER_GAME_ENGINE_EDITOR_PROVIDER_PATH = "servergameengineditorprovider";
     public static final String QUEST_PROVIDER_PATH = "questprovider";

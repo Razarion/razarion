@@ -12,17 +12,30 @@ public class Alarm {
     private Type type;
     private Date date;
 
-    public Alarm(Type type) {
-        this.type = type;
-        date = new Date();
-    }
-
     public Type getType() {
         return type;
     }
 
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     public Date getDate() {
         return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Alarm type(Type type) {
+        setType(type);
+        return this;
+    }
+
+    public Alarm date(Date date) {
+        setDate(date);
+        return this;
     }
 
     @Override

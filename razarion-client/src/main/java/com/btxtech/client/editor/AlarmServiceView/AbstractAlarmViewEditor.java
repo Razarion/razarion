@@ -2,19 +2,17 @@ package com.btxtech.client.editor.AlarmServiceView;
 
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.shared.system.alarm.Alarm;
-import com.btxtech.shared.system.alarm.AlarmService;
 import elemental2.dom.HTMLTableElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.List;
 
-@Templated("AlarmViewEditor.html#alarmView")
-public class AlarmViewEditor extends AbstractEditor {
-    @Inject
-    private AlarmService alarmService;
+import static com.btxtech.client.utils.Elemental2Utils.removeAllChildren;
+
+public abstract class AbstractAlarmViewEditor extends AbstractEditor {
     @Inject
     private Instance<AlarmRow> rowInstance;
     @Inject
@@ -23,7 +21,14 @@ public class AlarmViewEditor extends AbstractEditor {
 
     @PostConstruct
     public void postConstruct() {
-        alarmService.getAlarms().forEach(this::displayAlarm);
+       requestAlarms();
+    }
+
+    protected abstract void requestAlarms();
+
+    protected void onAlarmReceived(List<Alarm> alarms) {
+        removeAllChildren(alarmTable);
+        alarms.forEach(this::displayAlarm);
     }
 
     private void displayAlarm(Alarm alarm) {

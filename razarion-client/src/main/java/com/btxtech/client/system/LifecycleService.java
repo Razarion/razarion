@@ -127,7 +127,8 @@ public class LifecycleService {
             public void onFallback(Alarm.Type alarmType) {
                 alarmService.riseAlarm(alarmType);
                 editorService.activateFallbackEditorMenuButton();
-                editorService.openAlarmView();
+                editorService.openClientAlarmView();
+                editorService.openServerAlarmView();
             }
         });
         Browser.getDocument().addEventListener("beforeunload", evt -> beforeUnload = true);
