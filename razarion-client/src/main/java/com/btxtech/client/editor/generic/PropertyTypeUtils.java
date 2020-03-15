@@ -5,6 +5,7 @@ import com.btxtech.client.editor.generic.propertyeditors.GenericPropertyEditor;
 import com.btxtech.client.editor.generic.propertyeditors.GenericPropertyType;
 import com.btxtech.client.editor.generic.propertyeditors.IntegerEditor;
 import com.btxtech.client.editor.generic.propertyeditors.Rectangle2DEditor;
+import com.btxtech.client.editor.generic.propertyeditors.RectangleEditor;
 import com.btxtech.client.editor.generic.propertyeditors.StringEditor;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
@@ -30,7 +31,7 @@ public final class PropertyTypeUtils {
             new GenericPropertyType<>(String.class, StringEditor.class),
             new GenericPropertyType<>(Integer.class, IntegerEditor.class),
             new GenericPropertyType<>(Double.class, DoubleEditor.class),
-            new GenericPropertyType<>(Rectangle.class, null),
+            new GenericPropertyType<>(Rectangle.class, RectangleEditor.class),
             new GenericPropertyType<>(Rectangle2D.class, Rectangle2DEditor.class),
             new GenericPropertyType<>(DecimalPosition.class, null),
             new GenericPropertyType<>(Index.class, null));
