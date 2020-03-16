@@ -54,7 +54,7 @@ public class LevelField extends Composite {
     private void setupNameLabel() {
         if (levelId != null) {
             LevelConfig levelConfig = levelService.getLevel(levelId);
-            nameLabel.setText(levelConfig.getNumber() + " (" + levelConfig.getLevelId() + ")");
+            nameLabel.setText(levelConfig.getNumber() + " (" + levelConfig.getId() + ")");
         } else {
             nameLabel.setText("-");
         }

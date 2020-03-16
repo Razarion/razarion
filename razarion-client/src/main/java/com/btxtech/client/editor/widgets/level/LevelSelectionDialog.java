@@ -56,7 +56,7 @@ public class LevelSelectionDialog extends Composite implements ModalDialogConten
         if (isAttached()) {
             levels.deselectAll();
             levels.selectComponent(widget);
-            modalDialogPanel.setApplyValue(widget.getValue().getLevelId());
+            modalDialogPanel.setApplyValue(widget.getValue().getId());
         }
     }
 

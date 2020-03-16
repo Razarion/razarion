@@ -42,12 +42,12 @@ public class CommonUrl {
     public static final String TERRAIN_ELEMENT_SERVICE_PATH = "terrainelement";
     public static final String GROUND_EDITOR_PATH = "editor/ground";
     public static final String PLANET_EDITOR_PATH = "editor/planet";
+    public static final String LEVEL_EDITOR_PATH = "editor/level";
     public static final String SHAPE_3D_PROVIDER = G_ZIPPED + "/" + "shape3dprovider";
     public static final String TERRAIN_SHAPE_PROVIDER = G_ZIPPED + "/" + "terrainshape";
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
     public static final String ITEM_TYPE_PROVIDER = "itemtypeprovider";
     public static final String TRACKER_PATH = "tracker";
-    public static final String LEVEL_EDITOR_PROVIDER_PATH = "leveleditorprovider";
     public static final String BACKEND_PATH = "backend";
     public static final String SERVER_MGMT = "servermgmt";
     public static final String MARKETING = "marketing";

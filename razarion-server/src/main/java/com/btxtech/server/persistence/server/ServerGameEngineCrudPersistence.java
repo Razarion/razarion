@@ -272,7 +272,7 @@ public class ServerGameEngineCrudPersistence extends CrudPersistence<ServerGameE
         CriteriaQuery<LevelEntity> userSelect = userQuery.select(root.join(ServerLevelQuestEntity_.minimalLevel));
         userSelect.where(criteriaBuilder.equal(root.join(ServerLevelQuestEntity_.questConfigs).get(QuestConfigEntity_.id), questId));
         LevelEntity questLevelEntity = entityManager.createQuery(userSelect).getSingleResult();
-        LevelEntity userLevelEntity = levelPersistence.read(levelId);
+        LevelEntity userLevelEntity = levelPersistence.getEntity(levelId);
         if (userLevelEntity.getNumber() < questLevelEntity.getNumber()) {
             throw new IllegalArgumentException("The user is not allowed to activate a quest due to wrong level. questLevelEntity: " + questLevelEntity + " userLevelEntity: " + userLevelEntity);
         }
@@ -289,7 +289,7 @@ public class ServerGameEngineCrudPersistence extends CrudPersistence<ServerGameE
         crud.setEntityFactory(ServerLevelQuestEntity::new);
         crud.setEntityFiller((serverLevelQuestEntity, serverLevelQuestConfig) -> {
             serverLevelQuestEntity.setInternalName(serverLevelQuestConfig.getInternalName());
-            serverLevelQuestEntity.setMinimalLevel(levelPersistence.getLevel4Id(serverLevelQuestConfig.getMinimalLevelId()));
+            serverLevelQuestEntity.setMinimalLevel(levelPersistence.getEntity(serverLevelQuestConfig.getMinimalLevelId()));
         });
         return crud;
     }

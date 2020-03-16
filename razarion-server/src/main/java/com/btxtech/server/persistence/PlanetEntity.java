@@ -118,13 +118,7 @@ public class PlanetEntity {
         if (groundConfig != null) {
             planetConfig.setGroundConfigId(groundConfig.getId());
         }
-        Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
-        if (this.itemTypeLimitation != null) {
-            for (Map.Entry<BaseItemTypeEntity, Integer> entry : this.itemTypeLimitation.entrySet()) {
-                itemTypeLimitation.put(entry.getKey().getId(), entry.getValue());
-            }
-        }
-        planetConfig.setItemTypeLimitation(itemTypeLimitation);
+        planetConfig.setItemTypeLimitation(PersistenceUtil.extractItemTypeLimitation(itemTypeLimitation));
         if (startBaseItemType != null) {
             planetConfig.setStartBaseItemTypeId(startBaseItemType.getId());
         }

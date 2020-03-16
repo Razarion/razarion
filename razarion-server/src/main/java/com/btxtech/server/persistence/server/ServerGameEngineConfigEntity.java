@@ -171,7 +171,7 @@ public class ServerGameEngineConfigEntity {
     public void updateStartRegionConfig(StartRegionConfig startRegionConfig, LevelPersistence levelPersistence) {
         if (startRegionLevelConfigs != null) {
             StartRegionLevelConfigEntity startRegionLevelConfigEntityDb = startRegionLevelConfigs.stream().filter(startRegionLevelConfigEntity -> startRegionConfig.getId() == startRegionLevelConfigEntity.getId()).findFirst().orElseThrow(() -> new IllegalArgumentException("No StartRegionLevelConfigEntity for id: " + id + " on ServerGameEngineConfigEntity: " + this.id));
-            startRegionLevelConfigEntityDb.setMinimalLevel(levelPersistence.getLevel4Id(startRegionConfig.getMinimalLevelId()));
+            startRegionLevelConfigEntityDb.setMinimalLevel(levelPersistence.getEntity(startRegionConfig.getMinimalLevelId()));
             startRegionLevelConfigEntityDb.setInternalName(startRegionConfig.getInternalName());
             if (startRegionConfig.getRegion() != null) {
                 startRegionLevelConfigEntityDb.setStartRegion(startRegionConfig.getRegion().getCorners());

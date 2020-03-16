@@ -99,9 +99,9 @@ public class UserUiService {
         LevelConfig levelConfig = levelService.getLevel(userContext.getLevelId());
         if (xp >= levelConfig.getXp2LevelUp()) {
             LevelConfig newLevelConfig = levelService.getNextLevel(levelConfig);
-            userContext.setLevelId(newLevelConfig.getLevelId());
+            userContext.setLevelId(newLevelConfig.getId());
             userContext.setXp(0);
-            gameEngineControl.updateLevel(newLevelConfig.getLevelId());
+            gameEngineControl.updateLevel(newLevelConfig.getId());
             cockpitService.updateLevelAndXp(userContext);
             itemCockpitService.onStateChanged();
             dialogManager.onLevelPassed(new LevelUpPacket().setUserContext(userContext));

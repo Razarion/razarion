@@ -291,7 +291,7 @@ public class UserService {
             unregisteredUser.getLevelUnlockEntityIds().forEach(levelUnlockEntityId -> userEntity.addLevelUnlockEntity(levelPersistence.readLevelUnlockEntity(levelUnlockEntityId)));
         }
         userEntity.setXp(sessionHolder.getPlayerSession().getUserContext().getXp());
-        userEntity.setLevel(levelPersistence.getLevel4Id(sessionHolder.getPlayerSession().getUserContext().getLevelId()));
+        userEntity.setLevel(levelPersistence.getEntity(sessionHolder.getPlayerSession().getUserContext().getLevelId()));
     }
 
     @Transactional

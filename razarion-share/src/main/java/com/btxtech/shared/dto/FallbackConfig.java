@@ -259,7 +259,7 @@ public final class FallbackConfig {
         level1Limitation.put(HARBOUR_ITEM_TYPE_ID, 1);
         level1Limitation.put(SHIP_TRANSPORTER_ITEM_TYPE_ID, 1);
         level1Limitation.put(MOVING_TEST_ITEM_TYPE_ID, 1000);
-        levelConfigs.add(new LevelConfig().setLevelId(LEVEL_ID_1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(level1Limitation));
+        levelConfigs.add(new LevelConfig().id(LEVEL_ID_1).number(1).xp2LevelUp(2).itemTypeLimitation(level1Limitation));
         return levelConfigs;
     }
 

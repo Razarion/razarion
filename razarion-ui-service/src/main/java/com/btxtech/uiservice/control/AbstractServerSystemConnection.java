@@ -55,7 +55,7 @@ public abstract class AbstractServerSystemConnection {
     }
 
     public void onLevelChanged(LevelConfig levelConfig) {
-        sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.LEVEL_UPDATE_CLIENT, toJson(levelConfig.getLevelId())));
+        sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.LEVEL_UPDATE_CLIENT, toJson(levelConfig.getId())));
     }
 
     public void sendChatMessage(String message) {

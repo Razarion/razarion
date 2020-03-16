@@ -28,7 +28,7 @@ public class LevelService {
         levels.clear();
         orderedLevels.clear();
         for (LevelConfig levelConfig : staticGameConfig.getLevelConfigs()) {
-            levels.put(levelConfig.getLevelId(), levelConfig);
+            levels.put(levelConfig.getId(), levelConfig);
             orderedLevels.add(levelConfig);
         }
         orderedLevels.sort(Comparator.comparingInt(LevelConfig::getNumber));

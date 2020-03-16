@@ -1,16 +1,21 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
+
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -63,5 +68,12 @@ public interface PersistenceUtil {
         entityList.clear();
         entityList.addAll(resultEntityList);
         return entityList;
+    }
+
+    static Map<Integer, Integer> extractItemTypeLimitation(Map<BaseItemTypeEntity, Integer> itemTypeLimitation) {
+        if (itemTypeLimitation != null) {
+            return itemTypeLimitation.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().getId(), Map.Entry::getValue, (a, b) -> b));
+        }
+        return Collections.emptyMap();
     }
 }

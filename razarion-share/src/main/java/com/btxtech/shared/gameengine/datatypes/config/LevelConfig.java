@@ -13,10 +13,9 @@
 
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ObjectNameIdProvider;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -24,45 +23,74 @@ import java.util.Map;
  * Date: 17.05.2010
  * Time: 18:48:18
  */
-public class LevelConfig implements ObjectNameIdProvider {
-    private int levelId;
+public class LevelConfig implements Config {
+    private int id;
+    private String internalName;
     private int number;
     private Map<Integer, Integer> itemTypeLimitation;
     private int xp2LevelUp;
 
-    public int getLevelId() {
-        return levelId;
+    @Override
+    public int getId() {
+        return id;
     }
 
-    public LevelConfig setLevelId(int levelId) {
-        this.levelId = levelId;
-        return this;
+    @Override
+    public String getInternalName() {
+        return internalName;
+    }
+
+    @Override
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
     }
 
     public int getNumber() {
         return number;
     }
 
-    public LevelConfig setNumber(int number) {
+    public void setNumber(int number) {
         this.number = number;
-        return this;
     }
 
     public Map<Integer, Integer> getItemTypeLimitation() {
         return itemTypeLimitation;
     }
 
-    public LevelConfig setItemTypeLimitation(Map<Integer, Integer> itemTypeLimitation) {
+    public void setItemTypeLimitation(Map<Integer, Integer> itemTypeLimitation) {
         this.itemTypeLimitation = itemTypeLimitation;
-        return this;
     }
 
     public int getXp2LevelUp() {
         return xp2LevelUp;
     }
 
-    public LevelConfig setXp2LevelUp(int xp2LevelUp) {
+    public void setXp2LevelUp(int xp2LevelUp) {
         this.xp2LevelUp = xp2LevelUp;
+    }
+
+    public LevelConfig id(int id) {
+        this.id = id;
+        return this;
+    }
+
+    public LevelConfig internalName(String internalName) {
+        this.internalName = internalName;
+        return this;
+    }
+
+    public LevelConfig number(int number) {
+        setNumber(number);
+        return this;
+    }
+
+    public LevelConfig itemTypeLimitation(Map<Integer, Integer> itemTypeLimitation) {
+        setItemTypeLimitation(itemTypeLimitation);
+        return this;
+    }
+
+    public LevelConfig xp2LevelUp(int xp2LevelUp) {
+        setXp2LevelUp(xp2LevelUp);
         return this;
     }
 
@@ -77,7 +105,7 @@ public class LevelConfig implements ObjectNameIdProvider {
 
     @Override
     public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(levelId, Integer.toString(number));
+        return new ObjectNameId(id, Integer.toString(number));
     }
 
     @Override
@@ -90,11 +118,11 @@ public class LevelConfig implements ObjectNameIdProvider {
         }
 
         LevelConfig that = (LevelConfig) o;
-        return levelId == that.levelId;
+        return id == that.id;
     }
 
     @Override
     public int hashCode() {
-        return levelId;
+        return id;
     }
 }

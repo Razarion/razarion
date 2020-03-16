@@ -44,7 +44,7 @@ public class LevelSelectionEntry implements TakesValue<LevelConfig>, IsElement {
     @Override
     public void setValue(LevelConfig level) {
         this.level = level;
-        levelId.setText(DisplayUtils.handleInteger(level.getLevelId()));
+        levelId.setText(DisplayUtils.handleInteger(level.getId()));
         levelNumber.setText(DisplayUtils.handleInteger(level.getNumber()));
     }
 
