@@ -54,8 +54,10 @@ public class LevelPersistence extends CrudPersistence<LevelConfig, LevelEntity> 
     @Override
     protected void fromConfig(LevelConfig config, LevelEntity entity) {
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation = new HashMap<>();
-        for (Map.Entry<Integer, Integer> entry : config.getItemTypeLimitation().entrySet()) {
-            itemTypeLimitation.put(itemTypePersistence.readBaseItemTypeEntity(entry.getKey()), entry.getValue());
+        if (config.getItemTypeLimitation() != null) {
+            for (Map.Entry<Integer, Integer> entry : config.getItemTypeLimitation().entrySet()) {
+                itemTypeLimitation.put(itemTypePersistence.readBaseItemTypeEntity(entry.getKey()), entry.getValue());
+            }
         }
         Collection<LevelUnlockEntity> levelUnlockEntities = new ArrayList<>();
 //   TODO     LevelEntity levelEntity = read(levelEditConfig.getLevelId());

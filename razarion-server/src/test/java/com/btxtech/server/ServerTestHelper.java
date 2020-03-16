@@ -11,8 +11,18 @@ import com.btxtech.server.persistence.history.UserHistoryEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
+import com.btxtech.server.persistence.itemtype.BuilderTypeEntity;
+import com.btxtech.server.persistence.itemtype.ConsumerTypeEntity;
+import com.btxtech.server.persistence.itemtype.DemolitionStepEffectEntity;
+import com.btxtech.server.persistence.itemtype.DemolitionStepEffectParticleEntity;
+import com.btxtech.server.persistence.itemtype.FactoryTypeEntity;
+import com.btxtech.server.persistence.itemtype.HarvesterTypeEntity;
+import com.btxtech.server.persistence.itemtype.HouseTypeEntity;
+import com.btxtech.server.persistence.itemtype.ItemContainerTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
+import com.btxtech.server.persistence.itemtype.TurretTypeEntity;
+import com.btxtech.server.persistence.itemtype.WeaponTypeEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
@@ -74,6 +84,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -172,10 +183,6 @@ public class ServerTestHelper {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
-    private ItemTypePersistence itemTypePersistence;
-    @Inject
-    private Shape3DPersistence shape3DPersistence;
-    @Inject
     private PlanetCrudPersistence planetCrudPersistence;
     @Inject
     private ServerGameEngineControl serverGameEngineControl;
@@ -196,9 +203,12 @@ public class ServerTestHelper {
     @After
     public void closeJpa() {
         cleanupAfterTests.forEach(cleanupAfterTest -> {
-            runInTransaction(em -> {
-                em.createQuery("DELETE FROM " + cleanupAfterTest.getEntityClass().getSimpleName()).executeUpdate();
-            });
+            if (cleanupAfterTest.getEntityClass() != null) {
+                cleanTable(cleanupAfterTest.getEntityClass());
+            }
+            if (cleanupAfterTest.getTableName() != null) {
+                cleanTableNative(cleanupAfterTest.getTableName());
+            }
         });
         entityManager.close();
         entityManagerFactory.close();
@@ -224,17 +234,17 @@ public class ServerTestHelper {
         GROUND_2_ID = persistInTransaction(new GroundConfigEntity()).getId();
         GROUND_3_ID = persistInTransaction(new GroundConfigEntity()).getId();
         GROUND_4_ID = persistInTransaction(new GroundConfigEntity()).getId();
-        cleanupAfterTests.add(new CleanupAfterTest().setEntity(GroundConfigEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(GroundConfigEntity.class));
     }
 
     protected void setupImages() {
         IMAGE_1_ID = persistInTransaction(new ImageLibraryEntity()).getId();
         IMAGE_2_ID = persistInTransaction(new ImageLibraryEntity()).getId();
         IMAGE_3_ID = persistInTransaction(new ImageLibraryEntity()).getId();
-        cleanupAfterTests.add(new CleanupAfterTest().setEntity(ImageLibraryEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(ImageLibraryEntity.class));
     }
 
-    protected void setupItemTypes() throws Exception {
+    protected void setupItemTypes() {
         BaseItemType factory = new BaseItemType();
         factory.setPrice(1).setHealth(100).setSpawnDurationMillis(1000).setBuildup(3).setInternalName("Factory");
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(5).setTerrainType(TerrainType.LAND));
@@ -274,6 +284,26 @@ public class ServerTestHelper {
         BoxItemType boxItemType = new BoxItemType();
         boxItemType.setRadius(2);
         BOX_ITEM_TYPE_ID = createBoxItemTypeEntity(boxItemType);
+
+        cleanupAfterTests.add(new CleanupAfterTest().tableName("BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD"));
+        cleanupAfterTests.add(new CleanupAfterTest().tableName("BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD"));
+        cleanupAfterTests.add(new CleanupAfterTest().tableName("BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES"));
+        cleanupAfterTests.add(new CleanupAfterTest().tableName("BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES"));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(DemolitionStepEffectParticleEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(DemolitionStepEffectEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(BaseItemTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(WeaponTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(FactoryTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(HarvesterTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(BuilderTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(ConsumerTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(ItemContainerTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(HouseTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(BaseItemTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(ResourceItemTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(BoxItemTypeEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(InventoryItemEntity.class));
+        cleanupAfterTests.add(new CleanupAfterTest().entity(TurretTypeEntity.class));
     }
 
     protected void cleanImages() {
@@ -285,29 +315,14 @@ public class ServerTestHelper {
 
     protected void cleanItemTypes() {
         runInTransaction(em -> {
-            em.createNativeQuery("DELETE FROM BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD").executeUpdate();
-            em.createNativeQuery("DELETE FROM BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD").executeUpdate();
-            em.createNativeQuery("DELETE FROM BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES").executeUpdate();
-            em.createQuery("DELETE FROM DemolitionStepEffectParticleEntity").executeUpdate();
-            em.createQuery("DELETE FROM DemolitionStepEffectEntity").executeUpdate();
-            em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
-            em.createQuery("DELETE FROM WeaponTypeEntity").executeUpdate();
-            em.createQuery("DELETE FROM FactoryTypeEntity").executeUpdate();
-            em.createQuery("DELETE FROM HarvesterTypeEntity").executeUpdate();
-            em.createQuery("DELETE FROM BuilderTypeEntity").executeUpdate();
-            em.createQuery("DELETE FROM ConsumerTypeEntity").executeUpdate();
-            em.createQuery("DELETE FROM ItemContainerTypeEntity").executeUpdate();
-            em.createQuery("DELETE FROM HouseTypeEntity").executeUpdate();
-            em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
-            em.createQuery("DELETE FROM ResourceItemTypeEntity").executeUpdate();
-            em.createQuery("DELETE FROM BoxItemTypeEntity ").executeUpdate();
-            em.createQuery("DELETE FROM InventoryItemEntity").executeUpdate();
-            em.createQuery("DELETE FROM TurretTypeEntity").executeUpdate();
         });
     }
 
     private int createBaseItemTypeEntity(BaseItemType baseItemType) {
         BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
+        ItemTypePersistence itemTypePersistence = EasyMock.createNiceMock(ItemTypePersistence.class);
+        Shape3DPersistence shape3DPersistence = EasyMock.createNiceMock(Shape3DPersistence.class);
+        EasyMock.replay(itemTypePersistence, shape3DPersistence);
         baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, shape3DPersistence);
         persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
@@ -612,13 +627,6 @@ public class ServerTestHelper {
             }
         }
         return columnRow;
-    }
-
-    private Map<BaseItemTypeEntity, Integer> setupPlanet2Limitation() {
-        Map<BaseItemTypeEntity, Integer> limitation = new HashMap<>();
-        limitation.put(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        limitation.put(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_FACTORY_ID), 1);
-        return limitation;
     }
 
     protected void cleanPlanets() {
