@@ -69,8 +69,11 @@ public class GameUiControlConfigPersistence {
         ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
         coldGameUiContext.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         coldGameUiContext.setUserContext(userContext);
+        if (userContext.getLevelId() == null) {
+            alarmService.riseAlarm(Alarm.Type.USER_HAS_NO_LEVEL);
+            userContext.setLevelId(levelPersistence.getStarterLevelId());
+        }
         if (userContext.getLevelId() != null) {
-            alarmService.riseAlarm(Alarm.Type.NO_LEVELS);
             coldGameUiContext.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext.getHumanPlayerId(), userContext.getLevelId()));
         }
         coldGameUiContext.setShape3Ds(shape3DPersistence.getShape3Ds());
@@ -88,7 +91,6 @@ public class GameUiControlConfigPersistence {
     @Transactional
     public WarmGameUiContext loadWarm(Locale locale, UserContext userContext) {
         if(userContext.getLevelId() == null) {
-            alarmService.riseAlarm(Alarm.Type.USER_HAS_NO_LEVEL);
             return null;
         }
         WarmGameUiContext warmGameUiContext = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);

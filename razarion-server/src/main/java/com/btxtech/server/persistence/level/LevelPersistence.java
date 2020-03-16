@@ -3,11 +3,12 @@ package com.btxtech.server.persistence.level;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.persistence.CrudPersistence;
-import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -37,7 +38,7 @@ public class LevelPersistence extends CrudPersistence<LevelConfig, LevelEntity> 
     @Inject
     private ItemTypePersistence itemTypePersistence;
     @Inject
-    private ImagePersistence imagePersistence;
+    private AlarmService alarmService;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -84,7 +85,11 @@ public class LevelPersistence extends CrudPersistence<LevelConfig, LevelEntity> 
         Root<LevelEntity> from = userQuery.from(LevelEntity.class);
         CriteriaQuery<LevelEntity> userSelect = userQuery.select(from);
         userQuery.orderBy(criteriaBuilder.asc(from.get(LevelEntity_.number)));
-        return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getResultList().stream().findFirst().orElse(null);
+        LevelEntity startLevel = entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getResultList().stream().findFirst().orElse(null);
+        if (startLevel == null) {
+            alarmService.riseAlarm(Alarm.Type.NO_LEVELS);
+        }
+        return startLevel;
     }
 
     @Transactional
