@@ -33,6 +33,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.Locale;
 
+import static com.btxtech.shared.system.alarm.Alarm.Type.NO_GAME_UI_CONTROL_CONFIG_ENTITY_FOR_LEVEL_ID;
+
 /**
  * Created by Beat
  * 03.08.2016.
@@ -90,10 +92,14 @@ public class GameUiControlConfigPersistence {
 
     @Transactional
     public WarmGameUiContext loadWarm(Locale locale, UserContext userContext) {
-        if(userContext.getLevelId() == null) {
+        if (userContext.getLevelId() == null) {
             return null;
         }
-        WarmGameUiContext warmGameUiContext = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);
+        GameUiControlConfigEntity gameUiControlConfigEntity = load4Level(userContext.getLevelId());
+        if(gameUiControlConfigEntity == null) {
+            return null;
+        }
+        WarmGameUiContext warmGameUiContext = gameUiControlConfigEntity.toGameWarmGameUiControlConfig(locale);
         if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
             warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
             warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getHumanPlayerId()));
@@ -111,7 +117,11 @@ public class GameUiControlConfigPersistence {
         query.where(criteriaBuilder.lessThanOrEqualTo(root.join(GameUiControlConfigEntity_.minimalLevel).get(LevelEntity_.number), levelNumber));
         CriteriaQuery<GameUiControlConfigEntity> userSelect = query.select(root);
         query.orderBy(criteriaBuilder.desc(root.join(GameUiControlConfigEntity_.minimalLevel).get(LevelEntity_.number)));
-        return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult();
+        GameUiControlConfigEntity gameUiControlConfigEntity = entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getResultList().stream().findFirst().orElse(null);
+        if (gameUiControlConfigEntity == null) {
+            alarmService.riseAlarm(NO_GAME_UI_CONTROL_CONFIG_ENTITY_FOR_LEVEL_ID, levelId);
+        }
+        return gameUiControlConfigEntity;
     }
 
 

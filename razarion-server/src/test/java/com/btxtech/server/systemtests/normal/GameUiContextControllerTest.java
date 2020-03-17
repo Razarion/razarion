@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests.minimal;
+package com.btxtech.server.systemtests.normal;
 
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.dto.ColdGameUiContext;
@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNull;
 
-public class MinimalGameUiContextControllerTest extends AbstractSystemTest {
+public class GameUiContextControllerTest extends AbstractSystemTest {
     private GameUiContextController gameUiContextController;
 
     @Before
@@ -19,7 +19,7 @@ public class MinimalGameUiContextControllerTest extends AbstractSystemTest {
     }
 
     @Test
-    public void minimalCold() {
+    public void cold() {
         getDefaultRestConnection().logout();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
         assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackCold.json",
@@ -29,21 +29,21 @@ public class MinimalGameUiContextControllerTest extends AbstractSystemTest {
     }
 
     @Test
-    public void fallbackColdUser() {
+    public void coldUser() {
         getDefaultRestConnection().loginUser();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
         assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdUser.json", null, getClass(), coldGameUiContext);
     }
 
     @Test
-    public void fallbackColdAdmin() {
+    public void coldAdmin() {
         getDefaultRestConnection().loginAdmin();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
         assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdAdmin.json", null, getClass(), coldGameUiContext);
     }
 
     @Test
-    public void fallbackWarm() {
+    public void warm() {
         assertNull(gameUiContextController.loadWarmGameUiContext());
     }
 }

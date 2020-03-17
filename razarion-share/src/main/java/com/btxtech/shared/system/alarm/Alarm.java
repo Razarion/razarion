@@ -9,7 +9,8 @@ public class Alarm {
         USER_HAS_NO_LEVEL,
         NO_WARM_GAME_UI_CONTEXT,
         NO_PLANETS,
-        FAIL_STARTING_PLANET
+        FAIL_STARTING_PLANET,
+        NO_GAME_UI_CONTROL_CONFIG_ENTITY_FOR_LEVEL_ID
     }
     private Type type;
     private Date date;
