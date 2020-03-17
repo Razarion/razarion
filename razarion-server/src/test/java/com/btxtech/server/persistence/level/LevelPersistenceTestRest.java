@@ -25,7 +25,7 @@ public class LevelPersistenceTestRest extends IgnoreOldArquillianTest {
     public void testStarterLevelId() throws Exception {
         setupLevels();
         Assert.assertEquals(LEVEL_1_ID, (int) levelPersistence.getStarterLevel().getId());
-        cleanLevels();
+        // TODO cleanLevels();
     }
 
     @Test
@@ -35,7 +35,7 @@ public class LevelPersistenceTestRest extends IgnoreOldArquillianTest {
         Assert.assertEquals(2, levelPersistence.getLevelNumber4Id(LEVEL_2_ID));
         Assert.assertEquals(3, levelPersistence.getLevelNumber4Id(LEVEL_3_ID));
         Assert.assertEquals(4, levelPersistence.getLevelNumber4Id(LEVEL_4_ID));
-        cleanLevels();
+        // TODO cleanLevels();
     }
 
     private LevelConfig getLevelConfig(int levelId, List<LevelConfig> levelConfigs) {

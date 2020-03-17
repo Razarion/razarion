@@ -40,7 +40,7 @@ public class ChatPersistenceTestRest extends IgnoreOldArquillianTest {
 
     @After
     public void after() throws Exception {
-        cleanLevels();
+        // TODO cleanLevels();
     }
 
     @Test

@@ -59,7 +59,7 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
-import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
@@ -122,13 +122,22 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
  * on 08.02.2018.
  */
 public class ServerTestHelper {
+    // Images
     public static final String IMG_1_DATA_BASE64 = "R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
     public static final String IMG_1_DATA_URL = "data:image/jpeg;base64," + IMG_1_DATA_BASE64;
     public static final byte[] IMG_1_BYTES = Base64.getDecoder().decode(IMG_1_DATA_BASE64.getBytes());
-
     public static final String IMG_2_DATA_BASE64 = "R0lGODlhAQABAIABABWLAP///yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAAQABAAACAkQBADs=";
     public static final String IMG_2_DATA_URL = "data:image/gif;base64," + IMG_2_DATA_BASE64;
     public static final byte[] IMG_2_BYTES = Base64.getDecoder().decode(IMG_2_DATA_BASE64.getBytes());
+    // Default users
+    public static final String ADMIN_USER_EMAIL = "admin@admin.com";
+    public static final String ADMIN_USER_PASSWORD = "1234";
+    public static final String ADMIN_USER_PASSWORD_HASH = "qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==";
+    public static int ADMIN_USER_ID;
+    public static final String NORMAL_USER_EMAIL = "user@user.com";
+    public static final String NORMAL_USER_PASSWORD = "1234";
+    public static final String NORMAL_USER_PASSWORD_HASH = "qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==";
+    public static int NORMAL_USER_ID;
     // Images
     public static int GROUND_1_ID;
     public static int GROUND_2_ID;
@@ -191,25 +200,29 @@ public class ServerTestHelper {
     @Inject
     private BaseItemService baseItemService;
     private MongoClient mongoClient;
-    private List<CleanupAfterTest> cleanupAfterTests = new ArrayList<>();
+    private List<List<CleanupAfterTest>> cleanupAfterTests = new ArrayList<>();
 
     @Before
     public void setupJpa() {
         entityManagerFactory = Persistence.createEntityManagerFactory("test-jpa");
         entityManager = entityManagerFactory.createEntityManager();
         entityTransaction = entityManager.getTransaction();
+
+        setupDefaultUser();
     }
 
     @After
     public void closeJpa() {
-        cleanupAfterTests.forEach(cleanupAfterTest -> {
+        cleanUsers();
+        Collections.reverse(cleanupAfterTests);
+        cleanupAfterTests.forEach(block -> block.forEach(cleanupAfterTest -> {
             if (cleanupAfterTest.getEntityClass() != null) {
                 cleanTable(cleanupAfterTest.getEntityClass());
             }
             if (cleanupAfterTest.getTableName() != null) {
                 cleanTableNative(cleanupAfterTest.getTableName());
             }
-        });
+        }));
         entityManager.close();
         entityManagerFactory.close();
     }
@@ -223,10 +236,24 @@ public class ServerTestHelper {
         return entityManager;
     }
 
-    protected I18nString i18nHelper(String string) {
-        Map<String, String> localizedStrings = new HashMap<>();
-        localizedStrings.put(I18nString.DE, string);
-        return new I18nString(localizedStrings);
+    private void setupDefaultUser() {
+        UserEntity adminUser = new UserEntity()
+                .admin(true);
+        adminUser.setVerifiedDone();
+        adminUser.fromEmailPasswordHash(ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD_HASH, Locale.ENGLISH);
+        ADMIN_USER_ID = persistInTransaction(adminUser).getId();
+        UserEntity normalUser = new UserEntity();
+        normalUser.setVerifiedDone();
+        normalUser.fromEmailPasswordHash(NORMAL_USER_EMAIL, NORMAL_USER_PASSWORD_HASH, Locale.ENGLISH);
+        NORMAL_USER_ID = persistInTransaction(normalUser).getId();
+    }
+
+    protected void cleanUsers() {
+        cleanTable(ForgotPasswordEntity.class);
+        cleanTable(LoginCookieEntity.class);
+        cleanTable(UserHistoryEntity.class);
+        cleanTableNative("USER_COMPLETED_QUEST");
+        cleanTable(UserEntity.class);
     }
 
     protected void setupGroundConfig() {
@@ -234,14 +261,14 @@ public class ServerTestHelper {
         GROUND_2_ID = persistInTransaction(new GroundConfigEntity()).getId();
         GROUND_3_ID = persistInTransaction(new GroundConfigEntity()).getId();
         GROUND_4_ID = persistInTransaction(new GroundConfigEntity()).getId();
-        cleanupAfterTests.add(new CleanupAfterTest().entity(GroundConfigEntity.class));
+        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(GroundConfigEntity.class)));
     }
 
     protected void setupImages() {
         IMAGE_1_ID = persistInTransaction(new ImageLibraryEntity()).getId();
         IMAGE_2_ID = persistInTransaction(new ImageLibraryEntity()).getId();
         IMAGE_3_ID = persistInTransaction(new ImageLibraryEntity()).getId();
-        cleanupAfterTests.add(new CleanupAfterTest().entity(ImageLibraryEntity.class));
+        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(ImageLibraryEntity.class)));
     }
 
     protected void setupItemTypes() {
@@ -285,37 +312,104 @@ public class ServerTestHelper {
         boxItemType.setRadius(2);
         BOX_ITEM_TYPE_ID = createBoxItemTypeEntity(boxItemType);
 
-        cleanupAfterTests.add(new CleanupAfterTest().tableName("BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD"));
-        cleanupAfterTests.add(new CleanupAfterTest().tableName("BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD"));
-        cleanupAfterTests.add(new CleanupAfterTest().tableName("BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES"));
-        cleanupAfterTests.add(new CleanupAfterTest().tableName("BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES"));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(DemolitionStepEffectParticleEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(DemolitionStepEffectEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(BaseItemTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(WeaponTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(FactoryTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(HarvesterTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(BuilderTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(ConsumerTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(ItemContainerTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(HouseTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(BaseItemTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(ResourceItemTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(BoxItemTypeEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(InventoryItemEntity.class));
-        cleanupAfterTests.add(new CleanupAfterTest().entity(TurretTypeEntity.class));
-    }
-
-    protected void cleanImages() {
-        runInTransaction(em -> {
-            em.createQuery("DELETE FROM ImageLibraryEntity").executeUpdate();
-        });
+        List<CleanupAfterTest> block = new ArrayList<>();
+        block.add(new CleanupAfterTest().tableName("BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD"));
+        block.add(new CleanupAfterTest().tableName("BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD"));
+        block.add(new CleanupAfterTest().tableName("BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES"));
+        block.add(new CleanupAfterTest().tableName("BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES"));
+        block.add(new CleanupAfterTest().entity(DemolitionStepEffectParticleEntity.class));
+        block.add(new CleanupAfterTest().entity(DemolitionStepEffectEntity.class));
+        block.add(new CleanupAfterTest().entity(BaseItemTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(WeaponTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(FactoryTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(HarvesterTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(BuilderTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(ConsumerTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(ItemContainerTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(HouseTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(BaseItemTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(ResourceItemTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(BoxItemTypeEntity.class));
+        block.add(new CleanupAfterTest().entity(InventoryItemEntity.class));
+        block.add(new CleanupAfterTest().entity(TurretTypeEntity.class));
+        cleanupAfterTests.add(block);
     }
 
 
-    protected void cleanItemTypes() {
-        runInTransaction(em -> {
-        });
+    protected void setupLevels() {
+        setupItemTypes();
+        entityTransaction.begin();
+        entityManager.joinTransaction();
+
+        // Level 1
+        LevelEntity levelEntity1 = new LevelEntity();
+        Map<BaseItemTypeEntity, Integer> itemTypeLimitation1 = new HashMap<>();
+        itemTypeLimitation1.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        levelEntity1.fromLevelConfig(new LevelConfig().number(1).xp2LevelUp(10), itemTypeLimitation1, null);
+        entityManager.persist(levelEntity1);
+        LEVEL_1_ID = levelEntity1.getId();
+        // Level 2
+        LevelEntity levelEntity2 = new LevelEntity();
+        Map<BaseItemTypeEntity, Integer> itemTypeLimitation2 = new HashMap<>();
+        itemTypeLimitation2.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation2.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
+        levelEntity2.fromLevelConfig(new LevelConfig().number(2).xp2LevelUp(20), itemTypeLimitation2, null);
+        entityManager.persist(levelEntity2);
+        LEVEL_2_ID = levelEntity2.getId();
+        // Level 3
+        LevelEntity levelEntity3 = new LevelEntity();
+        Map<BaseItemTypeEntity, Integer> itemTypeLimitation3 = new HashMap<>();
+        itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
+        itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
+        levelEntity3.fromLevelConfig(new LevelConfig().number(3).xp2LevelUp(30), itemTypeLimitation3, null);
+        entityManager.persist(levelEntity3);
+        LEVEL_3_ID = levelEntity3.getId();
+        // Level 4
+        LevelEntity levelEntity4 = new LevelEntity();
+        Map<BaseItemTypeEntity, Integer> itemTypeLimitation4 = new HashMap<>();
+        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
+        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
+        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
+        LevelUnlockEntity levelUnlockEntity4_1 = new LevelUnlockEntity();
+        levelUnlockEntity4_1.setBaseItemType(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID));
+        levelUnlockEntity4_1.setBaseItemTypeCount(1);
+        levelUnlockEntity4_1.setInternalName("levelUnlockEntity4_1");
+        levelEntity4.fromLevelConfig(new LevelConfig().number(4).xp2LevelUp(300), itemTypeLimitation4, Collections.singletonList(levelUnlockEntity4_1));
+        entityManager.persist(levelEntity4);
+        LEVEL_4_ID = levelEntity4.getId();
+        LEVEL_UNLOCK_ID_L4_1 = levelUnlockEntity4_1.getId();
+        // Level 5
+        LevelEntity levelEntity5 = new LevelEntity();
+        Map<BaseItemTypeEntity, Integer> itemTypeLimitation5 = new HashMap<>();
+        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 4);
+        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
+        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
+        LevelUnlockEntity levelUnlockEntity5_1 = new LevelUnlockEntity();
+        levelUnlockEntity5_1.setBaseItemType(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID));
+        levelUnlockEntity5_1.setBaseItemTypeCount(2);
+        levelUnlockEntity5_1.setCrystalCost(10);
+        levelUnlockEntity5_1.setInternalName("levelUnlockEntity5_1");
+        LevelUnlockEntity levelUnlockEntity5_2 = new LevelUnlockEntity();
+        levelUnlockEntity5_2.setBaseItemType(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID));
+        levelUnlockEntity5_2.setBaseItemTypeCount(1);
+        levelUnlockEntity5_2.setCrystalCost(20);
+        levelUnlockEntity5_2.setInternalName("levelUnlockEntity5_2");
+        levelEntity5.fromLevelConfig(new LevelConfig().number(5).xp2LevelUp(400), itemTypeLimitation5, Arrays.asList(levelUnlockEntity5_1, levelUnlockEntity5_2));
+        entityManager.persist(levelEntity5);
+        LEVEL_5_ID = levelEntity5.getId();
+        LEVEL_UNLOCK_ID_L5_1 = levelUnlockEntity5_1.getId();
+        LEVEL_UNLOCK_ID_L5_2 = levelUnlockEntity5_2.getId();
+
+        entityTransaction.commit();
+
+        List<CleanupAfterTest> block = new ArrayList<>();
+        block.add(new CleanupAfterTest().entity(LevelUnlockEntity.class));
+        block.add(new CleanupAfterTest().tableName("LEVEL_LIMITATION"));
+        block.add(new CleanupAfterTest().entity(LevelEntity.class));
+        cleanupAfterTests.add(block);
     }
 
     private int createBaseItemTypeEntity(BaseItemType baseItemType) {
@@ -347,6 +441,12 @@ public class ServerTestHelper {
         boxItemTypeEntity.fromBoxItemType(boxItemType, null);
         persistInTransaction(boxItemTypeEntity);
         return boxItemTypeEntity.getId();
+    }
+
+    protected I18nString i18nHelper(String string) {
+        Map<String, String> localizedStrings = new HashMap<>();
+        localizedStrings.put(I18nString.DE, string);
+        return new I18nString(localizedStrings);
     }
 
     protected <T> T persistInTransaction(T object) {
@@ -383,83 +483,6 @@ public class ServerTestHelper {
             t.printStackTrace();
             entityTransaction.rollback();
         }
-    }
-
-    protected void setupLevels() throws Exception {
-        setupItemTypes();
-        entityTransaction.begin();
-        entityManager.joinTransaction();
-
-        // Level 1
-        LevelEntity levelEntity1 = new LevelEntity();
-        Map<BaseItemTypeEntity, Integer> itemTypeLimitation1 = new HashMap<>();
-        itemTypeLimitation1.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        levelEntity1.fromLevelConfig((LevelEditConfig) new LevelEditConfig().number(1).xp2LevelUp(10), itemTypeLimitation1, null);
-        entityManager.persist(levelEntity1);
-        LEVEL_1_ID = levelEntity1.getId();
-        // Level 2
-        LevelEntity levelEntity2 = new LevelEntity();
-        Map<BaseItemTypeEntity, Integer> itemTypeLimitation2 = new HashMap<>();
-        itemTypeLimitation2.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        itemTypeLimitation2.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
-        levelEntity2.fromLevelConfig((LevelEditConfig) new LevelEditConfig().number(2).xp2LevelUp(20), itemTypeLimitation2, null);
-        entityManager.persist(levelEntity2);
-        LEVEL_2_ID = levelEntity2.getId();
-        // Level 3
-        LevelEntity levelEntity3 = new LevelEntity();
-        Map<BaseItemTypeEntity, Integer> itemTypeLimitation3 = new HashMap<>();
-        itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
-        itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
-        levelEntity3.fromLevelConfig((LevelEditConfig) new LevelEditConfig().number(3).xp2LevelUp(30), itemTypeLimitation3, null);
-        entityManager.persist(levelEntity3);
-        LEVEL_3_ID = levelEntity3.getId();
-        // Level 4
-        LevelEntity levelEntity4 = new LevelEntity();
-        Map<BaseItemTypeEntity, Integer> itemTypeLimitation4 = new HashMap<>();
-        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
-        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
-        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
-        LevelUnlockEntity levelUnlockEntity4_1 = new LevelUnlockEntity();
-        levelUnlockEntity4_1.setBaseItemType(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID));
-        levelUnlockEntity4_1.setBaseItemTypeCount(1);
-        levelUnlockEntity4_1.setInternalName("levelUnlockEntity4_1");
-        levelEntity4.fromLevelConfig((LevelEditConfig) new LevelEditConfig().number(4).xp2LevelUp(300), itemTypeLimitation4, Collections.singletonList(levelUnlockEntity4_1));
-        entityManager.persist(levelEntity4);
-        LEVEL_4_ID = levelEntity4.getId();
-        LEVEL_UNLOCK_ID_L4_1 = levelUnlockEntity4_1.getId();
-        // Level 5
-        LevelEntity levelEntity5 = new LevelEntity();
-        Map<BaseItemTypeEntity, Integer> itemTypeLimitation5 = new HashMap<>();
-        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 4);
-        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
-        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
-        LevelUnlockEntity levelUnlockEntity5_1 = new LevelUnlockEntity();
-        levelUnlockEntity5_1.setBaseItemType(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID));
-        levelUnlockEntity5_1.setBaseItemTypeCount(2);
-        levelUnlockEntity5_1.setCrystalCost(10);
-        levelUnlockEntity5_1.setInternalName("levelUnlockEntity5_1");
-        LevelUnlockEntity levelUnlockEntity5_2 = new LevelUnlockEntity();
-        levelUnlockEntity5_2.setBaseItemType(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID));
-        levelUnlockEntity5_2.setBaseItemTypeCount(1);
-        levelUnlockEntity5_2.setCrystalCost(20);
-        levelUnlockEntity5_2.setInternalName("levelUnlockEntity5_2");
-        levelEntity5.fromLevelConfig((LevelEditConfig) new LevelEditConfig().number(5).xp2LevelUp(400), itemTypeLimitation5, Arrays.asList(levelUnlockEntity5_1, levelUnlockEntity5_2));
-        entityManager.persist(levelEntity5);
-        LEVEL_5_ID = levelEntity5.getId();
-        LEVEL_UNLOCK_ID_L5_1 = levelUnlockEntity5_1.getId();
-        LEVEL_UNLOCK_ID_L5_2 = levelUnlockEntity5_2.getId();
-
-        entityTransaction.commit();
-    }
-
-    protected void cleanLevels() {
-        cleanTable(LevelUnlockEntity.class);
-        cleanTableNative("LEVEL_LIMITATION");
-        cleanTable(LevelEntity.class);
-        cleanItemTypes();
     }
 
     public void setupPlanets() throws Exception {
@@ -645,7 +668,7 @@ public class ServerTestHelper {
         cleanTable(ServerGameEngineConfigEntity.class);
         cleanTableNative("PLANET_LIMITATION");
         cleanTable(PlanetEntity.class);
-        cleanLevels();
+        // cleanLevels();
     }
 
     protected void cleanPlanetWithSlopes() throws Exception {
@@ -666,14 +689,6 @@ public class ServerTestHelper {
         cleanTable(SlopeNodeEntity.class);
         cleanTable(SlopeShapeEntity.class);
         cleanTable(SlopeConfigEntity.class);
-    }
-
-    protected void cleanUsers() {
-        cleanTable(ForgotPasswordEntity.class);
-        cleanTable(LoginCookieEntity.class);
-        cleanTable(UserHistoryEntity.class);
-        cleanTableNative("USER_COMPLETED_QUEST");
-        cleanTable(UserEntity.class);
     }
 
     protected void assertCount(int countExpected, Class entityClass) {

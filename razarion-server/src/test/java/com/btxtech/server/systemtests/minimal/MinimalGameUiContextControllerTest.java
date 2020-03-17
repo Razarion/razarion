@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests.fallback;
+package com.btxtech.server.systemtests.minimal;
 
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.dto.ColdGameUiContext;
@@ -9,16 +9,17 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNull;
 
-public class FallbackGameUiContextControllerTest extends AbstractSystemTest {
+public class MinimalGameUiContextControllerTest extends AbstractSystemTest {
     private GameUiContextController gameUiContextController;
 
     @Before
     public void setup() {
         gameUiContextController = setupRestAccess(GameUiContextController.class);
+        setupLevels();
     }
 
     @Test
-    public void fallbackCold() {
+    public void minimalCold() {
         getDefaultRestConnection().logout();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
         assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackCold.json",
@@ -31,20 +32,14 @@ public class FallbackGameUiContextControllerTest extends AbstractSystemTest {
     public void fallbackColdUser() {
         getDefaultRestConnection().loginUser();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdUser.json",
-                s -> s.replace("\"$USER_ID$\"", Integer.toString(NORMAL_USER_ID)),
-                getClass(),
-                coldGameUiContext);
+        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdUser.json", null, getClass(), coldGameUiContext);
     }
 
     @Test
     public void fallbackColdAdmin() {
         getDefaultRestConnection().loginAdmin();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdAdmin.json",
-                s -> s.replace("\"$USER_ID$\"", Integer.toString(ADMIN_USER_ID)),
-                getClass(),
-                coldGameUiContext);
+        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdAdmin.json", null, getClass(), coldGameUiContext);
     }
 
     @Test

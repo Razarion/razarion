@@ -1,5 +1,6 @@
 package com.btxtech.server.systemtests.framework;
 
+import com.btxtech.server.ServerTestHelper;
 import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.shared.rest.FrontendController;
@@ -12,10 +13,6 @@ import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.ext.ContextResolver;
 
 public class RestConnection {
-    public static final String ADMIN_USER_EMAIL = "admin@admin.com";
-    public static final String ADMIN_USER_PASSWORD = "1234";
-    public static final String NORMAL_USER_EMAIL = "user@user.com";
-    public static final String NORMAL_USER_PASSWORD = "1234";
     public static String URL = "http://localhost:32778";
     public static String REST_URL = URL + "/rest/";
     private boolean loggedIn = false;
@@ -49,11 +46,11 @@ public class RestConnection {
     }
 
     public void loginAdmin() {
-        login(ADMIN_USER_EMAIL, ADMIN_USER_PASSWORD);
+        login(ServerTestHelper.ADMIN_USER_EMAIL, ServerTestHelper.ADMIN_USER_PASSWORD);
     }
 
     public void loginUser() {
-        login(NORMAL_USER_EMAIL, NORMAL_USER_PASSWORD);
+        login(ServerTestHelper.NORMAL_USER_EMAIL, ServerTestHelper.NORMAL_USER_PASSWORD);
     }
 
     public void login(String email, String password) {

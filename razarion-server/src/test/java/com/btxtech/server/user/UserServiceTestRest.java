@@ -92,7 +92,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
             em.createQuery("SELECT uhe FROM UserHistoryEntity uhe where uhe.id =:userId AND uhe.loggedOut is not null AND uhe.sessionId =:sessionId", UserHistoryEntity.class).setParameter("userId", userContext.getHumanPlayerId().getUserId()).setParameter("sessionId", sessionHolder.getPlayerSession().getHttpSessionId()).getFirstResult();
         });
         cleanTable(UserHistoryEntity.class);
-        cleanLevels();
+        // TODO cleanLevels();
     }
 
     @Test
@@ -107,7 +107,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
         Assert.assertFalse(userContext.isAdmin());
         Assert.assertTrue(userContext.getUnlockedItemLimit().isEmpty());
 
-        cleanLevels();
+        // TODO cleanLevels();
         session.invalidate();
         assertEmptyCount(UserHistoryEntity.class);
     }

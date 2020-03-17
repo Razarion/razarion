@@ -336,6 +336,11 @@ public class UserEntity {
         }
     }
 
+    public UserEntity admin(boolean admin) {
+        this.admin = admin;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

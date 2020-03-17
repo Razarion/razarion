@@ -1,6 +1,6 @@
 {
   "userContext": {
-    "userId": 2,
+    "userId": "$USER_ID$",
     "registerState":"EMAIL_VERIFIED",
     "humanPlayerId": null,
     "name": null,
