@@ -34,7 +34,7 @@ public class UnlockProviderImpl implements UnlockProvider {
                 return new UnlockResultInfo().setNotEnoughCrystals(true);
             }
             serverUnlockService.unlockViaCrystals(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), levelUnlockConfigId);
-            return new UnlockResultInfo().setAvailableUnlocks(serverUnlockService.gatherAvailableUnlocks(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), sessionHolder.getPlayerSession().getUserContext().getLevelId()));
+            return new UnlockResultInfo().setAvailableUnlocks(serverUnlockService.gatherAvailableUnlocks(sessionHolder.getPlayerSession().getUserContext(), sessionHolder.getPlayerSession().getUserContext().getLevelId()));
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

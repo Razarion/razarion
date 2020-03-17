@@ -121,7 +121,7 @@ public class ServerLevelQuestService implements QuestListener {
                 userContext.setLevelId(newLevel.getId());
                 userContext.setXp(0);
                 historyPersistence.get().onLevelUp(humanPlayerId, newLevel);
-                List<LevelUnlockConfig> levelUnlockConfigs = serverUnlockService.gatherAvailableUnlocks(humanPlayerId, newLevel.getId());
+                List<LevelUnlockConfig> levelUnlockConfigs = serverUnlockService.gatherAvailableUnlocks(userContext, newLevel.getId());
                 clientSystemConnectionService.onLevelUp(humanPlayerId, userContext, levelUnlockConfigs);
                 serverGameEngineControlInstance.get().onLevelChanged(humanPlayerId, newLevel.getId());
                 if (registered) {

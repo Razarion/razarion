@@ -204,7 +204,7 @@ public class ServerMgmt {
         UserContext userContext = userService.getUserContextTransactional(humanPlayerId);
         LevelEntity newLevel = levelPersistence.getLevel4Number(levelNumber);
         userContext.setLevelId(newLevel.getId());
-        clientSystemConnectionService.onLevelUp(humanPlayerId, userContext, serverUnlockService.gatherAvailableUnlocks(humanPlayerId, newLevel.getId()));
+        clientSystemConnectionService.onLevelUp(humanPlayerId, userContext, serverUnlockService.gatherAvailableUnlocks(userContext, newLevel.getId()));
         serverGameEngineControl.onLevelChanged(humanPlayerId, newLevel.getId());
         if (humanPlayerId.getUserId() != null) {
             userService.persistLevel(humanPlayerId.getUserId(), newLevel);

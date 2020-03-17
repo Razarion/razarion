@@ -74,7 +74,7 @@ public class GameUiControlConfigPersistence {
             userContext.setLevelId(levelPersistence.getStarterLevelId());
         }
         if (userContext.getLevelId() != null) {
-            coldGameUiContext.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext.getHumanPlayerId(), userContext.getLevelId()));
+            coldGameUiContext.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext, userContext.getLevelId()));
         }
         coldGameUiContext.setShape3Ds(shape3DPersistence.getShape3Ds());
         coldGameUiContext.setAudioConfig(setupAudioConfig());
