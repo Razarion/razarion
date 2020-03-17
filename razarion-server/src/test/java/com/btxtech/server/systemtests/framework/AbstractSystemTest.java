@@ -4,8 +4,12 @@ import com.btxtech.server.ServerTestHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -38,18 +42,22 @@ public abstract class AbstractSystemTest extends ServerTestHelper {
         }
     }
 
-    protected void assertViaJson(String expectedResource, Class resourceLoader, Object actual) {
+    protected void assertViaJson(String expectedResource, Function<String, String> replacer, Class resourceLoader, Object actual) {
         try {
             InputStream inputStream = resourceLoader.getResourceAsStream(expectedResource);
-            if(inputStream == null) {
+            if (inputStream == null) {
                 throw new IOException("No such resource: " + expectedResource);
+            }
+            String jsonString = new BufferedReader(new InputStreamReader(inputStream)).lines().collect(Collectors.joining("\n"));
+            if (replacer != null) {
+                jsonString = replacer.apply(jsonString);
             }
             // https://www.baeldung.com/jackson-compare-two-json-objects
             ObjectMapper mapper = new ObjectMapper();
 //            System.out.println("-----------------------------------");
 //            System.out.println(mapper.writeValueAsString(actual));
 //            System.out.println("-----------------------------------");
-            assertEquals(mapper.readTree(inputStream), mapper.readTree(mapper.writeValueAsString(actual)));
+            assertEquals(mapper.readTree(jsonString), mapper.readTree(mapper.writeValueAsString(actual)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

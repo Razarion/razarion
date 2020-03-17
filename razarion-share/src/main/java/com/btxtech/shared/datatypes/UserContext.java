@@ -8,19 +8,55 @@ import java.util.Map;
  * 30.08.2016.
  */
 public class UserContext {
+    public enum RegisterState {
+        UNREGISTERED,
+        EMAIL_UNVERIFIED,
+        EMAIL_VERIFIED,
+        FACEBOOK
+    }
+
+    private int userId;
+    private RegisterState registerState;
+    @Deprecated
     private HumanPlayerId humanPlayerId;
     private String name;
-    private boolean registered;
     private boolean admin;
-    private boolean emailNotVerified;
     private Integer levelId;
     private Map<Integer, Integer> unlockedItemLimit;
     private int xp;
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public UserContext userId(int userId) {
+        setUserId(userId);
+        return this;
+    }
+
+    public RegisterState getRegisterState() {
+        return registerState;
+    }
+
+    public void setRegisterState(RegisterState registerState) {
+        this.registerState = registerState;
+    }
+
+    public UserContext registerState(RegisterState registerState) {
+        setRegisterState(registerState);
+        return this;
+    }
+
+    @Deprecated
     public HumanPlayerId getHumanPlayerId() {
         return humanPlayerId;
     }
 
+    @Deprecated
     public UserContext setHumanPlayerId(HumanPlayerId humanPlayerId) {
         this.humanPlayerId = humanPlayerId;
         return this;
@@ -35,30 +71,12 @@ public class UserContext {
         return this;
     }
 
-    public boolean isRegistered() {
-        return registered;
-    }
-
-    public UserContext setRegistered(boolean registered) {
-        this.registered = registered;
-        return this;
-    }
-
     public boolean isAdmin() {
         return admin;
     }
 
     public UserContext setAdmin(boolean admin) {
         this.admin = admin;
-        return this;
-    }
-
-    public boolean isEmailNotVerified() {
-        return emailNotVerified;
-    }
-
-    public UserContext setEmailNotVerified(boolean emailNotVerified) {
-        this.emailNotVerified = emailNotVerified;
         return this;
     }
 
@@ -89,6 +107,14 @@ public class UserContext {
         return this;
     }
 
+    public boolean registered() {
+        return registerState != RegisterState.UNREGISTERED;
+    }
+
+    public boolean emailNotVerified() {
+        return registerState != RegisterState.EMAIL_UNVERIFIED;
+    }
+
     public boolean checkName() {
         return name != null;
     }
@@ -98,9 +124,7 @@ public class UserContext {
         return "UserContext{" +
                 "humanPlayerId=" + humanPlayerId +
                 ", name='" + name + '\'' +
-                ", registered=" + registered +
                 ", admin=" + admin +
-                ", emailNotVerified=" + emailNotVerified +
                 ", levelId=" + levelId +
                 ", unlockedItemLimit=" + unlockedItemLimit +
                 ", xp=" + xp +

@@ -270,9 +270,8 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
         // Prepare
         SingleHolder<HumanPlayerId> holder = new SingleHolder<>();
         runInTransaction(entityManager -> {
-                    HumanPlayerIdEntity humanPlayerIdEntity = userService.createHumanPlayerId();
                     UserEntity existingUser = new UserEntity();
-                    existingUser.fromFacebookUserLoginInfo("0123456789", humanPlayerIdEntity, Locale.ENGLISH);
+                    existingUser.fromFacebookUserLoginInfo("0123456789", Locale.ENGLISH);
                     existingUser.setXp(123);
                     existingUser.setName("gegel");
                     existingUser.setCrystals(346);

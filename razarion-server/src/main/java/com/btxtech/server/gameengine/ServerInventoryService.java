@@ -52,7 +52,7 @@ public class ServerInventoryService {
     }
 
     public InventoryInfo loadInventory(PlayerSession playerSession) {
-        if (playerSession.getUserContext().isRegistered()) {
+        if (playerSession.getUserContext().registered()) {
             return userService.readInventoryInfo(playerSession.getUserContext().getHumanPlayerId().getUserId());
         } else {
             return playerSession.getUnregisteredUser().toInventoryInfo();
@@ -60,7 +60,7 @@ public class ServerInventoryService {
     }
 
     public int loadCrystals(PlayerSession playerSession) {
-        if (playerSession.getUserContext().isRegistered()) {
+        if (playerSession.getUserContext().registered()) {
             return userService.readCrystals(playerSession.getUserContext().getHumanPlayerId().getUserId());
         } else {
             return playerSession.getUnregisteredUser().getCrystals();
@@ -72,7 +72,7 @@ public class ServerInventoryService {
         if (inventoryInfo.getInventoryItemIds() == null || !inventoryInfo.getInventoryItemIds().contains(useInventoryItem.getInventoryId())) {
             throw new IllegalArgumentException("User does not have inventory. Inventory Id: " + useInventoryItem.getInventoryId() + ". HumanPlayerId: " + playerSession.getUserContext().getHumanPlayerId());
         }
-        if (playerSession.getUserContext().isRegistered()) {
+        if (playerSession.getUserContext().registered()) {
             userService.persistRemoveInventoryItem(playerSession.getUserContext().getHumanPlayerId().getUserId(), inventoryPersistence.readInventoryItemEntity(useInventoryItem.getInventoryId()));
         } else {
             UnregisteredUser unregisteredUser = sessionService.findPlayerSession(playerSession.getUserContext().getHumanPlayerId()).getUnregisteredUser();

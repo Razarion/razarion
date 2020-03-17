@@ -1,10 +1,10 @@
 {
   "userContext": {
+    "userId": 1,
+    "registerState":"EMAIL_VERIFIED",
     "humanPlayerId": null,
     "name": null,
-    "registered": true,
     "admin": true,
-    "emailNotVerified": false,
     "levelId": null,
     "unlockedItemLimit": {},
     "xp": 0

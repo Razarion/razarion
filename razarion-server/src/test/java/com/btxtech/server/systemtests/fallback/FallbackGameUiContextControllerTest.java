@@ -21,22 +21,24 @@ public class FallbackGameUiContextControllerTest extends AbstractSystemTest {
     public void fallbackCold() {
         getDefaultRestConnection().logout();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        coldGameUiContext.getUserContext().setHumanPlayerId(null); // Remove HumanPlayerId in along term view
-        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackCold.json", getClass(), coldGameUiContext);
+        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackCold.json",
+                s -> s.replace("\"$USER_ID$\"", Integer.toString(coldGameUiContext.getUserContext().getUserId())),
+                getClass(),
+                coldGameUiContext);
     }
 
     @Test
     public void fallbackColdUser() {
         getDefaultRestConnection().loginUser();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdUser.json", getClass(), coldGameUiContext);
+        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdUser.json", null, getClass(), coldGameUiContext);
     }
 
     @Test
     public void fallbackColdAdmin() {
         getDefaultRestConnection().loginAdmin();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdAdmin.json", getClass(), coldGameUiContext);
+        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdAdmin.json", null, getClass(), coldGameUiContext);
     }
 
     @Test

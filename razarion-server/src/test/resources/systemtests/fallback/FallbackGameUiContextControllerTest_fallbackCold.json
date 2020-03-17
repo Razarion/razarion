@@ -1,10 +1,10 @@
 {
   "userContext": {
+    "userId": "$USER_ID$",
+    "registerState":"UNREGISTERED",
     "humanPlayerId": null,
     "name": null,
-    "registered": false,
     "admin": false,
-    "emailNotVerified": false,
     "levelId": null,
     "unlockedItemLimit": {},
     "xp": 0

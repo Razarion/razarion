@@ -1,7 +1,6 @@
 package com.btxtech.server.user;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
-import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.history.HistoryPersistence;
@@ -47,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -83,17 +83,9 @@ public class UserService {
     public UserContext getUserContextFromSession() {
         UserContext userContext = sessionHolder.getPlayerSession().getUserContext();
         if (userContext == null) {
-            userContext = createAnonymousUserContext();
+            userContext = createAnonymousUser();
             loginUserContext(userContext, new UnregisteredUser());
         }
-        return userContext;
-    }
-
-    private UserContext createAnonymousUserContext() {
-        UserContext userContext = new UserContext();
-        userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
-        userContext.setLevelId(levelPersistence.getStarterLevelId());
-        userContext.setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelPersistence.getStartUnlockedItemLimit()));
         return userContext;
     }
 
@@ -242,56 +234,40 @@ public class UserService {
         return userContext;
     }
 
+    private UserContext createAnonymousUser() {
+        return userEntityFactory(userEntity -> {
+            userEntity.fromAnonymus(this.sessionHolder.getPlayerSession().getLocale());
+        }).toUserContext();
+    }
+
     private UserEntity createUser(String email, String password) {
-        UserEntity userEntity = new UserEntity();
-        HumanPlayerIdEntity humanPlayerIdEntity;
-        if (sessionHolder.getPlayerSession().getUserContext() != null) {
-            humanPlayerIdEntity = getHumanPlayerId(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getPlayerId());
-            fromUnregisteredUser(userEntity);
-        } else {
-            humanPlayerIdEntity = createHumanPlayerId();
-            userEntity.setLevel(levelPersistence.getStarterLevel());
-            userEntity.setLevelUnlockEntities(levelPersistence.getStartUnlockedItemLimit());
-        }
-        userEntity.fromEmailPasswordHash(email, registerService.generateSHA512SecurePassword(password), humanPlayerIdEntity, this.sessionHolder.getPlayerSession().getLocale());
-        entityManager.persist(userEntity);
-        return userEntity;
+        return userEntityFactory(userEntity -> userEntity.fromEmailPasswordHash(
+                email,
+                registerService.generateSHA512SecurePassword(password),
+                this.sessionHolder.getPlayerSession().getLocale()));
     }
 
     private UserEntity createFacebookUser(String facebookUserId) {
+        return userEntityFactory(userEntity -> {
+            userEntity.fromFacebookUserLoginInfo(facebookUserId, sessionHolder.getPlayerSession().getLocale());
+        });
+    }
+
+    private UserEntity userEntityFactory(Consumer<UserEntity> decorator) {
         UserEntity userEntity = new UserEntity();
-        userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId(), sessionHolder.getPlayerSession().getLocale());
         userEntity.setLevel(levelPersistence.getStarterLevel());
         userEntity.setLevelUnlockEntities(levelPersistence.getStartUnlockedItemLimit());
+        decorator.accept(userEntity);
         entityManager.persist(userEntity);
         return userEntity;
+
     }
 
     private UserEntity createFacebookUserFromUnregistered(String facebookUserId) {
         UserEntity userEntity = new UserEntity();
-        userEntity.fromFacebookUserLoginInfo(facebookUserId, getHumanPlayerId(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getPlayerId()), sessionHolder.getPlayerSession().getLocale());
-        fromUnregisteredUser(userEntity);
+        userEntity.fromFacebookUserLoginInfo(facebookUserId, sessionHolder.getPlayerSession().getLocale());
         entityManager.persist(userEntity);
         return userEntity;
-    }
-
-    private void fromUnregisteredUser(UserEntity userEntity) {
-        UnregisteredUser unregisteredUser = sessionHolder.getPlayerSession().getUnregisteredUser();
-        if (unregisteredUser.getCompletedQuestIds() != null) {
-            unregisteredUser.getCompletedQuestIds().forEach(completedQuestId -> userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, completedQuestId)));
-        }
-        if (unregisteredUser.getActiveQuest() != null) {
-            userEntity.setActiveQuest(entityManager.find(QuestConfigEntity.class, unregisteredUser.getActiveQuest().getId()));
-        }
-        userEntity.setCrystals(unregisteredUser.getCrystals());
-        if (unregisteredUser.getInventoryItemIds() != null) {
-            unregisteredUser.getInventoryItemIds().forEach(inventoryItemId -> userEntity.addInventoryItem(inventoryPersistence.readInventoryItemEntity(inventoryItemId)));
-        }
-        if (unregisteredUser.getLevelUnlockEntityIds() != null) {
-            unregisteredUser.getLevelUnlockEntityIds().forEach(levelUnlockEntityId -> userEntity.addLevelUnlockEntity(levelPersistence.readLevelUnlockEntity(levelUnlockEntityId)));
-        }
-        userEntity.setXp(sessionHolder.getPlayerSession().getUserContext().getXp());
-        userEntity.setLevel(levelPersistence.getEntity(sessionHolder.getPlayerSession().getUserContext().getLevelId()));
     }
 
     @Transactional
@@ -312,6 +288,7 @@ public class UserService {
     }
 
     @Transactional
+    @Deprecated
     public HumanPlayerIdEntity createHumanPlayerId() {
         HumanPlayerIdEntity humanPlayerIdEntity = new HumanPlayerIdEntity();
         humanPlayerIdEntity.setTimeStamp(new Date());
@@ -622,10 +599,10 @@ public class UserService {
             return ErrorResult.TO_SHORT;
         }
         UserContext userContext = getUserContextFromSession();
-        if (!userContext.isRegistered()) {
+        if (!userContext.registered()) {
             throw new IllegalStateException("Only registered user chan set a name: " + userContext);
         }
-        if (userContext.isEmailNotVerified()) {
+        if (userContext.emailNotVerified()) {
             throw new IllegalStateException("Only email verified user can set a name: " + userContext);
         }
         if (userContext.checkName()) {

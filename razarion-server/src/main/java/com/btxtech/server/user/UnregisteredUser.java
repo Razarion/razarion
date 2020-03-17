@@ -10,6 +10,7 @@ import java.util.Collection;
  * Created by Beat
  * on 02.08.2017.
  */
+@Deprecated
 public class UnregisteredUser {
     private Collection<Integer> completedQuestIds;
     private QuestConfig activeQuest;

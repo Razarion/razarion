@@ -56,6 +56,7 @@ public class UserEntity {
     @Column(columnDefinition = "DATETIME(3)")
     private Date registerDate;
     private boolean admin;
+    @Deprecated
     @OneToOne(fetch = FetchType.LAZY)
     private HumanPlayerIdEntity humanPlayerIdEntity;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -112,6 +113,10 @@ public class UserEntity {
         return name;
     }
 
+    public void fromAnonymus(Locale locale) {
+        this.locale = locale;
+    }
+
     /**
      * Should not be used for facebook email
      *
@@ -120,31 +125,28 @@ public class UserEntity {
      * @param humanPlayerId humanPlayerId
      * @param locale        locale
      */
-    public void fromEmailPasswordHash(String email, String passwordHash, HumanPlayerIdEntity humanPlayerId, Locale locale) {
+    public void fromEmailPasswordHash(String email, String passwordHash, Locale locale) {
         registerDate = new Date();
         this.email = email;
         this.passwordHash = passwordHash;
-        this.humanPlayerIdEntity = humanPlayerId;
         this.locale = locale;
     }
 
-    public void fromFacebookUserLoginInfo(String facebookUserId, HumanPlayerIdEntity humanPlayerId, Locale locale) {
+    public void fromFacebookUserLoginInfo(String facebookUserId, Locale locale) {
         // this.email should not be used for facebook email
         registerDate = new Date();
         this.facebookUserId = facebookUserId;
-        this.humanPlayerIdEntity = humanPlayerId;
         this.locale = locale;
     }
 
     public UserContext toUserContext() {
         UserContext userContext = new UserContext()
+                .userId(id)
+                .registerState(createRegisterState())
                 .setName(name)
-                .setHumanPlayerId(createHumanPlayerId())
                 .setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities))
-                .setRegistered(true)
                 .setAdmin(admin)
-                .setXp(xp)
-                .setEmailNotVerified(!isVerified());
+                .setXp(xp);
         if (level != null) {
             userContext.setLevelId(level.getId());
         }
@@ -309,7 +311,9 @@ public class UserEntity {
     }
 
     public boolean isVerified() {
-        return facebookUserId != null || verificationDoneDate != null;
+        UserContext.RegisterState registerState = createRegisterState();
+        return registerState == UserContext.RegisterState.FACEBOOK
+                || registerState == UserContext.RegisterState.EMAIL_VERIFIED;
     }
 
     public String getVerificationId() {
@@ -318,6 +322,18 @@ public class UserEntity {
 
     public Date getVerificationTimedOutDate() {
         return verificationTimedOutDate;
+    }
+
+    public UserContext.RegisterState createRegisterState() {
+        if (facebookUserId != null) {
+            return UserContext.RegisterState.FACEBOOK;
+        } else if (verificationDoneDate != null) {
+            return UserContext.RegisterState.EMAIL_VERIFIED;
+        } else if (verificationStartedDate != null && verificationTimedOutDate == null) {
+            return UserContext.RegisterState.EMAIL_UNVERIFIED;
+        } else {
+            return UserContext.RegisterState.UNREGISTERED;
+        }
     }
 
     @Override

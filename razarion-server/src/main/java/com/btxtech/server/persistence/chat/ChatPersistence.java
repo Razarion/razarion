@@ -54,10 +54,10 @@ public class ChatPersistence {
     @Transactional
     public void onMessage(PlayerSession playerSession, String message) {
         UserContext userContext = playerSession.getUserContext();
-        if (!userContext.isRegistered()) {
+        if (!userContext.registered()) {
             throw new IllegalStateException("User is not registered. Session id:" + playerSession.getHttpSessionId());
         }
-        if (userContext.isEmailNotVerified()) {
+        if (userContext.emailNotVerified()) {
             throw new IllegalStateException("Only email verified user can use the chat: " + userContext);
         }
         if (!userContext.checkName()) {

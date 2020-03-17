@@ -138,11 +138,11 @@ public class UserUiService {
     }
 
     public boolean isRegistered() {
-        return userContext.isRegistered();
+        return userContext.registered();
     }
 
     public boolean isEmailNotVerified() {
-        return userContext.isEmailNotVerified();
+        return userContext.emailNotVerified();
     }
 
     public boolean isRegisteredAndNamed() {
@@ -151,7 +151,11 @@ public class UserUiService {
 
     public void onUserRegistered(HumanPlayerId humanPlayerId, boolean emailNotVerified) {
         userContext.setHumanPlayerId(humanPlayerId);
-        userContext.setEmailNotVerified(emailNotVerified);
+        if(emailNotVerified) {
+            userContext.registerState(UserContext.RegisterState.EMAIL_UNVERIFIED);
+        } else {
+            userContext.registerState(UserContext.RegisterState.EMAIL_VERIFIED);
+        }
         clearRegisterTimer();
         if (gameUiControlInstance.get().getGameEngineMode() == GameEngineMode.SLAVE) {
             activateSetUserNameTimer();
@@ -171,7 +175,7 @@ public class UserUiService {
 
 
     public void onEmailVerified() {
-        userContext.setEmailNotVerified(false);
+        userContext.registerState(UserContext.RegisterState.EMAIL_UNVERIFIED);
         modalDialogManager.showMessageDialog(I18nHelper.getConstants().registerThanks(), I18nHelper.getConstants().registerThanksLong());
     }
 

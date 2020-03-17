@@ -24,6 +24,6 @@ public class SessionHolder implements Serializable {
 
     public boolean isLoggedIn() {
         UserContext userContext = playerSession.getUserContext();
-        return userContext != null && userContext.isRegistered();
+        return userContext != null && userContext.registered();
     }
 }
