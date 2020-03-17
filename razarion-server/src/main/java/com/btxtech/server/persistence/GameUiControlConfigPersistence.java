@@ -70,7 +70,7 @@ public class GameUiControlConfigPersistence {
         coldGameUiContext.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         coldGameUiContext.setUserContext(userContext);
         if (userContext.getLevelId() == null) {
-            alarmService.riseAlarm(Alarm.Type.USER_HAS_NO_LEVEL);
+            alarmService.riseAlarm(Alarm.Type.USER_HAS_NO_LEVEL, userContext.getUserId());
             userContext.setLevelId(levelPersistence.getStarterLevelId());
         }
         if (userContext.getLevelId() != null) {
