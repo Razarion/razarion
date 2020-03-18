@@ -36,6 +36,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.system.boot.Boot;
+import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.btxtech.uiservice.user.UserUiService;
@@ -52,6 +53,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import static com.btxtech.shared.system.alarm.Alarm.Type.NO_SCENES;
 
 /**
  * Created by Beat
@@ -158,7 +161,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         terrainScrollHandler.setPlayGround(getPlanetConfig().getPlayGround());
     }
 
-    public void start() {
+    public void start(DeferredStartup deferredStartup) {
         if (!renderService.depthTextureSupported()) {
             modalDialogManager.showMessageDialog(I18nHelper.getConstants().oldBrowserDialogTitle(), I18nHelper.getConstants().oldBrowserDialogMessage());
         }
@@ -182,6 +185,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             topRightCockpit.setBotSceneIndicationInfos(null);
         } else {
             throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiContext.getWarmGameUiContext().getGameEngineMode());
+        }
+        if(scenes.isEmpty()) {
+            deferredStartup.fallback(NO_SCENES);
+            return;
         }
         runScene();
     }
