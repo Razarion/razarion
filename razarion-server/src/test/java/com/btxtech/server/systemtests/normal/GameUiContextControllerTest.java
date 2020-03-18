@@ -1,13 +1,21 @@
 package com.btxtech.server.systemtests.normal;
 
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
+import com.btxtech.shared.dto.WarmGameUiContext;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.rest.GameUiContextController;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class GameUiContextControllerTest extends AbstractSystemTest {
     private GameUiContextController gameUiContextController;
@@ -15,35 +23,79 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
     @Before
     public void setup() {
         gameUiContextController = setupRestAccess(GameUiContextController.class);
-        setupLevels();
+        setupGameUiControlContext();
     }
 
     @Test
     public void cold() {
         getDefaultRestConnection().logout();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackCold.json",
-                s -> s.replace("\"$USER_ID$\"", Integer.toString(coldGameUiContext.getUserContext().getUserId())),
-                getClass(),
-                coldGameUiContext);
+
+        assertThat(coldGameUiContext, allOf(
+                hasProperty("userContext", allOf(
+                        hasProperty("userId", notNullValue()),
+                        hasProperty("registerState", equalTo(UserContext.RegisterState.UNREGISTERED)),
+                        hasProperty("admin", equalTo(false)),
+                        hasProperty("levelId", equalTo(LEVEL_1_ID))
+                )),
+                staticGameConfigMatcher(),
+                hasProperty("warmGameUiContext", warmGameUiContextMatcher())
+        ));
     }
 
     @Test
     public void coldUser() {
         getDefaultRestConnection().loginUser();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdUser.json", null, getClass(), coldGameUiContext);
+
+        assertThat(coldGameUiContext, allOf(
+                hasProperty("userContext", allOf(
+                        hasProperty("userId", notNullValue()),
+                        hasProperty("registerState", equalTo(UserContext.RegisterState.EMAIL_VERIFIED)),
+                        hasProperty("admin", equalTo(false)),
+                        hasProperty("levelId", equalTo(LEVEL_1_ID))
+                )),
+                staticGameConfigMatcher(),
+                hasProperty("warmGameUiContext", warmGameUiContextMatcher())
+        ));
     }
 
     @Test
     public void coldAdmin() {
         getDefaultRestConnection().loginAdmin();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("/systemtests/fallback/FallbackGameUiContextControllerTest_fallbackColdAdmin.json", null, getClass(), coldGameUiContext);
+
+        assertThat(coldGameUiContext, allOf(
+                hasProperty("userContext", allOf(
+                        hasProperty("userId", notNullValue()),
+                        hasProperty("registerState", equalTo(UserContext.RegisterState.EMAIL_VERIFIED)),
+                        hasProperty("admin", equalTo(true)),
+                        hasProperty("levelId", equalTo(LEVEL_1_ID))
+                )),
+                staticGameConfigMatcher(),
+                hasProperty("warmGameUiContext", warmGameUiContextMatcher())
+        ));
     }
 
     @Test
     public void warm() {
-        assertNull(gameUiContextController.loadWarmGameUiContext());
+        WarmGameUiContext warmGameUiContext = gameUiContextController.loadWarmGameUiContext();
+
+        assertThat(warmGameUiContext, warmGameUiContextMatcher());
+
+    }
+
+    private Matcher<ColdGameUiContext> staticGameConfigMatcher() {
+        return hasProperty("staticGameConfig", allOf(
+                hasProperty("groundConfigs", notNullValue()),
+                hasProperty("levelConfigs", notNullValue())
+        ));
+    }
+
+    private Matcher<WarmGameUiContext> warmGameUiContextMatcher() {
+        return allOf(
+                hasProperty("gameEngineMode", equalTo(GameEngineMode.MASTER)),
+                hasProperty("planetConfig", notNullValue())
+        );
     }
 }

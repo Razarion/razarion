@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
@@ -125,21 +124,19 @@ public class PlanetEntity {
         return planetConfig;
     }
 
-    public void fromPlanetConfig(PlanetConfig planetConfig, GroundCrudPersistence groundCrudPersistence, ItemTypePersistence itemTypePersistence) {
+    public void fromPlanetConfig(PlanetConfig planetConfig, GroundConfigEntity groundConfig, BaseItemTypeEntity startBaseItemType, Map<BaseItemTypeEntity, Integer> itemTypeLimitation) {
         internalName = planetConfig.getInternalName();
-        groundConfig = groundCrudPersistence.getEntity(planetConfig.getGroundConfigId());
+        this.groundConfig = groundConfig;
         houseSpace = planetConfig.getHouseSpace();
         startRazarion = planetConfig.getStartRazarion();
         terrainTileDimension = planetConfig.getTerrainTileDimension();
         playGround = planetConfig.getPlayGround();
-        startBaseItemType = itemTypePersistence.readBaseItemTypeEntity(planetConfig.getStartBaseItemTypeId());
-        if (itemTypeLimitation == null) {
-            itemTypeLimitation = new HashMap<>();
+        this.startBaseItemType = startBaseItemType;
+        if (this.itemTypeLimitation == null) {
+            this.itemTypeLimitation = new HashMap<>();
         }
-        itemTypeLimitation.clear();
-        for (Map.Entry<Integer, Integer> entry : planetConfig.getItemTypeLimitation().entrySet()) {
-            itemTypeLimitation.put(itemTypePersistence.readBaseItemTypeEntity(entry.getKey()), entry.getValue());
-        }
+        this.itemTypeLimitation.clear();
+        this.itemTypeLimitation.putAll(itemTypeLimitation);
     }
 
     public PlanetVisualConfig toPlanetVisualConfig() {

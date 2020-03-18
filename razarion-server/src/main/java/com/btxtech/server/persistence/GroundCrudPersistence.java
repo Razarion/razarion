@@ -10,7 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 @Singleton
-public class GroundCrudPersistence extends CrudPersistence<GroundConfig, GroundConfigEntity> {
+public class GroundCrudPersistence extends AbstractCrudPersistence<GroundConfig, GroundConfigEntity> {
     @PersistenceContext
     private EntityManager entityManager;
     @Inject

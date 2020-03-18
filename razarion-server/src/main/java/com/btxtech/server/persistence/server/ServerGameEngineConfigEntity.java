@@ -5,7 +5,7 @@ import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
-import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
@@ -168,10 +168,10 @@ public class ServerGameEngineConfigEntity {
         return startRegionLevelConfigEntity;
     }
 
-    public void updateStartRegionConfig(StartRegionConfig startRegionConfig, LevelPersistence levelPersistence) {
+    public void updateStartRegionConfig(StartRegionConfig startRegionConfig, LevelCrudPersistence levelCrudPersistence) {
         if (startRegionLevelConfigs != null) {
             StartRegionLevelConfigEntity startRegionLevelConfigEntityDb = startRegionLevelConfigs.stream().filter(startRegionLevelConfigEntity -> startRegionConfig.getId() == startRegionLevelConfigEntity.getId()).findFirst().orElseThrow(() -> new IllegalArgumentException("No StartRegionLevelConfigEntity for id: " + id + " on ServerGameEngineConfigEntity: " + this.id));
-            startRegionLevelConfigEntityDb.setMinimalLevel(levelPersistence.getEntity(startRegionConfig.getMinimalLevelId()));
+            startRegionLevelConfigEntityDb.setMinimalLevel(levelCrudPersistence.getEntity(startRegionConfig.getMinimalLevelId()));
             startRegionLevelConfigEntityDb.setInternalName(startRegionConfig.getInternalName());
             if (startRegionConfig.getRegion() != null) {
                 startRegionLevelConfigEntityDb.setStartRegion(startRegionConfig.getRegion().getCorners());

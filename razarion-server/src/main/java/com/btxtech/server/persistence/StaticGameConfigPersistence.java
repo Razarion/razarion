@@ -2,7 +2,7 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
-import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -21,7 +21,7 @@ public class StaticGameConfigPersistence {
     @Inject
     private ItemTypePersistence itemTypePersistence;
     @Inject
-    private LevelPersistence levelPersistence;
+    private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private InventoryPersistence inventoryPersistence;
 
@@ -35,7 +35,7 @@ public class StaticGameConfigPersistence {
         staticGameConfig.setBaseItemTypes(itemTypePersistence.readBaseItemTypes());
         staticGameConfig.setResourceItemTypes(itemTypePersistence.readResourceItemTypes());
         staticGameConfig.setBoxItemTypes(itemTypePersistence.readBoxItemTypes());
-        staticGameConfig.setLevelConfigs(levelPersistence.read());
+        staticGameConfig.setLevelConfigs(levelCrudPersistence.read());
         staticGameConfig.setInventoryItems(inventoryPersistence.readInventoryItems());
         return staticGameConfig;
     }

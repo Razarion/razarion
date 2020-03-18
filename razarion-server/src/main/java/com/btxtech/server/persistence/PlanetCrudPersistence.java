@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * 08.07.2016.
  */
 @Singleton
-public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetEntity> {
+public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig, PlanetEntity> {
     @Inject
     private TerrainElementPersistence terrainElementPersistence;
     @Inject
@@ -40,13 +40,16 @@ public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetE
     }
 
     @Override
-    protected PlanetConfig toConfig(PlanetEntity entity) {
-        return entity.toPlanetConfig();
+    protected PlanetConfig toConfig(PlanetEntity planetEntity) {
+        return planetEntity.toPlanetConfig();
     }
 
     @Override
-    protected void fromConfig(PlanetConfig config, PlanetEntity entity) {
-        entity.fromPlanetConfig(config, groundCrudPersistence, itemTypePersistence);
+    protected void fromConfig(PlanetConfig planetConfig, PlanetEntity planetEntity) {
+        planetEntity.fromPlanetConfig(planetConfig,
+                groundCrudPersistence.getEntity(planetConfig.getGroundConfigId()),
+                itemTypePersistence.readBaseItemTypeEntity(planetConfig.getStartBaseItemTypeId()),
+                itemTypePersistence.baseItemTypeLimitation(planetConfig.getItemTypeLimitation()));
     }
 
 

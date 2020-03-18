@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.GameUiControlConfigPersistence;
+import com.btxtech.server.persistence.GameUiContextCrudPersistence;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.UserContext;
@@ -20,7 +20,7 @@ import javax.transaction.Transactional;
  */
 public class GameUiContextControllerImpl implements GameUiContextController {
     @Inject
-    private GameUiControlConfigPersistence gameUiControlConfigPersistence;
+    private GameUiContextCrudPersistence gameUiContextCrudPersistence;
     @Inject
     private UserService userService;
     @Inject
@@ -33,7 +33,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
     public ColdGameUiContext loadColdGameUiContext(GameUiControlInput gameUiControlInput) {
         UserContext userContext = userService.getUserContextFromSession();
         try {
-            return gameUiControlConfigPersistence.loadCold(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
+            return gameUiContextCrudPersistence.loadCold(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
             exceptionHandler.handleException("Using fallback. No ColdGameUiContext configured", e);
             return FallbackConfig.coldGameUiControlConfig(userContext);
@@ -44,7 +44,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
     public WarmGameUiContext loadWarmGameUiContext() {
         try {
             UserContext userContext = userService.getUserContextFromSession();
-            return gameUiControlConfigPersistence.loadWarm(sessionHolder.getPlayerSession().getLocale(), userContext);
+            return gameUiContextCrudPersistence.loadWarm(sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
             exceptionHandler.handleException("Using fallback. No WarmGameUiContext configured", e);
             return FallbackConfig.warmGameUiControlConfig();

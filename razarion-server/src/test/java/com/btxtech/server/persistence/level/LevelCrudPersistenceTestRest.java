@@ -14,9 +14,9 @@ import java.util.List;
  * Created by Beat
  * 05.05.2017.
  */
-public class LevelPersistenceTestRest extends IgnoreOldArquillianTest {
+public class LevelCrudPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
-    private LevelPersistence levelPersistence;
+    private LevelCrudPersistence levelCrudPersistence;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -24,17 +24,17 @@ public class LevelPersistenceTestRest extends IgnoreOldArquillianTest {
     @Test
     public void testStarterLevelId() throws Exception {
         setupLevels();
-        Assert.assertEquals(LEVEL_1_ID, (int) levelPersistence.getStarterLevel().getId());
+        Assert.assertEquals(LEVEL_1_ID, (int) levelCrudPersistence.getStarterLevel().getId());
         // TODO cleanLevels();
     }
 
     @Test
     public void testLevelNumber4Id() throws Exception {
         setupLevels();
-        Assert.assertEquals(1, levelPersistence.getLevelNumber4Id(LEVEL_1_ID));
-        Assert.assertEquals(2, levelPersistence.getLevelNumber4Id(LEVEL_2_ID));
-        Assert.assertEquals(3, levelPersistence.getLevelNumber4Id(LEVEL_3_ID));
-        Assert.assertEquals(4, levelPersistence.getLevelNumber4Id(LEVEL_4_ID));
+        Assert.assertEquals(1, levelCrudPersistence.getLevelNumber4Id(LEVEL_1_ID));
+        Assert.assertEquals(2, levelCrudPersistence.getLevelNumber4Id(LEVEL_2_ID));
+        Assert.assertEquals(3, levelCrudPersistence.getLevelNumber4Id(LEVEL_3_ID));
+        Assert.assertEquals(4, levelCrudPersistence.getLevelNumber4Id(LEVEL_4_ID));
         // TODO cleanLevels();
     }
 

@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.CrudPersistence;
+import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -13,7 +13,7 @@ public class PlanetEditorControllerImpl extends AbstractCrudController<PlanetCon
     private PlanetCrudPersistence planetCrudPersistence;
 
     @Override
-    protected CrudPersistence<PlanetConfig, PlanetEntity> getCrudPersistence() {
+    protected AbstractCrudPersistence<PlanetConfig, PlanetEntity> getCrudPersistence() {
         return planetCrudPersistence;
     }
 }

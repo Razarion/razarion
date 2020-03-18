@@ -1,8 +1,8 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.CrudPersistence;
+import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
-import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.rest.LevelEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -17,10 +17,10 @@ public class LevelEditorControllerImpl extends AbstractCrudController<LevelConfi
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private LevelPersistence levelPersistence;
+    private LevelCrudPersistence levelCrudPersistence;
 
     @Override
-    protected CrudPersistence<LevelConfig, LevelEntity> getCrudPersistence() {
-        return levelPersistence;
+    protected AbstractCrudPersistence<LevelConfig, LevelEntity> getCrudPersistence() {
+        return levelCrudPersistence;
     }
 }

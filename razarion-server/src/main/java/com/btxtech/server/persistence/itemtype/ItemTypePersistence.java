@@ -19,7 +19,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -199,4 +201,14 @@ public class ItemTypePersistence {
         }
         return botConfigEntity;
     }
+
+    public Map<BaseItemTypeEntity, Integer> baseItemTypeLimitation(Map<Integer, Integer> input) {
+        if(input == null) {
+            return Collections.emptyMap();
+        }
+        return input.entrySet()
+                .stream()
+                .collect(Collectors.toMap(entry -> readBaseItemTypeEntity(entry.getKey()), Map.Entry::getKey));
+    }
+
 }

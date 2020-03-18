@@ -5,7 +5,7 @@ import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.SimpleTestEnvironment;
 import com.btxtech.server.TestClientSystemConnection;
 import com.btxtech.server.TestHelper;
-import com.btxtech.server.persistence.GameUiControlConfigPersistence;
+import com.btxtech.server.persistence.GameUiContextCrudPersistence;
 import com.btxtech.server.persistence.history.LevelUnlockHistoryEntry;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.user.PlayerSession;
@@ -55,7 +55,7 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
     @Inject
     private SessionService sessionService;
     @Inject
-    private GameUiControlConfigPersistence gameUiControlConfigPersistence;
+    private GameUiContextCrudPersistence gameUiContextCrudPersistence;
 
     @Before
     public void before() throws Exception {
@@ -173,7 +173,7 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
     }
 
     private void assertAvailableUnlocks(Integer... expectedLevelUnlockIds) throws Exception {
-        List<LevelUnlockConfig> actualLevelUnlockConfigs = gameUiControlConfigPersistence.loadCold(new GameUiControlInput(), Locale.ENGLISH, userService.getUserContextFromSession()).getLevelUnlockConfigs();
+        List<LevelUnlockConfig> actualLevelUnlockConfigs = gameUiContextCrudPersistence.loadCold(new GameUiControlInput(), Locale.ENGLISH, userService.getUserContextFromSession()).getLevelUnlockConfigs();
         Assert.assertEquals(expectedLevelUnlockIds.length, actualLevelUnlockConfigs.size());
         Collection<Integer> expectedCollection = new ArrayList<>(Arrays.asList(expectedLevelUnlockIds));
         expectedCollection.removeAll(actualLevelUnlockConfigs.stream().map(LevelUnlockConfig::getId).collect(Collectors.toList()));

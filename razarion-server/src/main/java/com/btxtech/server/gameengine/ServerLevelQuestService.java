@@ -1,11 +1,11 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.connection.ClientSystemConnectionService;
-import com.btxtech.server.persistence.GameUiControlConfigPersistence;
+import com.btxtech.server.persistence.GameUiContextCrudPersistence;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.history.QuestHistoryEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
-import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.user.PlayerSession;
@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 public class ServerLevelQuestService implements QuestListener {
     private Logger logger = Logger.getLogger(ServerLevelQuestService.class.getName());
     @Inject
-    private Instance<GameUiControlConfigPersistence> gameUiControlConfigPersistence;
+    private Instance<GameUiContextCrudPersistence> gameUiControlConfigPersistence;
     @Inject
     private Instance<HistoryPersistence> historyPersistence;
     @Inject
@@ -49,7 +49,7 @@ public class ServerLevelQuestService implements QuestListener {
     @Inject
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     @Inject
-    private LevelPersistence levelPersistence;
+    private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private UserService userService;
     @Inject
@@ -66,7 +66,7 @@ public class ServerLevelQuestService implements QuestListener {
 
     @Transactional
     public void onClientLevelUpdate(String sessionId, int newLevelId) {
-        LevelEntity newLevel = levelPersistence.getEntity(newLevelId);
+        LevelEntity newLevel = levelCrudPersistence.getEntity(newLevelId);
         PlayerSession playerSession = sessionService.getSession(sessionId);
         UserContext userContext = playerSession.getUserContext();
         historyPersistence.get().onLevelUp(userContext.getHumanPlayerId(), newLevel);
@@ -114,9 +114,9 @@ public class ServerLevelQuestService implements QuestListener {
         UserContext userContext = userService.getUserContext(humanPlayerId);
         // Check for level up
         int newXp = userContext.getXp() + questConfig.getXp();
-        LevelEntity currentLevel = levelPersistence.getEntity(userContext.getLevelId());
+        LevelEntity currentLevel = levelCrudPersistence.getEntity(userContext.getLevelId());
         if (newXp >= currentLevel.getXp2LevelUp()) {
-            LevelEntity newLevel = levelPersistence.getNextLevel(currentLevel);
+            LevelEntity newLevel = levelCrudPersistence.getNextLevel(currentLevel);
             if (newLevel != null) {
                 userContext.setLevelId(newLevel.getId());
                 userContext.setXp(0);
@@ -148,7 +148,7 @@ public class ServerLevelQuestService implements QuestListener {
             if (playerSession != null) {
                 UnregisteredUser unregisteredUser = playerSession.getUnregisteredUser();
                 unregisteredUser.addCompletedQuestId(questConfig.getId());
-                QuestConfigEntity newQuestEntity = serverGameEngineCrudPersistence.getQuest4LevelAndCompleted(levelPersistence.getEntity(playerSession.getUserContext().getLevelId()), unregisteredUser.getCompletedQuestIds());
+                QuestConfigEntity newQuestEntity = serverGameEngineCrudPersistence.getQuest4LevelAndCompleted(levelCrudPersistence.getEntity(playerSession.getUserContext().getLevelId()), unregisteredUser.getCompletedQuestIds());
                 if (newQuestEntity != null) {
                     newQuest = newQuestEntity.toQuestConfig(playerSession.getLocale());
                 }
@@ -164,7 +164,7 @@ public class ServerLevelQuestService implements QuestListener {
     }
 
     public List<QuestConfig> readOpenQuestForDialog(UserContext userContext, Locale locale) {
-        return serverGameEngineCrudPersistence.getQuests4Dialog(levelPersistence.getEntity(userContext.getLevelId()), readActiveOrPassedQuestIds(userContext), locale);
+        return serverGameEngineCrudPersistence.getQuests4Dialog(levelCrudPersistence.getEntity(userContext.getLevelId()), readActiveOrPassedQuestIds(userContext), locale);
     }
 
     @Transactional

@@ -7,7 +7,7 @@ import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
-import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
@@ -65,7 +65,7 @@ public class UserService {
     @Inject
     private SessionHolder sessionHolder;
     @Inject
-    private LevelPersistence levelPersistence;
+    private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     @Inject
@@ -255,8 +255,8 @@ public class UserService {
 
     private UserEntity userEntityFactory(Consumer<UserEntity> decorator) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setLevel(levelPersistence.getStarterLevel());
-        userEntity.setLevelUnlockEntities(levelPersistence.getStartUnlockedItemLimit());
+        userEntity.setLevel(levelCrudPersistence.getStarterLevel());
+        userEntity.setLevelUnlockEntities(levelCrudPersistence.getStartUnlockedItemLimit());
         decorator.accept(userEntity);
         entityManager.persist(userEntity);
         return userEntity;
@@ -353,7 +353,7 @@ public class UserService {
     @Transactional
     public void persistUnlockViaCrystals(int userId, int levelUnlockEntityId) {
         UserEntity userEntity = getUserEntity(userId);
-        LevelUnlockEntity levelUnlockEntity = levelPersistence.readLevelUnlockEntity(levelUnlockEntityId);
+        LevelUnlockEntity levelUnlockEntity = levelCrudPersistence.readLevelUnlockEntity(levelUnlockEntityId);
         if (levelUnlockEntity.getCrystalCost() > userEntity.getCrystals()) {
             throw new IllegalArgumentException("User does not have enough crystals to unlock LevelUnlockEntity. User id: " + userEntity.getId() + " LevelUnlockEntity id: " + levelUnlockEntity.getId());
         }

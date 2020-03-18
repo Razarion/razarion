@@ -8,7 +8,7 @@ import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.QuestPersistence;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
-import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
@@ -46,7 +46,7 @@ public class ServerMgmt {
     @Inject
     private SessionService sessionService;
     @Inject
-    private LevelPersistence levelPersistence;
+    private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private QuestPersistence questPersistence;
     @Inject
@@ -135,7 +135,7 @@ public class ServerMgmt {
         UserBackendInfo userBackendInfo;
         userBackendInfo = new UserBackendInfo().setHumanPlayerId(humanPlayerId);
         if (playerSession.getUserContext() != null) {
-            userBackendInfo.setLevelNumber(levelPersistence.getLevelNumber4Id(playerSession.getUserContext().getLevelId()));
+            userBackendInfo.setLevelNumber(levelCrudPersistence.getLevelNumber4Id(playerSession.getUserContext().getLevelId()));
             userBackendInfo.setXp(playerSession.getUserContext().getXp());
         }
         if (playerSession.getUnregisteredUser() != null) {
@@ -147,7 +147,7 @@ public class ServerMgmt {
                 userBackendInfo.setCompletedQuests(playerSession.getUnregisteredUser().getCompletedQuestIds().stream().map(questId -> questPersistence.findQuestBackendInfo(questId)).collect(Collectors.toList()));
             }
             if (playerSession.getUnregisteredUser().getLevelUnlockEntityIds() != null && !playerSession.getUnregisteredUser().getLevelUnlockEntityIds().isEmpty()) {
-                userBackendInfo.setUnlockedBackendInfos(playerSession.getUnregisteredUser().getLevelUnlockEntityIds().stream().map(levelUnlockId -> levelPersistence.findUnlockedBackendInfo(levelUnlockId)).collect(Collectors.toList()));
+                userBackendInfo.setUnlockedBackendInfos(playerSession.getUnregisteredUser().getLevelUnlockEntityIds().stream().map(levelUnlockId -> levelCrudPersistence.findUnlockedBackendInfo(levelUnlockId)).collect(Collectors.toList()));
             }
         }
         return userBackendInfo;
@@ -202,7 +202,7 @@ public class ServerMgmt {
     public UserBackendInfo setLevelNumber(int playerId, int levelNumber) {
         HumanPlayerId humanPlayerId = userService.findHumanPlayerId(playerId);
         UserContext userContext = userService.getUserContextTransactional(humanPlayerId);
-        LevelEntity newLevel = levelPersistence.getLevel4Number(levelNumber);
+        LevelEntity newLevel = levelCrudPersistence.getLevel4Number(levelNumber);
         userContext.setLevelId(newLevel.getId());
         clientSystemConnectionService.onLevelUp(humanPlayerId, userContext, serverUnlockService.gatherAvailableUnlocks(userContext, newLevel.getId()));
         serverGameEngineControl.onLevelChanged(humanPlayerId, newLevel.getId());

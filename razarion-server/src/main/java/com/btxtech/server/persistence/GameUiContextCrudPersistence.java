@@ -1,10 +1,9 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.gameengine.ServerUnlockService;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity_;
-import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.shared.datatypes.DbPropertyKey;
@@ -12,6 +11,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameTipVisualConfig;
+import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.InGameQuestVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
@@ -40,7 +40,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.NO_GAME_UI_CONTROL_CONF
  * 03.08.2016.
  */
 @Singleton
-public class GameUiControlConfigPersistence {
+public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUiContextConfig, GameUiControlContextEntity> {
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -48,9 +48,9 @@ public class GameUiControlConfigPersistence {
     @Inject
     private StaticGameConfigPersistence staticGameConfigPersistence;
     @Inject
-    private ServerGameEngineControl gameEngineService;
+    private PlanetCrudPersistence planetCrudPersistence;
     @Inject
-    private LevelPersistence levelPersistence;
+    private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     @Inject
@@ -66,6 +66,20 @@ public class GameUiControlConfigPersistence {
     @Inject
     private AlarmService alarmService;
 
+    public GameUiContextCrudPersistence() {
+        super(GameUiControlContextEntity.class, GameUiControlContextEntity_.id, GameUiControlContextEntity_.internalName);
+    }
+
+    @Override
+    protected GameUiContextConfig toConfig(GameUiControlContextEntity entity) {
+        return entity.toConfig();
+    }
+
+    @Override
+    protected void fromConfig(GameUiContextConfig config, GameUiControlContextEntity entity) {
+        entity.fromConfig(config, levelCrudPersistence.getEntity(config.getMinimalLevelId()), planetCrudPersistence.getEntity(config.getPlanetId()));
+    }
+
     @Transactional
     public ColdGameUiContext loadCold(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
         ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
@@ -73,7 +87,7 @@ public class GameUiControlConfigPersistence {
         coldGameUiContext.setUserContext(userContext);
         if (userContext.getLevelId() == null) {
             alarmService.riseAlarm(Alarm.Type.USER_HAS_NO_LEVEL, userContext.getUserId());
-            userContext.setLevelId(levelPersistence.getStarterLevelId());
+            userContext.setLevelId(levelCrudPersistence.getStarterLevelId());
         }
         if (userContext.getLevelId() != null) {
             coldGameUiContext.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext, userContext.getLevelId()));
@@ -95,11 +109,11 @@ public class GameUiControlConfigPersistence {
         if (userContext.getLevelId() == null) {
             return null;
         }
-        GameUiControlConfigEntity gameUiControlConfigEntity = load4Level(userContext.getLevelId());
-        if(gameUiControlConfigEntity == null) {
+        GameUiControlContextEntity gameUiControlContextEntity = load4Level(userContext.getLevelId());
+        if (gameUiControlContextEntity == null) {
             return null;
         }
-        WarmGameUiContext warmGameUiContext = gameUiControlConfigEntity.toGameWarmGameUiControlConfig(locale);
+        WarmGameUiContext warmGameUiContext = gameUiControlContextEntity.toGameWarmGameUiControlConfig(locale);
         if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
             warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
             warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getHumanPlayerId()));
@@ -108,22 +122,21 @@ public class GameUiControlConfigPersistence {
         return warmGameUiContext;
     }
 
-    public GameUiControlConfigEntity load4Level(int levelId) {
-        int levelNumber = levelPersistence.getLevelNumber4Id(levelId);
+    public GameUiControlContextEntity load4Level(int levelId) {
+        int levelNumber = levelCrudPersistence.getLevelNumber4Id(levelId);
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<GameUiControlConfigEntity> query = criteriaBuilder.createQuery(GameUiControlConfigEntity.class);
-        Root<GameUiControlConfigEntity> root = query.from(GameUiControlConfigEntity.class);
-        query.where(criteriaBuilder.lessThanOrEqualTo(root.join(GameUiControlConfigEntity_.minimalLevel).get(LevelEntity_.number), levelNumber));
-        CriteriaQuery<GameUiControlConfigEntity> userSelect = query.select(root);
-        query.orderBy(criteriaBuilder.desc(root.join(GameUiControlConfigEntity_.minimalLevel).get(LevelEntity_.number)));
-        GameUiControlConfigEntity gameUiControlConfigEntity = entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getResultList().stream().findFirst().orElse(null);
-        if (gameUiControlConfigEntity == null) {
+        CriteriaQuery<GameUiControlContextEntity> query = criteriaBuilder.createQuery(GameUiControlContextEntity.class);
+        Root<GameUiControlContextEntity> root = query.from(GameUiControlContextEntity.class);
+        query.where(criteriaBuilder.lessThanOrEqualTo(root.join(GameUiControlContextEntity_.minimalLevel).get(LevelEntity_.number), levelNumber));
+        CriteriaQuery<GameUiControlContextEntity> userSelect = query.select(root);
+        query.orderBy(criteriaBuilder.desc(root.join(GameUiControlContextEntity_.minimalLevel).get(LevelEntity_.number)));
+        GameUiControlContextEntity gameUiControlContextEntity = entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getResultList().stream().findFirst().orElse(null);
+        if (gameUiControlContextEntity == null) {
             alarmService.riseAlarm(NO_GAME_UI_CONTROL_CONFIG_ENTITY_FOR_LEVEL_ID, levelId);
         }
-        return gameUiControlConfigEntity;
+        return gameUiControlContextEntity;
     }
-
 
     private GameTipVisualConfig setupGameTipVisualConfig() {
         GameTipVisualConfig gameTipVisualConfig = new GameTipVisualConfig();

@@ -2,6 +2,7 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.scene.SceneEntity;
+import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -10,6 +11,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,18 +29,19 @@ import java.util.Locale;
  * 06.07.2016.
  */
 @Entity
-@Table(name = "GAME_UI_CONTROL_CONFIG")
-public class GameUiControlConfigEntity {
+@Table(name = "GAME_UI_CONTROL_CONTEXT")
+public class GameUiControlContextEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+    private String internalName;
+    @OneToOne(fetch = FetchType.LAZY)
     private PlanetEntity planetEntity;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "gameUiControlConfigEntityId", nullable = false )
+    @JoinColumn(name = "gameUiControlConfigEntityId", nullable = false)
     @OrderColumn(name = "orderColumn")
     private List<SceneEntity> scenes;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private LevelEntity minimalLevel;
     @Enumerated(EnumType.STRING)
     private GameEngineMode gameEngineMode;
@@ -46,6 +49,27 @@ public class GameUiControlConfigEntity {
 
     public Integer getId() {
         return id;
+    }
+
+    public GameUiContextConfig toConfig() {
+        GameUiContextConfig gameUiContextConfig = new GameUiContextConfig()
+                .id(id)
+                .internalName(internalName)
+                .gameEngineMode(gameEngineMode);
+        if (minimalLevel != null) {
+            gameUiContextConfig.setMinimalLevelId(minimalLevel.getId());
+        }
+        if (planetEntity != null) {
+            gameUiContextConfig.setPlanetId(planetEntity.getId());
+        }
+        return gameUiContextConfig;
+    }
+
+    public void fromConfig(GameUiContextConfig config, LevelEntity minimalLevel, PlanetEntity planetEntity) {
+        internalName = config.getInternalName();
+        gameEngineMode = config.getGameEngineMode();
+        this.minimalLevel = minimalLevel;
+        this.planetEntity = planetEntity;
     }
 
     public WarmGameUiContext toGameWarmGameUiControlConfig(Locale locale) {
@@ -77,28 +101,8 @@ public class GameUiControlConfigEntity {
         this.scenes = scenes;
     }
 
-    public PlanetEntity getPlanetEntity() {
-        return planetEntity;
-    }
-
-    public void setPlanetEntity(PlanetEntity planetEntity) {
-        this.planetEntity = planetEntity;
-    }
-
-    public LevelEntity getMinimalLevel() {
-        return minimalLevel;
-    }
-
-    public void setMinimalLevel(LevelEntity minimalLevel) {
-        this.minimalLevel = minimalLevel;
-    }
-
     public GameEngineMode getGameEngineMode() {
         return gameEngineMode;
-    }
-
-    public void setGameEngineMode(GameEngineMode gameEngineMode) {
-        this.gameEngineMode = gameEngineMode;
     }
 
     @Override
@@ -110,7 +114,7 @@ public class GameUiControlConfigEntity {
             return false;
         }
 
-        GameUiControlConfigEntity that = (GameUiControlConfigEntity) o;
+        GameUiControlContextEntity that = (GameUiControlContextEntity) o;
         return id != null && id.equals(that.id);
     }
 

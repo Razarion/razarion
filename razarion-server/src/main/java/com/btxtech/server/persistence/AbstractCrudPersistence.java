@@ -19,14 +19,14 @@ import java.util.stream.Collectors;
  * @param <C> Config
  * @param <E> Entity
  */
-public abstract class CrudPersistence<C extends Config, E> {
+public abstract class AbstractCrudPersistence<C extends Config, E> {
     @PersistenceContext
     private EntityManager entityManager;
     private Class<E> entityClass;
     private SingularAttribute<E, Integer> id;
     private SingularAttribute<E, String> internalName;
 
-    public CrudPersistence(Class<E> entityClass, SingularAttribute<E, Integer> id, SingularAttribute<E, String> internalName) {
+    public AbstractCrudPersistence(Class<E> entityClass, SingularAttribute<E, Integer> id, SingularAttribute<E, String> internalName) {
         this.entityClass = entityClass;
         this.id = id;
         this.internalName = internalName;

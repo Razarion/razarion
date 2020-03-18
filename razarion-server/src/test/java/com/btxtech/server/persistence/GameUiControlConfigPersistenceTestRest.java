@@ -20,7 +20,7 @@ import java.util.Locale;
  */
 public class GameUiControlConfigPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
-    private GameUiControlConfigPersistence gameUiControlConfigPersistence;
+    private GameUiContextCrudPersistence gameUiContextCrudPersistence;
     @Inject
     private UserService userService;
 
@@ -40,22 +40,22 @@ public class GameUiControlConfigPersistenceTestRest extends IgnoreOldArquillianT
 
         UserContext userContext = userService.getUserContextFromSession();
         userContext.setLevelId(LEVEL_1_ID);
-        ColdGameUiContext gameUiControlConfig = gameUiControlConfigPersistence.loadCold(new GameUiControlInput(), locale, userContext);
+        ColdGameUiContext gameUiControlConfig = gameUiContextCrudPersistence.loadCold(new GameUiControlInput(), locale, userContext);
         Assert.assertEquals(PLANET_1_ID, gameUiControlConfig.getWarmGameUiContext().getPlanetConfig().getId());
 
         userContext = userService.getUserContextFromSession();
         userContext.setLevelId(LEVEL_2_ID);
-        gameUiControlConfig = gameUiControlConfigPersistence.loadCold(new GameUiControlInput(), locale, userContext);
+        gameUiControlConfig = gameUiContextCrudPersistence.loadCold(new GameUiControlInput(), locale, userContext);
         Assert.assertEquals(PLANET_1_ID, gameUiControlConfig.getWarmGameUiContext().getPlanetConfig().getId());
 
         userContext = userService.getUserContextFromSession();
         userContext.setLevelId(LEVEL_3_ID);
-        gameUiControlConfig = gameUiControlConfigPersistence.loadCold(new GameUiControlInput(), locale, userContext);
+        gameUiControlConfig = gameUiContextCrudPersistence.loadCold(new GameUiControlInput(), locale, userContext);
         Assert.assertEquals(PLANET_1_ID, gameUiControlConfig.getWarmGameUiContext().getPlanetConfig().getId());
 
         userContext = userService.getUserContextFromSession();
         userContext.setLevelId(LEVEL_4_ID);
-        gameUiControlConfig = gameUiControlConfigPersistence.loadCold(new GameUiControlInput(), locale, userContext);
+        gameUiControlConfig = gameUiContextCrudPersistence.loadCold(new GameUiControlInput(), locale, userContext);
         Assert.assertEquals(PLANET_2_ID, gameUiControlConfig.getWarmGameUiContext().getPlanetConfig().getId());
     }
 
@@ -65,22 +65,22 @@ public class GameUiControlConfigPersistenceTestRest extends IgnoreOldArquillianT
 
         UserContext userContext = userService.getUserContextFromSession();
         userContext.setLevelId(LEVEL_1_ID);
-        WarmGameUiContext warmGameUiContext = gameUiControlConfigPersistence.loadWarm(locale, userContext);
+        WarmGameUiContext warmGameUiContext = gameUiContextCrudPersistence.loadWarm(locale, userContext);
         Assert.assertEquals(PLANET_1_ID, warmGameUiContext.getPlanetConfig().getId());
 
         userContext = userService.getUserContextFromSession();
         userContext.setLevelId(LEVEL_2_ID);
-        warmGameUiContext = gameUiControlConfigPersistence.loadWarm(locale, userContext);
+        warmGameUiContext = gameUiContextCrudPersistence.loadWarm(locale, userContext);
         Assert.assertEquals(PLANET_1_ID, warmGameUiContext.getPlanetConfig().getId());
 
         userContext = userService.getUserContextFromSession();
         userContext.setLevelId(LEVEL_3_ID);
-        warmGameUiContext = gameUiControlConfigPersistence.loadWarm(locale, userContext);
+        warmGameUiContext = gameUiContextCrudPersistence.loadWarm(locale, userContext);
         Assert.assertEquals(PLANET_1_ID, warmGameUiContext.getPlanetConfig().getId());
 
         userContext = userService.getUserContextFromSession();
         userContext.setLevelId(LEVEL_4_ID);
-        warmGameUiContext = gameUiControlConfigPersistence.loadWarm(locale, userContext);
+        warmGameUiContext = gameUiContextCrudPersistence.loadWarm(locale, userContext);
         Assert.assertEquals(PLANET_2_ID, warmGameUiContext.getPlanetConfig().getId());
     }
 }

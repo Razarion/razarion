@@ -57,7 +57,7 @@ public class SceneEditorPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private SceneEditorPersistence sceneEditorPersistence;
     @Inject
-    private GameUiControlConfigPersistence gameUiControlConfigPersistence;
+    private GameUiContextCrudPersistence gameUiContextCrudPersistence;
 
     @Before
     public void before() throws Exception {

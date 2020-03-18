@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.level;
 
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.UnlockedBackendInfo;
-import com.btxtech.server.persistence.CrudPersistence;
+import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * 05.05.2017.
  */
 @Singleton
-public class LevelPersistence extends CrudPersistence<LevelConfig, LevelEntity> {
+public class LevelCrudPersistence extends AbstractCrudPersistence<LevelConfig, LevelEntity> {
     @Inject
     private ItemTypePersistence itemTypePersistence;
     @Inject
@@ -42,7 +42,7 @@ public class LevelPersistence extends CrudPersistence<LevelConfig, LevelEntity> 
     @PersistenceContext
     private EntityManager entityManager;
 
-    public LevelPersistence() {
+    public LevelCrudPersistence() {
         super(LevelEntity.class, LevelEntity_.id, LevelEntity_.internalName);
     }
 

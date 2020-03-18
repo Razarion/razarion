@@ -2,7 +2,7 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.persistence.history.HistoryPersistence;
-import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.SecurityCheck;
@@ -36,7 +36,7 @@ public class ServerUnlockService {
     @Inject
     private SessionService sessionService;
     @Inject
-    private LevelPersistence levelPersistence;
+    private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private HistoryPersistence historyPersistence;
 
@@ -50,14 +50,14 @@ public class ServerUnlockService {
             PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
             if (playerSession != null && playerSession.getUnregisteredUser() != null) {
                 UnregisteredUser unregisteredUser = playerSession.getUnregisteredUser();
-                int crystals = levelPersistence.readLevelUnlockEntityCrystals(levelUnlockEntityId);
+                int crystals = levelCrudPersistence.readLevelUnlockEntityCrystals(levelUnlockEntityId);
                 if (crystals > unregisteredUser.getCrystals()) {
                     throw new IllegalArgumentException("Unregistered user does not have enough crystals to unlock LevelUnlockEntity. LevelUnlockEntity id: " + levelUnlockEntityId);
                 }
                 unregisteredUser.addLevelUnlockEntityId(levelUnlockEntityId);
                 unregisteredUser.removeCrystals(crystals);
                 userContext = playerSession.getUserContext();
-                userContext.setUnlockedItemLimit(levelPersistence.setupUnlockedItemLimit(unregisteredUser.getLevelUnlockEntityIds()));
+                userContext.setUnlockedItemLimit(levelCrudPersistence.setupUnlockedItemLimit(unregisteredUser.getLevelUnlockEntityIds()));
             } else {
                 return;
             }
@@ -83,7 +83,7 @@ public class ServerUnlockService {
     }
 
     public List<LevelUnlockConfig> gatherAvailableUnlocks(UserContext userContext, int levelId) {
-        return levelPersistence.readUnlocks(levelId, userService.unlockedEntityIds(userContext.getUserId()));
+        return levelCrudPersistence.readUnlocks(levelId, userService.unlockedEntityIds(userContext.getUserId()));
     }
 
     @SecurityCheck
@@ -99,7 +99,7 @@ public class ServerUnlockService {
                 UnregisteredUser unregisteredUser = playerSession.getUnregisteredUser();
                 unregisteredUser.getLevelUnlockEntityIds().remove(levelUnlockEntityId);
                 userContext = playerSession.getUserContext();
-                userContext.setUnlockedItemLimit(levelPersistence.setupUnlockedItemLimit(unregisteredUser.getLevelUnlockEntityIds()));
+                userContext.setUnlockedItemLimit(levelCrudPersistence.setupUnlockedItemLimit(unregisteredUser.getLevelUnlockEntityIds()));
             } else {
                 return;
             }

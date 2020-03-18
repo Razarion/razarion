@@ -2,7 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.gameengine.ServerInventoryService;
 import com.btxtech.server.gameengine.ServerUnlockService;
-import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.gameengine.datatypes.packets.UnlockResultInfo;
 import com.btxtech.shared.rest.UnlockProvider;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
  */
 public class UnlockProviderImpl implements UnlockProvider {
     @Inject
-    private LevelPersistence levelPersistence;
+    private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private ServerUnlockService serverUnlockService;
     @Inject
@@ -30,7 +30,7 @@ public class UnlockProviderImpl implements UnlockProvider {
     public UnlockResultInfo unlockViaCrystals(int levelUnlockConfigId) {
         try {
             int crystals = serverInventoryService.loadCrystals(sessionHolder.getPlayerSession());
-            if (crystals < levelPersistence.readLevelUnlockEntityCrystals(levelUnlockConfigId)) {
+            if (crystals < levelCrudPersistence.readLevelUnlockEntityCrystals(levelUnlockConfigId)) {
                 return new UnlockResultInfo().setNotEnoughCrystals(true);
             }
             serverUnlockService.unlockViaCrystals(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), levelUnlockConfigId);

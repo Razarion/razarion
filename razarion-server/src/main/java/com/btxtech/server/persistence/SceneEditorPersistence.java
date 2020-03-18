@@ -49,10 +49,10 @@ public class SceneEditorPersistence {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
-    private Instance<ServerChildCrudPersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig>> sceneConfigCrudInstance;
+    private Instance<ServerChildCrudPersistence<GameUiControlContextEntity, GameUiControlContextEntity, SceneEntity, SceneConfig>> sceneConfigCrudInstance;
 
-    public ServerChildCrudPersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig> getSceneConfigCrud(int gameUiControlConfigId) {
-        ServerChildCrudPersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig> crud = sceneConfigCrudInstance.get();
+    public ServerChildCrudPersistence<GameUiControlContextEntity, GameUiControlContextEntity, SceneEntity, SceneConfig> getSceneConfigCrud(int gameUiControlConfigId) {
+        ServerChildCrudPersistence<GameUiControlContextEntity, GameUiControlContextEntity, SceneEntity, SceneConfig> crud = sceneConfigCrudInstance.get();
         crud.setRootProvider(() -> readGameUiControlConfigEntity(gameUiControlConfigId)).setParentProvider(entityManager -> readGameUiControlConfigEntity(gameUiControlConfigId));
         crud.setEntitiesGetter((entityManager) -> readGameUiControlConfigEntity(gameUiControlConfigId).getScenes());
         crud.setEntitiesSetter((entityManager, sceneConfigEntities) -> readGameUiControlConfigEntity(gameUiControlConfigId).setScenes(sceneConfigEntities));
@@ -63,8 +63,8 @@ public class SceneEditorPersistence {
         return crud;
     }
 
-    private GameUiControlConfigEntity readGameUiControlConfigEntity(int gameUiControlConfigId) {
-        return entityManager.find(GameUiControlConfigEntity.class, gameUiControlConfigId);
+    private GameUiControlContextEntity readGameUiControlConfigEntity(int gameUiControlConfigId) {
+        return entityManager.find(GameUiControlContextEntity.class, gameUiControlConfigId);
     }
 
     private void saveScene(SceneEntity sceneEntity, SceneConfig sceneConfig, Locale locale) {

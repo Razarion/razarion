@@ -18,7 +18,7 @@ public class PlanetCrudPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
     @Inject
-    private GameUiControlConfigPersistence gameUiControlConfigPersistence;
+    private GameUiContextCrudPersistence gameUiContextCrudPersistence;
 
     @Test
     public void loadStaticGameConfig() throws Exception {
@@ -28,7 +28,7 @@ public class PlanetCrudPersistenceTestRest extends IgnoreOldArquillianTest {
         expectedPlanetVisualConfig.setLightDirection(new Vertex(0, 0, -1));
         planetCrudPersistence.updatePlanetVisualConfig(PLANET_1_ID, expectedPlanetVisualConfig);
 
-        PlanetVisualConfig actualPlanetVisualConfig = gameUiControlConfigPersistence.loadWarm(Locale.ENGLISH, new UserContext().setLevelId(LEVEL_1_ID)).getPlanetVisualConfig();
+        PlanetVisualConfig actualPlanetVisualConfig = gameUiContextCrudPersistence.loadWarm(Locale.ENGLISH, new UserContext().setLevelId(LEVEL_1_ID)).getPlanetVisualConfig();
 
         ReflectionAssert.assertReflectionEquals(expectedPlanetVisualConfig, actualPlanetVisualConfig);
 

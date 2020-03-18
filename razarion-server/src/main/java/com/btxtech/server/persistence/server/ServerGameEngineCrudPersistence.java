@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.server;
 
-import com.btxtech.server.persistence.CrudPersistence;
+import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity_;
@@ -8,7 +8,7 @@ import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelEntity_;
-import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.user.SecurityCheck;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * 09.05.2017.
  */
 @Singleton
-public class ServerGameEngineCrudPersistence extends CrudPersistence<ServerGameEngineConfig, ServerGameEngineConfigEntity> {
+public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<ServerGameEngineConfig, ServerGameEngineConfigEntity> {
     private Logger logger = Logger.getLogger(ServerGameEngineCrudPersistence.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
@@ -61,7 +61,7 @@ public class ServerGameEngineCrudPersistence extends CrudPersistence<ServerGameE
     @Inject
     private ItemTypePersistence itemTypePersistence;
     @Inject
-    private LevelPersistence levelPersistence;
+    private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig>> serverLevelQuestCrudInstance;
     @Inject
@@ -92,7 +92,7 @@ public class ServerGameEngineCrudPersistence extends CrudPersistence<ServerGameE
     @Transactional
     public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
         SlavePlanetConfig slavePlanetConfig = new SlavePlanetConfig();
-        slavePlanetConfig.setStartRegion(serverGameEngineConfigEntity().findStartRegion(levelPersistence.getLevelNumber4Id(levelId)));
+        slavePlanetConfig.setStartRegion(serverGameEngineConfigEntity().findStartRegion(levelCrudPersistence.getLevelNumber4Id(levelId)));
         return slavePlanetConfig;
     }
 
@@ -185,7 +185,7 @@ public class ServerGameEngineCrudPersistence extends CrudPersistence<ServerGameE
     @SecurityCheck
     public void updateStartRegionConfig(StartRegionConfig startRegionConfig) {
         ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
-        serverGameEngineConfigEntity.updateStartRegionConfig(startRegionConfig, levelPersistence);
+        serverGameEngineConfigEntity.updateStartRegionConfig(startRegionConfig, levelCrudPersistence);
         entityManager.merge(serverGameEngineConfigEntity);
     }
 
@@ -272,7 +272,7 @@ public class ServerGameEngineCrudPersistence extends CrudPersistence<ServerGameE
         CriteriaQuery<LevelEntity> userSelect = userQuery.select(root.join(ServerLevelQuestEntity_.minimalLevel));
         userSelect.where(criteriaBuilder.equal(root.join(ServerLevelQuestEntity_.questConfigs).get(QuestConfigEntity_.id), questId));
         LevelEntity questLevelEntity = entityManager.createQuery(userSelect).getSingleResult();
-        LevelEntity userLevelEntity = levelPersistence.getEntity(levelId);
+        LevelEntity userLevelEntity = levelCrudPersistence.getEntity(levelId);
         if (userLevelEntity.getNumber() < questLevelEntity.getNumber()) {
             throw new IllegalArgumentException("The user is not allowed to activate a quest due to wrong level. questLevelEntity: " + questLevelEntity + " userLevelEntity: " + userLevelEntity);
         }
@@ -289,7 +289,7 @@ public class ServerGameEngineCrudPersistence extends CrudPersistence<ServerGameE
         crud.setEntityFactory(ServerLevelQuestEntity::new);
         crud.setEntityFiller((serverLevelQuestEntity, serverLevelQuestConfig) -> {
             serverLevelQuestEntity.setInternalName(serverLevelQuestConfig.getInternalName());
-            serverLevelQuestEntity.setMinimalLevel(levelPersistence.getEntity(serverLevelQuestConfig.getMinimalLevelId()));
+            serverLevelQuestEntity.setMinimalLevel(levelCrudPersistence.getEntity(serverLevelQuestConfig.getMinimalLevelId()));
         });
         return crud;
     }

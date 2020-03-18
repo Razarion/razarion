@@ -2,7 +2,6 @@ package com.btxtech.server.systemtests.framework;
 
 import com.btxtech.server.ServerTestHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,10 +21,6 @@ public abstract class AbstractSystemTest extends ServerTestHelper {
 
     protected <T> T setupRestAccess(Class<T> clazz) {
         return defaultRestConnection.proxy(clazz);
-    }
-
-    @Before
-    public void setupRestClient() {
     }
 
     public RestConnection getDefaultRestConnection() {
