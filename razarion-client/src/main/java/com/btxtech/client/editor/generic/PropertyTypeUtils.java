@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.editor.generic.propertyeditors.DoubleEditor;
+import com.btxtech.client.editor.generic.propertyeditors.EnumEditor;
 import com.btxtech.client.editor.generic.propertyeditors.GenericPropertyEditor;
 import com.btxtech.client.editor.generic.propertyeditors.GenericPropertyType;
 import com.btxtech.client.editor.generic.propertyeditors.IntegerEditor;
@@ -56,27 +57,33 @@ public final class PropertyTypeUtils {
         return READ_ONLY_PROPERTIES.stream().anyMatch(s -> s.equalsIgnoreCase(propertyName));
     }
 
-    public static Node setupGenericPropertyWidget(String propertyName, PropertyType propertyType, HasProperties hasProperties) {
+    public static Node createPropertyEditor(String propertyName, PropertyType propertyType, HasProperties hasProperties) {
         Class propertyClass = propertyType.getType();
-        GenericPropertyType<? extends GenericPropertyEditor> genericPropertyType = GENERIC_TYPES.stream()
-                .filter(type -> type.getPropertyClass().equals(propertyClass))
-                .findFirst()
-                .orElse(null);
-        if (genericPropertyType == null) {
-            return setupUnknownInformation(propertyClass);
-        }
-        if (genericPropertyType.getGenericPropertyEditorClass() == null) {
-            return setupUnknownInformation(propertyClass);
+        Class<? extends GenericPropertyEditor> propertyEditorClass;
+        if (propertyType.getType().isEnum()) {
+            propertyEditorClass = EnumEditor.class;
+        } else {
+            GenericPropertyType<? extends GenericPropertyEditor> genericPropertyType = GENERIC_TYPES.stream()
+                    .filter(type -> type.getPropertyClass().equals(propertyClass))
+                    .findFirst()
+                    .orElse(null);
+            if (genericPropertyType == null) {
+                return setupUnknownInformation(propertyClass, "genericPropertyType == null");
+            }
+            propertyEditorClass = genericPropertyType.getGenericPropertyEditorClass();
+            if (propertyEditorClass == null) {
+                return setupUnknownInformation(propertyClass, "genericPropertyType.getGenericPropertyEditorClass() == null");
+            }
         }
 
-        GenericPropertyEditor bean = IOC.getBeanManager().lookupBean(genericPropertyType.getGenericPropertyEditorClass()).getInstance();
-        bean.init(propertyName, hasProperties);
+        GenericPropertyEditor bean = IOC.getBeanManager().lookupBean(propertyEditorClass).getInstance();
+        bean.init(propertyName, propertyClass, hasProperties);
         return bean.getElement();
     }
 
-    public static Node setupUnknownInformation(Class propertyClass) {
+    public static Node setupUnknownInformation(Class propertyClass, String additionalInfo) {
         HTMLDivElement divElement = (HTMLDivElement) DomGlobal.document.createElement("div");
-        divElement.textContent = "No editor for <" + propertyClass + ">";
+        divElement.textContent = "No editor for <" + propertyClass + ">" + additionalInfo;
         return divElement;
     }
 }

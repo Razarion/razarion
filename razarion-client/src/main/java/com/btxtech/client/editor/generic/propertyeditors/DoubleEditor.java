@@ -23,7 +23,7 @@ public class DoubleEditor implements GenericPropertyEditor {
     }
 
     @Override
-    public void init(String propertyName, HasProperties hasProperties) {
+    public void init(String propertyName, Class propertyClass, HasProperties hasProperties) {
         Double value = (Double) hasProperties.get(propertyName);
         if(value != null) {
             htmlInputElement.value = value.toString();

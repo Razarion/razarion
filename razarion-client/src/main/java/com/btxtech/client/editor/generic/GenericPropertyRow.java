@@ -30,7 +30,7 @@ public class GenericPropertyRow implements IsElement {
     public void init(String propertyName, PropertyType propertyValue, HasProperties hasProperties) {
         this.propertyName.textContent = propertyName;
         Elemental2Utils.removeAllChildren(this.propertyValue);
-        this.propertyValue.appendChild(PropertyTypeUtils.setupGenericPropertyWidget(propertyName, propertyValue, hasProperties));
+        this.propertyValue.appendChild(PropertyTypeUtils.createPropertyEditor(propertyName, propertyValue, hasProperties));
     }
 
     @Override

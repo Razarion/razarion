@@ -50,7 +50,7 @@ public class RectangleEditor implements GenericPropertyEditor {
     private HasProperties hasProperties;
 
     @Override
-    public void init(String propertyName, HasProperties hasProperties) {
+    public void init(String propertyName, Class propertyClass, HasProperties hasProperties) {
         this.propertyName = propertyName;
         this.hasProperties = hasProperties;
         Rectangle rectangle = (Rectangle) hasProperties.get(propertyName);

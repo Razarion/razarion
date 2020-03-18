@@ -23,7 +23,7 @@ public class IntegerEditor implements GenericPropertyEditor {
     }
 
     @Override
-    public void init(String propertyName, HasProperties hasProperties) {
+    public void init(String propertyName, Class propertyClass, HasProperties hasProperties) {
         Integer value = (Integer) hasProperties.get(propertyName);
         if (value != null) {
             htmlInputElement.value = value.toString();

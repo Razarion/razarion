@@ -22,7 +22,7 @@ public class StringEditor implements GenericPropertyEditor {
     }
 
     @Override
-    public void init(String propertyName, HasProperties hasProperties) {
+    public void init(String propertyName, Class propertyClass, HasProperties hasProperties) {
         String value = (String) hasProperties.get(propertyName);
         if (value != null) {
             htmlInputElement.value = value;
