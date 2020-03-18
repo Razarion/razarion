@@ -26,6 +26,7 @@ import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
 import com.btxtech.client.editor.water.WaterSidebar;
+import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
@@ -136,6 +137,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button i18nPanelButton;
+    @Inject
+    @DataField
+    private Button gameUiContextButton;
     private ModalDialogPanel<Void> modalDialogPanel;
 
     @EventHandler("alarmServiceButton")
@@ -284,6 +288,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("i18nPanelButton")
     private void i18nPanelButtonClicked(ClickEvent event) {
         editorService.openEditor(I18nPanel.class, "???Unknown");
+    }
+
+    @EventHandler("gameUiContextButton")
+    private void gameUiContextButtonClicked(ClickEvent event) {
+        editorService.openGenericCrudEditor(GameUiContextEditorController.class, "Game Ui Context");
     }
 
     @Override
