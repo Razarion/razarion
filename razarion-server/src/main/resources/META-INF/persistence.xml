@@ -8,7 +8,13 @@
         <properties>
             <!-- Properties for Hibernate -->
             <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <!--
+            Log passed SQL parameters: Wildfly admin
+              - Categories: org.hibernate.type=TRACE
+              - Handlers: CONSOLE Level=ALL
+            -->
             <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
         </properties>
     </persistence-unit>
 </persistence>

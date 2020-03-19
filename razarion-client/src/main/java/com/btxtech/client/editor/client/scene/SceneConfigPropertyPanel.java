@@ -1,7 +1,6 @@
 package com.btxtech.client.editor.client.scene;
 
 import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
-import com.btxtech.client.editor.widgets.bot.BotConfigPropertyPanel;
 import com.btxtech.client.editor.widgets.childtable.ChildTable;
 import com.btxtech.client.editor.widgets.marker.Rectangle2DWidget;
 import com.btxtech.client.editor.widgets.quest.QuestPropertyPanel;
@@ -22,14 +21,11 @@ import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.rest.SceneEditorProvider;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.Input;
@@ -53,12 +49,11 @@ import java.util.List;
  * on 12.08.2017.
  */
 @Templated("SceneConfigPropertyPanel.html#propertyPanel")
+@Deprecated
 public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     // private Logger logger = Logger.getLogger(SceneConfigPropertyPanel.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
-    @Inject
-    private Caller<SceneEditorProvider> provider;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -212,32 +207,32 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
         resourceItemTypePositions.addComponentCreationHandler(resourceItemPositionRow -> resourceItemPositionRow.setSceneConfigPropertyPanel(SceneConfigPropertyPanel.this));
         boxItemPositions.addComponentCreationHandler(boxItemPositionRow -> boxItemPositionRow.setSceneConfigPropertyPanel(SceneConfigPropertyPanel.this));
         int gameUiControlConfigId = gameUiControl.getColdGameUiContext().getWarmGameUiContext().getGameUiControlConfigId();
-        provider.call(new RemoteCallback<SceneConfig>() {
-            @Override
-            public void callback(SceneConfig sceneConfig) {
-                dataBinder.setModel(sceneConfig);
-                startPointPlacerConfig.init(sceneConfig.getStartPointPlacerConfig(), sceneConfig::setStartPointPlacerConfig);
-                gameTipConfigPanel.init(sceneConfig.getGameTipConfig(), sceneConfig::setGameTipConfig);
-                handleQuestConfigVisibility();
-                botConfigPanel.init(sceneConfig.getBotConfigs(), sceneConfig::setBotConfigs, BotConfig::new, BotConfigPropertyPanel.class);
-                botMoveCommandConfigs.init(sceneConfig.getBotMoveCommandConfigs(), sceneConfig::setBotMoveCommandConfigs, BotMoveCommandConfig::new, BotMoveCommandConfigPropertyPanel.class);
-                botHarvestCommandConfigs.init(sceneConfig.getBotHarvestCommandConfigs(), sceneConfig::setBotHarvestCommandConfigs, BotHarvestCommandConfig::new, BotHarvestCommandConfigPropertyPanel.class);
-                botAttackCommandConfigs.init(sceneConfig.getBotAttackCommandConfigs(), sceneConfig::setBotAttackCommandConfigs, BotAttackCommandConfig::new, BotAttackCommandConfigPropertyPanel.class);
-                botKillOtherBotCommandConfigs.init(sceneConfig.getBotKillOtherBotCommandConfigs(), sceneConfig::setBotKillOtherBotCommandConfigs, BotKillOtherBotCommandConfig::new, BotKillOtherBotCommandConfigPropertyPanel.class);
-                botKillHumanCommandConfigs.init(sceneConfig.getBotKillHumanCommandConfigs(), sceneConfig::setBotKillHumanCommandConfigs, BotKillHumanCommandConfig::new, BotKillHumanCommandConfigPropertyPanel.class);
-                botRemoveOwnItemCommandConfigs.init(sceneConfig.getBotRemoveOwnItemCommandConfigs(), sceneConfig::setBotRemoveOwnItemCommandConfigs, BotRemoveOwnItemCommandConfig::new, BotRemoveOwnItemCommandConfigPropertyPanel.class);
-                killBotCommandConfigs.init(sceneConfig.getKillBotCommandConfigs(), sceneConfig::setKillBotCommandConfigs, KillBotCommandConfig::new, KillBotCommandConfigPropertyPanel.class);
-
-            }
-        }, exceptionHandler.restErrorHandler("SceneEditorProvider.readSceneConfig failed: ")).readSceneConfig(gameUiControlConfigId, objectNameId.getId());
+//   TODO     provider.call(new RemoteCallback<SceneConfig>() {
+//            @Override
+//            public void callback(SceneConfig sceneConfig) {
+//                dataBinder.setModel(sceneConfig);
+//                startPointPlacerConfig.init(sceneConfig.getStartPointPlacerConfig(), sceneConfig::setStartPointPlacerConfig);
+//                gameTipConfigPanel.init(sceneConfig.getGameTipConfig(), sceneConfig::setGameTipConfig);
+//                handleQuestConfigVisibility();
+//                botConfigPanel.init(sceneConfig.getBotConfigs(), sceneConfig::setBotConfigs, BotConfig::new, BotConfigPropertyPanel.class);
+//                botMoveCommandConfigs.init(sceneConfig.getBotMoveCommandConfigs(), sceneConfig::setBotMoveCommandConfigs, BotMoveCommandConfig::new, BotMoveCommandConfigPropertyPanel.class);
+//                botHarvestCommandConfigs.init(sceneConfig.getBotHarvestCommandConfigs(), sceneConfig::setBotHarvestCommandConfigs, BotHarvestCommandConfig::new, BotHarvestCommandConfigPropertyPanel.class);
+//                botAttackCommandConfigs.init(sceneConfig.getBotAttackCommandConfigs(), sceneConfig::setBotAttackCommandConfigs, BotAttackCommandConfig::new, BotAttackCommandConfigPropertyPanel.class);
+//                botKillOtherBotCommandConfigs.init(sceneConfig.getBotKillOtherBotCommandConfigs(), sceneConfig::setBotKillOtherBotCommandConfigs, BotKillOtherBotCommandConfig::new, BotKillOtherBotCommandConfigPropertyPanel.class);
+//                botKillHumanCommandConfigs.init(sceneConfig.getBotKillHumanCommandConfigs(), sceneConfig::setBotKillHumanCommandConfigs, BotKillHumanCommandConfig::new, BotKillHumanCommandConfigPropertyPanel.class);
+//                botRemoveOwnItemCommandConfigs.init(sceneConfig.getBotRemoveOwnItemCommandConfigs(), sceneConfig::setBotRemoveOwnItemCommandConfigs, BotRemoveOwnItemCommandConfig::new, BotRemoveOwnItemCommandConfigPropertyPanel.class);
+//                killBotCommandConfigs.init(sceneConfig.getKillBotCommandConfigs(), sceneConfig::setKillBotCommandConfigs, KillBotCommandConfig::new, KillBotCommandConfigPropertyPanel.class);
+//
+//            }
+//        }, exceptionHandler.restErrorHandler("SceneEditorProvider.readSceneConfig failed: ")).readSceneConfig(gameUiControlConfigId, objectNameId.getId());
         registerSaveButton(this::save);
         enableSaveButton(true);
     }
 
     private void save() {
-        int gameUiControlConfigId = gameUiControl.getColdGameUiContext().getWarmGameUiContext().getGameUiControlConfigId();
-        provider.call(response -> {
-        }, exceptionHandler.restErrorHandler("SceneEditorProvider.updateSceneConfig failed: ")).updateSceneConfig(gameUiControlConfigId, dataBinder.getModel());
+//  TODO      int gameUiControlConfigId = gameUiControl.getColdGameUiContext().getWarmGameUiContext().getGameUiControlConfigId();
+//        provider.call(response -> {
+//        }, exceptionHandler.restErrorHandler("SceneEditorProvider.updateSceneConfig failed: ")).updateSceneConfig(gameUiControlConfigId, dataBinder.getModel());
     }
 
     @Override

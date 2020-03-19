@@ -1,7 +1,7 @@
 package com.btxtech.server;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
-import com.btxtech.server.persistence.GameUiControlContextEntity;
+import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
@@ -164,9 +164,9 @@ public class ServerTestHelper {
     // Planet
     public static int PLANET_1_ID;
     public static int PLANET_2_ID;
-    // GameUiControlContextEntity
-    public static int GAME_UI_CONTROL_CONFIG_1_ID;
-    public static int GAME_UI_CONTROL_CONFIG_2_ID;
+    // GameUiContextEntity
+    public static int GAME_UI_CONTEXT_CONFIG_1_ID;
+    public static int GAME_UI_CONTEXT_CONFIG_2_ID;
     // Inventory
     public static int INVENTORY_ITEM_1_ID;
     // ServerGameEngineConfigEntity
@@ -494,23 +494,23 @@ public class ServerTestHelper {
         setupLevels();
         setupPlanets();
         runInTransaction(entityManager -> {
-            GameUiControlContextEntity gameUiControlConfigEntity1 = new GameUiControlContextEntity();
+            GameUiContextEntity gameUiControlConfigEntity1 = new GameUiContextEntity();
             gameUiControlConfigEntity1.fromConfig(new GameUiContextConfig().gameEngineMode(GameEngineMode.MASTER),
                     entityManager.find(LevelEntity.class, LEVEL_1_ID),
                     entityManager.find(PlanetEntity.class, PLANET_1_ID));
             entityManager.persist(gameUiControlConfigEntity1);
-            GAME_UI_CONTROL_CONFIG_1_ID = gameUiControlConfigEntity1.getId();
+            GAME_UI_CONTEXT_CONFIG_1_ID = gameUiControlConfigEntity1.getId();
 
-            GameUiControlContextEntity gameUiControlConfigEntity2 = new GameUiControlContextEntity();
+            GameUiContextEntity gameUiControlConfigEntity2 = new GameUiContextEntity();
             gameUiControlConfigEntity2.fromConfig(new GameUiContextConfig().gameEngineMode(GameEngineMode.SLAVE),
                     entityManager.find(LevelEntity.class, LEVEL_3_ID),
                     entityManager.find(PlanetEntity.class, PLANET_2_ID));
             entityManager.persist(gameUiControlConfigEntity2);
-            GAME_UI_CONTROL_CONFIG_2_ID = gameUiControlConfigEntity2.getId();
+            GAME_UI_CONTEXT_CONFIG_2_ID = gameUiControlConfigEntity2.getId();
         });
 
         List<CleanupAfterTest> block = new ArrayList<>();
-        block.add(new CleanupAfterTest().entity(GameUiControlContextEntity.class));
+        block.add(new CleanupAfterTest().entity(GameUiContextEntity.class));
         cleanupAfterTests.add(block);
     }
 
@@ -647,7 +647,6 @@ public class ServerTestHelper {
         cleanTableNative("SERVER_QUEST");
         cleanTable(QuestConfigEntity.class);
         cleanTable(ConditionConfigEntity.class);
-        cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
         cleanTableNative("QUEST_COMPARISON_BOT");
         cleanTable(ComparisonConfigEntity.class);
         cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
@@ -694,11 +693,19 @@ public class ServerTestHelper {
     }
 
     protected void cleanTable(Class entityClass) {
-        runInTransaction(em -> em.createQuery("DELETE FROM " + entityClass.getName()).executeUpdate());
+        try {
+            runInTransaction(em -> em.createQuery("DELETE FROM " + entityClass.getName()).executeUpdate());
+        } catch (Throwable t) {
+            throw new RuntimeException("Can not clean table. entityClass: " + entityClass, t);
+        }
     }
 
     protected void cleanTableNative(String tableName) {
-        runInTransaction(em -> em.createNativeQuery("DELETE FROM " + tableName).executeUpdate());
+        try {
+            runInTransaction(em -> em.createNativeQuery("DELETE FROM " + tableName).executeUpdate());
+        } catch (Throwable t) {
+            throw new RuntimeException("Can not clean table. tableName: " + tableName, t);
+        }
     }
 
     protected void printSqlStatement(String sql) {

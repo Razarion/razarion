@@ -29,8 +29,8 @@ import java.util.Locale;
  * 06.07.2016.
  */
 @Entity
-@Table(name = "GAME_UI_CONTROL_CONTEXT")
-public class GameUiControlContextEntity {
+@Table(name = "GAME_UI_CONTEXT")
+public class GameUiContextEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -38,7 +38,7 @@ public class GameUiControlContextEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private PlanetEntity planetEntity;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "gameUiControlConfigEntityId", nullable = false)
+    @JoinColumn(name = "gameUiContextEntityId", nullable = false)
     @OrderColumn(name = "orderColumn")
     private List<SceneEntity> scenes;
     @OneToOne(fetch = FetchType.LAZY)
@@ -55,7 +55,9 @@ public class GameUiControlContextEntity {
         GameUiContextConfig gameUiContextConfig = new GameUiContextConfig()
                 .id(id)
                 .internalName(internalName)
-                .gameEngineMode(gameEngineMode);
+                .gameEngineMode(gameEngineMode)
+                .scenes(setupScenes(Locale.US))
+                .detailedTracking(detailedTracking);
         if (minimalLevel != null) {
             gameUiContextConfig.setMinimalLevelId(minimalLevel.getId());
         }
@@ -70,6 +72,7 @@ public class GameUiControlContextEntity {
         gameEngineMode = config.getGameEngineMode();
         this.minimalLevel = minimalLevel;
         this.planetEntity = planetEntity;
+        detailedTracking = config.isDetailedTracking();
     }
 
     public WarmGameUiContext toGameWarmGameUiControlConfig(Locale locale) {
@@ -114,7 +117,7 @@ public class GameUiControlContextEntity {
             return false;
         }
 
-        GameUiControlContextEntity that = (GameUiControlContextEntity) o;
+        GameUiContextEntity that = (GameUiContextEntity) o;
         return id != null && id.equals(that.id);
     }
 

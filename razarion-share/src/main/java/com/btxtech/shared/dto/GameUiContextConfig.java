@@ -2,12 +2,16 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 
+import java.util.List;
+
 public class GameUiContextConfig implements Config {
     private int id;
     private String internalName;
     private Integer minimalLevelId;
     private Integer planetId;
     private GameEngineMode gameEngineMode;
+    private boolean detailedTracking;
+    private List<SceneConfig> scenes;
 
     @Override
     public int getId() {
@@ -48,6 +52,22 @@ public class GameUiContextConfig implements Config {
         this.gameEngineMode = gameEngineMode;
     }
 
+    public boolean isDetailedTracking() {
+        return detailedTracking;
+    }
+
+    public void setDetailedTracking(boolean detailedTracking) {
+        this.detailedTracking = detailedTracking;
+    }
+
+    public List<SceneConfig> getScenes() {
+        return scenes;
+    }
+
+    public void setScenes(List<SceneConfig> scenes) {
+        this.scenes = scenes;
+    }
+
     public GameUiContextConfig id(int id) {
         this.id = id;
         return this;
@@ -70,6 +90,16 @@ public class GameUiContextConfig implements Config {
 
     public GameUiContextConfig gameEngineMode(GameEngineMode gameEngineMode) {
         setGameEngineMode(gameEngineMode);
+        return this;
+    }
+
+    public GameUiContextConfig detailedTracking(boolean detailedTracking) {
+        setDetailedTracking(detailedTracking);
+        return this;
+    }
+
+    public GameUiContextConfig scenes(List<SceneConfig> scenes) {
+        setScenes(scenes);
         return this;
     }
 }

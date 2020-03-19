@@ -17,8 +17,6 @@ services:
       MYSQL_USER: raz_user
       MYSQL_PASSWORD: 1234
       MYSQL_ROOT_PASSWORD: 1234
-    volumes:
-      - ./stage/db:/docker-entrypoint-initdb.d
     ports:
       - "32788:3306"
     command: [

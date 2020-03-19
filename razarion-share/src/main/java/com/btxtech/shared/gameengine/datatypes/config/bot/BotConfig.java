@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * Time: 13:36:14
  */
 public class BotConfig implements ObjectNameIdProvider {
-    private int id;
+    private Integer id;
     private String internalName;
     private Integer auxiliaryId;
     private boolean npc;
@@ -97,7 +97,7 @@ public class BotConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

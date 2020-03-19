@@ -8,7 +8,7 @@ import com.btxtech.shared.dto.ObjectNameIdProvider;
  * 24.10.2016.
  */
 public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements ObjectNameIdProvider {
-    private int id;
+    private Integer id;
     private String internalName;
     private String title;
     private String description;
@@ -18,7 +18,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
     private String passedMessage;
     private boolean hidePassedDialog;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

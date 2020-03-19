@@ -2,20 +2,45 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.gameengine.ServerUnlockService;
+import com.btxtech.server.persistence.bot.BotConfigEntity;
+import com.btxtech.server.persistence.inventory.InventoryPersistence;
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity_;
+import com.btxtech.server.persistence.scene.BotAttackCommandEntity;
+import com.btxtech.server.persistence.scene.BotHarvestCommandEntity;
+import com.btxtech.server.persistence.scene.BotKillBotCommandEntity;
+import com.btxtech.server.persistence.scene.BotKillHumanCommandEntity;
+import com.btxtech.server.persistence.scene.BotKillOtherBotCommandEntity;
+import com.btxtech.server.persistence.scene.BotMoveCommandEntity;
+import com.btxtech.server.persistence.scene.BotRemoveOwnItemCommandEntity;
+import com.btxtech.server.persistence.scene.BoxItemPositionEntity;
+import com.btxtech.server.persistence.scene.GameTipConfigEntity;
+import com.btxtech.server.persistence.scene.ResourceItemPositionEntity;
+import com.btxtech.server.persistence.scene.SceneEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.AudioConfig;
+import com.btxtech.shared.dto.BotAttackCommandConfig;
+import com.btxtech.shared.dto.BotHarvestCommandConfig;
+import com.btxtech.shared.dto.BotKillHumanCommandConfig;
+import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
+import com.btxtech.shared.dto.BotMoveCommandConfig;
+import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
+import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.InGameQuestVisualConfig;
+import com.btxtech.shared.dto.KillBotCommandConfig;
+import com.btxtech.shared.dto.ResourceItemPosition;
+import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -31,6 +56,8 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.NO_GAME_UI_CONTROL_CONFIG_ENTITY_FOR_LEVEL_ID;
@@ -40,7 +67,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.NO_GAME_UI_CONTROL_CONF
  * 03.08.2016.
  */
 @Singleton
-public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUiContextConfig, GameUiControlContextEntity> {
+public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUiContextConfig, GameUiContextEntity> {
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -65,19 +92,45 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     private BotService botService;
     @Inject
     private AlarmService alarmService;
+    @Inject
+    private ItemTypePersistence itemTypePersistence;
+    @Inject
+    private InventoryPersistence inventoryPersistence;
+    @Inject
+    private ImagePersistence imagePersistence;
 
     public GameUiContextCrudPersistence() {
-        super(GameUiControlContextEntity.class, GameUiControlContextEntity_.id, GameUiControlContextEntity_.internalName);
+        super(GameUiContextEntity.class, GameUiContextEntity_.id, GameUiContextEntity_.internalName);
     }
 
     @Override
-    protected GameUiContextConfig toConfig(GameUiControlContextEntity entity) {
+    protected GameUiContextConfig toConfig(GameUiContextEntity entity) {
         return entity.toConfig();
     }
 
     @Override
-    protected void fromConfig(GameUiContextConfig config, GameUiControlContextEntity entity) {
-        entity.fromConfig(config, levelCrudPersistence.getEntity(config.getMinimalLevelId()), planetCrudPersistence.getEntity(config.getPlanetId()));
+    protected void fromConfig(GameUiContextConfig config, GameUiContextEntity entity) {
+        entity.fromConfig(config,
+                levelCrudPersistence.getEntity(config.getMinimalLevelId()),
+                planetCrudPersistence.getEntity(config.getPlanetId()));
+        createEntityList(config.getScenes(), entity.getScenes());
+    }
+
+    private void createEntityList(List<SceneConfig> scenes, List<SceneEntity> entities) {
+        List<SceneEntity> originals = new ArrayList<>(entities);
+        entities.clear();
+        scenes.forEach(sceneConfig -> {
+            SceneEntity sceneEntity = getOrCreate(sceneConfig, originals);
+            fromConfig(sceneEntity, sceneConfig, Locale.US);
+            entities.add(sceneEntity);
+        });
+    }
+
+    private SceneEntity getOrCreate(SceneConfig sceneConfig, List<SceneEntity> entities) {
+        return entities.stream()
+                .filter(sceneEntity -> sceneEntity.getId().equals(sceneConfig.getId()))
+                .findFirst()
+                .orElse(new SceneEntity());
     }
 
     @Transactional
@@ -109,11 +162,11 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
         if (userContext.getLevelId() == null) {
             return null;
         }
-        GameUiControlContextEntity gameUiControlContextEntity = load4Level(userContext.getLevelId());
-        if (gameUiControlContextEntity == null) {
+        GameUiContextEntity gameUiContextEntity = load4Level(userContext.getLevelId());
+        if (gameUiContextEntity == null) {
             return null;
         }
-        WarmGameUiContext warmGameUiContext = gameUiControlContextEntity.toGameWarmGameUiControlConfig(locale);
+        WarmGameUiContext warmGameUiContext = gameUiContextEntity.toGameWarmGameUiControlConfig(locale);
         if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
             warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
             warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getHumanPlayerId()));
@@ -122,20 +175,149 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
         return warmGameUiContext;
     }
 
-    public GameUiControlContextEntity load4Level(int levelId) {
+    public GameUiContextEntity load4Level(int levelId) {
         int levelNumber = levelCrudPersistence.getLevelNumber4Id(levelId);
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<GameUiControlContextEntity> query = criteriaBuilder.createQuery(GameUiControlContextEntity.class);
-        Root<GameUiControlContextEntity> root = query.from(GameUiControlContextEntity.class);
-        query.where(criteriaBuilder.lessThanOrEqualTo(root.join(GameUiControlContextEntity_.minimalLevel).get(LevelEntity_.number), levelNumber));
-        CriteriaQuery<GameUiControlContextEntity> userSelect = query.select(root);
-        query.orderBy(criteriaBuilder.desc(root.join(GameUiControlContextEntity_.minimalLevel).get(LevelEntity_.number)));
-        GameUiControlContextEntity gameUiControlContextEntity = entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getResultList().stream().findFirst().orElse(null);
-        if (gameUiControlContextEntity == null) {
+        CriteriaQuery<GameUiContextEntity> query = criteriaBuilder.createQuery(GameUiContextEntity.class);
+        Root<GameUiContextEntity> root = query.from(GameUiContextEntity.class);
+        query.where(criteriaBuilder.lessThanOrEqualTo(root.join(GameUiContextEntity_.minimalLevel).get(LevelEntity_.number), levelNumber));
+        CriteriaQuery<GameUiContextEntity> userSelect = query.select(root);
+        query.orderBy(criteriaBuilder.desc(root.join(GameUiContextEntity_.minimalLevel).get(LevelEntity_.number)));
+        GameUiContextEntity gameUiContextEntity = entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getResultList().stream().findFirst().orElse(null);
+        if (gameUiContextEntity == null) {
             alarmService.riseAlarm(NO_GAME_UI_CONTROL_CONFIG_ENTITY_FOR_LEVEL_ID, levelId);
         }
-        return gameUiControlContextEntity;
+        return gameUiContextEntity;
+    }
+
+    private void fromConfig(SceneEntity sceneEntity, SceneConfig sceneConfig, Locale locale) {
+        sceneEntity.fromSceneConfig(itemTypePersistence, sceneConfig, locale);
+        sceneEntity.clearBotConfigEntities();
+        if (sceneConfig.getBotConfigs() != null) {
+            for (BotConfig botConfig : sceneConfig.getBotConfigs()) {
+                BotConfigEntity botConfigEntity = new BotConfigEntity();
+                botConfigEntity.fromBotConfig(itemTypePersistence, botConfig);
+                sceneEntity.addBotConfigEntity(botConfigEntity);
+            }
+        }
+        sceneEntity.clearBotAttackCommandEntities();
+        if (sceneConfig.getBotAttackCommandConfigs() != null) {
+            for (BotAttackCommandConfig botAttackCommandConfig : sceneConfig.getBotAttackCommandConfigs()) {
+                BotAttackCommandEntity botAttackCommandEntity = new BotAttackCommandEntity();
+                botAttackCommandEntity.setBotAuxiliaryIdId(botAttackCommandConfig.getBotAuxiliaryId());
+                botAttackCommandEntity.setActorItemType(itemTypePersistence.readBaseItemTypeEntity(botAttackCommandConfig.getActorItemTypeId()));
+                botAttackCommandEntity.setTargetItemType(itemTypePersistence.readBaseItemTypeEntity(botAttackCommandConfig.getTargetItemTypeId()));
+                if (botAttackCommandConfig.getTargetSelection() != null) {
+                    PlaceConfigEntity BotConfigEntity = new PlaceConfigEntity();
+                    BotConfigEntity.fromPlaceConfig(botAttackCommandConfig.getTargetSelection());
+                    botAttackCommandEntity.setTargetSelection(BotConfigEntity);
+                }
+                sceneEntity.addBotAttackCommandEntity(botAttackCommandEntity);
+            }
+        }
+        sceneEntity.clearBotMoveCommandEntities();
+        if (sceneConfig.getBotMoveCommandConfigs() != null) {
+            for (BotMoveCommandConfig botMoveCommandConfig : sceneConfig.getBotMoveCommandConfigs()) {
+                BotMoveCommandEntity botMoveCommandEntity = new BotMoveCommandEntity();
+                botMoveCommandEntity.setBotAuxiliaryIdId(botMoveCommandConfig.getBotAuxiliaryId());
+                botMoveCommandEntity.setBaseItemType(itemTypePersistence.readBaseItemTypeEntity(botMoveCommandConfig.getBaseItemTypeId()));
+                botMoveCommandEntity.setTargetPosition(botMoveCommandConfig.getTargetPosition());
+                sceneEntity.addBotMoveCommandEntity(botMoveCommandEntity);
+            }
+        }
+        sceneEntity.clearBotHarvestCommandEntities();
+        if (sceneConfig.getBotHarvestCommandConfigs() != null) {
+            for (BotHarvestCommandConfig botHarvestCommandConfig : sceneConfig.getBotHarvestCommandConfigs()) {
+                BotHarvestCommandEntity botHarvestCommandEntity = new BotHarvestCommandEntity();
+                botHarvestCommandEntity.setBotAuxiliaryIdId(botHarvestCommandConfig.getBotAuxiliaryId());
+                botHarvestCommandEntity.setHarvesterItemType(itemTypePersistence.readBaseItemTypeEntity(botHarvestCommandConfig.getHarvesterItemTypeId()));
+                botHarvestCommandEntity.setResourceItemType(itemTypePersistence.readResourceItemTypeEntity(botHarvestCommandConfig.getResourceItemTypeId()));
+                if (botHarvestCommandConfig.getResourceSelection() != null) {
+                    PlaceConfigEntity placeConfigEntity = new PlaceConfigEntity();
+                    placeConfigEntity.fromPlaceConfig(botHarvestCommandConfig.getResourceSelection());
+                    botHarvestCommandEntity.setResourceSelection(placeConfigEntity);
+                }
+                sceneEntity.addBotHarvestCommandEntity(botHarvestCommandEntity);
+            }
+        }
+        sceneEntity.clearBotKillOtherBotCommandEntities();
+        if (sceneConfig.getBotKillOtherBotCommandConfigs() != null) {
+            for (BotKillOtherBotCommandConfig botKillOtherBotCommandConfig : sceneConfig.getBotKillOtherBotCommandConfigs()) {
+                BotKillOtherBotCommandEntity botKillOtherBotCommandEntity = new BotKillOtherBotCommandEntity();
+                botKillOtherBotCommandEntity.fromBotKillOtherBotCommandConfig(botKillOtherBotCommandConfig);
+                if (botKillOtherBotCommandConfig.getAttackerBaseItemTypeId() != null) {
+                    botKillOtherBotCommandEntity.setAttackerBaseItemType(itemTypePersistence.readBaseItemTypeEntity(botKillOtherBotCommandConfig.getAttackerBaseItemTypeId()));
+                }
+                sceneEntity.addBotKillOtherBotCommandEntity(botKillOtherBotCommandEntity);
+            }
+        }
+        sceneEntity.clearBotKillHumanCommandEntities();
+        if (sceneConfig.getBotKillHumanCommandConfigs() != null) {
+            for (BotKillHumanCommandConfig botKillHumanCommandConfig : sceneConfig.getBotKillHumanCommandConfigs()) {
+                BotKillHumanCommandEntity botKillHumanCommandEntity = new BotKillHumanCommandEntity();
+                botKillHumanCommandEntity.fromBotKillHumanCommandConfig(botKillHumanCommandConfig);
+                if (botKillHumanCommandConfig.getAttackerBaseItemTypeId() != null) {
+                    botKillHumanCommandEntity.setAttackerBaseItemType(itemTypePersistence.readBaseItemTypeEntity(botKillHumanCommandConfig.getAttackerBaseItemTypeId()));
+                }
+                sceneEntity.addBotKillHumanCommandEntity(botKillHumanCommandEntity);
+            }
+        }
+        sceneEntity.clearBotRemoveOwnItemCommandEntities();
+        if (sceneConfig.getBotRemoveOwnItemCommandConfigs() != null) {
+            for (BotRemoveOwnItemCommandConfig botRemoveOwnItemCommandConfig : sceneConfig.getBotRemoveOwnItemCommandConfigs()) {
+                BotRemoveOwnItemCommandEntity botRemoveOwnItemCommandEntity = new BotRemoveOwnItemCommandEntity();
+                botRemoveOwnItemCommandEntity.setBotAuxiliaryIdId(botRemoveOwnItemCommandConfig.getBotAuxiliaryId());
+                botRemoveOwnItemCommandEntity.setBaseItemType2Remove(itemTypePersistence.readBaseItemTypeEntity(botRemoveOwnItemCommandConfig.getBaseItemType2RemoveId()));
+                sceneEntity.addBotRemoveOwnItemCommandEntity(botRemoveOwnItemCommandEntity);
+            }
+        }
+        sceneEntity.clearKillBotCommandEntities();
+        if (sceneConfig.getKillBotCommandConfigs() != null) {
+            for (KillBotCommandConfig killBotCommandConfig : sceneConfig.getKillBotCommandConfigs()) {
+                BotKillBotCommandEntity botKillBotCommandEntity = new BotKillBotCommandEntity();
+                botKillBotCommandEntity.fromKillBotCommandConfig(killBotCommandConfig);
+                sceneEntity.addKillBotCommandEntity(botKillBotCommandEntity);
+            }
+        }
+        sceneEntity.clearResourceItemPositionEntities();
+        if (sceneConfig.getResourceItemTypePositions() != null) {
+            for (ResourceItemPosition resourceItemPosition : sceneConfig.getResourceItemTypePositions()) {
+                ResourceItemPositionEntity resourceItemPositionEntity = new ResourceItemPositionEntity();
+                resourceItemPositionEntity.setResourceItemType(itemTypePersistence.readResourceItemTypeEntity(resourceItemPosition.getResourceItemTypeId()));
+                resourceItemPositionEntity.setPosition(resourceItemPosition.getPosition());
+                resourceItemPositionEntity.setRotationZ(resourceItemPosition.getRotationZ());
+                sceneEntity.addResourceItemPositionEntity(resourceItemPositionEntity);
+            }
+        }
+        sceneEntity.clearBoxItemPositionEntities();
+        if (sceneConfig.getBoxItemPositions() != null) {
+            for (BoxItemPosition boxItemPosition : sceneConfig.getBoxItemPositions()) {
+                BoxItemPositionEntity resourceItemPositionEntity = new BoxItemPositionEntity();
+                resourceItemPositionEntity.setBoxItemType(itemTypePersistence.readBoxItemTypeEntity(boxItemPosition.getBoxItemTypeId()));
+                resourceItemPositionEntity.setPosition(boxItemPosition.getPosition());
+                resourceItemPositionEntity.setRotationZ(boxItemPosition.getRotationZ());
+                sceneEntity.addBoxItemPositionEntity(resourceItemPositionEntity);
+            }
+        }
+        if (sceneConfig.getGameTipConfig() != null) {
+            GameTipConfigEntity gameTipConfigEntity = new GameTipConfigEntity();
+            gameTipConfigEntity.setTip(sceneConfig.getGameTipConfig().getTip());
+            gameTipConfigEntity.setActor(itemTypePersistence.readBaseItemTypeEntity(sceneConfig.getGameTipConfig().getActor()));
+            gameTipConfigEntity.setToCreatedItemType(itemTypePersistence.readBaseItemTypeEntity(sceneConfig.getGameTipConfig().getToCreatedItemTypeId()));
+            gameTipConfigEntity.setResourceItemTypeEntity(itemTypePersistence.readResourceItemTypeEntity(sceneConfig.getGameTipConfig().getResourceItemTypeId()));
+            gameTipConfigEntity.setBoxItemTypeEntity(itemTypePersistence.readBoxItemTypeEntity(sceneConfig.getGameTipConfig().getBoxItemTypeId()));
+            gameTipConfigEntity.setInventoryItemEntity(inventoryPersistence.readInventoryItemEntity(sceneConfig.getGameTipConfig().getInventoryItemId()));
+            gameTipConfigEntity.setTerrainPositionHint(sceneConfig.getGameTipConfig().getTerrainPositionHint());
+            if (sceneConfig.getGameTipConfig().getPlaceConfig() != null) {
+                PlaceConfigEntity placeConfigEntity = new PlaceConfigEntity();
+                placeConfigEntity.fromPlaceConfig(sceneConfig.getGameTipConfig().getPlaceConfig());
+                gameTipConfigEntity.setPlaceConfig(placeConfigEntity);
+            }
+            gameTipConfigEntity.setScrollMapImage(imagePersistence.getImageLibraryEntity(sceneConfig.getGameTipConfig().getScrollMapImageId()));
+            sceneEntity.setGameTipConfigEntity(gameTipConfigEntity);
+        }
+
     }
 
     private GameTipVisualConfig setupGameTipVisualConfig() {
