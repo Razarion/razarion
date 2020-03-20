@@ -3,7 +3,6 @@ package com.btxtech.shared.system.alarm;
 import java.util.Date;
 
 public class Alarm {
-
     public enum Type {
         NO_LEVELS,
         USER_HAS_NO_LEVEL,
@@ -11,7 +10,8 @@ public class Alarm {
         NO_PLANETS,
         FAIL_STARTING_PLANET,
         NO_GAME_UI_CONTROL_CONFIG_ENTITY_FOR_LEVEL_ID,
-        NO_SCENES
+        NO_SCENES,
+        FAIL_START_GAME_ENGINE
     }
     private Type type;
     private Date date;
