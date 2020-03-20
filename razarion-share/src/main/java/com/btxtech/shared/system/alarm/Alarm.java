@@ -11,7 +11,8 @@ public class Alarm {
         FAIL_STARTING_PLANET,
         NO_GAME_UI_CONTROL_CONFIG_ENTITY_FOR_LEVEL_ID,
         NO_SCENES,
-        FAIL_START_GAME_ENGINE
+        FAIL_START_GAME_ENGINE,
+        FAILED_SET_GAME_CONTEXT
     }
     private Type type;
     private Date date;
