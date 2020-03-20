@@ -62,8 +62,10 @@ public final class PropertyTypeUtils {
         Class<? extends GenericPropertyEditor> propertyEditorClass;
         if (propertyType.getType().isEnum()) {
             propertyEditorClass = EnumEditor.class;
+        } else if (propertyType.getType() == List.class) {
+            return setupUnknownInformation(propertyClass, "List");
         } else {
-            GenericPropertyType<? extends GenericPropertyEditor> genericPropertyType = GENERIC_TYPES.stream()
+            GenericPropertyType genericPropertyType = GENERIC_TYPES.stream()
                     .filter(type -> type.getPropertyClass().equals(propertyClass))
                     .findFirst()
                     .orElse(null);
