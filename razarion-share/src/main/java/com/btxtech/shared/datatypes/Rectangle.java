@@ -322,12 +322,16 @@ public class Rectangle {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Rectangle rectangle = (Rectangle) o;
-
-        return !(end != null ? !end.equals(rectangle.end) : rectangle.end != null) && !(start != null ? !start.equals(rectangle.start) : rectangle.start != null);
+        return !(end != null ? !end.equals(rectangle.end) : rectangle.end != null)
+                && !(start != null ? !start.equals(rectangle.start) : rectangle.start != null);
 
     }
 

@@ -50,6 +50,13 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
     protected void doAssert() {
     }
 
+    /**
+     * Override in subclasses
+     */
+    protected void assertCreated(ConfigObject config1) {
+
+    }
+
     protected void registerUpdate(Consumer<ConfigObject> configModifier, IdSuppressor... idSuppressors) {
         configModifiers.add(new ConfigModifier<>(configModifier, idSuppressors));
     }
@@ -62,6 +69,7 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
         List<ObjectNameId> objectNameIds = crudToBeTested.getObjectNameIds();
         assertEquals(0, objectNameIds.size());
         ConfigObject config1 = crudToBeTested.create();
+        assertCreated(config1);
         // Read all
         objectNameIds = crudToBeTested.getObjectNameIds();
         assertEquals(1, objectNameIds.size());
@@ -98,7 +106,6 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
         assertEquals(0, crudToBeTested.getObjectNameIds().size());
         doAssert();
     }
-
 
     protected <T> List<T> add(List<T> readonly, T entity) {
         List<T> list = new ArrayList<>(readonly);

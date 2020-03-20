@@ -5,6 +5,8 @@ import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -52,6 +54,13 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
                 itemTypePersistence.baseItemTypeLimitation(planetConfig.getItemTypeLimitation()));
     }
 
+    @Override
+    protected PlanetConfig newConfig() {
+        PlanetConfig planetConfig = new PlanetConfig();
+        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 4, 4));
+        planetConfig.setPlayGround(new Rectangle2D(50, 50, 700, 700));
+        return planetConfig;
+    }
 
     @Transactional
     public List<TerrainObjectPosition> getTerrainObjectPositions(int planetId) {

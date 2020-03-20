@@ -82,9 +82,18 @@ public abstract class AbstractCrudPersistence<C extends Config, E> {
 
     protected abstract void fromConfig(C config, E entity);
 
+    protected C newConfig() {
+        return null;
+    }
+
     protected E newEntity() {
         try {
-            return entityClass.newInstance();
+            E entity = entityClass.newInstance();
+            C config = newConfig();
+            if (config != null) {
+                fromConfig(config, entity);
+            }
+            return entity;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

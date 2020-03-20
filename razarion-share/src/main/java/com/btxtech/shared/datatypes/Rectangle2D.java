@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * User: beat
@@ -406,5 +407,23 @@ public class Rectangle2D {
 
     public String testString() {
         return "new Rectangle2D(" + startX() + ", " + startY() + ", " + width() + ", " + height() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Rectangle2D that = (Rectangle2D) o;
+        return Objects.equals(start, that.start) &&
+                Objects.equals(end, that.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(start, end);
     }
 }
