@@ -38,13 +38,18 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
         serviceCaller.call((RemoteCallback<ColdGameUiContext>) coldGameUiContext -> {
-            if (coldGameUiContext.getWarmGameUiContext() == null && coldGameUiContext.getUserContext().isAdmin()) {
-                deferredStartup.fallback(Alarm.Type.NO_WARM_GAME_UI_CONTEXT);
-                return;
+            try {
+                if (coldGameUiContext.getWarmGameUiContext() == null && coldGameUiContext.getUserContext().isAdmin()) {
+                    deferredStartup.fallback(Alarm.Type.NO_WARM_GAME_UI_CONTEXT);
+                    return;
+                }
+                gameUiControl.setColdGameUiContext(coldGameUiContext);
+                facebookService.activateFacebookAppStartLogin();
+                deferredStartup.finished();
+            } catch (Throwable t) {
+                deferredStartup.fallback(Alarm.Type.FAILED_SET_GAME_CONTEXT);
+                throw t;
             }
-            gameUiControl.setColdGameUiContext(coldGameUiContext);
-            facebookService.activateFacebookAppStartLogin();
-            deferredStartup.finished();
         }, (message, throwable) -> {
             exceptionHandler.restErrorHandler("GameUiContextController.loadColdGameUiContext()");
             deferredStartup.failed(throwable);
