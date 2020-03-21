@@ -16,12 +16,11 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Templated("EnumEditor.html#select")
 public class EnumEditor implements GenericPropertyEditor {
-    private Logger logger = Logger.getLogger(EnumEditor.class.getName());
+    // private Logger logger = Logger.getLogger(EnumEditor.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -37,7 +36,7 @@ public class EnumEditor implements GenericPropertyEditor {
         this.hasProperties = hasProperties;
 
         enumOptions = Arrays.stream(propertyClass.getEnumConstants())
-                .sorted(Comparator.comparing(Object::toString)).map(o -> (Enum)o).collect(Collectors.toList());
+                .sorted(Comparator.comparing(Object::toString)).map(o -> (Enum) o).collect(Collectors.toList());
 
         enumOptions.forEach(o -> {
             HTMLOptionElement option = (HTMLOptionElement) DomGlobal.document.createElement("option");
@@ -46,7 +45,7 @@ public class EnumEditor implements GenericPropertyEditor {
         });
 
         Enum value = (Enum) hasProperties.get(propertyName);
-        if(value != null) {
+        if (value != null) {
             select.selectedIndex = enumOptions.indexOf(value);
         } else {
             select.selectedIndex = -1;
@@ -54,9 +53,9 @@ public class EnumEditor implements GenericPropertyEditor {
     }
 
     @EventHandler("select")
-    private void onsSelectChanged(@ForEvent("change") Event e) {
+    private void onSelectChanged(@ForEvent("change") Event e) {
         try {
-            Enum enumEntry = enumOptions.get((int)select.selectedIndex);
+            Enum enumEntry = enumOptions.get((int) select.selectedIndex);
             hasProperties.set(propertyName, enumEntry);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
