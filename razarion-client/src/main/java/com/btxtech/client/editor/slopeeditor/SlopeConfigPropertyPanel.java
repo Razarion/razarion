@@ -178,7 +178,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig_
 //            slopeConfigOLD.getSlopeConfig().setSlopeWaterSplattingId(imageId);
 //            terrainUiService.onEditorTerrainChanged();
 //        });
-//        shapeEditor.init(svgElement, slopeConfigOLD, this, 10.0);
+//        shapeEditor.display(svgElement, slopeConfigOLD, this, 10.0);
     }
 
     @Override

@@ -2,7 +2,9 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class GameUiContextConfig implements Config {
     private int id;
@@ -101,5 +103,9 @@ public class GameUiContextConfig implements Config {
     public GameUiContextConfig scenes(List<SceneConfig> scenes) {
         setScenes(scenes);
         return this;
+    }
+
+    public Map<String, Class> metaListTypes() {
+        return Collections.singletonMap("scenes", SceneConfig.class);
     }
 }

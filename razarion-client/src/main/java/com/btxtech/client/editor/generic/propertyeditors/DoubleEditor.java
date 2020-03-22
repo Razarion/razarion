@@ -4,14 +4,13 @@ import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLInputElement;
-import org.jboss.errai.databinding.client.HasProperties;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 @Dependent
-public class DoubleEditor implements GenericPropertyEditor {
+public class DoubleEditor extends AbstractPropertyEditor<Double> {
     @Inject
     private ExceptionHandler exceptionHandler;
     private HTMLInputElement htmlInputElement;
@@ -23,21 +22,16 @@ public class DoubleEditor implements GenericPropertyEditor {
     }
 
     @Override
-    public void init(String propertyName, Class propertyClass, HasProperties hasProperties) {
-        Double value = (Double) hasProperties.get(propertyName);
-        if(value != null) {
-            htmlInputElement.value = value.toString();
-        }
+    public void showValue() {
+        htmlInputElement.value = getPropertyValueString();
 
-        htmlInputElement.addEventListener("input", event -> writeStringValue(propertyName, hasProperties), false);
-    }
-
-    private void writeStringValue(String propertyName, HasProperties hasProperties) {
-        try {
-            hasProperties.set(propertyName, Double.parseDouble(htmlInputElement.textContent));
-        } catch (Throwable t) {
-            exceptionHandler.handleException("Cannot set property value for property: " + propertyName, t);
-        }
+        htmlInputElement.addEventListener("input", event -> {
+            try {
+                setPropertyValue(Double.parseDouble(htmlInputElement.value));
+            } catch (Throwable t) {
+                exceptionHandler.handleException("Cannot set property value for property: " + getPropertyModel(), t);
+            }
+        }, false);
     }
 
 

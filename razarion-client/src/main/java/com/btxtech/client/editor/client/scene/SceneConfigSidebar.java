@@ -33,7 +33,7 @@ public class SceneConfigSidebar extends AbstractEditor {
 //        }
 //        int gameUiControlConfigId = gameUiControl.getColdGameUiContext().getWarmGameUiContext().getGameUiControlConfigId();
 //
-//        sceneConfigTable.init(new AbstractObjectNameIdEditor() {
+//        sceneConfigTable.display(new AbstractObjectNameIdEditor() {
 //
 //            @Override
 //            protected void read(RemoteCallback<List<ObjectNameId>> callback) {

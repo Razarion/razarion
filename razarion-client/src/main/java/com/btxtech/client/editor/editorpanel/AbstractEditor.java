@@ -1,12 +1,17 @@
 package com.btxtech.client.editor.editorpanel;
 
+import com.btxtech.shared.system.ExceptionHandler;
 import com.google.gwt.user.client.ui.Composite;
+
+import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 05.05.2016.
  */
 public abstract class AbstractEditor extends Composite {
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private EditorPanel editorPanel;
 
     /**
@@ -34,7 +39,13 @@ public abstract class AbstractEditor extends Composite {
 
     protected void registerSaveButton(Runnable callback) {
         editorPanel.getSaveButton().style.visibility = "visible";
-        editorPanel.getSaveButton().addEventListener("click", event -> callback.run());
+        editorPanel.getSaveButton().addEventListener("click", event -> {
+            try {
+                callback.run();
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
+        });
     }
 
     protected void enableSaveButton(boolean enabled) {
@@ -43,7 +54,13 @@ public abstract class AbstractEditor extends Composite {
 
     protected void registerDeleteButton(Runnable callback) {
         editorPanel.getDeleteButton().style.visibility = "visible";
-        editorPanel.getDeleteButton().addEventListener("click", event -> callback.run());
+        editorPanel.getDeleteButton().addEventListener("click", event -> {
+            try {
+                callback.run();
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
+        });
     }
 
     protected void enableDeleteButton(boolean enabled) {

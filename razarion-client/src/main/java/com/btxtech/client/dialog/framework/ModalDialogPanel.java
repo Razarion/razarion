@@ -75,7 +75,7 @@ public class ModalDialogPanel<T> implements IsElement {
             modalDialogContent.customize(this);
             setupFooterButton(dialogButtons);
         } catch (Throwable throwable) {
-            exceptionHandler.handleException("ModalDialogPanel.init() title: " + title, throwable);
+            exceptionHandler.handleException("ModalDialogPanel.display() title: " + title, throwable);
         }
     }
 

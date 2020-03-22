@@ -57,7 +57,7 @@ public class BotSelectionDialog extends Composite implements ModalDialogContent<
         loadingSpan.getStyle().setProperty("display", "none");
         botList.setValue(objectNameIds);
         if (selectedId != null) {
-            botList.selectModel(objectNameIds.stream().filter(objectNameId -> objectNameId.getId() == selectedId).findFirst().orElseThrow(() -> new IllegalArgumentException("BotSelectionDialog.init() selectedId not found: " + selectedId)));
+            botList.selectModel(objectNameIds.stream().filter(objectNameId -> objectNameId.getId() == selectedId).findFirst().orElseThrow(() -> new IllegalArgumentException("BotSelectionDialog.display() selectedId not found: " + selectedId)));
         }
     }
 

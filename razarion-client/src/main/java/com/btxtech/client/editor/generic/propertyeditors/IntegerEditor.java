@@ -4,14 +4,13 @@ import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLInputElement;
-import org.jboss.errai.databinding.client.HasProperties;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 @Dependent
-public class IntegerEditor implements GenericPropertyEditor {
+public class IntegerEditor extends AbstractPropertyEditor<Integer> {
     @Inject
     private ExceptionHandler exceptionHandler;
     private HTMLInputElement htmlInputElement;
@@ -23,23 +22,17 @@ public class IntegerEditor implements GenericPropertyEditor {
     }
 
     @Override
-    public void init(String propertyName, Class propertyClass, HasProperties hasProperties) {
-        Integer value = (Integer) hasProperties.get(propertyName);
-        if (value != null) {
-            htmlInputElement.value = value.toString();
-        }
+    public void showValue() {
+        htmlInputElement.value = getPropertyValueString();
 
-        htmlInputElement.addEventListener("input", event -> writeStringValue(propertyName, hasProperties), false);
+        htmlInputElement.addEventListener("input", event -> {
+            try {
+                setPropertyValue(Integer.parseInt(htmlInputElement.value));
+            } catch (Throwable t) {
+                exceptionHandler.handleException("Cannot set property value for property: " + getPropertyModel(), t);
+            }
+        }, false);
     }
-
-    private void writeStringValue(String propertyName, HasProperties hasProperties) {
-        try {
-            hasProperties.set(propertyName, Integer.parseInt(htmlInputElement.value));
-        } catch (Throwable t) {
-            exceptionHandler.handleException("Cannot set property value for property: " + propertyName, t);
-        }
-    }
-
 
     @Override
     public HTMLElement getElement() {

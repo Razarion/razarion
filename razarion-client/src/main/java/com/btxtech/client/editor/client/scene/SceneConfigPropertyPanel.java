@@ -211,17 +211,17 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
 //            @Override
 //            public void callback(SceneConfig sceneConfig) {
 //                dataBinder.setModel(sceneConfig);
-//                startPointPlacerConfig.init(sceneConfig.getStartPointPlacerConfig(), sceneConfig::setStartPointPlacerConfig);
-//                gameTipConfigPanel.init(sceneConfig.getGameTipConfig(), sceneConfig::setGameTipConfig);
+//                startPointPlacerConfig.display(sceneConfig.getStartPointPlacerConfig(), sceneConfig::setStartPointPlacerConfig);
+//                gameTipConfigPanel.display(sceneConfig.getGameTipConfig(), sceneConfig::setGameTipConfig);
 //                handleQuestConfigVisibility();
-//                botConfigPanel.init(sceneConfig.getBotConfigs(), sceneConfig::setBotConfigs, BotConfig::new, BotConfigPropertyPanel.class);
-//                botMoveCommandConfigs.init(sceneConfig.getBotMoveCommandConfigs(), sceneConfig::setBotMoveCommandConfigs, BotMoveCommandConfig::new, BotMoveCommandConfigPropertyPanel.class);
-//                botHarvestCommandConfigs.init(sceneConfig.getBotHarvestCommandConfigs(), sceneConfig::setBotHarvestCommandConfigs, BotHarvestCommandConfig::new, BotHarvestCommandConfigPropertyPanel.class);
-//                botAttackCommandConfigs.init(sceneConfig.getBotAttackCommandConfigs(), sceneConfig::setBotAttackCommandConfigs, BotAttackCommandConfig::new, BotAttackCommandConfigPropertyPanel.class);
-//                botKillOtherBotCommandConfigs.init(sceneConfig.getBotKillOtherBotCommandConfigs(), sceneConfig::setBotKillOtherBotCommandConfigs, BotKillOtherBotCommandConfig::new, BotKillOtherBotCommandConfigPropertyPanel.class);
-//                botKillHumanCommandConfigs.init(sceneConfig.getBotKillHumanCommandConfigs(), sceneConfig::setBotKillHumanCommandConfigs, BotKillHumanCommandConfig::new, BotKillHumanCommandConfigPropertyPanel.class);
-//                botRemoveOwnItemCommandConfigs.init(sceneConfig.getBotRemoveOwnItemCommandConfigs(), sceneConfig::setBotRemoveOwnItemCommandConfigs, BotRemoveOwnItemCommandConfig::new, BotRemoveOwnItemCommandConfigPropertyPanel.class);
-//                killBotCommandConfigs.init(sceneConfig.getKillBotCommandConfigs(), sceneConfig::setKillBotCommandConfigs, KillBotCommandConfig::new, KillBotCommandConfigPropertyPanel.class);
+//                botConfigPanel.display(sceneConfig.getBotConfigs(), sceneConfig::setBotConfigs, BotConfig::new, BotConfigPropertyPanel.class);
+//                botMoveCommandConfigs.display(sceneConfig.getBotMoveCommandConfigs(), sceneConfig::setBotMoveCommandConfigs, BotMoveCommandConfig::new, BotMoveCommandConfigPropertyPanel.class);
+//                botHarvestCommandConfigs.display(sceneConfig.getBotHarvestCommandConfigs(), sceneConfig::setBotHarvestCommandConfigs, BotHarvestCommandConfig::new, BotHarvestCommandConfigPropertyPanel.class);
+//                botAttackCommandConfigs.display(sceneConfig.getBotAttackCommandConfigs(), sceneConfig::setBotAttackCommandConfigs, BotAttackCommandConfig::new, BotAttackCommandConfigPropertyPanel.class);
+//                botKillOtherBotCommandConfigs.display(sceneConfig.getBotKillOtherBotCommandConfigs(), sceneConfig::setBotKillOtherBotCommandConfigs, BotKillOtherBotCommandConfig::new, BotKillOtherBotCommandConfigPropertyPanel.class);
+//                botKillHumanCommandConfigs.display(sceneConfig.getBotKillHumanCommandConfigs(), sceneConfig::setBotKillHumanCommandConfigs, BotKillHumanCommandConfig::new, BotKillHumanCommandConfigPropertyPanel.class);
+//                botRemoveOwnItemCommandConfigs.display(sceneConfig.getBotRemoveOwnItemCommandConfigs(), sceneConfig::setBotRemoveOwnItemCommandConfigs, BotRemoveOwnItemCommandConfig::new, BotRemoveOwnItemCommandConfigPropertyPanel.class);
+//                killBotCommandConfigs.display(sceneConfig.getKillBotCommandConfigs(), sceneConfig::setKillBotCommandConfigs, KillBotCommandConfig::new, KillBotCommandConfigPropertyPanel.class);
 //
 //            }
 //        }, exceptionHandler.restErrorHandler("SceneEditorProvider.readSceneConfig failed: ")).readSceneConfig(gameUiControlConfigId, objectNameId.getId());

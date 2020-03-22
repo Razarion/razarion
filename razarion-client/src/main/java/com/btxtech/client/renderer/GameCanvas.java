@@ -59,7 +59,7 @@ public class GameCanvas {
     private boolean playbackMode;
 
 //    public GameCanvas() {
-//        logger.severe("GameCanvas <init> called twice????");
+//        logger.severe("GameCanvas <display> called twice????");
 //    }
 
     public void init() {
