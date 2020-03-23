@@ -2,6 +2,7 @@ package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.editor.generic.propertyeditors.AbstractPropertyEditor;
 import com.btxtech.client.editor.generic.propertyeditors.EnumEditor;
+import com.btxtech.client.editor.generic.propertyeditors.ListEditor;
 import com.btxtech.client.editor.generic.propertyeditors.PropertyEditorClassFactory;
 import com.btxtech.client.editor.generic.propertyeditors.PropertySection;
 import com.btxtech.client.editor.generic.propertyeditors.UnknownEditor;
@@ -12,6 +13,7 @@ import org.jboss.errai.databinding.client.PropertyType;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.function.Consumer;
 
 @Dependent
@@ -21,6 +23,7 @@ public class PropertyModel {
     private HasProperties hasProperties;
     private String propertyName;
     private PropertyType propertyType;
+    private Integer listIndex;
 
 
     public void initAsRoot(Object rootPropertyValue) {
@@ -28,7 +31,7 @@ public class PropertyModel {
         propertyType = new PropertyType(rootPropertyValue.getClass(), true, false);
     }
 
-    private void initAsChild(PropertyModel parent, String propertyName, PropertyType propertyType) {
+    private void initAsSectionChild(PropertyModel parent, String propertyName, PropertyType propertyType) {
         this.propertyName = propertyName;
         this.propertyType = propertyType;
         if (propertyType.isBindable()) {
@@ -38,12 +41,38 @@ public class PropertyModel {
         }
     }
 
-    public void createChildren(Consumer<PropertyModel> childConsumer) {
+    private void initAsListChild(int listIndex, PropertyType propertyType) {
+        this.listIndex = listIndex;
+        this.propertyType = propertyType;
+//        xxx
+//
+//        if (propertyType.isBindable()) {
+//            hasProperties = (HasProperties) BindableProxyFactory.getBindableProxy(propertyType.getType());
+//        } else {
+//            hasProperties = parent.hasProperties;
+//        }
+    }
+
+    public void createBindableChildren(Consumer<PropertyModel> childConsumer) {
+        if (!propertyType.isBindable()) {
+            throw new IllegalStateException("Property is not bindable: " + this);
+        }
         hasProperties.getBeanProperties().forEach((propertyName, propertyType) -> {
             PropertyModel childPropertyModel = metaModelContextInstance.get();
-            childPropertyModel.initAsChild(this, propertyName, propertyType);
+            childPropertyModel.initAsSectionChild(this, propertyName, propertyType);
             childConsumer.accept(childPropertyModel);
         });
+    }
+
+    public void createListChildren(Consumer<PropertyModel> childConsumer) {
+        if (!propertyType.isList()) {
+            throw new IllegalStateException("Property is not a list: " + this);
+        }
+        for (int index = 0; index < ((List) getPropertyValue()).size(); index++) {
+            PropertyModel childPropertyModel = metaModelContextInstance.get();
+            childPropertyModel.initAsListChild(index, propertyType);
+            childConsumer.accept(childPropertyModel);
+        }
     }
 
     public String getDisplayName() {
@@ -58,6 +87,8 @@ public class PropertyModel {
             return EnumEditor.class;
         } else if (propertyType.isBindable()) {
             return PropertySection.class;
+        } else if (propertyType.isList()) {
+            return ListEditor.class;
         } else {
             Class<? extends AbstractPropertyEditor> propertyEditorClass = PropertyEditorClassFactory.get(propertyType.getType());
             if (propertyEditorClass == null) {

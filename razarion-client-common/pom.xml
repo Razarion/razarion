@@ -53,5 +53,10 @@
             <artifactId>errai-jaxrs-client</artifactId>
             <version>${errai.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-bus</artifactId>
+            <version>${errai.version}</version>
+        </dependency>
     </dependencies>
 </project>

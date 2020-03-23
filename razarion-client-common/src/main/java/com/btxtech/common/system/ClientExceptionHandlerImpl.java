@@ -2,6 +2,7 @@ package com.btxtech.common.system;
 
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.dom.DomGlobal;
+import org.jboss.errai.bus.client.api.BusErrorCallback;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.enterprise.client.jaxrs.api.ResponseException;
 import org.jboss.errai.ioc.client.api.UncaughtExceptionHandler;
@@ -68,6 +69,13 @@ public class ClientExceptionHandlerImpl implements ExceptionHandler {
     }
 
     public ErrorCallback<?> restErrorHandler(String restService) {
+        return (message, throwable) -> {
+            handleRestException(restService, message, throwable);
+            return false;
+        };
+    }
+
+    public BusErrorCallback busErrorCallback(String restService) {
         return (message, throwable) -> {
             handleRestException(restService, message, throwable);
             return false;

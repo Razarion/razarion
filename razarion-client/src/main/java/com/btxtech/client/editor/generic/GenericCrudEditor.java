@@ -11,7 +11,8 @@ import javax.inject.Inject;
 
 @Templated("../framework/AbstractCrudeParentSidebar.html#abstract-crud-parent")
 public class GenericCrudEditor extends AbstractCrudeParentSidebar<ObjectNameIdProvider, RootPropertySection> {
-    private GenericCrudControllerEditor genericCrudControllerEditor = new GenericCrudControllerEditor();
+    @Inject
+    private GenericCrudControllerEditor genericCrudControllerEditor;
     @Inject
     private Instance<RootPropertySection> genericPropertyPanelInstance;
 

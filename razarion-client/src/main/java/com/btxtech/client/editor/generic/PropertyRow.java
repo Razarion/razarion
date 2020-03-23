@@ -18,7 +18,7 @@ import javax.inject.Named;
 import java.util.logging.Logger;
 
 @Templated("PropertyRow.html#propertyTableRow")
-public class PropertyRow  implements IsElement {
+public class PropertyRow implements IsElement {
     private Logger logger = Logger.getLogger(PropertyRow.class.getName());
     @Inject
     private Instance<AbstractPropertyEditor> propertyEditorInstance;
