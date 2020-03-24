@@ -2,6 +2,7 @@ package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.editor.generic.propertyeditors.AbstractPropertyEditor;
 import com.btxtech.client.utils.Elemental2Utils;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
@@ -20,6 +21,8 @@ import java.util.logging.Logger;
 @Templated("PropertyRow.html#propertyTableRow")
 public class PropertyRow implements IsElement {
     private Logger logger = Logger.getLogger(PropertyRow.class.getName());
+    @Inject
+    private ExceptionHandler exceptionHandler;
     @Inject
     private Instance<AbstractPropertyEditor> propertyEditorInstance;
     @Inject
@@ -66,21 +69,30 @@ public class PropertyRow implements IsElement {
     private void display() {
         // Value
         Elemental2Utils.removeAllChildren(propertyEditorDiv);
-        if (propertyModel.isPropertyValueNotNull() || !propertyModel.isPropertyNullable()) {
-            AbstractPropertyEditor abstractPropertyEditor = propertyEditorInstance.select(propertyModel.getEditorClass()).get();
-            abstractPropertyEditor.init(propertyModel);
-            propertyEditorDiv.appendChild(abstractPropertyEditor.getElement());
+        try {
+            if (propertyModel.isPropertyValueNotNull() || !propertyModel.isPropertyNullable()) {
+                AbstractPropertyEditor abstractPropertyEditor = propertyEditorInstance.select(propertyModel.getEditorClass()).get();
+                abstractPropertyEditor.init(propertyModel);
+                propertyEditorDiv.appendChild(abstractPropertyEditor.getElement());
+            }
+        } catch (Throwable t) {
+            propertyEditorDiv.textContent = t.toString();
+            exceptionHandler.handleException(t);
         }
         // Button
-        if (propertyModel.isPropertyNullable()) {
-            createDeleteButton.style.display = "inline-block";
-            if (propertyModel.isPropertyValueNotNull()) {
-                createDeleteButton.textContent = "Delete";
+        try {
+            if (propertyModel.isPropertyNullable()) {
+                createDeleteButton.style.display = "inline-block";
+                if (propertyModel.isPropertyValueNotNull()) {
+                    createDeleteButton.textContent = "Delete";
+                } else {
+                    createDeleteButton.textContent = "Create";
+                }
             } else {
-                createDeleteButton.textContent = "Create";
+                createDeleteButton.style.display = "none";
             }
-        } else {
-            createDeleteButton.style.display = "none";
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
     }
 }

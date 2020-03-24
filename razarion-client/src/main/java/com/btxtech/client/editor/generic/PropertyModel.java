@@ -6,6 +6,8 @@ import com.btxtech.client.editor.generic.propertyeditors.ListEditor;
 import com.btxtech.client.editor.generic.propertyeditors.PropertyEditorClassFactory;
 import com.btxtech.client.editor.generic.propertyeditors.PropertySection;
 import com.btxtech.client.editor.generic.propertyeditors.UnknownEditor;
+import org.jboss.errai.databinding.client.BindableListWrapper;
+import org.jboss.errai.databinding.client.BindableProxy;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.databinding.client.PropertyType;
@@ -13,7 +15,6 @@ import org.jboss.errai.databinding.client.PropertyType;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.List;
 import java.util.function.Consumer;
 
 @Dependent
@@ -41,16 +42,10 @@ public class PropertyModel {
         }
     }
 
-    private void initAsListChild(int listIndex, PropertyType propertyType) {
+    private void initAsListChild(HasProperties hasProperties, int listIndex, PropertyType propertyType) {
+        this.hasProperties = hasProperties;
         this.listIndex = listIndex;
         this.propertyType = propertyType;
-//        xxx
-//
-//        if (propertyType.isBindable()) {
-//            hasProperties = (HasProperties) BindableProxyFactory.getBindableProxy(propertyType.getType());
-//        } else {
-//            hasProperties = parent.hasProperties;
-//        }
     }
 
     public void createBindableChildren(Consumer<PropertyModel> childConsumer) {
@@ -68,9 +63,24 @@ public class PropertyModel {
         if (!propertyType.isList()) {
             throw new IllegalStateException("Property is not a list: " + this);
         }
-        for (int index = 0; index < ((List) getPropertyValue()).size(); index++) {
+        BindableListWrapper bindableListWrapper = (BindableListWrapper) BindableProxyFactory.getBindableProxy(getPropertyValue());
+        for (int index = 0; index < bindableListWrapper.size(); index++) {
+            Object object = bindableListWrapper.get(index);
+            PropertyType propertyType;
+            HasProperties hasProperties;
+            if (object instanceof BindableListWrapper) {
+                propertyType = new PropertyType(((BindableListWrapper) object).unwrap().getClass(), true, true);
+                hasProperties = (HasProperties) object;
+                continue; // TODO
+            } else if (object instanceof BindableProxy) {
+                propertyType = new PropertyType(((BindableProxy) object).unwrap().getClass(), true, false);
+                hasProperties = (HasProperties) object;
+            } else {
+                propertyType = new PropertyType(object.getClass());
+                hasProperties = this.hasProperties;
+            }
             PropertyModel childPropertyModel = metaModelContextInstance.get();
-            childPropertyModel.initAsListChild(index, propertyType);
+            childPropertyModel.initAsListChild(hasProperties, index, propertyType);
             childConsumer.accept(childPropertyModel);
         }
     }
@@ -105,6 +115,8 @@ public class PropertyModel {
     public Object getPropertyValue() {
         if (propertyName != null) {
             return hasProperties.get(propertyName);
+        } else if (listIndex != null) {
+            return ((BindableListWrapper) hasProperties).get(listIndex);
         } else {
             return hasProperties;
         }
@@ -139,8 +151,8 @@ public class PropertyModel {
 
     @Override
     public String toString() {
-        return "PropertyModel{" +
-                ", propertyName='" + propertyName + '\'' +
+        return "PropertyModel{propertyName=" + propertyName +
+                ", listIndex=" + listIndex +
                 ", propertyType.getType()=" + propertyType.getType() +
                 ", propertyType.isBindable()=" + propertyType.isBindable() +
                 '}';

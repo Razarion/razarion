@@ -24,7 +24,7 @@ public class PropertySection  extends AbstractPropertyEditor {
 
     @Override
     protected void showValue() {
-        getPropertyModel().createChildren(childPropertyModel -> {
+        getPropertyModel().createBindableChildren(childPropertyModel -> {
             PropertyRow propertyRow = propertyRowInstance.get();
             propertyRow.init(childPropertyModel);
             propertyTable.appendChild(propertyRow.getElement());
