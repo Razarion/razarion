@@ -153,6 +153,7 @@ a:active {
     padding: 0;
     border: 0;
     order: 10;
+    overflow: auto;
 }
 /** -------------------------- MAIN ENDS -------------------------- */
 
