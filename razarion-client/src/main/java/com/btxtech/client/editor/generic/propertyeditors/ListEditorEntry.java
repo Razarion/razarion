@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.generic.propertyeditors;
 
-import com.btxtech.client.editor.generic.PropertyModel;
+import com.btxtech.client.editor.generic.model.AbstractPropertyModel;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLTableCellElement;
 import elemental2.dom.HTMLTableRowElement;
@@ -32,13 +32,13 @@ public class ListEditorEntry implements IsElement {
     @Named("td")
     private HTMLTableCellElement propertyEditor;
 
-    public void init(PropertyModel propertyModel) {
+    public void init(AbstractPropertyModel abstractPropertyModel) {
 //        if (sceneConfig.getId() != null) {
 //            propertyId.textContent = Integer.toString(sceneConfig.getId());
 //        }
 //        propertyName.textContent = sceneConfig.getInternalName();
-        AbstractPropertyEditor abstractPropertyEditor = propertyEditorInstance.select(propertyModel.getEditorClass()).get();
-        abstractPropertyEditor.init(propertyModel);
+        AbstractPropertyEditor abstractPropertyEditor = propertyEditorInstance.select(abstractPropertyModel.getEditorClass()).get();
+        abstractPropertyEditor.init(abstractPropertyModel);
         propertyEditor.appendChild(abstractPropertyEditor.getElement());
     }
 

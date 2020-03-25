@@ -1,6 +1,6 @@
-package com.btxtech.client.editor.generic;
+package com.btxtech.client.editor.generic.propertyeditors;
 
-import com.btxtech.client.editor.generic.propertyeditors.AbstractPropertyEditor;
+import com.btxtech.client.editor.generic.model.AbstractPropertyModel;
 import com.btxtech.client.utils.Elemental2Utils;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,9 +18,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.logging.Logger;
 
-@Templated("PropertyRow.html#propertyTableRow")
-public class PropertyRow implements IsElement {
-    private Logger logger = Logger.getLogger(PropertyRow.class.getName());
+@Templated("PropertySectionRow.html#propertyTableRow")
+public class PropertySectionRow implements IsElement {
+    private Logger logger = Logger.getLogger(PropertySectionRow.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -38,24 +38,24 @@ public class PropertyRow implements IsElement {
     @Inject
     @DataField
     private HTMLDivElement propertyEditorDiv;
-    private PropertyModel propertyModel;
+    private AbstractPropertyModel abstractPropertyModel;
 
-    public void init(PropertyModel propertyModel) {
-        this.propertyModel = propertyModel;
-        propertyName.textContent = propertyModel.getDisplayName();
+    public void init(AbstractPropertyModel abstractPropertyModel) {
+        this.abstractPropertyModel = abstractPropertyModel;
+        propertyName.textContent = abstractPropertyModel.getDisplayName();
         display();
     }
 
     @EventHandler("createDeleteButton")
     private void onCreateButtonClicked(ClickEvent event) {
-        if (!propertyModel.isPropertyNullable()) {
-            logger.warning("onCreateButtonClicked() on !propertyModel.isPropertyNullable(): " + propertyModel);
+        if (!abstractPropertyModel.isPropertyNullable()) {
+            logger.warning("onCreateButtonClicked() on !abstractPropertyModel.isPropertyNullable(): " + abstractPropertyModel);
             return;
         }
-        if (propertyModel.isPropertyValueNotNull()) {
-            propertyModel.setPropertyValue(null);
+        if (abstractPropertyModel.isPropertyValueNotNull()) {
+            abstractPropertyModel.setPropertyValue(null);
         } else {
-            propertyModel.createAndSetPropertyValue();
+            abstractPropertyModel.createAndSetPropertyValue();
         }
         display();
     }
@@ -70,9 +70,9 @@ public class PropertyRow implements IsElement {
         // Value
         Elemental2Utils.removeAllChildren(propertyEditorDiv);
         try {
-            if (propertyModel.isPropertyValueNotNull() || !propertyModel.isPropertyNullable()) {
-                AbstractPropertyEditor abstractPropertyEditor = propertyEditorInstance.select(propertyModel.getEditorClass()).get();
-                abstractPropertyEditor.init(propertyModel);
+            if (abstractPropertyModel.isPropertyValueNotNull() || !abstractPropertyModel.isPropertyNullable()) {
+                AbstractPropertyEditor abstractPropertyEditor = propertyEditorInstance.select(abstractPropertyModel.getEditorClass()).get();
+                abstractPropertyEditor.init(abstractPropertyModel);
                 propertyEditorDiv.appendChild(abstractPropertyEditor.getElement());
             }
         } catch (Throwable t) {
@@ -81,9 +81,9 @@ public class PropertyRow implements IsElement {
         }
         // Button
         try {
-            if (propertyModel.isPropertyNullable()) {
+            if (abstractPropertyModel.isPropertyNullable()) {
                 createDeleteButton.style.display = "inline-block";
-                if (propertyModel.isPropertyValueNotNull()) {
+                if (abstractPropertyModel.isPropertyValueNotNull()) {
                     createDeleteButton.textContent = "Delete";
                 } else {
                     createDeleteButton.textContent = "Create";

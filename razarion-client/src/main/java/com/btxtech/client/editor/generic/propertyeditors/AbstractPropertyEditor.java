@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.generic.propertyeditors;
 
-import com.btxtech.client.editor.generic.PropertyModel;
+import com.btxtech.client.editor.generic.model.AbstractPropertyModel;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
 
@@ -9,10 +9,10 @@ import javax.inject.Inject;
 public abstract class AbstractPropertyEditor<T> implements IsElement {
     @Inject
     private ExceptionHandler exceptionHandler;
-    private PropertyModel propertyModel;
+    private AbstractPropertyModel abstractPropertyModel;
 
-    public void init(PropertyModel propertyModel) {
-        this.propertyModel = propertyModel;
+    public void init(AbstractPropertyModel abstractPropertyModel) {
+        this.abstractPropertyModel = abstractPropertyModel;
         try {
             showValue();
         } catch (Throwable t) {
@@ -23,15 +23,15 @@ public abstract class AbstractPropertyEditor<T> implements IsElement {
     protected abstract void showValue();
 
     protected void setPropertyValue(T object) {
-        propertyModel.setPropertyValue(object);
+        abstractPropertyModel.setPropertyValue(object);
     }
 
     protected T getPropertyValue() {
-        return (T) propertyModel.getPropertyValue();
+        return (T) abstractPropertyModel.getPropertyValue();
     }
 
     protected T getPropertyValue(T defaultValue) {
-        T t = (T) propertyModel.getPropertyValue();
+        T t = (T) abstractPropertyModel.getPropertyValue();
         if(t != null) {
             return t;
         } else {
@@ -40,10 +40,10 @@ public abstract class AbstractPropertyEditor<T> implements IsElement {
     }
 
     protected String getPropertyValueString() {
-        return propertyModel.getPropertyValueString();
+        return abstractPropertyModel.getPropertyValueString();
     }
 
-    protected PropertyModel getPropertyModel() {
-        return propertyModel;
+    protected AbstractPropertyModel getAbstractPropertyModel() {
+        return abstractPropertyModel;
     }
 }

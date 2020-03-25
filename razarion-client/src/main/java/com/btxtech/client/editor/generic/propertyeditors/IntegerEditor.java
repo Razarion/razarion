@@ -29,7 +29,7 @@ public class IntegerEditor extends AbstractPropertyEditor<Integer> {
             try {
                 setPropertyValue(Integer.parseInt(htmlInputElement.value));
             } catch (Throwable t) {
-                exceptionHandler.handleException("Cannot set property value for property: " + getPropertyModel(), t);
+                exceptionHandler.handleException("Cannot set property value for property: " + getAbstractPropertyModel(), t);
             }
         }, false);
     }

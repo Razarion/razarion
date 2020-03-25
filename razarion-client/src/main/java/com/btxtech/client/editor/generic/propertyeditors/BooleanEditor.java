@@ -30,7 +30,7 @@ public class BooleanEditor extends AbstractPropertyEditor<Boolean> {
             try {
                 setPropertyValue(htmlInputElement.checked);
             } catch (Throwable t) {
-                exceptionHandler.handleException("Cannot set property value for property: " + getPropertyModel(), t);
+                exceptionHandler.handleException("Cannot set property value for property: " + getAbstractPropertyModel(), t);
             }
         }, false);
     }

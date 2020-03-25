@@ -18,7 +18,7 @@ public class UnknownEditor extends AbstractPropertyEditor {
 
     @Override
     public void showValue() {
-        htmldivElement.textContent = "Unknown editor: " + getPropertyModel();
+        htmldivElement.textContent = "Unknown editor: " + getAbstractPropertyModel();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.generic.propertyeditors;
 
-import com.btxtech.client.editor.generic.PropertyRow;
+import com.btxtech.client.editor.generic.model.Branch;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLTableElement;
@@ -10,7 +10,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-// TODO Rename to GenericPropertyBook -> RootPropertySection
 @Templated("PropertySection.html#propertySection")
 public class PropertySection  extends AbstractPropertyEditor {
     @Inject
@@ -20,12 +19,12 @@ public class PropertySection  extends AbstractPropertyEditor {
     @DataField
     private HTMLTableElement propertyTable;
     @Inject
-    private Instance<PropertyRow> propertyRowInstance;
+    private Instance<PropertySectionRow> propertyRowInstance;
 
     @Override
     protected void showValue() {
-        getPropertyModel().createBindableChildren(childPropertyModel -> {
-            PropertyRow propertyRow = propertyRowInstance.get();
+        ((Branch)getAbstractPropertyModel()).createBindableChildren(childPropertyModel -> {
+            PropertySectionRow propertyRow = propertyRowInstance.get();
             propertyRow.init(childPropertyModel);
             propertyTable.appendChild(propertyRow.getElement());
         });

@@ -29,7 +29,7 @@ public class DoubleEditor extends AbstractPropertyEditor<Double> {
             try {
                 setPropertyValue(Double.parseDouble(htmlInputElement.value));
             } catch (Throwable t) {
-                exceptionHandler.handleException("Cannot set property value for property: " + getPropertyModel(), t);
+                exceptionHandler.handleException("Cannot set property value for property: " + getAbstractPropertyModel(), t);
             }
         }, false);
     }

@@ -1,8 +1,12 @@
 package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
+import com.btxtech.client.editor.generic.model.Branch;
 import com.btxtech.client.editor.generic.propertyeditors.PropertySection;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
+import org.jboss.errai.databinding.client.BindableProxyFactory;
+import org.jboss.errai.databinding.client.HasProperties;
+import org.jboss.errai.databinding.client.PropertyType;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -17,16 +21,19 @@ public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvi
     @DataField
     private PropertySection rootPropertySection;
     @Inject
-    private PropertyModel rootPropertyModel;
+    private Branch branch;
 
     @Override
-    public void init(ObjectNameIdProvider objectNameIdProvider) {
-        rootPropertyModel.initAsRoot(objectNameIdProvider);
-        rootPropertySection.init(rootPropertyModel);
+    public void init(ObjectNameIdProvider rootPropertyValue) {
+        branch.init(null,
+                (HasProperties) BindableProxyFactory.getBindableProxy(rootPropertyValue),
+                new PropertyType(rootPropertyValue.getClass(), true, false));
+
+        rootPropertySection.init(branch);
     }
 
     @Override
     public ObjectNameIdProvider getConfigObject() {
-        return (ObjectNameIdProvider) rootPropertyModel.getPropertyValue();
+        return (ObjectNameIdProvider) branch.getPropertyValue();
     }
 }

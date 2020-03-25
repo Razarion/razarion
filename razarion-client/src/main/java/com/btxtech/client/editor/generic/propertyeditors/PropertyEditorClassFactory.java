@@ -22,7 +22,7 @@ public class PropertyEditorClassFactory {
         GENERIC_TYPES.put(Index.class, null);// TODO
     }
 
-    public static Class get(Class type) {
+    public static Class<? extends AbstractPropertyEditor> get(Class type) {
         return GENERIC_TYPES.get(type);
     }
 

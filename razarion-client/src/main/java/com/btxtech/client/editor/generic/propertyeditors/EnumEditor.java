@@ -29,7 +29,7 @@ public class EnumEditor extends AbstractPropertyEditor<Enum> {
 
     @Override
     public void showValue() {
-        enumOptions = Arrays.stream(getPropertyModel().getPropertyClass().getEnumConstants())
+        enumOptions = Arrays.stream(getAbstractPropertyModel().getPropertyClass().getEnumConstants())
                 .sorted(Comparator.comparing(Object::toString)).map(o -> (Enum) o).collect(Collectors.toList());
 
         enumOptions.forEach(o -> {
