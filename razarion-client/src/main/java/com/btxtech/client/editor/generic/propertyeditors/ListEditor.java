@@ -37,11 +37,15 @@ public class ListEditor extends AbstractPropertyEditor<List> {
 
     @Override
     public void showValue() {
+        display();
+    }
+
+    public void display() {
         Elemental2Utils.removeAllChildren(childTableTable);
         try {
             getBranch().createListChildren(propertyModel -> {
                 ListEditorEntry listEditorEntry = entryInstance.get();
-                listEditorEntry.init(propertyModel);
+                listEditorEntry.init(propertyModel, this);
                 childTableTable.appendChild(listEditorEntry.getElement());
             });
         } catch (Throwable t) {
@@ -54,6 +58,7 @@ public class ListEditor extends AbstractPropertyEditor<List> {
         try {
             BindableListWrapper bindableListWrapper = (BindableListWrapper) BindableProxyFactory.getBindableProxy(getPropertyValue());
             bindableListWrapper.add(new SceneConfig());
+            display();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }

@@ -24,7 +24,7 @@ public abstract class AbstractPropertyModel {
 
     public abstract void setPropertyValue(Object value);
 
-        public Class<? extends AbstractPropertyEditor> getEditorClass() {
+    public Class<? extends AbstractPropertyEditor> getEditorClass() {
         if (propertyType.getType().isEnum()) {
             return EnumEditor.class;
         } else if (propertyType.isBindable()) {

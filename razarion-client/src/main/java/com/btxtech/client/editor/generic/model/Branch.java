@@ -60,7 +60,11 @@ public class Branch extends AbstractPropertyModel {
         if (propertyName != null) {
             parent.hasProperties.set(propertyName, value);
         } else if (propertyIndex != null) {
-            ((BindableListWrapper) (parent.hasProperties)).set(propertyIndex, value);
+            if(value != null) {
+                ((BindableListWrapper) (parent.getHasPropertiese())).set(propertyIndex, value);
+            } else {
+                ((BindableListWrapper) (parent.getHasPropertiese())).remove(propertyIndex.intValue());
+            }
         } else {
             throw new IllegalStateException();
         }
