@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.generic.model;
 
+import org.jboss.errai.databinding.client.BindableListWrapper;
 import org.jboss.errai.databinding.client.PropertyType;
 
 import javax.enterprise.context.Dependent;
@@ -25,7 +26,6 @@ public class Leaf extends AbstractPropertyModel {
         if (propertyIndex != null) {
             return branch.getIndexedChildPropertyValue(propertyIndex);
         }
-
         throw new IllegalStateException("No propertyName and no propertyIndex");
     }
 
@@ -38,5 +38,21 @@ public class Leaf extends AbstractPropertyModel {
         } else {
             throw new IllegalStateException();
         }
+    }
+
+    @Override
+    public void setPropertyValue(Object value) {
+        if (propertyName != null) {
+            branch.getHasPropertiese().set(propertyName, value);
+        } else if (propertyIndex != null) {
+            ((BindableListWrapper) (branch.getHasPropertiese())).set(propertyIndex, value);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    @Override
+    public boolean isPropertyNullable() {
+        return false;
     }
 }

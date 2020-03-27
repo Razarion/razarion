@@ -7,14 +7,10 @@ import com.btxtech.client.editor.generic.propertyeditors.PropertyEditorClassFact
 import com.btxtech.client.editor.generic.propertyeditors.PropertySection;
 import com.btxtech.client.editor.generic.propertyeditors.UnknownEditor;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
-import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.databinding.client.PropertyType;
 
 public abstract class AbstractPropertyModel {
-    private HasProperties hasProperties;
-    private String propertyName;
     private PropertyType propertyType;
-    private Integer listIndex;
 
     protected void initInternal(PropertyType propertyType) {
         this.propertyType = propertyType;
@@ -24,7 +20,11 @@ public abstract class AbstractPropertyModel {
 
     public abstract Object getPropertyValue();
 
-    public Class<? extends AbstractPropertyEditor> getEditorClass() {
+    public abstract boolean isPropertyNullable();
+
+    public abstract void setPropertyValue(Object value);
+
+        public Class<? extends AbstractPropertyEditor> getEditorClass() {
         if (propertyType.getType().isEnum()) {
             return EnumEditor.class;
         } else if (propertyType.isBindable()) {
@@ -48,28 +48,15 @@ public abstract class AbstractPropertyModel {
         return propertyType;
     }
 
-    //------------------------------
-
-    public void setPropertyValue(Object value) { // TODO
-        if (propertyName == null) {
-            throw new IllegalStateException("Root property can not be set: " + this);
-        }
-        hasProperties.set(propertyName, value);
-    }
-
-    public void createAndSetPropertyValue() { // TODO
-        setPropertyValue(BindableProxyFactory.getBindableProxy(propertyType.getType()));
-    }
-
-    public boolean isPropertyNullable() { // TODO
-        return propertyType.isBindable();
-    }
-
-    public boolean isPropertyValueNotNull() { // TODO
+    public boolean isPropertyValueNotNull() {
         return getPropertyValue() != null;
     }
 
-    public String getPropertyValueString() { // TODO
+    public void createAndSetPropertyValue() {
+        setPropertyValue(BindableProxyFactory.getBindableProxy(propertyType.getType()));
+    }
+
+    public String getPropertyValueString() {
         if (isPropertyValueNotNull()) {
             return getPropertyValue().toString();
         } else {
@@ -79,9 +66,7 @@ public abstract class AbstractPropertyModel {
 
     @Override
     public String toString() {
-        return "AbstractPropertyModel{propertyName=" + propertyName +
-                ", listIndex=" + listIndex +
-                ", propertyType.getType()=" + propertyType.getType() +
+        return "AbstractPropertyModel{propertyType.getType()=" + propertyType.getType() +
                 ", propertyType.isBindable()=" + propertyType.isBindable() +
                 '}';
     }

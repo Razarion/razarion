@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.generic.model;
 
 import org.jboss.errai.databinding.client.BindableListWrapper;
+import org.jboss.errai.databinding.client.BindableProxy;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.databinding.client.PropertyType;
@@ -16,19 +17,25 @@ public class Branch extends AbstractPropertyModel {
     private Instance<Leaf> nodeInstance;
     @Inject
     private Instance<Branch> branchInstance;
+    private Branch parent;
     private HasProperties hasProperties;
     private String propertyName;
+    private Integer propertyIndex;
 
-    public void init(String propertyName, HasProperties hasProperties, PropertyType propertyType) {
+    public void init(String propertyName, Integer propertyIndex, HasProperties hasProperties, PropertyType propertyType, Branch parent) {
         this.propertyName = propertyName;
         initInternal(propertyType);
         this.hasProperties = hasProperties;
+        this.propertyIndex = propertyIndex;
+        this.parent = parent;
     }
 
     @Override
     public String getDisplayName() {
         if (propertyName != null) {
             return propertyName;
+        } else if (propertyIndex != null) {
+            return "[" + propertyIndex + "]";
         } else {
             throw new IllegalStateException();
         }
@@ -37,6 +44,34 @@ public class Branch extends AbstractPropertyModel {
     @Override
     public Object getPropertyValue() {
         return hasProperties;
+    }
+
+    public HasProperties getHasPropertiese() {
+        return hasProperties;
+    }
+
+    @Override
+    public void setPropertyValue(Object value) {
+        if(value!= null) {
+            this.hasProperties = (HasProperties) BindableProxyFactory.getBindableProxy(value);
+        } else {
+            this.hasProperties = null;
+        }
+        if (propertyName != null) {
+            parent.hasProperties.set(propertyName, value);
+        } else if (propertyIndex != null) {
+            ((BindableListWrapper) (parent.hasProperties)).set(propertyIndex, value);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    @Override
+    public boolean isPropertyNullable() {
+        if (hasProperties == null) {
+            return true;
+        }
+        return hasProperties instanceof BindableProxy && !(hasProperties instanceof BindableListWrapper);
     }
 
     public Object getNamedChildPropertyValue(String propertyName) {
@@ -51,14 +86,14 @@ public class Branch extends AbstractPropertyModel {
         if (!getPropertyType().isBindable()) {
             throw new IllegalStateException("Property is not bindable: " + this);
         }
-        if(hasProperties == null) {
+        if (hasProperties == null) {
             return;
         }
         hasProperties.getBeanProperties().forEach((propertyName, propertyType) -> {
             HasProperties childHasProperties = null;
             if (propertyType.isBindable() || propertyType.isList()) {
                 Object childPropertyValue = hasProperties.get(propertyName);
-                if(childPropertyValue != null) {
+                if (childPropertyValue != null) {
                     childHasProperties = (HasProperties) BindableProxyFactory.getBindableProxy(childPropertyValue);
                 }
             }
@@ -71,7 +106,7 @@ public class Branch extends AbstractPropertyModel {
         if (!getPropertyType().isList()) {
             throw new IllegalStateException("Property is not a list: " + this);
         }
-        if(hasProperties == null) {
+        if (hasProperties == null) {
             return;
         }
         BindableListWrapper bindableListWrapper = (BindableListWrapper) hasProperties;
@@ -95,16 +130,12 @@ public class Branch extends AbstractPropertyModel {
     private AbstractPropertyModel createChild(String propertyName, Integer propertyIndex, PropertyType propertyType, HasProperties childHasProperties) {
         if (propertyType.isList() || propertyType.isBindable()) {
             Branch branch = branchInstance.get();
-            branch.init(propertyName, childHasProperties, propertyType);
+            branch.init(propertyName, propertyIndex, childHasProperties, propertyType, this);
             return branch;
         } else {
             Leaf node = nodeInstance.select(Leaf.class).get();
             node.init(propertyName, propertyIndex, propertyType, this);
             return node;
         }
-    }
-
-    protected HasProperties getHasProperties() {
-        return hasProperties;
     }
 }

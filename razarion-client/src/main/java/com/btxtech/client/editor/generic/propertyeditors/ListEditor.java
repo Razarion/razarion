@@ -1,6 +1,5 @@
 package com.btxtech.client.editor.generic.propertyeditors;
 
-import com.btxtech.client.editor.generic.model.Branch;
 import com.btxtech.client.utils.Elemental2Utils;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -40,7 +39,7 @@ public class ListEditor extends AbstractPropertyEditor<List> {
     public void showValue() {
         Elemental2Utils.removeAllChildren(childTableTable);
         try {
-            ((Branch)getAbstractPropertyModel()).createListChildren(propertyModel -> {
+            getBranch().createListChildren(propertyModel -> {
                 ListEditorEntry listEditorEntry = entryInstance.get();
                 listEditorEntry.init(propertyModel);
                 childTableTable.appendChild(listEditorEntry.getElement());

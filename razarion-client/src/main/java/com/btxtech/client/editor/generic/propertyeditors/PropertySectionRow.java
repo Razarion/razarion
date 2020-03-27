@@ -47,11 +47,12 @@ public class PropertySectionRow implements IsElement {
     }
 
     @EventHandler("createDeleteButton")
-    private void onCreateButtonClicked(ClickEvent event) {
+    private void onCreateDeleteButtonClicked(ClickEvent event) {
         if (!abstractPropertyModel.isPropertyNullable()) {
             logger.warning("onCreateButtonClicked() on !abstractPropertyModel.isPropertyNullable(): " + abstractPropertyModel);
             return;
         }
+
         if (abstractPropertyModel.isPropertyValueNotNull()) {
             abstractPropertyModel.setPropertyValue(null);
         } else {

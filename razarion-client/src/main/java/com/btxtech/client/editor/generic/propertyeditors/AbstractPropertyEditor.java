@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.generic.propertyeditors;
 
 import com.btxtech.client.editor.generic.model.AbstractPropertyModel;
+import com.btxtech.client.editor.generic.model.Branch;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
 
@@ -32,7 +33,7 @@ public abstract class AbstractPropertyEditor<T> implements IsElement {
 
     protected T getPropertyValue(T defaultValue) {
         T t = (T) abstractPropertyModel.getPropertyValue();
-        if(t != null) {
+        if (t != null) {
             return t;
         } else {
             return defaultValue;
@@ -46,4 +47,9 @@ public abstract class AbstractPropertyEditor<T> implements IsElement {
     protected AbstractPropertyModel getAbstractPropertyModel() {
         return abstractPropertyModel;
     }
+
+    protected Branch getBranch() {
+        return (Branch) getAbstractPropertyModel();
+    }
+
 }

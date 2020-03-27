@@ -26,8 +26,10 @@ public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvi
     @Override
     public void init(ObjectNameIdProvider rootPropertyValue) {
         branch.init(null,
+                null,
                 (HasProperties) BindableProxyFactory.getBindableProxy(rootPropertyValue),
-                new PropertyType(rootPropertyValue.getClass(), true, false));
+                new PropertyType(rootPropertyValue.getClass(), true, false),
+                null);
 
         rootPropertySection.init(branch);
     }

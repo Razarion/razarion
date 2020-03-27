@@ -1,6 +1,5 @@
 package com.btxtech.client.editor.generic.propertyeditors;
 
-import com.btxtech.client.editor.generic.model.Branch;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLTableElement;
@@ -23,7 +22,7 @@ public class PropertySection  extends AbstractPropertyEditor {
 
     @Override
     protected void showValue() {
-        ((Branch)getAbstractPropertyModel()).createBindableChildren(childPropertyModel -> {
+        getBranch().createBindableChildren(childPropertyModel -> {
             PropertySectionRow propertyRow = propertyRowInstance.get();
             propertyRow.init(childPropertyModel);
             propertyTable.appendChild(propertyRow.getElement());
