@@ -52,7 +52,10 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     @DataField
-    private Button alarmServiceButton;
+    private Button clientAlarmServiceButton;
+    @Inject
+    @DataField
+    private Button serverAlarmServiceButton;
     @Inject
     @DataField
     private Button perfmonButton;
@@ -142,9 +145,14 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button gameUiContextButton;
     private ModalDialogPanel<Void> modalDialogPanel;
 
-    @EventHandler("alarmServiceButton")
-    private void onAlarmServiceButtonClicked(ClickEvent event) {
+    @EventHandler("clientAlarmServiceButton")
+    private void onClientAlarmServiceButtonClicked(ClickEvent event) {
         editorService.openClientAlarmView();
+    }
+
+    @EventHandler("serverAlarmServiceButton")
+    private void onServerAlarmServiceButtonClicked(ClickEvent event) {
+        editorService.openServerAlarmView();
     }
 
     @EventHandler("perfmonButton")
