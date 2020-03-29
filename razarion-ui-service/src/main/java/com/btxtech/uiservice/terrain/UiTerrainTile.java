@@ -13,7 +13,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.system.alarm.AlarmService;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -27,8 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import static com.btxtech.shared.system.alarm.Alarm.Type.RENDER_GROUND_FAILED;
 
 /**
  * Created by Beat
@@ -45,7 +43,7 @@ public class UiTerrainTile {
     @Inject
     private Instance<UiTerrainWaterTile> uiTerrainWaterTileInstance;
     @Inject
-    private AlarmService alarmService;
+    private ExceptionHandler exceptionHandler;
     private Index index;
     private GroundConfig groundConfig;
     private TerrainTile terrainTile;
@@ -80,7 +78,7 @@ public class UiTerrainTile {
             modelRenderer = groundRenderTask.createModelRenderer(this);
             modelRenderer.setActive(active);
         } catch (Throwable t) {
-            alarmService.riseAlarm(RENDER_GROUND_FAILED);
+            exceptionHandler.handleException(t);
         }
 //   TODO     if (terrainTile.getTerrainSlopeTiles() != null) {
 //            uiTerrainSlopeTiles = new ArrayList<>();

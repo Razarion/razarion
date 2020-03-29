@@ -8,6 +8,7 @@ import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
@@ -30,6 +31,8 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
+    @Inject
+    private GameUiControl gameUiControl;
     @Inject
     private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute vertices;
@@ -67,6 +70,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 
     @Override
     protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
+        AlarmRaiser.onNull(uiTerrainTile.getGroundConfig(), Alarm.Type.RENDER_GROUND_FAILED, "No GroundConfig in Planet: ", gameUiControl.getPlanetConfig().getId());
         AlarmRaiser.onNull(uiTerrainTile.getGroundConfig().getTopMaterial(), Alarm.Type.RENDER_GROUND_FAILED, "No top material on GroundConfig: ", uiTerrainTile.getGroundConfig().getId());
         AlarmRaiser.onNull(uiTerrainTile.getGroundConfig().getTopMaterial().getTextureId(), Alarm.Type.RENDER_GROUND_FAILED, "No top material texture on GroundConfig: ", uiTerrainTile.getGroundConfig().getId());
         topMaterial = webGlFacade.createPhongMaterial(uiTerrainTile.getGroundConfig().getTopMaterial(), "topMaterial");

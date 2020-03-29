@@ -4,14 +4,12 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.terrain.UiTerrainTile;
 
-import java.util.logging.Logger;
-
 /**
  * Created by Beat
  * 07.08.2016.
  */
 public abstract class AbstractGroundRendererUnit extends AbstractRenderUnit<UiTerrainTile> {
-    private Logger logger = Logger.getLogger(AbstractGroundRendererUnit.class.getName());
+//    private Logger logger = Logger.getLogger(AbstractGroundRendererUnit.class.getName());
 
     protected abstract void fillBuffersInternal(UiTerrainTile uiTerrainTile);
 
