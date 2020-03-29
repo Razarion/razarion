@@ -27,7 +27,11 @@ public class DoubleEditor extends AbstractPropertyEditor<Double> {
 
         htmlInputElement.addEventListener("input", event -> {
             try {
-                setPropertyValue(Double.parseDouble(htmlInputElement.value));
+                if (htmlInputElement.value != null && !htmlInputElement.value.trim().isEmpty()) {
+                    setPropertyValue(Double.parseDouble(htmlInputElement.value));
+                } else {
+                    setPropertyValue(null);
+                }
             } catch (Throwable t) {
                 exceptionHandler.handleException("Cannot set property value for property: " + getAbstractPropertyModel(), t);
             }

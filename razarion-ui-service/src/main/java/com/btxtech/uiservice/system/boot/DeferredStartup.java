@@ -13,8 +13,6 @@
 
 package com.btxtech.uiservice.system.boot;
 
-import com.btxtech.shared.system.alarm.Alarm;
-
 /**
  * User: beat
  * Date: 04.12.2010
@@ -45,6 +43,7 @@ public class DeferredStartup {
     public void failed(Throwable t) {
         isFinished = true;
         task.correctDeferredDuration();
+        boot.raiseAlarmIfNeeded(t);
         boot.onTaskFailed(task, t);
     }
 
@@ -52,10 +51,6 @@ public class DeferredStartup {
         isFinished = true;
         task.correctDeferredDuration();
         boot.onTaskFailed(task, error, null);
-    }
-
-    public void fallback(Alarm.Type alarmType) {
-        boot.onFallback(alarmType);
     }
 
     public void setBackground() {

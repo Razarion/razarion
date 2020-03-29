@@ -14,25 +14,18 @@ import java.util.logging.Logger;
 /**
  * Created by Beat
  * 28.06.2016.
- *
+ * <p>
  * Idea replace in path with regexp
  * \, \(message\, throwable\) \-\> \{\n            logger\.log\(Level\.SEVERE\, \"(.*)?" \+ message\, throwable\)\;\n            return false\;\n        \}
- , exceptionHandler.restErrorHandler("$1")
- *
- *
+ * , exceptionHandler.restErrorHandler("$1")
  */
 @ApplicationScoped
-public class ClientExceptionHandlerImpl implements ExceptionHandler {
+public class ClientExceptionHandlerImpl extends ExceptionHandler {
     private Logger logger = Logger.getLogger(ExceptionHandler.class.getName());
     private boolean windowClosing;
 
     @Override
-    public void handleException(Throwable t) {
-        logger.log(Level.SEVERE, t.getMessage(), t);
-    }
-
-    @Override
-    public void handleException(String message, Throwable t) {
+    protected void handleExceptionInternal(String message, Throwable t) {
         logger.log(Level.SEVERE, message, t);
     }
 
@@ -44,25 +37,6 @@ public class ClientExceptionHandlerImpl implements ExceptionHandler {
     public void registerWindowCloseHandler() {
         try {
             DomGlobal.window.addEventListener("beforeunload", event -> windowClosing = true);
-        } catch (Throwable t) {
-            handleException(t);
-        }
-    }
-
-    public void handleRestException(String restService, Object message, Throwable throwable) {
-        try {
-            if (throwable instanceof ResponseException) {
-                ResponseException responseException = (ResponseException) throwable;
-                if (responseException.getResponse().getStatusCode() == 0) {
-                    if (windowClosing) {
-                        return;
-                    } else {
-                        logger.log(Level.SEVERE, "StatusCode code == 0. " + restService + ": " + message + ". Throwable: " + throwable);
-                        return;
-                    }
-                }
-            }
-            logger.log(Level.SEVERE, restService + ": " + message, throwable);
         } catch (Throwable t) {
             handleException(t);
         }
@@ -80,5 +54,24 @@ public class ClientExceptionHandlerImpl implements ExceptionHandler {
             handleRestException(restService, message, throwable);
             return false;
         };
+    }
+
+    private void handleRestException(String restService, Object message, Throwable throwable) {
+        try {
+            if (throwable instanceof ResponseException) {
+                ResponseException responseException = (ResponseException) throwable;
+                if (responseException.getResponse().getStatusCode() == 0) {
+                    if (windowClosing) {
+                        return;
+                    } else {
+                        logger.log(Level.SEVERE, "StatusCode code == 0. " + restService + ": " + message + ". Throwable: " + throwable);
+                        return;
+                    }
+                }
+            }
+            logger.log(Level.SEVERE, restService + ": " + message, throwable);
+        } catch (Throwable t) {
+            handleException(t);
+        }
     }
 }

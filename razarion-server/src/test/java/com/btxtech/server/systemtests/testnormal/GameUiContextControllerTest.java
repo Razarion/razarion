@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests.normal;
+package com.btxtech.server.systemtests.testnormal;
 
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.datatypes.UserContext;

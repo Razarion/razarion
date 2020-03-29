@@ -11,13 +11,27 @@ public class AlarmService {
     private List<AlarmServiceListener> listeners = new ArrayList<>();
 
     public void riseAlarm(Alarm.Type type) {
-        riseAlarm(type, null);
+        riseAlarm(type, null, null);
+    }
+
+    public void riseAlarm(Alarm.Type type, String text) {
+        riseAlarm(type, text, null);
     }
 
     public void riseAlarm(Alarm.Type type, Integer id) {
-        Alarm alarm = new Alarm().type(type).date(new Date()).id(id);
+        riseAlarm(type, null, id);
+    }
+
+    public void riseAlarm(Alarm.Type type, String text, Integer id) {
+        Alarm alarm = new Alarm().type(type).date(new Date()).text(text).id(id);
         alarms.add(alarm);
         fire(alarm);
+    }
+
+    public void riseAlarm(AlarmRaisedException alarmRaisedException) {
+        riseAlarm(alarmRaisedException.getType(),
+                alarmRaisedException.getText(),
+                alarmRaisedException.getId());
     }
 
     public List<Alarm> getAlarms() {

@@ -1,11 +1,14 @@
 package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmRaisedException;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.ExceptionUtil;
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
@@ -14,6 +17,7 @@ import static org.easymock.EasyMock.contains;
 import static org.easymock.EasyMock.createStrictMock;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.geq;
+import static org.easymock.EasyMock.notNull;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
@@ -24,6 +28,7 @@ import static org.easymock.EasyMock.verify;
  */
 public class TestBoot {
     private static final String ERROR_TEXT = "error_wsxedcrfv";
+    private static final AlarmRaisedException ALARM_RAISED_EXCEPTION = new AlarmRaisedException(Alarm.Type.FAIL_START_GAME_ENGINE, "xxaazz", 182);
     private WeldContainer weldContainer;
 
     @Test
@@ -508,22 +513,58 @@ public class TestBoot {
     }
 
     @Test
-    public void runDeferredFallback() {
+    public void runAlarmRaising() {
         StartupProgressListener mockListener = createStrictMock(StartupProgressListener.class);
-        mockListener.onStart(StartupTestSeq.TEST_DEFERRED_FALLBACK);
+        mockListener.onStart(StartupTestSeq.TEST_ALARM_RAISING);
 
-        mockListener.onNextTask(DeferredFallbackTestTaskEnum.TEST_1);
-        mockListener.onFallback(Alarm.Type.NO_LEVELS);
+        mockListener.onNextTask(AlarmRaisingTestTaskEnum.RAISE_ALARM);
+        mockListener.onTaskFailed(eqAbstractStartupTask(AlarmRaisingTestTaskEnum.RAISE_ALARM), contains(Alarm.Type.NO_WARM_GAME_UI_CONTEXT.name()), notNull());
+
+        mockListener.onStartupFailed(eqStartupTaskInfo(new StartupTaskEnum[]{AlarmRaisingTestTaskEnum.RAISE_ALARM}), geq(0L));
 
         replay(mockListener);
 
         Boot boot = createClientRunner();
         boot.addStartupProgressListener(mockListener);
-        boot.start(StartupTestSeq.TEST_DEFERRED_FALLBACK);
-        getStartupTestTaskMonitor().getDeferredStartupTestTask(0).fallback(Alarm.Type.NO_LEVELS);
+        boot.start(StartupTestSeq.TEST_ALARM_RAISING);
 
         verify(mockListener);
         failOnException();
+
+        List<Alarm> alarms = weldContainer.select(AlarmService.class).get().getAlarms();
+        Assert.assertEquals(alarms.size(), 1);
+        Assert.assertEquals((Integer) 124, alarms.get(0).getId());
+        Assert.assertEquals("Test boot alarm", alarms.get(0).getText());
+        Assert.assertEquals(Alarm.Type.NO_WARM_GAME_UI_CONTEXT, alarms.get(0).getType());
+        Assert.assertNotNull(alarms.get(0).getDate());
+    }
+
+    @Test
+    public void runDeferredAlarmRaising() {
+        StartupProgressListener mockListener = createStrictMock(StartupProgressListener.class);
+        mockListener.onStart(StartupTestSeq.TEST_DEFERRED_ALARM_RAISING);
+
+        mockListener.onNextTask(DeferredAlarmRaisingTestTaskEnum.DEFERRED_RAISE_ALARM);
+        mockListener.onTaskFailed(eqAbstractStartupTask(DeferredAlarmRaisingTestTaskEnum.DEFERRED_RAISE_ALARM), contains(ALARM_RAISED_EXCEPTION.getType().name()), notNull());
+
+        mockListener.onStartupFailed(eqStartupTaskInfo(new StartupTaskEnum[]{DeferredAlarmRaisingTestTaskEnum.DEFERRED_RAISE_ALARM}), geq(0L));
+
+        replay(mockListener);
+
+        Boot boot = createClientRunner();
+        boot.addStartupProgressListener(mockListener);
+        boot.start(StartupTestSeq.TEST_DEFERRED_ALARM_RAISING);
+        getStartupTestTaskMonitor().getDeferredStartupTestTask(0).failed(ALARM_RAISED_EXCEPTION);
+
+        verify(mockListener);
+        failOnException();
+
+        List<Alarm> alarms = weldContainer.select(AlarmService.class).get().getAlarms();
+        Assert.assertEquals(alarms.size(), 1);
+        Assert.assertEquals(ALARM_RAISED_EXCEPTION.getId(), alarms.get(0).getId());
+        Assert.assertEquals(ALARM_RAISED_EXCEPTION.getText(), alarms.get(0).getText());
+        Assert.assertEquals(ALARM_RAISED_EXCEPTION.getType(), alarms.get(0).getType());
+        Assert.assertNotNull(alarms.get(0).getDate());
     }
 
     public static List<StartupTaskInfo> eqStartupTaskInfo(StartupSeq startupSeq) {

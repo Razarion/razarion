@@ -5,7 +5,6 @@ import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.GameUiContextController;
-import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -39,16 +38,11 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
         deferredStartup.setDeferred();
         serviceCaller.call((RemoteCallback<ColdGameUiContext>) coldGameUiContext -> {
             try {
-                if (coldGameUiContext.getWarmGameUiContext() == null && coldGameUiContext.getUserContext().isAdmin()) {
-                    deferredStartup.fallback(Alarm.Type.NO_WARM_GAME_UI_CONTEXT);
-                    return;
-                }
                 gameUiControl.setColdGameUiContext(coldGameUiContext);
                 facebookService.activateFacebookAppStartLogin();
                 deferredStartup.finished();
-            } catch (Throwable t) {
-                deferredStartup.fallback(Alarm.Type.FAILED_SET_GAME_CONTEXT);
-                throw t;
+            } catch (Throwable throwable) {
+                deferredStartup.failed(throwable);
             }
         }, (message, throwable) -> {
             exceptionHandler.restErrorHandler("GameUiContextController.loadColdGameUiContext()");

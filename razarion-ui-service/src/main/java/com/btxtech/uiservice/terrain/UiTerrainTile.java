@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
@@ -14,6 +13,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import static com.btxtech.shared.system.alarm.Alarm.Type.RENDER_GROUND_FAILED;
 
 /**
  * Created by Beat
@@ -42,6 +44,8 @@ public class UiTerrainTile {
     private Instance<UiTerrainSlopeTile> uiTerrainSlopeTileInstance;
     @Inject
     private Instance<UiTerrainWaterTile> uiTerrainWaterTileInstance;
+    @Inject
+    private AlarmService alarmService;
     private Index index;
     private GroundConfig groundConfig;
     private TerrainTile terrainTile;
@@ -72,8 +76,12 @@ public class UiTerrainTile {
 
     private void terrainTileReceived(TerrainTile terrainTile) {
         this.terrainTile = terrainTile;
-        modelRenderer = groundRenderTask.createModelRenderer(this);
-        modelRenderer.setActive(active);
+        try {
+            modelRenderer = groundRenderTask.createModelRenderer(this);
+            modelRenderer.setActive(active);
+        } catch (Throwable t) {
+            alarmService.riseAlarm(RENDER_GROUND_FAILED);
+        }
 //   TODO     if (terrainTile.getTerrainSlopeTiles() != null) {
 //            uiTerrainSlopeTiles = new ArrayList<>();
 //            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
@@ -98,8 +106,8 @@ public class UiTerrainTile {
         return terrainTile;
     }
 
-    public PhongMaterialConfig getTopTexture() {
-        return groundConfig.getTopMaterial();
+    public GroundConfig getGroundConfig() {
+        return groundConfig;
     }
 
     public Integer getSplattingId() {

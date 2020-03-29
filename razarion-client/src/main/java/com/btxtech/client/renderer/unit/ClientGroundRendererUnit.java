@@ -6,6 +6,8 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
@@ -65,7 +67,9 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 
     @Override
     protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
-        topMaterial = webGlFacade.createPhongMaterial(uiTerrainTile.getTopTexture(), "topMaterial");
+        AlarmRaiser.onNull(uiTerrainTile.getGroundConfig().getTopMaterial(), Alarm.Type.RENDER_GROUND_FAILED, "No top material on GroundConfig: ", uiTerrainTile.getGroundConfig().getId());
+        AlarmRaiser.onNull(uiTerrainTile.getGroundConfig().getTopMaterial().getTextureId(), Alarm.Type.RENDER_GROUND_FAILED, "No top material texture on GroundConfig: ", uiTerrainTile.getGroundConfig().getId());
+        topMaterial = webGlFacade.createPhongMaterial(uiTerrainTile.getGroundConfig().getTopMaterial(), "topMaterial");
 //        splattingTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getSplattingId(), "uSplatting", "uSplattingScale", uiTerrainTile.getSplattingScale());
 //        bottomTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", uiTerrainTile.getBottomTextureScale());
 //        bottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainTile.getBottomBmId(), "uBottomBm", "uBottomBmScale", uiTerrainTile.getBottomBmScale(), "uBottomBmOnePixel");

@@ -1,7 +1,8 @@
 package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmRaisedException;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.ExceptionUtil;
 import com.btxtech.shared.utils.MathHelper;
 
@@ -31,6 +32,8 @@ public abstract class Boot {
     private Instance<AbstractStartupTask> taskInstance;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private AlarmService alarmService;
 
     protected abstract StartupSeq getWarm();
 
@@ -84,6 +87,10 @@ public abstract class Boot {
         }
         try {
             task.start(deferredStartup);
+        } catch (AlarmRaisedException are) {
+            alarmService.riseAlarm(are);
+            onTaskFailed(task, are);
+            return;
         } catch (Throwable t) {
             onTaskFailed(task, t);
             return;
@@ -195,19 +202,14 @@ public abstract class Boot {
     }
 
 
-    public void onFallback(Alarm.Type alarmType) {
-        for (StartupProgressListener listener : listeners) {
-            try {
-                listener.onFallback(alarmType);
-            } catch (Throwable t) {
-                exceptionHandler.handleException(t);
-            }
-        }
-        cleanup();
-    }
-
     void onTaskFailed(AbstractStartupTask abstractStartupTask, Throwable t) {
         onTaskFailed(abstractStartupTask, ExceptionUtil.setupStackTrace(null, t), t);
+    }
+
+    public void raiseAlarmIfNeeded(Throwable t) {
+         if(t instanceof AlarmRaisedException) {
+             alarmService.riseAlarm((AlarmRaisedException) t);
+         }
     }
 
     private void setupStartupSeq(StartupSeq startupSeq) {
@@ -222,4 +224,5 @@ public abstract class Boot {
     public String getGameSessionUuid() {
         return gameSessionUuid;
     }
+
 }

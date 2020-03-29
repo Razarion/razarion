@@ -44,7 +44,7 @@ public class CommonUrl {
     public static final String LEVEL_EDITOR_PATH = "editor/level";
     public static final String GAME_UI_CONTEXT_EDITOR_PATH = "editor/game-ui-context";
     public static final String SHAPE_3D_PROVIDER = G_ZIPPED + "/" + "shape3dprovider";
-    public static final String TERRAIN_SHAPE_PROVIDER = G_ZIPPED + "/" + "terrainshape";
+    public static final String TERRAIN_SHAPE_CONTROLLER = G_ZIPPED + "/" + "terrainshape";
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
     public static final String ITEM_TYPE_PROVIDER = "itemtypeprovider";
     public static final String TRACKER_PATH = "tracker";
@@ -86,8 +86,8 @@ public class CommonUrl {
         return APPLICATION_PATH + "/" + SHAPE_3D_PROVIDER + "/" + SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
     }
 
-    public static String terrainShapeProvider(int planetId) {
-        return APPLICATION_PATH + "/" + TERRAIN_SHAPE_PROVIDER + "/" + planetId;
+    public static String terrainShapeController(int planetId) {
+        return APPLICATION_PATH + "/" + TERRAIN_SHAPE_CONTROLLER + "/" + planetId;
     }
 
     public static String fbClickTrackingReceiver() {

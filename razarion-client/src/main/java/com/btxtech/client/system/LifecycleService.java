@@ -10,8 +10,6 @@ import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.rest.ServerMgmtProvider;
-import com.btxtech.shared.system.alarm.Alarm;
-import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -34,8 +32,10 @@ import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
+import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
 import elemental.client.Browser;
@@ -46,6 +46,7 @@ import org.jboss.errai.enterprise.client.jaxrs.api.ResponseException;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -113,7 +114,7 @@ public class LifecycleService {
     @Inject
     private EditorService editorService;
     @Inject
-    private AlarmService alarmService;
+    private UserUiService userUiService;
     private Consumer<ServerState> serverRestartCallback;
     private SimpleScheduledFuture simpleScheduledFuture;
     private boolean beforeUnload;
@@ -124,11 +125,12 @@ public class LifecycleService {
         boot.addStartupProgressListener(clientScreenCover);
         boot.addStartupProgressListener(new StartupProgressListener() {
             @Override
-            public void onFallback(Alarm.Type alarmType) {
-                alarmService.riseAlarm(alarmType);
-                editorService.activateFallbackEditorMenuButton();
-                editorService.openClientAlarmView();
-                editorService.openServerAlarmView();
+            public void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
+                if(userUiService.isAdmin()) {
+                    editorService.activateFallbackEditorMenuButton();
+                    editorService.openClientAlarmView();
+                    editorService.openServerAlarmView();
+                }
             }
         });
         Browser.getDocument().addEventListener("beforeunload", evt -> beforeUnload = true);

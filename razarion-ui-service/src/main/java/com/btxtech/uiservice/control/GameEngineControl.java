@@ -31,6 +31,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleD
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
@@ -273,8 +274,7 @@ public abstract class GameEngineControl {
 
     private void onInitialisingFailed(String errorText) {
         if (deferredStartup != null) {
-            deferredStartup.failed(errorText);
-            deferredStartup.fallback(Alarm.Type.FAIL_START_GAME_ENGINE);
+            deferredStartup.failed(new AlarmRaisedException(Alarm.Type.FAIL_START_GAME_ENGINE, errorText));
             deferredStartup = null;
         }
     }

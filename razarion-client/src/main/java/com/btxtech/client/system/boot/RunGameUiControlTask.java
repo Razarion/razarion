@@ -39,7 +39,7 @@ public class RunGameUiControlTask extends AbstractStartupTask {
     protected void privateStart(DeferredStartup deferredStartup) {
         gameEngineControl.start();
         // gameEngineControl.enableTracking();
-        gameUiControl.start(deferredStartup);
+        gameUiControl.start();
         gameCanvas.startRenderLoop();
         perfmonService.start(boot.getGameSessionUuid());
         clientPerformanceTrackerService.start();

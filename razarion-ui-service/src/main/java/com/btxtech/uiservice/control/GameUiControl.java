@@ -5,9 +5,8 @@ import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.SlaveQuestInfo;
-import com.btxtech.shared.dto.WarmGameUiContext;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
+import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
@@ -16,11 +15,15 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmRaisedException;
+import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.Shape3DUtils;
@@ -36,7 +39,6 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.system.boot.Boot;
-import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.btxtech.uiservice.user.UserUiService;
@@ -53,8 +55,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import static com.btxtech.shared.system.alarm.Alarm.Type.NO_SCENES;
 
 /**
  * Created by Beat
@@ -125,9 +125,12 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public void setColdGameUiContext(ColdGameUiContext coldGameUiContext) {
         this.coldGameUiContext = coldGameUiContext;
-        gameEngineMode = coldGameUiContext.getWarmGameUiContext().getGameEngineMode();
         userUiService.init(coldGameUiContext.getUserContext());
         unlockUiService.setLevelUnlockConfigs(coldGameUiContext.getLevelUnlockConfigs());
+
+        AlarmRaiser.onNull(coldGameUiContext.getWarmGameUiContext(), Alarm.Type.NO_WARM_GAME_UI_CONTEXT);
+        gameEngineMode = coldGameUiContext.getWarmGameUiContext().getGameEngineMode();
+        AlarmRaiser.onNull(gameEngineMode, Alarm.Type.INVALID_GAME_UI_CONTEXT, "No engine mode", coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
         initServerQuest(coldGameUiContext.getWarmGameUiContext().getSlaveQuestInfo());
     }
 
@@ -145,6 +148,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         levelService.init(coldGameUiContext.getStaticGameConfig());
         inventoryTypeService.init(coldGameUiContext.getStaticGameConfig());
         gameUiControlInitEvent.fire(new GameUiControlInitEvent(coldGameUiContext));
+        AlarmRaiser.onNull(getPlanetConfig(),
+                Alarm.Type.INVALID_GAME_UI_CONTEXT,
+                "No planet",
+                coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
         terrainScrollHandler.setPlayGround(getPlanetConfig().getPlayGround());
     }
 
@@ -161,7 +168,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         terrainScrollHandler.setPlayGround(getPlanetConfig().getPlayGround());
     }
 
-    public void start(DeferredStartup deferredStartup) {
+    public void start() {
         if (!renderService.depthTextureSupported()) {
             modalDialogManager.showMessageDialog(I18nHelper.getConstants().oldBrowserDialogTitle(), I18nHelper.getConstants().oldBrowserDialogMessage());
         }
@@ -186,9 +193,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         } else {
             throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiContext.getWarmGameUiContext().getGameEngineMode());
         }
-        if(scenes.isEmpty()) {
-            deferredStartup.fallback(NO_SCENES);
-            return;
+        if (scenes.isEmpty()) {
+            throw new AlarmRaisedException(Alarm.Type.START_GAME_UI_CONTROL_FAILED,
+                    "No scenes defined",
+                    coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
         }
         runScene();
     }

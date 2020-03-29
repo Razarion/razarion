@@ -83,10 +83,17 @@ public enum StartupTestSeq implements StartupSeq {
         }
 
     },
-    TEST_DEFERRED_FALLBACK {
+    TEST_ALARM_RAISING {
         @Override
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
-            return DeferredFallbackTestTaskEnum.values();
+            return AlarmRaisingTestTaskEnum.values();
+        }
+
+    },
+    TEST_DEFERRED_ALARM_RAISING {
+        @Override
+        public StartupTaskEnum[] getAbstractStartupTaskEnum() {
+            return DeferredAlarmRaisingTestTaskEnum.values();
         }
 
     }

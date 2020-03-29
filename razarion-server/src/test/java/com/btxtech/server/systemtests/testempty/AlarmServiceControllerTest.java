@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests.fallback;
+package com.btxtech.server.systemtests.testempty;
 
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.dto.GameUiControlInput;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
 
-public class FallbackAlarmServiceControllerTest extends AbstractSystemTest {
+public class AlarmServiceControllerTest extends AbstractSystemTest {
     private AlarmServiceController serviceController;
     private GameUiContextController gameUiContextController;
 
@@ -41,7 +41,6 @@ public class FallbackAlarmServiceControllerTest extends AbstractSystemTest {
         getDefaultRestConnection().loginAdmin();
         gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
         List<Alarm.Type> alarms = serviceController.getAlarms().stream().map(alarm -> alarm.getType()).collect(Collectors.toList());
-        assertTrue(alarms.contains(Alarm.Type.NO_PLANETS));
         assertTrue(alarms.contains(Alarm.Type.USER_HAS_NO_LEVEL));
     }
 }

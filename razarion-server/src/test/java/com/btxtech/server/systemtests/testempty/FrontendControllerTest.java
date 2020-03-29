@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests.fallback;
+package com.btxtech.server.systemtests.testempty;
 
 import com.btxtech.server.ServerTestHelper;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class FallbackFrontendControllerTest extends AbstractSystemTest {
+public class FrontendControllerTest extends AbstractSystemTest {
     private FrontendController frontendController;
 
     @Before

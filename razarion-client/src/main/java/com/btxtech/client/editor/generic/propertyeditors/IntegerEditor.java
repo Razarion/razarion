@@ -27,7 +27,11 @@ public class IntegerEditor extends AbstractPropertyEditor<Integer> {
 
         htmlInputElement.addEventListener("input", event -> {
             try {
-                setPropertyValue(Integer.parseInt(htmlInputElement.value));
+                if (htmlInputElement.value != null && !htmlInputElement.value.trim().isEmpty()) {
+                    setPropertyValue(Integer.parseInt(htmlInputElement.value));
+                } else {
+                    setPropertyValue(null);
+                }
             } catch (Throwable t) {
                 exceptionHandler.handleException("Cannot set property value for property: " + getAbstractPropertyModel(), t);
             }

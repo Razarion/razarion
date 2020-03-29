@@ -18,12 +18,12 @@ package com.btxtech.uiservice.system.boot;
  * Date: 18.12010
  * Time: 14:18:24
  */
-public enum DeferredFallbackTestTaskEnum implements StartupTaskEnum {
-    TEST_1(DeferredStartupTestTask.class);
+public enum AlarmRaisingTestTaskEnum implements StartupTaskEnum {
+    RAISE_ALARM(AlarmRaisingTestTask.class);
 
     private Class<? extends AbstractStartupTask> taskClass;
 
-    DeferredFallbackTestTaskEnum(Class<? extends AbstractStartupTask> taskClass) {
+    AlarmRaisingTestTaskEnum(Class<? extends AbstractStartupTask> taskClass) {
         this.taskClass = taskClass;
     }
 

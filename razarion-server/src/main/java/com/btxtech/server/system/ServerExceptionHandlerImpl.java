@@ -12,17 +12,12 @@ import java.util.logging.Logger;
  * 28.06.2016.
  */
 @Singleton
-public class ServerExceptionHandlerImpl implements ExceptionHandler {
+public class ServerExceptionHandlerImpl extends ExceptionHandler {
     @Inject
     private Logger logger;
 
     @Override
-    public void handleException(Throwable t) {
-        logger.log(Level.SEVERE, t.getMessage(), t);
-    }
-
-    @Override
-    public void handleException(String message, Throwable t) {
+    protected void handleExceptionInternal(String message, Throwable t) {
         logger.log(Level.SEVERE, message, t);
     }
 }

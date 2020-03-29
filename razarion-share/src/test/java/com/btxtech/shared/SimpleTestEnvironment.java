@@ -19,14 +19,12 @@ import java.util.function.Supplier;
 public class SimpleTestEnvironment {
     private static ExceptionHandler exceptionHandler = new ExceptionHandler() {
         @Override
-        public void handleException(Throwable t) {
-            t.printStackTrace();
-        }
-
-        @Override
-        public void handleException(String message, Throwable t) {
+        protected void handleExceptionInternal(String message, Throwable t) {
             System.out.println(message);
-            t.printStackTrace();
+            if (t != null) {
+                t.printStackTrace();
+            }
+
         }
     };
 

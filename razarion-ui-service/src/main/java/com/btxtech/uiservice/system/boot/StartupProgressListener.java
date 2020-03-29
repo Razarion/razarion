@@ -1,7 +1,5 @@
 package com.btxtech.uiservice.system.boot;
 
-import com.btxtech.shared.system.alarm.Alarm;
-
 import java.util.List;
 
 /**
@@ -26,8 +24,5 @@ public interface StartupProgressListener {
     }
 
     default void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
-    }
-
-    default void onFallback(Alarm.Type alarmType) {
     }
 }

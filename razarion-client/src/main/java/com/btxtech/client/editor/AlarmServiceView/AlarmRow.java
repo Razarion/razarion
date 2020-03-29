@@ -19,21 +19,26 @@ public class AlarmRow implements IsElement {
     @Inject
     @DataField
     @Named("td")
-    private HTMLTableCellElement alarmText;
-    @Inject
-    @DataField
-    @Named("td")
     private HTMLTableCellElement alarmDate;
     @Inject
     @DataField
     @Named("td")
-    private HTMLTableCellElement alarmAdditional;
+    private HTMLTableCellElement alarmType;
+    @Inject
+    @DataField
+    @Named("td")
+    private HTMLTableCellElement alarmText;
+    @Inject
+    @DataField
+    @Named("td")
+    private HTMLTableCellElement alarmId;
 
     public void init(Alarm alarm) {
-        alarmText.textContent = alarm.getType().toString();
         alarmDate.textContent = alarm.getDate().toString();
-        if(alarm.getId() != null) {
-            alarmAdditional.textContent = Integer.toString(alarm.getId());
+        alarmType.textContent = alarm.getType().toString();
+        alarmText.textContent = alarm.getText();
+        if (alarm.getId() != null) {
+            alarmId.textContent = Integer.toString(alarm.getId());
         }
     }
 

@@ -3,11 +3,12 @@ package com.btxtech.client.cockpit;
 import com.btxtech.client.MainPanelService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
-import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.system.boot.StartupSeq;
+import com.btxtech.uiservice.system.boot.StartupTaskInfo;
+import com.btxtech.uiservice.user.UserUiService;
 import elemental.client.Browser;
 import elemental.dom.Element;
 import elemental.html.ProgressElement;
@@ -15,6 +16,7 @@ import elemental.html.ProgressElement;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -35,6 +37,8 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     private SimpleExecutorService simpleExecutorService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private UserUiService userUiService;
     private StoryCoverPanel storyCoverPanel;
     private int totalStartupTasks;
     private int finishedStartupTasks;
@@ -107,7 +111,9 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     }
 
     @Override
-    public void onFallback(Alarm.Type alarmType) {
-        removeLoadingCover();
+    public void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
+        if(userUiService.isAdmin()) {
+            removeLoadingCover();
+        }
     }
 }

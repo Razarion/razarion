@@ -5,7 +5,6 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
-import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.rest.GameUiContextController;
@@ -35,8 +34,8 @@ public class GameUiContextControllerImpl implements GameUiContextController {
         try {
             return gameUiContextCrudPersistence.loadCold(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
-            exceptionHandler.handleException("Using fallback. No ColdGameUiContext configured", e);
-            return FallbackConfig.coldGameUiControlConfig(userContext);
+            exceptionHandler.handleException(e);
+            return new ColdGameUiContext().setUserContext(userContext);
         }
     }
 
@@ -46,8 +45,8 @@ public class GameUiContextControllerImpl implements GameUiContextController {
             UserContext userContext = userService.getUserContextFromSession();
             return gameUiContextCrudPersistence.loadWarm(sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
-            exceptionHandler.handleException("Using fallback. No WarmGameUiContext configured", e);
-            return FallbackConfig.warmGameUiControlConfig();
+            exceptionHandler.handleException(e);
+            return null;
         }
     }
 }
