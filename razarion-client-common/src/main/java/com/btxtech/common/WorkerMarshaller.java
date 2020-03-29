@@ -362,7 +362,11 @@ public class WorkerMarshaller {
     private static String toJson(Object object) {
         RestClient.setJacksonMarshallingActive(false); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         try {
-            return MarshallingWrapper.toJSON(object);
+            if (object == null) {
+                return "null";
+            } else {
+                return MarshallingWrapper.toJSON(object);
+            }
         } finally {
             RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         }
@@ -371,7 +375,11 @@ public class WorkerMarshaller {
     private static <T> T fromJson(String json, Class<T> type) {
         RestClient.setJacksonMarshallingActive(false); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         try {
-            return MarshallingWrapper.fromJSON(json, type);
+            if ("null".equals(json)) {
+                return null;
+            } else {
+                return MarshallingWrapper.fromJSON(json, type);
+            }
         } finally {
             RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         }
