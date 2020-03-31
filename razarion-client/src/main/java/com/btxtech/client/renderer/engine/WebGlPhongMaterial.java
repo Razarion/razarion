@@ -23,12 +23,12 @@ public class WebGlPhongMaterial {
     public WebGlPhongMaterial(WebGlFacade webGlFacade, PhongMaterialConfig phongMaterialConfig, String prefix) {
         this.webGlFacade = webGlFacade;
         this.phongMaterialConfig = phongMaterialConfig;
-        texture = webGlFacade.createWebGLTexture(phongMaterialConfig.getTextureId(), prefix + UNIFROM_LOCATION_TEXTURE);
-        scale = webGlFacade.getUniformLocation(prefix + UNIFROM_LOCATION_SCALE);
-        bumpMap = webGlFacade.createWebGLTexture(phongMaterialConfig.getBumpMapId(), prefix + UNIFROM_LOCATION_BUMP_MAP);
-        bumpMapDepth = webGlFacade.getUniformLocation(prefix + UNIFROM_LOCATION_BUMP_MAP_DEPTH);
-        shininess = webGlFacade.getUniformLocation(prefix + UNIFROM_LOCATION_SHININESS);
-        specularStrength = webGlFacade.getUniformLocation(prefix + UNIFROM_LOCATION_SPECULAR_STRENGTH);
+        texture = webGlFacade.createWebGLTexture(phongMaterialConfig.getTextureId(), variableName(prefix, UNIFROM_LOCATION_TEXTURE));
+        scale = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_SCALE));
+        bumpMap = webGlFacade.createWebGLTexture(phongMaterialConfig.getBumpMapId(), variableName(prefix, UNIFROM_LOCATION_BUMP_MAP));
+        bumpMapDepth = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_BUMP_MAP_DEPTH));
+        shininess = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_SHININESS));
+        specularStrength = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_SPECULAR_STRENGTH));
     }
 
     public void activate() {
@@ -38,5 +38,13 @@ public class WebGlPhongMaterial {
         webGlFacade.uniform1f(bumpMapDepth, phongMaterialConfig.getBumpMapDepth());
         webGlFacade.uniform1f(shininess, phongMaterialConfig.getShininess());
         webGlFacade.uniform1f(specularStrength, phongMaterialConfig.getSpecularStrength());
+    }
+
+    private String variableName(String prefix, String name) {
+        if (prefix != null && prefix.trim().length() > 0) {
+            return prefix + name.substring(0, 1).toUpperCase() + name.substring(1);
+        } else {
+            return name;
+        }
     }
 }
