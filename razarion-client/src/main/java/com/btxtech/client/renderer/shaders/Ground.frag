@@ -13,10 +13,10 @@ varying vec4 vShadowCoord;
 // Top
 uniform sampler2D topMaterialTexture;
 uniform float topMaterialScale;
-uniform sampler2D uTopBumpMap;
-uniform float uTopBumpMapDepth;
-uniform float uTopShininess;
-uniform float uTopSpecularStrength;
+uniform sampler2D topMaterialBumpMap;
+uniform float topMaterialBumpMapDepth;
+uniform float topMaterialShininess;
+uniform float topMaterialSpecularStrength;
 #ifdef  RENDER_GROUND_BOTTOM_TEXTURE
 // Bottom
 uniform sampler2D uBottomTexture;
@@ -75,7 +75,7 @@ vec3 phong(sampler2D uTexture, float uTextureScale, sampler2D uBumpMap, float uB
 }
 
 void main(void) {
-    vec3 top = phong(topMaterialTexture, topMaterialScale, uTopBumpMap, uTopBumpMapDepth, uTopShininess, uTopSpecularStrength);
+    vec3 top = phong(topMaterialTexture, topMaterialScale, topMaterialBumpMap, topMaterialBumpMapDepth, topMaterialShininess, topMaterialSpecularStrength);
     #ifndef RENDER_GROUND_BOTTOM_TEXTURE
     gl_FragColor = vec4(top, 1.0);
     #endif
