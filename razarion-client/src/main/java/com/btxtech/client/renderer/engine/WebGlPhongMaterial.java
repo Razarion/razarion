@@ -17,7 +17,7 @@ public class WebGlPhongMaterial {
     private WebGLUniformLocation scale;
     private WebGlUniformTexture bumpMap;
     private WebGLUniformLocation bumpMapDepth;
-    private WebGLUniformLocation shiniess;
+    private WebGLUniformLocation shininess;
     private WebGLUniformLocation specularStrength;
 
     public WebGlPhongMaterial(WebGlFacade webGlFacade, PhongMaterialConfig phongMaterialConfig, String prefix) {
@@ -27,7 +27,7 @@ public class WebGlPhongMaterial {
         scale = webGlFacade.getUniformLocation(prefix + UNIFROM_LOCATION_SCALE);
         bumpMap = webGlFacade.createWebGLTexture(phongMaterialConfig.getBumpMapId(), prefix + UNIFROM_LOCATION_BUMP_MAP);
         bumpMapDepth = webGlFacade.getUniformLocation(prefix + UNIFROM_LOCATION_BUMP_MAP_DEPTH);
-        shiniess = webGlFacade.getUniformLocation(prefix + UNIFROM_LOCATION_SHININESS);
+        shininess = webGlFacade.getUniformLocation(prefix + UNIFROM_LOCATION_SHININESS);
         specularStrength = webGlFacade.getUniformLocation(prefix + UNIFROM_LOCATION_SPECULAR_STRENGTH);
     }
 
@@ -36,7 +36,7 @@ public class WebGlPhongMaterial {
         webGlFacade.uniform1f(scale, phongMaterialConfig.getScale());
         bumpMap.activate();
         webGlFacade.uniform1f(bumpMapDepth, phongMaterialConfig.getBumpMapDepth());
-        webGlFacade.uniform1f(shiniess, phongMaterialConfig.getShininess());
+        webGlFacade.uniform1f(shininess, phongMaterialConfig.getShininess());
         webGlFacade.uniform1f(specularStrength, phongMaterialConfig.getSpecularStrength());
     }
 }

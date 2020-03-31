@@ -59,10 +59,10 @@ public class WebGLTextureContainer {
 
     public void setupTextures() {
         for (Integer imageId : gameUiControl.getAllTextureIds()) {
-            imageUiService.requestImage(imageId, imageElement -> setupTexture(imageId, Js.cast(imageElement)));
+            imageUiService.requestImage(imageId, imageElement -> setupTexture(imageId, Js.uncheckedCast(imageElement)));
         }
         for (Integer imageId : gameUiControl.getAllBumpTextureIds()) {
-            imageUiService.requestImage(imageId, imageElement -> setupTextureForBumpMap(imageId, Js.cast(imageElement)));
+            imageUiService.requestImage(imageId, imageElement -> setupTextureForBumpMap(imageId, Js.uncheckedCast(imageElement)));
         }
         setupEmptyTerrainMarkerTexture();
     }
@@ -74,7 +74,7 @@ public class WebGLTextureContainer {
         }
         webGLTexture = gameCanvas.getCtx3d().createTexture();
         WebGLTexture finalWebGLTexture = webGLTexture;
-        imageUiService.requestImage(imageId, imageElement -> bindTexture(Js.cast(imageElement), finalWebGLTexture));
+        imageUiService.requestImage(imageId, imageElement -> bindTexture(Js.uncheckedCast(imageElement), finalWebGLTexture));
         return webGLTexture;
     }
 
@@ -85,7 +85,7 @@ public class WebGLTextureContainer {
         }
         webGLTexture = gameCanvas.getCtx3d().createTexture();
         WebGLTexture finalWebGLTexture = webGLTexture;
-        imageUiService.requestImage(imageId, imageElement -> bindTextureForBumpMap(Js.cast(imageElement), finalWebGLTexture));
+        imageUiService.requestImage(imageId, imageElement -> bindTextureForBumpMap(Js.uncheckedCast(imageElement), finalWebGLTexture));
         return webGLTexture;
     }
 
