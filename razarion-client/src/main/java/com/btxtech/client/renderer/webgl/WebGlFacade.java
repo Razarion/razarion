@@ -215,6 +215,12 @@ public class WebGlFacade {
         return new WebGlPhongMaterial(this, phongMaterialConfig, prefix);
     }
 
+    public WebGlUniformTexture createFakeWebGLTexture(String samplerUniformName) {
+        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
+        webGlUniformTexture.setWebGLTexture(textureContainer.getFakeTexture());
+        return webGlUniformTexture;
+    }
+
     private TextureIdHandler.WebGlTextureId createWebGlTextureId() {
         return textureIdHandler.create();
     }

@@ -23,9 +23,17 @@ public class WebGlPhongMaterial {
     public WebGlPhongMaterial(WebGlFacade webGlFacade, PhongMaterialConfig phongMaterialConfig, String prefix) {
         this.webGlFacade = webGlFacade;
         this.phongMaterialConfig = phongMaterialConfig;
-        texture = webGlFacade.createWebGLTexture(phongMaterialConfig.getTextureId(), variableName(prefix, UNIFROM_LOCATION_TEXTURE));
+        if (phongMaterialConfig.getTextureId() != null) {
+            texture = webGlFacade.createWebGLTexture(phongMaterialConfig.getTextureId(), variableName(prefix, UNIFROM_LOCATION_TEXTURE));
+        } else {
+            texture = webGlFacade.createFakeWebGLTexture(variableName(prefix, UNIFROM_LOCATION_TEXTURE));
+        }
         scale = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_SCALE));
-        bumpMap = webGlFacade.createWebGLTexture(phongMaterialConfig.getBumpMapId(), variableName(prefix, UNIFROM_LOCATION_BUMP_MAP));
+        if (phongMaterialConfig.getBumpMapId() != null) {
+            bumpMap = webGlFacade.createWebGLTexture(phongMaterialConfig.getBumpMapId(), variableName(prefix, UNIFROM_LOCATION_BUMP_MAP));
+        } else {
+            bumpMap = webGlFacade.createFakeWebGLTexture(variableName(prefix, UNIFROM_LOCATION_BUMP_MAP));
+        }
         bumpMapDepth = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_BUMP_MAP_DEPTH));
         shininess = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_SHININESS));
         specularStrength = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_SPECULAR_STRENGTH));
@@ -35,9 +43,9 @@ public class WebGlPhongMaterial {
         texture.activate();
         webGlFacade.uniform1f(scale, phongMaterialConfig.getScale());
         bumpMap.activate();
-        webGlFacade.uniform1f(bumpMapDepth, phongMaterialConfig.getBumpMapDepth());
-        webGlFacade.uniform1f(shininess, phongMaterialConfig.getShininess());
-        webGlFacade.uniform1f(specularStrength, phongMaterialConfig.getSpecularStrength());
+        webGlFacade.uniform1f(bumpMapDepth, defaultIfNull(phongMaterialConfig.getBumpMapDepth()));
+        webGlFacade.uniform1f(shininess, defaultIfNull(phongMaterialConfig.getShininess()));
+        webGlFacade.uniform1f(specularStrength, defaultIfNull(phongMaterialConfig.getSpecularStrength()));
     }
 
     private String variableName(String prefix, String name) {
@@ -47,4 +55,13 @@ public class WebGlPhongMaterial {
             return name;
         }
     }
+
+    private double defaultIfNull(Double value) {
+        if (value != null) {
+            return value;
+        } else {
+            return 0.0;
+        }
+    }
+
 }

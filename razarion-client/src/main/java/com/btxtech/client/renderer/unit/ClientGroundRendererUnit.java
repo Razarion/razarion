@@ -72,7 +72,6 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
         AlarmRaiser.onNull(uiTerrainTile.getGroundConfig(), Alarm.Type.RENDER_GROUND_FAILED, "No GroundConfig in Planet: ", gameUiControl.getPlanetConfig().getId());
         AlarmRaiser.onNull(uiTerrainTile.getGroundConfig().getTopMaterial(), Alarm.Type.RENDER_GROUND_FAILED, "No top material on GroundConfig: ", uiTerrainTile.getGroundConfig().getId());
-        AlarmRaiser.onNull(uiTerrainTile.getGroundConfig().getTopMaterial().getTextureId(), Alarm.Type.RENDER_GROUND_FAILED, "No top material texture on GroundConfig: ", uiTerrainTile.getGroundConfig().getId());
         topMaterial = webGlFacade.createPhongMaterial(uiTerrainTile.getGroundConfig().getTopMaterial(), "topMaterial");
 //        splattingTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getSplattingId(), "uSplatting", "uSplattingScale", uiTerrainTile.getSplattingScale());
 //        bottomTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", uiTerrainTile.getBottomTextureScale());
