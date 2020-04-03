@@ -153,7 +153,11 @@ a:active {
     padding: 0;
     border: 0;
     order: 10;
-    overflow: auto;
+}
+
+.root-property-section {
+    overflow-y: auto;
+    height: inherit;
 }
 /** -------------------------- MAIN ENDS -------------------------- */
 
