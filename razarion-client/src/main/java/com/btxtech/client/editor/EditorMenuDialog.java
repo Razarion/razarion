@@ -147,11 +147,13 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("clientAlarmServiceButton")
     private void onClientAlarmServiceButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openClientAlarmView();
     }
 
     @EventHandler("serverAlarmServiceButton")
     private void onServerAlarmServiceButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openServerAlarmView();
     }
 
@@ -163,106 +165,127 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("renderEngineButton")
     private void onRenderEngineButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(RenderEngineEditorPanel.class, "???Unknown");
     }
 
     @EventHandler("gameEngineButton")
     private void onGameEngineButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(GameEngineEditorPanel.class, "???Unknown");
     }
 
     @EventHandler("baseMgmtButton")
     private void onBaseMgmtButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(BaseMgmtEditorPanel.class, "???Unknown");
     }
 
     @EventHandler("planetButton")
     private void onPlanetButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openGenericCrudEditor(PlanetEditorController.class, "Planets");
     }
 
     @EventHandler("planetVisualConfigButton")
     private void onPanetVisualConfigButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(PlanetVisualConfigPanel.class, "???Unknown");
     }
 
     @EventHandler("terrainButton")
     private void onTerrainButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(TerrainEditorSidebar.class, "???Unknown");
     }
 
     @EventHandler("resourceRegionButton")
     private void onResourceRegionsButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(ResourceRegionSidebar.class, "???Unknown");
     }
 
     @EventHandler("boxRegionButton")
     private void onBoxRegionsButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(BoxRegionSidebar.class, "???Unknown");
     }
 
     @EventHandler("startRegionsButton")
     private void startRegionsButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(StartRegionSidebar.class, "???Unknown");
     }
 
     @EventHandler("levelQuestButton")
     private void levelQuestButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(LevelQuestSidebar.class, "???Unknown");
     }
 
     @EventHandler("inventoryItemButton")
     private void inventoryItemButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(InventoryItemCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("botButton")
     private void botButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(BotSidebar.class, "???Unknown");
     }
 
     @EventHandler("botSceneButton")
     private void botSceneButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(BotSceneSidebar.class, "???Unknown");
     }
 
     @EventHandler("sceneConfigButton")
     private void sceneConfigButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(SceneConfigSidebar.class, "???Unknown");
     }
 
     @EventHandler("slopeButton")
     private void onSlopeButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(SlopeConfigCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("groundButton")
     private void onGroundButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openGenericCrudEditor(GroundEditorController.class, "Grounds");
     }
 
     @EventHandler("waterButton")
     private void onWaterButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(WaterSidebar.class, "???Unknown");
     }
 
     @EventHandler("baseItemButton")
     private void onBaseItemButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(BaseItemTypeCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("resourceItemButton")
     private void onResourceItemButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(ResourceItemTypeCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("boxItemButton")
     private void onBoxItemButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(BoxItemTypeCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("terrainObjectButton")
     private void onTerrainObjectButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(TerrainObjectCrudSidebar.class, "???Unknown");
     }
 
@@ -280,26 +303,31 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("shape3DButton")
     private void onShape3DButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(Shape3DCrudeSidebar.class, "???Unknown");
     }
 
     @EventHandler("particleButton")
     private void particleButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(ParticleCrudeSidebar.class, "???Unknown");
     }
 
     @EventHandler("levelConfigButton")
     private void levelConfigButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openGenericCrudEditor(LevelEditorController.class, "Levels");
     }
 
     @EventHandler("i18nPanelButton")
     private void i18nPanelButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openEditor(I18nPanel.class, "???Unknown");
     }
 
     @EventHandler("gameUiContextButton")
     private void gameUiContextButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         editorService.openGenericCrudEditor(GameUiContextEditorController.class, "Game Ui Context");
     }
 
