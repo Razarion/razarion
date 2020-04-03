@@ -124,6 +124,10 @@ public class TerrainTypeService {
 
 
     // Methods used by the editors -----------------------------------------------------------------
+    public void overrideGroundConfig(GroundConfig groundConfig) {
+        groundConfigs.put(groundConfig.getId(), groundConfig);
+    }
+
     public void overrideTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
         terrainObjectConfigs.put(terrainObjectConfig.getId(), terrainObjectConfig);
     }

@@ -71,11 +71,6 @@ public class TerrainUiService {
         clearTerrainTiles();
     }
 
-    public void onEditorTerrainChanged() {
-        terrainObjectConfigModelMatrices.clear();
-        clearTerrainTiles();
-    }
-
     private void clearTerrainTiles() {
         for (UiTerrainTile uiTerrainTile : displayTerrainTiles.values()) {
             uiTerrainTile.dispose();
@@ -260,15 +255,19 @@ public class TerrainUiService {
     }
 
     public void enableEditMode(GroundConfig groundConfig) {
-        // TODO terrainTypeService.setGroundConfigs(groundConfig);
-        // TODO displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundConfig));
-        // TODO  cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundConfig));
+        terrainTypeService.overrideGroundConfig(groundConfig);
+        onEditorTerrainChanged();
     }
 
     public void enableEditMode(SlopeConfig slopeConfig) {
         terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig);
         // TODO displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeConfig));
         cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeConfig));
+    }
+
+    public void onEditorTerrainChanged() {
+        terrainObjectConfigModelMatrices.clear();
+        clearTerrainTiles();
     }
 
     public boolean isLoaded() {

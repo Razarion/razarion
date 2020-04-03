@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.client.editor.generic.updater.EngineUpdater;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -18,6 +19,8 @@ public class GenericCrudControllerEditor extends AbstractCrudeEditor<ObjectNameI
     // private Logger logger = Logger.getLogger(GenericCrudControllerEditor.class.getName());
     @Inject
     private ClientExceptionHandlerImpl clientExceptionHandler;
+    @Inject
+    private EngineUpdater engineUpdater;
     private Class<? extends CrudController> crudControllerClass;
     private List<ObjectNameId> objectNameIds = new ArrayList<>(); // Needs to be initialized due to frameworks restriction
 
@@ -40,6 +43,7 @@ public class GenericCrudControllerEditor extends AbstractCrudeEditor<ObjectNameI
                     objectNameIds.add(objectNameIdProvider.createObjectNameId());
                     fire();
                     fireSelection(objectNameIdProvider.createObjectNameId());
+                    engineUpdater.connect(objectNameIdProvider);
                 },
                 clientExceptionHandler.busErrorCallback("GenericCrudControllerEditor.create() " + crudControllerClass),
                 crudControllerClass).create();
@@ -66,7 +70,10 @@ public class GenericCrudControllerEditor extends AbstractCrudeEditor<ObjectNameI
 
     @Override
     public void getInstance(ObjectNameId id, Consumer<ObjectNameIdProvider> callback) {
-        MessageBuilder.createCall((RemoteCallback<ObjectNameIdProvider>) callback::accept,
+        MessageBuilder.createCall((RemoteCallback<ObjectNameIdProvider>) t -> {
+                    callback.accept(t);
+                    engineUpdater.connect(t);
+                },
                 clientExceptionHandler.busErrorCallback("GenericCrudControllerEditor.objectNameIdProvider() " + crudControllerClass),
                 crudControllerClass).read(id.getId());
     }
