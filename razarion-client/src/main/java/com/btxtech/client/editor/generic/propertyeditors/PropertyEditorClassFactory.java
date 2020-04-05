@@ -18,8 +18,8 @@ public class PropertyEditorClassFactory {
         GENERIC_TYPES.put(Boolean.class, BooleanEditor.class);
         GENERIC_TYPES.put(Rectangle.class, RectangleEditor.class);
         GENERIC_TYPES.put(Rectangle2D.class, Rectangle2DEditor.class);
-        GENERIC_TYPES.put(DecimalPosition.class, null); // TODO
-        GENERIC_TYPES.put(Index.class, null);// TODO
+        GENERIC_TYPES.put(DecimalPosition.class, DecimalPositionEditor.class);
+        GENERIC_TYPES.put(Index.class, IndexEditor.class);
     }
 
     public static Class<? extends AbstractPropertyEditor> get(Class type) {
