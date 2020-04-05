@@ -22,7 +22,7 @@ public class ProjectionTransformation {
     private static final int Z_FAR_FALLBACK = 5000000;
     private static final double MIN_FOV_Y = Math.toRadians(30);
     private static final double MAX_FOV_Y = Math.toRadians(70);
-    private static final double DEFAULT_FOV_Y = Math.toRadians(45);
+    private static final double DEFAULT_FOV_Y = Math.toRadians(50);
     // private Logger logger = Logger.getLogger(ProjectionTransformation.class.getName());
     @Inject
     private Camera camera;

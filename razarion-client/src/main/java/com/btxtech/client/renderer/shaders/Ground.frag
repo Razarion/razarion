@@ -4,10 +4,12 @@ precision mediump float;
 varying vec3 vWorldVertexPosition;
 varying vec3 vViewPosition;
 varying vec3 vNormal;
+uniform highp mat4 normalMatrix;
+
 // Light
-const vec3 DIRECTIONAL_LIGHT_COLOR = vec3(0.8, 0.8, 0.8);
-const vec3 DIRECTIONAL_LIGHT_DIRECTION = vec3(0.0, 0.0, -1.0);
-const vec3 AMBIENT_LIGTH_COLOR = vec3(0.2, 0.2, 0.2);
+uniform vec3 directLightDirection;
+uniform vec3 directLightColor;
+uniform vec3 ambientLightColor;
 // Shadow
 varying vec4 vShadowCoord;
 // Top
@@ -32,6 +34,7 @@ uniform float uSplattingScale2;
 uniform float uSplattingFadeThreshold;
 uniform float uSplattingOffset;
 #endif
+vec3 correctedDirectLightDirection;
 
 vec3 vec3ToReg(vec3 normVec) {
     return normVec * 0.5 + 0.5;
@@ -63,18 +66,18 @@ vec3 perturbNormalArb(vec3 surf_pos, vec3 surf_norm, vec2 dHdxy) {
 vec3 phong(sampler2D uTexture, float uTextureScale, sampler2D uBumpMap, float uBumpMapDepth, float uShininess, float uSpecularStrength) {
     vec3 normal = perturbNormalArb(-vViewPosition, normalize(vNormal), dHdxy_fwd(uBumpMap, uBumpMapDepth, uTextureScale));
     vec3 viewDir = normalize(vViewPosition);
-    vec3 directLightColor = DIRECTIONAL_LIGHT_COLOR;
-    vec3 directLightDirection = DIRECTIONAL_LIGHT_DIRECTION;
 
     vec4 texture = texture2D(uTexture, vWorldVertexPosition.xy / uTextureScale);
-    vec3 diffuse = max(dot(normal, directLightDirection), 0.0) * directLightColor;
-    vec3 halfwayDir = normalize(directLightDirection + viewDir);
+    vec3 diffuse = max(dot(normal, correctedDirectLightDirection), 0.0) * directLightColor;
+    vec3 halfwayDir = normalize(correctedDirectLightDirection + viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), uShininess);
     vec3 specular = uSpecularStrength * spec * directLightColor;
-    return (AMBIENT_LIGTH_COLOR + diffuse) * texture.rgb + specular;
+    return (ambientLightColor + diffuse) * texture.rgb + specular;
 }
 
 void main(void) {
+    correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
+
     vec3 top = phong(topMaterialTexture, topMaterialScale, topMaterialBumpMap, topMaterialBumpMapDepth, topMaterialShininess, topMaterialSpecularStrength);
     #ifndef RENDER_GROUND_BOTTOM_TEXTURE
     gl_FragColor = vec4(top, 1.0);

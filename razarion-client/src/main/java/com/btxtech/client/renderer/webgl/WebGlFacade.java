@@ -129,6 +129,9 @@ public class WebGlFacade {
         return webGlProgram.getUniformLocation(uniformName);
     }
 
+    public WebGLUniformLocation getUniformLocationAlarm(String uniformName) {
+        return webGlProgram.getUniformLocationAlarm(uniformName);
+    }
 
     public void useProgram() {
         webGlProgram.useProgram();
@@ -147,11 +150,17 @@ public class WebGlFacade {
     }
 
     public void uniform3f(WebGLUniformLocation webGLUniformLocation, Vertex vertex) {
+        if(webGLUniformLocation == null) {
+            return;
+        }
         gameCanvas.getCtx3d().uniform3f(webGLUniformLocation, (float) vertex.getX(), (float) vertex.getY(), (float) vertex.getZ());
         WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
     }
 
     public void uniform3fNoAlpha(WebGLUniformLocation uniformLocation, Color color) {
+        if(uniformLocation == null) {
+            return;
+        }
         gameCanvas.getCtx3d().uniform3f(uniformLocation, (float) color.getR(), (float) color.getG(), (float) color.getB());
         WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
     }
@@ -186,6 +195,10 @@ public class WebGlFacade {
 
     public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName) {
         return createWebGLTexture(imageId, samplerUniformName, null, null);
+    }
+
+    public WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName) {
+        return createWebGLBumpMapTexture(imageId, samplerUniformName, null, null, null);
     }
 
     public WebGlUniformTexture createEmptyWebGLTexture(String samplerUniformName) {

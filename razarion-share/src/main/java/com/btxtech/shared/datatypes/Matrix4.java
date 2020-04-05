@@ -236,7 +236,7 @@ public class Matrix4 {
         if (MathHelper.compareToZeroWithPrecision(vAfterRotation.magnitude(), 0.0)) {
             throw new IllegalArgumentException("vAfterRotation must be normalized: " + vBeforeRotation);
         }
-        if(vBeforeRotation.equalsDelta(vAfterRotation, 0.000001)) {
+        if (vBeforeRotation.equalsDelta(vAfterRotation, 0.000001)) {
             return Matrix4.IDENTITY;
         }
         Vertex a = vBeforeRotation.cross(vAfterRotation).normalize(1);
@@ -312,6 +312,13 @@ public class Matrix4 {
                 + ", "
                 + Arrays.toString(numbers[3])
                 + "]}";
+    }
+
+    public String toPrettyString() {
+        return numberAt(0, 0) + ", " + numberAt(1, 0) + ", " + numberAt(2, 0) + ", " + numberAt(3, 0) + "\n" +
+                numberAt(0, 1) + ", " + numberAt(1, 1) + ", " + numberAt(2, 1) + ", " + numberAt(3, 1) + "\n" +
+                numberAt(0, 2) + ", " + numberAt(1, 2) + ", " + numberAt(2, 2) + ", " + numberAt(3, 2) + "\n" +
+                numberAt(0, 3) + ", " + numberAt(1, 3) + ", " + numberAt(2, 3) + ", " + numberAt(3, 3);
     }
 
     public boolean equalsDelta(Matrix4 other, double delta) {
@@ -511,10 +518,4 @@ public class Matrix4 {
         return field;
     }
 
-    public static void printMatrix(Matrix4 matrix4) {
-        System.out.println(matrix4.numberAt(0, 0) + ", " + matrix4.numberAt(1, 0) + ", " + matrix4.numberAt(2, 0) + ", " + matrix4.numberAt(3, 0));
-        System.out.println(matrix4.numberAt(0, 1) + ", " + matrix4.numberAt(1, 1) + ", " + matrix4.numberAt(2, 1) + ", " + matrix4.numberAt(3, 1));
-        System.out.println(matrix4.numberAt(0, 2) + ", " + matrix4.numberAt(1, 2) + ", " + matrix4.numberAt(2, 2) + ", " + matrix4.numberAt(3, 2));
-        System.out.println(matrix4.numberAt(0, 3) + ", " + matrix4.numberAt(1, 3) + ", " + matrix4.numberAt(2, 3) + ", " + matrix4.numberAt(3, 3));
-    }
 }

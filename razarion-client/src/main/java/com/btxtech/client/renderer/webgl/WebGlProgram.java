@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.renderer.ViewService;
 import elemental2.webgl.WebGLProgram;
 import elemental2.webgl.WebGLRenderingContext;
@@ -9,6 +10,8 @@ import elemental2.webgl.WebGLUniformLocation;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+
+import static com.btxtech.shared.system.alarm.Alarm.Type.RENDER_ENGINE_UNIFORM;
 
 /**
  * Created by Beat
@@ -24,6 +27,8 @@ public class WebGlProgram {
     private GameCanvas gameCanvas;
     @Inject
     private ViewService viewService;
+    @Inject
+    private AlarmService alarmService;
     private Runnable transformUnregisterHandler;
     private Runnable shadowLookupUnregisterHandler;
     private WebGLUniformLocation viewMatrixUniformLocation;
@@ -109,6 +114,14 @@ public class WebGlProgram {
         WebGLUniformLocation uniform = gameCanvas.getCtx3d().getUniformLocation(program, uniformName);
         if (uniform == null) {
             throw new IllegalArgumentException("No uniform location for '" + uniformName + "' in OpenGl program.");
+        }
+        return uniform;
+    }
+
+    public WebGLUniformLocation getUniformLocationAlarm(String uniformName) {
+        WebGLUniformLocation uniform = gameCanvas.getCtx3d().getUniformLocation(program, uniformName);
+        if (uniform == null) {
+            alarmService.riseAlarm(RENDER_ENGINE_UNIFORM,"No uniform location for '" + uniformName + "' in OpenGl program.");
         }
         return uniform;
     }

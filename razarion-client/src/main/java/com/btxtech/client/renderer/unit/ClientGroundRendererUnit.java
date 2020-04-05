@@ -35,13 +35,13 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     private GameUiControl gameUiControl;
     @Inject
     private InGameQuestVisualizationService inGameQuestVisualizationService;
-    private Vec3Float32ArrayShaderAttribute vertices;
+    private Vec3Float32ArrayShaderAttribute positions;
     private Vec3Float32ArrayShaderAttribute normals;
     private WebGlPhongMaterial topMaterial;
 //    private WebGlUniformTexture splattingTexture;
 //    private WebGlUniformTexture bottomTexture;
 //    private WebGlUniformTexture bottomBm;
-//    private LightUniforms lightUniforms;
+    private LightUniforms lightUniforms;
 //    private SpecularUniforms specularUniforms;
 //    private WebGLUniformLocation uBottomBmDepth;
 //    private WebGLUniformLocation uSplattingGroundBmMultiplicator;
@@ -53,9 +53,9 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     public void init() {
         webGlFacade.enableOESStandartDerivatives();
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader()).enableTransformation(true).enableReceiveShadow());
-        vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
-//        lightUniforms = new LightUniforms(null, webGlFacade);
+        lightUniforms = new LightUniforms(webGlFacade);
 //        specularUniforms = new SpecularUniforms(null, webGlFacade);
 //        uBottomBmDepth = webGlFacade.getUniformLocation("uBottomBmDepth");
 //        uSplattingGroundBmMultiplicator = webGlFacade.getUniformLocation("uSplattingGroundBmMultiplicator");
@@ -78,7 +78,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 //        bottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainTile.getBottomBmId(), "uBottomBm", "uBottomBmScale", uiTerrainTile.getBottomBmScale(), "uBottomBmOnePixel");
 
         Float32Array groundPositions = Js.uncheckedCast(uiTerrainTile.getTerrainTile().getGroundPositions());
-        vertices.fillFloat32Array(groundPositions);
+        positions.fillFloat32Array(groundPositions);
         normals.fillFloat32Array(Js.uncheckedCast(uiTerrainTile.getTerrainTile().getGroundNorms()));
         setElementCount((int) (groundPositions.length / Vertex.getComponentsPerVertex()));
     }
@@ -87,14 +87,14 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     public void draw(UiTerrainTile uiTerrainTile) {
         webGlFacade.useProgram();
 
-//        lightUniforms.setLightUniforms(webGlFacade);
+        lightUniforms.setLightUniforms(webGlFacade);
 //        specularUniforms.setUniforms(uiTerrainTile.getSpecularLightConfig(), webGlFacade);
 //        webGlFacade.uniform1f(uBottomBmDepth, uiTerrainTile.getBottomBmDepth());
 //        webGlFacade.uniform1f(uSplattingGroundBmMultiplicator, uiTerrainTile.getSplattingGroundBmMultiplicator());
 
         webGlFacade.activateReceiveShadow();
 
-        vertices.activate();
+        positions.activate();
         normals.activate();
 
         topMaterial.activate();
@@ -120,7 +120,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 
     @Override
     public void dispose() {
-        vertices.deleteBuffer();
+        positions.deleteBuffer();
         normals.deleteBuffer();
     }
 }

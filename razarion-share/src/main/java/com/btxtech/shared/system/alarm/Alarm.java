@@ -13,7 +13,8 @@ public class Alarm {
         START_GAME_UI_CONTROL_FAILED,
         NO_SCENES,
         FAIL_START_GAME_ENGINE,
-        RENDER_GROUND_FAILED
+        RENDER_GROUND_FAILED,
+        RENDER_ENGINE_UNIFORM
     }
     private Type type;
     private Date date;

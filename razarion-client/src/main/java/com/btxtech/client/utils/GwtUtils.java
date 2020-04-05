@@ -5,7 +5,6 @@ import com.google.gwt.user.client.ui.Widget;
 import elemental.dom.Element;
 import elemental.events.Event;
 import elemental.events.MouseEvent;
-import elemental.events.WheelEvent;
 import elemental.html.ImageElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
@@ -36,12 +35,12 @@ public class GwtUtils {
         return event.buttons;
     }-*/;
 
-    public static boolean isButtonResponsible4Event(MouseEvent event, int button) {
-        return event.getButton() == button;
+    public static boolean isButtonResponsible4Event(elemental2.dom.MouseEvent event, double button) {
+        return event.button == button;
     }
 
-    public static boolean isButtonDown(MouseEvent event, int button) {
-        return (getButtons(event) & button) == button;
+    public static boolean isButtonDown(elemental2.dom.MouseEvent event, int button) {
+        return ((int)event.button & button) == button;
     }
 
     public static void preventContextMenu(Widget widget) {
@@ -82,10 +81,6 @@ public class GwtUtils {
                 element.webkitRequestFullscreen();
             }
         }
-    }-*/;
-
-    public static native double getDeltaYFromWheelEvent(WheelEvent wheelEvent) /*-{
-        return wheelEvent.deltaY;
     }-*/;
 
     /**

@@ -23,7 +23,7 @@ public class Camera {
     private double translateX;
     private double translateY;
     private double translateZ = 80;
-    private double rotateX = Math.toRadians(35);
+    private double rotateX = Math.toRadians(40);
     private double rotateZ;
     private Matrix4 matrix4;
     private Matrix4 normMatrix4;
@@ -139,6 +139,7 @@ public class Camera {
     private void setupInternalMatrices() {
         matrix4 = Matrix4.createXRotation(-rotateX).multiply(Matrix4.createZRotation(-rotateZ)).multiply(Matrix4.createTranslation(-translateX, -translateY, -translateZ));
         normMatrix4 = matrix4.normTransformation();
+        logger.severe("normMatrix4:\n" + normMatrix4.toPrettyString());
     }
 
     public Line3d toWorld(Line3d pickRay) {

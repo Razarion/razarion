@@ -17,22 +17,6 @@ public abstract class AbstractGroundRendererUnit extends AbstractRenderUnit<UiTe
 
     @Override
     public void fillBuffers(UiTerrainTile uiTerrainTile) {
-//        if (uiTerrainTile.getTopTextureId() == null) {
-//            logger.warning("No TopTextureId in AbstractGroundRendererUnit for: " + helperString());
-//            return;
-//        }
-//        if (uiTerrainTile.getSplattingId() == null) {
-//            logger.warning("No SplattingId in AbstractGroundRendererUnit for: " + helperString());
-//            return;
-//        }
-//        if (uiTerrainTile.getBottomTextureId() == null) {
-//            logger.warning("No BottomTextureId in AbstractGroundRendererUnit for: " + helperString());
-//            return;
-//        }
-//        if (uiTerrainTile.getBottomBmId() == null) {
-//            logger.warning("No BottomBmId in AbstractGroundRendererUnit for: " + helperString());
-//            return;
-//        }
         fillBuffersInternal(uiTerrainTile);
     }
 

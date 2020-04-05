@@ -15,11 +15,11 @@ public class WebGlException extends RuntimeException {
         super(message);
     }
 
-    public WebGlException(String operation, int lastError) {
-        super("Operation: " + operation + ". Last error: " + lastError + (" (0x" + Integer.toHexString(lastError) + ")"));
+    public WebGlException(String operation, double lastError) {
+        super("Operation: " + operation + ". Last error: " + lastError + (" (0x" + Integer.toHexString((int)lastError) + ")"));
     }
 
-    public WebGlException(String operation, String description, int lastError) {
-        super("Operation: " + operation + " Description: " + description + ". Last error: " + lastError + (" (0x" + Integer.toHexString(lastError) + ")"));
+    public WebGlException(String operation, String description, double lastError) {
+        super("Operation: " + operation + " Description: " + description + ". Last error: " + lastError + (" (0x" + Integer.toHexString((int)lastError) + ")"));
     }
 }

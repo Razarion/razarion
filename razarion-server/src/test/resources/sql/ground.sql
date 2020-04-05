@@ -207,7 +207,7 @@ INSERT INTO `GAME_UI_CONTEXT` (`id`, `detailedTracking`, `gameEngineMode`, `inte
 DELETE FROM `GROUND_CONFIG`;
 /*!40000 ALTER TABLE `GROUND_CONFIG` DISABLE KEYS */;
 INSERT INTO `GROUND_CONFIG` (`id`, `bottomBumpMapDepth`, `bottomScale`, `bottomShininess`, `bottomSpecularStrength`, `internalName`, `splattingScale2`, `splattingAmplitude`, `splattingBlur`, `splattingOffset`, `splattingScale`, `topBumpMapDepth`, `topScale`, `topShininess`, `topSpecularStrength`, `bottomBumpMapId`, `bottomTextureId`, `splattingImageId`, `topBumpMapId`, `topTextureId`) VALUES
-	(252, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 100, 1, 1, NULL, NULL, NULL, 42, 41);
+	(252, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0.2, 50, 3, 0.5, NULL, NULL, NULL, 42, 41);
 /*!40000 ALTER TABLE `GROUND_CONFIG` ENABLE KEYS */;
 
 -- Exportiere Daten aus Tabelle razarion.HUMAN_PLAYER_ENTITY: ~0 rows (ungefähr)
@@ -270,7 +270,7 @@ DELETE FROM `PLACE_CONFIG_POSITION_POLYGON`;
 DELETE FROM `PLANET`;
 /*!40000 ALTER TABLE `PLANET` DISABLE KEYS */;
 INSERT INTO `PLANET` (`id`, `ambientA`, `ambientB`, `ambientG`, `ambientR`, `diffuseA`, `diffuseB`, `diffuseG`, `diffuseR`, `houseSpace`, `internalName`, `lightDirectionX`, `lightDirectionY`, `lightDirectionZ`, `miniMapImage`, `playGroundEndX`, `playGroundEndY`, `playGroundStartX`, `playGroundStartY`, `shadowAlpha`, `startRazarion`, `terrainTileDimensionEndX`, `terrainTileDimensionEndY`, `terrainTileDimensionStartX`, `terrainTileDimensionStartY`, `groundConfig_id`, `startBaseItemType_id`) VALUES
-	(117, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 750, 750, 50, 50, 0, 0, 4, 4, 0, 0, 252, NULL);
+	(117, 1, 0.25098039215686274, 0.25098039215686274, 0.25098039215686274, 1, 0.5, 0.5, 0.5, 0, NULL, -0.12371134020618557, 0.15463917525773196, -0.9801949957942031, NULL, 750, 750, 50, 50, 0, 0, 4, 4, 0, 0, 252, NULL);
 /*!40000 ALTER TABLE `PLANET` ENABLE KEYS */;
 
 -- Exportiere Daten aus Tabelle razarion.PLANET_LIMITATION: ~0 rows (ungefähr)
@@ -472,16 +472,6 @@ DELETE FROM `USER_FORGOT_PASSWORD`;
 DELETE FROM `USER_INVENTORY`;
 /*!40000 ALTER TABLE `USER_INVENTORY` DISABLE KEYS */;
 /*!40000 ALTER TABLE `USER_INVENTORY` ENABLE KEYS */;
-
--- Exportiere Daten aus Tabelle razarion.USER_LOGIN_COOKIE: ~4 rows (ungefähr)
-DELETE FROM `USER_LOGIN_COOKIE`;
-/*!40000 ALTER TABLE `USER_LOGIN_COOKIE` DISABLE KEYS */;
-INSERT INTO `USER_LOGIN_COOKIE` (`id`, `timeStamp`, `token`, `user_id`) VALUES
-	(21, '2020-03-27 07:23:29.585', 'b55c6627-1b40-41d5-800b-3abb0ee2516c', 499),
-	(22, '2020-03-27 08:20:53.111', 'b356ef66-dd1c-4c1d-b73e-3b40fb260c92', 499),
-	(23, '2020-03-27 21:02:49.609', '08823dcc-ef08-460b-bdab-f77928eec77e', 499),
-	(24, '2020-03-28 07:02:57.989', 'faaebe1c-8b7d-4035-9947-8f9223cf29b2', 499);
-/*!40000 ALTER TABLE `USER_LOGIN_COOKIE` ENABLE KEYS */;
 
 -- Exportiere Daten aus Tabelle razarion.USER_UNLOCKED: ~0 rows (ungefähr)
 DELETE FROM `USER_UNLOCKED`;

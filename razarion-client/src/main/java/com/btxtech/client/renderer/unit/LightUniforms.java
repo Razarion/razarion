@@ -1,7 +1,6 @@
 package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.shared.dto.SpecularLightConfig;
 import elemental2.webgl.WebGLUniformLocation;
 
 /**
@@ -9,23 +8,30 @@ import elemental2.webgl.WebGLUniformLocation;
  * on 27.01.2019.
  */
 public class LightUniforms {
-    private WebGLUniformLocation uLightDirection;
-    private WebGLUniformLocation uLightDiffuse;
-    private WebGLUniformLocation uLightAmbient;
+    private WebGLUniformLocation directLightDirection;
+    private WebGLUniformLocation directLightColor;
+    private WebGLUniformLocation ambientLightColor;
 
+    public LightUniforms(WebGlFacade webGlFacade) {
+        directLightDirection = webGlFacade.getUniformLocationAlarm("directLightDirection");
+        directLightColor = webGlFacade.getUniformLocationAlarm("directLightColor");
+        ambientLightColor = webGlFacade.getUniformLocationAlarm("ambientLightColor");
+    }
+
+    @Deprecated
     public LightUniforms(String postfix, WebGlFacade webGlFacade) {
         if (postfix == null) {
             postfix = "";
         }
-        uLightDirection = webGlFacade.getUniformLocation("uLightDirection" + postfix);
-        uLightDiffuse = webGlFacade.getUniformLocation("uLightDiffuse" + postfix);
-        uLightAmbient = webGlFacade.getUniformLocation("uLightAmbient" + postfix);
+        directLightDirection = webGlFacade.getUniformLocation("uLightDirection" + postfix);
+        directLightColor = webGlFacade.getUniformLocation("uLightDiffuse" + postfix);
+        ambientLightColor = webGlFacade.getUniformLocation("uLightAmbient" + postfix);
     }
 
     public void setLightUniforms(WebGlFacade webGlFacade) {
-        webGlFacade.uniform3f(uLightDirection, webGlFacade.getVisualUiService().getLightDirection());
-        webGlFacade.uniform3fNoAlpha(uLightDiffuse, webGlFacade.getVisualUiService().getDiffuse());
-        webGlFacade.uniform3fNoAlpha(uLightAmbient, webGlFacade.getVisualUiService().getAmbient());
+        webGlFacade.uniform3f(directLightDirection, webGlFacade.getVisualUiService().getLightDirection());
+        webGlFacade.uniform3fNoAlpha(directLightColor, webGlFacade.getVisualUiService().getDiffuse());
+        webGlFacade.uniform3fNoAlpha(ambientLightColor, webGlFacade.getVisualUiService().getAmbient());
     }
 
 }
