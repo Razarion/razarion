@@ -210,46 +210,6 @@ INSERT INTO `GROUND_CONFIG` (`id`, `bottomBumpMapDepth`, `bottomScale`, `bottomS
 	(252, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 100, 1, 1, NULL, NULL, NULL, 42, 41);
 /*!40000 ALTER TABLE `GROUND_CONFIG` ENABLE KEYS */;
 
--- Exportiere Daten aus Tabelle razarion.HISTORY_BOT_SCENE_INDICATOR: ~0 rows (ungefähr)
-DELETE FROM `HISTORY_BOT_SCENE_INDICATOR`;
-/*!40000 ALTER TABLE `HISTORY_BOT_SCENE_INDICATOR` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HISTORY_BOT_SCENE_INDICATOR` ENABLE KEYS */;
-
--- Exportiere Daten aus Tabelle razarion.HISTORY_FORGOT_PASSWORDY: ~0 rows (ungefähr)
-DELETE FROM `HISTORY_FORGOT_PASSWORDY`;
-/*!40000 ALTER TABLE `HISTORY_FORGOT_PASSWORDY` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HISTORY_FORGOT_PASSWORDY` ENABLE KEYS */;
-
--- Exportiere Daten aus Tabelle razarion.HISTORY_INVENTORY: ~0 rows (ungefähr)
-DELETE FROM `HISTORY_INVENTORY`;
-/*!40000 ALTER TABLE `HISTORY_INVENTORY` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HISTORY_INVENTORY` ENABLE KEYS */;
-
--- Exportiere Daten aus Tabelle razarion.HISTORY_LEVEL: ~0 rows (ungefähr)
-DELETE FROM `HISTORY_LEVEL`;
-/*!40000 ALTER TABLE `HISTORY_LEVEL` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HISTORY_LEVEL` ENABLE KEYS */;
-
--- Exportiere Daten aus Tabelle razarion.HISTORY_QUEST: ~0 rows (ungefähr)
-DELETE FROM `HISTORY_QUEST`;
-/*!40000 ALTER TABLE `HISTORY_QUEST` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HISTORY_QUEST` ENABLE KEYS */;
-
--- Exportiere Daten aus Tabelle razarion.HISTORY_UNLOCKED: ~0 rows (ungefähr)
-DELETE FROM `HISTORY_UNLOCKED`;
-/*!40000 ALTER TABLE `HISTORY_UNLOCKED` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HISTORY_UNLOCKED` ENABLE KEYS */;
-
--- Exportiere Daten aus Tabelle razarion.HISTORY_USER: ~4 rows (ungefähr)
-DELETE FROM `HISTORY_USER`;
-/*!40000 ALTER TABLE `HISTORY_USER` DISABLE KEYS */;
-INSERT INTO `HISTORY_USER` (`id`, `loggedIn`, `loggedOut`, `sessionId`, `userId`) VALUES
-	(171, '2020-03-27 07:23:29.579', NULL, 'lduVHpx5mLNyy3lGyy0hzglptgOmm9EE8K_v4gGV', 499),
-	(172, '2020-03-27 08:20:53.104', NULL, 'OmHlQncR_Pql2PFdukI68kyMYRSaCg5t4a-LTpZ9', 499),
-	(173, '2020-03-27 21:02:49.602', NULL, 'SM4upoepnrMzRu7E_B8N2pENOUEgonjR7SfAWx76', 499),
-	(174, '2020-03-28 07:02:57.979', NULL, 'fMm4m32kZ9NTa7pIpegn8iHbS2P-yplecD9fYEop', 499);
-/*!40000 ALTER TABLE `HISTORY_USER` ENABLE KEYS */;
-
 -- Exportiere Daten aus Tabelle razarion.HUMAN_PLAYER_ENTITY: ~0 rows (ungefähr)
 DELETE FROM `HUMAN_PLAYER_ENTITY`;
 /*!40000 ALTER TABLE `HUMAN_PLAYER_ENTITY` DISABLE KEYS */;
@@ -357,7 +317,7 @@ DELETE FROM `RESOURCE_ITEM_TYPE`;
 DELETE FROM `SCENE`;
 /*!40000 ALTER TABLE `SCENE` DISABLE KEYS */;
 INSERT INTO `SCENE` (`id`, `duration`, `internalName`, `removeLoadingCover`, `scrollUiQuestCrystal`, `scrollUiQuestI18nHidePassedDialog`, `scrollUiQuestRazarion`, `scrollUiQuestTargetRectangleEndX`, `scrollUiQuestTargetRectangleEndY`, `scrollUiQuestTargetRectangleStartX`, `scrollUiQuestTargetRectangleStartY`, `scrollUiQuestXp`, `suppressSell`, `viewFieldBottomWidth`, `viewFieldCameraLocked`, `viewFieldFromPositionX`, `viewFieldFromPositionY`, `viewFieldSpeed`, `viewFieldToPositionX`, `viewFieldToPositionY`, `wait4LevelUpDialog`, `wait4QuestPassedDialog`, `waitForBaseLostDialog`, `gameTipConfigEntity_id`, `i18nIntroText_id`, `questConfig_id`, `scrollUiQuestI18nDescription_id`, `scrollUiQuestI18nPassedMessage_id`, `scrollUiQuestI18nTitle_id`, `startPointPlacerEntity_id`, `gameUiContextEntityId`, `orderColumn`) VALUES
-	(183, NULL, NULL, b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 91, 0);
+	(183, NULL, NULL, b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', NULL, NULL, NULL, 10, 10, NULL, b'1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 91, 0);
 /*!40000 ALTER TABLE `SCENE` ENABLE KEYS */;
 
 -- Exportiere Daten aus Tabelle razarion.SCENE_BOT: ~0 rows (ungefähr)
