@@ -185,11 +185,10 @@ public class GameCanvas {
                             WebGLRenderingContext.UNSIGNED_BYTE,
                             uint8Array);
                     WebGlUtil.checkLastWebGlError("readPixels", ctx3d);
-                    logger.severe("Read screen pixel at " + mouseEvent.clientX + ":" + mouseEvent.clientY + " RGBA=" + uint8Array.getAt(0) + "," + uint8Array.getAt(1) + "," + uint8Array.getAt(2) + "," + uint8Array.getAt(3) + "(if 0,0,0,0 -> {preserveDrawingBuffer: true})");
                     double x = uint8Array.getAt(0) / 255.0 * 2.0 - 1.0;
                     double y = uint8Array.getAt(1) / 255.0 * 2.0 - 1.0;
                     double z = uint8Array.getAt(2) / 255.0 * 2.0 - 1.0;
-                    logger.severe("x=" + x + " y=" + y + " z=" + z);
+                    logger.severe("Read screen pixel at " + mouseEvent.clientX + ":" + mouseEvent.clientY +"Vector=(" + x + "," + y + "," + z +") RGBA=(" + uint8Array.getAt(0) + "," + uint8Array.getAt(1) + "," + uint8Array.getAt(2) + "," + uint8Array.getAt(3) + ") (if 0,0,0,0 -> {preserveDrawingBuffer: true})");
                 }
             } catch (Throwable throwable) {
                 exceptionHandler.handleException(throwable);
