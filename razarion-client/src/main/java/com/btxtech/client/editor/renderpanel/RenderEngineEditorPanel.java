@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
+import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
@@ -82,13 +83,13 @@ public class RenderEngineEditorPanel extends AbstractEditor {
     private DoubleBox rotateXSlider;
     @Inject
     @DataField
-    private DoubleBox rotateXBox;
+    private HTMLInputElement rotateXBox;
     @Inject
     @DataField
     private DoubleBox rotateZSlider;
     @Inject
     @DataField
-    private DoubleBox rotateZBox;
+    private HTMLInputElement rotateZBox;
     @Inject
     @DataField
     private Label directionLabel;
@@ -97,7 +98,7 @@ public class RenderEngineEditorPanel extends AbstractEditor {
     private DoubleBox openingAngleYSlider;
     @Inject
     @DataField
-    private DoubleBox openingAngleYBox;
+    private HTMLInputElement openingAngleYBox;
     @Inject
     @DataField
     @ListContainer("tbody")
@@ -120,10 +121,10 @@ public class RenderEngineEditorPanel extends AbstractEditor {
         translateY.setValue(camera.getTranslateY());
         translateZ.setValue(camera.getTranslateZ());
         openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
-        openingAngleYBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(normalProjectionTransformation.getFovY())));
-        rotateZBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateZ())));
+        openingAngleYBox.value = Double.toString(Math.toDegrees(normalProjectionTransformation.getFovY()));
+        rotateZBox.value = Double.toString(Math.toDegrees(camera.getRotateZ()));
         rotateZSlider.setValue(Math.toDegrees(camera.getRotateZ()));
-        rotateXBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateX())));
+        rotateXBox.value = Double.toString(Math.toDegrees(camera.getRotateX()));
         rotateXSlider.setValue(Math.toDegrees(camera.getRotateX()));
     }
 
@@ -174,36 +175,36 @@ public class RenderEngineEditorPanel extends AbstractEditor {
     @EventHandler("rotateXSlider")
     public void rotateXSliderChanged(ChangeEvent e) {
         camera.setRotateX(Math.toRadians(rotateXSlider.getValue()));
-        rotateXBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateX())));
+        rotateXBox.value = Double.toString(Math.toDegrees(camera.getRotateX()));
     }
 
     @EventHandler("rotateXBox")
     public void rotateXBoxChanged(ChangeEvent e) {
-        camera.setRotateX(Math.toRadians(rotateXBox.getValue()));
+        camera.setRotateX(Math.toRadians(rotateXBox.valueAsNumber));
         rotateXSlider.setValue(Math.toDegrees(camera.getRotateX()));
     }
 
     @EventHandler("rotateZSlider")
     public void rotateZSliderChanged(ChangeEvent e) {
         camera.setRotateZ(Math.toRadians(rotateZSlider.getValue()));
-        rotateZBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateZ())));
+        rotateZBox.value = Double.toString(Math.toDegrees(camera.getRotateZ()));
     }
 
     @EventHandler("rotateZBox")
     public void rotateZBoxChanged(ChangeEvent e) {
-        camera.setRotateZ(Math.toRadians(rotateZBox.getValue()));
+        camera.setRotateZ(Math.toRadians(rotateZBox.valueAsNumber));
         rotateZSlider.setValue(Math.toDegrees(camera.getRotateZ()));
     }
 
     @EventHandler("openingAngleYSlider")
     public void openingAngleYSliderChanged(ChangeEvent e) {
         normalProjectionTransformation.setFovY(Math.toRadians(openingAngleYSlider.getValue()));
-        openingAngleYBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(normalProjectionTransformation.getFovY())));
+        openingAngleYBox.value = Double.toString(Math.toDegrees(normalProjectionTransformation.getFovY()));
     }
 
     @EventHandler("openingAngleYBox")
     public void openingAngleYBoxChanged(ChangeEvent e) {
-        normalProjectionTransformation.setFovY(Math.toRadians(openingAngleYBox.getValue()));
+        normalProjectionTransformation.setFovY(Math.toRadians(openingAngleYBox.valueAsNumber));
         openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
     }
 
