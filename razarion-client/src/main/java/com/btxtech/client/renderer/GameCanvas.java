@@ -6,20 +6,22 @@ import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.client.utils.DomConstants;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.google.gwt.user.client.Window;
-import elemental.client.Browser;
-import elemental.events.Event;
-import elemental.events.MouseEvent;
-import elemental.events.WheelEvent;
-import elemental2.core.Int8Array;
+import elemental2.core.JsObject;
+import elemental2.core.Uint8Array;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLCanvasElement;
+import elemental2.dom.MouseEvent;
+import elemental2.dom.WheelEvent;
 import elemental2.webgl.WebGLRenderingContext;
 import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -38,6 +40,8 @@ import static elemental2.dom.DomGlobal.RequestAnimationFrameCallbackFn;
 public class GameCanvas {
     // @Inject does not work
     private Logger logger = Logger.getLogger(GameCanvas.class.getName());
+    @Inject
+    private ExceptionHandler exceptionHandler;
     @Inject
     private MainPanelService mainPanelService;
     @Inject
@@ -103,9 +107,17 @@ public class GameCanvas {
         canvasElement.style.height = HeightUnionType.of("100%");
         canvasElement.style.position = "absolute";
         // Create 3d context
-        ctx3d = Js.cast(canvasElement.getContext("webgl"));
+        JsPropertyMap<Object> args = JsPropertyMap.of();
+        // WEBGL TRANSPARENCY AND ALPHA BLENDING PROBLEM
+        // {alpha:false}
+        // http://in2gpu.com/2014/04/11/webgl-transparency/
+        // {preserveDrawingBuffer: true}
+        // http://stackoverflow.com/questions/7156971/webgl-readpixels-is-always-returning-0-0-0-0
+        args.set("alpha", false);
+        args.set("preserveDrawingBuffer", true);
+        ctx3d = Js.cast(canvasElement.getContext("webgl", (JsObject) args));
         if (ctx3d == null) {
-            Browser.getWindow().alert("WebGL not supported ?!?!?!");
+            DomGlobal.window.alert("WebGL not supported ?!?!?!");
         }
         // Configure context
         ctx3d.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -116,73 +128,97 @@ public class GameCanvas {
 
     private void setupAnimationCallback() {
         animationCallback = timestamp -> {
-            if (!running) {
-                return null;
-            }
             try {
-                renderService.render();
-            } catch (Throwable t) {
-                logger.log(Level.SEVERE, "requestAnimationFrame() execute failed", t);
+                if (!running) {
+                    return null;
+                }
+                try {
+                    renderService.render();
+                } catch (Throwable t) {
+                    logger.log(Level.SEVERE, "requestAnimationFrame() execute failed", t);
+                }
+                DomGlobal.requestAnimationFrame(animationCallback, canvasElement);
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
             }
-            DomGlobal.requestAnimationFrame(animationCallback, canvasElement);
             return null;
         };
     }
 
     private void initMouseHandler() {
-        canvasElement.addEventListener(Event.MOUSEMOVE, evt -> {
-            if (playbackMode) {
-                return;
-            }
-            MouseEvent mouseEvent = (MouseEvent) evt;
-            terrainMouseHandler.onMouseMove(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height, GwtUtils.isButtonDown(mouseEvent, 1));
-        }, true);
-        canvasElement.addEventListener(Event.MOUSEOUT, evt -> {
-            if (playbackMode) {
-                return;
-            }
-            terrainMouseHandler.onMouseOut();
-        }, true);
-        canvasElement.addEventListener(Event.MOUSEDOWN, evt -> {
-            if (playbackMode) {
-                return;
-            }
-            MouseEvent mouseEvent = (MouseEvent) evt;
-            if (GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.PRIMARY)) {
-                terrainMouseHandler.onMouseDown(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height, mouseEvent.isShiftKey());
-            }
-            if (mouseEvent.getButton() == MouseEvent.Button.PRIMARY && mouseEvent.isAltKey()) {
-                Int8Array uint8Array = new Int8Array(4);
-                ctx3d.readPixels(mouseEvent.getClientX(),
-                        canvasElement.height - mouseEvent.getClientY(),
-                        1, 1,
-                        (int) WebGLRenderingContext.RGBA,
-                        (int) WebGLRenderingContext.UNSIGNED_BYTE,
-                        uint8Array);
-                WebGlUtil.checkLastWebGlError("readPixels", ctx3d);
-                logger.severe("Read screen pixel at " + mouseEvent.getClientX() + ":" + mouseEvent.getClientY() + " RGBA=" + uint8Array.buffer + "," + uint8Array.getAt(0) + "," + uint8Array.getAt(1) + "," + uint8Array.getAt(2) + "," + uint8Array.getAt(3) + "(if 0,0,0,0 -> {preserveDrawingBuffer: true})");
-                double x = uint8Array.getAt(0) / 255.0 * 2.0 - 1.0;
-                double y = uint8Array.getAt(1) / 255.0 * 2.0 - 1.0;
-                double z = uint8Array.getAt(2) / 255.0 * 2.0 - 1.0;
-                logger.severe("x=" + x + " y=" + y + " z=" + z);
+        canvasElement.addEventListener(DomConstants.Event.MOUSEMOVE, evt -> {
+            try {
+                if (playbackMode) {
+                    return;
+                }
+                MouseEvent mouseEvent = (MouseEvent) evt;
+                terrainMouseHandler.onMouseMove((int) mouseEvent.clientX, (int) mouseEvent.clientY, width, height, GwtUtils.isButtonDown(mouseEvent, 1));
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
             }
         }, true);
-        canvasElement.addEventListener(Event.MOUSEUP, evt -> {
-            if (playbackMode) {
-                return;
+        canvasElement.addEventListener(DomConstants.Event.MOUSEOUT, evt -> {
+            try {
+                if (playbackMode) {
+                    return;
+                }
+                terrainMouseHandler.onMouseOut();
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
             }
-            MouseEvent mouseEvent = (MouseEvent) evt;
-            if (GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.PRIMARY)) {
-                terrainMouseHandler.onMouseUp(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height);
+        }, true);
+        canvasElement.addEventListener(DomConstants.Event.MOUSEDOWN, evt -> {
+            try {
+                if (playbackMode) {
+                    return;
+                }
+                MouseEvent mouseEvent = (MouseEvent) evt;
+                if (GwtUtils.isButtonResponsible4Event(mouseEvent, DomConstants.Mouse.BUTTON_MAIN)) {
+                    terrainMouseHandler.onMouseDown((int)mouseEvent.clientX, (int)mouseEvent.clientY, width, height, mouseEvent.shiftKey);
+                }
+                if (mouseEvent.button == DomConstants.Mouse.BUTTON_MAIN && mouseEvent.altKey) {
+                    Uint8Array uint8Array = new Uint8Array(4);
+                    ctx3d.readPixels(mouseEvent.clientX,
+                            canvasElement.height - mouseEvent.clientY,
+                            1, 1,
+                            WebGLRenderingContext.RGBA,
+                            WebGLRenderingContext.UNSIGNED_BYTE,
+                            uint8Array);
+                    WebGlUtil.checkLastWebGlError("readPixels", ctx3d);
+                    logger.severe("Read screen pixel at " + mouseEvent.clientX + ":" + mouseEvent.clientY + " RGBA=" + uint8Array.getAt(0) + "," + uint8Array.getAt(1) + "," + uint8Array.getAt(2) + "," + uint8Array.getAt(3) + "(if 0,0,0,0 -> {preserveDrawingBuffer: true})");
+                    double x = uint8Array.getAt(0) / 255.0 * 2.0 - 1.0;
+                    double y = uint8Array.getAt(1) / 255.0 * 2.0 - 1.0;
+                    double z = uint8Array.getAt(2) / 255.0 * 2.0 - 1.0;
+                    logger.severe("x=" + x + " y=" + y + " z=" + z);
+                }
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
+            }
+        }, true);
+        canvasElement.addEventListener(DomConstants.Event.MOUSEUP, evt -> {
+            try {
+                if (playbackMode) {
+                    return;
+                }
+                MouseEvent mouseEvent = (MouseEvent) evt;
+                if (GwtUtils.isButtonResponsible4Event(mouseEvent, DomConstants.Mouse.BUTTON_MAIN)) {
+                    terrainMouseHandler.onMouseUp((int) mouseEvent.clientX, (int) mouseEvent.clientY, width, height);
+                }
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
             }
         }, true);
         canvasElement.addEventListener("wheel", evt -> {
-            if (playbackMode) {
-                return;
+            try {
+                if (playbackMode) {
+                    return;
+                }
+                WheelEvent wheelEvent = (WheelEvent) evt;
+                terrainMouseHandler.onMouseWheel(wheelEvent.deltaY);
+                wheelEvent.preventDefault();
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
             }
-            WheelEvent wheelEvent = (WheelEvent) evt;
-            terrainMouseHandler.onMouseWheel(GwtUtils.getDeltaYFromWheelEvent(wheelEvent));
-            wheelEvent.preventDefault();
         }, true);
         GwtUtils.preventContextMenu(canvasElement);
     }
