@@ -5,12 +5,12 @@ import com.btxtech.shared.dto.PhongMaterialConfig;
 import elemental2.webgl.WebGLUniformLocation;
 
 public class WebGlPhongMaterial {
-    public static final String UNIFROM_LOCATION_TEXTURE = "texture";
-    public static final String UNIFROM_LOCATION_SCALE = "scale";
-    public static final String UNIFROM_LOCATION_BUMP_MAP = "bumpMap";
-    public static final String UNIFROM_LOCATION_BUMP_MAP_DEPTH = "bumpMapDepth";
-    public static final String UNIFROM_LOCATION_SHININESS = "shininess";
-    public static final String UNIFROM_LOCATION_SPECULAR_STRENGTH = "specularStrength";
+    public static final String UNIFORM_LOCATION_TEXTURE = "texture";
+    public static final String UNIFORM_LOCATION_SCALE = "scale";
+    public static final String UNIFORM_LOCATION_BUMP_MAP = "bumpMap";
+    public static final String UNIFORM_LOCATION_BUMP_MAP_DEPTH = "bumpMapDepth";
+    public static final String UNIFORM_LOCATION_SHININESS = "shininess";
+    public static final String UNIFORM_LOCATION_SPECULAR_STRENGTH = "specularStrength";
     private final WebGlFacade webGlFacade;
     private final PhongMaterialConfig phongMaterialConfig;
     private WebGlUniformTexture texture;
@@ -24,19 +24,19 @@ public class WebGlPhongMaterial {
         this.webGlFacade = webGlFacade;
         this.phongMaterialConfig = phongMaterialConfig;
         if (phongMaterialConfig.getTextureId() != null) {
-            texture = webGlFacade.createWebGLTexture(phongMaterialConfig.getTextureId(), variableName(prefix, UNIFROM_LOCATION_TEXTURE));
+            texture = webGlFacade.createWebGLTexture(phongMaterialConfig.getTextureId(), variableName(prefix, UNIFORM_LOCATION_TEXTURE));
         } else {
-            texture = webGlFacade.createFakeWebGLTexture(variableName(prefix, UNIFROM_LOCATION_TEXTURE));
+            texture = webGlFacade.createFakeWebGLTexture(variableName(prefix, UNIFORM_LOCATION_TEXTURE));
         }
-        scale = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_SCALE));
+        scale = webGlFacade.getUniformLocation(variableName(prefix, UNIFORM_LOCATION_SCALE));
         if (phongMaterialConfig.getBumpMapId() != null) {
-            bumpMap = webGlFacade.createWebGLBumpMapTexture(phongMaterialConfig.getBumpMapId(), variableName(prefix, UNIFROM_LOCATION_BUMP_MAP));
+            bumpMap = webGlFacade.createWebGLBumpMapTexture(phongMaterialConfig.getBumpMapId(), variableName(prefix, UNIFORM_LOCATION_BUMP_MAP));
         } else {
-            bumpMap = webGlFacade.createFakeWebGLTexture(variableName(prefix, UNIFROM_LOCATION_BUMP_MAP));
+            bumpMap = webGlFacade.createFakeWebGLTexture(variableName(prefix, UNIFORM_LOCATION_BUMP_MAP));
         }
-        bumpMapDepth = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_BUMP_MAP_DEPTH));
-        shininess = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_SHININESS));
-        specularStrength = webGlFacade.getUniformLocation(variableName(prefix, UNIFROM_LOCATION_SPECULAR_STRENGTH));
+        bumpMapDepth = webGlFacade.getUniformLocation(variableName(prefix, UNIFORM_LOCATION_BUMP_MAP_DEPTH));
+        shininess = webGlFacade.getUniformLocation(variableName(prefix, UNIFORM_LOCATION_SHININESS));
+        specularStrength = webGlFacade.getUniformLocation(variableName(prefix, UNIFORM_LOCATION_SPECULAR_STRENGTH));
     }
 
     public void activate() {
