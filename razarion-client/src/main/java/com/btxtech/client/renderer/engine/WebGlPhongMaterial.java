@@ -50,7 +50,7 @@ public class WebGlPhongMaterial {
 
     private String variableName(String prefix, String name) {
         if (prefix != null && prefix.trim().length() > 0) {
-            return prefix + name.substring(0, 1).toUpperCase() + name.substring(1);
+            return prefix + "." + name;
         } else {
             return name;
         }
