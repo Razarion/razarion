@@ -19,6 +19,7 @@ public class DoubleEditor extends AbstractPropertyEditor<Double> {
     public void postConstruct() {
         htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
         htmlInputElement.type = "number";
+        htmlInputElement.step = "0.1";
     }
 
     @Override
