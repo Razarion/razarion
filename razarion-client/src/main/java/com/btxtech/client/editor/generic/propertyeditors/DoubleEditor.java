@@ -20,12 +20,6 @@ public class DoubleEditor extends AbstractPropertyEditor<Double> {
         htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
         htmlInputElement.type = "number";
         htmlInputElement.step = "0.1";
-    }
-
-    @Override
-    public void showValue() {
-        htmlInputElement.value = getPropertyValueString();
-
         htmlInputElement.addEventListener("input", event -> {
             try {
                 if (htmlInputElement.value != null && !htmlInputElement.value.trim().isEmpty()) {
@@ -37,6 +31,11 @@ public class DoubleEditor extends AbstractPropertyEditor<Double> {
                 exceptionHandler.handleException("Cannot set property value for property: " + getAbstractPropertyModel(), t);
             }
         }, false);
+    }
+
+    @Override
+    public void showValue() {
+        htmlInputElement.value = getPropertyValueString();
     }
 
 

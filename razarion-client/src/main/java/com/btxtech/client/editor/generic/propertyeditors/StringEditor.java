@@ -14,12 +14,12 @@ public class StringEditor extends AbstractPropertyEditor<String> {
     @PostConstruct
     public void postConstruct() {
         htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
+        htmlInputElement.addEventListener("input", event -> setPropertyValue(htmlInputElement.value), false);
     }
 
     @Override
     public void showValue() {
         htmlInputElement.value = getPropertyValueString();
-        htmlInputElement.addEventListener("input", event -> setPropertyValue(htmlInputElement.value), false);
     }
 
     @Override

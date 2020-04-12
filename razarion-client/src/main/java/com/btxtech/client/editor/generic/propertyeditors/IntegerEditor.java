@@ -19,12 +19,6 @@ public class IntegerEditor extends AbstractPropertyEditor<Integer> {
     public void postConstruct() {
         htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
         htmlInputElement.type = "number";
-    }
-
-    @Override
-    public void showValue() {
-        htmlInputElement.value = getPropertyValueString();
-
         htmlInputElement.addEventListener("input", event -> {
             try {
                 if (htmlInputElement.value != null && !htmlInputElement.value.trim().isEmpty()) {
@@ -36,6 +30,11 @@ public class IntegerEditor extends AbstractPropertyEditor<Integer> {
                 exceptionHandler.handleException("Cannot set property value for property: " + getAbstractPropertyModel(), t);
             }
         }, false);
+    }
+
+    @Override
+    public void showValue() {
+        htmlInputElement.value = getPropertyValueString();
     }
 
     @Override

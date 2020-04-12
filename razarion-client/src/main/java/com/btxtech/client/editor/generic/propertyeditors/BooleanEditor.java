@@ -20,12 +20,6 @@ public class BooleanEditor extends AbstractPropertyEditor<Boolean> {
     public void postConstruct() {
         htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
         htmlInputElement.type = "checkbox";
-    }
-
-    @Override
-    public void showValue() {
-        htmlInputElement.checked = getPropertyValue(false);
-
         htmlInputElement.addEventListener("input", event -> {
             try {
                 setPropertyValue(htmlInputElement.checked);
@@ -33,6 +27,11 @@ public class BooleanEditor extends AbstractPropertyEditor<Boolean> {
                 exceptionHandler.handleException("Cannot set property value for property: " + getAbstractPropertyModel(), t);
             }
         }, false);
+    }
+
+    @Override
+    public void showValue() {
+        htmlInputElement.checked = getPropertyValue(false);
     }
 
 
