@@ -139,7 +139,6 @@ public class Camera {
     private void setupInternalMatrices() {
         matrix4 = Matrix4.createXRotation(-rotateX).multiply(Matrix4.createZRotation(-rotateZ)).multiply(Matrix4.createTranslation(-translateX, -translateY, -translateZ));
         normMatrix4 = matrix4.normTransformation();
-        logger.severe("normMatrix4:\n" + normMatrix4.toPrettyString());
     }
 
     public Line3d toWorld(Line3d pickRay) {
