@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.TextureIdHandler;
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
+import com.btxtech.client.renderer.engine.WebGlSplatting;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.DecimalPositionShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Float32ArrayShaderAttribute;
@@ -17,6 +18,7 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
+import com.btxtech.shared.dto.GroundSplattingConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.uiservice.VisualUiService;
@@ -150,7 +152,7 @@ public class WebGlFacade {
     }
 
     public void uniform3f(WebGLUniformLocation webGLUniformLocation, Vertex vertex) {
-        if(webGLUniformLocation == null) {
+        if (webGLUniformLocation == null) {
             return;
         }
         gameCanvas.getCtx3d().uniform3f(webGLUniformLocation, (float) vertex.getX(), (float) vertex.getY(), (float) vertex.getZ());
@@ -158,7 +160,7 @@ public class WebGlFacade {
     }
 
     public void uniform3fNoAlpha(WebGLUniformLocation uniformLocation, Color color) {
-        if(uniformLocation == null) {
+        if (uniformLocation == null) {
             return;
         }
         gameCanvas.getCtx3d().uniform3f(uniformLocation, (float) color.getR(), (float) color.getG(), (float) color.getB());
@@ -224,8 +226,12 @@ public class WebGlFacade {
         return webGlUniformTexture;
     }
 
-    public WebGlPhongMaterial createPhongMaterial(PhongMaterialConfig phongMaterialConfig, String prefix) {
-        return new WebGlPhongMaterial(this, phongMaterialConfig, prefix);
+    public WebGlPhongMaterial createPhongMaterial(PhongMaterialConfig phongMaterialConfig, String variableName) {
+        return new WebGlPhongMaterial(this, phongMaterialConfig, variableName);
+    }
+
+    public WebGlSplatting createSplatting(GroundSplattingConfig splatting, String variableName) {
+        return new WebGlSplatting(this, splatting, variableName);
     }
 
     public WebGlUniformTexture createFakeWebGLTexture(String samplerUniformName) {

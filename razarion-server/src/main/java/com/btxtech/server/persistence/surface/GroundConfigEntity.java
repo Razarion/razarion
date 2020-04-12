@@ -51,16 +51,15 @@ public class GroundConfigEntity {
     })
     @Embedded
     private PhongMaterialConfigEmbeddable bottomMaterial;
-    @AssociationOverride(name = "image", joinColumns = @JoinColumn(name = "splattingImageId"))
+    @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "splattingTextureId"))
     @AttributeOverrides({
-            @AttributeOverride(name = "scale", column = @Column(name = "splattingScale")),
+            @AttributeOverride(name = "scale1", column = @Column(name = "splattingScale1")),
             @AttributeOverride(name = "scale2", column = @Column(name = "splattingScale2")),
             @AttributeOverride(name = "blur", column = @Column(name = "splattingBlur")),
             @AttributeOverride(name = "offset", column = @Column(name = "splattingOffset")),
-            @AttributeOverride(name = "amplitude", column = @Column(name = "splattingAmplitude")),
     })
     @Embedded
-    private DoubleSplattingConfigEmbeddable splatting;
+    private GroundSplattingConfigEmbeddable splatting;
 
     public Integer getId() {
         return id;
@@ -96,7 +95,7 @@ public class GroundConfigEntity {
             bottomMaterial = null;
         }
         if (config.getSplatting() != null) {
-            splatting = new DoubleSplattingConfigEmbeddable();
+            splatting = new GroundSplattingConfigEmbeddable();
             splatting.from(config.getSplatting(), imagePersistence);
         } else {
             splatting = null;

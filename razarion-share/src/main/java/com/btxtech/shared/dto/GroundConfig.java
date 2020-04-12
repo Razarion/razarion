@@ -11,7 +11,7 @@ public class GroundConfig implements Config {
     private String internalName;
     private PhongMaterialConfig topMaterial;
     private PhongMaterialConfig bottomMaterial;
-    private DoubleSplattingConfig splatting;
+    private GroundSplattingConfig splatting;
 
     public int getId() {
         return id;
@@ -41,11 +41,11 @@ public class GroundConfig implements Config {
         this.bottomMaterial = bottomMaterial;
     }
 
-    public DoubleSplattingConfig getSplatting() {
+    public GroundSplattingConfig getSplatting() {
         return splatting;
     }
 
-    public void setSplatting(DoubleSplattingConfig splatting) {
+    public void setSplatting(GroundSplattingConfig splatting) {
         this.splatting = splatting;
     }
 
@@ -69,7 +69,7 @@ public class GroundConfig implements Config {
         return this;
     }
 
-    public GroundConfig splatting(DoubleSplattingConfig splatting) {
+    public GroundConfig splatting(GroundSplattingConfig splatting) {
         setSplatting(splatting);
         return this;
     }

@@ -13,6 +13,7 @@ uniform vec3 ambientLightColor;
 // Shadow
 varying vec4 vShadowCoord;
 
+#define RENDER_GROUND_BOTTOM_TEXTURE
 
 struct PhongMaterial {
     sampler2D texture;
@@ -22,22 +23,17 @@ struct PhongMaterial {
     float shininess;
     float specularStrength;
 };
-
 uniform PhongMaterial topMaterial;
 #ifdef  RENDER_GROUND_BOTTOM_TEXTURE
-// Bottom
-uniform sampler2D uBottomTexture;
-uniform float uBottomTextureScale;
-uniform sampler2D uBottomBumpMap;
-uniform float uBottomBumpMapDepth;
-uniform float uBottomShininess;
-uniform float uBottomSpecularStrength;
-// Top-Bottom Splatting
-uniform sampler2D uSplatting;
-uniform float uSplattingScale1;
-uniform float uSplattingScale2;
-uniform float uSplattingFadeThreshold;
-uniform float uSplattingOffset;
+uniform PhongMaterial bottomMaterial;
+struct Splatting {
+    sampler2D texture;
+    float scale1;
+    float scale2;
+    float blur;
+    float offset;
+};
+uniform Splatting splatting;
 #endif
 vec3 correctedDirectLightDirection;
 
@@ -89,13 +85,13 @@ void main(void) {
     #endif
 
     #ifdef  RENDER_GROUND_BOTTOM_TEXTURE
-    vec3 bottom = phong(uBottomTexture, uBottomTextureScale, uBottomBumpMap, uBottomBumpMapDepth, uBottomShininess, uBottomSpecularStrength);
+    vec3 bottom = phong(bottomMaterial);
 
-    float splatting1 = texture2D(uSplatting, vWorldVertexPosition.xy / uSplattingScale1).r;
-    float splatting2 = texture2D(uSplatting, vWorldVertexPosition.xy / uSplattingScale2).r;
-    float splatting = (splatting1 + splatting2) / 2.0;
-    splatting = (splatting - uSplattingOffset) / (2.0 * uSplattingFadeThreshold) + 0.5;
-    splatting = clamp(splatting, 0.0, 1.0);
-    gl_FragColor = vec4(mix(top, bottom, splatting), 1.0);
+    float splatting1 = texture2D(splatting.texture, vWorldVertexPosition.xy / splatting.scale1).r;
+    float splatting2 = texture2D(splatting.texture, vWorldVertexPosition.xy / splatting.scale2).r;
+    float splattingFactor = (splatting1 + splatting2) / 2.0;
+    splattingFactor = (splattingFactor - splatting.offset) / (2.0 * splatting.blur) + 0.5;
+    splattingFactor = clamp(splattingFactor, 0.0, 1.0);
+    gl_FragColor = vec4(mix(top, bottom, splattingFactor), 1.0);
     #endif
 }

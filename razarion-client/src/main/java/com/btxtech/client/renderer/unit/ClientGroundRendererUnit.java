@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
+import com.btxtech.client.renderer.engine.WebGlSplatting;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -38,13 +39,9 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec3Float32ArrayShaderAttribute normals;
     private WebGlPhongMaterial topMaterial;
-//    private WebGlUniformTexture splattingTexture;
-//    private WebGlUniformTexture bottomTexture;
-//    private WebGlUniformTexture bottomBm;
+    private WebGlPhongMaterial bottomMaterial;
+    private WebGlSplatting splatting;
     private LightUniforms lightUniforms;
-//    private SpecularUniforms specularUniforms;
-//    private WebGLUniformLocation uBottomBmDepth;
-//    private WebGLUniformLocation uSplattingGroundBmMultiplicator;
 //    private WebGlUniformTexture terrainMarkerTexture;
 //    private WebGLUniformLocation terrainMarker2DPoints;
 //    private WebGLUniformLocation terrainMarkerAnimation;
@@ -56,9 +53,6 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         lightUniforms = new LightUniforms(webGlFacade);
-//        specularUniforms = new SpecularUniforms(null, webGlFacade);
-//        uBottomBmDepth = webGlFacade.getUniformLocation("uBottomBmDepth");
-//        uSplattingGroundBmMultiplicator = webGlFacade.getUniformLocation("uSplattingGroundBmMultiplicator");
 //        terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
 //        terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
 //        terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
@@ -73,9 +67,8 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         AlarmRaiser.onNull(uiTerrainTile.getGroundConfig(), Alarm.Type.RENDER_GROUND_FAILED, "No GroundConfig in Planet: ", gameUiControl.getPlanetConfig().getId());
         AlarmRaiser.onNull(uiTerrainTile.getGroundConfig().getTopMaterial(), Alarm.Type.RENDER_GROUND_FAILED, "No top material on GroundConfig: ", uiTerrainTile.getGroundConfig().getId());
         topMaterial = webGlFacade.createPhongMaterial(uiTerrainTile.getGroundConfig().getTopMaterial(), "topMaterial");
-//        splattingTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getSplattingId(), "uSplatting", "uSplattingScale", uiTerrainTile.getSplattingScale());
-//        bottomTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", uiTerrainTile.getBottomTextureScale());
-//        bottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainTile.getBottomBmId(), "uBottomBm", "uBottomBmScale", uiTerrainTile.getBottomBmScale(), "uBottomBmOnePixel");
+        bottomMaterial = webGlFacade.createPhongMaterial(uiTerrainTile.getGroundConfig().getBottomMaterial(), "bottomMaterial");
+        splatting = webGlFacade.createSplatting(uiTerrainTile.getGroundConfig().getSplatting(), "splatting");
 
         Float32Array groundPositions = Js.uncheckedCast(uiTerrainTile.getTerrainTile().getGroundPositions());
         positions.fillFloat32Array(groundPositions);
@@ -88,9 +81,6 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         webGlFacade.useProgram();
 
         lightUniforms.setLightUniforms(webGlFacade);
-//        specularUniforms.setUniforms(uiTerrainTile.getSpecularLightConfig(), webGlFacade);
-//        webGlFacade.uniform1f(uBottomBmDepth, uiTerrainTile.getBottomBmDepth());
-//        webGlFacade.uniform1f(uSplattingGroundBmMultiplicator, uiTerrainTile.getSplattingGroundBmMultiplicator());
 
         webGlFacade.activateReceiveShadow();
 
@@ -98,15 +88,9 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         normals.activate();
 
         topMaterial.activate();
+        bottomMaterial.activate();
+        splatting.activate();
 
-//        topTexture.overrideScale(uiTerrainTile.getTopTextureScale());
-//        topTexture.activate();
-//        splattingTexture.overrideScale(uiTerrainTile.getSplattingScale());
-//        splattingTexture.activate();
-//        bottomTexture.overrideScale(uiTerrainTile.getBottomTextureScale());
-//        bottomTexture.activate();
-//        bottomBm.overrideScale(uiTerrainTile.getBottomBmScale());
-//        bottomBm.activate();
 //        if (inGameQuestVisualizationService.isQuestInGamePlaceVisualization()) {
 //            terrainMarkerTexture.activate();
 //            webGlFacade.uniform4f(terrainMarker2DPoints, inGameQuestVisualizationService.getQuestInGamePlaceVisualization().getPlaceConfigBoundary());
