@@ -40,6 +40,7 @@ public class CommonUrl {
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";
     public static final String TERRAIN_ELEMENT_SERVICE_PATH = "terrainelement";
     public static final String GROUND_EDITOR_PATH = "editor/ground";
+    public static final String SLOPE_EDITOR_PATH = "editor/slope";
     public static final String PLANET_EDITOR_PATH = "editor/planet";
     public static final String LEVEL_EDITOR_PATH = "editor/level";
     public static final String GAME_UI_CONTEXT_EDITOR_PATH = "editor/game-ui-context";

@@ -19,6 +19,8 @@ public class StaticGameConfigPersistence {
     @Inject
     private GroundCrudPersistence groundCrudPersistence;
     @Inject
+    private SlopeCrudPersistence slopeCrudPersistence;
+    @Inject
     private ItemTypePersistence itemTypePersistence;
     @Inject
     private LevelCrudPersistence levelCrudPersistence;
@@ -27,7 +29,7 @@ public class StaticGameConfigPersistence {
 
     public StaticGameConfig loadStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setSlopeConfigs(terrainElementPersistence.loadSlopeSkeletons());
+        staticGameConfig.setSlopeConfigs(slopeCrudPersistence.read());
         staticGameConfig.setDrivewayConfigs(terrainElementPersistence.loadDrivewayConfigs());
         staticGameConfig.setGroundConfigs(groundCrudPersistence.read());
         staticGameConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());

@@ -4,7 +4,6 @@ import com.btxtech.server.persistence.TerrainElementPersistence;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -20,66 +19,6 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     private ExceptionHandler exceptionHandler;
     @Inject
     private TerrainElementPersistence persistenceService;
-
-    @Override
-    public List<ObjectNameId> getSlopeNameIds() {
-        try {
-            return persistenceService.getSlopeNameIds();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
-    public SlopeConfig_OLD createSlopeConfig() {
-        try {
-            return persistenceService.createSlopeConfig();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
-    public SlopeConfig_OLD readSlopeConfig(int id) {
-        try {
-            return persistenceService.readSlopeConfig(id);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
-    public List<SlopeConfig_OLD> readSlopeConfigs() {
-        try {
-            return persistenceService.readSlopeConfigs();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
-    public void updateSlopeConfig(SlopeConfig_OLD slopeConfigOLD) {
-        try {
-            persistenceService.updateSlopeConfig(slopeConfigOLD);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
-    public void deleteSlopeConfig(int id) {
-        try {
-            persistenceService.deleteSlopeConfig(id);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
 
     @Override
     public WaterConfig saveWaterConfig(WaterConfig waterConfig) {

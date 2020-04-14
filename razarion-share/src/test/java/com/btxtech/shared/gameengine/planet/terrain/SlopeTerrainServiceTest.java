@@ -28,7 +28,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
     public void testSlope() {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
-        slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.id(1);
         slopeConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 5, 1),},
@@ -79,7 +79,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
     public void testWidthSlope() {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
-        slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.id(1);
         slopeConfigLand.setRows(3).setSegments(1).setWidth(25).setHorizontalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodeLand = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(5, 5, 1),},
@@ -136,7 +136,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
     public void testTerrainSlopeTileGeneration4Tiles() {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
-        slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.id(1);
         slopeConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 5, 1),},

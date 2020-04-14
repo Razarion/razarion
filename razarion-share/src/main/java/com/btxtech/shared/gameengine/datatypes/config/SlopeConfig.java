@@ -1,11 +1,10 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
 
+import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.SpecularLightConfig;
 
 import java.util.List;
 
@@ -13,28 +12,24 @@ import java.util.List;
  * Created by Beat
  * 08.05.2016.
  */
-public class SlopeConfig implements ObjectNameIdProvider {
-    public enum Type {
-        LAND,
-        WATER
-    }
-
+public class SlopeConfig implements Config {
     private int id;
     private String internalName;
     private List<SlopeShape> slopeShapes;
     private int segments;
     private double horizontalSpace;
+    @Deprecated
     private int rows;
+    @Deprecated
     private double width;
+    @Deprecated
     private double height;
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
-    private Type type;
+    private Integer waterConfigId;
     private SlopeNode[][] slopeNodes;
     private boolean interpolateNorm;
-    @Deprecated
-    private SpecularLightConfig specularLightConfig;
     private Integer slopeTextureId;
     private double slopeTextureScale;
     private Integer slopeBumpMapId;
@@ -45,9 +40,6 @@ public class SlopeConfig implements ObjectNameIdProvider {
     private Integer slopeFoamDistortionId;
     private Double slopeFoamDistortionStrength;
     private Double slopeFoamAnimationDuration;
-    private Integer groundConfigId;
-    //    private SplattingConfig outerSplatting;
-//    private SplattingConfig innerSplatting;
     private Double waterLevel;
     private Double waterFresnelOffset;
     private Double waterFresnelDelta;
@@ -68,33 +60,21 @@ public class SlopeConfig implements ObjectNameIdProvider {
     private Double shallowWaterDistortionStrength;
     private Double shallowWaterAnimation;
     private Integer shallowWaterStencilId;
-    @Deprecated
-    private Integer slopeWaterSplattingId;
-    @Deprecated
-    private double slopeWaterSplattingScale;
-    @Deprecated
-    private double slopeWaterSplattingFactor;
-    @Deprecated
-    private double slopeWaterSplattingFadeThreshold;
-    @Deprecated
-    private double slopeWaterSplattingHeight;
 
     public int getId() {
         return id;
     }
 
-    public SlopeConfig setId(int id) {
+    public void setId(int id) {
         this.id = id;
-        return this;
     }
 
     public String getInternalName() {
         return internalName;
     }
 
-    public SlopeConfig setInternalName(String internalName) {
+    public void setInternalName(String internalName) {
         this.internalName = internalName;
-        return this;
     }
 
     public List<SlopeShape> getSlopeShapes() {
@@ -119,29 +99,35 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return this;
     }
 
+    @Deprecated
     public SlopeConfig setRows(int rows) {
         this.rows = rows;
         return this;
     }
 
+    @Deprecated
     public SlopeConfig setWidth(double width) {
         this.width = width;
         return this;
     }
 
+    @Deprecated
     public SlopeConfig setHeight(double height) {
         this.height = height;
         return this;
     }
 
+    @Deprecated
     public int getRows() {
         return rows;
     }
 
+    @Deprecated
     public double getWidth() {
         return width;
     }
 
+    @Deprecated
     public double getHeight() {
         return height;
     }
@@ -209,33 +195,6 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Integer getGroundConfiId() {
-        return groundConfigId;
-    }
-
-    public SlopeConfig setGroundConfig(Integer groundConfigId) {
-        this.groundConfigId = groundConfigId;
-        return this;
-    }
-
-    //    public SplattingConfig getOuterSplatting() {
-//        return outerSplatting;
-//    }
-//
-//    public SlopeConfig setOuterSplatting(SplattingConfig outerSplatting) {
-//        this.outerSplatting = outerSplatting;
-//        return this;
-//    }
-//
-//    public SplattingConfig getInnerSplatting() {
-//        return innerSplatting;
-//    }
-//
-//    public SlopeConfig setInnerSplatting(SplattingConfig innerSplatting) {
-//        this.innerSplatting = innerSplatting;
-//        return this;
-//    }
-//
     public double getOuterLineGameEngine() {
         return outerLineGameEngine;
     }
@@ -272,13 +231,12 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Type getType() {
-        return type;
+    public Integer getWaterConfigId() {
+        return waterConfigId;
     }
 
-    public SlopeConfig setType(Type type) {
-        this.type = type;
-        return this;
+    public void setWaterConfigId(Integer waterConfigId) {
+        this.waterConfigId = waterConfigId;
     }
 
     public SlopeNode[][] getSlopeNodes() {
@@ -296,17 +254,6 @@ public class SlopeConfig implements ObjectNameIdProvider {
 
     public SlopeConfig setInterpolateNorm(boolean interpolateNorm) {
         this.interpolateNorm = interpolateNorm;
-        return this;
-    }
-
-    @Deprecated
-    public SpecularLightConfig getSpecularLightConfig() {
-        return specularLightConfig;
-    }
-
-    @Deprecated
-    public SlopeConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
-        this.specularLightConfig = specularLightConfig;
         return this;
     }
 
@@ -339,10 +286,6 @@ public class SlopeConfig implements ObjectNameIdProvider {
 
     public SlopeNode getSlopeNode(int column, int row) {
         return slopeNodes[column % segments][row];
-    }
-
-    public boolean hasWater() {
-        return waterLevel != null;
     }
 
     public Double getWaterLevel() {
@@ -525,49 +468,23 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Integer getSlopeWaterSplattingId() {
-        return slopeWaterSplattingId;
-    }
-
-    public SlopeConfig setSlopeWaterSplattingId(Integer slopeWaterSplattingId) {
-        this.slopeWaterSplattingId = slopeWaterSplattingId;
+    public SlopeConfig id(Integer id) {
+        this.id = id;
         return this;
     }
 
-    public double getSlopeWaterSplattingScale() {
-        return slopeWaterSplattingScale;
-    }
-
-    public SlopeConfig setSlopeWaterSplattingScale(double slopeWaterSplattingScale) {
-        this.slopeWaterSplattingScale = slopeWaterSplattingScale;
+    public SlopeConfig internalName(String internalName) {
+        setInternalName(internalName);
         return this;
     }
 
-    public double getSlopeWaterSplattingFactor() {
-        return slopeWaterSplattingFactor;
-    }
-
-    public SlopeConfig setSlopeWaterSplattingFactor(double slopeWaterSplattingFactor) {
-        this.slopeWaterSplattingFactor = slopeWaterSplattingFactor;
+    public SlopeConfig waterConfigId(Integer waterConfigId) {
+        setWaterConfigId(waterConfigId);
         return this;
     }
 
-    public double getSlopeWaterSplattingFadeThreshold() {
-        return slopeWaterSplattingFadeThreshold;
-    }
-
-    public SlopeConfig setSlopeWaterSplattingFadeThreshold(double slopeWaterSplattingFadeThreshold) {
-        this.slopeWaterSplattingFadeThreshold = slopeWaterSplattingFadeThreshold;
-        return this;
-    }
-
-    public double getSlopeWaterSplattingHeight() {
-        return slopeWaterSplattingHeight;
-    }
-
-    public SlopeConfig setSlopeWaterSplattingHeight(double slopeWaterSplattingHeight) {
-        this.slopeWaterSplattingHeight = slopeWaterSplattingHeight;
-        return this;
+    public boolean hasWaterConfigId() {
+        return waterConfigId != null;
     }
 
     @Override

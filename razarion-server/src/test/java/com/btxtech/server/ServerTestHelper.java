@@ -49,11 +49,11 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -62,7 +62,6 @@ import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
@@ -592,8 +591,8 @@ public class ServerTestHelper {
         runInTransaction(em -> {
             SlopeConfigEntity slopeConfigEntity1 = new SlopeConfigEntity();
             SlopeConfig slopeConfigLand = new SlopeConfig();
-            slopeConfigLand.setSpecularLightConfig(new SpecularLightConfig());
-            slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+            // TODO slopeConfigLand.setSpecularLightConfig(new SpecularLightConfig());
+            slopeConfigLand.id(1);
             slopeConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
             slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                     {new SlopeNode().setPosition(new Vertex(2, 0, 5)).setSlopeFactor(1)},
@@ -604,15 +603,15 @@ public class ServerTestHelper {
             slopeConfigEntity1.setDefault();
             List<SlopeShape> shapeLand = Arrays.asList(new SlopeShape(new DecimalPosition(2, 5), 1), new SlopeShape(new DecimalPosition(4, 10), 1), new SlopeShape(new DecimalPosition(7, 20), 1));
             slopeConfigLand.setSlopeShapes(shapeLand);
-            slopeConfigEntity1.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigLand).setInternalName("Land"), imagePersistence);
+            // TODO slopeConfigEntity1.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigLand).setInternalName("Land"), imagePersistence);
             em.persist(slopeConfigEntity1);
 
 
             SLOPE_LAND_CONFIG_ENTITY_1 = slopeConfigEntity1.getId();
             SlopeConfigEntity slopeConfigEntity2 = new SlopeConfigEntity();
             SlopeConfig slopeConfigWater = new SlopeConfig();
-            slopeConfigWater.setSpecularLightConfig(new SpecularLightConfig());
-            slopeConfigWater.setId(2).setType(SlopeConfig.Type.WATER);
+            // TODO slopeConfigWater.setSpecularLightConfig(new SpecularLightConfig());
+            slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
             slopeConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-2);
             slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                     {new SlopeNode().setPosition(new Vertex(5, 0, 0.5)).setSlopeFactor(0.5)},
@@ -624,7 +623,7 @@ public class ServerTestHelper {
             slopeConfigEntity2.setDefault();
             List<SlopeShape> shapeWater = Arrays.asList(new SlopeShape(new DecimalPosition(5, 0.5), 0.5f), new SlopeShape(new DecimalPosition(10, -0.1), 1), new SlopeShape(new DecimalPosition(15, -0.8), 1), new SlopeShape(new DecimalPosition(20, -2), 1));
             slopeConfigWater.setSlopeShapes(shapeWater);
-            slopeConfigEntity2.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigWater).setInternalName("Water"), imagePersistence);
+            // TODO slopeConfigEntity2.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigWater).setInternalName("Water"), imagePersistence);
             em.persist(slopeConfigEntity2);
             SLOPE_WATER_CONFIG_ENTITY_2 = slopeConfigEntity2.getId();
         });

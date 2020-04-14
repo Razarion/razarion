@@ -3,6 +3,7 @@ package com.btxtech.client.editor;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.client.editor.EditorMenuButtonSection.CrudControllerButton;
 import com.btxtech.client.editor.audio.AudioGalleryDialog;
 import com.btxtech.client.editor.basemgmt.BaseMgmtEditorPanel;
 import com.btxtech.client.editor.client.scene.SceneConfigSidebar;
@@ -22,7 +23,6 @@ import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
 import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
-import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
 import com.btxtech.client.editor.water.WaterSidebar;
@@ -30,6 +30,7 @@ import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
+import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -52,6 +53,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     @DataField
+    private EditorMenuButtonSection globalConfig;
+    @Inject
+    @DataField
     private Button clientAlarmServiceButton;
     @Inject
     @DataField
@@ -68,9 +72,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button baseMgmtButton;
-    @Inject
-    @DataField
-    private Button planetButton;
     @Inject
     @DataField
     private Button planetVisualConfigButton;
@@ -100,12 +101,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button sceneConfigButton;
     @Inject
     @DataField
-    private Button slopeButton;
-    @Inject
-    @DataField
-    private Button groundButton;
-    @Inject
-    @DataField
     private Button waterButton;
     @Inject
     @DataField
@@ -133,17 +128,22 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button particleButton;
     @Inject
     @DataField
-    private Button levelConfigButton;
-    @Inject
-    @DataField
     private Button inventoryItemButton;
     @Inject
     @DataField
     private Button i18nPanelButton;
-    @Inject
-    @DataField
-    private Button gameUiContextButton;
     private ModalDialogPanel<Void> modalDialogPanel;
+
+    @Override
+    public void init(Void aVoid) {
+        globalConfig.showSection(() -> modalDialogPanel.close(),
+                new CrudControllerButton(LevelEditorController.class, "Levels"),
+                new CrudControllerButton(PlanetEditorController.class, "Planets"),
+                new CrudControllerButton(GroundEditorController.class, "Grounds"),
+                new CrudControllerButton(SlopeEditorController.class, "Slope"),
+                new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context")
+        );
+    }
 
     @EventHandler("clientAlarmServiceButton")
     private void onClientAlarmServiceButtonClicked(ClickEvent event) {
@@ -179,12 +179,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private void onBaseMgmtButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
         editorService.openEditor(BaseMgmtEditorPanel.class, "???Unknown");
-    }
-
-    @EventHandler("planetButton")
-    private void onPlanetButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openGenericCrudEditor(PlanetEditorController.class, "Planets");
     }
 
     @EventHandler("planetVisualConfigButton")
@@ -247,18 +241,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
         editorService.openEditor(SceneConfigSidebar.class, "???Unknown");
     }
 
-    @EventHandler("slopeButton")
-    private void onSlopeButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openEditor(SlopeConfigCrudSidebar.class, "???Unknown");
-    }
-
-    @EventHandler("groundButton")
-    private void onGroundButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openGenericCrudEditor(GroundEditorController.class, "Grounds");
-    }
-
     @EventHandler("waterButton")
     private void onWaterButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
@@ -313,31 +295,14 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
         editorService.openEditor(ParticleCrudeSidebar.class, "???Unknown");
     }
 
-    @EventHandler("levelConfigButton")
-    private void levelConfigButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openGenericCrudEditor(LevelEditorController.class, "Levels");
-    }
-
     @EventHandler("i18nPanelButton")
     private void i18nPanelButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
         editorService.openEditor(I18nPanel.class, "???Unknown");
     }
 
-    @EventHandler("gameUiContextButton")
-    private void gameUiContextButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openGenericCrudEditor(GameUiContextEditorController.class, "Game Ui Context");
-    }
-
     @Override
     public void onClose() {
-
-    }
-
-    @Override
-    public void init(Void aVoid) {
 
     }
 

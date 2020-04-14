@@ -375,7 +375,7 @@ public class Slope {
     }
 
     public boolean hasWater() {
-        return slopeConfig.getType() == SlopeConfig.Type.WATER;
+        return slopeConfig.hasWaterConfigId();
     }
 
     @Override

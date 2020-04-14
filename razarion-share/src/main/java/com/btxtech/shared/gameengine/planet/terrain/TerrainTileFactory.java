@@ -195,7 +195,7 @@ public class TerrainTileFactory {
                 terrainSlopeTileBuilder.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()));
             }
             vertexColumn++;
-            if (slopeConfig.hasWater()) {
+            if (slopeConfig.hasWaterConfigId()) {
                 terrainTileBuilder.getTerrainWaterTileBuilder().addShallowWaterMeshVertices(transformationMatrix, slopeConfig.getWidth(), slopeConfig.getHorizontalSpace(), fractionalSlope.getGroundHeight() + slopeConfig.getWaterLevel(), fractionalSlopeSegment.getUvY(), fractionalSlopeSegment.getUvYTermination());
             }
         }

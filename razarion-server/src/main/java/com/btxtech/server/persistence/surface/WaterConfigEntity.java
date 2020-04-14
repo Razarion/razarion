@@ -2,13 +2,8 @@ package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.SpecularLightConfigEmbeddable;
-import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.dto.WaterConfig;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Optional;
 
 /**
  * Created by Beat
@@ -35,16 +29,16 @@ public class WaterConfigEntity {
     @JoinColumn
     private ImageLibraryEntity normMapId; // TODO rename on db
     private double groundLevel;
-    private SpecularLightConfigEmbeddable specularLightConfig;
+
+    public Integer getId() {
+        return id;
+    }
 
     public WaterConfig toWaterConfig() {
         WaterConfig waterConfig = new WaterConfig();
         waterConfig.setWaterLevel(waterLevel).setGroundLevel(groundLevel).setTransparency(waterTransparency);
         if (normMapId != null) {
             waterConfig.setNormMapId(normMapId.getId());
-        }
-        if (specularLightConfig != null) {
-            waterConfig.setSpecularLightConfig(specularLightConfig.toLightConfig());
         }
         // TODO ----------
         waterConfig.setReflectionId(96); // TODO
@@ -64,7 +58,6 @@ public class WaterConfigEntity {
         groundLevel = waterConfig.getGroundLevel();
         waterTransparency = waterConfig.getTransparency();
         normMapId = imagePersistence.getImageLibraryEntity(waterConfig.getNormMapId());
-        specularLightConfig.fromLightConfig(waterConfig.getSpecularLightConfig());
     }
 
     @Override

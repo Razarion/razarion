@@ -34,6 +34,8 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
     private ItemTypePersistence itemTypePersistence;
     @Inject
     private GroundCrudPersistence groundCrudPersistence;
+    @Inject
+    private SlopeCrudPersistence slopeCrudPersistence;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -123,7 +125,7 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
         PlanetEntity planetEntity = getEntity(planetId);
         for (TerrainSlopePosition terrainSlopePosition : updatedSlopes) {
             TerrainSlopePositionEntityChain chain = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePosition.getId());
-            chain.getChild().setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigId()));
+            chain.getChild().setSlopeConfigEntity(slopeCrudPersistence.getEntity(terrainSlopePosition.getSlopeConfigId()));
             chain.getChild().getPolygon().clear();
             chain.getChild().setInverted(terrainSlopePosition.isInverted());
             chain.getChild().getPolygon().addAll(terrainSlopePosition.getPolygon().stream().map(terrainSlopeCorner -> {
@@ -145,7 +147,7 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
         List<TerrainSlopePositionEntity> terrainSlopePositionEntities = new ArrayList<>();
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             TerrainSlopePositionEntity terrainSlopePositionEntity = new TerrainSlopePositionEntity();
-            terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigId()));
+            terrainSlopePositionEntity.setSlopeConfigEntity(slopeCrudPersistence.getEntity(terrainSlopePosition.getSlopeConfigId()));
             terrainSlopePositionEntity.setInverted(terrainSlopePosition.isInverted());
             terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon().stream().map(terrainSlopeCorner -> {
                 TerrainSlopeCornerEntity terrainSlopeCornerEntity = new TerrainSlopeCornerEntity();

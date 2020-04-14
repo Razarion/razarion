@@ -9,6 +9,7 @@ import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.dialog.DialogButton;
@@ -47,6 +48,8 @@ public class TerrainEditorSidebar extends AbstractEditor implements ViewService.
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private TerrainEditorImpl terrainEditor;
+    @Inject
+    private Caller<SlopeEditorController> slopeEditorController;
     @Inject
     private Caller<TerrainElementEditorProvider> elementEditorProvider;
     @Inject
@@ -147,12 +150,12 @@ public class TerrainEditorSidebar extends AbstractEditor implements ViewService.
         terrainObjectRandomZRotation.setValue(terrainEditor.getTerrainObjectRandomZRotation());
         terrainObjectRandomScale.setValue(terrainEditor.getTerrainObjectRandomScale());
         slopeSelection.addValueChangeHandler(event -> terrainEditor.setSlope4New(slopeSelection.getValue()));
-        elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
+        slopeEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
             ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
             slopeSelection.setAcceptableValues(objectNameIds);
             slopeSelection.setValue(objectNameId);
             terrainEditor.setSlope4New(objectNameId);
-        }, exceptionHandler.restErrorHandler("getSlopeNameIds failed: ")).getSlopeNameIds();
+        }, exceptionHandler.restErrorHandler("SlopeEditorController.getObjectNameIds() failed: ")).getObjectNameIds();
         drivewayMode.setChecked(terrainEditor.isDrivewayMode());
         drivewaySelection.addValueChangeHandler(event -> terrainEditor.setDriveway4New(drivewaySelection.getValue()));
         elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {

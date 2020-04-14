@@ -1,9 +1,8 @@
 package com.btxtech.uiservice.terrain;
 
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.utils.SignalGenerator;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -74,16 +73,12 @@ public class UiTerrainSlopeTile {
     }
 
 
-    public SpecularLightConfig getSlopeLightConfig() {
-        return slopeConfig.getSpecularLightConfig();
-    }
-
     public double getBmDepth() {
         return slopeConfig.getSlopeBumpMapDepth();
     }
 
     public boolean hasWater() {
-        return slopeConfig.getType() == SlopeConfig.Type.WATER;
+        return slopeConfig.hasWaterConfigId();
     }
 
     public double getTextureScale() {

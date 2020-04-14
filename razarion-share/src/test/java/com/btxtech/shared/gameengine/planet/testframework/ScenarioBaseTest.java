@@ -39,7 +39,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
     public void before() {
         // Land slope config
         SlopeConfig slopeConfigLand = new SlopeConfig();
-        slopeConfigLand.setId(1).setInternalName("Mountain").setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.id(1).internalName("Mountain");
         slopeConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(25);
         SlopeNode[][] slopeNodeLand = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 5, 0),},
@@ -52,7 +52,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         slopeConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(9);
         // Water slope config
         SlopeConfig slopeConfigWater = new SlopeConfig();
-        slopeConfigWater.setId(2).setInternalName("Water").setType(SlopeConfig.Type.WATER);
+        slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID).setInternalName("Water");
         slopeConfigWater.setRows(4).setSegments(1).setWidth(12).setHorizontalSpace(5).setHeight(-2);
         SlopeNode[][] slopeNodeWater = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 1),},

@@ -90,7 +90,7 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
     private void setup(TerrainSlopePosition terrainSlopePosition) {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
-        slopeConfigLand.setId(SKELETON_CONFIG_ID_1).setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.id(SKELETON_CONFIG_ID_1);
         slopeConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 5, 1),},

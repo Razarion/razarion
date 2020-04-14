@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
@@ -140,11 +139,6 @@ public class UiTerrainTile {
 
     public double getBottomBmScale() {
         // TODO return groundSkeletonConfig.getBottomBmScale();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public SpecularLightConfig getSpecularLightConfig() {
-        // TODO rreturn groundSkeletonConfig.getSpecularLightConfig();
         throw new UnsupportedOperationException("TODO");
     }
 

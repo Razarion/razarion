@@ -4,16 +4,12 @@ import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectEntity_;
 import com.btxtech.server.persistence.surface.DrivewayConfigEntity;
 import com.btxtech.server.persistence.surface.DrivewayConfigEntity_;
-import com.btxtech.server.persistence.surface.SlopeConfigEntity;
-import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -63,67 +59,6 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public List<ObjectNameId> getSlopeNameIds() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
-        Root<SlopeConfigEntity> root = cq.from(SlopeConfigEntity.class);
-        cq.multiselect(root.get(SlopeConfigEntity_.id), root.get(SlopeConfigEntity_.internalName));
-        List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
-        return tupleResult.stream().map(t -> new ObjectNameId(((int) t.get(0)), (String) t.get(1))).collect(Collectors.toList());
-    }
-
-    @Transactional
-    @SecurityCheck
-    public SlopeConfig_OLD createSlopeConfig() {
-        SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
-        slopeConfigEntity.setDefault();
-        entityManager.persist(slopeConfigEntity);
-        return slopeConfigEntity.toSlopeConfig();
-    }
-
-    @Transactional
-    public SlopeConfig_OLD readSlopeConfig(int id) {
-        return entityManager.find(SlopeConfigEntity.class, id).toSlopeConfig();
-    }
-
-    @Transactional
-    public List<SlopeConfig_OLD> readSlopeConfigs() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<SlopeConfigEntity> userQuery = criteriaBuilder.createQuery(SlopeConfigEntity.class);
-        Root<SlopeConfigEntity> root = userQuery.from(SlopeConfigEntity.class);
-        CriteriaQuery<SlopeConfigEntity> userSelect = userQuery.select(root);
-        Collection<SlopeConfigEntity> slopeConfigEntities = entityManager.createQuery(userSelect).getResultList();
-
-        return slopeConfigEntities.stream().map(SlopeConfigEntity::toSlopeConfig).collect(Collectors.toList());
-    }
-
-    @Transactional
-    public List<SlopeConfig> loadSlopeSkeletons() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<SlopeConfigEntity> userQuery = criteriaBuilder.createQuery(SlopeConfigEntity.class);
-        Root<SlopeConfigEntity> root = userQuery.from(SlopeConfigEntity.class);
-        CriteriaQuery<SlopeConfigEntity> userSelect = userQuery.select(root);
-        Collection<SlopeConfigEntity> slopeConfigEntities = entityManager.createQuery(userSelect).getResultList();
-
-        return slopeConfigEntities.stream().map(SlopeConfigEntity::toSlopeSkeleton).collect(Collectors.toList());
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void updateSlopeConfig(SlopeConfig_OLD slopeConfigOLD) {
-        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, slopeConfigOLD.getId());
-        slopeConfigEntity.fromSlopeConfig(slopeConfigOLD, imagePersistence);
-        entityManager.merge(slopeConfigEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void deleteSlopeConfig(int id) {
-        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, id);
-        entityManager.remove(slopeConfigEntity);
-    }
-
-    @Transactional
     public List<ObjectNameId> getTerrainObjectNameIds() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
@@ -169,20 +104,6 @@ public class TerrainElementPersistence {
         TerrainObjectEntity terrainObjectEntity = new TerrainObjectEntity();
         entityManager.persist(terrainObjectEntity);
         return terrainObjectEntity.toTerrainObjectConfig();
-    }
-
-    @Transactional
-    public SlopeConfigEntity getSlopeConfigEntity(Integer slopeId) {
-        if (slopeId == null) {
-            return null;
-        }
-        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, slopeId);
-        if (slopeConfigEntity == null) {
-            throw new IllegalArgumentException("No SlopeConfigEntity for id: " + slopeId);
-        }
-        return slopeConfigEntity;
-
-
     }
 
     @Transactional

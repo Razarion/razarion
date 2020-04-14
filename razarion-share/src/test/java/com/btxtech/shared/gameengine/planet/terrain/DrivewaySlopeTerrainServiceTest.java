@@ -143,7 +143,7 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
     private void setup(List<TerrainObjectPosition> terrainObjectPositions, TerrainSlopeCorner... slopePolygon) {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
-        slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.id(1);
         slopeConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 1),},

@@ -43,7 +43,7 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
 // ---------------------------Slope shape---------------------------
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig skeletonConfig = new SlopeConfig();
-        skeletonConfig.setId(1).setType(SlopeConfig.Type.LAND);
+        skeletonConfig.id(1);
         skeletonConfig.setRows(10).setSegments(100).setWidth(9.8).setHorizontalSpace(3.0).setHeight(8.2);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(1.4, 0.0, 0.1), GameTestHelper.createSlopeNode(3.5999998569488527, 0.0, 0.3), GameTestHelper.createSlopeNode(4.6, 1.0, 0.9), GameTestHelper.createSlopeNode(5.2, 2.4, 1.0), GameTestHelper.createSlopeNode(5.4, 3.7, 1.0), GameTestHelper.createSlopeNode(5.7, 5.1, 1.0), GameTestHelper.createSlopeNode(6.1, 6.8, 1.0), GameTestHelper.createSlopeNode(7.400000095367432, 8.8, 0.8), GameTestHelper.createSlopeNode(8.800000953674317, 8.2, 0.5), GameTestHelper.createSlopeNode(9.8, 8.2, 0.0)},

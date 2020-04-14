@@ -1,13 +1,12 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.Color;
-
 /**
  * Created by Beat
  * 15.03.2017.
  */
-@Deprecated
-public class WaterConfig {
+public class WaterConfig implements Config {
+    private int id;
+    private String internalName;
     private double waterLevel;
     private double transparency;
     private Integer reflectionId;
@@ -19,7 +18,21 @@ public class WaterConfig {
     private double distortionStrength;
     private double distortionDurationSeconds;
     private double groundLevel;
-    private SpecularLightConfig specularLightConfig;
+
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public String getInternalName() {
+        return internalName;
+    }
+
+    @Override
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
+    }
 
     public double getWaterLevel() {
         return waterLevel;
@@ -117,15 +130,6 @@ public class WaterConfig {
 
     public WaterConfig setGroundLevel(double groundLevel) {
         this.groundLevel = groundLevel;
-        return this;
-    }
-
-    public SpecularLightConfig getSpecularLightConfig() {
-        return specularLightConfig;
-    }
-
-    public WaterConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
-        this.specularLightConfig = specularLightConfig;
         return this;
     }
 }

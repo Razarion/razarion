@@ -3,7 +3,6 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
-import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.shared.utils.SignalGenerator;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;

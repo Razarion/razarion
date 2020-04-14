@@ -77,8 +77,8 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
         webGlFacade.useProgram();
 
         webGlFacade.uniform3f(uLightDirection, webGlFacade.getVisualUiService().getLightDirection());
-        webGlFacade.uniform1f(uLightSpecularIntensity, uiTerrainWaterTile.getWaterConfig().getSpecularLightConfig().getSpecularIntensity());
-        webGlFacade.uniform1f(uLightSpecularHardness, uiTerrainWaterTile.getWaterConfig().getSpecularLightConfig().getSpecularHardness());
+        // TODO webGlFacade.uniform1f(uLightSpecularIntensity, uiTerrainWaterTile.getWaterConfig().getSpecularLightConfig().getSpecularIntensity());
+        // TODO webGlFacade.uniform1f(uLightSpecularHardness, uiTerrainWaterTile.getWaterConfig().getSpecularLightConfig().getSpecularHardness());
 
         webGlFacade.uniform1f(uTransparency, uiTerrainWaterTile.getWaterConfig().getTransparency());
         webGlFacade.uniform1f(distortionStrength, uiTerrainWaterTile.getWaterConfig().getDistortionStrength());

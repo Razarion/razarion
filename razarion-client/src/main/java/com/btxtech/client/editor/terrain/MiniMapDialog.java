@@ -6,13 +6,13 @@ import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.utils.MathHelper;
 import com.google.gwt.dom.client.Element;
@@ -30,7 +30,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -42,7 +41,7 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
     private static final String GROUND_COLOR = "#86b300";
     private static final String SLOPE_COLOR = "#8c8c8c";
     private static final String TERRAIN_OBJECT_COLOR = "#008000";
-    private Logger logger = Logger.getLogger(MiniMapDialog.class.getName());
+    // private Logger logger = Logger.getLogger(MiniMapDialog.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
@@ -117,19 +116,14 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
     private void drawSlope(Rectangle2D playground, List<TerrainSlopePosition> terrainSlopePositions) {
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             SlopeConfig slopeConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId());
-            switch (slopeConfig.getType()) {
-                case LAND:
-                    drawPlateau(playground, terrainSlopePosition, slopeConfig);
-                    break;
-                case WATER:
-                    if (terrainSlopePosition.isInverted()) {
-                        drawIsland(playground, terrainSlopePosition);
-                    } else {
-                        drawWater(playground, terrainSlopePosition);
-                    }
-                    break;
-                default:
-                    logger.warning("MiniMapDialog.generateMiniTerrain() unknown slopeConfig.getType(): " + slopeConfig.getType());
+            if (slopeConfig.hasWaterConfigId()) {
+                if (terrainSlopePosition.isInverted()) {
+                    drawIsland(playground, terrainSlopePosition);
+                } else {
+                    drawWater(playground, terrainSlopePosition);
+                }
+            } else {
+                drawPlateau(playground, terrainSlopePosition, slopeConfig);
             }
             if (terrainSlopePosition.getChildren() != null) {
                 drawSlope(playground, terrainSlopePosition.getChildren());

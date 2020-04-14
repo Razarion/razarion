@@ -5,7 +5,6 @@ import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -13,7 +12,6 @@ import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.ValueListBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
@@ -57,9 +55,9 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig_
     @Bound
     @DataField
     private TextBox internalName;
-    @Inject
-    @DataField
-    private ValueListBox<SlopeConfig.Type> type;
+//    @Inject
+//    @DataField
+//    private ValueListBox<SlopeConfig.Type> type;
 //    @Inject
 //    @DataField
 //    private SpecularLightWidget specularLightConfig;

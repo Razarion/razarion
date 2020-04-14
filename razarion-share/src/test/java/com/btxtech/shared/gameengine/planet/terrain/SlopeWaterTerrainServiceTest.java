@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -28,7 +29,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
     public void testWater1() {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigWater = new SlopeConfig();
-        slopeConfigWater.setId(10).setType(SlopeConfig.Type.WATER);
+        slopeConfigWater.id(10).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
         slopeConfigWater.setRows(4).setSegments(1).setWidth(9).setHorizontalSpace(6).setHeight(-2);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0.5, 0.5),},
@@ -240,7 +241,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
     public void testWater2() {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigWater = new SlopeConfig();
-        slopeConfigWater.setId(10).setType(SlopeConfig.Type.WATER);
+        slopeConfigWater.id(10).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
         slopeConfigWater.setRows(4).setSegments(1).setWidth(9).setHorizontalSpace(6).setHeight(-2);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0.5, 0.5),},
@@ -303,7 +304,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
 
         SlopeConfig slopeConfigWater = new SlopeConfig();
-        slopeConfigWater.setId(2).setType(SlopeConfig.Type.WATER);
+        slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
         slopeConfigWater.setRows(3).setSegments(1).setWidth(15).setHorizontalSpace(5).setHeight(-1);
         SlopeNode[][] slopeNodeWater = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(5, -0.2, 1),},

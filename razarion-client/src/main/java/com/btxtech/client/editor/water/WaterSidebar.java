@@ -1,7 +1,6 @@
 package com.btxtech.client.editor.water;
 
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
-import com.btxtech.client.editor.widgets.SpecularLightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.WaterConfig;
@@ -36,9 +35,6 @@ public class WaterSidebar extends AbstractEditor {
     @Inject
     @AutoBound
     private DataBinder<WaterConfig> waterDataBinder;
-    @Inject
-    @DataField
-    private SpecularLightWidget specularLightConfig;
     @Inject
     @Bound
     @DataField
@@ -84,7 +80,6 @@ public class WaterSidebar extends AbstractEditor {
     @PostConstruct
     public void init() {
         waterDataBinder.setModel(terrainTypeService.getWaterConfig());
-        specularLightConfig.setModel(terrainTypeService.getWaterConfig().getSpecularLightConfig());
         // TODO terrainUiService.enableEditMode(visualUiService.getStaticVisualConfig().getWaterConfig());
         reflectionId.setImageId(terrainTypeService.getWaterConfig().getReflectionId(), imageId -> {
             terrainTypeService.getWaterConfig().setReflectionId(imageId);
