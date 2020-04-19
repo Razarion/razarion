@@ -7,12 +7,16 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.mocks.TestFloat32Array;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.Assert;
@@ -118,6 +122,15 @@ public class AssertTerrainTile {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            SimpleModule module = new SimpleModule();
+            module.addSerializer(Float32ArrayEmu.class, new JsonSerializer<Float32ArrayEmu>() {
+                @Override
+                public void serialize(Float32ArrayEmu value, JsonGenerator jgen, SerializerProvider serializers) throws IOException, JsonProcessingException {
+                    ObjectMapper mapper = (ObjectMapper) jgen.getCodec();
+                    jgen.writeRawValue(mapper.writeValueAsString(Vertex.toArray(((TestFloat32Array)value).getVertices())));
+                }
+            });
+            objectMapper.registerModule(module);
             objectMapper.writeValue(new File(directoryName, fileName), terrainTiles);
         } catch (IOException e) {
             throw new RuntimeException(e);
