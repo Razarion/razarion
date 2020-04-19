@@ -9,13 +9,12 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 
 /**
  * Created by Beat
  * on 23.08.2017.
  */
-public class WeldSlaveEmulator extends WeldBaseTest {
+public class WeldSlaveEmulator extends AbstractIntegrationTest {
     private TestClientWebSocket testClientWebSocket;
     private WeldMasterBaseTest weldMasterBaseTest;
 

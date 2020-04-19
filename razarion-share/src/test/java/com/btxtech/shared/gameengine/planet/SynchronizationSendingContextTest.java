@@ -24,24 +24,24 @@ public class SynchronizationSendingContextTest {
         synchronizationSendingContext = new SynchronizationSendingContext();
         synchronizationSendingContext.addCollision(syncBaseItem1.getSyncPhysicalMovable(), syncBaseItem2.getSyncPhysicalMovable());
         Assert.assertEquals(1, synchronizationSendingContext.getCollisions().size());
-        WeldBaseTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().findFirst().orElseThrow(AssertionError::new), 1, 2);
+        AbstractIntegrationTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().findFirst().orElseThrow(AssertionError::new), 1, 2);
         // Case 3
         synchronizationSendingContext = new SynchronizationSendingContext();
         synchronizationSendingContext.addCollision(syncBaseItem1.getSyncPhysicalMovable(), syncBaseItem2.getSyncPhysicalMovable());
         synchronizationSendingContext.addCollision(syncBaseItem2.getSyncPhysicalMovable(), syncBaseItem3.getSyncPhysicalMovable());
         Assert.assertEquals(1, synchronizationSendingContext.getCollisions().size());
-        WeldBaseTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().findFirst().orElseThrow(AssertionError::new), 1, 2, 3);
+        AbstractIntegrationTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().findFirst().orElseThrow(AssertionError::new), 1, 2, 3);
         // Case 4
         synchronizationSendingContext = new SynchronizationSendingContext();
         synchronizationSendingContext.addCollision(syncBaseItem2.getSyncPhysicalMovable(), syncBaseItem3.getSyncPhysicalMovable());
         synchronizationSendingContext.addCollision(syncBaseItem1.getSyncPhysicalMovable(), syncBaseItem2.getSyncPhysicalMovable());
         Assert.assertEquals(1, synchronizationSendingContext.getCollisions().size());
-        WeldBaseTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().findFirst().orElseThrow(AssertionError::new), 1, 2, 3);
+        AbstractIntegrationTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().findFirst().orElseThrow(AssertionError::new), 1, 2, 3);
         // Case 5
         synchronizationSendingContext = new SynchronizationSendingContext();
         synchronizationSendingContext.addCollision(syncBaseItem1.getSyncPhysicalMovable(), syncBaseItem2.getSyncPhysicalMovable());
         Assert.assertEquals(1, synchronizationSendingContext.getCollisions().size());
-        WeldBaseTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().findFirst().orElseThrow(AssertionError::new), 1, 2);
+        AbstractIntegrationTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().findFirst().orElseThrow(AssertionError::new), 1, 2);
     }
 
     @Test
@@ -57,8 +57,8 @@ public class SynchronizationSendingContextTest {
         synchronizationSendingContext.addCollision(syncBaseItem2.getSyncPhysicalMovable(), syncBaseItem3.getSyncPhysicalMovable());
         synchronizationSendingContext.addCollision(syncBaseItem4.getSyncPhysicalMovable(), syncBaseItem5.getSyncPhysicalMovable());
         Assert.assertEquals(2, synchronizationSendingContext.getCollisions().size());
-        WeldBaseTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().filter(syncBaseItems -> syncBaseItems.size() == 3).findFirst().orElseThrow(AssertionError::new), 1, 2, 3);
-        WeldBaseTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().filter(syncBaseItems -> syncBaseItems.size() == 2).findFirst().orElseThrow(AssertionError::new), 4, 5);
+        AbstractIntegrationTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().filter(syncBaseItems -> syncBaseItems.size() == 3).findFirst().orElseThrow(AssertionError::new), 1, 2, 3);
+        AbstractIntegrationTest.assertContainingSyncItemIds(synchronizationSendingContext.getCollisions().stream().filter(syncBaseItems -> syncBaseItems.size() == 2).findFirst().orElseThrow(AssertionError::new), 4, 5);
     }
 
 }

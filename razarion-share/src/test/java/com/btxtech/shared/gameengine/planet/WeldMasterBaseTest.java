@@ -24,7 +24,7 @@ import java.util.List;
  * Created by Beat
  * on 21.08.2017.
  */
-public class WeldMasterBaseTest extends WeldBaseTest {
+public class WeldMasterBaseTest extends AbstractIntegrationTest {
     private int nextHumanPlayerId = 1;
 
     protected void setupMasterEnvironment() {

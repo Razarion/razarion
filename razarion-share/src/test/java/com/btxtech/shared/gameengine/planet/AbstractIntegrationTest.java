@@ -7,7 +7,6 @@ import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -48,7 +47,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 23.08.2017.
  */
-public class WeldBaseTest {
+public class AbstractIntegrationTest {
     private WeldContainer weldContainer;
     private TestSimpleExecutorService testSimpleExecutorService;
     private BaseItemService baseItemService;
