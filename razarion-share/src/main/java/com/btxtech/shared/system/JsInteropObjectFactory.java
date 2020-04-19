@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 
@@ -16,9 +15,6 @@ import java.util.List;
  * 01.04.2017.
  */
 public interface JsInteropObjectFactory {
-
-    TerrainTile generateTerrainTile();
-
     TerrainSlopeTile generateTerrainSlopeTile();
 
     TerrainWaterTile generateTerrainWaterTile();

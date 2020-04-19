@@ -49,7 +49,7 @@ public class TerrainTileBuilder {
         this.terrainTileIndex = terrainTileIndex;
         terrainWaterTileBuilder.init(this);
 
-        terrainTile = jsInteropObjectFactory.generateTerrainTile();
+        terrainTile = new TerrainTile();
 
         terrainTile.setIndex(terrainTileIndex);
         offsetIndexX = terrainTileIndex.getX() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
@@ -74,10 +74,14 @@ public class TerrainTileBuilder {
 
         Map<Integer, Float32ArrayEmu> terrainTileGroundSlopeVertices = new HashMap<>();
         groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopeVertices.put(slopeId, jsInteropObjectFactory.newFloat32Array(vertices)));
-        terrainTile.setGroundSlopePositions(terrainTileGroundSlopeVertices);
+        if (!terrainTileGroundSlopeVertices.isEmpty()) {
+            terrainTile.setGroundSlopePositions(terrainTileGroundSlopeVertices);
+        }
         Map<Integer, Float32ArrayEmu> terrainTileGroundNorms = new HashMap<>();
         groundSlopeNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, jsInteropObjectFactory.newFloat32Array(vertices)));
-        terrainTile.setGroundSlopeNorms(terrainTileGroundNorms);
+        if (!terrainTileGroundNorms.isEmpty()) {
+            terrainTile.setGroundSlopeNorms(terrainTileGroundNorms);
+        }
 
         //  TODO groundSlopeVertices.
 

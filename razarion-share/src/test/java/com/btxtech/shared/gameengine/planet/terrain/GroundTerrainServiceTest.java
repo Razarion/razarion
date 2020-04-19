@@ -23,7 +23,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
 
-        showDisplay();
+        // showDisplay();
 
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGeneration1.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGeneration1.json");

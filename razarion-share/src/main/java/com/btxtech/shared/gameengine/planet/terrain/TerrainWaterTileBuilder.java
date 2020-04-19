@@ -11,7 +11,6 @@ import com.btxtech.shared.system.JsInteropObjectFactory;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +68,7 @@ public class TerrainWaterTileBuilder {
 
     public List<TerrainWaterTile> generate() {
         if (trianglePositions.isEmpty() && shallowTrianglePositions.isEmpty()) {
-            return Collections.emptyList();
+            return null;
         }
 
         List<TerrainWaterTile> terrainWaterTiles = new ArrayList<>();

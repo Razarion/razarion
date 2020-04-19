@@ -280,6 +280,20 @@ public class Vertex {
         return array;
     }
 
+    public static List<Vertex> fromArray(double[] values) {
+        if (values == null) {
+            return null;
+        }
+        if (values.length % getComponentsPerVertex() != 0) {
+            throw new IllegalArgumentException("Size of values must be a multiple of " + getComponentsPerVertex());
+        }
+        List<Vertex> vertices = new ArrayList<>();
+        for (int i = 0; i < values.length; i += getComponentsPerVertex()) {
+            vertices.add(new Vertex(values[i], values[i + 1], values[i + 2]));
+        }
+        return vertices;
+    }
+
     public static Comparator<Vertex> createVertexComparator1(double delta) {
         return (v1, v2) -> {
             if (v1.equalsDelta(v2, delta)) {

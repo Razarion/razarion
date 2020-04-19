@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.system.JsInteropObjectFactory;
@@ -21,12 +20,6 @@ import java.util.List;
  */
 @ApplicationScoped
 public class ClientJsInteropObjectFactory implements JsInteropObjectFactory {
-    @Override
-    public TerrainTile generateTerrainTile() {
-        return new TerrainTile() {
-        };
-    }
-
     @Override
     public TerrainSlopeTile generateTerrainSlopeTile() {
         return new TerrainSlopeTile() {
