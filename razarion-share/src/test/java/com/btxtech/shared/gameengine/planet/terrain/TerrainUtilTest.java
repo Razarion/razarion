@@ -11,9 +11,9 @@ public class TerrainUtilTest {
     @Test
     public void setupSegmentLookup1() {
         List<SlopeShape> slopeShapes = Arrays.asList(
-                new SlopeShape().setSlopeFactor(0.0f),
-                new SlopeShape().setSlopeFactor(1.0f),
-                new SlopeShape().setSlopeFactor(0.0f));
+                new SlopeShape().slopeFactor(0.0),
+                new SlopeShape().slopeFactor(1.0),
+                new SlopeShape().slopeFactor(0.0));
         TerrainSlopeTileBuilder.Segment[] segments = TerrainUtil.setupSegmentLookup(slopeShapes);
         Assert.assertArrayEquals(new TerrainSlopeTileBuilder.Segment[]{
                         TerrainSlopeTileBuilder.Segment.OUTER,
@@ -24,10 +24,10 @@ public class TerrainUtilTest {
     @Test
     public void setupSegmentLookup2() {
         List<SlopeShape> slopeShapes = Arrays.asList(
-                new SlopeShape().setSlopeFactor(1.0f),
-                new SlopeShape().setSlopeFactor(1.0f),
-                new SlopeShape().setSlopeFactor(1.0f),
-                new SlopeShape().setSlopeFactor(1.0f));
+                new SlopeShape().slopeFactor(1.0),
+                new SlopeShape().slopeFactor(1.0),
+                new SlopeShape().slopeFactor(1.0),
+                new SlopeShape().slopeFactor(1.0));
         TerrainSlopeTileBuilder.Segment[] segments = TerrainUtil.setupSegmentLookup(slopeShapes);
         Assert.assertArrayEquals(new TerrainSlopeTileBuilder.Segment[]{
                         TerrainSlopeTileBuilder.Segment.CENTER,
@@ -39,10 +39,10 @@ public class TerrainUtilTest {
     @Test
     public void setupSegmentLookup3() {
         List<SlopeShape> slopeShapes = Arrays.asList(
-                new SlopeShape().setSlopeFactor(0.0f),
-                new SlopeShape().setSlopeFactor(0.0f),
-                new SlopeShape().setSlopeFactor(0.0f),
-                new SlopeShape().setSlopeFactor(0.0f));
+                new SlopeShape().slopeFactor(0.0),
+                new SlopeShape().slopeFactor(0.0),
+                new SlopeShape().slopeFactor(0.0),
+                new SlopeShape().slopeFactor(0.0));
         TerrainSlopeTileBuilder.Segment[] segments = TerrainUtil.setupSegmentLookup(slopeShapes);
         Assert.assertArrayEquals(new TerrainSlopeTileBuilder.Segment[]{
                         TerrainSlopeTileBuilder.Segment.INNER,
@@ -53,10 +53,10 @@ public class TerrainUtilTest {
     @Test
     public void setupSegmentLookup4() {
         List<SlopeShape> slopeShapes = Arrays.asList(
-                new SlopeShape().setSlopeFactor(0.0f),
-                new SlopeShape().setSlopeFactor(1.0f),
-                new SlopeShape().setSlopeFactor(1.0f),
-                new SlopeShape().setSlopeFactor(0.0f));
+                new SlopeShape().slopeFactor(0.0),
+                new SlopeShape().slopeFactor(1.0),
+                new SlopeShape().slopeFactor(1.0),
+                new SlopeShape().slopeFactor(0.0));
         TerrainSlopeTileBuilder.Segment[] segments = TerrainUtil.setupSegmentLookup(slopeShapes);
         Assert.assertArrayEquals(new TerrainSlopeTileBuilder.Segment[]{
                         TerrainSlopeTileBuilder.Segment.OUTER,

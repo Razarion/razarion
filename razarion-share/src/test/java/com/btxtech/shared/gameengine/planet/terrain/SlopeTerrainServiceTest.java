@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.FallbackConfig;
+import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -30,13 +31,12 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
         slopeConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
-        SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 5, 1),},
-                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
-                {GameTestHelper.createSlopeNode(7, 20, 0.7),},
-        };
         slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
-        slopeConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
+        List<SlopeShape> slopeShapes = new ArrayList<>();
+        slopeShapes.add(new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1));
+        slopeShapes.add(new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7));
+        slopeShapes.add(new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7));
+        slopeConfigLand.setSlopeShapes(slopeShapes);
         slopeConfigs.add(slopeConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
@@ -64,7 +64,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         showDisplay();
 
         Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
-        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSlopeTile1.json");
+        AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSlopeTile1.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSlopeTile1.json");
         assertTerrainTile.assertEquals(terrainTiles);
 

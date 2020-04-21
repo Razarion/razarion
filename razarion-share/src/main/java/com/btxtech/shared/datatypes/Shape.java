@@ -37,7 +37,7 @@ public class Shape {
         return toVertex(entries.get(index).getPosition());
     }
 
-    public float getSlopeFactor(int index) {
+    public double getSlopeFactor(int index) {
         return entries.get(index).getSlopeFactor();
     }
 

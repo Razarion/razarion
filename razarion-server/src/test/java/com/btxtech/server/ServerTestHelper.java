@@ -53,7 +53,6 @@ import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -601,8 +600,8 @@ public class ServerTestHelper {
             }));
             slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
             slopeConfigEntity1.setDefault();
-            List<SlopeShape> shapeLand = Arrays.asList(new SlopeShape(new DecimalPosition(2, 5), 1), new SlopeShape(new DecimalPosition(4, 10), 1), new SlopeShape(new DecimalPosition(7, 20), 1));
-            slopeConfigLand.setSlopeShapes(shapeLand);
+            // TODO sList<SlopeShape> shapeLand = Arrays.asList(new SlopeShape(new DecimalPosition(2, 5), 1), new SlopeShape(new DecimalPosition(4, 10), 1), new SlopeShape(new DecimalPosition(7, 20), 1));
+            // TODO sslopeConfigLand.setSlopeShapes(shapeLand);
             // TODO slopeConfigEntity1.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigLand).setInternalName("Land"), imagePersistence);
             em.persist(slopeConfigEntity1);
 
@@ -621,8 +620,8 @@ public class ServerTestHelper {
             }));
             slopeConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
             slopeConfigEntity2.setDefault();
-            List<SlopeShape> shapeWater = Arrays.asList(new SlopeShape(new DecimalPosition(5, 0.5), 0.5f), new SlopeShape(new DecimalPosition(10, -0.1), 1), new SlopeShape(new DecimalPosition(15, -0.8), 1), new SlopeShape(new DecimalPosition(20, -2), 1));
-            slopeConfigWater.setSlopeShapes(shapeWater);
+            // TODO sList<SlopeShape> shapeWater = Arrays.asList(new SlopeShape(new DecimalPosition(5, 0.5), 0.5f), new SlopeShape(new DecimalPosition(10, -0.1), 1), new SlopeShape(new DecimalPosition(15, -0.8), 1), new SlopeShape(new DecimalPosition(20, -2), 1));
+            // TODO sslopeConfigWater.setSlopeShapes(shapeWater);
             // TODO slopeConfigEntity2.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigWater).setInternalName("Water"), imagePersistence);
             em.persist(slopeConfigEntity2);
             SLOPE_WATER_CONFIG_ENTITY_2 = slopeConfigEntity2.getId();

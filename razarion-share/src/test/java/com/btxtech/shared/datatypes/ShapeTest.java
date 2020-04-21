@@ -83,7 +83,7 @@ public class ShapeTest {
     public static List<SlopeShape> toSlopeShapeList(DecimalPosition... positions) {
         List<SlopeShape> slopeShapes = new ArrayList<>();
         for (DecimalPosition position : positions) {
-            slopeShapes.add(new SlopeShape(position, 0));
+            slopeShapes.add(new SlopeShape().position(position));
         }
         return slopeShapes;
     }

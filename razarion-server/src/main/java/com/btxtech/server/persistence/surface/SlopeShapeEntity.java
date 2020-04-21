@@ -25,10 +25,10 @@ public class SlopeShapeEntity {
     /**
      * 1.0 is slope 0.0 is ground
      */
-    private float slopeFactor;
+    private double slopeFactor;
 
     public SlopeShape toSlopeShape() {
-        return new SlopeShape(position, slopeFactor);
+        return new SlopeShape().position(position).slopeFactor(slopeFactor);
     }
 
     public void fromSlopeShape(SlopeShape slopeShape) {

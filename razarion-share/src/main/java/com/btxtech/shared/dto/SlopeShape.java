@@ -1,7 +1,6 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 
 /**
  * Created by Beat
@@ -9,34 +8,31 @@ import com.btxtech.shared.datatypes.Index;
  */
 public class SlopeShape {
     private DecimalPosition position;
-    private float slopeFactor;
-
-    /**
-     * Used by errai
-     */
-    public SlopeShape() {
-    }
-
-    public SlopeShape(DecimalPosition position, float slopeFactor) {
-        this.position = position;
-        this.slopeFactor = slopeFactor;
-    }
-
-    public SlopeShape setPosition(DecimalPosition position) {
-        this.position = position;
-        return this;
-    }
+    private double slopeFactor;
 
     public DecimalPosition getPosition() {
         return position;
     }
 
-    public SlopeShape setSlopeFactor(float slopeFactor) {
+    public void setPosition(DecimalPosition position) {
+        this.position = position;
+    }
+
+    public double getSlopeFactor() {
+        return slopeFactor;
+    }
+
+    public void setSlopeFactor(double slopeFactor) {
         this.slopeFactor = slopeFactor;
+    }
+
+    public SlopeShape position(DecimalPosition position) {
+        setPosition(position);
         return this;
     }
 
-    public float getSlopeFactor() {
-        return slopeFactor;
+    public SlopeShape slopeFactor(double slopeFactor) {
+        setSlopeFactor(slopeFactor);
+        return this;
     }
 }
