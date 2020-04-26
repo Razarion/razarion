@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ShapeTest;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
-import com.btxtech.shared.utils.FractalFieldGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,13 +18,12 @@ public class SlopeModelerTest {
         SlopeConfig_OLD slopeConfigOLD = new SlopeConfig_OLD();
         SlopeConfig slopeConfig = new SlopeConfig();
         slopeConfigOLD.setSlopeConfig(slopeConfig);
-        slopeConfig.setSegments(10);
         slopeConfig.setSlopeShapes(ShapeTest.toSlopeShapeList(new DecimalPosition(0, 100), new DecimalPosition(0, 50), new DecimalPosition(0, 0)));
 
-        double[][] fractalField = FractalFieldGenerator.createFractalField(slopeConfigOLD.toFractalFiledConfig());
+        // TODO double[][] fractalField = FractalFieldGenerator.createFractalField(slopeConfigOLD.toFractalFiledConfig());
+        SlopeModeler.sculpt(slopeConfig);
 
 
-        SlopeModeler.sculpt(slopeConfig, fractalField);
 
         Assert.fail("... VERIFY ...");
     }

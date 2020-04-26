@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.shared.system.JsInteropObjectFactory;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.enterprise.context.Dependent;
@@ -18,8 +17,6 @@ import javax.inject.Inject;
 public class TerrainSlopeTileBuilder {
     // private Logger logger = Logger.getLogger(TerrainSlopeTileBuilder.class.getName());
     @Inject
-    private JsInteropObjectFactory jsInteropObjectFactory;
-    @Inject
     private ExceptionHandler exceptionHandler;
     private SlopeConfig slopeConfig;
     private int xCount;
@@ -27,9 +24,12 @@ public class TerrainSlopeTileBuilder {
     private SlopeVertex[][] mesh;
     private TerrainTileBuilder terrainTileBuilder;
     private Segment[] polygon2Segment;
-    private SlopeGeometryContext outerSlopeGeometryContext = new SlopeGeometryContext();
-    private SlopeGeometryContext centerSlopeGeometryContext = new SlopeGeometryContext();
-    private SlopeGeometryContext innerSlopeGeometryContext = new SlopeGeometryContext();
+    @Inject
+    private SlopeGeometryContext outerSlopeGeometryContext;
+    @Inject
+    private SlopeGeometryContext centerSlopeGeometryContext;
+    @Inject
+    private SlopeGeometryContext innerSlopeGeometryContext;
 
     public void init(SlopeConfig slopeConfig, int xCount, int yCount, TerrainTileBuilder terrainTileBuilder) {
         this.slopeConfig = slopeConfig;
@@ -45,7 +45,7 @@ public class TerrainSlopeTileBuilder {
     }
 
     public TerrainSlopeTile generate() {
-        TerrainSlopeTile terrainSlopeTile = jsInteropObjectFactory.generateTerrainSlopeTile();
+        TerrainSlopeTile terrainSlopeTile = new TerrainSlopeTile();
         terrainSlopeTile.setSlopeConfigId(slopeConfig.getId());
         if(!outerSlopeGeometryContext.isEmpty()) {
             terrainSlopeTile.setOuterSlopeGeometry(outerSlopeGeometryContext.generate());

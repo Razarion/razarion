@@ -35,7 +35,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
-        slopeConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
+        slopeConfigLand.setHorizontalSpace(5);
         slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 5, 1),},
                 {GameTestHelper.createSlopeNode(4, 10, 0.7),},
@@ -46,7 +46,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
 
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
-        slopeConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-2);
+        slopeConfigWater.setHorizontalSpace(6);
         slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(5, 0.5, 0.5),},
                 {GameTestHelper.createSlopeNode(10, -0.1, 1),},

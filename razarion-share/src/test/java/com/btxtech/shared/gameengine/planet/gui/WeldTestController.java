@@ -61,8 +61,6 @@ public class WeldTestController implements Initializable {
     @FXML
     private TextField zMaxField;
     @FXML
-    private CheckBox terrainTileSplattingCheck;
-    @FXML
     private CheckBox terrainTileWaterCheck;
     @FXML
     private CheckBox terrainTileGroundCheck;
@@ -124,7 +122,6 @@ public class WeldTestController implements Initializable {
         zMinField.setText(Double.toString(weldTestRenderer.getZMin()));
         zMaxField.setText(Double.toString(weldTestRenderer.getZMax()));
 
-        addRenderListener(terrainTileSplattingCheck);
         addRenderListener(terrainTileWaterCheck);
         addRenderListener(terrainTileGroundCheck);
         addRenderListener(terrainTileSlopeCheck);
@@ -252,10 +249,6 @@ public class WeldTestController implements Initializable {
     public void onMaxZChanged() {
         weldTestRenderer.setZMax(Double.parseDouble(zMaxField.getText()));
         weldTestRenderer.render(scenarioPlaybackController);
-    }
-
-    public boolean renderTerrainTileSplattings() {
-        return terrainTileSplattingCheck.isSelected();
     }
 
     public boolean renderTerrainTileWater() {

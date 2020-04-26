@@ -23,6 +23,7 @@ public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
     private int slopeId;
     private SlopeConfig slopeConfig;
+    private CalculatedSlopeData calculatedSlopeData;
     private final boolean inverted;
     private final double outerGroundHeight;
     private final double innerGroundHeight;
@@ -41,11 +42,12 @@ public class Slope {
     public Slope(int slopeId, SlopeConfig slopeConfig, boolean inverted, List<TerrainSlopeCorner> corners, double outerGroundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
         this.slopeConfig = slopeConfig;
+        calculatedSlopeData = SlopeModeler.sculpt(slopeConfig);
         this.terrainTypeService = terrainTypeService;
         this.inverted = inverted;
         this.outerGroundHeight = outerGroundHeight;
-        this.innerGroundHeight = inverted ? outerGroundHeight - slopeConfig.getHeight() : outerGroundHeight + slopeConfig.getHeight();
-        if (slopeConfig.getWidth() <= 0.0) {
+        this.innerGroundHeight = inverted ? outerGroundHeight - calculatedSlopeData.getHeight() : outerGroundHeight + calculatedSlopeData.getHeight();
+        if (calculatedSlopeData.getWidth() <= 0.0) {
             throw new IllegalArgumentException("Slope <constructor> slopeConfig.getWidth() <= 0.0 for slopeId: " + slopeId + " with slopeConfig id: " + slopeConfig.getId());
         }
         List<AbstractBorder> borders = setupSlopingBorder(new ArrayList<>(corners));
@@ -124,9 +126,9 @@ public class Slope {
             Corner current = corners.get(i);
             Corner next = CollectionUtils.getCorrectedElement(i + 1, corners);
             if (current.getPosition().angle(next.getPosition(), previous.getPosition()) > MathHelper.HALF_RADIANT) {
-                cornerBorders.add(new OuterCornerBorder(current.getPosition(), previous.getPosition(), next.getPosition(), slopeConfig.getWidth(), current.getDrivewayHeightFactor()));
+                cornerBorders.add(new OuterCornerBorder(current.getPosition(), previous.getPosition(), next.getPosition(), calculatedSlopeData.getWidth(), current.getDrivewayHeightFactor()));
             } else {
-                cornerBorders.add(new InnerCornerBorder(current.getPosition(), previous.getPosition(), next.getPosition(), slopeConfig.getWidth(), current.getDrivewayHeightFactor()));
+                cornerBorders.add(new InnerCornerBorder(current.getPosition(), previous.getPosition(), next.getPosition(), calculatedSlopeData.getWidth(), current.getDrivewayHeightFactor()));
             }
         }
         // Setup whole contour
@@ -135,7 +137,7 @@ public class Slope {
             AbstractCornerBorder current = cornerBorders.get(i);
             AbstractCornerBorder next = cornerBorders.get(CollectionUtils.getCorrectedIndex(i + 1, cornerBorders.size()));
             borders.add(current);
-            borders.add(new LineBorder(current, next, slopeConfig.getWidth(), current.getDrivewayHeightFactor()));
+            borders.add(new LineBorder(current, next, calculatedSlopeData.getWidth(), current.getDrivewayHeightFactor()));
         }
         return borders;
     }
@@ -173,7 +175,7 @@ public class Slope {
     }
 
     private double calculateSafetyDistance(double innerAngle) {
-        return slopeConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
+        return calculatedSlopeData.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
     }
 
     private void setupLimitationPolygon() {
@@ -200,8 +202,7 @@ public class Slope {
             int index = CollectionUtils.getCorrectedIndex(i + offset, verticalSegments);
             VerticalSegment verticalSegment = verticalSegments.get(index);
             DecimalPosition outerSlopeRenderEngine = verticalSegment.getOuter();
-            double slopeSkeletonWidth = slopeConfig.getSlopeNode(verticalSegment.getIndex(), slopeConfig.getRows() - 1).getPosition().getX();
-            DecimalPosition innerSlopeRenderEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonWidth, verticalSegment.getInner(), true);
+            DecimalPosition innerSlopeRenderEngine = outerSlopeRenderEngine.getPointWithDistance(calculatedSlopeData.getWidth(), verticalSegment.getInner(), true);
 
             DecimalPosition innerSlopeGameEngine;
             DecimalPosition outerSlopeGameEngine;
@@ -240,7 +241,7 @@ public class Slope {
                 if (drivewaySlopeInnerGameEngine == null) {
                     VerticalSegment startVerticalSegment = CollectionUtils.getCorrectedElement(index - 1, verticalSegments);
                     Driveway driveway = getDriveway(startVerticalSegment.getInner());
-                    Polygon2D innerSlopePolygon = driveway.setupInnerPolygon(slopeSkeletonWidth - slopeConfig.getInnerLineGameEngine());
+                    Polygon2D innerSlopePolygon = driveway.setupInnerPolygon(calculatedSlopeData.getWidth() - slopeConfig.getInnerLineGameEngine());
                     drivewayGameEngineHandler.addInnerSlopePolygon(innerSlopePolygon, driveway);
                     // -----------------------------------------------------------
                     drivewaySlopeInnerGameEngine = new ArrayList<>();
@@ -370,8 +371,8 @@ public class Slope {
         return coastDelimiterPolygonTerrainType;
     }
 
-    public double getHeight() {
-        return slopeConfig.getHeight();
+    public CalculatedSlopeData getCalculatedSlopeData() {
+        return calculatedSlopeData;
     }
 
     public boolean hasWater() {

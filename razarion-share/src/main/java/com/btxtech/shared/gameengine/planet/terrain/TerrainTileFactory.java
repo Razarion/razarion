@@ -6,9 +6,8 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
@@ -17,6 +16,8 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNod
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectList;
+import com.btxtech.shared.gameengine.planet.terrain.slope.CalculatedSlopeData;
+import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -168,7 +169,8 @@ public class TerrainTileFactory {
 
     private void generateSlopeTerrainTile(TerrainTileBuilder terrainTileBuilder, FractionalSlope fractionalSlope) {
         SlopeConfig slopeConfig = terrainTypeService.getSlopeSkeleton(fractionalSlope.getSlopeConfigId());
-        TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainTileBuilder.createTerrainSlopeTileContext(slopeConfig, fractionalSlope.getFractionalSlopeSegments().size());
+        CalculatedSlopeData calculatedSlopeData = SlopeModeler.sculpt(slopeConfig);
+        TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainTileBuilder.createTerrainSlopeTileContext(slopeConfig, calculatedSlopeData, fractionalSlope.getFractionalSlopeSegments().size());
         terrainTileBuilder.getTerrainWaterTileBuilder().startWaterMesh();
         int vertexColumn = 0;
         for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
@@ -176,9 +178,9 @@ public class TerrainTileFactory {
             // Setup Slope
             double uvX = 0;
             Vertex lastPosition = null;
-            for (int row = 0; row < slopeConfig.getRows(); row++) {
-                SlopeNode slopeNode = slopeConfig.getSlopeNode(fractionalSlopeSegment.getIndex(), row);
-                Vertex skeletonVertex = slopeNode.getPosition();
+            for (int row = 0; row < calculatedSlopeData.getRows(); row++) {
+                Vertex skeletonVertex = calculatedSlopeData.setupVertex(fractionalSlopeSegment.getIndex(), row);
+                double slopeFactor = calculatedSlopeData.setupSlopeFactor(fractionalSlopeSegment.getIndex(), row);
                 if (fractionalSlopeSegment.getDrivewayHeightFactor() < 1.0) {
                     skeletonVertex = skeletonVertex.multiply(1.0, 1.0, fractionalSlopeSegment.getDrivewayHeightFactor());
                 }
@@ -192,26 +194,26 @@ public class TerrainTileFactory {
                     uvTermination = new DecimalPosition(uvX, fractionalSlopeSegment.getUvYTermination());
                 }
                 lastPosition = transformedPoint;
-                terrainSlopeTileBuilder.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()));
+                terrainSlopeTileBuilder.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeFactor, fractionalSlopeSegment.getDrivewayHeightFactor()));
             }
             vertexColumn++;
             if (slopeConfig.hasWaterConfigId()) {
-                terrainTileBuilder.getTerrainWaterTileBuilder().addShallowWaterMeshVertices(transformationMatrix, slopeConfig.getWidth(), slopeConfig.getHorizontalSpace(), fractionalSlope.getGroundHeight() + slopeConfig.getWaterLevel(), fractionalSlopeSegment.getUvY(), fractionalSlopeSegment.getUvYTermination());
+                terrainTileBuilder.getTerrainWaterTileBuilder().addShallowWaterMeshVertices(transformationMatrix, calculatedSlopeData.getWidth(), slopeConfig.getHorizontalSpace(), fractionalSlope.getGroundHeight() + slopeConfig.getWaterLevel(), fractionalSlopeSegment.getUvY(), fractionalSlopeSegment.getUvYTermination());
             }
         }
         terrainSlopeTileBuilder.triangulation(fractionalSlope.isInverted(), slopeConfig.isInterpolateNorm());
         terrainTileBuilder.getTerrainWaterTileBuilder().triangulateShallowWaterMesh(fractionalSlope.getSlopeConfigId());
     }
 
-    private static double setupSlopeFactor(SlopeNode slopeNode, double drivewayHeightFactor) {
-        if (MathHelper.compareWithPrecision(1.0, slopeNode.getSlopeFactor())) {
+    private static double setupSlopeFactor(double slopeFactor, double drivewayHeightFactor) {
+        if (MathHelper.compareWithPrecision(1.0, slopeFactor)) {
             return 1.0;
-        } else if (MathHelper.compareWithPrecision(0.0, slopeNode.getSlopeFactor())) {
+        } else if (MathHelper.compareWithPrecision(0.0, slopeFactor)) {
             return 0;
         }
         // Why -shapeTemplateEntry.getNormShift() and not + is unclear
         // return (float) MathHelper.clamp(slopeSkeletonEntry.getSlopeFactor() - slopeSkeletonEntry.getNormShift(), 0.0, 1.0);
-        return slopeNode.getSlopeFactor() * drivewayHeightFactor;
+        return slopeFactor * drivewayHeightFactor;
     }
 
     private void insertSlopeGroundConnectionPart(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
@@ -281,7 +283,7 @@ public class TerrainTileFactory {
 
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode != null) {
-                TerrainNode terrainNode = jsInteropObjectFactory.generateTerrainNode();
+                TerrainNode terrainNode = new TerrainNode();
                 terrainNode.setTerrainType(TerrainType.toOrdinal(terrainShapeNode.getTerrainType()));
                 if (terrainShapeNode.isFullGameEngineDriveway()) {
                     terrainNode.setHeight(InterpolationUtils.rectangleInterpolate(new DecimalPosition(0.5, 0.5), terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL()));
@@ -321,7 +323,7 @@ public class TerrainTileFactory {
     }
 
     private TerrainSubNode createTerrainSubNode(DecimalPosition nodePosition, DecimalPosition subNodePosition, TerrainShapeNode terrainShapeNode, TerrainShapeSubNode terrainShapeSubNode) {
-        TerrainSubNode terrainSubNode = jsInteropObjectFactory.generateTerrainSubNode();
+        TerrainSubNode terrainSubNode = new TerrainSubNode();
         terrainSubNode.setTerrainType(TerrainType.toOrdinal(terrainShapeSubNode.getTerrainType()));
         if (terrainShapeSubNode.isDriveway()) {
             terrainSubNode.setHeight(InterpolationUtils.rectangleInterpolate(new DecimalPosition(0.5, 0.5), terrainShapeSubNode.getDrivewayHeightBL(), terrainShapeSubNode.getDrivewayHeightBR(), terrainShapeSubNode.getDrivewayHeightTR(), terrainShapeSubNode.getDrivewayHeightTL()));

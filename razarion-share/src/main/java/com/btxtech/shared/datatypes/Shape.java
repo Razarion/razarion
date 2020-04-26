@@ -8,6 +8,7 @@ import java.util.List;
  * Created by Beat
  * 23.01.2016.
  */
+@Deprecated
 public class Shape {
     private double distance;
     private List<SlopeShape> entries;
@@ -37,10 +38,6 @@ public class Shape {
         return toVertex(entries.get(index).getPosition());
     }
 
-    public double getSlopeFactor(int index) {
-        return entries.get(index).getSlopeFactor();
-    }
-
     public Vertex getNormShiftedVertex(int row, double distance) {
         DecimalPosition previous;
         DecimalPosition current;
@@ -66,9 +63,5 @@ public class Shape {
 
     private Vertex toVertex(DecimalPosition xzPosition) {
         return new Vertex(xzPosition.getX(), 0, xzPosition.getY());
-    }
-
-    public double getZInner() {
-        return entries.get(entries.size() - 1).getPosition().getY();
     }
 }

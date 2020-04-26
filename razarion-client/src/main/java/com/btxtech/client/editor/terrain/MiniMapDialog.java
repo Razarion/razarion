@@ -13,6 +13,7 @@ import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.utils.MathHelper;
 import com.google.gwt.dom.client.Element;
@@ -133,7 +134,7 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
 
     private void drawPlateau(Rectangle2D playground, TerrainSlopePosition terrainSlopePosition, SlopeConfig slopeConfig) {
         ctx.setStrokeStyle(SLOPE_COLOR);
-        ctx.setLineWidth((float) slopeConfig.getWidth());
+        ctx.setLineWidth((float) SlopeModeler.sculpt(slopeConfig).getWidth());
 
         doPolygon(playground, terrainSlopePosition);
         ctx.stroke();

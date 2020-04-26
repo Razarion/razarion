@@ -43,7 +43,7 @@ public class Driveway {
         this.slope = slope;
         this.startSlopePosition = startSlopePosition;
         this.startSlopeIndex = startSlopeIndex;
-        drivewayLength = drivewayConfig.calculateDrivewayLength(slope.getHeight());
+        drivewayLength = drivewayConfig.calculateDrivewayLength(slope.getCalculatedSlopeData().getHeight());
     }
 
     public boolean computeVerify(DecimalPosition endSlopePosition, int endSlopeIndex) {
@@ -76,7 +76,7 @@ public class Driveway {
         DecimalPosition last = CollectionUtils.getCorrectedElement(startSlopeIndex - 1, input).getPosition();
         double angle = startSlopePosition.angle(last, endSlopePosition);
         if (angle < MathHelper.THREE_QUARTER_RADIANT) {
-            startSlopeBreaking = slope.getSlopeConfig().getWidth() / Math.tan((MathHelper.THREE_QUARTER_RADIANT + angle) / 2.0);
+            startSlopeBreaking = slope.getCalculatedSlopeData().getWidth() / Math.tan((MathHelper.THREE_QUARTER_RADIANT + angle) / 2.0);
         } else {
             startSlopeBreaking = 0;
         }
@@ -86,7 +86,7 @@ public class Driveway {
         DecimalPosition next = CollectionUtils.getCorrectedElement(endSlopeIndex + 1, input).getPosition();
         double angle = endSlopePosition.angle(startSlopePosition, next);
         if (angle < MathHelper.THREE_QUARTER_RADIANT) {
-            endSlopeBreaking = slope.getSlopeConfig().getWidth() / Math.tan((MathHelper.THREE_QUARTER_RADIANT + angle) / 2.0);
+            endSlopeBreaking = slope.getCalculatedSlopeData().getWidth() / Math.tan((MathHelper.THREE_QUARTER_RADIANT + angle) / 2.0);
         } else {
             endSlopeBreaking = 0;
         }
@@ -99,7 +99,7 @@ public class Driveway {
         DecimalPosition breaking = outerLine.projectOnInfiniteLine(position);
         DecimalPosition ground = breakingLine.projectOnInfiniteLine(position);
 
-        return InterpolationUtils.interpolate(0, slope.getHeight(), 0, breaking.getDistance(ground), position.getDistance(breaking));
+        return InterpolationUtils.interpolate(0, slope.getCalculatedSlopeData().getHeight(), 0, breaking.getDistance(ground), position.getDistance(breaking));
     }
 
     public boolean isInside(Collection<DecimalPosition> positions) {

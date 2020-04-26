@@ -1,10 +1,8 @@
 package com.btxtech.server.system;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.system.JsInteropObjectFactory;
@@ -19,22 +17,7 @@ import java.util.List;
 @ApplicationScoped
 public class ServerJsInteropObjectFactory implements JsInteropObjectFactory {
     @Override
-    public TerrainSlopeTile generateTerrainSlopeTile() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public TerrainWaterTile generateTerrainWaterTile() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public TerrainNode generateTerrainNode() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public TerrainSubNode generateTerrainSubNode() {
         throw new UnsupportedOperationException();
     }
 
@@ -44,7 +27,17 @@ public class ServerJsInteropObjectFactory implements JsInteropObjectFactory {
     }
 
     @Override
-    public Float32ArrayEmu newFloat32Array(List<Vertex> vertices) {
+    public Float32ArrayEmu newFloat32Array4Vertices(List<Vertex> vertices) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Float32ArrayEmu newFloat32Array4DecimalPositions(List<DecimalPosition> decimalPositions) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Float32ArrayEmu newFloat32Array4Doubles(List<Double> doubles) {
         throw new UnsupportedOperationException();
     }
 }

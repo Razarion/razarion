@@ -144,7 +144,7 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
-        slopeConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
+        slopeConfigLand.setHorizontalSpace(5);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 1),},
                 {GameTestHelper.createSlopeNode(4, 8, 0.7),},

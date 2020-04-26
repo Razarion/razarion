@@ -30,14 +30,14 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(10).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
-        slopeConfigWater.setRows(4).setSegments(1).setWidth(9).setHorizontalSpace(6).setHeight(-2);
+        slopeConfigWater.setHorizontalSpace(6);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0.5, 0.5),},
                 {GameTestHelper.createSlopeNode(4, -0.1, 1),},
                 {GameTestHelper.createSlopeNode(6, -0.8, 1),},
                 {GameTestHelper.createSlopeNode(9, -2, 1),}
         };
-        slopeConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
+        // TODO slopeConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
         slopeConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
         slopeConfigs.add(slopeConfigWater);
 
@@ -234,7 +234,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     protected void initShape(SlopeConfig slopeConfig, SlopeShape... slopeShapes) {
         slopeConfig.setSlopeShapes(Arrays.asList(slopeShapes));
-        SlopeModeler.sculpt(slopeConfig, null);
+        SlopeModeler.sculpt(slopeConfig);
     }
 
     @Test
@@ -242,14 +242,14 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(10).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
-        slopeConfigWater.setRows(4).setSegments(1).setWidth(9).setHorizontalSpace(6).setHeight(-2);
+        slopeConfigWater.setHorizontalSpace(6);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0.5, 0.5),},
                 {GameTestHelper.createSlopeNode(4, -0.1, 1),},
                 {GameTestHelper.createSlopeNode(6, -0.8, 1),},
                 {GameTestHelper.createSlopeNode(9, -2, 1),}
         };
-        slopeConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
+        // TODO slopeConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
         slopeConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
         slopeConfigs.add(slopeConfigWater);
 
@@ -305,13 +305,13 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
-        slopeConfigWater.setRows(3).setSegments(1).setWidth(15).setHorizontalSpace(5).setHeight(-1);
+        slopeConfigWater.setHorizontalSpace(5);
         SlopeNode[][] slopeNodeWater = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(5, -0.2, 1),},
                 {GameTestHelper.createSlopeNode(10, -0.6, 0.7),},
                 {GameTestHelper.createSlopeNode(15, -1, 0.7),},
         };
-        slopeConfigWater.setSlopeNodes(toColumnRow(slopeNodeWater));
+        // TODO slopeConfigWater.setSlopeNodes(toColumnRow(slopeNodeWater));
         slopeConfigWater.setInnerLineGameEngine(13).setCoastDelimiterLineGameEngine(8).setOuterLineGameEngine(2);
         slopeConfigs.add(slopeConfigWater);
 

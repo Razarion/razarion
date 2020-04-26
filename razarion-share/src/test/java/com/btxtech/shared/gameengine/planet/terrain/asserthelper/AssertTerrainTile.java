@@ -51,7 +51,7 @@ public class AssertTerrainTile {
                 public Float32ArrayEmu deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
                     ObjectMapper mapper = (ObjectMapper) p.getCodec();
                     double[] value = mapper.readValue(p, double[].class);
-                    return new TestFloat32Array().vertices(value);
+                    return new TestFloat32Array().doubles(value);
                 }
             });
             objectMapper.registerModule(module);
@@ -127,7 +127,7 @@ public class AssertTerrainTile {
                 @Override
                 public void serialize(Float32ArrayEmu value, JsonGenerator jgen, SerializerProvider serializers) throws IOException, JsonProcessingException {
                     ObjectMapper mapper = (ObjectMapper) jgen.getCodec();
-                    jgen.writeRawValue(mapper.writeValueAsString(Vertex.toArray(((TestFloat32Array)value).getVertices())));
+                    jgen.writeRawValue(mapper.writeValueAsString(((TestFloat32Array)value).getDoubles()));
                 }
             });
             objectMapper.registerModule(module);

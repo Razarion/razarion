@@ -106,7 +106,7 @@ public class SlopeConfig_OLD implements ObjectNameIdProvider {
         fractalFieldConfig.setFractalMax(fractalMax);
         fractalFieldConfig.setClampMin(fractalClampMin);
         fractalFieldConfig.setClampMax(fractalClampMax);
-        fractalFieldConfig.setXCount(slopeConfig.getSegments());
+        // TODO fractalFieldConfig.setXCount(slopeConfig.getSegments());
         // TODO Shape shape = new Shape(this.slopeShapes);
         // TODO fractalFieldConfig.setYCount(shape.getShiftableCount());
         // TODO fractalFieldConfig.setFractalRoughness(fractalRoughness);
@@ -119,6 +119,6 @@ public class SlopeConfig_OLD implements ObjectNameIdProvider {
         fractalClampMin = fractalFieldConfig.getClampMin();
         fractalClampMax = fractalFieldConfig.getClampMax();
         fractalRoughness = fractalFieldConfig.getFractalRoughness();
-        slopeConfig.setSegments(fractalFieldConfig.getXCount());
+        // TODO slopeConfig.setSegments(fractalFieldConfig.getXCount());
     }
 }

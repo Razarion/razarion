@@ -45,7 +45,6 @@ public class SlopeConfigEntity {
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
     private double horizontalSpace;
-    private int segments;
 
     public Integer getId() {
         return id;
@@ -54,7 +53,6 @@ public class SlopeConfigEntity {
     public SlopeConfig toSlopeConfig() {
         SlopeConfig slopeConfig = new SlopeConfig();
         slopeConfig.id(id).internalName(internalName);
-        slopeConfig.setSegments(segments);
         slopeConfig.setInnerLineGameEngine(innerLineGameEngine);
         slopeConfig.setCoastDelimiterLineGameEngine(coastDelimiterLineGameEngine);
         slopeConfig.setOuterLineGameEngine(outerLineGameEngine);
@@ -106,7 +104,6 @@ public class SlopeConfigEntity {
     }
 
     public void setDefault() {
-        segments = 1;
         horizontalSpace = 0.5;
         shape = new ArrayList<>();
         shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(0, 0)).setSlopeFactor(1));

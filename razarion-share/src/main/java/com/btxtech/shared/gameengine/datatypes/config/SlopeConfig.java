@@ -16,19 +16,11 @@ public class SlopeConfig implements Config {
     private int id;
     private String internalName;
     private List<SlopeShape> slopeShapes;
-    private int segments;
     private double horizontalSpace;
-    @Deprecated
-    private int rows;
-    @Deprecated
-    private double width;
-    @Deprecated
-    private double height;
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
     private Integer waterConfigId;
-    private SlopeNode[][] slopeNodes;
     private boolean interpolateNorm;
     private Integer slopeTextureId;
     private double slopeTextureScale;
@@ -88,48 +80,6 @@ public class SlopeConfig implements Config {
     @Override
     public ObjectNameId createObjectNameId() {
         return new ObjectNameId(id, internalName);
-    }
-
-    public int getSegments() {
-        return segments;
-    }
-
-    public SlopeConfig setSegments(int segments) {
-        this.segments = segments;
-        return this;
-    }
-
-    @Deprecated
-    public SlopeConfig setRows(int rows) {
-        this.rows = rows;
-        return this;
-    }
-
-    @Deprecated
-    public SlopeConfig setWidth(double width) {
-        this.width = width;
-        return this;
-    }
-
-    @Deprecated
-    public SlopeConfig setHeight(double height) {
-        this.height = height;
-        return this;
-    }
-
-    @Deprecated
-    public int getRows() {
-        return rows;
-    }
-
-    @Deprecated
-    public double getWidth() {
-        return width;
-    }
-
-    @Deprecated
-    public double getHeight() {
-        return height;
     }
 
     public double getSlopeBumpMapDepth() {
@@ -239,13 +189,9 @@ public class SlopeConfig implements Config {
         this.waterConfigId = waterConfigId;
     }
 
-    public SlopeNode[][] getSlopeNodes() {
-        return slopeNodes;
-    }
-
+    @Deprecated
     public SlopeConfig setSlopeNodes(SlopeNode[][] slopeNodes) {
-        this.slopeNodes = slopeNodes;
-        return this;
+        throw new UnsupportedOperationException("...Deprecated...");
     }
 
     public boolean isInterpolateNorm() {
@@ -282,10 +228,6 @@ public class SlopeConfig implements Config {
     public SlopeConfig setSlopeBumpMapId(Integer slopeBumpMapId) {
         this.slopeBumpMapId = slopeBumpMapId;
         return this;
-    }
-
-    public SlopeNode getSlopeNode(int column, int row) {
-        return slopeNodes[column % segments][row];
     }
 
     public Double getWaterLevel() {

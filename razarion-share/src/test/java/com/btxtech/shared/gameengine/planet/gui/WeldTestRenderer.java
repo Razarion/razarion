@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.gui;
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -34,6 +35,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.DiffTriangleElement;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
+import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
@@ -310,7 +312,7 @@ public class WeldTestRenderer {
         Index fromTileIndex = new Index(0, 0);
         Index toTileIndex = fromTileIndex.add(2, 2);
 
-        if (weldTestController.renderTerrainTileSplattings() || weldTestController.renderTerrainTileWater() || weldTestController.renderTerrainTileGround() || weldTestController.renderTerrainTileSlope() || weldTestController.renderTerrainTileHeight() || weldTestController.renderTerrainTileTerrainType() || weldTestController.renderTerrainTileTerrainObject()) {
+        if (weldTestController.renderTerrainTileWater() || weldTestController.renderTerrainTileGround() || weldTestController.renderTerrainTileSlope() || weldTestController.renderTerrainTileHeight() || weldTestController.renderTerrainTileTerrainType() || weldTestController.renderTerrainTileTerrainObject()) {
             doRenderTile(fromTileIndex, toTileIndex);
         }
 
@@ -387,10 +389,6 @@ public class WeldTestRenderer {
     }
 
     public void drawTerrainTile(TerrainTile terrainTile) {
-        if (weldTestController.renderTerrainTileSplattings()) {
-            renderTileSplatting(terrainTile);
-        }
-
         if (weldTestController.renderTerrainTileWater()) {
 //           gc.setLineWidth(LINE_WIDTH);
 //            if (terrainTile.getTerrainWaterTile() != null) {
@@ -399,14 +397,9 @@ public class WeldTestRenderer {
         }
         if (weldTestController.renderTerrainTileGround()) {
             gc.setLineWidth(LINE_WIDTH);
-            TestFloat32Array float32Array = (TestFloat32Array) terrainTile.getGroundPositions();
-            for (int index = 0; index < float32Array.getVertices().size(); index += 3) {
-//                fillTriangle(float32Array.getVertices().get(index),
-//                        float32Array.getVertices().get(index + 1),
-//                        float32Array.getVertices().get(index + 2));
-                strokeZTriangle(float32Array.getVertices().get(index),
-                        float32Array.getVertices().get(index + 1),
-                        float32Array.getVertices().get(index + 2));
+            drawTriangles(terrainTile.getGroundPositions());
+            if(terrainTile.getGroundSlopePositions() != null) {
+                terrainTile.getGroundSlopePositions().values().forEach(this::drawTriangles);
             }
         }
 
@@ -438,6 +431,13 @@ public class WeldTestRenderer {
                     }
                 });
             }
+        }
+    }
+
+    private void drawTriangles(Float32ArrayEmu float32ArrayEmu) {
+        TestFloat32Array float32Array = (TestFloat32Array) float32ArrayEmu;
+        for (int index = 0; index < float32Array.getDoubles().length; index += 9) {
+            strokeZTriangle(float32Array.getDoubles(), index, index + 3, index + 6);
         }
     }
 
@@ -541,6 +541,11 @@ public class WeldTestRenderer {
     }
 
     private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
+        drawSlopeGeometry(terrainSlopeTile.getOuterSlopeGeometry());
+        drawSlopeGeometry(terrainSlopeTile.getCenterSlopeGeometry());
+        drawSlopeGeometry(terrainSlopeTile.getInnerSlopeGeometry());
+
+
         gc.setLineWidth(LINE_WIDTH);
         // TODO for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
         // TODO    int vertexScalarIndex = vertexIndex * 3;
@@ -613,33 +618,11 @@ public class WeldTestRenderer {
 //        }
     }
 
-    private void renderTileSplatting(TerrainTile terrainTile) {
-        gc.setLineWidth(FAT_LINE_WIDTH);
-
-//    TODO    for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
-//            int vertexScalarIndex = vertexIndex * 3;
-//            Color color1 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex], 0);
-//            Color color2 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 1], 0);
-//            Color color3 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 2], 0);
-//            strokeGradientTriangle(terrainTile.getGroundPositions(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6, color1, color2, color3);
-//        }
-
-//   TODO    if (terrainTile.getTerrainSlopeTiles() != null) {
-//            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
-//                for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
-//                    int vertexScalarIndex = vertexIndex * 3;
-//
-//    TODO                double xCorner = terrainSlopeTile.getVertices()[vertexScalarIndex];
-//    TODO                double yCorner = terrainSlopeTile.getVertices()[vertexScalarIndex + 1];
-//
-//     TODO               double splatting = terrainSlopeTile.getGroundSplattings()[vertexIndex];
-//
-//    TODO                DecimalPosition position = new DecimalPosition(xCorner, yCorner);
-//                    DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
-//                    gc.strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
-//                }
-//            }
-//        }
+    private void drawSlopeGeometry(SlopeGeometry slopeGeometry) {
+        if (slopeGeometry == null) {
+            return;
+        }
+        drawTriangles(slopeGeometry.getPositions());
     }
 
     private void drawTerrainWaterTile(TerrainWaterTile terrainWaterTile) {

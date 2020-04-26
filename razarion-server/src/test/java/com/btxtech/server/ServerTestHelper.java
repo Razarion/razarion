@@ -592,7 +592,7 @@ public class ServerTestHelper {
             SlopeConfig slopeConfigLand = new SlopeConfig();
             // TODO slopeConfigLand.setSpecularLightConfig(new SpecularLightConfig());
             slopeConfigLand.id(1);
-            slopeConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
+            slopeConfigLand.setHorizontalSpace(5);
             slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                     {new SlopeNode().setPosition(new Vertex(2, 0, 5)).setSlopeFactor(1)},
                     {new SlopeNode().setPosition(new Vertex(4, 0, 10)).setSlopeFactor(0.7)},
@@ -611,7 +611,7 @@ public class ServerTestHelper {
             SlopeConfig slopeConfigWater = new SlopeConfig();
             // TODO slopeConfigWater.setSpecularLightConfig(new SpecularLightConfig());
             slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
-            slopeConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-2);
+            slopeConfigWater.setHorizontalSpace(6);
             slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                     {new SlopeNode().setPosition(new Vertex(5, 0, 0.5)).setSlopeFactor(0.5)},
                     {new SlopeNode().setPosition(new Vertex(10, 0, -0.1)).setSlopeFactor(1)},

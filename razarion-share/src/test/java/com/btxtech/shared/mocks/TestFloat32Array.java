@@ -1,29 +1,20 @@
 package com.btxtech.shared.mocks;
 
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
-import com.btxtech.shared.datatypes.Vertex;
-
-import java.util.List;
-
-import static com.btxtech.shared.datatypes.Vertex.fromArray;
 
 public class TestFloat32Array implements Float32ArrayEmu {
-    private List<Vertex> vertices;
+    private double[] doubles;
 
-    public List<Vertex> getVertices() {
-        return vertices;
+    public double[] getDoubles() {
+        return doubles;
     }
 
-    public void setVertices(List<Vertex> vertices) {
-        this.vertices = vertices;
+    public void setDoubles(double[] doubles) {
+        this.doubles = doubles;
     }
 
-    public TestFloat32Array vertices(List<Vertex> vertices) {
-        setVertices(vertices);
+    public TestFloat32Array doubles(double[] doubles) {
+        setDoubles(doubles);
         return this;
-    }
-
-    public Float32ArrayEmu vertices(double[] vertices) {
-        return vertices(fromArray(vertices));
     }
 }

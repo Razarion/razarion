@@ -25,7 +25,7 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
-        slopeConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
+        slopeConfigLand.setHorizontalSpace(5);
         slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 1),},
                 {GameTestHelper.createSlopeNode(4, 8, 0.7),},
@@ -38,7 +38,7 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(2).setWaterConfigId(FallbackConfig.WATER_CONFIG_ID);
-        slopeConfigWater.setRows(5).setSegments(1).setWidth(12).setHorizontalSpace(5).setHeight(-2);
+        slopeConfigWater.setHorizontalSpace(5);
         slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 1),},
                 {GameTestHelper.createSlopeNode(4, 0, 0.7),},

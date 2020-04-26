@@ -51,7 +51,6 @@
                     <content>
                         <VBox>
                             <children>
-                                <CheckBox fx:id="terrainTileSplattingCheck" mnemonicParsing="false" text="Tile Splatting" />
                                 <CheckBox fx:id="terrainTileWaterCheck" mnemonicParsing="false" text="Tile Water" />
                                 <CheckBox fx:id="terrainTileGroundCheck" mnemonicParsing="false" text="Tile Ground" />
                                 <CheckBox fx:id="terrainTileSlopeCheck" mnemonicParsing="false" text="Tile Slope" />

@@ -9,6 +9,7 @@ import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
+import com.btxtech.shared.gameengine.planet.terrain.slope.CalculatedSlopeData;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import javax.enterprise.context.Dependent;
@@ -69,16 +70,16 @@ public class TerrainTileBuilder {
     public TerrainTile generate() {
         terrainTile.setTerrainWaterTiles(terrainWaterTileBuilder.generate());
 
-        terrainTile.setGroundPositions(jsInteropObjectFactory.newFloat32Array(groundPositions));
-        terrainTile.setGroundNorms(jsInteropObjectFactory.newFloat32Array(groundNorms));
+        terrainTile.setGroundPositions(jsInteropObjectFactory.newFloat32Array4Vertices(groundPositions));
+        terrainTile.setGroundNorms(jsInteropObjectFactory.newFloat32Array4Vertices(groundNorms));
 
         Map<Integer, Float32ArrayEmu> terrainTileGroundSlopeVertices = new HashMap<>();
-        groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopeVertices.put(slopeId, jsInteropObjectFactory.newFloat32Array(vertices)));
+        groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopeVertices.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
         if (!terrainTileGroundSlopeVertices.isEmpty()) {
             terrainTile.setGroundSlopePositions(terrainTileGroundSlopeVertices);
         }
         Map<Integer, Float32ArrayEmu> terrainTileGroundNorms = new HashMap<>();
-        groundSlopeNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, jsInteropObjectFactory.newFloat32Array(vertices)));
+        groundSlopeNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
         if (!terrainTileGroundNorms.isEmpty()) {
             terrainTile.setGroundSlopeNorms(terrainTileGroundNorms);
         }
@@ -148,9 +149,9 @@ public class TerrainTileBuilder {
         terrainTile.setLandWaterProportion(landWaterProportion);
     }
 
-    public TerrainSlopeTileBuilder createTerrainSlopeTileContext(SlopeConfig slopeConfig, int xCount) {
+    public TerrainSlopeTileBuilder createTerrainSlopeTileContext(SlopeConfig slopeConfig, CalculatedSlopeData calculatedSlopeData, int xCount) {
         TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainSlopeTileContextInstance.get();
-        terrainSlopeTileBuilder.init(slopeConfig, xCount, slopeConfig.getRows(), this);
+        terrainSlopeTileBuilder.init(slopeConfig, xCount, calculatedSlopeData.getRows(), this);
         if (terrainSlopeTileBuilders == null) {
             terrainSlopeTileBuilders = new ArrayList<>();
         }

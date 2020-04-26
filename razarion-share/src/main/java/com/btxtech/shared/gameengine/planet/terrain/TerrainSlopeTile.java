@@ -1,32 +1,46 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
-import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 03.04.2017.
  */
-@JsType(isNative = true, name = "TerrainSlopeTile", namespace = "com.btxtech.shared.nativejs")
-public abstract class TerrainSlopeTile {
-//    private int slopeConfigId;
-//    private SlopeGeometry outerSlopeGeometry;
-//    private SlopeGeometry centerSlopeGeometry;
-//    private SlopeGeometry innerSlopeGeometry;
+public class TerrainSlopeTile {
+    private int slopeConfigId;
+    private SlopeGeometry outerSlopeGeometry;
+    private SlopeGeometry centerSlopeGeometry;
+    private SlopeGeometry innerSlopeGeometry;
 
-    public native int getSlopeConfigId();
+    public int getSlopeConfigId() {
+        return slopeConfigId;
+    }
 
-    public native void setSlopeConfigId(int slopeConfigId);
+    public void setSlopeConfigId(int slopeConfigId) {
+        this.slopeConfigId = slopeConfigId;
+    }
 
-    public native SlopeGeometry getOuterSlopeGeometry();
+    public SlopeGeometry getOuterSlopeGeometry() {
+        return outerSlopeGeometry;
+    }
 
-    public native void setOuterSlopeGeometry(SlopeGeometry outerSlopeGeometry);
+    public void setOuterSlopeGeometry(SlopeGeometry outerSlopeGeometry) {
+        this.outerSlopeGeometry = outerSlopeGeometry;
+    }
 
-    public native SlopeGeometry getCenterSlopeGeometry();
+    public SlopeGeometry getCenterSlopeGeometry() {
+        return centerSlopeGeometry;
+    }
 
-    public native void setCenterSlopeGeometry(SlopeGeometry centerSlopeGeometry);
+    public void setCenterSlopeGeometry(SlopeGeometry centerSlopeGeometry) {
+        this.centerSlopeGeometry = centerSlopeGeometry;
+    }
 
-    public native SlopeGeometry getInnerSlopeGeometry();
+    public SlopeGeometry getInnerSlopeGeometry() {
+        return innerSlopeGeometry;
+    }
 
-    public native void setInnerSlopeGeometry(SlopeGeometry innerSlopeGeometry);
+    public void setInnerSlopeGeometry(SlopeGeometry innerSlopeGeometry) {
+        this.innerSlopeGeometry = innerSlopeGeometry;
+    }
 }

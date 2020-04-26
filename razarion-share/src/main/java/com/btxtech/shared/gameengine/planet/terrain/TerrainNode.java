@@ -1,24 +1,39 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import jsinterop.annotations.JsType;
-
 /**
  * Created by Beat
  * on 30.06.2017.
  */
-@JsType(isNative = true, name = "TerrainNode", namespace = "com.btxtech.shared.nativejs")
-public abstract class TerrainNode {
-    public native void initTerrainSubNodeField(int terrainSubNodeEdgeCount);
+public class TerrainNode {
+    private TerrainSubNode[][] terrainSubNodes;
+    private double height;
+    private int terrainTypeOrdinal;
 
-    public native TerrainSubNode[][] getTerrainSubNodes();
+    public void initTerrainSubNodeField(int terrainSubNodeEdgeCount) {
+        terrainSubNodes = new TerrainSubNode[terrainSubNodeEdgeCount][terrainSubNodeEdgeCount];
+    }
 
-    public native void insertTerrainSubNode(int x, int y, TerrainSubNode terrainSubNode);
+    public TerrainSubNode[][] getTerrainSubNodes() {
+        return terrainSubNodes;
+    }
 
-    public native double getHeight();
+    public void insertTerrainSubNode(int x, int y, TerrainSubNode terrainSubNode) {
+        terrainSubNodes[x][y] = terrainSubNode;
+    }
 
-    public native void setHeight(double height);
+    public double getHeight() {
+        return height;
+    }
 
-    public native int getTerrainType(); // Integer is not working here because Integer.intValue() is not defined
+    public void setHeight(double height) {
+        this.height = height;
+    }
 
-    public native void setTerrainType(int terrainType); // Integer is not working here because Integer.intValue() is not defined
+    public int getTerrainType() {
+        return terrainTypeOrdinal;
+    }
+
+    public void setTerrainType(int terrainTypeOrdinal) {
+        this.terrainTypeOrdinal = terrainTypeOrdinal;
+    }
 }

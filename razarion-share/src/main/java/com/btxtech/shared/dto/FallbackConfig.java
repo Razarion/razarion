@@ -268,7 +268,7 @@ public final class FallbackConfig {
         // Land
         SlopeConfig skeletonConfigLand = new SlopeConfig();
         skeletonConfigLand.setId(SLOPE_CONFIG_LAND_ID);
-        skeletonConfigLand.setRows(5).setSegments(10).setWidth(9.8).setHorizontalSpace(3.0).setHeight(8.2);
+        skeletonConfigLand.setHorizontalSpace(3.0);
 //   TODO     skeletonConfigLand.setSlopeNodes(new SlopeNode[][]{
 //                {GameTestHelper.createSlopeNode(1.4, 0.1, 0.1), GameTestHelper.createSlopeNode(4.6, 1.0, 0.9), GameTestHelper.createSlopeNode(5.4, 3.7, 1.0), GameTestHelper.createSlopeNode(7.0, 8.3, 0.8), GameTestHelper.createSlopeNode(9.8, 8.2, 0.0)},
 //                {GameTestHelper.createSlopeNode(1.4, 0.1, 0.1), GameTestHelper.createSlopeNode(4.6, 1.0, 0.9), GameTestHelper.createSlopeNode(5.4, 3.7, 1.0), GameTestHelper.createSlopeNode(7.0, 8.3, 0.8), GameTestHelper.createSlopeNode(9.8, 8.2, 0.0)},
@@ -285,7 +285,7 @@ public final class FallbackConfig {
         // Water
         SlopeConfig skeletonConfigWater = new SlopeConfig();
         skeletonConfigWater.id(SLOPE_CONFIG_WATER_ID).waterConfigId(WATER_CONFIG_ID);
-        skeletonConfigWater.setRows(3).setSegments(5).setWidth(15.6).setHorizontalSpace(3.0).setHeight(-1.9);
+        skeletonConfigWater.setHorizontalSpace(3.0);
 //   TODO     SlopeNode[][] slopeNodes = new SlopeNode[][]{
 //                {GameTestHelper.createSlopeNode(3.5, 0.6, 0.5), GameTestHelper.createSlopeNode(10.5, -1.2, 1.0), GameTestHelper.createSlopeNode(15.6, -1.9, 1.0)},
 //                {GameTestHelper.createSlopeNode(3.5, 0.6, 0.5), GameTestHelper.createSlopeNode(10.5, -1.2, 1.0), GameTestHelper.createSlopeNode(15.6, -1.9, 1.0)},
