@@ -3,6 +3,9 @@ package com.btxtech.server.persistence.surface;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.SlopeShape;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,6 +24,7 @@ public class SlopeShapeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Embedded
+    @AttributeOverrides({@AttributeOverride(name = "x", column = @Column), @AttributeOverride(name = "y", column = @Column)})
     private DecimalPosition position;
     /**
      * 1.0 is slope 0.0 is ground

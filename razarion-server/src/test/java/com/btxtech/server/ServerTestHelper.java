@@ -32,7 +32,6 @@ import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
-import com.btxtech.server.persistence.surface.SlopeNodeEntity;
 import com.btxtech.server.persistence.surface.SlopeShapeEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
@@ -599,7 +598,7 @@ public class ServerTestHelper {
                     {new SlopeNode().setPosition(new Vertex(7, 0, 20)).setSlopeFactor(0.7)},
             }));
             slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
-            slopeConfigEntity1.setDefault();
+            // TODO slopeConfigEntity1.setDefault();
             // TODO sList<SlopeShape> shapeLand = Arrays.asList(new SlopeShape(new DecimalPosition(2, 5), 1), new SlopeShape(new DecimalPosition(4, 10), 1), new SlopeShape(new DecimalPosition(7, 20), 1));
             // TODO sslopeConfigLand.setSlopeShapes(shapeLand);
             // TODO slopeConfigEntity1.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigLand).setInternalName("Land"), imagePersistence);
@@ -619,7 +618,7 @@ public class ServerTestHelper {
                     {new SlopeNode().setPosition(new Vertex(20, 0, -2)).setSlopeFactor(1)},
             }));
             slopeConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
-            slopeConfigEntity2.setDefault();
+            // TODO slopeConfigEntity2.setDefault();
             // TODO sList<SlopeShape> shapeWater = Arrays.asList(new SlopeShape(new DecimalPosition(5, 0.5), 0.5f), new SlopeShape(new DecimalPosition(10, -0.1), 1), new SlopeShape(new DecimalPosition(15, -0.8), 1), new SlopeShape(new DecimalPosition(20, -2), 1));
             // TODO sslopeConfigWater.setSlopeShapes(shapeWater);
             // TODO slopeConfigEntity2.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigWater).setInternalName("Water"), imagePersistence);
@@ -669,7 +668,7 @@ public class ServerTestHelper {
         cleanTable(TerrainSlopeCornerEntity.class);
         cleanTable(TerrainSlopePositionEntity.class);
 
-        cleanTable(SlopeNodeEntity.class);
+        // TODO cleanTable(SlopeNodeEntity.class);
         cleanTable(SlopeShapeEntity.class);
         cleanTable(SlopeConfigEntity.class);
     }

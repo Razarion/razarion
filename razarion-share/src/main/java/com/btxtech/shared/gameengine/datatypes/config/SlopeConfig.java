@@ -425,6 +425,31 @@ public class SlopeConfig implements Config {
         return this;
     }
 
+    public SlopeConfig slopeShapes(List<SlopeShape> slopeShapes) {
+        setSlopeShapes(slopeShapes);
+        return this;
+    }
+
+    public SlopeConfig horizontalSpace(double horizontalSpace) {
+        setHorizontalSpace(horizontalSpace);
+        return this;
+    }
+
+    public SlopeConfig outerLineGameEngine(double outerLineGameEngine) {
+        setOuterLineGameEngine(outerLineGameEngine);
+        return this;
+    }
+
+    public SlopeConfig innerLineGameEngine(double innerLineGameEngine) {
+        setInnerLineGameEngine(innerLineGameEngine);
+        return this;
+    }
+
+    public SlopeConfig coastDelimiterLineGameEngine(double coastDelimiterLineGameEngine) {
+        setCoastDelimiterLineGameEngine(coastDelimiterLineGameEngine);
+        return this;
+    }
+
     public boolean hasWaterConfigId() {
         return waterConfigId != null;
     }
