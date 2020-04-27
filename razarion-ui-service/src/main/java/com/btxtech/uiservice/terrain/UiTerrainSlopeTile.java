@@ -65,16 +65,19 @@ public class UiTerrainSlopeTile {
     }
 
     public Integer getTextureId() {
-        return slopeConfig.getSlopeTextureId();
+        // TODO return slopeConfig.getSlopeTextureId();
+        return 0;
     }
 
     public Integer getBmId() {
-        return slopeConfig.getSlopeBumpMapId();
+        // TODO return slopeConfig.getSlopeBumpMapId();
+        return 0;
     }
 
 
     public double getBmDepth() {
-        return slopeConfig.getSlopeBumpMapDepth();
+        // TODO return slopeConfig.getSlopeBumpMapDepth();
+        return 0;
     }
 
     public boolean hasWater() {
@@ -82,7 +85,8 @@ public class UiTerrainSlopeTile {
     }
 
     public double getTextureScale() {
-        return slopeConfig.getSlopeTextureScale();
+        // TODO return slopeConfig.getSlopeTextureScale();
+        return 0;
     }
 
     @Deprecated
