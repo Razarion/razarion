@@ -46,7 +46,7 @@ public class Branch extends AbstractPropertyModel {
         return hasProperties;
     }
 
-    public HasProperties getHasPropertiese() {
+    public HasProperties getHasProperties() {
         return hasProperties;
     }
 
@@ -61,9 +61,9 @@ public class Branch extends AbstractPropertyModel {
             parent.hasProperties.set(propertyName, value);
         } else if (propertyIndex != null) {
             if(value != null) {
-                ((BindableListWrapper) (parent.getHasPropertiese())).set(propertyIndex, value);
+                ((BindableListWrapper) (parent.getHasProperties())).set(propertyIndex, value);
             } else {
-                ((BindableListWrapper) (parent.getHasPropertiese())).remove(propertyIndex.intValue());
+                ((BindableListWrapper) (parent.getHasProperties())).remove(propertyIndex.intValue());
             }
         } else {
             throw new IllegalStateException();

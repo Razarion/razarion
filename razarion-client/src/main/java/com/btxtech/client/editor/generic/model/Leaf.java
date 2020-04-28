@@ -43,12 +43,12 @@ public class Leaf extends AbstractPropertyModel {
     @Override
     public void setPropertyValue(Object value) {
         if (propertyName != null) {
-            branch.getHasPropertiese().set(propertyName, value);
+            branch.getHasProperties().set(propertyName, value);
         } else if (propertyIndex != null) {
             if(value != null) {
-                ((BindableListWrapper) (branch.getHasPropertiese())).set(propertyIndex, value);
+                ((BindableListWrapper) (branch.getHasProperties())).set(propertyIndex, value);
             } else {
-                ((BindableListWrapper) (branch.getHasPropertiese())).remove(propertyIndex.intValue());
+                ((BindableListWrapper) (branch.getHasProperties())).remove(propertyIndex.intValue());
             }
         } else {
             throw new IllegalStateException();
