@@ -96,6 +96,12 @@
             <artifactId>disruptor</artifactId>
             <version>3.3.7</version>
         </dependency>
+        <!-- Reflections -->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.12</version>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>

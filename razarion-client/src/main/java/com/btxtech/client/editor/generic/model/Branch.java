@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.generic.model;
 
+import org.jboss.errai.common.client.api.WrappedPortable;
 import org.jboss.errai.databinding.client.BindableListWrapper;
 import org.jboss.errai.databinding.client.BindableProxy;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
@@ -17,6 +18,8 @@ public class Branch extends AbstractPropertyModel {
     private Instance<Leaf> nodeInstance;
     @Inject
     private Instance<Branch> branchInstance;
+    @Inject
+    private ListTypeArgumentProvider listTypeArgumentProvider;
     private Branch parent;
     private HasProperties hasProperties;
     private String propertyName;
@@ -52,7 +55,7 @@ public class Branch extends AbstractPropertyModel {
 
     @Override
     public void setPropertyValue(Object value) {
-        if(value!= null) {
+        if (value != null) {
             this.hasProperties = (HasProperties) BindableProxyFactory.getBindableProxy(value);
         } else {
             this.hasProperties = null;
@@ -60,7 +63,7 @@ public class Branch extends AbstractPropertyModel {
         if (propertyName != null) {
             parent.hasProperties.set(propertyName, value);
         } else if (propertyIndex != null) {
-            if(value != null) {
+            if (value != null) {
                 ((BindableListWrapper) (parent.getHasProperties())).set(propertyIndex, value);
             } else {
                 ((BindableListWrapper) (parent.getHasProperties())).remove(propertyIndex.intValue());
@@ -142,4 +145,16 @@ public class Branch extends AbstractPropertyModel {
             return node;
         }
     }
+
+    public void createListElement() {
+        Class clazz = parent.getPropertyType().getType();
+        if(parent.hasProperties instanceof WrappedPortable) {
+            clazz = ((WrappedPortable)parent.hasProperties).unwrap().getClass();
+        }
+
+        Object listElement = listTypeArgumentProvider.provide(clazz, propertyName);
+        BindableListWrapper bindableListWrapper = (BindableListWrapper) BindableProxyFactory.getBindableProxy(getPropertyValue());
+        bindableListWrapper.add(listElement);
+    }
+
 }

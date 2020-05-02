@@ -43,6 +43,7 @@ public class CommonUrl {
     public static final String SLOPE_EDITOR_PATH = "editor/slope";
     public static final String PLANET_EDITOR_PATH = "editor/planet";
     public static final String LEVEL_EDITOR_PATH = "editor/level";
+    public static final String GENERIC_PROPERTY_EDITOR_PATH = "editor/generic-property";
     public static final String GAME_UI_CONTEXT_EDITOR_PATH = "editor/game-ui-context";
     public static final String SHAPE_3D_PROVIDER = G_ZIPPED + "/" + "shape3dprovider";
     public static final String TERRAIN_SHAPE_CONTROLLER = G_ZIPPED + "/" + "terrainshape";
