@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  * 05.05.2016.
  */
 @ApplicationScoped
-public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardListener {
+public class TerrainEditorService implements EditorMouseListener, EditorKeyboardListener {
     public enum CursorType {
         CREATE,
         MODIFY,

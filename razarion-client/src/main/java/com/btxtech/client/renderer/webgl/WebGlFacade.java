@@ -52,7 +52,7 @@ public class WebGlFacade {
     public static final String U_VIEW_MATRIX = "viewMatrix";
     public static final String U_PROJECTION_MATRIX = "projectionMatrix";
     public static final String U_VIEW_NORM_MATRIX = "normalMatrix";
-    public static final String U_MODEL_MATRIX = "uMMatrix";
+    public static final String U_MODEL_MATRIX = "modelMatrix";
     public static final String U_SHADOW_MATRIX = "shadowMatrix";
     // Uniform Light
     public static final String U_LIGHT_DIRECTION = "uLightDirection";

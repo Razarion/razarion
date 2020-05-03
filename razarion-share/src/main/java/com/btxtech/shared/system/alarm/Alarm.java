@@ -14,7 +14,9 @@ public class Alarm {
         NO_SCENES,
         FAIL_START_GAME_ENGINE,
         RENDER_GROUND_FAILED,
-        RENDER_ENGINE_UNIFORM
+        RENDER_ENGINE_UNIFORM,
+        INVALID_AUDIO_SERVICE,
+        INVALID_PROPERTY
     }
     private Type type;
     private Date date;

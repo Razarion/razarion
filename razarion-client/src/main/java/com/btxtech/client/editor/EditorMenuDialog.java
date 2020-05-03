@@ -23,7 +23,7 @@ import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
 import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
-import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
+import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
 import com.btxtech.client.editor.water.WaterSidebar;
 import com.btxtech.shared.rest.GameUiContextEditorController;
@@ -190,7 +190,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("terrainButton")
     private void onTerrainButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
-        editorService.openEditor(TerrainEditorSidebar.class, "???Unknown");
+        editorService.openEditor(TerrainEditor.class, "???Unknown");
     }
 
     @EventHandler("resourceRegionButton")

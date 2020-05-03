@@ -28,7 +28,7 @@ public abstract class DomConstants {
         public static final String MOUSEOUT = "mouseout";
         public static final String MOUSEOVER = "mouseover";
         public static final String MOUSEUP = "mouseup";
-        public static final String MOUSEWHEEL = "mousewheel";
+        public static final String WHEEL = "wheel";
         public static final String FOCUS = "focus";
         public static final String FOCUSIN = "focusin";
         public static final String FOCUSOUT = "focusout";

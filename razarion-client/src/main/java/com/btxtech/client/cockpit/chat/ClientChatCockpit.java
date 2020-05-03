@@ -85,7 +85,7 @@ public class ClientChatCockpit implements ChatCockpit {
         chatCockpit.addEventListener("mousedown", event -> {
             if (!resizeMode && isResizeAllowed((MouseEvent) event)) {
                 resizeMode = true;
-                startResizePosition = new Index((int) ((MouseEvent) event).clientX, (int) ((MouseEvent) event).clientY);
+                startResizePosition = new Index((int) ((MouseEvent) event).offsetX, (int) ((MouseEvent) event).offsetY);
                 doResize((MouseEvent) event);
                 DomGlobal.document.body.addEventListener("mousemove", mouseMoveListener, true);
             }
@@ -105,11 +105,11 @@ public class ClientChatCockpit implements ChatCockpit {
     }
 
     private boolean isResizeAllowed(MouseEvent event) {
-        return RESIZE_CURSOR_AREA > (event.clientX - chatCockpit.offsetLeft) || RESIZE_CURSOR_AREA > (event.clientY - chatCockpit.offsetTop);
+        return RESIZE_CURSOR_AREA > (event.offsetX - chatCockpit.offsetLeft) || RESIZE_CURSOR_AREA > (event.offsetY - chatCockpit.offsetTop);
     }
 
     private void doResize(MouseEvent event) {
-        Index current = new Index((int) event.clientX, (int) event.clientY);
+        Index current = new Index((int) event.offsetX, (int) event.offsetY);
         Index delta = current.sub(startResizePosition);
         startResizePosition = current;
         chatCockpit.style.setProperty("width", chatCockpit.clientWidth - delta.getX() + "px");

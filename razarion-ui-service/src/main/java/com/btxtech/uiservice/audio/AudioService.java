@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
@@ -17,6 +18,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.logging.Logger;
+
+import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_AUDIO_SERVICE;
 
 /**
  * Created by Beat
@@ -30,6 +33,8 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
     private TerrainUiService terrainUiService;
     @Inject
     private ItemTypeService itemTypeService;
+    @Inject
+    private AlarmService alarmService;
     private AudioConfig audioConfig;
     private double lastLandWaterProportion = -1;
 
@@ -131,11 +136,11 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
     @Override
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         if(getAudioConfig().getTerrainLoopLand() == null) {
-            logger.warning("audioConfig.getTerrainLoopLand() == null");
+            alarmService.riseAlarm(INVALID_AUDIO_SERVICE, "TerrainLoopLand");
             return;
         }
         if(getAudioConfig().getTerrainLoopWater() == null) {
-            logger.warning("audioConfig.getTerrainLoopWater() == null");
+            alarmService.riseAlarm(INVALID_AUDIO_SERVICE, "TerrainLoopWater");
             return;
         }
 

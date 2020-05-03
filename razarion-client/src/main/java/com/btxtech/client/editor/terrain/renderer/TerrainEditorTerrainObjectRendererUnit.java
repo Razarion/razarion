@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.terrain.renderer;
 
-import com.btxtech.client.editor.terrain.TerrainEditorImpl;
+import com.btxtech.client.editor.terrain.TerrainEditorService;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -37,7 +37,7 @@ public class TerrainEditorTerrainObjectRendererUnit extends AbstractRenderUnit<V
     @Inject
     private WebGlFacade webGlFacade;
     @Inject
-    private TerrainEditorImpl terrainEditor;
+    private TerrainEditorService terrainEditor;
     private VertexShaderAttribute vertices;
     private WebGLUniformLocation modelMatrix;
     private WebGLUniformLocation uDelete;

@@ -48,7 +48,7 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
-    private TerrainEditorImpl terrainEditor;
+    private TerrainEditorService terrainEditor;
     @Inject
     private Caller<PlanetEditorProvider> planetEditorServiceCaller;
     @DataField

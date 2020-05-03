@@ -6,13 +6,11 @@ import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.client.utils.DomConstants;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.google.gwt.user.client.Window;
 import elemental2.core.JsObject;
 import elemental2.core.Uint8Array;
 import elemental2.dom.DomGlobal;
@@ -28,8 +26,9 @@ import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static elemental2.dom.CSSProperties.HeightUnionType;
-import static elemental2.dom.CSSProperties.WidthUnionType;
+import static com.btxtech.client.utils.DomConstants.Event.*;
+import static com.btxtech.client.utils.DomConstants.Mouse.*;
+import static elemental2.dom.CSSProperties.*;
 import static elemental2.dom.DomGlobal.RequestAnimationFrameCallbackFn;
 
 /**
@@ -56,8 +55,8 @@ public class GameCanvas {
     private ClientTrackerService trackerService;
     private WebGLRenderingContext ctx3d;
     private RequestAnimationFrameCallbackFn animationCallback;
-    private int width;
-    private int height;
+    private double width;
+    private double height;
     private HTMLCanvasElement canvasElement;
     private boolean running;
     private boolean playbackMode;
@@ -76,7 +75,7 @@ public class GameCanvas {
 
         setupAnimationCallback();
 
-        Window.addResizeHandler(event -> onWindowResized());
+        mainPanelService.addResizeListener(this::onWindowResized);
 
         initMouseHandler();
         keyboardEventHandler.init();
@@ -86,10 +85,10 @@ public class GameCanvas {
 
     private void onWindowResized() {
         if (!playbackMode) {
-            logger.severe("This is wrong. FIX canvas width & height. Its not the Windows size");
-            width = Window.getClientWidth();
-            height = Window.getClientHeight();
-            trackerService.onResizeCanvas(new Index(width, height));
+            width = canvasElement.offsetWidth;
+            height = canvasElement.offsetHeight;
+            logger.severe("XXXXX: " + width + ": " + height);
+            trackerService.onResizeCanvas(new Index((int) width, (int) height));
         }
         resizeCanvas();
     }
@@ -97,7 +96,7 @@ public class GameCanvas {
     private void resizeCanvas() {
         canvasElement.width = width;
         canvasElement.height = height;
-        projectionTransformation.setAspectRatio((double) width / (double) height);
+        projectionTransformation.setAspectRatio(width / height);
     }
 
     private void initCanvas() {
@@ -146,18 +145,22 @@ public class GameCanvas {
     }
 
     private void initMouseHandler() {
-        canvasElement.addEventListener(DomConstants.Event.MOUSEMOVE, evt -> {
+        canvasElement.addEventListener(MOUSEMOVE, evt -> {
             try {
                 if (playbackMode) {
                     return;
                 }
                 MouseEvent mouseEvent = (MouseEvent) evt;
-                terrainMouseHandler.onMouseMove((int) mouseEvent.clientX, (int) mouseEvent.clientY, width, height, GwtUtils.isButtonDown(mouseEvent, 1));
+                terrainMouseHandler.onMouseMove((int) mouseEvent.offsetX,
+                        (int) mouseEvent.offsetY,
+                        (int) width,
+                        (int) height,
+                        GwtUtils.isButtonDown(mouseEvent, 1));
             } catch (Throwable throwable) {
                 exceptionHandler.handleException(throwable);
             }
         }, true);
-        canvasElement.addEventListener(DomConstants.Event.MOUSEOUT, evt -> {
+        canvasElement.addEventListener(MOUSEOUT, evt -> {
             try {
                 if (playbackMode) {
                     return;
@@ -167,19 +170,23 @@ public class GameCanvas {
                 exceptionHandler.handleException(throwable);
             }
         }, true);
-        canvasElement.addEventListener(DomConstants.Event.MOUSEDOWN, evt -> {
+        canvasElement.addEventListener(MOUSEDOWN, evt -> {
             try {
                 if (playbackMode) {
                     return;
                 }
                 MouseEvent mouseEvent = (MouseEvent) evt;
-                if (GwtUtils.isButtonResponsible4Event(mouseEvent, DomConstants.Mouse.BUTTON_MAIN)) {
-                    terrainMouseHandler.onMouseDown((int)mouseEvent.clientX, (int)mouseEvent.clientY, width, height, mouseEvent.shiftKey);
+                if (GwtUtils.isButtonResponsible4Event(mouseEvent, BUTTON_MAIN)) {
+                    terrainMouseHandler.onMouseDown((int) mouseEvent.offsetX,
+                            (int) mouseEvent.offsetY,
+                            (int) width,
+                            (int) height,
+                            mouseEvent.shiftKey);
                 }
-                if (mouseEvent.button == DomConstants.Mouse.BUTTON_MAIN && mouseEvent.altKey) {
+                if (mouseEvent.button == BUTTON_MAIN && mouseEvent.altKey) {
                     Uint8Array uint8Array = new Uint8Array(4);
-                    ctx3d.readPixels(mouseEvent.clientX,
-                            canvasElement.height - mouseEvent.clientY,
+                    ctx3d.readPixels(mouseEvent.offsetX,
+                            canvasElement.height - mouseEvent.offsetY,
                             1, 1,
                             WebGLRenderingContext.RGBA,
                             WebGLRenderingContext.UNSIGNED_BYTE,
@@ -188,26 +195,30 @@ public class GameCanvas {
                     double x = uint8Array.getAt(0) / 255.0 * 2.0 - 1.0;
                     double y = uint8Array.getAt(1) / 255.0 * 2.0 - 1.0;
                     double z = uint8Array.getAt(2) / 255.0 * 2.0 - 1.0;
-                    logger.severe("Read screen pixel at " + mouseEvent.clientX + ":" + mouseEvent.clientY +" Vector=(" + x + "," + y + "," + z +") RGBA=(" + uint8Array.getAt(0) + "," + uint8Array.getAt(1) + "," + uint8Array.getAt(2) + "," + uint8Array.getAt(3) + ") (if 0,0,0,0 -> {preserveDrawingBuffer: true})");
+                    logger.severe("Read screen pixel at " + mouseEvent.offsetX + ":" + mouseEvent.offsetY + " Vector=(" + x + "," + y + "," + z + ") RGBA=(" + uint8Array.getAt(0) + "," + uint8Array.getAt(1) + "," + uint8Array.getAt(2) + "," + uint8Array.getAt(3) + ") (if 0,0,0,0 -> {preserveDrawingBuffer: true})");
                 }
             } catch (Throwable throwable) {
                 exceptionHandler.handleException(throwable);
             }
         }, true);
-        canvasElement.addEventListener(DomConstants.Event.MOUSEUP, evt -> {
+        canvasElement.addEventListener(MOUSEUP, evt -> {
             try {
                 if (playbackMode) {
                     return;
                 }
                 MouseEvent mouseEvent = (MouseEvent) evt;
-                if (GwtUtils.isButtonResponsible4Event(mouseEvent, DomConstants.Mouse.BUTTON_MAIN)) {
-                    terrainMouseHandler.onMouseUp((int) mouseEvent.clientX, (int) mouseEvent.clientY, width, height);
+                if (GwtUtils.isButtonResponsible4Event(mouseEvent, BUTTON_MAIN)) {
+                    terrainMouseHandler.onMouseUp(
+                            (int) mouseEvent.offsetX,
+                            (int) mouseEvent.offsetY,
+                            (int) width,
+                            (int) height);
                 }
             } catch (Throwable throwable) {
                 exceptionHandler.handleException(throwable);
             }
         }, true);
-        canvasElement.addEventListener("wheel", evt -> {
+        canvasElement.addEventListener(WHEEL, evt -> {
             try {
                 if (playbackMode) {
                     return;
@@ -237,11 +248,11 @@ public class GameCanvas {
     }
 
     public int getWidth() {
-        return width;
+        return (int) width;
     }
 
     public int getHeight() {
-        return height;
+        return (int) height;
     }
 
     public void enterPlaybackMode() {
@@ -257,7 +268,7 @@ public class GameCanvas {
     }
 
     public Index getWindowDimenionForPlayback() {
-        return new Index(Window.getClientWidth(), Window.getClientHeight());
+        return new Index(getWidth(), getHeight());
     }
 
     public void setCursor(String cursor) {

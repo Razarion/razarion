@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.terrain.renderer;
 
 import com.btxtech.client.editor.terrain.ModifiedSlope;
-import com.btxtech.client.editor.terrain.TerrainEditorImpl;
+import com.btxtech.client.editor.terrain.TerrainEditorService;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -21,7 +21,7 @@ import java.util.Map;
 @ApplicationScoped
 public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
     @Inject
-    private TerrainEditorImpl terrainEditor;
+    private TerrainEditorService terrainEditor;
     private boolean active;
     private TerrainEditorCursorRenderUnit cursorRenderer;
     private Map<ModifiedSlope, TerrainEditorSlopeRenderUnit> slopeRenderers = new HashMap<>();

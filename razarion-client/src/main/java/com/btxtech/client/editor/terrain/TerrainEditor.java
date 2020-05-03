@@ -41,13 +41,13 @@ import java.util.Collection;
  * Created by Beat
  * 06.11.2015.
  */
-@Templated("TerrainEditorSidebar.html#terrainEditor")
-public class TerrainEditorSidebar extends AbstractEditor implements ViewService.ViewFieldListener {
+@Templated("TerrainEditor.html#terrainEditor")
+public class TerrainEditor extends AbstractEditor implements ViewService.ViewFieldListener {
     // private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
-    private TerrainEditorImpl terrainEditor;
+    private TerrainEditorService terrainEditor;
     @Inject
     private Caller<SlopeEditorController> slopeEditorController;
     @Inject
