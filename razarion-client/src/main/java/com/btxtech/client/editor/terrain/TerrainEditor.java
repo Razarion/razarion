@@ -159,6 +159,9 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
         drivewayMode.setChecked(terrainEditor.isDrivewayMode());
         drivewaySelection.addValueChangeHandler(event -> terrainEditor.setDriveway4New(drivewaySelection.getValue()));
         elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
+            if(objectNameIds == null || objectNameIds.isEmpty()) {
+                return;
+            }
             ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
             drivewaySelection.setAcceptableValues(objectNameIds);
             drivewaySelection.setValue(objectNameId);
@@ -166,6 +169,9 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
         }, exceptionHandler.restErrorHandler("readDrivewayObjectNameIds failed: ")).readDrivewayObjectNameIds();
         terrainObjectSelection.addValueChangeHandler(event -> terrainEditor.setTerrainObject4New(terrainObjectSelection.getValue()));
         elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
+            if(objectNameIds == null || objectNameIds.isEmpty()) {
+                return;
+            }
             ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
             terrainObjectSelection.setAcceptableValues(objectNameIds);
             terrainObjectSelection.setValue(objectNameId);

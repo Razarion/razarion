@@ -87,7 +87,6 @@ public class GameCanvas {
         if (!playbackMode) {
             width = canvasElement.offsetWidth;
             height = canvasElement.offsetHeight;
-            logger.severe("XXXXX: " + width + ": " + height);
             trackerService.onResizeCanvas(new Index((int) width, (int) height));
         }
         resizeCanvas();
