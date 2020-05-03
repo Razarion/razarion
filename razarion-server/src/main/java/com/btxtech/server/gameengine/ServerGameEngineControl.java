@@ -12,6 +12,7 @@ import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -45,6 +46,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -100,7 +102,11 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
         //debugGui.display();
-        int planetConfigId = serverGameEngineCrudPersistence.read().get(0).getPlanetConfigId();
+        List<ServerGameEngineConfig> serverGameEngineConfigEntities = serverGameEngineCrudPersistence.read();
+        if (serverGameEngineConfigEntities.isEmpty()) {
+            return;
+        }
+        int planetConfigId = serverGameEngineConfigEntities.get(0).getPlanetConfigId();
         PlanetConfig planetConfig = planetCrudPersistence.read(planetConfigId);
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
         planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEngineCrudPersistence.readMasterPlanetConfig(), () -> {
@@ -184,7 +190,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     @SecurityCheck
     public void backupPlanet() throws JsonProcessingException {
-        if(!running) {
+        if (!running) {
             return;
         }
         long time = System.currentTimeMillis();
@@ -216,13 +222,17 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     public void stop() {
         planetService.removeTickListener(this);
-        planetService.stop();
-        botService.killAllBots();
+        if (running) {
+            planetService.stop();
+            botService.killAllBots();
+        }
     }
 
     public void shutdown() {
         try {
-            planetBackupMongoDb.saveBackup(planetService.backup(false));
+            if (running) {
+                planetBackupMongoDb.saveBackup(planetService.backup(false));
+            }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
