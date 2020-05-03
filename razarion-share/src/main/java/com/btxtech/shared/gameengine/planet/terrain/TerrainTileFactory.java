@@ -168,7 +168,7 @@ public class TerrainTileFactory {
     }
 
     private void generateSlopeTerrainTile(TerrainTileBuilder terrainTileBuilder, FractionalSlope fractionalSlope) {
-        SlopeConfig slopeConfig = terrainTypeService.getSlopeSkeleton(fractionalSlope.getSlopeConfigId());
+        SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(fractionalSlope.getSlopeConfigId());
         CalculatedSlopeData calculatedSlopeData = SlopeModeler.sculpt(slopeConfig);
         TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainTileBuilder.createTerrainSlopeTileContext(slopeConfig, calculatedSlopeData, fractionalSlope.getFractionalSlopeSegments().size());
         terrainTileBuilder.getTerrainWaterTileBuilder().startWaterMesh();

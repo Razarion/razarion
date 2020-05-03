@@ -93,6 +93,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private ItemTrackerPersistence itemTrackerPersistence;
     @Inject
     private HistoryPersistence historyPersistence;
+    private boolean running;
     //    @Inject
 //    private DebugGui debugGui;
     private final Object reloadLook = new Object();
@@ -102,7 +103,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         int planetConfigId = serverGameEngineCrudPersistence.read().get(0).getPlanetConfigId();
         PlanetConfig planetConfig = planetCrudPersistence.read(planetConfigId);
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
-        gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
         planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEngineCrudPersistence.readMasterPlanetConfig(), () -> {
             gameLogicService.setGameLogicListener(this);
             if (finaBackupPlanetInfo != null) {
@@ -118,6 +118,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         if (activateQuests) {
             activateQuests(finaBackupPlanetInfo);
         }
+        running = true;
     }
 
     private BackupPlanetInfo setupBackupPlanetInfo(BackupPlanetInfo backupPlanetInfo, PlanetConfig planetConfig) {
@@ -183,6 +184,9 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     @SecurityCheck
     public void backupPlanet() throws JsonProcessingException {
+        if(!running) {
+            return;
+        }
         long time = System.currentTimeMillis();
         BackupPlanetInfo backupPlanetInfo = planetService.backup(false);
         planetBackupMongoDb.saveBackup(backupPlanetInfo);

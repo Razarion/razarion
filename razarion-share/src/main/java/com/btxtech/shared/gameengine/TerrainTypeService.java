@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Singleton
 public class TerrainTypeService {
-    private Map<Integer, SlopeConfig> slopeSkeletonConfigs = new HashMap<>();
+    private Map<Integer, SlopeConfig> slopeConfigs = new HashMap<>();
     private Map<Integer, GroundConfig> groundConfigs = new HashMap<>();;
     private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
     private Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
@@ -32,12 +32,12 @@ public class TerrainTypeService {
     public void init(StaticGameConfig staticGameConfig) {
         setGroundConfigs(staticGameConfig.getGroundConfigs());
         waterConfig = staticGameConfig.getWaterConfig();
-        setSlopeSkeletonConfigs(staticGameConfig.getSlopeConfigs());
+        setSlopeConfigs(staticGameConfig.getSlopeConfigs());
         setTerrainObjectConfigs(staticGameConfig.getTerrainObjectConfigs());
         setDrivewayConfigs(staticGameConfig.getDrivewayConfigs());
     }
 
-    public void setGroundConfigs(Collection<GroundConfig> groundConfigs) {
+    private void setGroundConfigs(Collection<GroundConfig> groundConfigs) {
         this.groundConfigs.clear();
         if (groundConfigs != null) {
             for (GroundConfig groundConfig : groundConfigs) {
@@ -46,11 +46,11 @@ public class TerrainTypeService {
         }
     }
 
-    public void setSlopeSkeletonConfigs(Collection<SlopeConfig> slopeConfigs) {
-        this.slopeSkeletonConfigs.clear();
+    private void setSlopeConfigs(Collection<SlopeConfig> slopeConfigs) {
+        this.slopeConfigs.clear();
         if (slopeConfigs != null) {
             for (SlopeConfig slopeConfig : slopeConfigs) {
-                this.slopeSkeletonConfigs.put(slopeConfig.getId(), slopeConfig);
+                this.slopeConfigs.put(slopeConfig.getId(), slopeConfig);
             }
         }
     }
@@ -82,16 +82,16 @@ public class TerrainTypeService {
         return terrainObjectConfig;
     }
 
-    public SlopeConfig getSlopeSkeleton(int id) {
-        SlopeConfig slopeConfig = slopeSkeletonConfigs.get(id);
+    public SlopeConfig getSlopeConfig(int id) {
+        SlopeConfig slopeConfig = slopeConfigs.get(id);
         if (slopeConfig == null) {
             throw new IllegalArgumentException("No entry in integerSlopeSkeletonMap for id: " + id);
         }
         return slopeConfig;
     }
 
-    public Collection<SlopeConfig> getSlopeSkeletonConfigs() {
-        return slopeSkeletonConfigs.values();
+    public Collection<SlopeConfig> getSlopeConfigs() {
+        return slopeConfigs.values();
     }
 
     public Collection<TerrainObjectConfig> getTerrainObjectConfigs() {
@@ -137,10 +137,10 @@ public class TerrainTypeService {
     }
 
     public void overrideSlopeSkeletonConfig(SlopeConfig slopeConfig) {
-        slopeSkeletonConfigs.put(slopeConfig.getId(), slopeConfig);
+        slopeConfigs.put(slopeConfig.getId(), slopeConfig);
     }
 
     public void deleteSlopeSkeletonConfig(SlopeConfig slopeConfig) {
-        slopeSkeletonConfigs.remove(slopeConfig.getId());
+        slopeConfigs.remove(slopeConfig.getId());
     }
 }

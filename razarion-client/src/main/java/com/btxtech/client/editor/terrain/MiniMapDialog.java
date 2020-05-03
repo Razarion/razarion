@@ -116,7 +116,7 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
 
     private void drawSlope(Rectangle2D playground, List<TerrainSlopePosition> terrainSlopePositions) {
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
-            SlopeConfig slopeConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId());
+            SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainSlopePosition.getSlopeConfigId());
             if (slopeConfig.hasWaterConfigId()) {
                 if (terrainSlopePosition.isInverted()) {
                     drawIsland(playground, terrainSlopePosition);

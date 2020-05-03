@@ -3,11 +3,14 @@ package com.btxtech.server.web;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.mgmt.ServerMgmt;
+import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.chat.ChatPersistence;
 import com.btxtech.shared.datatypes.ServerState;
+import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -25,6 +28,8 @@ public class ServletContextMonitor implements ServletContextListener {
     @Inject
     private ServerTerrainShapeService serverTerrainShapeService;
     @Inject
+    private StaticGameConfigPersistence staticGameConfigPersistence;
+    @Inject
     private ServerGameEngineControl gameEngineService;
     @Inject
     private ChatPersistence chatPersistence;
@@ -34,11 +39,18 @@ public class ServletContextMonitor implements ServletContextListener {
     private ServerMgmt serverMgmt;
     @Inject
     private AlarmService alarmService;
+    @Inject
+    private Event<StaticGameInitEvent> gameEngineInitEvent;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         serverMgmt.setServerState(ServerState.STARTING);
         alarmService.addListener(alarm -> logger.severe(alarm.toString()));
+        try {
+            gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+        }
         try {
             serverTerrainShapeService.start();
         } catch (Exception e) {

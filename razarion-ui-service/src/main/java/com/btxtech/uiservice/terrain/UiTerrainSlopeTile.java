@@ -30,7 +30,7 @@ public class UiTerrainSlopeTile {
 
     public void init(boolean active, UiTerrainTile uiTerrainTile, TerrainSlopeTile terrainSlopeTile) {
         this.uiTerrainTile = uiTerrainTile;
-        slopeConfig = terrainTypeService.getSlopeSkeleton(terrainSlopeTile.getSlopeConfigId());
+        slopeConfig = terrainTypeService.getSlopeConfig(terrainSlopeTile.getSlopeConfigId());
         waterConfig = terrainTypeService.getWaterConfig();
         this.terrainSlopeTile = terrainSlopeTile;
         modelRenderer = slopeRenderTask.createModelRenderer(this);
