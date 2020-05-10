@@ -6,7 +6,7 @@ import jsinterop.annotations.JsType;
  * Created by Beat
  * 10.04.2017.
  */
-@JsType(isNative = true, name = "TerrainWaterTile", namespace = "com.btxtech.shared.json")
+@JsType(isNative = true, name = "TerrainWaterTile", namespace = "com.btxtech.shared.nativejs")
 public class TerrainWaterTile {
 //    private int slopeConfigId;
 //    private double[] vertices;

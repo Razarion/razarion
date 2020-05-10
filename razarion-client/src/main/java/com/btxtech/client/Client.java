@@ -34,6 +34,18 @@ public class Client {
     private MainPanelService mainPanelService;
 
     public Client() {
+//        DomGlobal.window.onerror = new Window.OnerrorCallbackFn() {
+//            @Override
+//            public Object onInvoke(String p0, String p1, double p2) {
+//                DomGlobal.console.error("------------------------------");
+//                DomGlobal.console.error(p0);
+//                DomGlobal.console.error(p1);
+//                DomGlobal.console.error(p2);
+//                // ErrorEvent errorEvent =
+//
+//                return true; // When the function returns true, this prevents the firing of the default event handler.
+//            }
+//        };
         GWT.setUncaughtExceptionHandler(e -> {
             if (logger != null) {
                 logger.log(Level.SEVERE, "UncaughtExceptionHandler", e);

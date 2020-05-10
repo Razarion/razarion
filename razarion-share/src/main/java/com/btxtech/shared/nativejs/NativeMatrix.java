@@ -6,7 +6,7 @@ import jsinterop.annotations.JsType;
  * Created by Beat
  * 24.03.2017.
  */
-@JsType(name = "NativeMatrix", isNative = true, namespace = "com.btxtech.shared.json")
+@JsType(name = "NativeMatrix", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public class NativeMatrix {
     public native NativeMatrix multiply(NativeMatrix other);
 

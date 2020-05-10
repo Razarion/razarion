@@ -6,7 +6,7 @@ import jsinterop.annotations.JsType;
  * Created by Beat
  * on 12.01.2018.
  */
-@JsType(name = "NativeMatrixDto", isNative = true, namespace = "com.btxtech.shared.json")
+@JsType(name = "NativeMatrixDto", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public class NativeMatrixDto {
     public double[] numbers;
 }
