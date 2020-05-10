@@ -62,8 +62,8 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
 
     @Before
     public void fillTables() {
-        setupPlanets();
-        setupLevels();
+        setupPlanetDb();
+        setupLevelDb();
     }
 
     @After

@@ -1,6 +1,8 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.persistence.PlanetCrudPersistence;
+import com.btxtech.server.persistence.StaticGameConfigPersistence;
+import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
@@ -8,6 +10,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTer
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.HashMap;
@@ -30,21 +33,35 @@ public class ServerTerrainShapeService {
     private ExceptionHandler exceptionHandler;
     @Inject
     private AlarmService alarmService;
+    @Inject
+    private Event<StaticGameInitEvent> gameEngineInitEvent;
+    @Inject
+    private StaticGameConfigPersistence staticGameConfigPersistence;
     private Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
 
     public void start() {
         terrainShapes.clear();
-        planetCrudPersistence.read().forEach(this::setupTerrainShape);
+        planetCrudPersistence.read().forEach(planetConfig -> {
+            try {
+                createTerrainShape(planetConfig);
+            } catch (Throwable t) {
+                alarmService.riseAlarm(TERRAIN_SHAPE_SETUP_FAILED, planetConfig.getId());
+                exceptionHandler.handleException(t);
+            }
+        });
     }
 
-    public void setupTerrainShape(PlanetConfig planetConfig) {
-        try {
-            TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetCrudPersistence.getTerrainSlopePositions(planetConfig.getId()), planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()));
-            terrainShapes.put(planetConfig.getId(), terrainShape.toNativeTerrainShape());
-        } catch (Throwable t) {
-            alarmService.riseAlarm(TERRAIN_SHAPE_SETUP_FAILED, planetConfig.getId());
-            exceptionHandler.handleException(t);
-        }
+    private void createTerrainShape(PlanetConfig planetConfig) {
+        TerrainShape terrainShape = new TerrainShape(planetConfig,
+                terrainTypeService,
+                planetCrudPersistence.getTerrainSlopePositions(planetConfig.getId()),
+                planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()));
+        terrainShapes.put(planetConfig.getId(), terrainShape.toNativeTerrainShape());
+    }
+
+    public void createTerrainShape(int planetConfigId) {
+        gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
+        createTerrainShape(planetCrudPersistence.read(planetConfigId));
     }
 
     public NativeTerrainShape getNativeTerrainShape(int planetId) {

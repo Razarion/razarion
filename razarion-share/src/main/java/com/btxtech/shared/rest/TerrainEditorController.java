@@ -18,8 +18,7 @@ import javax.ws.rs.core.MediaType;
  * 07.07.2016.
  */
 @Path(CommonUrl.PLANET_EDITOR_SERVICE_PATH)
-@Deprecated
-public interface PlanetEditorProvider {
+public interface TerrainEditorController {
     @GET
     @Path("readTerrainSlopePositions/{planetId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -32,6 +31,7 @@ public interface PlanetEditorProvider {
 
     @PUT
     @Path("restartPlanetWarm/{planetId}")
+    @Deprecated
     void restartPlanetWarm(@PathParam("planetId") int planetId);
 
     @PUT

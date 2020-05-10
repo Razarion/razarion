@@ -22,7 +22,7 @@ public class PlanetCrudPersistenceTestRest extends IgnoreOldArquillianTest {
 
     @Test
     public void loadStaticGameConfig() throws Exception {
-        setupPlanets();
+        setupPlanetDb();
 
         PlanetVisualConfig expectedPlanetVisualConfig = new PlanetVisualConfig().setShadowAlpha(0.2);
         expectedPlanetVisualConfig.setLightDirection(new Vertex(0, 0, -1));

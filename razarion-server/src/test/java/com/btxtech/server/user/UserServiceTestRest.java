@@ -61,7 +61,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
 
     @Test
     public void registeredUser() throws Exception {
-        setupLevels();
+        setupLevelDb();
 
         handleFacebookUserLogin("0000001");
 
@@ -97,7 +97,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
 
     @Test
     public void unregisteredUser() throws Exception {
-        setupLevels();
+        setupLevelDb();
 
         UserContext userContext = userService.getUserContextFromSession();
         Assert.assertEquals(LEVEL_1_ID, userContext.getLevelId().intValue());

@@ -26,8 +26,8 @@ public interface ServerGameEngineControlProvider {
     void restartResourceRegions();
 
     @POST
-    @Path("reloadPlanet")
-    void reloadPlanet();
+    @Path("reloadPlanetShapes")
+    void reloadPlanetShapes();
 
     @POST
     @Path("restartBoxRegions")

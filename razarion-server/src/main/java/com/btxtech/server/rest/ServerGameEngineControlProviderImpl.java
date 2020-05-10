@@ -1,6 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.rest.ServerGameEngineControlProvider;
@@ -19,6 +20,8 @@ public class ServerGameEngineControlProviderImpl implements ServerGameEngineCont
     private ServerGameEngineControl serverGameEngineControl;
     @Inject
     private BaseItemService baseItemService;
+    @Inject
+    private ServerTerrainShapeService serverTerrainShapeService;
 
     @Override
     public void restartBots() {
@@ -51,9 +54,9 @@ public class ServerGameEngineControlProviderImpl implements ServerGameEngineCont
     }
 
     @Override
-    public void reloadPlanet() {
+    public void reloadPlanetShapes() {
         try {
-            serverGameEngineControl.reloadPlanet();
+            serverTerrainShapeService.start();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

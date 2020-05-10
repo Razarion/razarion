@@ -40,7 +40,7 @@ public class RestServerGameEnginePersistenceTestBase extends IgnoreOldArquillian
 
     @Before
     public void before() throws Exception {
-        setupPlanets();
+        setupPlanetDb();
     }
 
     @After

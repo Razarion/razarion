@@ -153,18 +153,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @SecurityCheck
-    public void reloadPlanet() {
-        synchronized (reloadLook) {
-            PlanetConfig newPlanetConfig = serverGameEngineCrudPersistence.readPlanetConfig();
-            PlanetConfig currentPlanetConfig = planetService.getPlanetConfig();
-            currentPlanetConfig.setItemTypeLimitation(newPlanetConfig.getItemTypeLimitation());
-            currentPlanetConfig.setHouseSpace(newPlanetConfig.getHouseSpace());
-            currentPlanetConfig.setStartRazarion(newPlanetConfig.getStartRazarion());
-            currentPlanetConfig.setStartBaseItemTypeId(newPlanetConfig.getStartBaseItemTypeId());
-        }
-    }
-
-    @SecurityCheck
     public void restartResourceRegions() {
         synchronized (reloadLook) {
             resourceService.reloadResourceRegions(serverGameEngineCrudPersistence.readMasterPlanetConfig().getResourceRegionConfigs());

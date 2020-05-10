@@ -18,7 +18,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
-import com.btxtech.shared.rest.PlanetEditorProvider;
+import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.EditorKeyboardListener;
 import com.btxtech.uiservice.EditorMouseListener;
@@ -53,7 +53,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
-    private Caller<PlanetEditorProvider> planetEditorServiceCaller;
+    private Caller<TerrainEditorController> terrainEditorController;
     @Inject
     private RenderService renderService;
     @Inject
@@ -278,7 +278,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     private void loadFromServer() {
-        planetEditorServiceCaller.call((RemoteCallback<TerrainEditorLoad>) terrainEditorLoad -> {
+        terrainEditorController.call((RemoteCallback<TerrainEditorLoad>) terrainEditorLoad -> {
             hoverSlope = null;
             hoverTerrainObject = null;
             terrainEditorRenderTask.deactivate();
@@ -358,7 +358,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     public void restartPlanetButton() {
-        modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> planetEditorServiceCaller.call(ignore -> {
+        modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> terrainEditorController.call(ignore -> {
         }, exceptionHandler.restErrorHandler("PlanetEditorProvider.restartPlanetWarm() failed: ")).restartPlanetWarm(getPlanetId()), () -> {
         });
     }
@@ -372,7 +372,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
             return;
         }
         modalDialogManager.showMessageNoClosableDialog("Save", "Please wait while saving terrain", modalDialogPanel -> this.saveDialog = modalDialogPanel);
-        planetEditorServiceCaller.call(ignore -> loadFromServer(), (message, throwable) -> {
+        terrainEditorController.call(ignore -> loadFromServer(), (message, throwable) -> {
             if (saveDialog != null) {
                 saveDialog.close();
                 saveDialog = null;
@@ -528,7 +528,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     public void saveMiniMapImage(String dataUrl) {
-        planetEditorServiceCaller.call(ignore -> {
+        terrainEditorController.call(ignore -> {
         }, exceptionHandler.restErrorHandler("updateMiniMapImage failed: ")).updateMiniMapImage(getPlanetId(), dataUrl);
     }
 

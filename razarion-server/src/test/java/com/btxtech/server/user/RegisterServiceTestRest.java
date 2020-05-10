@@ -29,7 +29,7 @@ public class RegisterServiceTestRest extends IgnoreOldArquillianTest {
     @Before
     public void before() throws Exception {
         fakeEmailServer.startFakeMailServer();
-        setupPlanets();
+        setupPlanetDb();
     }
 
     @After

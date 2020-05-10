@@ -1,10 +1,8 @@
 package com.btxtech.server;
 
-import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.history.UserHistoryEntity;
@@ -45,13 +43,15 @@ import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.I18nString;
+import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
+import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -186,18 +186,12 @@ public class ServerTestHelper {
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
     private EntityTransaction entityTransaction;
-    @Inject
-    private ImagePersistence imagePersistence;
-    @Inject
-    private PlanetCrudPersistence planetCrudPersistence;
-    @Inject
-    private ServerGameEngineControl serverGameEngineControl;
+    private List<List<CleanupAfterTest>> cleanupAfterTests = new ArrayList<>();
     @Inject
     private UserService userService;
     @Inject
     private BaseItemService baseItemService;
     private MongoClient mongoClient;
-    private List<List<CleanupAfterTest>> cleanupAfterTests = new ArrayList<>();
 
     @Before
     public void setupJpa() {
@@ -261,6 +255,26 @@ public class ServerTestHelper {
         cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(GroundConfigEntity.class)));
     }
 
+    protected void setupSlopeConfigs() {
+        SLOPE_LAND_CONFIG_ENTITY_1 = persistInTransaction(createLandSlopeConfig()).getId();
+        cleanupAfterTests.add(Arrays.asList(
+                new CleanupAfterTest().entity(SlopeShapeEntity.class),
+                new CleanupAfterTest().entity(SlopeConfigEntity.class)));
+    }
+
+    protected SlopeConfigEntity createLandSlopeConfig() {
+        SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
+        slopeConfigEntity.fromSlopeConfig(new SlopeConfig()
+                        .horizontalSpace(5)
+                        .outerLineGameEngine(1).innerLineGameEngine(6)
+                        .slopeShapes(Arrays.asList(new SlopeShape().slopeFactor(1),
+                                new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
+                                new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
+                                new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7)))
+                , EasyMock.createNiceMock(ImagePersistence.class));
+        return slopeConfigEntity;
+    }
+
     protected void setupImages() {
         IMAGE_1_ID = persistInTransaction(new ImageLibraryEntity()).getId();
         IMAGE_2_ID = persistInTransaction(new ImageLibraryEntity()).getId();
@@ -309,27 +323,26 @@ public class ServerTestHelper {
         boxItemType.setRadius(2);
         BOX_ITEM_TYPE_ID = createBoxItemTypeEntity(boxItemType);
 
-        List<CleanupAfterTest> block = new ArrayList<>();
-        block.add(new CleanupAfterTest().tableName("BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD"));
-        block.add(new CleanupAfterTest().tableName("BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD"));
-        block.add(new CleanupAfterTest().tableName("BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES"));
-        block.add(new CleanupAfterTest().tableName("BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES"));
-        block.add(new CleanupAfterTest().entity(DemolitionStepEffectParticleEntity.class));
-        block.add(new CleanupAfterTest().entity(DemolitionStepEffectEntity.class));
-        block.add(new CleanupAfterTest().entity(BaseItemTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(WeaponTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(FactoryTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(HarvesterTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(BuilderTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(ConsumerTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(ItemContainerTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(HouseTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(BaseItemTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(ResourceItemTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(BoxItemTypeEntity.class));
-        block.add(new CleanupAfterTest().entity(InventoryItemEntity.class));
-        block.add(new CleanupAfterTest().entity(TurretTypeEntity.class));
-        cleanupAfterTests.add(block);
+        cleanupAfterTests.add(Arrays.asList(
+                new CleanupAfterTest().tableName("BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD"),
+                new CleanupAfterTest().tableName("BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD"),
+                new CleanupAfterTest().tableName("BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES"),
+                new CleanupAfterTest().tableName("BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES"),
+                new CleanupAfterTest().entity(DemolitionStepEffectParticleEntity.class),
+                new CleanupAfterTest().entity(DemolitionStepEffectEntity.class),
+                new CleanupAfterTest().entity(BaseItemTypeEntity.class),
+                new CleanupAfterTest().entity(WeaponTypeEntity.class),
+                new CleanupAfterTest().entity(FactoryTypeEntity.class),
+                new CleanupAfterTest().entity(HarvesterTypeEntity.class),
+                new CleanupAfterTest().entity(BuilderTypeEntity.class),
+                new CleanupAfterTest().entity(ConsumerTypeEntity.class),
+                new CleanupAfterTest().entity(ItemContainerTypeEntity.class),
+                new CleanupAfterTest().entity(HouseTypeEntity.class),
+                new CleanupAfterTest().entity(BaseItemTypeEntity.class),
+                new CleanupAfterTest().entity(ResourceItemTypeEntity.class),
+                new CleanupAfterTest().entity(BoxItemTypeEntity.class),
+                new CleanupAfterTest().entity(InventoryItemEntity.class),
+                new CleanupAfterTest().entity(TurretTypeEntity.class)));
     }
 
     private int createBaseItemTypeEntity(BaseItemType baseItemType) {
@@ -363,7 +376,7 @@ public class ServerTestHelper {
         return boxItemTypeEntity.getId();
     }
 
-    protected void setupLevels() {
+    protected void setupLevelDb() {
         setupItemTypes();
         runInTransaction(entityManager -> {
             // Level 1
@@ -429,32 +442,38 @@ public class ServerTestHelper {
             LEVEL_UNLOCK_ID_L5_2 = levelUnlockEntity5_2.getId();
         });
 
-        List<CleanupAfterTest> block = new ArrayList<>();
-        block.add(new CleanupAfterTest().entity(LevelUnlockEntity.class));
-        block.add(new CleanupAfterTest().tableName("LEVEL_LIMITATION"));
-        block.add(new CleanupAfterTest().entity(LevelEntity.class));
-        cleanupAfterTests.add(block);
+        cleanupAfterTests.add(Arrays.asList(
+                new CleanupAfterTest().entity(LevelUnlockEntity.class),
+                new CleanupAfterTest().tableName("LEVEL_LIMITATION"),
+                new CleanupAfterTest().entity(LevelEntity.class)
+        ));
     }
 
-    public void setupPlanets() {
+    public void setupPlanetDb() {
         setupGroundConfig();
+        setupSlopeConfigs();
 
         runInTransaction(entityManager -> {
-            PlanetEntity planetEntity1 = new PlanetEntity();
-            planetEntity1.fromPlanetConfig(new PlanetConfig(), null, null, Collections.emptyMap());
-            entityManager.persist(planetEntity1);
-            PLANET_1_ID = planetEntity1.getId();
+            PlanetEntity planetEntity = new PlanetEntity();
+            planetEntity.fromPlanetConfig(new PlanetConfig()
+                            .terrainTileDimension(new Rectangle(0, 0, 6, 6))
+                            .playGround(new Rectangle2D(0, 0, 960, 960))
+                    , entityManager.find(GroundConfigEntity.class, GROUND_1_ID), null, Collections.emptyMap());
+            planetEntity.getTerrainSlopePositionEntities().add(createLandSlope());
+            entityManager.persist(planetEntity);
+            PLANET_1_ID = planetEntity.getId();
 
-            PlanetEntity planetEntity2 = new PlanetEntity();
-            planetEntity1.fromPlanetConfig(new PlanetConfig(), null, null, Collections.emptyMap());
-            entityManager.persist(planetEntity2);
-            PLANET_2_ID = planetEntity2.getId();
+            planetEntity = new PlanetEntity();
+            planetEntity.fromPlanetConfig(new PlanetConfig(), entityManager.find(GroundConfigEntity.class, GROUND_1_ID), null, Collections.emptyMap());
+            entityManager.persist(planetEntity);
+            PLANET_2_ID = planetEntity.getId();
         });
 
-        List<CleanupAfterTest> block = new ArrayList<>();
-        block.add(new CleanupAfterTest().tableName("PLANET_LIMITATION"));
-        block.add(new CleanupAfterTest().entity(PlanetEntity.class));
-        cleanupAfterTests.add(block);
+        cleanupAfterTests.add(Arrays.asList(
+                new CleanupAfterTest().entity(TerrainSlopeCornerEntity.class),
+                new CleanupAfterTest().entity(TerrainSlopePositionEntity.class),
+                new CleanupAfterTest().tableName("PLANET_LIMITATION"),
+                new CleanupAfterTest().entity(PlanetEntity.class)));
 
 //        ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
 //        serverGameEngineConfigEntity1.setPlanetEntity(planetEntity2);
@@ -487,9 +506,20 @@ public class ServerTestHelper {
 //        SERVER_QUEST_ID_L5_3 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(2).getId();
     }
 
-    protected void setupGameUiControlContext() {
-        setupLevels();
-        setupPlanets();
+    private TerrainSlopePositionEntity createLandSlope() {
+        TerrainSlopePositionEntity terrainSlopePositionLand = new TerrainSlopePositionEntity();
+        terrainSlopePositionLand.setSlopeConfigEntity(entityManager.find(SlopeConfigEntity.class, SLOPE_LAND_CONFIG_ENTITY_1));
+        terrainSlopePositionLand.setPolygon(Arrays.asList(
+                new TerrainSlopeCornerEntity().position(new DecimalPosition(50, 50)),
+                new TerrainSlopeCornerEntity().position(new DecimalPosition(400, 50)),
+                new TerrainSlopeCornerEntity().position(new DecimalPosition(400, 200)),
+                new TerrainSlopeCornerEntity().position(new DecimalPosition(50, 200))));
+        return terrainSlopePositionLand;
+    }
+
+    protected void setupDb() {
+        setupLevelDb();
+        setupPlanetDb();
         runInTransaction(entityManager -> {
             GameUiContextEntity gameUiControlConfigEntity1 = new GameUiContextEntity();
             gameUiControlConfigEntity1.fromConfig(new GameUiContextConfig().gameEngineMode(GameEngineMode.MASTER),
@@ -506,9 +536,7 @@ public class ServerTestHelper {
             GAME_UI_CONTEXT_CONFIG_2_ID = gameUiControlConfigEntity2.getId();
         });
 
-        List<CleanupAfterTest> block = new ArrayList<>();
-        block.add(new CleanupAfterTest().entity(GameUiContextEntity.class));
-        cleanupAfterTests.add(block);
+        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(GameUiContextEntity.class)));
     }
 
     protected I18nString i18nHelper(String string) {
@@ -554,8 +582,8 @@ public class ServerTestHelper {
     }
 
     protected void setupPlanetWithSlopes() throws Exception {
-        setupSlopeConfigEntities();
-        setupPlanets();
+        setupSlopeConfigs();
+        setupPlanetDb();
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
 
@@ -574,57 +602,15 @@ public class ServerTestHelper {
                 new TerrainSlopeCorner().setPosition(new DecimalPosition(239, 359)), new TerrainSlopeCorner().setPosition(new DecimalPosition(49, 360))));
         terrainSlopePositions.add(terrainSlopePositionWater);
 
-        planetCrudPersistence.createTerrainSlopePositions(PLANET_2_ID, terrainSlopePositions);
+        // TODO planetCrudPersistence.createTerrainSlopePositions(PLANET_2_ID, terrainSlopePositions);
 
         // Start from ServletContextMonitor.contextInitialized() not working
-        serverGameEngineControl.start(null, true);
+        // TODO serverGameEngineControl.start(null, true);
     }
 
     protected void setupPlanetFastTickGameEngine() throws Exception {
         PlanetService.TICK_TIME_MILLI_SECONDS = 1;
         setupPlanetWithSlopes();
-    }
-
-    protected void setupSlopeConfigEntities() {
-        runInTransaction(em -> {
-            SlopeConfigEntity slopeConfigEntity1 = new SlopeConfigEntity();
-            SlopeConfig slopeConfigLand = new SlopeConfig();
-            // TODO slopeConfigLand.setSpecularLightConfig(new SpecularLightConfig());
-            slopeConfigLand.id(1);
-            slopeConfigLand.setHorizontalSpace(5);
-            slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
-                    {new SlopeNode().setPosition(new Vertex(2, 0, 5)).setSlopeFactor(1)},
-                    {new SlopeNode().setPosition(new Vertex(4, 0, 10)).setSlopeFactor(0.7)},
-                    {new SlopeNode().setPosition(new Vertex(7, 0, 20)).setSlopeFactor(0.7)},
-            }));
-            slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
-            // TODO slopeConfigEntity1.setDefault();
-            // TODO sList<SlopeShape> shapeLand = Arrays.asList(new SlopeShape(new DecimalPosition(2, 5), 1), new SlopeShape(new DecimalPosition(4, 10), 1), new SlopeShape(new DecimalPosition(7, 20), 1));
-            // TODO sslopeConfigLand.setSlopeShapes(shapeLand);
-            // TODO slopeConfigEntity1.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigLand).setInternalName("Land"), imagePersistence);
-            em.persist(slopeConfigEntity1);
-
-
-            SLOPE_LAND_CONFIG_ENTITY_1 = slopeConfigEntity1.getId();
-            SlopeConfigEntity slopeConfigEntity2 = new SlopeConfigEntity();
-            SlopeConfig slopeConfigWater = new SlopeConfig();
-            // TODO slopeConfigWater.setSpecularLightConfig(new SpecularLightConfig());
-            slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
-            slopeConfigWater.setHorizontalSpace(6);
-            slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
-                    {new SlopeNode().setPosition(new Vertex(5, 0, 0.5)).setSlopeFactor(0.5)},
-                    {new SlopeNode().setPosition(new Vertex(10, 0, -0.1)).setSlopeFactor(1)},
-                    {new SlopeNode().setPosition(new Vertex(15, 0, -0.8)).setSlopeFactor(1)},
-                    {new SlopeNode().setPosition(new Vertex(20, 0, -2)).setSlopeFactor(1)},
-            }));
-            slopeConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
-            // TODO slopeConfigEntity2.setDefault();
-            // TODO sList<SlopeShape> shapeWater = Arrays.asList(new SlopeShape(new DecimalPosition(5, 0.5), 0.5f), new SlopeShape(new DecimalPosition(10, -0.1), 1), new SlopeShape(new DecimalPosition(15, -0.8), 1), new SlopeShape(new DecimalPosition(20, -2), 1));
-            // TODO sslopeConfigWater.setSlopeShapes(shapeWater);
-            // TODO slopeConfigEntity2.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigWater).setInternalName("Water"), imagePersistence);
-            em.persist(slopeConfigEntity2);
-            SLOPE_WATER_CONFIG_ENTITY_2 = slopeConfigEntity2.getId();
-        });
     }
 
     protected SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {

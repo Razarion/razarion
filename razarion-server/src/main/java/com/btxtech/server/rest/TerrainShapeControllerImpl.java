@@ -1,9 +1,9 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.gameengine.ServerTerrainShapeService;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 import com.btxtech.shared.rest.TerrainShapeController;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 
@@ -14,17 +14,15 @@ import javax.inject.Inject;
 public class TerrainShapeControllerImpl implements TerrainShapeController {
     @Inject
     private ServerTerrainShapeService serverTerrainShapeService;
-    @Inject
-    private ExceptionHandler exceptionHandler;
 
     @Override
     public NativeTerrainShape getTerrainShape(int planetId) {
-        try {
-            return serverTerrainShapeService.getNativeTerrainShape(planetId);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
+        return serverTerrainShapeService.getNativeTerrainShape(planetId);
     }
 
+    @Override
+    @SecurityCheck
+    public void createTerrainShape(int planetId) {
+        serverTerrainShapeService.createTerrainShape(planetId);
+    }
 }

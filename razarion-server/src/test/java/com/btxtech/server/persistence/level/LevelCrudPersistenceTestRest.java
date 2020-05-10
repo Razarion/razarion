@@ -23,14 +23,14 @@ public class LevelCrudPersistenceTestRest extends IgnoreOldArquillianTest {
 
     @Test
     public void testStarterLevelId() throws Exception {
-        setupLevels();
+        setupLevelDb();
         Assert.assertEquals(LEVEL_1_ID, (int) levelCrudPersistence.getStarterLevel().getId());
         // TODO cleanLevels();
     }
 
     @Test
     public void testLevelNumber4Id() throws Exception {
-        setupLevels();
+        setupLevelDb();
         Assert.assertEquals(1, levelCrudPersistence.getLevelNumber4Id(LEVEL_1_ID));
         Assert.assertEquals(2, levelCrudPersistence.getLevelNumber4Id(LEVEL_2_ID));
         Assert.assertEquals(3, levelCrudPersistence.getLevelNumber4Id(LEVEL_3_ID));

@@ -20,7 +20,7 @@ public class ItemTrackerAccessTestRest extends IgnoreOldArquillianTest {
 
     @Before
     public void before() throws Exception {
-        setupPlanets();
+        setupPlanetDb();
         clearMongoDb();
         fillBackupInfoMongoDb("server_item_tracking", "/mongodb/ServerItemTracking.json", ItemTracking.class);
     }

@@ -29,6 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,6 +157,9 @@ public class PlanetEntity {
     }
 
     public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {
+        if(terrainSlopePositionEntities == null) {
+            terrainSlopePositionEntities = new ArrayList<>();
+        }
         return terrainSlopePositionEntities;
     }
 

@@ -26,7 +26,7 @@ public class GameUiControlConfigPersistenceTestRest extends IgnoreOldArquillianT
 
     @Before
     public void before() throws Exception {
-        setupPlanets();
+        setupPlanetDb();
     }
 
     @After

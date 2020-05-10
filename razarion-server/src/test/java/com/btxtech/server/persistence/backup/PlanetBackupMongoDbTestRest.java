@@ -22,7 +22,7 @@ public class PlanetBackupMongoDbTestRest extends IgnoreOldArquillianTest {
 
     @Before
     public void before() throws Exception {
-        setupPlanets();
+        setupPlanetDb();
         clearMongoDb();
         fillBackupInfoMongoDb("planet_backup", "/mongodb/PlanetBackup.json", BackupPlanetInfo.class);
     }

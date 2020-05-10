@@ -5,7 +5,7 @@ import com.btxtech.client.editor.widgets.LightDirectionWidget;
 import com.btxtech.client.guielements.VertexRoBox;
 import com.btxtech.client.utils.HtmlColor2ColorConverter;
 import com.btxtech.shared.dto.PlanetVisualConfig;
-import com.btxtech.shared.rest.PlanetEditorProvider;
+import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.ShadowUiService;
@@ -40,7 +40,7 @@ public class PlanetVisualConfigPanel extends AbstractEditor {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
-    private Caller<PlanetEditorProvider> planetEditorProviderCaller;
+    private Caller<TerrainEditorController> planetEditorProviderCaller;
     @Inject
     @AutoBound
     private DataBinder<PlanetVisualConfig> planetVisualConfigDataBinder;

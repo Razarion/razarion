@@ -21,7 +21,7 @@ public class SecurityInterceptor {
     private FilePropertiesService filePropertiesService;
 
     @AroundInvoke
-    public Object logMethodEntry(InvocationContext invocationContext) throws Exception {
+    public Object checkAuthentication(InvocationContext invocationContext) throws Exception {
         if (!filePropertiesService.isDeveloperMode()) {
             if (sessionHolder.getPlayerSession() == null) {
                 throw new SecurityException("sessionHolder.getPlayerSession() == null", invocationContext.getMethod());

@@ -14,7 +14,7 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
-import com.btxtech.shared.rest.PlanetEditorProvider;
+import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.shared.utils.MathHelper;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -50,7 +50,7 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
     @Inject
     private TerrainEditorService terrainEditor;
     @Inject
-    private Caller<PlanetEditorProvider> planetEditorServiceCaller;
+    private Caller<TerrainEditorController> terrainEditorController;
     @DataField
     private Element miniMapElement = (Element) Browser.getDocument().createCanvasElement();
     @DataField
@@ -66,7 +66,7 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
         this.canvasElement.setHeight(RadarPanel.MINI_MAP_IMAGE_HEIGHT);
         ctx = (CanvasRenderingContext2D) this.canvasElement.getContext("2d");
 
-        planetEditorServiceCaller.call((RemoteCallback<TerrainEditorLoad>) this::generateMiniTerrain, exceptionHandler.restErrorHandler("readTerrainSlopePositions failed: ")).readTerrainEditorLoad(terrainEditor.getPlanetId());
+        terrainEditorController.call((RemoteCallback<TerrainEditorLoad>) this::generateMiniTerrain, exceptionHandler.restErrorHandler("readTerrainSlopePositions failed: ")).readTerrainEditorLoad(terrainEditor.getPlanetId());
     }
 
     @Override

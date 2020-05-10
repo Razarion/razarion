@@ -42,7 +42,7 @@ public class RestServerInventoryServiceTestBase extends IgnoreOldArquillianTest 
 
     @Before
     public void before() throws Exception {
-        setupPlanets();
+        setupPlanetDb();
         cleanTable(InventoryHistoryEntry.class);
     }
 

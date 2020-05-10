@@ -35,7 +35,7 @@ public class ChatPersistenceTestRest extends IgnoreOldArquillianTest {
 
     @Before
     public void before() throws Exception {
-        setupLevels();
+        setupLevelDb();
     }
 
     @After

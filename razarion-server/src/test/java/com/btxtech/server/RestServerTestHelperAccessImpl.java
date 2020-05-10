@@ -24,7 +24,7 @@ public class RestServerTestHelperAccessImpl implements RestServerTestHelperAcces
     @Override
     public void setupPlanets() {
         try {
-            serverTestHelper.setupPlanets();
+            serverTestHelper.setupPlanetDb();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw new RuntimeException(t);

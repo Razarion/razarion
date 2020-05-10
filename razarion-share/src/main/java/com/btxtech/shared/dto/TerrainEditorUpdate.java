@@ -67,4 +67,34 @@ public class TerrainEditorUpdate {
     public boolean hasAnyChanged() {
         return !createdSlopes.isEmpty() || !updatedSlopes.isEmpty() || !deletedSlopeIds.isEmpty() || !createdTerrainObjects.isEmpty() || !updatedTerrainObjects.isEmpty() || !deletedTerrainObjectsIds.isEmpty();
     }
+
+    public TerrainEditorUpdate createdSlopes(List<TerrainSlopePosition> createdSlopes) {
+        setCreatedSlopes(createdSlopes);
+        return this;
+    }
+
+    public TerrainEditorUpdate updatedSlopes(List<TerrainSlopePosition> updatedSlopes) {
+        setUpdatedSlopes(updatedSlopes);
+        return this;
+    }
+
+    public TerrainEditorUpdate deletedSlopeIds(List<Integer> deletedSlopeIds) {
+        setDeletedSlopeIds(deletedSlopeIds);
+        return this;
+    }
+
+    public TerrainEditorUpdate createdTerrainObjects(List<TerrainObjectPosition> createdTerrainObjects) {
+        setCreatedTerrainObjects(createdTerrainObjects);
+        return this;
+    }
+
+    public TerrainEditorUpdate updatedTerrainObjects(List<TerrainObjectPosition> updatedTerrainObjects) {
+        setUpdatedTerrainObjects(updatedTerrainObjects);
+        return this;
+    }
+
+    public TerrainEditorUpdate deletedTerrainObjectsIds(List<Integer> deletedTerrainObjectsIds) {
+        setDeletedTerrainObjectsIds(deletedTerrainObjectsIds);
+        return this;
+    }
 }

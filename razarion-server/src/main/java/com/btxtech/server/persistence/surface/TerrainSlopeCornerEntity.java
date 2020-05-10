@@ -46,6 +46,16 @@ public class TerrainSlopeCornerEntity {
         this.drivewayConfigEntity = drivewayConfigEntity;
     }
 
+    public TerrainSlopeCornerEntity position(DecimalPosition position) {
+        setPosition(position);
+        return this;
+    }
+
+    public TerrainSlopeCornerEntity drivewayConfigEntity(DrivewayConfigEntity drivewayConfigEntity) {
+        setDrivewayConfigEntity(drivewayConfigEntity);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

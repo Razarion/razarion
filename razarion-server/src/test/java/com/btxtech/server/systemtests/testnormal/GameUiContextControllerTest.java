@@ -23,7 +23,7 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
     @Before
     public void setup() {
         gameUiContextController = setupRestAccess(GameUiContextController.class);
-        setupGameUiControlContext();
+        setupDb();
     }
 
     @Test

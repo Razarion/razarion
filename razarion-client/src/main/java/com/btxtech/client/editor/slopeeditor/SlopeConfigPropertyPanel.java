@@ -6,7 +6,7 @@ import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
-import com.btxtech.shared.rest.PlanetEditorProvider;
+import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -41,7 +41,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig_
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private Caller<PlanetEditorProvider> planetEditorServiceCaller;
+    private Caller<TerrainEditorController> planetEditorServiceCaller;
     @Inject
     private GameUiControl gameUiControl;
     @Inject

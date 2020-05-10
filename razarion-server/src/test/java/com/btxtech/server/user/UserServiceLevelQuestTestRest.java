@@ -28,7 +28,7 @@ public class UserServiceLevelQuestTestRest extends IgnoreOldArquillianTest {
 
     @Before
     public void before() throws Exception {
-        setupPlanets();
+        setupPlanetDb();
     }
 
     @After
