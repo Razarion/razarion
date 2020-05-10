@@ -1,13 +1,12 @@
-package com.btxtech.shared.gameengine.planet.terrain.container.nativejs;
+package com.btxtech.shared.gameengine.planet.terrain.container.json;
 
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * on 03.07.2017.
  */
-@JsType(name = "NativeTerrainShapeSubNode", isNative = true, namespace = "com.btxtech.shared.nativejs")
+@JsType(name = "NativeTerrainShapeSubNode", isNative = true, namespace = "com.btxtech.shared.json")
 public class NativeTerrainShapeSubNode {
     public int terrainTypeOrdinal; // Integer is not working here because Integer.intValue() is not defined
     public Double height;

@@ -8,7 +8,7 @@ import jsinterop.annotations.JsType;
  * Created by Beat
  * on 12.01.2018.
  */
-@JsType(name = "NativeSyncBaseItemTickInfo", isNative = true, namespace = "com.btxtech.shared.nativejs.workerdto")
+@JsType(name = "NativeSyncBaseItemTickInfo", isNative = true, namespace = "com.btxtech.shared.json.workerdto")
 public class NativeSyncBaseItemTickInfo {
     public int id;
     public int itemTypeId;

@@ -7,7 +7,7 @@ import jsinterop.annotations.JsType;
  * Created by Beat
  * on 18.01.2018.
  */
-@JsType(isNative = true, name = "TerrainTileObjectList", namespace = "com.btxtech.shared.nativejs")
+@JsType(isNative = true, name = "TerrainTileObjectList", namespace = "com.btxtech.shared.json")
 public class TerrainTileObjectList {
     public native int getTerrainObjectConfigId();
 

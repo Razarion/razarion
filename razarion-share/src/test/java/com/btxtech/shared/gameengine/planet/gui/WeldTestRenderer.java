@@ -41,7 +41,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectList;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.mocks.TestFloat32Array;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;

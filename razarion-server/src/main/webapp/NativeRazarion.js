@@ -906,15 +906,11 @@ com = {
                 }
             }
         }
-        // client: {
-        //     nativejs: {
-        //     }
-        // }
     }
 };
 
 // Static methode example
-// com.btxtech.client.nativejs.NativeControlUtils = {};
-// com.btxtech.client.nativejs.NativeControlUtils.openSingleFileDataUrlUpload = function (callback) {
+// com.btxtech.client.json.NativeControlUtils = {};
+// com.btxtech.client.json.NativeControlUtils.openSingleFileDataUrlUpload = function (callback) {
 //     callback(xxx, yyy);
 // };

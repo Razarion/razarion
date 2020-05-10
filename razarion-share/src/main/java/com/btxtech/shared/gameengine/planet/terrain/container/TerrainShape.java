@@ -12,11 +12,11 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlope;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeFractionalSlope;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeNode;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeTile;
 import com.btxtech.shared.utils.ExceptionUtil;
 import com.btxtech.shared.utils.GeometricUtil;
 

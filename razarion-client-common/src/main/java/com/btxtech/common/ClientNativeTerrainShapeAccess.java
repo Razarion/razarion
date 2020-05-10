@@ -1,8 +1,8 @@
 package com.btxtech.common;
 
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.dom.XMLHttpRequest;
 import jsinterop.base.Js;

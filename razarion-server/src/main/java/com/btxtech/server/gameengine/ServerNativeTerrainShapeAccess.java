@@ -1,7 +1,7 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

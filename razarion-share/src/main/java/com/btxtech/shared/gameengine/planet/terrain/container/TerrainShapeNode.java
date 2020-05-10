@@ -8,10 +8,10 @@ import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeHelper;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeVertex;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeHelper;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeObstacle;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeNode;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeVertex;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,8 +74,8 @@ public class TerrainShapeNode {
         renderHideGround = nativeTerrainShapeNode.renderHideGround;
         renderInnerWaterSlopeId = nativeTerrainShapeNode.renderInnerWaterSlopeId;
         if (nativeTerrainShapeNode.groundSlopeConnections != null) {
-            groundSlopeConnections = nativeTerrainShapeNode.groundSlopeConnections;
-//            TODO for (NativeVertex[] nativeGroundSlopeConnection : nativeTerrainShapeNode.groundSlopeConnections) {
+//            groundSlopeConnections = nativeTerrainShapeNode.groundSlopeConnections;
+//             for (NativeVertex[] nativeGroundSlopeConnection : nativeTerrainShapeNode.groundSlopeConnections) {
 //                List<Vertex> groundSlopeConnection = new ArrayList<>();
 //                for (NativeVertex nativeVertex : nativeGroundSlopeConnection) {
 //                    groundSlopeConnection.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
@@ -328,18 +328,18 @@ public class TerrainShapeNode {
         nativeTerrainShapeNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);
         nativeTerrainShapeNode.fullGameEngineDriveway = fullGameEngineDriveway;
         nativeTerrainShapeNode.fullRenderEngineDriveway = fullRenderEngineDriveway;
-        nativeTerrainShapeNode.groundSlopeConnections = groundSlopeConnections;
         nativeTerrainShapeNode.renderInnerSlopeId = renderInnerSlopeId;
         nativeTerrainShapeNode.renderHideGround = renderHideGround;
         nativeTerrainShapeNode.renderInnerWaterSlopeId = renderInnerWaterSlopeId;
 
-        // TODO if (groundSlopeConnections != null) {
-        // TODO nativeTerrainShapeNode.groundSlopeConnections = new NativeVertex[groundSlopeConnections.size()][];
-        // TODO  for (int i = 0; i < groundSlopeConnections.size(); i++) {
-        // TODO List<Vertex> groundSlopeConnection = groundSlopeConnections.get(i);
-        // TODO nativeTerrainShapeNode.groundSlopeConnections[i] = groundSlopeConnection.stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
-        // TODO }
-        // TODO }
+        if (groundSlopeConnections != null) {
+            nativeTerrainShapeNode.groundSlopeConnections = groundSlopeConnections;
+            nativeTerrainShapeNode.groundSlopeConnections = new NativeVertex[groundSlopeConnections.size()][];
+            for (int i = 0; i < groundSlopeConnections.size(); i++) {
+                List<Vertex> groundSlopeConnection = groundSlopeConnections.get(i);
+                nativeTerrainShapeNode.groundSlopeConnections[i] = groundSlopeConnection.stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
+            }
+        }
         if (waterSegments != null) {
 //      TODO      nativeTerrainShapeNode.waterSegments = new NativeVertex[waterSegments.size()][];
 //            for (int i = 0; i < waterSegments.size(); i++) {

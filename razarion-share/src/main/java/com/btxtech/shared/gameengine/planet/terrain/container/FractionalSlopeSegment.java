@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlopeSegment;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeFractionalSlopeSegment;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 
 /**

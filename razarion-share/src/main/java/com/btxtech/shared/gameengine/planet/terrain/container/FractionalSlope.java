@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlope;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlopeSegment;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeFractionalSlope;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeFractionalSlopeSegment;
 
 import java.util.ArrayList;
 import java.util.List;

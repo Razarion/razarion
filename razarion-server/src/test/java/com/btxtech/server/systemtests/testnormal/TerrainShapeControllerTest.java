@@ -1,7 +1,7 @@
 package com.btxtech.server.systemtests.testnormal;
 
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.rest.TerrainShapeController;
 import org.junit.Before;
 import org.junit.Test;

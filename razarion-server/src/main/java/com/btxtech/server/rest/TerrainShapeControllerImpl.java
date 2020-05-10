@@ -2,7 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.rest.TerrainShapeController;
 
 import javax.inject.Inject;

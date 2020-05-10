@@ -10,7 +10,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeObstacle;
 import com.btxtech.shared.utils.CollectionUtils;
 import org.easymock.EasyMock;
 

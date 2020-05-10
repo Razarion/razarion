@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.planet.terrain.container.nativejs;
+package com.btxtech.shared.gameengine.planet.terrain.container.json;
 
 import com.btxtech.shared.datatypes.Vertex;
 

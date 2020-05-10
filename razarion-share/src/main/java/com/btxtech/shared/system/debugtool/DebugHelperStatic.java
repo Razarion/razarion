@@ -5,7 +5,7 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeObstacle;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -1,6 +1,4 @@
-package com.btxtech.shared.gameengine.planet.terrain.container.nativejs;
-
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
+package com.btxtech.shared.gameengine.planet.terrain.container.json;
 
 import java.util.function.Consumer;
 

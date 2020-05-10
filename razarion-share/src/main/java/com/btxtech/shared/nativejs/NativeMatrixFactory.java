@@ -6,7 +6,7 @@ import jsinterop.annotations.JsType;
  * Created by Beat
  * 24.03.2017.
  */
-@JsType(name = "NativeMatrixFactory", isNative = true, namespace = "com.btxtech.shared.nativejs")
+@JsType(name = "NativeMatrixFactory", isNative = true, namespace = "com.btxtech.shared.json")
 public abstract class NativeMatrixFactory {
     public native NativeMatrix createFromColumnMajorArray(double[] array);
 

@@ -2,10 +2,10 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlope;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectList;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeFractionalSlope;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeNode;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeTile;
 
 import java.util.ArrayList;
 import java.util.List;

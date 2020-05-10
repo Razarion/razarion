@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeObstacle;
 
 /**
  * Created by Beat

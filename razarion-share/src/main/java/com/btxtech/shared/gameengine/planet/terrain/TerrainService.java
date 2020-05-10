@@ -6,7 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.SurfaceAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.cdimock;
 
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.function.Consumer;
