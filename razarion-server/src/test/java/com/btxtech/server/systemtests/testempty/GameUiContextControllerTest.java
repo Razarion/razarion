@@ -23,7 +23,7 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
         assertViaJson("/systemtests/testempty/GameUiContextControllerTest_fallbackCold.json",
                 s -> s.replace("\"$USER_ID$\"", Integer.toString(coldGameUiContext.getUserContext().getUserId())),
-                getClass(),
+                null, getClass(),
                 coldGameUiContext);
     }
 
@@ -33,7 +33,7 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
         assertViaJson("/systemtests/testempty/GameUiContextControllerTest_fallbackColdUser.json",
                 s -> s.replace("\"$USER_ID$\"", Integer.toString(NORMAL_USER_ID)),
-                getClass(),
+                null, getClass(),
                 coldGameUiContext);
     }
 
@@ -43,7 +43,7 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
         assertViaJson("/systemtests/testempty/GameUiContextControllerTest_fallbackColdAdmin.json",
                 s -> s.replace("\"$USER_ID$\"", Integer.toString(ADMIN_USER_ID)),
-                getClass(),
+                null, getClass(),
                 coldGameUiContext);
     }
 

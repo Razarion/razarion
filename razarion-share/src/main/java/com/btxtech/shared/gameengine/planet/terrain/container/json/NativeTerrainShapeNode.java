@@ -12,9 +12,10 @@ import java.util.Map;
  */
 @JsType(name = "NativeTerrainShapeNode", isNative = true, namespace = "com.btxtech.shared.json")
 public class NativeTerrainShapeNode {
+    public final static String DEFAULT_GROUND = "default_ground";
     public double[] fullDrivewayHeights; // bl, br, tr, tl
     public Double innerGroundHeight;
-    public Map<Integer, NativeVertex[][]> groundSlopeConnections; // TODO Map not working here
+    public Map<Object, NativeVertex[][]> groundSlopeConnections; // TODO Map not working here
     public Map<Integer, List<List<Vertex>>> waterSegments; // TODO Map not working here
     public Integer renderInnerSlopeId; // TODO  Integer is not working here because Integer.intValue() is not defined
     public boolean renderHideGround;

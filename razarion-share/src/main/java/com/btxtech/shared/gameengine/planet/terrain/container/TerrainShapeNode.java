@@ -331,14 +331,16 @@ public class TerrainShapeNode {
         nativeTerrainShapeNode.renderInnerSlopeId = renderInnerSlopeId;
         nativeTerrainShapeNode.renderHideGround = renderHideGround;
         nativeTerrainShapeNode.renderInnerWaterSlopeId = renderInnerWaterSlopeId;
-
         if (groundSlopeConnections != null) {
-            nativeTerrainShapeNode.groundSlopeConnections = groundSlopeConnections;
-            nativeTerrainShapeNode.groundSlopeConnections = new NativeVertex[groundSlopeConnections.size()][];
-            for (int i = 0; i < groundSlopeConnections.size(); i++) {
-                List<Vertex> groundSlopeConnection = groundSlopeConnections.get(i);
-                nativeTerrainShapeNode.groundSlopeConnections[i] = groundSlopeConnection.stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
-            }
+            nativeTerrainShapeNode.groundSlopeConnections = new HashMap<>();
+            groundSlopeConnections.forEach((groundId, lists) -> {
+                if(groundId == null) {
+                    NativeVertex[][] jsonTriangleList = nativeTerrainShapeNode.groundSlopeConnections.computeIfAbsent(NativeTerrainShapeNode.DEFAULT_GROUND, o -> new NativeVertex[lists.size()][]);
+                    for (int i = 0; i < jsonTriangleList.length; i++) {
+                        jsonTriangleList[i] = lists.get(i).stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
+                    }
+                }
+            });
         }
         if (waterSegments != null) {
 //      TODO      nativeTerrainShapeNode.waterSegments = new NativeVertex[waterSegments.size()][];
