@@ -6,7 +6,7 @@ import jsinterop.annotations.JsType;
  * Created by Beat
  * on 10.01.2018.
  */
-@JsType(name = "NativeTickInfo", isNative = true, namespace = "com.btxtech.shared.json.workerdto")
+@JsType(name = "NativeTickInfo", isNative = true, namespace = "com.btxtech.shared.nativejs.workerdto")
 public class NativeTickInfo {
     public int resources;
     public int xpFromKills;

@@ -92,7 +92,7 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
     private void restartPlanet(int planetId, LifecyclePacket.Type type) {
         try {
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
-            // TODO serverTerrainShapeService.createTerrainShape(planetCrudPersistence.read(planetId));
+            serverTerrainShapeService.createTerrainShape(planetId);
             serverGameEngineControl.restartPlanet();
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(type));
         } catch (Throwable e) {

@@ -169,6 +169,9 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     @SecurityCheck
     public void restartPlanet() {
+        if (!running) {
+            return;
+        }
         long time = System.currentTimeMillis();
         BackupPlanetInfo backupPlanetInfo = planetService.backup(true);
         stop();
