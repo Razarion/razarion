@@ -25,6 +25,7 @@ import java.util.logging.Logger;
  * on 18.06.2017.
  */
 public class TerrainShapeNode {
+    public final static String JSON_DEFAULT_GROUND = "default_ground";
     public static final double DEFAULT_HEIGHT = 0;
     private static Logger logger = Logger.getLogger(TerrainShapeNode.class.getName());
     // Game engine
@@ -335,7 +336,7 @@ public class TerrainShapeNode {
             nativeTerrainShapeNode.groundSlopeConnections = new HashMap<>();
             groundSlopeConnections.forEach((groundId, lists) -> {
                 if(groundId == null) {
-                    NativeVertex[][] jsonTriangleList = nativeTerrainShapeNode.groundSlopeConnections.computeIfAbsent(NativeTerrainShapeNode.DEFAULT_GROUND, o -> new NativeVertex[lists.size()][]);
+                    NativeVertex[][] jsonTriangleList = nativeTerrainShapeNode.groundSlopeConnections.computeIfAbsent(JSON_DEFAULT_GROUND, o -> new NativeVertex[lists.size()][]);
                     for (int i = 0; i < jsonTriangleList.length; i++) {
                         jsonTriangleList[i] = lists.get(i).stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
                     }
