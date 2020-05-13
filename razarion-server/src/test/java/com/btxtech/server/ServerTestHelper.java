@@ -26,6 +26,7 @@ import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
 import com.btxtech.server.persistence.quest.ConditionConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
+import com.btxtech.server.persistence.scene.SceneEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
@@ -536,7 +537,9 @@ public class ServerTestHelper {
             GAME_UI_CONTEXT_CONFIG_2_ID = gameUiControlConfigEntity2.getId();
         });
 
-        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(GameUiContextEntity.class)));
+        cleanupAfterTests.add(Arrays.asList(
+                new CleanupAfterTest().entity(SceneEntity.class),
+                new CleanupAfterTest().entity(GameUiContextEntity.class)));
     }
 
     protected I18nString i18nHelper(String string) {

@@ -75,10 +75,9 @@ public abstract class AbstractSystemTest extends ServerTestHelper {
             }
             // https://www.baeldung.com/jackson-compare-two-json-objects
             ObjectMapper mapper = new ObjectMapper();
-            // System.out.println("-----------------------------------");
-            // System.out.println(mapper.writeValueAsString(actual));
-            // ??? System.out.println(jsonString.replaceAll("\r", "").replaceAll("\n", ""));
-            // System.out.println("-----------------------------------");
+//            System.out.println("-----------------------------------");
+//            System.out.println(mapper.writeValueAsString(actual));
+//            System.out.println("-----------------------------------");
             assertViaJson(mapper.readTree(jsonString), mapper.readTree(mapper.writeValueAsString(actual)), idSuppressors);
         } catch (IOException e) {
             throw new RuntimeException(e);

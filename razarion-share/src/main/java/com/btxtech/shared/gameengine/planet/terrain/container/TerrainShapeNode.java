@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeGroundSlopeConnection;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeObstacle;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeNode;
@@ -25,7 +26,6 @@ import java.util.logging.Logger;
  * on 18.06.2017.
  */
 public class TerrainShapeNode {
-    public final static String JSON_DEFAULT_GROUND = "default_ground";
     public static final double DEFAULT_HEIGHT = 0;
     private static Logger logger = Logger.getLogger(TerrainShapeNode.class.getName());
     // Game engine
@@ -75,14 +75,30 @@ public class TerrainShapeNode {
         renderHideGround = nativeTerrainShapeNode.renderHideGround;
         renderInnerWaterSlopeId = nativeTerrainShapeNode.renderInnerWaterSlopeId;
         if (nativeTerrainShapeNode.groundSlopeConnections != null) {
-//            groundSlopeConnections = nativeTerrainShapeNode.groundSlopeConnections;
-//             for (NativeVertex[] nativeGroundSlopeConnection : nativeTerrainShapeNode.groundSlopeConnections) {
-//                List<Vertex> groundSlopeConnection = new ArrayList<>();
-//                for (NativeVertex nativeVertex : nativeGroundSlopeConnection) {
-//                    groundSlopeConnection.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
-//                }
-//                groundSlopeConnections.add(groundSlopeConnection);
-//            }
+            groundSlopeConnections = new HashMap<>();
+//
+// GWT cna not handle below stream solution
+//
+//            Arrays.stream(nativeTerrainShapeNode.groundSlopeConnections).forEach(groundSlopeConnection -> {
+//                List<List<Vertex>> polygons = Arrays.stream(groundSlopeConnection.polygons)
+//                        .map(nativeVertices -> Arrays.stream(nativeVertices)
+//                                .map(nativeVertex -> new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z))
+//                                .collect(Collectors.toList()))
+//                        .collect(Collectors.toList());
+//                groundSlopeConnections.put(groundSlopeConnection.groundConfigId, polygons);
+//            });
+//
+            for (NativeGroundSlopeConnection groundSlopeConnection : nativeTerrainShapeNode.groundSlopeConnections) {
+                List<List<Vertex>> polygons = new ArrayList<>();
+                for (NativeVertex[] nativeVertexPolygon : groundSlopeConnection.polygons) {
+                    List<Vertex> polygon = new ArrayList<>();
+                    polygons.add(polygon);
+                    for (NativeVertex nativeVertex : nativeVertexPolygon) {
+                        polygon.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
+                    }
+                }
+                groundSlopeConnections.put(groundSlopeConnection.groundConfigId, polygons);
+            }
         }
         if (nativeTerrainShapeNode.waterSegments != null) {
             waterSegments = nativeTerrainShapeNode.waterSegments;
@@ -333,15 +349,14 @@ public class TerrainShapeNode {
         nativeTerrainShapeNode.renderHideGround = renderHideGround;
         nativeTerrainShapeNode.renderInnerWaterSlopeId = renderInnerWaterSlopeId;
         if (groundSlopeConnections != null) {
-            nativeTerrainShapeNode.groundSlopeConnections = new HashMap<>();
-            groundSlopeConnections.forEach((groundId, lists) -> {
-                if(groundId == null) {
-                    NativeVertex[][] jsonTriangleList = nativeTerrainShapeNode.groundSlopeConnections.computeIfAbsent(JSON_DEFAULT_GROUND, o -> new NativeVertex[lists.size()][]);
-                    for (int i = 0; i < jsonTriangleList.length; i++) {
-                        jsonTriangleList[i] = lists.get(i).stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
-                    }
-                }
-            });
+            nativeTerrainShapeNode.groundSlopeConnections = groundSlopeConnections.entrySet().stream().map(entry -> {
+                NativeGroundSlopeConnection nativeGroundSlopeConnection = new NativeGroundSlopeConnection();
+                nativeGroundSlopeConnection.groundConfigId = entry.getKey();
+                nativeGroundSlopeConnection.polygons = entry.getValue().stream()
+                        .map(polygons -> polygons.stream().map(NativeHelper::fromVertex).toArray(value -> new NativeVertex[polygons.size()]))
+                        .toArray(value -> new NativeVertex[entry.getValue().size()][]);
+                return nativeGroundSlopeConnection;
+            }).toArray(value -> new NativeGroundSlopeConnection[groundSlopeConnections.size()]);
         }
         if (waterSegments != null) {
 //      TODO      nativeTerrainShapeNode.waterSegments = new NativeVertex[waterSegments.size()][];
