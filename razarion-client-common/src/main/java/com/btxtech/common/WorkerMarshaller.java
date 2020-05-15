@@ -1,6 +1,7 @@
 package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
@@ -25,6 +26,7 @@ import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
 import elemental2.core.Array;
+import elemental2.core.Float32Array;
 import elemental2.core.JsObject;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
@@ -32,15 +34,20 @@ import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+
+import static jsinterop.base.Js.uncheckedCast;
 
 /**
  * Created by Beat
  * 03.01.2017.
  */
 public class WorkerMarshaller {
-    // private static Logger logger = Logger.getLogger(WorkerMarshaller.class.getName());
+    private static final String DEFAULT_GROUND_KEY = "DEFAULT_GROUND";
+    private static Logger LOGGER = Logger.getLogger(WorkerMarshaller.class.getName());
     private static final int COMMAND_OFFSET = 0;
     private static final int DATA_OFFSET_0 = 1;
     private static final int DATA_OFFSET_1 = 2;
@@ -391,6 +398,8 @@ public class WorkerMarshaller {
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
         terrainTile.setGroundPositions(array[1].uncheckedCast());
         terrainTile.setGroundNorms(array[2].uncheckedCast());
+        terrainTile.setGroundSlopePositions(demarshallFloat32ArrayMap(array[3]));
+        terrainTile.setGroundSlopePositions(demarshallFloat32ArrayMap(array[4]));
         return terrainTile;
     }
 
@@ -402,7 +411,39 @@ public class WorkerMarshaller {
         array.push(indexArray);
         array.push(terrainTile.getGroundPositions());
         array.push(terrainTile.getGroundNorms());
+        array.push(marshallFloat32ArrayMap(terrainTile.getGroundSlopePositions()));
+        array.push(marshallFloat32ArrayMap(terrainTile.getGroundSlopeNorms()));
         return array;
     }
 
+    private static elemental2.core.Map<Object, Float32Array> marshallFloat32ArrayMap(Map<Integer, Float32ArrayEmu> float32ArrayMap) {
+        elemental2.core.Map<Object, Float32Array> groundSlopePositions = new elemental2.core.Map<>();
+        if (float32ArrayMap != null) {
+            for (Map.Entry<Integer, Float32ArrayEmu> entry : float32ArrayMap.entrySet()) {
+                if (entry.getKey() != null) {
+                    groundSlopePositions.set(entry.getKey(), Js.uncheckedCast(entry.getValue()));
+                } else {
+                    groundSlopePositions.set(DEFAULT_GROUND_KEY, Js.uncheckedCast(entry.getValue()));
+                }
+            }
+        }
+        return groundSlopePositions;
+    }
+
+    private static Map<Integer, Float32ArrayEmu> demarshallFloat32ArrayMap(Any any) {
+        elemental2.core.Map<Object, Float32ArrayEmu> jsFloat32ArrayMap = uncheckedCast(any);
+        if (jsFloat32ArrayMap.size == 0) {
+            return null;
+        }
+        Map<Integer, Float32ArrayEmu> float32ArrayMap = new HashMap<>();
+        jsFloat32ArrayMap.forEach((float32Array, groundId, ignore) -> {
+            if (DEFAULT_GROUND_KEY.equals(groundId)) {
+                float32ArrayMap.put(null, float32Array);
+            } else {
+                float32ArrayMap.put(Js.uncheckedCast(groundId), float32Array);
+            }
+            return null;
+        });
+        return float32ArrayMap;
+    }
 }

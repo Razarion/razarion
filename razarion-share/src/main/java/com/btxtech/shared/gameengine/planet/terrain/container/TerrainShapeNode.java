@@ -97,7 +97,11 @@ public class TerrainShapeNode {
                         polygon.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
                     }
                 }
-                groundSlopeConnections.put(groundSlopeConnection.groundConfigId, polygons);
+                if(groundSlopeConnection.defaultGround) {
+                    groundSlopeConnections.put(null, polygons);
+                } else {
+                    groundSlopeConnections.put(groundSlopeConnection.groundConfigId, polygons);
+                }
             }
         }
         if (nativeTerrainShapeNode.waterSegments != null) {
@@ -351,7 +355,11 @@ public class TerrainShapeNode {
         if (groundSlopeConnections != null) {
             nativeTerrainShapeNode.groundSlopeConnections = groundSlopeConnections.entrySet().stream().map(entry -> {
                 NativeGroundSlopeConnection nativeGroundSlopeConnection = new NativeGroundSlopeConnection();
-                nativeGroundSlopeConnection.groundConfigId = entry.getKey();
+                if (entry.getKey() != null) {
+                    nativeGroundSlopeConnection.groundConfigId = entry.getKey();
+                } else {
+                    nativeGroundSlopeConnection.defaultGround = true;
+                }
                 nativeGroundSlopeConnection.polygons = entry.getValue().stream()
                         .map(polygons -> polygons.stream().map(NativeHelper::fromVertex).toArray(value -> new NativeVertex[polygons.size()]))
                         .toArray(value -> new NativeVertex[entry.getValue().size()][]);

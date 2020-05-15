@@ -41,7 +41,7 @@ public class TerrainTileBuilder {
     private Collection<TerrainSlopeTileBuilder> terrainSlopeTileBuilders;
     private List<Vertex> groundPositions = new ArrayList<>();
     private List<Vertex> groundNorms = new ArrayList<>();
-    private MapList<Integer, Vertex> groundSlopeVertices = new MapList<>();
+    private MapList<Integer, Vertex> groundSlopePositions = new MapList<>();
     private MapList<Integer, Vertex> groundSlopeNorms = new MapList<>();
     private Rectangle2D playGround;
 
@@ -73,18 +73,16 @@ public class TerrainTileBuilder {
         terrainTile.setGroundPositions(jsInteropObjectFactory.newFloat32Array4Vertices(groundPositions));
         terrainTile.setGroundNorms(jsInteropObjectFactory.newFloat32Array4Vertices(groundNorms));
 
-        Map<Integer, Float32ArrayEmu> terrainTileGroundSlopeVertices = new HashMap<>();
-        groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopeVertices.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
-        if (!terrainTileGroundSlopeVertices.isEmpty()) {
-            terrainTile.setGroundSlopePositions(terrainTileGroundSlopeVertices);
+        Map<Integer, Float32ArrayEmu> terrainTileGroundSlopePositions = new HashMap<>();
+        groundSlopePositions.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopePositions.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
+        if (!terrainTileGroundSlopePositions.isEmpty()) {
+            terrainTile.setGroundSlopePositions(terrainTileGroundSlopePositions);
         }
         Map<Integer, Float32ArrayEmu> terrainTileGroundNorms = new HashMap<>();
         groundSlopeNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
         if (!terrainTileGroundNorms.isEmpty()) {
             terrainTile.setGroundSlopeNorms(terrainTileGroundNorms);
         }
-
-        //  TODO groundSlopeVertices.
 
         if (terrainSlopeTileBuilders != null) {
             for (TerrainSlopeTileBuilder terrainSlopeTileBuilder : terrainSlopeTileBuilders) {
@@ -96,7 +94,7 @@ public class TerrainTileBuilder {
 
     public void addTriangleCorner(Vertex vertex, Vertex norm, Integer slopeId) {
         if (slopeId != null) {
-            groundSlopeVertices.put(slopeId, vertex);
+            groundSlopePositions.put(slopeId, vertex);
             groundSlopeNorms.put(slopeId, norm);
         } else {
             groundPositions.add(vertex);
