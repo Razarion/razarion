@@ -6,15 +6,13 @@ import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 @Singleton
 public class SlopeCrudPersistence extends AbstractCrudPersistence<SlopeConfig, SlopeConfigEntity> {
-    @PersistenceContext
-    private EntityManager entityManager;
     @Inject
     private ImagePersistence imagePersistence;
+    @Inject
+    private GroundCrudPersistence groundCrudPersistence;
 
     public SlopeCrudPersistence() {
         super(SlopeConfigEntity.class, SlopeConfigEntity_.id, SlopeConfigEntity_.internalName);
@@ -27,6 +25,6 @@ public class SlopeCrudPersistence extends AbstractCrudPersistence<SlopeConfig, S
 
     @Override
     protected void fromConfig(SlopeConfig config, SlopeConfigEntity entity) {
-        entity.fromSlopeConfig(config, imagePersistence);
+        entity.fromSlopeConfig(config, imagePersistence, groundCrudPersistence.getEntity(config.getGroundConfigId()));
     }
 }

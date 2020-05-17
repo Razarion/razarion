@@ -75,13 +75,13 @@ public class TerrainTileFactory {
 //                }
                 //////////////////////
                 if (terrainShapeTile.isRenderLand() && terrainShapeNode == null) {
-                    addTerrainRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight(), null, terrainTileBuilder);
+                    addGroundRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight(), null, terrainTileBuilder);
                 } else if (terrainShapeNode != null) {
                     if (terrainShapeNode.isFullRenderEngineDriveway()) {
-                        addDrivewayTerrainRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainShapeNode.getRenderInnerSlopeId(), terrainTileBuilder);
+                        addDrivewayGroundRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainShapeNode.getRenderGroundId(), terrainTileBuilder);
                     } else {
                         if (!terrainShapeNode.isRenderHideGround()) {
-                            addTerrainRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getInnerGroundHeight(), terrainShapeNode.getRenderInnerSlopeId(), terrainTileBuilder);
+                            addGroundRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getInnerGroundHeight(), terrainShapeNode.getRenderGroundId(), terrainTileBuilder);
                         }
                     }
                 }
@@ -90,13 +90,13 @@ public class TerrainTileFactory {
             for (int xNode = 0; xNode < TerrainUtil.TERRAIN_TILE_NODES_COUNT; xNode++) {
                 for (int yNode = 0; yNode < TerrainUtil.TERRAIN_TILE_NODES_COUNT; yNode++) {
                     Index nodeRelativeIndex = new Index(xNode, yNode);
-                    addTerrainRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), 0, null, terrainTileBuilder);
+                    addGroundRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), 0, null, terrainTileBuilder);
                 }
             }
         }
     }
 
-    private void addTerrainRectangle(Index absoluteNodeIndex, double groundHeight, Integer slopeId, TerrainTileBuilder terrainTileBuilder) {
+    private void addGroundRectangle(Index absoluteNodeIndex, double groundHeight, Integer groundId, TerrainTileBuilder terrainTileBuilder) {
         int xNode = absoluteNodeIndex.getX();
         int yNode = absoluteNodeIndex.getY();
         int rightXNode = xNode + 1;
@@ -116,10 +116,10 @@ public class TerrainTileFactory {
         Vertex normTR = terrainTileBuilder.addGroundSkeletonNorm(rightXNode, topYNode, null);
         Vertex normTL = terrainTileBuilder.addGroundSkeletonNorm(xNode, topYNode, null);
 
-        addTerrainRectangle(terrainTileBuilder, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, slopeId);
+        addGroundRectangle(terrainTileBuilder, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, groundId);
     }
 
-    private void addDrivewayTerrainRectangle(Index absoluteNodeIndex, TerrainShapeNode terrainShapeNode, Integer slopeId, TerrainTileBuilder terrainTileBuilder) {
+    private void addDrivewayGroundRectangle(Index absoluteNodeIndex, TerrainShapeNode terrainShapeNode, Integer groundId, TerrainTileBuilder terrainTileBuilder) {
         int xNode = absoluteNodeIndex.getX();
         int yNode = absoluteNodeIndex.getY();
         int rightXNode = xNode + 1;
@@ -144,18 +144,18 @@ public class TerrainTileFactory {
         Vertex normTR = terrainTileBuilder.addGroundSkeletonNorm(rightXNode, topYNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(1, 1)));
         Vertex normTL = terrainTileBuilder.addGroundSkeletonNorm(xNode, topYNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(0, 1)));
 
-        addTerrainRectangle(terrainTileBuilder, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, slopeId);
+        addGroundRectangle(terrainTileBuilder, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, groundId);
     }
 
-    private void addTerrainRectangle(TerrainTileBuilder terrainTileBuilder, Vertex vertexBL, Vertex vertexBR, Vertex vertexTR, Vertex vertexTL, Vertex normBL, Vertex normBR, Vertex normTR, Vertex normTL, Integer slopeId) {
+    private void addGroundRectangle(TerrainTileBuilder terrainTileBuilder, Vertex vertexBL, Vertex vertexBR, Vertex vertexTR, Vertex vertexTL, Vertex normBL, Vertex normBR, Vertex normTR, Vertex normTL, Integer slopeId) {
         // Triangle 1
-        terrainTileBuilder.addTriangleCorner(vertexBL, normBL, slopeId);
-        terrainTileBuilder.addTriangleCorner(vertexBR, normBR, slopeId);
-        terrainTileBuilder.addTriangleCorner(vertexTL, normTL, slopeId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexBL, normBL, slopeId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexBR, normBR, slopeId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexTL, normTL, slopeId);
         // Triangle 2
-        terrainTileBuilder.addTriangleCorner(vertexBR, normBR, slopeId);
-        terrainTileBuilder.addTriangleCorner(vertexTR, normTR, slopeId);
-        terrainTileBuilder.addTriangleCorner(vertexTL, normTL, slopeId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexBR, normBR, slopeId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexTR, normTR, slopeId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexTL, normTL, slopeId);
     }
 
     private void insertSlopePart(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
@@ -234,9 +234,9 @@ public class TerrainTileFactory {
 //                    System.out.println();
 //                }
 
-                terrainShapeNode.getGroundSlopeConnections().forEach((slopeId, connections) -> {
+                terrainShapeNode.getGroundSlopeConnections().forEach((groundId, connections) -> {
                     try {
-                        connections.forEach(polygon -> Triangulator.calculate(polygon, IGNORE_SMALLER_TRIANGLE, (vertex1, vertex2, vertex3) -> terrainTileBuilder.addTriangleGroundSlopeConnection(vertex1, vertex2, vertex3, slopeId)));
+                        connections.forEach(polygon -> Triangulator.calculate(polygon, IGNORE_SMALLER_TRIANGLE, (vertex1, vertex2, vertex3) -> terrainTileBuilder.addGroundTriangleSlopeConnection(vertex1, vertex2, vertex3, groundId)));
                     } catch (Exception e) {
                         Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeIndex));
                         exceptionHandler.handleException("TerrainTileFactory.insertSlopeGroundConnectionPart(); Triangulator.calculate() failed. terrainRect: " + terrainRect, e);

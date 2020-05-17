@@ -35,6 +35,9 @@ public class SlopeConfigEntity {
     private List<SlopeShapeEntity> shape;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    private GroundConfigEntity groundConfig;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
     private WaterConfigEntity waterConfig;
     private double outerLineGameEngine;
     private double innerLineGameEngine;
@@ -53,6 +56,9 @@ public class SlopeConfigEntity {
                 .innerLineGameEngine(innerLineGameEngine)
                 .outerLineGameEngine(outerLineGameEngine)
                 .coastDelimiterLineGameEngine(coastDelimiterLineGameEngine);
+        if (groundConfig != null) {
+            slopeConfig.setGroundConfigId(groundConfig.getId());
+        }
         if (waterConfig != null) {
             slopeConfig.setWaterConfigId(waterConfig.getId());
         }
@@ -62,7 +68,7 @@ public class SlopeConfigEntity {
         return slopeConfig;
     }
 
-    public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence) {
+    public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence, GroundConfigEntity groundConfigEntity) {
 //        shape.clear();
 //        // TODO  for (SlopeShape slopeShape : slopeConfig.getSlopeShapes()) {
 //        // TODO     SlopeShapeEntity slopeShapeEntity = new SlopeShapeEntity();
@@ -75,6 +81,7 @@ public class SlopeConfigEntity {
         innerLineGameEngine = slopeConfig.getInnerLineGameEngine();
         coastDelimiterLineGameEngine = slopeConfig.getCoastDelimiterLineGameEngine();
         outerLineGameEngine = slopeConfig.getOuterLineGameEngine();
+        groundConfig = groundConfigEntity;
         if (shape == null) {
             shape = new ArrayList<>();
         }

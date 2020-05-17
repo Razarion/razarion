@@ -13,7 +13,7 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
-import com.btxtech.uiservice.terrain.UiTerrainTile;
+import com.btxtech.uiservice.terrain.UiTerrainGroundTile;
 import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLRenderingContext;
 import jsinterop.base.Js;
@@ -63,21 +63,21 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     }
 
     @Override
-    protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
-        AlarmRaiser.onNull(uiTerrainTile.getGroundConfig(), Alarm.Type.RENDER_GROUND_FAILED, "No GroundConfig in Planet: ", gameUiControl.getPlanetConfig().getId());
-        AlarmRaiser.onNull(uiTerrainTile.getGroundConfig().getTopMaterial(), Alarm.Type.RENDER_GROUND_FAILED, "No top material on GroundConfig: ", uiTerrainTile.getGroundConfig().getId());
-        topMaterial = webGlFacade.createPhongMaterial(uiTerrainTile.getGroundConfig().getTopMaterial(), "topMaterial");
-        bottomMaterial = webGlFacade.createPhongMaterial(uiTerrainTile.getGroundConfig().getBottomMaterial(), "bottomMaterial");
-        splatting = webGlFacade.createSplatting(uiTerrainTile.getGroundConfig().getSplatting(), "splatting");
+    protected void fillBuffersInternal(UiTerrainGroundTile uiTerrainGroundTile) {
+        AlarmRaiser.onNull(uiTerrainGroundTile.getGroundConfig(), Alarm.Type.RENDER_GROUND_FAILED, "No GroundConfig in Planet: ", gameUiControl.getPlanetConfig().getId());
+        AlarmRaiser.onNull(uiTerrainGroundTile.getGroundConfig().getTopMaterial(), Alarm.Type.RENDER_GROUND_FAILED, "No top material on GroundConfig: ", uiTerrainGroundTile.getGroundConfig().getId());
+        topMaterial = webGlFacade.createPhongMaterial(uiTerrainGroundTile.getGroundConfig().getTopMaterial(), "topMaterial");
+        bottomMaterial = webGlFacade.createPhongMaterial(uiTerrainGroundTile.getGroundConfig().getBottomMaterial(), "bottomMaterial");
+        splatting = webGlFacade.createSplatting(uiTerrainGroundTile.getGroundConfig().getSplatting(), "splatting");
 
-        Float32Array groundPositions = Js.uncheckedCast(uiTerrainTile.getTerrainTile().getGroundPositions());
+        Float32Array groundPositions = Js.uncheckedCast(uiTerrainGroundTile.getGroundPositions());
         positions.fillFloat32Array(groundPositions);
-        normals.fillFloat32Array(Js.uncheckedCast(uiTerrainTile.getTerrainTile().getGroundNorms()));
+        normals.fillFloat32Array(Js.uncheckedCast(uiTerrainGroundTile.getGroundNorms()));
         setElementCount((int) (groundPositions.length / Vertex.getComponentsPerVertex()));
     }
 
     @Override
-    public void draw(UiTerrainTile uiTerrainTile) {
+    public void draw(UiTerrainGroundTile uiTerrainGroundTile) {
         webGlFacade.useProgram();
 
         lightUniforms.setLightUniforms(webGlFacade);

@@ -36,7 +36,7 @@ public class TerrainShapeNode {
     private Boolean fullGameEngineDriveway;
     // Render engine
     private Map<Integer, List<List<Vertex>>> groundSlopeConnections;
-    private Integer renderInnerSlopeId;
+    private Integer renderGroundId;
     private boolean renderHideGround;
     private Boolean fullRenderEngineDriveway;
     private Integer renderInnerWaterSlopeId;
@@ -71,7 +71,9 @@ public class TerrainShapeNode {
             }
             this.obstacles = obstacles;
         }
-        renderInnerSlopeId = nativeTerrainShapeNode.renderInnerSlopeId;
+        if (nativeTerrainShapeNode.renderGround) {
+            renderGroundId = nativeTerrainShapeNode.renderGroundId;
+        }
         renderHideGround = nativeTerrainShapeNode.renderHideGround;
         renderInnerWaterSlopeId = nativeTerrainShapeNode.renderInnerWaterSlopeId;
         if (nativeTerrainShapeNode.groundSlopeConnections != null) {
@@ -97,7 +99,7 @@ public class TerrainShapeNode {
                         polygon.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
                     }
                 }
-                if(groundSlopeConnection.defaultGround) {
+                if (groundSlopeConnection.defaultGround) {
                     groundSlopeConnections.put(null, polygons);
                 } else {
                     groundSlopeConnections.put(groundSlopeConnection.groundConfigId, polygons);
@@ -141,14 +143,14 @@ public class TerrainShapeNode {
         this.gameEngineHeight = gameEngineHeight;
     }
 
-    public void addGroundSlopeConnections(List<Vertex> groundSlopeConnection, Integer slopeId) {
+    public void addGroundSlopeConnections(List<Vertex> groundSlopeConnection, Integer groundId) {
         if (groundSlopeConnection == null) {
             return;
         }
         if (groundSlopeConnections == null) {
             groundSlopeConnections = new HashMap<>();
         }
-        groundSlopeConnections.computeIfAbsent(slopeId, integer -> new ArrayList<>()).add(groundSlopeConnection);
+        groundSlopeConnections.computeIfAbsent(groundId, integer -> new ArrayList<>()).add(groundSlopeConnection);
     }
 
     public void addWaterSegments(List<Vertex> waterSegment, int slopeId) {
@@ -161,12 +163,12 @@ public class TerrainShapeNode {
         waterSegments.computeIfAbsent(slopeId, integer -> new ArrayList<>()).add(waterSegment);
     }
 
-    public void setRenderInnerSlopeId(Integer renderInnerSlopeId) {
-        this.renderInnerSlopeId = renderInnerSlopeId;
+    public void setRenderGroundId(Integer renderGroundId) {
+        this.renderGroundId = renderGroundId;
     }
 
-    public Integer getRenderInnerSlopeId() {
-        return renderInnerSlopeId;
+    public Integer getRenderGroundId() {
+        return renderGroundId;
     }
 
     public void setRenderHideGround(boolean renderHideGround) {
@@ -349,7 +351,10 @@ public class TerrainShapeNode {
         nativeTerrainShapeNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);
         nativeTerrainShapeNode.fullGameEngineDriveway = fullGameEngineDriveway;
         nativeTerrainShapeNode.fullRenderEngineDriveway = fullRenderEngineDriveway;
-        nativeTerrainShapeNode.renderInnerSlopeId = renderInnerSlopeId;
+        if(renderGroundId != null) {
+            nativeTerrainShapeNode.renderGround = true;
+            nativeTerrainShapeNode.renderGroundId = renderGroundId;
+        }
         nativeTerrainShapeNode.renderHideGround = renderHideGround;
         nativeTerrainShapeNode.renderInnerWaterSlopeId = renderInnerWaterSlopeId;
         if (groundSlopeConnections != null) {

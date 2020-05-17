@@ -6,7 +6,7 @@ import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
-import com.btxtech.uiservice.terrain.UiTerrainTile;
+import com.btxtech.uiservice.terrain.UiTerrainGroundTile;
 import elemental2.webgl.WebGLRenderingContext;
 import jsinterop.base.Js;
 
@@ -33,8 +33,8 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
     }
 
     @Override
-    protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
-        vertices.fillFloat32Array(Js.uncheckedCast(uiTerrainTile.getTerrainTile().getGroundPositions()));
+    protected void fillBuffersInternal(UiTerrainGroundTile uiTerrainGroundTile) {
+        vertices.fillFloat32Array(Js.uncheckedCast(uiTerrainGroundTile.getGroundPositions()));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
     }
 
     @Override
-    public void draw(UiTerrainTile uiTerrainTile) {
+    public void draw(UiTerrainGroundTile uiTerrainTile) {
         webGlFacade.useProgram();
 
         vertices.activate();

@@ -397,9 +397,8 @@ public class WeldTestRenderer {
         }
         if (weldTestController.renderTerrainTileGround()) {
             gc.setLineWidth(LINE_WIDTH);
-            drawTriangles(terrainTile.getGroundPositions());
-            if(terrainTile.getGroundSlopePositions() != null) {
-                terrainTile.getGroundSlopePositions().values().forEach(this::drawTriangles);
+            if(terrainTile.getGroundPositions() != null) {
+                terrainTile.getGroundPositions().values().forEach(this::drawTriangles);
             }
         }
 

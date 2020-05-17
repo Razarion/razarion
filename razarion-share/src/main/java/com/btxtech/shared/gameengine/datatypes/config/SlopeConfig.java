@@ -20,6 +20,7 @@ public class SlopeConfig implements Config {
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
+    private Integer groundConfigId;
     private Integer waterConfigId;
     private boolean interpolateNorm;
 //    private Integer slopeTextureId;
@@ -179,6 +180,14 @@ public class SlopeConfig implements Config {
     public SlopeConfig setHorizontalSpace(double horizontalSpace) {
         this.horizontalSpace = horizontalSpace;
         return this;
+    }
+
+    public Integer getGroundConfigId() {
+        return groundConfigId;
+    }
+
+    public void setGroundConfigId(Integer groundConfigId) {
+        this.groundConfigId = groundConfigId;
     }
 
     public Integer getWaterConfigId() {
@@ -447,6 +456,11 @@ public class SlopeConfig implements Config {
 
     public SlopeConfig coastDelimiterLineGameEngine(double coastDelimiterLineGameEngine) {
         setCoastDelimiterLineGameEngine(coastDelimiterLineGameEngine);
+        return this;
+    }
+
+    public SlopeConfig groundConfigId(Integer groundConfigId) {
+        setGroundConfigId(groundConfigId);
         return this;
     }
 

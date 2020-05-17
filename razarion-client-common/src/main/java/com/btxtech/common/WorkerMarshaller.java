@@ -27,6 +27,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
 import elemental2.core.Array;
 import elemental2.core.Float32Array;
+import elemental2.core.JsNumber;
 import elemental2.core.JsObject;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
@@ -396,10 +397,8 @@ public class WorkerMarshaller {
         Any[] array = Js.castToArray(data);
         TerrainTile terrainTile = new TerrainTile();
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
-        terrainTile.setGroundPositions(array[1].uncheckedCast());
-        terrainTile.setGroundNorms(array[2].uncheckedCast());
-        terrainTile.setGroundSlopePositions(demarshallFloat32ArrayMap(array[3]));
-        terrainTile.setGroundSlopePositions(demarshallFloat32ArrayMap(array[4]));
+        terrainTile.setGroundPositions(demarshallFloat32ArrayMap(array[1]));
+        terrainTile.setGroundNorms(demarshallFloat32ArrayMap(array[2]));
         return terrainTile;
     }
 
@@ -409,21 +408,19 @@ public class WorkerMarshaller {
         indexArray.push(terrainTile.getIndex().getX());
         indexArray.push(terrainTile.getIndex().getY());
         array.push(indexArray);
-        array.push(terrainTile.getGroundPositions());
-        array.push(terrainTile.getGroundNorms());
-        array.push(marshallFloat32ArrayMap(terrainTile.getGroundSlopePositions()));
-        array.push(marshallFloat32ArrayMap(terrainTile.getGroundSlopeNorms()));
+        array.push(marshallFloat32ArrayMap(terrainTile.getGroundPositions()));
+        array.push(marshallFloat32ArrayMap(terrainTile.getGroundNorms()));
         return array;
     }
 
-    private static elemental2.core.Map<Object, Float32Array> marshallFloat32ArrayMap(Map<Integer, Float32ArrayEmu> float32ArrayMap) {
-        elemental2.core.Map<Object, Float32Array> groundSlopePositions = new elemental2.core.Map<>();
+    private static elemental2.core.Map<JsNumber, Float32Array> marshallFloat32ArrayMap(Map<Integer, Float32ArrayEmu> float32ArrayMap) {
+        elemental2.core.Map<JsNumber, Float32Array> groundSlopePositions = new elemental2.core.Map<>();
         if (float32ArrayMap != null) {
             for (Map.Entry<Integer, Float32ArrayEmu> entry : float32ArrayMap.entrySet()) {
                 if (entry.getKey() != null) {
-                    groundSlopePositions.set(entry.getKey(), Js.uncheckedCast(entry.getValue()));
+                    groundSlopePositions.set(new JsNumber(entry.getKey()), Js.uncheckedCast(entry.getValue()));
                 } else {
-                    groundSlopePositions.set(DEFAULT_GROUND_KEY, Js.uncheckedCast(entry.getValue()));
+                    groundSlopePositions.set(null, Js.uncheckedCast(entry.getValue()));
                 }
             }
         }
@@ -431,13 +428,13 @@ public class WorkerMarshaller {
     }
 
     private static Map<Integer, Float32ArrayEmu> demarshallFloat32ArrayMap(Any any) {
-        elemental2.core.Map<Object, Float32ArrayEmu> jsFloat32ArrayMap = uncheckedCast(any);
+        elemental2.core.Map<JsNumber, Float32ArrayEmu> jsFloat32ArrayMap = uncheckedCast(any);
         if (jsFloat32ArrayMap.size == 0) {
             return null;
         }
         Map<Integer, Float32ArrayEmu> float32ArrayMap = new HashMap<>();
         jsFloat32ArrayMap.forEach((float32Array, groundId, ignore) -> {
-            if (DEFAULT_GROUND_KEY.equals(groundId)) {
+            if (groundId == null) {
                 float32ArrayMap.put(null, float32Array);
             } else {
                 float32ArrayMap.put(Js.uncheckedCast(groundId), float32Array);

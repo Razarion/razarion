@@ -272,7 +272,7 @@ public class ServerTestHelper {
                                 new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
                                 new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
                                 new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7)))
-                , EasyMock.createNiceMock(ImagePersistence.class));
+                , EasyMock.createNiceMock(ImagePersistence.class), null);
         return slopeConfigEntity;
     }
 

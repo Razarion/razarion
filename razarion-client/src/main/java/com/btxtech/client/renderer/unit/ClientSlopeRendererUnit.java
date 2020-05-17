@@ -106,9 +106,9 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         //  TODO  slopeWaterSplatting= webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getSlopeConfig().getSlopeWaterSplattingId(), "uSlopeWaterSplatting", "uSlopeWaterSplattingScale", uiTerrainSlopeTile.getSlopeConfig().getSlopeWaterSplattingScale());
 
         // TODO groundTopTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getUiTerrainTile().getTopTexture(), "uGroundTopTexture", "uGroundTopTextureScale", uiTerrainSlopeTile.getUiTerrainTile().getTopTextureScale());
-        groundSplattingTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getUiTerrainTile().getSplattingId(), "uGroundSplatting", "uGroundSplattingScale", uiTerrainSlopeTile.getUiTerrainTile().getSplattingScale());
-        groundBottomTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getUiTerrainTile().getBottomTextureId(), "uGroundBottomTexture", "uGroundBottomTextureScale", uiTerrainSlopeTile.getUiTerrainTile().getBottomTextureScale());
-        groundBottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainSlopeTile.getUiTerrainTile().getBottomBmId(), "uGroundBottomBm", "uGroundBottomBmScale", uiTerrainSlopeTile.getUiTerrainTile().getBottomBmScale(), "uGroundBottomBmOnePixel");
+        // TODO groundSplattingTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getUiTerrainTile().getSplattingId(), "uGroundSplatting", "uGroundSplattingScale", uiTerrainSlopeTile.getUiTerrainTile().getSplattingScale());
+        // TODO groundBottomTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getUiTerrainTile().getBottomTextureId(), "uGroundBottomTexture", "uGroundBottomTextureScale", uiTerrainSlopeTile.getUiTerrainTile().getBottomTextureScale());
+        // TODO groundBottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainSlopeTile.getUiTerrainTile().getBottomBmId(), "uGroundBottomBm", "uGroundBottomBmScale", uiTerrainSlopeTile.getUiTerrainTile().getBottomBmScale(), "uGroundBottomBmOnePixel");
 
         // TODO vertices.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getVertices()));
         // TODO normals.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getNorms()));
@@ -136,10 +136,10 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 // TODO       webGlFacade.uniform1f(slopeWaterSplattingHeight, uiTerrainSlopeTile.getSlopeConfig().getSlopeWaterSplattingHeight());
         //Ground
         // TODO groundSpecularUniforms.setUniforms(uiTerrainSlopeTile.getUiTerrainTile().getSpecularLightConfig(), webGlFacade);
-        webGlFacade.uniform1f(uGroundBottomBmDepth, uiTerrainSlopeTile.getUiTerrainTile().getBottomBmDepth());
+        // TODO webGlFacade.uniform1f(uGroundBottomBmDepth, uiTerrainSlopeTile.getUiTerrainTile().getBottomBmDepth());
         // TODO webGlFacade.uniform1f(uGroundSplattingFadeThreshold, uiTerrainSlopeTile.getUiTerrainTile().getSplattingFadeThreshold());
         // TODO webGlFacade.uniform1f(uGroundSplattingOffset, uiTerrainSlopeTile.getUiTerrainTile().getSplattingOffset());
-        webGlFacade.uniform1f(uGroundSplattingGroundBmMultiplicator, uiTerrainSlopeTile.getUiTerrainTile().getSplattingGroundBmMultiplicator());
+        // TODO webGlFacade.uniform1f(uGroundSplattingGroundBmMultiplicator, uiTerrainSlopeTile.getUiTerrainTile().getSplattingGroundBmMultiplicator());
 
         // Water
         webGlFacade.uniform1b(uHasWater, uiTerrainSlopeTile.hasWater());
@@ -172,13 +172,13 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         slopeWaterSplatting.activate();
         //  TODO   slopeWaterSplatting.overrideScale(uiTerrainSlopeTile.getSlopeConfig().getSlopeWaterSplattingScale());
 
-        groundTopTexture.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getTopTextureScale());
+        // TODO groundTopTexture.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getTopTextureScale());
         groundTopTexture.activate();
-        groundSplattingTexture.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getSplattingScale());
+        // TODO groundSplattingTexture.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getSplattingScale());
         groundSplattingTexture.activate();
-        groundBottomTexture.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getBottomTextureScale());
+        // TODO groundBottomTexture.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getBottomTextureScale());
         groundBottomTexture.activate();
-        groundBottomBm.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getBottomBmScale());
+        // TODO groundBottomBm.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getBottomBmScale());
         groundBottomBm.activate();
         webGlFacade.activateReceiveShadow();
 

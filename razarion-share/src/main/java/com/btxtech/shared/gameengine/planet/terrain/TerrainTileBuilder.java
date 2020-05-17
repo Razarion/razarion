@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.slope.CalculatedSlopeData;
@@ -18,7 +19,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,16 +33,16 @@ public class TerrainTileBuilder {
     private Instance<TerrainSlopeTileBuilder> terrainSlopeTileContextInstance;
     @Inject
     private TerrainWaterTileBuilder terrainWaterTileBuilder;
+    @Inject
+    private TerrainTypeService terrainTypeService;
     @Deprecated
     private Index terrainTileIndex;
     private TerrainTile terrainTile;
     private int offsetIndexX;
     private int offsetIndexY;
     private Collection<TerrainSlopeTileBuilder> terrainSlopeTileBuilders;
-    private List<Vertex> groundPositions = new ArrayList<>();
-    private List<Vertex> groundNorms = new ArrayList<>();
-    private MapList<Integer, Vertex> groundSlopePositions = new MapList<>();
-    private MapList<Integer, Vertex> groundSlopeNorms = new MapList<>();
+    private MapList<Integer, Vertex> groundPositions = new MapList<>();
+    private MapList<Integer, Vertex> groundNorms = new MapList<>();
     private Rectangle2D playGround;
 
 
@@ -70,18 +70,15 @@ public class TerrainTileBuilder {
     public TerrainTile generate() {
         terrainTile.setTerrainWaterTiles(terrainWaterTileBuilder.generate());
 
-        terrainTile.setGroundPositions(jsInteropObjectFactory.newFloat32Array4Vertices(groundPositions));
-        terrainTile.setGroundNorms(jsInteropObjectFactory.newFloat32Array4Vertices(groundNorms));
-
-        Map<Integer, Float32ArrayEmu> terrainTileGroundSlopePositions = new HashMap<>();
-        groundSlopePositions.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopePositions.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
-        if (!terrainTileGroundSlopePositions.isEmpty()) {
-            terrainTile.setGroundSlopePositions(terrainTileGroundSlopePositions);
+        Map<Integer, Float32ArrayEmu> terrainTileGroundPositions = new HashMap<>();
+        groundPositions.getMap().forEach((slopeId, vertices) -> terrainTileGroundPositions.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
+        if (!terrainTileGroundPositions.isEmpty()) {
+            terrainTile.setGroundPositions(terrainTileGroundPositions);
         }
         Map<Integer, Float32ArrayEmu> terrainTileGroundNorms = new HashMap<>();
-        groundSlopeNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
+        groundNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
         if (!terrainTileGroundNorms.isEmpty()) {
-            terrainTile.setGroundSlopeNorms(terrainTileGroundNorms);
+            terrainTile.setGroundNorms(terrainTileGroundNorms);
         }
 
         if (terrainSlopeTileBuilders != null) {
@@ -92,14 +89,9 @@ public class TerrainTileBuilder {
         return terrainTile;
     }
 
-    public void addTriangleCorner(Vertex vertex, Vertex norm, Integer slopeId) {
-        if (slopeId != null) {
-            groundSlopePositions.put(slopeId, vertex);
-            groundSlopeNorms.put(slopeId, norm);
-        } else {
-            groundPositions.add(vertex);
-            groundNorms.add(norm);
-        }
+    public void addGroundTriangleCorner(Vertex vertex, Vertex norm, Integer groundId) {
+        groundPositions.put(groundId, vertex);
+        groundNorms.put(groundId, norm);
     }
 
     public Vertex interpolateNorm(DecimalPosition absolutePosition, Vertex norm) {
@@ -121,7 +113,7 @@ public class TerrainTileBuilder {
         }
     }
 
-    public void addTriangleGroundSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC, Integer slopeId) {
+    public void addGroundTriangleSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC, Integer groundId) {
         if (!checkPlayGround(vertexA, vertexB, vertexC)) {
             return;
         }
@@ -131,9 +123,9 @@ public class TerrainTileBuilder {
         DecimalPosition positionC = vertexC.toXY();
         Vertex norm = vertexA.cross(vertexB, vertexC).normalize(1.0);
 
-        addTriangleCorner(vertexA, interpolateNorm(positionA, norm), slopeId);
-        addTriangleCorner(vertexB, interpolateNorm(positionB, norm), slopeId);
-        addTriangleCorner(vertexC, interpolateNorm(positionC, norm), slopeId);
+        addGroundTriangleCorner(vertexA, interpolateNorm(positionA, norm), groundId);
+        addGroundTriangleCorner(vertexB, interpolateNorm(positionB, norm), groundId);
+        addGroundTriangleCorner(vertexC, interpolateNorm(positionC, norm), groundId);
     }
 
     public TerrainWaterTileBuilder getTerrainWaterTileBuilder() {

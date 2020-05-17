@@ -3,7 +3,6 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
@@ -12,11 +11,8 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.renderer.ModelRenderer;
-import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
@@ -36,32 +32,28 @@ public class UiTerrainTile {
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private GroundRenderTask groundRenderTask;
+    private Instance<UiTerrainGroundTile> uiTerrainGroundTileInstance;
     @Inject
     private Instance<UiTerrainSlopeTile> uiTerrainSlopeTileInstance;
     @Inject
     private Instance<UiTerrainWaterTile> uiTerrainWaterTileInstance;
-    @Inject
-    private ExceptionHandler exceptionHandler;
     private Index index;
-    private GroundConfig groundConfig;
     private TerrainTile terrainTile;
-    private ModelRenderer modelRenderer;
     private boolean active;
+    private Collection<UiTerrainGroundTile> uiTerrainGroundTiles;
     private Collection<UiTerrainSlopeTile> uiTerrainSlopeTiles;
     private UiTerrainWaterTile uiTerrainWaterTile;
     private MapList<Integer, ModelMatrices> terrainObjectModelMatrices;
 
-    public void init(Index index, GroundConfig groundConfig) {
+    public void init(Index index) {
         this.index = index;
-        this.groundConfig = groundConfig;
         terrainUiService.requestTerrainTile(index, this::terrainTileReceived);
     }
 
     public void setActive(boolean active) {
         this.active = active;
-        if (modelRenderer != null) {
-            modelRenderer.setActive(active);
+        if (uiTerrainGroundTiles != null) {
+            uiTerrainGroundTiles.forEach(uiTerrainSlopeTile -> uiTerrainSlopeTile.setActive(active));
         }
         if (uiTerrainSlopeTiles != null) {
             uiTerrainSlopeTiles.forEach(uiTerrainSlopeTile -> uiTerrainSlopeTile.setActive(active));
@@ -73,11 +65,13 @@ public class UiTerrainTile {
 
     private void terrainTileReceived(TerrainTile terrainTile) {
         this.terrainTile = terrainTile;
-        try {
-            modelRenderer = groundRenderTask.createModelRenderer(this);
-            modelRenderer.setActive(active);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+        if (terrainTile.getGroundPositions() != null) {
+            uiTerrainGroundTiles = new ArrayList<>();
+            terrainTile.getGroundPositions().forEach((groundId, groundPositions) -> {
+                UiTerrainGroundTile uiTerrainGroundTile = uiTerrainGroundTileInstance.get();
+                uiTerrainGroundTile.init(active, groundId, groundPositions, terrainTile.getGroundNorms().get(groundId));
+                uiTerrainGroundTiles.add(uiTerrainGroundTile);
+            });
         }
 //   TODO     if (terrainTile.getTerrainSlopeTiles() != null) {
 //            uiTerrainSlopeTiles = new ArrayList<>();
@@ -101,55 +95,6 @@ public class UiTerrainTile {
 
     public TerrainTile getTerrainTile() {
         return terrainTile;
-    }
-
-    public GroundConfig getGroundConfig() {
-        return groundConfig;
-    }
-
-    public Integer getSplattingId() {
-        // TODO return groundSkeletonConfig.getSplatting().getId();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public Integer getBottomTextureId() {
-        // TODO return groundSkeletonConfig.getBottomTextureId();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public Integer getBottomBmId() {
-        // TODO return groundSkeletonConfig.getBottomBmId();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getTopTextureScale() {
-        // TODO return groundSkeletonConfig.getTopTextureScale();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getSplattingScale() {
-        // TODO  return groundSkeletonConfig.getSplatting().getScale();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getBottomTextureScale() {
-        // TODO return groundSkeletonConfig.getBottomTextureScale();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getBottomBmScale() {
-        // TODO return groundSkeletonConfig.getBottomBmScale();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getBottomBmDepth() {
-        // TODO return groundSkeletonConfig.getBottomBmDepth();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getSplattingGroundBmMultiplicator() {
-        // Todo return groundSkeletonConfig.getSplattingGroundBmMultiplicator();
-        return 0;
     }
 
     public void setSlopeSkeletonConfig(SlopeConfig skeletonConfig) {
@@ -180,14 +125,12 @@ public class UiTerrainTile {
     }
 
     public void dispose() {
-        if (modelRenderer != null) {
-            groundRenderTask.remove(modelRenderer);
-            modelRenderer.dispose();
+        if (uiTerrainGroundTiles != null) {
+            uiTerrainGroundTiles.forEach(UiTerrainGroundTile::dispose);
+            uiTerrainGroundTiles = null;
         }
         if (uiTerrainSlopeTiles != null) {
-            for (UiTerrainSlopeTile uiTerrainSlopeTile : uiTerrainSlopeTiles) {
-                uiTerrainSlopeTile.dispose();
-            }
+            uiTerrainSlopeTiles.forEach(UiTerrainSlopeTile::dispose);
             uiTerrainSlopeTiles = null;
         }
         if (uiTerrainWaterTile != null) {

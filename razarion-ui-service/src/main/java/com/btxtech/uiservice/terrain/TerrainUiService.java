@@ -17,7 +17,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ViewField;
 
@@ -48,8 +47,6 @@ public class TerrainUiService {
     private GameEngineControl gameEngineControl;
     @Inject
     private Instance<UiTerrainTile> uiTerrainTileInstance;
-    @Inject
-    private GameUiControl gameUiControl;
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
     private MapList<Integer, ModelMatrices> terrainObjectConfigModelMatrices = new MapList<>();
@@ -101,7 +98,7 @@ public class TerrainUiService {
             }
 
             UiTerrainTile newUiTerrainTile = uiTerrainTileInstance.get();
-            newUiTerrainTile.init(index, terrainTypeService.getGroundConfig(gameUiControl.getPlanetConfig().getGroundConfigId()));
+            newUiTerrainTile.init(index);
             newUiTerrainTile.setActive(true);
             newDisplayTerrainTiles.put(index, newUiTerrainTile);
         }

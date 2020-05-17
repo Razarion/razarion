@@ -63,6 +63,44 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
     }
 
     @Test
+    public void testSmallSlope() {
+        List<SlopeConfig> slopeConfigs = new ArrayList<>();
+        SlopeConfig slopeConfigLand = new SlopeConfig();
+        slopeConfigLand.id(1);
+        slopeConfigLand.setHorizontalSpace(5);
+        slopeConfigLand.setOuterLineGameEngine(0.1).setInnerLineGameEngine(0.2);
+        List<SlopeShape> slopeShapes = new ArrayList<>();
+        slopeShapes.add(new SlopeShape().slopeFactor(1));
+        slopeShapes.add(new SlopeShape().position(new DecimalPosition(0.1, 5)).slopeFactor(1));
+        slopeShapes.add(new SlopeShape().position(new DecimalPosition(0.2, 10)).slopeFactor(0.7));
+        slopeShapes.add(new SlopeShape().position(new DecimalPosition(0.3, 20)).slopeFactor(0.7));
+        slopeConfigLand.setSlopeShapes(slopeShapes);
+        slopeConfigs.add(slopeConfigLand);
+
+        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
+        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
+        terrainSlopePositionLand.setId(1);
+        terrainSlopePositionLand.setSlopeConfigId(1);
+        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
+        terrainSlopePositions.add(terrainSlopePositionLand);
+
+        setupTerrainTypeService(slopeConfigs, null, null, terrainSlopePositions, null, null);
+
+        // showDisplay();
+
+        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0));
+        AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSmallSlope.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSmallSlope.json");
+        assertTerrainTile.assertEquals(terrainTiles);
+
+        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), "testSlopeShapeHNT1.json");
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testSmallSlopeHNT1.json");
+
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSmallSlope.json");
+        AssertTerrainShape.assertTerrainShape(getClass(), "testSmallSlope.json", getTerrainShape());
+    }
+
+    @Test
     public void testWidthSlope() {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();

@@ -1,6 +1,5 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.ClientRenderUtil;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -8,7 +7,7 @@ import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
-import com.btxtech.uiservice.terrain.UiTerrainTile;
+import com.btxtech.uiservice.terrain.UiTerrainGroundTile;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
@@ -41,13 +40,13 @@ public class ClientGroundNormRendererUnit extends AbstractGroundRendererUnit {
     }
 
     @Override
-    protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
-        // vertices.fillFloat32Array(ClientRenderUtil.setupNormFloat32Array(uiTerrainTile.getVertices(), uiTerrainTile.getNorms()));
+    protected void fillBuffersInternal(UiTerrainGroundTile uiTerrainGroundTile) {
+        // vertices.fillFloat32Array(ClientRenderUtil.setupNormFloat32Array(uiTerrainGroundTile.getVertices(), uiTerrainGroundTile.getNorms()));
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    public void draw(UiTerrainTile uiTerrainTile) {
+    public void draw(UiTerrainGroundTile uiTerrainGroundTile) {
         webGlFacade.useProgram();
         webGlFacade.uniformMatrix4fv(modelMatrix, Matrix4.createIdentity());
 

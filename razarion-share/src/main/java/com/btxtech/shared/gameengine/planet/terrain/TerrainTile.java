@@ -14,10 +14,8 @@ import java.util.Map;
  */
 public class TerrainTile {
     private Index index;
-    private Float32ArrayEmu groundPositions;
-    private Float32ArrayEmu groundNorms;
-    private Map<Integer, Float32ArrayEmu> groundSlopePositions;
-    private Map<Integer, Float32ArrayEmu> groundSlopeNorms;
+    private Map<Integer, Float32ArrayEmu> groundPositions;
+    private Map<Integer, Float32ArrayEmu> groundNorms;
     private Collection<TerrainWaterTile> terrainWaterTiles;
     private Collection<TerrainSlopeTile> terrainSlopeTiles;
     private double landWaterProportion;
@@ -34,36 +32,20 @@ public class TerrainTile {
         return index;
     }
 
-    public Float32ArrayEmu getGroundPositions() {
+    public Map<Integer, Float32ArrayEmu> getGroundPositions() {
         return groundPositions;
     }
 
-    public void setGroundPositions(Float32ArrayEmu groundPositions) {
+    public void setGroundPositions(Map<Integer, Float32ArrayEmu> groundPositions) {
         this.groundPositions = groundPositions;
     }
 
-    public Float32ArrayEmu getGroundNorms() {
+    public Map<Integer, Float32ArrayEmu> getGroundNorms() {
         return groundNorms;
     }
 
-    public void setGroundNorms(Float32ArrayEmu groundNorms) {
+    public void setGroundNorms(Map<Integer, Float32ArrayEmu> groundNorms) {
         this.groundNorms = groundNorms;
-    }
-
-    public Map<Integer, Float32ArrayEmu> getGroundSlopePositions() {
-        return groundSlopePositions;
-    }
-
-    public void setGroundSlopePositions(Map<Integer, Float32ArrayEmu> groundSlopePositions) {
-        this.groundSlopePositions = groundSlopePositions;
-    }
-
-    public Map<Integer, Float32ArrayEmu> getGroundSlopeNorms() {
-        return groundSlopeNorms;
-    }
-
-    public void setGroundSlopeNorms(Map<Integer, Float32ArrayEmu> groundSlopeNorms) {
-        this.groundSlopeNorms = groundSlopeNorms;
     }
 
     public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles) {

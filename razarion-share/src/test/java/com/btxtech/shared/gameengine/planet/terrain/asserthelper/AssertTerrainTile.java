@@ -18,7 +18,9 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializer;
 import org.junit.Assert;
 
 import java.io.File;
@@ -27,6 +29,8 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import static com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer.TYPE_INT;
 
 /**
  * Created by Beat
@@ -43,20 +47,7 @@ public class AssertTerrainTile {
             throw new RuntimeException("Resource does not exist: " + theClass.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + resourceName);
         }
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            SimpleModule module = new SimpleModule();
-            module.addDeserializer(Float32ArrayEmu.class, new StdDeserializer<Float32ArrayEmu>(Float32ArrayEmu.class) {
-                @Override
-                public Float32ArrayEmu deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-                    ObjectMapper mapper = (ObjectMapper) p.getCodec();
-                    double[] value = mapper.readValue(p, double[].class);
-                    return new TestFloat32Array().doubles(value);
-                }
-            });
-            objectMapper.registerModule(module);
-
-            expected = objectMapper.readValue(inputStream, new TypeReference<List<TerrainTile>>() {
+            expected = createObjectMapper().readValue(inputStream, new TypeReference<List<TerrainTile>>() {
             });
             expected.forEach(this::oldExpectedFilter);
         } catch (IOException e) {
@@ -69,6 +60,7 @@ public class AssertTerrainTile {
 
     /**
      * Temporary to fix wrong test-expected json files
+     *
      * @param expectedTerrainTile
      */
     private void oldExpectedFilter(TerrainTile expectedTerrainTile) {
@@ -104,7 +96,7 @@ public class AssertTerrainTile {
     private void compare(TerrainTile expected, TerrainTile actual) {
         try {
             // https://www.baeldung.com/jackson-compare-two-json-objects
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = createObjectMapper();
             JsonNode expectedNode = mapper.readTree(mapper.writeValueAsString(expected));
             JsonNode actualNode = mapper.readTree(mapper.writeValueAsString(actual));
 
@@ -120,18 +112,7 @@ public class AssertTerrainTile {
 
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName, String directoryName) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            SimpleModule module = new SimpleModule();
-            module.addSerializer(Float32ArrayEmu.class, new JsonSerializer<Float32ArrayEmu>() {
-                @Override
-                public void serialize(Float32ArrayEmu value, JsonGenerator jgen, SerializerProvider serializers) throws IOException, JsonProcessingException {
-                    ObjectMapper mapper = (ObjectMapper) jgen.getCodec();
-                    jgen.writeRawValue(mapper.writeValueAsString(((TestFloat32Array)value).getDoubles()));
-                }
-            });
-            objectMapper.registerModule(module);
-            objectMapper.writeValue(new File(directoryName, fileName), terrainTiles);
+            createObjectMapper().writeValue(new File(directoryName, fileName), terrainTiles);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -158,5 +139,46 @@ public class AssertTerrainTile {
             return;
         }
         Assert.assertEquals(message, expected, actual);
+    }
+
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.getSerializerProvider().setNullKeySerializer(new StdKeySerializer() {
+
+            @Override
+            public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+                jgen.writeFieldName("null");
+            }
+        });
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Float32ArrayEmu.class, new JsonSerializer<Float32ArrayEmu>() {
+            @Override
+            public void serialize(Float32ArrayEmu value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
+                ObjectMapper mapper = (ObjectMapper) jgen.getCodec();
+                jgen.writeRawValue(mapper.writeValueAsString(((TestFloat32Array) value).getDoubles()));
+            }
+        });
+        module.addDeserializer(Float32ArrayEmu.class, new StdDeserializer<Float32ArrayEmu>(Float32ArrayEmu.class) {
+            @Override
+            public Float32ArrayEmu deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+                ObjectMapper mapper = (ObjectMapper) p.getCodec();
+                double[] value = mapper.readValue(p, double[].class);
+                return new TestFloat32Array().doubles(value);
+            }
+        });
+        module.addKeyDeserializer(Integer.class, new StdKeyDeserializer(TYPE_INT, Integer.class) {
+
+            @Override
+            public Object deserializeKey(String key, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+                if("null".equals(key)) {
+                    return null;
+                }
+                return super.deserializeKey(key, ctxt);
+            }
+        });
+        objectMapper.registerModule(module);
+        return objectMapper;
     }
 }

@@ -20,6 +20,7 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
     @Before
     public void fillTables() {
         setupImages();
+        setupGroundConfig();
     }
 
     @After
@@ -31,7 +32,8 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
     @Override
     protected void setupUpdate() {
         registerUpdate(groundConfig -> groundConfig.coastDelimiterLineGameEngine(10).outerLineGameEngine(5).innerLineGameEngine(20).horizontalSpace(5));
-        registerUpdate(groundConfig -> groundConfig.coastDelimiterLineGameEngine(20).outerLineGameEngine(27).innerLineGameEngine(50).horizontalSpace(25));
+        registerUpdate(groundConfig -> groundConfig.coastDelimiterLineGameEngine(20).outerLineGameEngine(27).innerLineGameEngine(50).horizontalSpace(25).groundConfigId(GROUND_1_ID));
+        registerUpdate(groundConfig -> groundConfig.groundConfigId(null));
         registerUpdate(groundConfig -> groundConfig.slopeShapes(Arrays.asList(
                 new SlopeShape().slopeFactor(0.5),
                 new SlopeShape().position(new DecimalPosition(1.1, 2.3)).slopeFactor(0.5),

@@ -16,7 +16,8 @@ public class NativeTerrainShapeNode {
     public Double innerGroundHeight;
     public NativeGroundSlopeConnection[] groundSlopeConnections;
     public Map<Integer, List<List<Vertex>>> waterSegments; // TODO Map not working here
-    public Integer renderInnerSlopeId; // TODO  Integer is not working here because Integer.intValue() is not defined
+    public boolean renderGround; // Integer is not working here because Integer.intValue() is not defined
+    public int renderGroundId; // Integer is not working here because Integer.intValue() is not defined
     public boolean renderHideGround;
     public Integer renderInnerWaterSlopeId; // TODO  Integer is not working here because Integer.intValue() is not defined
     public Double fullWaterLevel;
