@@ -34,8 +34,8 @@ public class SlopeGeometryContext {
         SlopeGeometry slopeGeometry = new SlopeGeometry();
         slopeGeometry.setPositions(jsInteropObjectFactory.newFloat32Array4Vertices(positions));
         slopeGeometry.setNorms(jsInteropObjectFactory.newFloat32Array4Vertices(norms));
-        // TODO slopeGeometry.setUvs(DecimalPosition.toArray(uvs));
-        // TODO slopeGeometry.setSlopeFactors(CollectionUtils.toArray(slopeFactors));
+        slopeGeometry.setUvs(jsInteropObjectFactory.newFloat32Array4DecimalPositions(uvs));
+        slopeGeometry.setSlopeFactors(jsInteropObjectFactory.newFloat32Array4Doubles(slopeFactors));
         return slopeGeometry;
     }
 }

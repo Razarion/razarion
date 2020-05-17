@@ -6,7 +6,6 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -28,8 +27,6 @@ public class ClientGameEngineControl extends GameEngineControl {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
-    @Inject
     private Instance<LifecycleService> lifecycleService;
     private Worker worker;
     private DeferredStartup deferredStartup;
@@ -48,7 +45,7 @@ public class ClientGameEngineControl extends GameEngineControl {
                 Object data = null;
                 try {
                     data = messageEvent.data;
-                    GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(data, nativeMatrixFactory);
+                    GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(data);
                     dispatch(controlPackage);
                     if (queueStatistics != null) {
                         queueStatistics.received(controlPackage.getCommand());

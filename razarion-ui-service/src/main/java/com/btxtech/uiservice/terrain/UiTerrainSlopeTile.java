@@ -60,36 +60,6 @@ public class UiTerrainSlopeTile {
     }
 
     @Deprecated
-    public int getSlopeVertexCount() {
-        throw new UnsupportedOperationException();
-    }
-
-    public Integer getTextureId() {
-        // TODO return slopeConfig.getSlopeTextureId();
-        return 0;
-    }
-
-    public Integer getBmId() {
-        // TODO return slopeConfig.getSlopeBumpMapId();
-        return 0;
-    }
-
-
-    public double getBmDepth() {
-        // TODO return slopeConfig.getSlopeBumpMapDepth();
-        return 0;
-    }
-
-    public boolean hasWater() {
-        return slopeConfig.hasWaterConfigId();
-    }
-
-    public double getTextureScale() {
-        // TODO return slopeConfig.getSlopeTextureScale();
-        return 0;
-    }
-
-    @Deprecated
     public WaterConfig getWaterConfig() {
         return waterConfig;
     }

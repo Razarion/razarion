@@ -23,7 +23,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
 import elemental2.core.Array;
@@ -168,7 +168,7 @@ public class WorkerMarshaller {
         return array;
     }
 
-    public static GameEngineControlPackage deMarshall(Object javaScriptObject, NativeMatrixFactory nativeMatrixFactory) {
+    public static GameEngineControlPackage deMarshall(Object javaScriptObject) {
         Any[] array = Js.castToArray(javaScriptObject);
         GameEngineControlPackage.Command command = GameEngineControlPackage.Command.valueOf(array[COMMAND_OFFSET].asString());
 
@@ -336,7 +336,7 @@ public class WorkerMarshaller {
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Index.class));
                 break;
             case TERRAIN_TILE_RESPONSE:
-                data.add(demarshallTerrainTile(array[DATA_OFFSET_0], nativeMatrixFactory));
+                data.add(demarshallTerrainTile(array[DATA_OFFSET_0]));
                 break;
             case PLAYBACK_PLAYER_BASE:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), PlayerBaseTracking.class));
@@ -427,13 +427,29 @@ public class WorkerMarshaller {
             for (TerrainSlopeTile terrainSlopeTile : terrainSlopeTiles) {
                 JsPropertyMapOfAny mapOfAny = JsPropertyMap.of();
                 mapOfAny.set("slopeConfigId", terrainSlopeTile.getSlopeConfigId());
+                mapOfAny.set("outerSlopeGeometry", marshallSlopeGeometry(terrainSlopeTile.getOuterSlopeGeometry()));
+                mapOfAny.set("centerSlopeGeometry", marshallSlopeGeometry(terrainSlopeTile.getCenterSlopeGeometry()));
+                mapOfAny.set("innerSlopeGeometry", marshallSlopeGeometry(terrainSlopeTile.getInnerSlopeGeometry()));
                 result.push(mapOfAny);
             }
         }
         return result;
     }
 
-    private static TerrainTile demarshallTerrainTile(Object data, NativeMatrixFactory nativeMatrixFactory) {
+    private static Float32Array[] marshallSlopeGeometry(SlopeGeometry slopeGeometry) {
+        if (slopeGeometry != null) {
+            return new Float32Array[]{
+                    Js.uncheckedCast(slopeGeometry.getPositions()),
+                    Js.uncheckedCast(slopeGeometry.getNorms()),
+                    Js.uncheckedCast(slopeGeometry.getSlopeFactors()),
+                    Js.uncheckedCast(slopeGeometry.getUvs())
+            };
+        } else {
+            return new Float32Array[0];
+        }
+    }
+
+    private static TerrainTile demarshallTerrainTile(Object data) {
         Any[] array = Js.castToArray(data);
         TerrainTile terrainTile = new TerrainTile();
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
@@ -468,8 +484,23 @@ public class WorkerMarshaller {
         return Arrays.stream(array).map(anyTerrainSlopeTile -> {
             TerrainSlopeTile terrainSlopeTile = new TerrainSlopeTile();
             terrainSlopeTile.setSlopeConfigId(((Any) anyTerrainSlopeTile.get("slopeConfigId")).asInt());
+            terrainSlopeTile.setOuterSlopeGeometry(demarshallSlopeGeometry(((Any) anyTerrainSlopeTile.get("outerSlopeGeometry")).asArray()));
+            terrainSlopeTile.setCenterSlopeGeometry(demarshallSlopeGeometry(((Any) anyTerrainSlopeTile.get("centerSlopeGeometry")).asArray()));
+            terrainSlopeTile.setInnerSlopeGeometry(demarshallSlopeGeometry(((Any) anyTerrainSlopeTile.get("innerSlopeGeometry")).asArray()));
             return terrainSlopeTile;
         }).collect(Collectors.toList());
+    }
+
+    private static SlopeGeometry demarshallSlopeGeometry(Any[] slopeGeometryAnyArray) {
+        if (slopeGeometryAnyArray == null || slopeGeometryAnyArray.length == 0) {
+            return null;
+        }
+        SlopeGeometry slopeGeometry = new SlopeGeometry();
+        slopeGeometry.setPositions(slopeGeometryAnyArray[0].uncheckedCast());
+        slopeGeometry.setNorms(slopeGeometryAnyArray[1].uncheckedCast());
+        slopeGeometry.setSlopeFactors(slopeGeometryAnyArray[2].uncheckedCast());
+        slopeGeometry.setUvs(slopeGeometryAnyArray[3].uncheckedCast());
+        return slopeGeometry;
     }
 
 
