@@ -1,18 +1,13 @@
 package com.btxtech.uiservice.terrain.helpers;
 
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by Beat
  * 31.03.2017.
  */
 public class TestToolTerrainTile extends TerrainTile {
-    private Collection<TerrainSlopeTile> terrainSlopeTiles;
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
     private double height;
@@ -30,22 +25,6 @@ public class TestToolTerrainTile extends TerrainTile {
     @Override
     public TerrainNode[][] getTerrainNodes() {
         return terrainNodes;
-    }
-
-    @Override
-    public void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
-        if (terrainSlopeTiles == null) {
-            terrainSlopeTiles = new ArrayList<>();
-        }
-        terrainSlopeTiles.add(terrainSlopeTile);
-    }
-
-    @Override
-    public TerrainSlopeTile[] getTerrainSlopeTiles() {
-        if (terrainSlopeTiles == null) {
-            return null;
-        }
-        return terrainSlopeTiles.toArray(new TerrainSlopeTile[terrainSlopeTiles.size()]);
     }
 
     @Override

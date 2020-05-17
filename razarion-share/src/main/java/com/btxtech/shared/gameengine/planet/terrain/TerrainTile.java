@@ -17,7 +17,7 @@ public class TerrainTile {
     private Map<Integer, Float32ArrayEmu> groundPositions;
     private Map<Integer, Float32ArrayEmu> groundNorms;
     private Collection<TerrainWaterTile> terrainWaterTiles;
-    private Collection<TerrainSlopeTile> terrainSlopeTiles;
+    private List<TerrainSlopeTile> terrainSlopeTiles;
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
     private double height;
@@ -48,26 +48,20 @@ public class TerrainTile {
         this.groundNorms = groundNorms;
     }
 
+    public List<TerrainSlopeTile> getTerrainSlopeTiles() {
+        return terrainSlopeTiles;
+    }
+
+    public void setTerrainSlopeTiles(List<TerrainSlopeTile> terrainSlopeTiles) {
+        this.terrainSlopeTiles = terrainSlopeTiles;
+    }
+
     public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles) {
         this.terrainWaterTiles = terrainWaterTiles;
     }
 
     public Collection<TerrainWaterTile> getTerrainWaterTiles() {
         return terrainWaterTiles;
-    }
-
-    public void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
-        if (terrainSlopeTiles == null) {
-            terrainSlopeTiles = new ArrayList<>();
-        }
-        terrainSlopeTiles.add(terrainSlopeTile);
-    }
-
-    public TerrainSlopeTile[] getTerrainSlopeTiles() {
-        if (terrainSlopeTiles == null) {
-            return null;
-        }
-        return terrainSlopeTiles.toArray(new TerrainSlopeTile[0]);
     }
 
     public double getLandWaterProportion() {

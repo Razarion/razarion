@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -81,10 +82,8 @@ public class TerrainTileBuilder {
             terrainTile.setGroundNorms(terrainTileGroundNorms);
         }
 
-        if (terrainSlopeTileBuilders != null) {
-            for (TerrainSlopeTileBuilder terrainSlopeTileBuilder : terrainSlopeTileBuilders) {
-                terrainTile.addTerrainSlopeTile(terrainSlopeTileBuilder.generate());
-            }
+        if (terrainSlopeTileBuilders != null && !terrainSlopeTileBuilders.isEmpty()) {
+            terrainTile.setTerrainSlopeTiles(terrainSlopeTileBuilders.stream().map(TerrainSlopeTileBuilder::generate).collect(Collectors.toList()));
         }
         return terrainTile;
     }

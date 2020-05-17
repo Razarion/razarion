@@ -21,24 +21,27 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
 import elemental2.core.Array;
 import elemental2.core.Float32Array;
-import elemental2.core.JsNumber;
 import elemental2.core.JsObject;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMap;
+import jsinterop.base.JsPropertyMapOfAny;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static jsinterop.base.Js.uncheckedCast;
 
@@ -47,8 +50,7 @@ import static jsinterop.base.Js.uncheckedCast;
  * 03.01.2017.
  */
 public class WorkerMarshaller {
-    private static final String DEFAULT_GROUND_KEY = "DEFAULT_GROUND";
-    private static Logger LOGGER = Logger.getLogger(WorkerMarshaller.class.getName());
+    // private static Logger LOGGER = Logger.getLogger(WorkerMarshaller.class.getName());
     private static final int COMMAND_OFFSET = 0;
     private static final int DATA_OFFSET_0 = 1;
     private static final int DATA_OFFSET_1 = 2;
@@ -393,15 +395,6 @@ public class WorkerMarshaller {
         }
     }
 
-    private static TerrainTile demarshallTerrainTile(Object data, NativeMatrixFactory nativeMatrixFactory) {
-        Any[] array = Js.castToArray(data);
-        TerrainTile terrainTile = new TerrainTile();
-        terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
-        terrainTile.setGroundPositions(demarshallFloat32ArrayMap(array[1]));
-        terrainTile.setGroundNorms(demarshallFloat32ArrayMap(array[2]));
-        return terrainTile;
-    }
-
     private static Object marshallTerrainTile(TerrainTile terrainTile) {
         Array<Object> array = new Array<>();
         JsArrayInteger indexArray = JavaScriptObject.createArray().cast();
@@ -410,15 +403,16 @@ public class WorkerMarshaller {
         array.push(indexArray);
         array.push(marshallFloat32ArrayMap(terrainTile.getGroundPositions()));
         array.push(marshallFloat32ArrayMap(terrainTile.getGroundNorms()));
+        array.push(marshallTerrainSlopeTiles(terrainTile.getTerrainSlopeTiles()));
         return array;
     }
 
-    private static elemental2.core.Map<JsNumber, Float32Array> marshallFloat32ArrayMap(Map<Integer, Float32ArrayEmu> float32ArrayMap) {
-        elemental2.core.Map<JsNumber, Float32Array> groundSlopePositions = new elemental2.core.Map<>();
+    private static elemental2.core.Map<Any, Float32Array> marshallFloat32ArrayMap(Map<Integer, Float32ArrayEmu> float32ArrayMap) {
+        elemental2.core.Map<Any, Float32Array> groundSlopePositions = new elemental2.core.Map<>();
         if (float32ArrayMap != null) {
             for (Map.Entry<Integer, Float32ArrayEmu> entry : float32ArrayMap.entrySet()) {
                 if (entry.getKey() != null) {
-                    groundSlopePositions.set(new JsNumber(entry.getKey()), Js.uncheckedCast(entry.getValue()));
+                    groundSlopePositions.set(Any.of((int) entry.getKey()), Js.uncheckedCast(entry.getValue()));
                 } else {
                     groundSlopePositions.set(null, Js.uncheckedCast(entry.getValue()));
                 }
@@ -427,8 +421,30 @@ public class WorkerMarshaller {
         return groundSlopePositions;
     }
 
+    private static Array<JsPropertyMapOfAny> marshallTerrainSlopeTiles(List<TerrainSlopeTile> terrainSlopeTiles) {
+        Array<JsPropertyMapOfAny> result = new Array<>();
+        if (terrainSlopeTiles != null) {
+            for (TerrainSlopeTile terrainSlopeTile : terrainSlopeTiles) {
+                JsPropertyMapOfAny mapOfAny = JsPropertyMap.of();
+                mapOfAny.set("slopeConfigId", terrainSlopeTile.getSlopeConfigId());
+                result.push(mapOfAny);
+            }
+        }
+        return result;
+    }
+
+    private static TerrainTile demarshallTerrainTile(Object data, NativeMatrixFactory nativeMatrixFactory) {
+        Any[] array = Js.castToArray(data);
+        TerrainTile terrainTile = new TerrainTile();
+        terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
+        terrainTile.setGroundPositions(demarshallFloat32ArrayMap(array[1]));
+        terrainTile.setGroundNorms(demarshallFloat32ArrayMap(array[2]));
+        terrainTile.setTerrainSlopeTiles(demarshallTerrainSlopeTiles(array[3]));
+        return terrainTile;
+    }
+
     private static Map<Integer, Float32ArrayEmu> demarshallFloat32ArrayMap(Any any) {
-        elemental2.core.Map<JsNumber, Float32ArrayEmu> jsFloat32ArrayMap = uncheckedCast(any);
+        elemental2.core.Map<Any, Float32ArrayEmu> jsFloat32ArrayMap = uncheckedCast(any);
         if (jsFloat32ArrayMap.size == 0) {
             return null;
         }
@@ -437,10 +453,24 @@ public class WorkerMarshaller {
             if (groundId == null) {
                 float32ArrayMap.put(null, float32Array);
             } else {
-                float32ArrayMap.put(Js.uncheckedCast(groundId), float32Array);
+                float32ArrayMap.put(groundId.asInt(), float32Array);
             }
             return null;
         });
         return float32ArrayMap;
     }
+
+    private static List<TerrainSlopeTile> demarshallTerrainSlopeTiles(Any any) {
+        JsPropertyMapOfAny[] array = Js.cast(any);
+        if (array.length == 0) {
+            return null;
+        }
+        return Arrays.stream(array).map(anyTerrainSlopeTile -> {
+            TerrainSlopeTile terrainSlopeTile = new TerrainSlopeTile();
+            terrainSlopeTile.setSlopeConfigId(((Any) anyTerrainSlopeTile.get("slopeConfigId")).asInt());
+            return terrainSlopeTile;
+        }).collect(Collectors.toList());
+    }
+
+
 }

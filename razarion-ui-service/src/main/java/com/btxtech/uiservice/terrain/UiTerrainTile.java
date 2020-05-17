@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
@@ -73,14 +74,14 @@ public class UiTerrainTile {
                 uiTerrainGroundTiles.add(uiTerrainGroundTile);
             });
         }
-//   TODO     if (terrainTile.getTerrainSlopeTiles() != null) {
-//            uiTerrainSlopeTiles = new ArrayList<>();
-//            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
-//                UiTerrainSlopeTile uiTerrainSlopeTile = uiTerrainSlopeTileInstance.get();
-//                uiTerrainSlopeTile.init(active, this, terrainSlopeTile);
-//                uiTerrainSlopeTiles.add(uiTerrainSlopeTile);
-//            }
-//        }
+        if (terrainTile.getTerrainSlopeTiles() != null) {
+            uiTerrainSlopeTiles = new ArrayList<>();
+            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
+                UiTerrainSlopeTile uiTerrainSlopeTile = uiTerrainSlopeTileInstance.get();
+                uiTerrainSlopeTile.init(active, this, terrainSlopeTile);
+                uiTerrainSlopeTiles.add(uiTerrainSlopeTile);
+            }
+        }
 //        if (terrainTile.getTerrainWaterTile() != null) {
 //            uiTerrainWaterTile = uiTerrainWaterTileInstance.get();
 //            uiTerrainWaterTile.init(active, terrainTile.getTerrainWaterTile());
