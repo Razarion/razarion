@@ -1,34 +1,24 @@
 precision mediump float;
 
-attribute vec3 aVertexPosition;
-attribute vec3 aVertexNormal;
-attribute vec3 aVertexTangent;
-attribute float aSlopeFactor;
-attribute float aGroundSplatting;
+attribute vec3 position;
+attribute vec3 objectNormal;
 
-uniform highp mat4 uVMatrix;
-uniform highp mat4 uPMatrix;
-uniform highp mat4 uNVMatrix;
-uniform highp mat4 uShadowMatrix;
+uniform highp mat4 viewMatrix;
+uniform highp mat4 projectionMatrix;
+uniform highp mat4 normalMatrix;
+uniform highp mat4 shadowMatrix;
 
-varying vec3 vVertexNormal;
-varying vec3 vVertexTangent;
-varying vec4 vVertexPosition;
-varying vec3 vVertexPositionCoord;
-varying vec3 vVertexNormCoord;
-varying float vSlopeFactor;
-varying float vGroundSplatting;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec3 vWorldVertexPosition;
 varying vec4 vShadowCoord;
 
 void main(void) {
-    vVertexNormal = (uNVMatrix * vec4(aVertexNormal, 1.0)).xyz;
-    vVertexTangent = (uNVMatrix * vec4(aVertexTangent, 1.0)).xyz;
-    vVertexPosition = uVMatrix * vec4(aVertexPosition, 1.0);
-    vShadowCoord = uShadowMatrix * vec4(aVertexPosition, 1.0);
-    gl_Position = uPMatrix * vVertexPosition;
-    vVertexPositionCoord = aVertexPosition.xyz;
-    vVertexNormCoord = aVertexNormal;
-    vSlopeFactor = aSlopeFactor;
-    vGroundSplatting = aGroundSplatting;
+    vWorldVertexPosition = position.xyz;
+    vNormal = (normalMatrix * vec4(objectNormal, 1.0)).xyz;
+    vViewPosition = - (viewMatrix * vec4(position, 1.0)).xyz;
+    vShadowCoord = shadowMatrix * vec4(position, 1.0);
+
+    gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
 }
 

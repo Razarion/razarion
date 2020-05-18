@@ -8,7 +8,6 @@ import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 
 import javax.enterprise.inject.Instance;
@@ -36,8 +35,8 @@ public class SlopeRenderTask extends AbstractRenderTask<Slope> {
         CommonRenderComposite<AbstractSlopeRendererUnit, UiTerrainSlopeTile> renderComposite = modelRenderer.create();
         renderComposite.init(uiTerrainSlopeTile);
         renderComposite.setRenderUnit(rendererInstance.get());
-        renderComposite.setDepthBufferRenderUnit(depthBufferRendererInstance.get());
-        renderComposite.setNormRenderUnit(normRendererInstance.get());
+        // renderComposite.setDepthBufferRenderUnit(depthBufferRendererInstance.get());
+        // renderComposite.setNormRenderUnit(normRendererInstance.get());
         modelRenderer.add(RenderUnitControl.TERRAIN, renderComposite);
         add(modelRenderer);
         renderComposite.fillBuffers();

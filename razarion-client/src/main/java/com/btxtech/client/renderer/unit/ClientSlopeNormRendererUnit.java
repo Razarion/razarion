@@ -1,6 +1,5 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.ClientRenderUtil;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -41,7 +40,7 @@ public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
     }
 
     @Override
-    protected void fillBuffer(UiTerrainSlopeTile terrainSlopeTile) {
+    protected void fillBufferInternal(UiTerrainSlopeTile terrainSlopeTile) {
         // vertices.fillFloat32Array(ClientRenderUtil.setupNormFloat32Array(terrainSlopeTile.getVertices(), terrainSlopeTile.getNorms()));
         throw new UnsupportedOperationException("TODO");
     }

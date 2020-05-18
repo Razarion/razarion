@@ -4,6 +4,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
+import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -40,7 +41,7 @@ public abstract class RenderService {
         renderTasks.clear();
 
         addRenderTask(GroundRenderTask.class, "Ground");
-// TODO       addRenderTask(SlopeRenderTask.class, "Slope");
+        addRenderTask(SlopeRenderTask.class, "Slope");
 // TODO       addRenderTask(TerrainObjectRenderTask.class, "Terrain Object");
 // TODO       addRenderTask(ItemMarkerRenderTask.class, "Item Marker");
 // TODO       addRenderTask(BaseItemRenderTask.class, "Base Item");

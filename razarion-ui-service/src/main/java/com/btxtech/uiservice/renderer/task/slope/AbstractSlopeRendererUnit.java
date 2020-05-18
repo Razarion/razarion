@@ -13,23 +13,13 @@ import java.util.logging.Logger;
 public abstract class AbstractSlopeRendererUnit extends AbstractRenderUnit<UiTerrainSlopeTile> {
     private Logger logger = Logger.getLogger(AbstractSlopeRendererUnit.class.getName());
 
-    protected abstract void fillBuffer(UiTerrainSlopeTile terrainSlopeTile);
+    protected abstract void fillBufferInternal(UiTerrainSlopeTile terrainSlopeTile);
 
     protected abstract void draw(UiTerrainSlopeTile uiTerrainSlopeTile);
 
     @Override
     public void fillBuffers(UiTerrainSlopeTile terrainSlopeTile) {
-        if (terrainSlopeTile.getTextureId() == null) {
-            logger.warning("No Texture Id in AbstractSlopeRendererUnit for: " + helperString());
-            return;
-        }
-        if (terrainSlopeTile.getBmId() == null) {
-            logger.warning("No BM Id in AbstractSlopeRendererUnit for: " + helperString());
-            return;
-        }
-
-        fillBuffer(terrainSlopeTile);
-        setElementCount(terrainSlopeTile.getSlopeVertexCount());
+        fillBufferInternal(terrainSlopeTile);
     }
 
     @Override

@@ -1,9 +1,8 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.btxtech.shared.utils.SignalGenerator;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
@@ -19,20 +18,15 @@ import javax.inject.Inject;
 public class UiTerrainSlopeTile {
     @Inject
     private SlopeRenderTask slopeRenderTask;
-    @Inject
-    private TerrainTypeService terrainTypeService;
     private ModelRenderer modelRenderer;
-    private UiTerrainTile uiTerrainTile;
     private SlopeConfig slopeConfig;
-    private TerrainSlopeTile terrainSlopeTile;
+    private SlopeGeometry slopeGeometry;
     private WaterConfig waterConfig;
     private double slopeWaterSplattingFadeThreshold;
 
-    public void init(boolean active, UiTerrainTile uiTerrainTile, TerrainSlopeTile terrainSlopeTile) {
-        this.uiTerrainTile = uiTerrainTile;
-        slopeConfig = terrainTypeService.getSlopeConfig(terrainSlopeTile.getSlopeConfigId());
-        waterConfig = terrainTypeService.getWaterConfig();
-        this.terrainSlopeTile = terrainSlopeTile;
+    public void init(boolean active, SlopeConfig slopeConfig, SlopeGeometry slopeGeometry) {
+        this.slopeConfig = slopeConfig;
+        this.slopeGeometry = slopeGeometry;
         modelRenderer = slopeRenderTask.createModelRenderer(this);
         modelRenderer.setActive(active);
     }
@@ -41,16 +35,12 @@ public class UiTerrainSlopeTile {
         modelRenderer.setActive(active);
     }
 
-    public TerrainSlopeTile getTerrainSlopeTile() {
-        return terrainSlopeTile;
-    }
-
-    public UiTerrainTile getUiTerrainTile() {
-        return uiTerrainTile;
-    }
-
     public SlopeConfig getSlopeConfig() {
         return slopeConfig;
+    }
+
+    public SlopeGeometry getSlopeGeometry() {
+        return slopeGeometry;
     }
 
     public void overrideSlopeSkeletonConfig(SlopeConfig slopeConfig) {
@@ -63,6 +53,7 @@ public class UiTerrainSlopeTile {
     public WaterConfig getWaterConfig() {
         return waterConfig;
     }
+
     public double getWaterAnimation() {
         return SignalGenerator.sawtooth(System.currentTimeMillis(), (int)(waterConfig.getDistortionDurationSeconds() * 1000.0), 0);
     }
