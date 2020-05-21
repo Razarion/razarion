@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.renderer.shaders.library.GlslLibrarian;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.renderer.ViewService;
 import elemental2.webgl.WebGLProgram;
@@ -29,6 +30,8 @@ public class WebGlProgram {
     private ViewService viewService;
     @Inject
     private AlarmService alarmService;
+    @Inject
+    private GlslLibrarian glslLibrarian;
     private Runnable transformUnregisterHandler;
     private Runnable shadowLookupUnregisterHandler;
     private WebGLUniformLocation viewMatrixUniformLocation;
@@ -39,8 +42,8 @@ public class WebGlProgram {
     private WebGLUniformLocation shadowMatrixUniformLocation;
 
     public void createProgram(WebGlFacadeConfig webGlFacadeConfig) {
-        vs = createShader(WebGLRenderingContext.VERTEX_SHADER, webGlFacadeConfig.getVertexShaderCode().getText());
-        fs = createShader(WebGLRenderingContext.FRAGMENT_SHADER, webGlFacadeConfig.getFragmentShaderCode().getText());
+        vs = createShader(WebGLRenderingContext.VERTEX_SHADER, glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode()));
+        fs = createShader(WebGLRenderingContext.FRAGMENT_SHADER, glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode()));
         program = createAndUseProgram(vs, fs);
 
         if (webGlFacadeConfig.isTransformation()) {
@@ -121,7 +124,7 @@ public class WebGlProgram {
     public WebGLUniformLocation getUniformLocationAlarm(String uniformName) {
         WebGLUniformLocation uniform = gameCanvas.getCtx3d().getUniformLocation(program, uniformName);
         if (uniform == null) {
-            alarmService.riseAlarm(RENDER_ENGINE_UNIFORM,"No uniform location for '" + uniformName + "' in OpenGl program.");
+            alarmService.riseAlarm(RENDER_ENGINE_UNIFORM, "No uniform location for '" + uniformName + "' in OpenGl program.");
         }
         return uniform;
     }

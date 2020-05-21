@@ -1,4 +1,3 @@
-#extension GL_OES_standard_derivatives : enable
 precision mediump float;
 
 varying vec3 vWorldVertexPosition;

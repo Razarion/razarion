@@ -1,5 +1,7 @@
 package com.btxtech.client.renderer.webgl;
 
+import com.btxtech.client.renderer.shaders.library.GlslLibrarian;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -15,10 +17,12 @@ public class WebGlProgramService {
     // private Logger logger = Logger.getLogger(WebGlProgramService.class.getName());
     @Inject
     private Instance<WebGlProgram> webGlProgramInstance;
+    @Inject
+    private GlslLibrarian glslLibrarian;
     private Map<String, WebGlProgram> webGlProgramCache = new HashMap<>();
 
     public WebGlProgram getWebGlProgram(WebGlFacadeConfig webGlFacadeConfig) {
-        String key = webGlFacadeConfig.getVertexShaderCode().getText() + webGlFacadeConfig.getFragmentShaderCode().getText();
+        String key = glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode()) + glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode());
         WebGlProgram webGlProgram = webGlProgramCache.get(key);
         if (webGlProgram != null) {
             return webGlProgram;
