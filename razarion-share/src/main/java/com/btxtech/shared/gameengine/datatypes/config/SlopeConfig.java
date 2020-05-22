@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
 
@@ -23,6 +24,7 @@ public class SlopeConfig implements Config {
     private Integer groundConfigId;
     private Integer waterConfigId;
     private boolean interpolateNorm;
+    private PhongMaterialConfig material;
 //    private Integer slopeTextureId;
 //    private double slopeTextureScale;
 //    private Integer slopeBumpMapId;
@@ -76,6 +78,14 @@ public class SlopeConfig implements Config {
 
     public void setSlopeShapes(List<SlopeShape> slopeShapes) {
         this.slopeShapes = slopeShapes;
+    }
+
+    public PhongMaterialConfig getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(PhongMaterialConfig material) {
+        this.material = material;
     }
 
     @Override
@@ -461,6 +471,11 @@ public class SlopeConfig implements Config {
 
     public SlopeConfig groundConfigId(Integer groundConfigId) {
         setGroundConfigId(groundConfigId);
+        return this;
+    }
+
+    public SlopeConfig material(PhongMaterialConfig material) {
+        this.material = material;
         return this;
     }
 

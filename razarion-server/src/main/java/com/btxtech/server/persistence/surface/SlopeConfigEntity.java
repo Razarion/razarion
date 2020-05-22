@@ -3,7 +3,13 @@ package com.btxtech.server.persistence.surface;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,6 +23,8 @@ import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.btxtech.server.persistence.surface.PhongMaterialConfigEmbeddable.factorize;
 
 /**
  * Created by Beat
@@ -39,6 +47,18 @@ public class SlopeConfigEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private WaterConfigEntity waterConfig;
+    @AssociationOverrides({
+            @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "materialTextureId")),
+            @AssociationOverride(name = "bumpMap", joinColumns = @JoinColumn(name = "materialBumpMapId"))
+    })
+    @AttributeOverrides({
+            @AttributeOverride(name = "scale", column = @Column(name = "materialScale")),
+            @AttributeOverride(name = "bumpMapDepth", column = @Column(name = "materialBumpMapDepth")),
+            @AttributeOverride(name = "shininess", column = @Column(name = "materialShininess")),
+            @AttributeOverride(name = "specularStrength", column = @Column(name = "materialSpecularStrength")),
+    })
+    @Embedded
+    private PhongMaterialConfigEmbeddable material;
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
@@ -65,19 +85,14 @@ public class SlopeConfigEntity {
         if (shape != null && !shape.isEmpty()) {
             slopeConfig.setSlopeShapes(shape.stream().map(SlopeShapeEntity::toSlopeShape).collect(Collectors.toList()));
         }
+        if (material != null) {
+            slopeConfig.setMaterial(material.to());
+        }
         return slopeConfig;
     }
 
     public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence, GroundConfigEntity groundConfigEntity) {
-//        shape.clear();
-//        // TODO  for (SlopeShape slopeShape : slopeConfig.getSlopeShapes()) {
-//        // TODO     SlopeShapeEntity slopeShapeEntity = new SlopeShapeEntity();
-//        // TODO     slopeShapeEntity.fromSlopeShape(slopeShape);
-//        // TODO     shape.add(slopeShapeEntity);
-//        // TODO  }
         internalName = slopeConfig.getInternalName();
-//        specularLightConfigEmbeddable.fromLightConfig(slopeConfig.getSlopeConfig().getSpecularLightConfig());
-//        type = slopeConfig.getSlopeConfig().getType();
         innerLineGameEngine = slopeConfig.getInnerLineGameEngine();
         coastDelimiterLineGameEngine = slopeConfig.getCoastDelimiterLineGameEngine();
         outerLineGameEngine = slopeConfig.getOuterLineGameEngine();
@@ -93,20 +108,9 @@ public class SlopeConfigEntity {
                 return slopeShapeEntity;
             }).collect(Collectors.toList()));
         }
-//        texture = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeConfig().getSlopeTextureId());
-//        textureScale = slopeConfig.getSlopeConfig().getSlopeTextureScale();
-//        bm = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeConfig().getSlopeBumpMapId());
-//        bmDepth = slopeConfig.getSlopeConfig().getSlopeBumpMapDepth();
         horizontalSpace = slopeConfig.getHorizontalSpace();
-//        segments = slopeConfig.getSlopeConfig().getSegments();
-//        slopeSkeletonEntries.clear();
-//        for (int x = 0; x < segments; x++) {
-//            for (int y = 0; y < shape.size(); y++) {
-//                SlopeNodeEntity slopeNodeEntity = new SlopeNodeEntity();
-//                slopeNodeEntity.fromSlopeNode(x, y, slopeConfig.getSlopeConfig().getSlopeNodes()[x][y]);
-//                slopeSkeletonEntries.add(slopeNodeEntity);
-//            }
-//        }
+
+        material = factorize(slopeConfig.getMaterial(), imagePersistence);
     }
 
     @Override

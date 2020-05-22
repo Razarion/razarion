@@ -47,4 +47,14 @@ public class PhongMaterialConfigEmbeddable {
         return phongMaterialConfig;
     }
 
+    public static PhongMaterialConfigEmbeddable factorize(PhongMaterialConfig materialConfig, ImagePersistence imagePersistence) {
+        if (materialConfig != null) {
+            PhongMaterialConfigEmbeddable materialEnity = new PhongMaterialConfigEmbeddable();
+            materialEnity.from(materialConfig, imagePersistence);
+            return materialEnity;
+        } else {
+            return null;
+        }
+    }
+
 }

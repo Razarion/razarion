@@ -12,6 +12,8 @@ uniform highp mat4 normalMatrix;
 uniform vec3 directLightDirection;
 uniform vec3 directLightColor;
 uniform vec3 ambientLightColor;
+vec3 correctedDirectLightDirection;
+
 // Shadow
 varying vec4 vShadowCoord;
 
@@ -21,5 +23,7 @@ uniform PhongMaterial material;
 //-$$$-INCLUDE phong functions
 
 void main(void) {
-    gl_FragColor = phong(material);
+    correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
+
+    gl_FragColor = vec4(phong(material), 1.0);
 }

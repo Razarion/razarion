@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeShapeEntity;
 import com.btxtech.server.systemtests.framework.AbstractCrudTest;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.rest.SlopeEditorController;
@@ -33,6 +34,8 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
     protected void setupUpdate() {
         registerUpdate(groundConfig -> groundConfig.coastDelimiterLineGameEngine(10).outerLineGameEngine(5).innerLineGameEngine(20).horizontalSpace(5));
         registerUpdate(groundConfig -> groundConfig.coastDelimiterLineGameEngine(20).outerLineGameEngine(27).innerLineGameEngine(50).horizontalSpace(25).groundConfigId(GROUND_1_ID));
+        registerUpdate(groundConfig -> groundConfig.material(new PhongMaterialConfig().textureId(IMAGE_2_ID).scale(2.1).bumpMapId(IMAGE_3_ID).bumpMapDepth(0.5).shininess(80.0).specularStrength(0.4)));
+        registerUpdate(groundConfig -> groundConfig.material(null));
         registerUpdate(groundConfig -> groundConfig.groundConfigId(null));
         registerUpdate(groundConfig -> groundConfig.slopeShapes(Arrays.asList(
                 new SlopeShape().slopeFactor(0.5),

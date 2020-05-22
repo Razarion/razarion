@@ -146,7 +146,9 @@ public class WebGlProgram {
             } else {
                 shaderType = "Unknown shader";
             }
-            throw new IllegalArgumentException(shaderType + " compilation failed: " + gameCanvas.getCtx3d().getShaderInfoLog(shader));
+            throw new IllegalArgumentException(shaderType + " compilation failed: " + gameCanvas.getCtx3d().getShaderInfoLog(shader)
+                    + "\n"
+                    + code);
         }
         return shader;
     }

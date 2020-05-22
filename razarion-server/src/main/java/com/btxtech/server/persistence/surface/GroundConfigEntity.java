@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
+import static com.btxtech.server.persistence.surface.PhongMaterialConfigEmbeddable.factorize;
+
 /**
  * Created by Beat
  * 02.05.2016.
@@ -82,18 +84,8 @@ public class GroundConfigEntity {
 
     public void fromGroundConfig(GroundConfig config, ImagePersistence imagePersistence) {
         internalName = config.getInternalName();
-        if (config.getTopMaterial() != null) {
-            topMaterial = new PhongMaterialConfigEmbeddable();
-            topMaterial.from(config.getTopMaterial(), imagePersistence);
-        } else {
-            topMaterial = null;
-        }
-        if (config.getBottomMaterial() != null) {
-            bottomMaterial = new PhongMaterialConfigEmbeddable();
-            bottomMaterial.from(config.getBottomMaterial(), imagePersistence);
-        } else {
-            bottomMaterial = null;
-        }
+        topMaterial = factorize(config.getTopMaterial(), imagePersistence);
+        bottomMaterial = factorize(config.getBottomMaterial(), imagePersistence);
         if (config.getSplatting() != null) {
             splatting = new GroundSplattingConfigEmbeddable();
             splatting.from(config.getSplatting(), imagePersistence);

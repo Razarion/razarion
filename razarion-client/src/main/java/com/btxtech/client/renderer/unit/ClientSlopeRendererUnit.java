@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.unit;
 
+import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -31,6 +32,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec3Float32ArrayShaderAttribute normals;
+    private WebGlPhongMaterial material;
     //    private Float32ArrayShaderAttribute slopeFactors;
 //    private Float32ArrayShaderAttribute groundSplatting;
 //    private WebGlUniformTexture slopeTexture;
@@ -71,6 +73,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader()).enableTransformation(true).enableReceiveShadow());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
+
         // TODO tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
         // TODO slopeFactors = webGlFacade.createFloat32ArrayShaderAttribute("aSlopeFactor");
         // TODO groundSplatting = webGlFacade.createFloat32ArrayShaderAttribute("aGroundSplatting");
@@ -101,6 +104,8 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
     @Override
     protected void fillBufferInternal(UiTerrainSlopeTile uiTerrainSlopeTile) {
+        material = webGlFacade.createPhongMaterial(uiTerrainSlopeTile.getSlopeConfig().getMaterial(), "material");
+
         // slopeTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getTextureId(), "uSlopeTexture", "uSlopeTextureScale", uiTerrainSlopeTile.getTextureScale());
         // TODO uSlopeBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainSlopeTile.getBmId(), "uSlopeBm", "uSlopeBmScale", uiTerrainSlopeTile.getBmScale(), "uSlopeBmOnePixel");
         //  TODO  slopeWaterSplatting= webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getSlopeConfig().getSlopeWaterSplattingId(), "uSlopeWaterSplatting", "uSlopeWaterSplattingScale", uiTerrainSlopeTile.getSlopeConfig().getSlopeWaterSplattingScale());
@@ -161,6 +166,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
         positions.activate();
         normals.activate();
+        material.activate();
 //        tangents.activate();
 //        slopeFactors.activate();
 //        groundSplatting.activate();
