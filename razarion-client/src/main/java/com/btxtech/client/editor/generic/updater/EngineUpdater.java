@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.generic.updater;
 
 import com.btxtech.shared.dto.GroundConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
@@ -19,6 +20,9 @@ public class EngineUpdater {
     public void connect(Object config) {
         if (config instanceof GroundConfig) {
             terrainUiService.enableEditMode((GroundConfig) config);
+            viewService.onViewChanged();
+        } else if (config instanceof SlopeConfig) {
+            terrainUiService.enableEditMode((SlopeConfig) config);
             viewService.onViewChanged();
         } else {
             logger.warning("GenericPropertyUpdater can not connect editor to render engine: " + config.getClass());

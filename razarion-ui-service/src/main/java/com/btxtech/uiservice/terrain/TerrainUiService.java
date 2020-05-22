@@ -258,8 +258,7 @@ public class TerrainUiService {
 
     public void enableEditMode(SlopeConfig slopeConfig) {
         terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig);
-        // TODO displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeConfig));
-        cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeConfig));
+        onEditorTerrainChanged();
     }
 
     public void onEditorTerrainChanged() {
