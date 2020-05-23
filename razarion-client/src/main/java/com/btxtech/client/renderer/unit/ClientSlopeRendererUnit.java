@@ -6,6 +6,8 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
@@ -104,6 +106,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
     @Override
     protected void fillBufferInternal(UiTerrainSlopeTile uiTerrainSlopeTile) {
+        AlarmRaiser.onNull(uiTerrainSlopeTile.getSlopeConfig().getMaterial(), Alarm.Type.INVALID_SLOPE_CONFIG, "No Material in SlopeConfig: ", uiTerrainSlopeTile.getSlopeConfig().getId());
         material = webGlFacade.createPhongMaterial(uiTerrainSlopeTile.getSlopeConfig().getMaterial(), "material");
 
         // slopeTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getTextureId(), "uSlopeTexture", "uSlopeTextureScale", uiTerrainSlopeTile.getTextureScale());

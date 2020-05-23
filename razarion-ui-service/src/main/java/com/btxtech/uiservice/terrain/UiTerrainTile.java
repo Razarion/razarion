@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 
@@ -42,6 +43,8 @@ public class UiTerrainTile {
     private Instance<UiTerrainWaterTile> uiTerrainWaterTileInstance;
     @Inject
     private TerrainTypeService terrainTypeService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Index index;
     private TerrainTile terrainTile;
     private boolean active;
@@ -73,9 +76,13 @@ public class UiTerrainTile {
         if (terrainTile.getGroundPositions() != null) {
             uiTerrainGroundTiles = new ArrayList<>();
             terrainTile.getGroundPositions().forEach((groundId, groundPositions) -> {
-                UiTerrainGroundTile uiTerrainGroundTile = uiTerrainGroundTileInstance.get();
-                uiTerrainGroundTile.init(active, groundId, groundPositions, terrainTile.getGroundNorms().get(groundId));
-                uiTerrainGroundTiles.add(uiTerrainGroundTile);
+                try {
+                    UiTerrainGroundTile uiTerrainGroundTile = uiTerrainGroundTileInstance.get();
+                    uiTerrainGroundTile.init(active, groundId, groundPositions, terrainTile.getGroundNorms().get(groundId));
+                    uiTerrainGroundTiles.add(uiTerrainGroundTile);
+                } catch (Throwable t) {
+                    exceptionHandler.handleException(t);
+                }
             });
         }
         if (terrainTile.getTerrainSlopeTiles() != null) {
@@ -106,9 +113,13 @@ public class UiTerrainTile {
     }
 
     private void createAndAddUiTerrainSlopeTile(SlopeConfig slopeConfig, SlopeGeometry slopeGeometry) {
-        UiTerrainSlopeTile uiTerrainSlopeTile = uiTerrainSlopeTileInstance.get();
-        uiTerrainSlopeTile.init(active, slopeConfig, slopeGeometry);
-        uiTerrainSlopeTiles.add(uiTerrainSlopeTile);
+        try {
+            UiTerrainSlopeTile uiTerrainSlopeTile = uiTerrainSlopeTileInstance.get();
+            uiTerrainSlopeTile.init(active, slopeConfig, slopeGeometry);
+            uiTerrainSlopeTiles.add(uiTerrainSlopeTile);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 
     public TerrainTile getTerrainTile() {
