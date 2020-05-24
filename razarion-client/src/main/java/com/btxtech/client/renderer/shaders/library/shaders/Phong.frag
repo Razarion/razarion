@@ -10,13 +10,13 @@ struct PhongMaterial {
 //-$$$-CHUNK struct END
 
 //-$$$-CHUNK functions BEGIN
-vec2 dHdxy_fwd(sampler2D uBumpMap, float uBumpMapDepth, float uTextureScale) {
-    vec2 vUv = vWorldVertexPosition.xy / uTextureScale;
-    vec2 dSTdx = dFdx(vUv);
-    vec2 dSTdy = dFdy(vUv);
-    float Hll = uBumpMapDepth * texture2D(uBumpMap, vUv).x;
-    float dBx = uBumpMapDepth * texture2D(uBumpMap, vUv + dSTdx).x - Hll;
-    float dBy = uBumpMapDepth * texture2D(uBumpMap, vUv + dSTdy).x - Hll;
+vec2 dHdxy_fwd(sampler2D bumpMap, float bumpMapDepth, float textureScale, vec2 uv) {
+    vec2 uvScalled = uv / textureScale;
+    vec2 dSTdx = dFdx(uvScalled);
+    vec2 dSTdy = dFdy(uvScalled);
+    float Hll = bumpMapDepth * texture2D(bumpMap, uvScalled).x;
+    float dBx = bumpMapDepth * texture2D(bumpMap, uvScalled + dSTdx).x - Hll;
+    float dBy = bumpMapDepth * texture2D(bumpMap, uvScalled + dSTdy).x - Hll;
     return vec2(dBx, dBy);
 }
 
@@ -32,11 +32,11 @@ vec3 perturbNormalArb(vec3 surf_pos, vec3 surf_norm, vec2 dHdxy) {
     return normalize(abs(fDet) * surf_norm - vGrad);
 }
 
-vec3 phong(PhongMaterial phongMaterial) {
-    vec3 normal = perturbNormalArb(-vViewPosition, normalize(vNormal), dHdxy_fwd(phongMaterial.bumpMap, phongMaterial.bumpMapDepth, phongMaterial.scale));
+vec3 phong(PhongMaterial phongMaterial, vec2 uv) {
+    vec3 normal = perturbNormalArb(-vViewPosition, normalize(vNormal), dHdxy_fwd(phongMaterial.bumpMap, phongMaterial.bumpMapDepth, phongMaterial.scale, uv));
     vec3 viewDir = normalize(vViewPosition);
 
-    vec4 texture = texture2D(phongMaterial.texture, vWorldVertexPosition.xy / phongMaterial.scale);
+    vec4 texture = texture2D(phongMaterial.texture, uv / phongMaterial.scale);
     vec3 diffuse = max(dot(normal, correctedDirectLightDirection), 0.0) * directLightColor;
     vec3 halfwayDir = normalize(correctedDirectLightDirection + viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), phongMaterial.shininess);

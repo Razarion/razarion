@@ -39,6 +39,7 @@ public class WebGlFacade {
     // Attributes
     public static final String A_VERTEX_POSITION = "position";
     public static final String A_VERTEX_NORMAL = "objectNormal";
+    public static final String A_VERTEX_UV = "uv";
     @Deprecated
     public static final String A_VERTEX_TANGENT = "aVertexTangent";
     public static final String A_TEXTURE_COORDINATE = "aTextureCoord";

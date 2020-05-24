@@ -25,5 +25,5 @@ uniform PhongMaterial material;
 void main(void) {
     correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
 
-    gl_FragColor = vec4(phong(material), 1.0);
+    gl_FragColor = vec4(phong(material, vUv), 1.0);
 }

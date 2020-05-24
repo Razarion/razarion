@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
+import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -34,6 +35,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec3Float32ArrayShaderAttribute normals;
+    private Vec2Float32ArrayShaderAttribute uvs;
     private WebGlPhongMaterial material;
     //    private Float32ArrayShaderAttribute slopeFactors;
 //    private Float32ArrayShaderAttribute groundSplatting;
@@ -75,6 +77,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader()).enableTransformation(true).enableReceiveShadow());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
+        uvs = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_UV);
 
         // TODO tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
         // TODO slopeFactors = webGlFacade.createFloat32ArrayShaderAttribute("aSlopeFactor");
@@ -121,6 +124,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         Float32Array groundPositions = Js.uncheckedCast(uiTerrainSlopeTile.getSlopeGeometry().getPositions());
         positions.fillFloat32Array(groundPositions);
         normals.fillFloat32Array(Js.uncheckedCast(uiTerrainSlopeTile.getSlopeGeometry().getNorms()));
+        uvs.fillFloat32Array(Js.uncheckedCast(uiTerrainSlopeTile.getSlopeGeometry().getUvs()));
         setElementCount((int) (groundPositions.length / Vertex.getComponentsPerVertex()));
         // TODO slopeFactors.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getSlopeFactors()));
         // TODO groundSplatting.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getGroundSplattings()));
@@ -169,6 +173,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
         positions.activate();
         normals.activate();
+        uvs.activate();
         material.activate();
 //        tangents.activate();
 //        slopeFactors.activate();
