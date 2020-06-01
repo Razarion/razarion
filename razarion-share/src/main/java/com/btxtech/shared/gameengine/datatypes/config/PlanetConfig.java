@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
-import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 
@@ -14,8 +13,7 @@ import java.util.Map;
 public class PlanetConfig implements Config {
     private int id;
     private String internalName;
-    private Rectangle terrainTileDimension; // In terrain tiles TerrainUtil.TERRAIN_TILE_NODES_COUNT
-    private Rectangle2D playGround;
+    private DecimalPosition size;
     private Map<Integer, Integer> itemTypeLimitation;
     private int houseSpace;
     private int startRazarion;
@@ -42,20 +40,12 @@ public class PlanetConfig implements Config {
         return new ObjectNameId(id, internalName);
     }
 
-    public Rectangle getTerrainTileDimension() {
-        return terrainTileDimension;
+    public DecimalPosition getSize() {
+        return size;
     }
 
-    public void setTerrainTileDimension(Rectangle terrainTileDimension) {
-        this.terrainTileDimension = terrainTileDimension;
-    }
-
-    public Rectangle2D getPlayGround() {
-        return playGround;
-    }
-
-    public void setPlayGround(Rectangle2D playGround) {
-        this.playGround = playGround;
+    public void setSize(DecimalPosition size) {
+        this.size = size;
     }
 
     public Map<Integer, Integer> getItemTypeLimitation() {
@@ -117,13 +107,8 @@ public class PlanetConfig implements Config {
         return this;
     }
 
-    public PlanetConfig terrainTileDimension(Rectangle terrainTileDimension) {
-        setTerrainTileDimension(terrainTileDimension);
-        return this;
-    }
-
-    public PlanetConfig playGround(Rectangle2D playGround) {
-        setPlayGround(playGround);
+    public PlanetConfig size(DecimalPosition size) {
+        setSize(size);
         return this;
     }
 

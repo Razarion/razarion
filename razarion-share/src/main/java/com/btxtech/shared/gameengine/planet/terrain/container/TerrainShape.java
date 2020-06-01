@@ -35,10 +35,9 @@ public class TerrainShape {
     private TerrainShapeTile[][] terrainShapeTiles;
     private SurfaceAccess surfaceAccess;
     private PathingAccess pathingAccess;
-    private Index tileOffset;
+    private DecimalPosition planetSize;
     private int tileXCount;
     private int tileYCount;
-    private Rectangle2D playGround;
 
     public TerrainShape() {
     }
@@ -47,10 +46,7 @@ public class TerrainShape {
         long time = System.currentTimeMillis();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
-        tileOffset = planetConfig.getTerrainTileDimension().getStart();
-        tileXCount = planetConfig.getTerrainTileDimension().width();
-        tileYCount = planetConfig.getTerrainTileDimension().height();
-        playGround = planetConfig.getPlayGround();
+        setupDimension(planetConfig);
         terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
         TerrainShapeSetup terrainShapeSetup = new TerrainShapeSetup(this, terrainTypeService);
         terrainShapeSetup.processSlopes(terrainSlopePositions);
@@ -62,13 +58,10 @@ public class TerrainShape {
     public void lazyInit(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, NativeTerrainShapeAccess nativeTerrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
-        playGround = planetConfig.getPlayGround();
+        setupDimension(planetConfig);
         nativeTerrainShapeAccess.load(planetConfig.getId(), nativeTerrainShape -> {
             try {
                 // long time = System.currentTimeMillis();
-                tileXCount = nativeTerrainShape.tileXCount;
-                tileYCount = nativeTerrainShape.tileYCount;
-                tileOffset = new Index(nativeTerrainShape.tileXOffset, nativeTerrainShape.tileYOffset);
                 terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
                 for (int x = 0; x < tileXCount; x++) {
                     for (int y = 0; y < tileYCount; y++) {
@@ -108,12 +101,14 @@ public class TerrainShape {
         }, failCallback);
     }
 
+    private void setupDimension(PlanetConfig planetConfig) {
+        planetSize = planetConfig.getSize();
+        tileXCount = TerrainUtil.toTileCeil(planetSize).getX();
+        tileYCount = TerrainUtil.toTileCeil(planetSize).getY();
+    }
+
     public NativeTerrainShape toNativeTerrainShape() {
         NativeTerrainShape nativeTerrainShape = new NativeTerrainShape();
-        nativeTerrainShape.tileXCount = tileXCount;
-        nativeTerrainShape.tileYCount = tileYCount;
-        nativeTerrainShape.tileXOffset = tileOffset.getX();
-        nativeTerrainShape.tileYOffset = tileOffset.getY();
         nativeTerrainShape.nativeTerrainShapeTiles = new NativeTerrainShapeTile[tileXCount][tileYCount];
         for (int x = 0; x < tileXCount; x++) {
             for (int y = 0; y < tileYCount; y++) {
@@ -126,10 +121,6 @@ public class TerrainShape {
         return nativeTerrainShape;
     }
 
-    public Index getTileOffset() {
-        return tileOffset;
-    }
-
     public int getTileXCount() {
         return tileXCount;
     }
@@ -139,14 +130,10 @@ public class TerrainShape {
     }
 
     public TerrainShapeTile getTerrainShapeTile(Index terrainTileIndex) {
-        if (tileOffset == null) {
-            throw new IllegalStateException("TerrainShape is not initialized");
-        }
-        Index fieldIndex = terrainTileIndex.sub(tileOffset);
-        if (fieldIndex.getX() < 0 || fieldIndex.getY() < 0 || fieldIndex.getX() >= tileXCount || fieldIndex.getY() >= tileYCount) {
+        if (terrainTileIndex.getX() < 0 || terrainTileIndex.getY() < 0 || terrainTileIndex.getX() >= tileXCount || terrainTileIndex.getY() >= tileYCount) {
             return null;
         }
-        return terrainShapeTiles[fieldIndex.getX()][fieldIndex.getY()];
+        return terrainShapeTiles[terrainTileIndex.getX()][terrainTileIndex.getY()];
     }
 
     public TerrainShapeNode getTerrainShapeNode(Index terrainNodeIndex) {
@@ -179,21 +166,20 @@ public class TerrainShape {
     }
 
     private TerrainShapeTile createTerrainShapeTile(Index terrainTileIndex) {
-        Index fieldIndex = terrainTileIndex.sub(tileOffset);
-        if (fieldIndex.getX() < 0) {
-            throw new IllegalArgumentException("fieldIndex X < 0: " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
+        if (terrainTileIndex.getX() < 0) {
+            throw new IllegalArgumentException("terrainTileIndex X < 0: " + terrainTileIndex);
         }
-        if (fieldIndex.getY() < 0) {
-            throw new IllegalArgumentException("fieldIndex Y < 0: " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
+        if (terrainTileIndex.getY() < 0) {
+            throw new IllegalArgumentException("terrainTileIndex Y < 0: " + terrainTileIndex);
         }
-        if (fieldIndex.getX() >= tileXCount) {
-            throw new IllegalArgumentException("fieldIndex X >= " + tileXCount + ": " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
+        if (terrainTileIndex.getX() >= tileXCount) {
+            throw new IllegalArgumentException("terrainTileIndex X >= " + tileXCount + ": " + terrainTileIndex);
         }
-        if (fieldIndex.getY() >= tileYCount) {
-            throw new IllegalArgumentException("fieldIndex Y >= " + tileYCount + ": " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
+        if (terrainTileIndex.getY() >= tileYCount) {
+            throw new IllegalArgumentException("terrainTileIndex Y >= " + tileYCount + ": " + terrainTileIndex);
         }
         TerrainShapeTile terrainShapeTile = new TerrainShapeTile();
-        terrainShapeTiles[fieldIndex.getX()][fieldIndex.getY()] = terrainShapeTile;
+        terrainShapeTiles[terrainTileIndex.getX()][terrainTileIndex.getY()] = terrainShapeTile;
         return terrainShapeTile;
     }
 
@@ -326,7 +312,7 @@ public class TerrainShape {
     }
 
     public Rectangle2D getPlayGround() {
-        return playGround;
+        return new Rectangle2D(DecimalPosition.NULL, planetSize);
     }
 
     private static class SimpleControl implements TerrainRegionImpactCallback.Control {

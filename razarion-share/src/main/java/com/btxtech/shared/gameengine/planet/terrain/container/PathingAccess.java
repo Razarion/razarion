@@ -4,15 +4,12 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -130,12 +127,12 @@ public class PathingAccess {
     }
 
     public boolean isNodeInBoundary(Index nodeIndex) {
-        Index fieldIndex = TerrainUtil.nodeToTile(nodeIndex).sub(terrainShape.getTileOffset());
+        Index fieldIndex = TerrainUtil.nodeToTile(nodeIndex);
         return fieldIndex.getX() >= 0 && fieldIndex.getY() >= 0 && fieldIndex.getX() < terrainShape.getTileXCount() && fieldIndex.getY() < terrainShape.getTileYCount();
     }
 
     public boolean isPositionInBoundary(DecimalPosition position) {
-        Index fieldIndex = TerrainUtil.toTile(position).sub(terrainShape.getTileOffset());
+        Index fieldIndex = TerrainUtil.toTile(position);
         return fieldIndex.getX() >= 0 && fieldIndex.getY() >= 0 && fieldIndex.getX() < terrainShape.getTileXCount() && fieldIndex.getY() < terrainShape.getTileYCount();
     }
 

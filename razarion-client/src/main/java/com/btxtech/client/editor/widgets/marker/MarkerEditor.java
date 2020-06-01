@@ -197,7 +197,6 @@ public class MarkerEditor implements EditorMouseListener {
 
     public void topView() {
         projectionTransformation.disableFovYConstrain();
-        terrainScrollHandler.setPlayGround(null);
         terrainScrollHandler.setScrollDisabled(false, null);
         camera.setTop();
     }

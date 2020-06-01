@@ -5,7 +5,6 @@ import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -88,25 +87,25 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
     private void generateMiniTerrain(TerrainEditorLoad terrainEditorLoad) {
         ctx.save();
 
-        Rectangle2D playground = terrainEditor.getPlanetConfig().getPlayGround();
-        float scale = (float) Math.min((double) RadarPanel.MINI_MAP_IMAGE_WIDTH / playground.width(), (double) RadarPanel.MINI_MAP_IMAGE_HEIGHT / playground.height());
+        DecimalPosition planetSize = terrainEditor.getPlanetConfig().getSize();
+        float scale = (float) Math.min((double) RadarPanel.MINI_MAP_IMAGE_WIDTH / planetSize.getX(), (double) RadarPanel.MINI_MAP_IMAGE_HEIGHT / planetSize.getY());
         ctx.translate(0, RadarPanel.MINI_MAP_IMAGE_HEIGHT);
         ctx.scale(scale, -scale);
 
         // Ground
         ctx.setFillStyle(GROUND_COLOR);
         ctx.beginPath();
-        ctx.rect(0, 0, (float) playground.width(), (float) playground.height());
+        ctx.rect(0, 0, (float) planetSize.getX(), (float) planetSize.getY());
         ctx.fill();
 
         // Slopes
-        drawSlope(playground, terrainEditorLoad.getSlopes());
+        drawSlope(terrainEditorLoad.getSlopes());
 
         // Terrain objects
         ctx.setFillStyle(TERRAIN_OBJECT_COLOR);
         for (TerrainObjectPosition terrainObjectPosition : terrainEditorLoad.getTerrainObjects()) {
             TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId());
-            DecimalPosition center = terrainObjectPosition.getPosition().sub(playground.getStart());
+            DecimalPosition center = terrainObjectPosition.getPosition();
             ctx.beginPath();
             ctx.arc((float) center.getX(), (float) center.getY(), (float) terrainObjectConfig.getRadius(), 0f, (float) MathHelper.ONE_RADIANT, true);
             ctx.fill();
@@ -114,55 +113,55 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
         ctx.restore();
     }
 
-    private void drawSlope(Rectangle2D playground, List<TerrainSlopePosition> terrainSlopePositions) {
+    private void drawSlope(List<TerrainSlopePosition> terrainSlopePositions) {
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainSlopePosition.getSlopeConfigId());
             if (slopeConfig.hasWaterConfigId()) {
                 if (terrainSlopePosition.isInverted()) {
-                    drawIsland(playground, terrainSlopePosition);
+                    drawIsland(terrainSlopePosition);
                 } else {
-                    drawWater(playground, terrainSlopePosition);
+                    drawWater(terrainSlopePosition);
                 }
             } else {
-                drawPlateau(playground, terrainSlopePosition, slopeConfig);
+                drawPlateau(terrainSlopePosition, slopeConfig);
             }
             if (terrainSlopePosition.getChildren() != null) {
-                drawSlope(playground, terrainSlopePosition.getChildren());
+                drawSlope(terrainSlopePosition.getChildren());
             }
         }
     }
 
-    private void drawPlateau(Rectangle2D playground, TerrainSlopePosition terrainSlopePosition, SlopeConfig slopeConfig) {
+    private void drawPlateau(TerrainSlopePosition terrainSlopePosition, SlopeConfig slopeConfig) {
         ctx.setStrokeStyle(SLOPE_COLOR);
         ctx.setLineWidth((float) SlopeModeler.sculpt(slopeConfig).getWidth());
 
-        doPolygon(playground, terrainSlopePosition);
+        doPolygon(terrainSlopePosition);
         ctx.stroke();
     }
 
-    private void drawWater(Rectangle2D playground, TerrainSlopePosition terrainSlopePosition) {
+    private void drawWater(TerrainSlopePosition terrainSlopePosition) {
         ctx.setFillStyle(WATER_COLOR);
 
-        doPolygon(playground, terrainSlopePosition);
+        doPolygon(terrainSlopePosition);
         ctx.closePath();
         ctx.fill();
     }
 
 
-    private void drawIsland(Rectangle2D playground, TerrainSlopePosition terrainSlopePosition) {
+    private void drawIsland(TerrainSlopePosition terrainSlopePosition) {
         ctx.setFillStyle(GROUND_COLOR);
 
-        doPolygon(playground, terrainSlopePosition);
+        doPolygon(terrainSlopePosition);
         ctx.closePath();
         ctx.fill();
     }
 
 
-    private void doPolygon(Rectangle2D playground, TerrainSlopePosition terrainSlopePosition) {
+    private void doPolygon(TerrainSlopePosition terrainSlopePosition) {
         ctx.beginPath();
         List<TerrainSlopeCorner> polygon = terrainSlopePosition.getPolygon();
         for (int i = 0; i < polygon.size(); i++) {
-            DecimalPosition position = polygon.get(i).getPosition().sub(playground.getStart());
+            DecimalPosition position = polygon.get(i).getPosition();
             if (i == 0) {
                 ctx.moveTo((float) position.getX(), (float) position.getY());
             } else {

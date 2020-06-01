@@ -721,7 +721,7 @@ public class WeldTestRenderer {
             for (int y = 0; y < actual.getTileYCount(); y++) {
                 TerrainShapeTile terrainShapeTile = terrainShapeTiles[x][y];
                 if (terrainShapeTile != null) {
-                    displayTerrainShapeTile(new Index(x, y).add(actual.getTileOffset()), terrainShapeTile);
+                    displayTerrainShapeTile(new Index(x, y), terrainShapeTile);
                 }
             }
         }

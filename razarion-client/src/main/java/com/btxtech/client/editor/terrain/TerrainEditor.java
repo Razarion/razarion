@@ -8,7 +8,6 @@ import com.btxtech.common.DisplayUtils;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -67,13 +66,7 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     private Span id;
     @Inject
     @DataField
-    private Span terrainTileDimension;
-    @Inject
-    @DataField
-    private Span terrainTiles;
-    @Inject
-    @DataField
-    private Span playGround;
+    private Span terrainSize;
     @Inject
     @DataField
     private Span terrainPositionLabel;
@@ -139,9 +132,7 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     public void init() {
         terrainEditor.activate();
         id.setTextContent(Integer.toString(terrainEditor.getPlanetConfig().getId()));
-        terrainTiles.setTextContent(DisplayUtils.handleRectangle(terrainEditor.getPlanetConfig().getTerrainTileDimension()));
-        terrainTileDimension.setTextContent(DisplayUtils.handleRectangle2D(TerrainUtil.toTileAbsolute(terrainEditor.getPlanetConfig().getTerrainTileDimension())));
-        playGround.setTextContent(DisplayUtils.handleRectangle2D(terrainEditor.getPlanetConfig().getPlayGround()));
+        terrainSize.setTextContent(DisplayUtils.handleDecimalPosition(terrainEditor.getPlanetConfig().getSize()));
         slopeRadio.setChecked(terrainEditor.getCreationMode());
         terrainObjectRadio.setChecked(!terrainEditor.getCreationMode());
         cursorRadius.setValue(terrainEditor.getCursorRadius());
@@ -159,7 +150,7 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
         drivewayMode.setChecked(terrainEditor.isDrivewayMode());
         drivewaySelection.addValueChangeHandler(event -> terrainEditor.setDriveway4New(drivewaySelection.getValue()));
         elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
-            if(objectNameIds == null || objectNameIds.isEmpty()) {
+            if (objectNameIds == null || objectNameIds.isEmpty()) {
                 return;
             }
             ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
@@ -169,7 +160,7 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
         }, exceptionHandler.restErrorHandler("readDrivewayObjectNameIds failed: ")).readDrivewayObjectNameIds();
         terrainObjectSelection.addValueChangeHandler(event -> terrainEditor.setTerrainObject4New(terrainObjectSelection.getValue()));
         elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
-            if(objectNameIds == null || objectNameIds.isEmpty()) {
+            if (objectNameIds == null || objectNameIds.isEmpty()) {
                 return;
             }
             ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
@@ -231,7 +222,6 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @EventHandler("topViewButton")
     private void topViewButtonClick(ClickEvent event) {
         projectionTransformation.disableFovYConstrain();
-        terrainScrollHandler.setPlayGround(null);
         terrainScrollHandler.setScrollDisabled(false, null);
         camera.setTop();
     }

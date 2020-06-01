@@ -9,6 +9,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -20,6 +21,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
 import com.fasterxml.jackson.databind.ser.std.StdKeySerializer;
 import org.junit.Assert;
 
@@ -28,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer.TYPE_INT;
@@ -102,6 +107,8 @@ public class AssertTerrainTile {
 
             boolean equals = expectedNode.equals(actualNode);
             if (!equals) {
+                displayDifferences(expectedNode, actualNode, JsonPointer.compile(null));
+                displayDifferences(actualNode, expectedNode, JsonPointer.compile(null));
                 throw new AssertionError("\nexpected: " + expectedNode + "\nactual  : " + actualNode);
             }
 
@@ -109,6 +116,32 @@ public class AssertTerrainTile {
             throw new RuntimeException(e);
         }
     }
+
+    public void displayDifferences(JsonNode expectedNode, JsonNode actualNode, JsonPointer jsonPointer) {
+        if (expectedNode instanceof ObjectNode) {
+            ObjectNode objectNode = (ObjectNode) expectedNode;
+            for (Iterator<String> stringIterator = objectNode.fieldNames(); stringIterator.hasNext(); ) {
+                String fieldName = stringIterator.next();
+                JsonNode child = expectedNode.get(fieldName);
+                displayDifferences(child, actualNode, jsonPointer.append(JsonPointer.compile("/" + fieldName)));
+            }
+        } else if (expectedNode instanceof ArrayNode) {
+            ArrayNode arrayNode = (ArrayNode) expectedNode;
+            for (int i = 0; i < arrayNode.size(); i++) {
+                JsonNode child = arrayNode.get(i);
+                displayDifferences(child, actualNode, jsonPointer.append(JsonPointer.compile("/" + i)));
+            }
+        } else if (expectedNode instanceof ValueNode) {
+            ValueNode valueNodeExpected = (ValueNode) expectedNode;
+            ValueNode actualNodeExpected = (ValueNode) actualNode.at(jsonPointer);
+            if (!valueNodeExpected.equals(actualNodeExpected)) {
+                System.out.println(jsonPointer + " expected: " + valueNodeExpected + " actual: " + actualNodeExpected);
+            }
+        } else {
+            throw new IllegalArgumentException(expectedNode.toString());
+        }
+    }
+
 
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName, String directoryName) {
         try {

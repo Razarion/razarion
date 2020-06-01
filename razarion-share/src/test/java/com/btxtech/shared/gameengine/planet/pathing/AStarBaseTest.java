@@ -1,16 +1,14 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
@@ -106,8 +104,7 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setRadius(10));
 
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
-        planetConfig.setPlayGround(new Rectangle2D(50, 50, 5000, 5000));
-        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 32, 32));
+        planetConfig.setSize(new DecimalPosition(5120, 512));
         List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(76, 30))));
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(114, 28))));

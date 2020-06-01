@@ -18,24 +18,25 @@ public abstract class AbstractGameCoordinates extends AbstractMiniMap {
 
     @Override
     protected void setupTransformation(double zoom, CanvasRenderingContext2D ctx, int width, int height) {
-        Rectangle2D playGround = gameUiControl.getPlanetConfig().getPlayGround();
+        DecimalPosition planetSize = gameUiControl.getPlanetConfig().getSize();
 
         double scale = setupGameScale();
-        DecimalPosition centerOffset = getViewField().calculateCenter().sub(playGround.getStart());
+        DecimalPosition centerOffset = getViewField().calculateCenter();
 
-        float xShift = setupXShift(width, playGround, scale, centerOffset);
-        float yShift = setupYShift(height, playGround, scale, centerOffset);
+        float xShift = setupXShift(width, planetSize.getX(), scale, centerOffset);
+        float yShift = setupYShift(height, planetSize.getY(), scale, centerOffset);
 
         ctx.scale((float) scale, (float) -scale);
         ctx.translate(-xShift, -yShift);
     }
 
     public DecimalPosition canvasToReal(DecimalPosition canvasPosition) {
+        DecimalPosition planetSize = gameUiControl.getPlanetConfig().getSize();
+
         double scale = setupGameScale();
         DecimalPosition real = canvasPosition.divide(scale, -scale);
-        Rectangle2D playGround = gameUiControl.getPlanetConfig().getPlayGround();
-        DecimalPosition centerOffset = getViewField().calculateCenter().sub(playGround.getStart());
-        real = real.add(setupXShift(getWidth(), playGround, scale, centerOffset), setupYShift(getHeight(), playGround, scale, centerOffset));
+        DecimalPosition centerOffset = getViewField().calculateCenter();
+        real = real.add(setupXShift(getWidth(), planetSize.getX(), scale, centerOffset), setupYShift(getHeight(), planetSize.getY(), scale, centerOffset));
         return real;
     }
 
@@ -47,30 +48,30 @@ public abstract class AbstractGameCoordinates extends AbstractMiniMap {
         return (float) (pixels / setupGameScale());
     }
 
-    private float setupXShift(int width, Rectangle2D playGround, double scale, DecimalPosition centerOffset) {
+    private float setupXShift(int width, double playWidth, double scale, DecimalPosition centerOffset) {
         float xDownerLimit = (float) (width / scale / 2.0);
-        float xUpperLimit = (float) (playGround.width() - xDownerLimit);
+        float xUpperLimit = (float) (playWidth - xDownerLimit);
         float xShift;
         if (centerOffset.getX() < xDownerLimit) {
-            xShift = (float) playGround.startX();
+            xShift = 0.0f;
         } else if (centerOffset.getX() > xUpperLimit) {
-            xShift = (float) (playGround.startX() + xUpperLimit - xDownerLimit);
+            xShift = xUpperLimit - xDownerLimit;
         } else {
-            xShift = (float) (centerOffset.getX() + playGround.startX() - xDownerLimit);
+            xShift = (float) (centerOffset.getX() - xDownerLimit);
         }
         return xShift;
     }
 
-    private float setupYShift(int height, Rectangle2D playGround, double scale, DecimalPosition centerOffset) {
+    private float setupYShift(int height, double playHeight, double scale, DecimalPosition centerOffset) {
         float yDownerLimit = (float) (height / scale / 2.0);
-        float yUpperLimit = (float) (playGround.height() - yDownerLimit);
+        float yUpperLimit = (float) (playHeight - yDownerLimit);
         float yShift;
         if (centerOffset.getY() < yDownerLimit) {
-            yShift = (float) (playGround.startY() + playGround.height() - yUpperLimit + yDownerLimit);
+            yShift = (float) (playHeight - yUpperLimit + yDownerLimit);
         } else if (centerOffset.getY() > yUpperLimit) {
-            yShift = (float) (playGround.startY() + playGround.height());
+            yShift = (float) playHeight;
         } else {
-            yShift = (float) (centerOffset.getY() + playGround.startY() + yDownerLimit);
+            yShift = (float) (centerOffset.getY() + yDownerLimit);
         }
         return yShift;
     }

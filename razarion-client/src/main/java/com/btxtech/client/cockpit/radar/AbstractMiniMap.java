@@ -1,6 +1,6 @@
 package com.btxtech.client.cockpit.radar;
 
-import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
@@ -62,8 +62,8 @@ public abstract class AbstractMiniMap {
     }
 
     protected double setupGameScale() {
-        Rectangle2D playGround = gameUiControl.getPlanetConfig().getPlayGround();
-        double scale = (float) Math.min(width / playGround.width(), height / playGround.height());
+        DecimalPosition planetSize = gameUiControl.getPlanetConfig().getSize();
+        double scale = (float) Math.min(width / planetSize.getX(), height / planetSize.getY());
         scale *= zoom;
         return scale;
     }

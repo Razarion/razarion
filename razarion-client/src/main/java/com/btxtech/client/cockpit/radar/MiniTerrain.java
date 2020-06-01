@@ -54,7 +54,7 @@ public class MiniTerrain extends AbstractMiniMap {
         imageScale *= zoom;
         ctx.scale((float) imageScale, (float) imageScale);
         double gameScale = setupGameScale();
-        DecimalPosition centerOffset = getViewField().calculateCenter().sub(gameUiControl.getPlanetConfig().getPlayGround().getStart()).divide(imageScale / gameScale);
+        DecimalPosition centerOffset = getViewField().calculateCenter().divide(imageScale / gameScale);
 
         float xDownerLimit = (float) (width / imageScale / 2.0);
         float xUpperLimit = RadarPanel.MINI_MAP_IMAGE_WIDTH - xDownerLimit;

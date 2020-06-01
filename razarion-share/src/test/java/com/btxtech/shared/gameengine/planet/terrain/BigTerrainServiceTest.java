@@ -1,13 +1,12 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import org.junit.Test;
 
@@ -70,8 +69,7 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
         };
 
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
-        planetConfig.setPlayGround(new Rectangle2D(50, 50, 5000, 5000));
-        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 32, 32));
+        planetConfig.setSize(new DecimalPosition(5120, 512));
 
         setupTerrainTypeService(slopeConfigs, null, planetConfig, terrainSlopePositions, null, null);
     }

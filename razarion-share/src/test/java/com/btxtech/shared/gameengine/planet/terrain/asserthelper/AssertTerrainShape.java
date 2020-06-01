@@ -41,11 +41,6 @@ public interface AssertTerrainShape {
     }
 
     static void compareTerrainShape(NativeTerrainShape expected, NativeTerrainShape actual) {
-        Assert.assertEquals("tileXCount", expected.tileXCount, actual.tileXCount);
-        Assert.assertEquals("tileYCount", expected.tileYCount, actual.tileYCount);
-        Assert.assertEquals("tileXOffset", expected.tileXOffset, actual.tileXOffset);
-        Assert.assertEquals("tileYOffset", expected.tileYOffset, actual.tileYOffset);
-
         if (expected.nativeTerrainShapeTiles == null && actual.nativeTerrainShapeTiles == null) {
             return;
         }

@@ -5,8 +5,7 @@ import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.shared.datatypes.Color;
-import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -56,19 +55,10 @@ public class PlanetEntity {
     @JoinColumn(nullable = false, name = "planet")
     private List<TerrainObjectPositionEntity> terrainObjectPositionEntities;
     @AttributeOverrides({
-            @AttributeOverride(name = "start.x", column = @Column(name = "terrainTileDimensionStartX")),
-            @AttributeOverride(name = "start.y", column = @Column(name = "terrainTileDimensionStartY")),
-            @AttributeOverride(name = "end.x", column = @Column(name = "terrainTileDimensionEndX")),
-            @AttributeOverride(name = "end.y", column = @Column(name = "terrainTileDimensionEndY")),
+            @AttributeOverride(name = "x", column = @Column(name = "width")),
+            @AttributeOverride(name = "y", column = @Column(name = "height")),
     })
-    private Rectangle terrainTileDimension;
-    @AttributeOverrides({
-            @AttributeOverride(name = "start.x", column = @Column(name = "playGroundStartX")),
-            @AttributeOverride(name = "start.y", column = @Column(name = "playGroundStartY")),
-            @AttributeOverride(name = "end.x", column = @Column(name = "playGroundEndX")),
-            @AttributeOverride(name = "end.y", column = @Column(name = "playGroundEndY")),
-    })
-    private Rectangle2D playGround;
+    private DecimalPosition size;
     @ElementCollection
     @MapKeyJoinColumn(name = "baseItemTypeEntityId")
     @CollectionTable(name = "PLANET_LIMITATION")
@@ -111,10 +101,9 @@ public class PlanetEntity {
         PlanetConfig planetConfig = new PlanetConfig()
                 .id(id)
                 .internalName(internalName)
+                .size(size)
                 .houseSpace(houseSpace)
-                .startRazarion(startRazarion)
-                .terrainTileDimension(terrainTileDimension)
-                .playGround(playGround);
+                .startRazarion(startRazarion);
         if (groundConfig != null) {
             planetConfig.setGroundConfigId(groundConfig.getId());
         }
@@ -130,8 +119,7 @@ public class PlanetEntity {
         this.groundConfig = groundConfig;
         houseSpace = planetConfig.getHouseSpace();
         startRazarion = planetConfig.getStartRazarion();
-        terrainTileDimension = planetConfig.getTerrainTileDimension();
-        playGround = planetConfig.getPlayGround();
+        size = planetConfig.getSize();
         this.startBaseItemType = startBaseItemType;
         if (this.itemTypeLimitation == null) {
             this.itemTypeLimitation = new HashMap<>();
@@ -157,7 +145,7 @@ public class PlanetEntity {
     }
 
     public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {
-        if(terrainSlopePositionEntities == null) {
+        if (terrainSlopePositionEntities == null) {
             terrainSlopePositionEntities = new ArrayList<>();
         }
         return terrainSlopePositionEntities;

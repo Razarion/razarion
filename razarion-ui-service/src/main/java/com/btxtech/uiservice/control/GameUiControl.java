@@ -152,7 +152,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
                 Alarm.Type.INVALID_GAME_UI_CONTEXT,
                 "No planet",
                 coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
-        terrainScrollHandler.setPlayGround(getPlanetConfig().getPlayGround());
+        terrainScrollHandler.setPlanetSize(getPlanetConfig().getSize());
     }
 
     public void closeConnection() {
@@ -165,7 +165,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void initWarm() {
         abstractServerSystemConnection.sendGameSessionUuid();
         gameEngineMode = coldGameUiContext.getWarmGameUiContext().getGameEngineMode();
-        terrainScrollHandler.setPlayGround(getPlanetConfig().getPlayGround());
+        terrainScrollHandler.setPlanetSize(getPlanetConfig().getSize());
     }
 
     public void start() {

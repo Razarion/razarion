@@ -1,7 +1,6 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -312,8 +311,7 @@ public final class FallbackConfig {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.id(PLANET_ID);
         planetConfig.setItemTypeLimitation(setupPlanetItemTypeLimitations());
-        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 6, 6));
-        planetConfig.setPlayGround(new Rectangle2D(0, 0, 1000, 1000));
+        planetConfig.setSize(new DecimalPosition(960, 960));
         planetConfig.setStartBaseItemTypeId(BUILDER_ITEM_TYPE_ID);
         return planetConfig;
     }

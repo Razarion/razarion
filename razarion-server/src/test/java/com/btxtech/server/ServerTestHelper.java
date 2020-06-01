@@ -44,8 +44,6 @@ import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -456,9 +454,7 @@ public class ServerTestHelper {
 
         runInTransaction(entityManager -> {
             PlanetEntity planetEntity = new PlanetEntity();
-            planetEntity.fromPlanetConfig(new PlanetConfig()
-                            .terrainTileDimension(new Rectangle(0, 0, 6, 6))
-                            .playGround(new Rectangle2D(0, 0, 960, 960))
+            planetEntity.fromPlanetConfig(new PlanetConfig().size(new DecimalPosition(960, 960))
                     , entityManager.find(GroundConfigEntity.class, GROUND_1_ID), null, Collections.emptyMap());
             planetEntity.getTerrainSlopePositionEntities().add(createLandSlope());
             entityManager.persist(planetEntity);

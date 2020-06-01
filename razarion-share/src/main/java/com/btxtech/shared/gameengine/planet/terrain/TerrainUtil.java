@@ -26,6 +26,10 @@ public interface TerrainUtil {
         return absolute.divide(TERRAIN_TILE_ABSOLUTE_LENGTH).toIndexFloor();
     }
 
+    static Index toTileCeil(DecimalPosition absolute) {
+        return absolute.divide(TERRAIN_TILE_ABSOLUTE_LENGTH).toIndexCeil();
+    }
+
     static DecimalPosition toTileAbsolute(Index tile) {
         return new DecimalPosition(tile.scale(TERRAIN_TILE_ABSOLUTE_LENGTH));
     }

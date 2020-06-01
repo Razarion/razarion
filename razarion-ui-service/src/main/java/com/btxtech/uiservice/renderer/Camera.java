@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
@@ -55,6 +56,14 @@ public class Camera {
         translateX = x;
         translateY = y;
         setupMatrices();
+    }
+
+    public void setTranslateXY(DecimalPosition xy) {
+        setTranslateXY(xy.getX(), xy.getY());
+    }
+
+    public DecimalPosition getTranslateXY() {
+        return new DecimalPosition(translateX, translateY);
     }
 
     public double getTranslateZ() {
