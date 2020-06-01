@@ -17,7 +17,6 @@ import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLRenderingContext;
 import jsinterop.base.Js;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -71,7 +70,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 //    private WebGLUniformLocation terrainMarker2DPoints;
 //    private WebGLUniformLocation terrainMarkerAnimation;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.enableOESStandartDerivatives();
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader()).enableTransformation(true).enableReceiveShadow());

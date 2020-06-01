@@ -15,6 +15,8 @@ public abstract class AbstractRenderUnit<D> {
     private AbstractRenderComposite<AbstractRenderUnit<D>, D> abstractRenderComposite;
     private int elementCount;
 
+    public abstract void init();
+
     @Deprecated
     public abstract void setupImages();
 
@@ -67,5 +69,27 @@ public abstract class AbstractRenderUnit<D> {
     // Override in subclasses
     public void dispose() {
 
+    }
+
+    /**
+     * Override in subclasses
+     * The defines in the vertex shader.
+     * "#deine "+ define + "\n"
+     *
+     * @return define names
+     */
+    public List<String> getGlslVertexDefines() {
+        return null;
+    }
+
+    /**
+     * Override in subclasses
+     * The defines in the fragment shader.
+     * "#deine "+ define + "\n"
+     *
+     * @return define names
+     */
+    public List<String> getGlslFragmentDefines() {
+        return null;
     }
 }

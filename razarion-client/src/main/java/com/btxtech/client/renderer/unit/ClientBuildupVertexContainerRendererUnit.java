@@ -17,7 +17,6 @@ import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -50,7 +49,7 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
     private WebGLUniformLocation characterRepresenting;
     private WebGLUniformLocation characterRepresentingColor;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.buildupVertexContainerVertexShader(), Shaders.INSTANCE.buildupVertexContainerFragmentShader()).enableTransformation(true).enableReceiveShadow());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

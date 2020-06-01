@@ -18,7 +18,6 @@ import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -44,7 +43,7 @@ public class ShadowMonitorRendererUnit extends AbstractRenderUnit<Void> {
     private WebGlUniformTexture textureDepth;
     private WebGLUniformLocation uDeepMap;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.monitorVertexShader(), Shaders.INSTANCE.monitorFragmentShader()));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

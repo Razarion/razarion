@@ -1,25 +1,19 @@
 package com.btxtech.client.editor.widgets.marker;
 
-import com.btxtech.client.editor.renderer.MonitorRenderTask;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Color;
-import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
-import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +28,7 @@ public class TerrainMarkerEditorRendererUnit extends AbstractRenderUnit<List<Ver
     private VertexShaderAttribute positions;
     private WebGLUniformLocation colorUniformLocation;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.rgbaVpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

@@ -12,7 +12,6 @@ import com.btxtech.uiservice.renderer.task.itemplacer.AbstractBaseItemPlacerCirc
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
@@ -30,8 +29,8 @@ public class ClientBaseItemPlacerCircleRendererUnit extends AbstractBaseItemPlac
     private WebGLUniformLocation colorUniformLocation;
     private WebGLUniformLocation modelMatrix;
 
-    @PostConstruct
-    public void postConstruct() {
+    @Override
+    public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.rgbaMvpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);

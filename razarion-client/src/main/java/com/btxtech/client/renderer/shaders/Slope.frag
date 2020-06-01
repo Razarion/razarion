@@ -17,10 +17,10 @@ vec3 correctedDirectLightDirection;
 // Shadow
 varying vec4 vShadowCoord;
 
-//-$$$-INCLUDE phong struct
+//-$$$-INCLUDE-CHUNK phong struct
 uniform PhongMaterial material;
 
-//-$$$-INCLUDE phong functions
+//-$$$-INCLUDE-CHUNK phong functions
 
 void main(void) {
     correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));

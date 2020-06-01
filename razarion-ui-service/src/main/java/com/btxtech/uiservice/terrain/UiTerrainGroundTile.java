@@ -67,49 +67,4 @@ public class UiTerrainGroundTile {
     public GroundConfig getGroundConfig() {
         return groundConfig;
     }
-
-    public Integer getSplattingId() {
-        // TODO return groundSkeletonConfig.getSplatting().getId();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public Integer getBottomTextureId() {
-        // TODO return groundSkeletonConfig.getBottomTextureId();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public Integer getBottomBmId() {
-        // TODO return groundSkeletonConfig.getBottomBmId();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getTopTextureScale() {
-        // TODO return groundSkeletonConfig.getTopTextureScale();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getSplattingScale() {
-        // TODO  return groundSkeletonConfig.getSplatting().getScale();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getBottomTextureScale() {
-        // TODO return groundSkeletonConfig.getBottomTextureScale();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getBottomBmScale() {
-        // TODO return groundSkeletonConfig.getBottomBmScale();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getBottomBmDepth() {
-        // TODO return groundSkeletonConfig.getBottomBmDepth();
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public double getSplattingGroundBmMultiplicator() {
-        // Todo return groundSkeletonConfig.getSplattingGroundBmMultiplicator();
-        return 0;
-    }
 }

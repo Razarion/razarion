@@ -29,6 +29,7 @@ public class CommonRenderComposite<U extends AbstractRenderUnit<D>, D> extends A
     public U setRenderUnit(Class<U> clazz) {
         U u = instance.select(clazz).get();
         setRenderUnit(u);
+        u.init();
         return u;
     }
 

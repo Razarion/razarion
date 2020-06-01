@@ -13,7 +13,7 @@ uniform vec3 ambientLightColor;
 // Shadow
 varying vec4 vShadowCoord;
 
-#define RENDER_GROUND_BOTTOM_TEXTURE
+//-$$$-INCLUDE-DEFINES
 
 struct PhongMaterial {
     sampler2D texture;

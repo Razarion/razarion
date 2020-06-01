@@ -14,10 +14,10 @@ uniform vec3 ambientLightColor;
 // Shadow
 varying vec4 vShadowCoord;
 
-//-$$$-INCLUDE phong struct
+//-$$$-INCLUDE-CHUNK phong struct
 uniform PhongMaterial material;
 
-//-$$$-INCLUDE phong functions
+//-$$$-INCLUDE-CHUNK phong functions
 
 void main(void) {
     gl_FragColor = phong(material);

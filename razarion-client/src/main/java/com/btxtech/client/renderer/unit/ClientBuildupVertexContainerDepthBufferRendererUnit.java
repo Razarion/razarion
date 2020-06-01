@@ -15,7 +15,6 @@ import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -40,7 +39,7 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
     private WebGLUniformLocation progressZUniformLocation;
     private WebGLUniformLocation characterRepresenting;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.buildupVertexContainerDeptBufferVertexShader(), Shaders.INSTANCE.buildupVertexContainerDeptBufferFragmentShader()).enableShadowTransformation());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

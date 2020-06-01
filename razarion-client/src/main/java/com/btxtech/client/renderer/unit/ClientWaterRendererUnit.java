@@ -13,7 +13,6 @@ import com.btxtech.uiservice.terrain.UiTerrainWaterTile;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -44,7 +43,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     private WebGLUniformLocation terrainMarker2DPoints;
     private WebGLUniformLocation terrainMarkerAnimation;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader()).enableTransformation(true));
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

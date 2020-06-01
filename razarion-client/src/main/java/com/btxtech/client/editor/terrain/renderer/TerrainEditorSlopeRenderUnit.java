@@ -16,7 +16,6 @@ import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class TerrainEditorSlopeRenderUnit extends AbstractRenderUnit<ModifiedSlo
     private ModifiedSlope modifiedSlope;
     private WebGLUniformLocation uColor;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainEditorVertexShader(), Shaders.INSTANCE.terrainEditorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

@@ -228,7 +228,11 @@ public class WebGlFacade {
     }
 
     public WebGlPhongMaterial createPhongMaterial(PhongMaterialConfig phongMaterialConfig, String variableName) {
-        return new WebGlPhongMaterial(this, phongMaterialConfig, variableName);
+        if (phongMaterialConfig != null) {
+            return new WebGlPhongMaterial(this, phongMaterialConfig, variableName);
+        } else {
+            return null;
+        }
     }
 
     public WebGlSplatting createSplatting(GroundSplattingConfig splatting, String variableName) {

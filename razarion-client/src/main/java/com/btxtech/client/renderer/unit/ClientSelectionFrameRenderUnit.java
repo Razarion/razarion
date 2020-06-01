@@ -11,7 +11,6 @@ import com.btxtech.uiservice.renderer.task.selection.AbstractSelectionFrameRende
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
@@ -28,8 +27,8 @@ public class ClientSelectionFrameRenderUnit extends AbstractSelectionFrameRender
     private VertexShaderAttribute positions;
     private WebGLUniformLocation colorUniformLocation;
 
-    @PostConstruct
-    public void postConstruct() {
+    @Override
+    public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.rgbaVpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);

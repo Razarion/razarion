@@ -10,7 +10,6 @@ import com.btxtech.uiservice.terrain.UiTerrainGroundTile;
 import elemental2.webgl.WebGLRenderingContext;
 import jsinterop.base.Js;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -26,7 +25,7 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
     private WebGlFacade webGlFacade;
     private Vec3Float32ArrayShaderAttribute vertices;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.depthBufferVPVertexShader(), Shaders.INSTANCE.depthBufferVPFragmentShader()).enableShadowTransformation());
         vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

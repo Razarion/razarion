@@ -15,7 +15,6 @@ import com.btxtech.uiservice.renderer.task.particle.AbstractParticleRenderUnit;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
@@ -39,7 +38,7 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
     private WebGLUniformLocation uProgress;
     private WebGLUniformLocation uXColorRampOffset;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleDeptBufferFragmentShader()).enableShadowTransformation());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

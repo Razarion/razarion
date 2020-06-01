@@ -10,17 +10,31 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("ALL")
 public class GlslLibrarianTest {
 
     @Test
-    public void link() {
+    public void linkChunk() {
         GlslLibrarian glslLibrarian = new GlslLibrarian(setupShaderLibrary(), System.lineSeparator());
-        String actual = glslLibrarian.link(createTextResource());
-        String expected = resource2Text("Result.frag", GlslLibrarianTest.class);
-        Assert.assertEquals(resource2Text("Result.frag", GlslLibrarianTest.class), actual);
+        String actual = glslLibrarian.link(createTextResource("ShaderChunk.frag", GlslLibrarianTest.class), null);
+        Assert.assertEquals(resource2Text("ResultChunk.frag", GlslLibrarianTest.class), actual);
+    }
+
+    @Test
+    public void linkDefines() {
+        GlslLibrarian glslLibrarian = new GlslLibrarian(setupShaderLibrary(), System.lineSeparator());
+        String actual = glslLibrarian.link(createTextResource("ShaderDefines.frag", GlslLibrarianTest.class), Arrays.asList("RENDER_BOTTOM"));
+        Assert.assertEquals(resource2Text("ResultDefines.frag", GlslLibrarianTest.class), actual);
+    }
+
+    @Test
+    public void linkNullDefines() {
+        GlslLibrarian glslLibrarian = new GlslLibrarian(setupShaderLibrary(), System.lineSeparator());
+        String actual = glslLibrarian.link(createTextResource("ShaderNullDefines.frag", GlslLibrarianTest.class), null);
+        Assert.assertEquals(resource2Text("ResultNullDefines.frag", GlslLibrarianTest.class), actual);
     }
 
     private ClientBundleWithLookup setupShaderLibrary() {
@@ -51,11 +65,11 @@ public class GlslLibrarianTest {
         };
     }
 
-    private TextResource createTextResource() {
+    private TextResource createTextResource(String location, Class clazz) {
         return new TextResource() {
             @Override
             public String getText() {
-                return resource2Text("Shader.frag", GlslLibrarianTest.class);
+                return resource2Text(location, clazz);
             }
 
             @Override

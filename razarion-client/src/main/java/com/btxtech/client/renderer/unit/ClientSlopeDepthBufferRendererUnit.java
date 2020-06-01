@@ -9,7 +9,6 @@ import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 import elemental2.webgl.WebGLRenderingContext;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -25,7 +24,7 @@ public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUni
     private WebGlFacade webGlFacade;
     private Vec3Float32ArrayShaderAttribute vertices;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.depthBufferVPVertexShader(), Shaders.INSTANCE.depthBufferVPFragmentShader()).enableShadowTransformation());
         vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

@@ -15,7 +15,6 @@ import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -45,7 +44,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     private WebGLUniformLocation characterRepresenting;
     private WebGLUniformLocation characterRepresentingColor;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.vertexContainerVertexShader(), Shaders.INSTANCE.vertexContainerFragmentShader()).enableTransformation(true).enableReceiveShadow());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

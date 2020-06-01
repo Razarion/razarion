@@ -11,7 +11,6 @@ import com.btxtech.uiservice.terrain.UiTerrainGroundTile;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -28,7 +27,7 @@ public class ClientGroundNormRendererUnit extends AbstractGroundRendererUnit {
     private Vec3Float32ArrayShaderAttribute vertices;
     private WebGLUniformLocation modelMatrix;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.debugVectorVertexShader(), Shaders.INSTANCE.debugVectorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

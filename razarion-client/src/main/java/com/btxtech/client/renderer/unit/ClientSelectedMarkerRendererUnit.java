@@ -12,7 +12,6 @@ import com.btxtech.uiservice.renderer.task.selection.AbstractSelectedMarkerRende
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
@@ -32,8 +31,8 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
     private WebGLUniformLocation modelMatrix;
     private WebGLUniformLocation uRadius;
 
-    @PostConstruct
-    public void postConstruct() {
+    @Override
+    public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.itemMarkerFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");

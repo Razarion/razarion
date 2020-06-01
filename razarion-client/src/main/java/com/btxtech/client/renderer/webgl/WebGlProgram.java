@@ -42,8 +42,8 @@ public class WebGlProgram {
     private WebGLUniformLocation shadowMatrixUniformLocation;
 
     public void createProgram(WebGlFacadeConfig webGlFacadeConfig) {
-        vs = createShader(WebGLRenderingContext.VERTEX_SHADER, glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode()));
-        fs = createShader(WebGLRenderingContext.FRAGMENT_SHADER, glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode()));
+        vs = createShader(WebGLRenderingContext.VERTEX_SHADER, glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode(), webGlFacadeConfig.getAbstractRenderUnit().getGlslVertexDefines()));
+        fs = createShader(WebGLRenderingContext.FRAGMENT_SHADER, glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode(), webGlFacadeConfig.getAbstractRenderUnit().getGlslFragmentDefines()));
         program = createAndUseProgram(vs, fs);
 
         if (webGlFacadeConfig.isTransformation()) {

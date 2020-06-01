@@ -16,7 +16,6 @@ import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class TerrainEditorTerrainObjectRendererUnit extends AbstractRenderUnit<V
     private WebGLUniformLocation uDelete;
     private WebGLUniformLocation uHover;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainObjectEditorVertexShader(), Shaders.INSTANCE.terrainObjectEditorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

@@ -17,7 +17,6 @@ import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class TerrainEditorCursorRenderUnit extends AbstractRenderUnit<Polygon2D>
     private WebGLUniformLocation modelMatrix;
     private WebGLUniformLocation uCursorType;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainEditorCursorVertexShader(), Shaders.INSTANCE.terrainEditorCursorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);

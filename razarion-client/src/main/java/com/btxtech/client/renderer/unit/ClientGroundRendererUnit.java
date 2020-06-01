@@ -18,9 +18,10 @@ import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLRenderingContext;
 import jsinterop.base.Js;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -46,7 +47,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 //    private WebGLUniformLocation terrainMarker2DPoints;
 //    private WebGLUniformLocation terrainMarkerAnimation;
 
-    @PostConstruct
+    @Override
     public void init() {
         webGlFacade.enableOESStandartDerivatives();
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader()).enableTransformation(true).enableReceiveShadow());
@@ -64,11 +65,13 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 
     @Override
     protected void fillBuffersInternal(UiTerrainGroundTile uiTerrainGroundTile) {
-        AlarmRaiser.onNull(uiTerrainGroundTile.getGroundConfig(), Alarm.Type.RENDER_GROUND_FAILED, "No GroundConfig in Planet: ", gameUiControl.getPlanetConfig().getId());
+        AlarmRaiser.onNull(uiTerrainGroundTile.getGroundConfig(), Alarm.Type.RENDER_GROUND_FAILED, "No GroundConfig in UiTerrainGroundTile: ", gameUiControl.getPlanetConfig().getId());
         AlarmRaiser.onNull(uiTerrainGroundTile.getGroundConfig().getTopMaterial(), Alarm.Type.RENDER_GROUND_FAILED, "No top material on GroundConfig: ", uiTerrainGroundTile.getGroundConfig().getId());
         topMaterial = webGlFacade.createPhongMaterial(uiTerrainGroundTile.getGroundConfig().getTopMaterial(), "topMaterial");
         bottomMaterial = webGlFacade.createPhongMaterial(uiTerrainGroundTile.getGroundConfig().getBottomMaterial(), "bottomMaterial");
-        splatting = webGlFacade.createSplatting(uiTerrainGroundTile.getGroundConfig().getSplatting(), "splatting");
+        if (bottomMaterial != null) {
+            splatting = webGlFacade.createSplatting(uiTerrainGroundTile.getGroundConfig().getSplatting(), "splatting");
+        }
 
         Float32Array groundPositions = Js.uncheckedCast(uiTerrainGroundTile.getGroundPositions());
         positions.fillFloat32Array(groundPositions);
@@ -88,8 +91,10 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         normals.activate();
 
         topMaterial.activate();
-        bottomMaterial.activate();
-        splatting.activate();
+        if (bottomMaterial != null && splatting != null) {
+            bottomMaterial.activate();
+            splatting.activate();
+        }
 
 //        if (inGameQuestVisualizationService.isQuestInGamePlaceVisualization()) {
 //            terrainMarkerTexture.activate();
@@ -106,5 +111,13 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     public void dispose() {
         positions.deleteBuffer();
         normals.deleteBuffer();
+    }
+
+    @Override
+    public List<String> getGlslFragmentDefines() {
+        if (getRenderData().getGroundConfig().getBottomMaterial() != null && getRenderData().getGroundConfig().getSplatting() != null) {
+            return Collections.singletonList("RENDER_GROUND_BOTTOM_TEXTURE");
+        }
+        return null;
     }
 }

@@ -22,7 +22,8 @@ public class WebGlProgramService {
     private Map<String, WebGlProgram> webGlProgramCache = new HashMap<>();
 
     public WebGlProgram getWebGlProgram(WebGlFacadeConfig webGlFacadeConfig) {
-        String key = glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode()) + glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode());
+        String key = glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode(), webGlFacadeConfig.getAbstractRenderUnit().getGlslVertexDefines()) +
+                glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode(), webGlFacadeConfig.getAbstractRenderUnit().getGlslFragmentDefines());
         WebGlProgram webGlProgram = webGlProgramCache.get(key);
         if (webGlProgram != null) {
             return webGlProgram;
