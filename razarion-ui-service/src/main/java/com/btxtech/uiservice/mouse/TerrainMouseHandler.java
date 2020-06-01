@@ -234,6 +234,7 @@ public class TerrainMouseHandler {
                 fovYStep = -FOV_Y_STEP;
             }
             projectionTransformation.setFovYSave(projectionTransformation.getFovY() - fovYStep);
+            terrainScrollHandler.onFovChanged();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }

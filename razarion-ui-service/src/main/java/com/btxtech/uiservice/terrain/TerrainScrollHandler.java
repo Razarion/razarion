@@ -3,7 +3,6 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.ViewFieldConfig;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.renderer.Camera;
@@ -34,8 +33,6 @@ public class TerrainScrollHandler {
     private static final int SCROLL_TIMER_DELAY = 30;
     private static final double SCROLL_SPEED = 60; // Meter per seconds
     // private Logger logger = Logger.getLogger(TerrainScrollHandler.class.getName());
-    @Inject
-    private ExceptionHandler exceptionHandler;
     @Inject
     private SimpleExecutorService simpleExecutorService;
     @Inject
@@ -135,6 +132,10 @@ public class TerrainScrollHandler {
             scrollDirectionYMouse = tmpScrollDirectionY;
             executeAutoScroll();
         }
+    }
+
+    public void onFovChanged() {
+        moveDelta(DecimalPosition.NULL);
     }
 
     private void executeAutoScroll() {
