@@ -29,7 +29,7 @@ public class WebGlPhongMaterial extends WebGlStruct {
         }
         scale = webGlFacade.getUniformLocation(variableName(UNIFORM_LOCATION_SCALE));
         if (phongMaterialConfig.getBumpMapId() != null) {
-            bumpMap = webGlFacade.createWebGLBumpMapTexture(phongMaterialConfig.getBumpMapId(), variableName(UNIFORM_LOCATION_BUMP_MAP));
+            bumpMap = webGlFacade.createWebGLTexture(phongMaterialConfig.getBumpMapId(), variableName(UNIFORM_LOCATION_BUMP_MAP));
         } else {
             bumpMap = webGlFacade.createFakeWebGLTexture(variableName(UNIFORM_LOCATION_BUMP_MAP));
         }
