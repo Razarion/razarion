@@ -1,8 +1,9 @@
 package com.btxtech.uiservice.terrain;
 
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.utils.SignalGenerator;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
@@ -20,13 +21,15 @@ public class UiTerrainWaterTile {
     private WaterRenderTask waterRenderTask;
     @Inject
     private TerrainTypeService terrainTypeService;
+    private Float32ArrayEmu positions;
+    private Float32ArrayEmu uvs;
     private ModelRenderer modelRenderer;
-    private TerrainWaterTile terrainWaterTile;
     private WaterConfig waterConfig;
 
-    public void init(boolean active, TerrainWaterTile terrainWaterTile) {
-        waterConfig = terrainTypeService.getWaterConfig();
-        this.terrainWaterTile = terrainWaterTile;
+    public void init(boolean active, SlopeConfig slopeConfig, Float32ArrayEmu positions, Float32ArrayEmu uvs) {
+        this.positions = positions;
+        this.uvs = uvs;
+        waterConfig = terrainTypeService.getWaterConfig(slopeConfig.getWaterConfigId());
         modelRenderer = waterRenderTask.createModelRenderer(this);
         modelRenderer.setActive(active);
     }
@@ -35,8 +38,12 @@ public class UiTerrainWaterTile {
         modelRenderer.setActive(active);
     }
 
-    public TerrainWaterTile getTerrainWaterTile() {
-        return terrainWaterTile;
+    public Float32ArrayEmu getPositions() {
+        return positions;
+    }
+
+    public Float32ArrayEmu getUvs() {
+        return uvs;
     }
 
     public WaterConfig getWaterConfig() {
@@ -44,7 +51,7 @@ public class UiTerrainWaterTile {
     }
 
     public double getWaterAnimation() {
-        return SignalGenerator.sawtooth(System.currentTimeMillis(), (int)(waterConfig.getDistortionDurationSeconds() * 1000.0), 0);
+        return SignalGenerator.sawtooth(System.currentTimeMillis(), (int) (waterConfig.getDistortionDurationSeconds() * 1000.0), 0);
     }
 
     public void dispose() {

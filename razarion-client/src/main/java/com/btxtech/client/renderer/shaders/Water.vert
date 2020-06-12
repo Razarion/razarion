@@ -1,15 +1,25 @@
-attribute vec3 aVertexPosition;
+precision mediump float;
 
-uniform highp mat4 uVMatrix;
-uniform highp mat4 uPMatrix;
-uniform highp mat4 uNVMatrix;
+attribute vec3 position;
+attribute vec2 uv;
 
-varying vec3 vVertexPosition;
+uniform highp mat4 viewMatrix;
+uniform highp mat4 projectionMatrix;
+uniform highp mat4 normalMatrix;
+uniform highp mat4 shadowMatrix;
+
+varying vec3 vNormal;
 varying vec3 vWorldVertexPosition;
+varying vec3 vViewPosition;
+varying vec2 vUv;
+varying vec4 vShadowCoord;
 
 void main(void) {
-    vVertexPosition = (uVMatrix * vec4(aVertexPosition, 1.0)).xyz;
-    vWorldVertexPosition = aVertexPosition.xyz;
+    vWorldVertexPosition = position.xyz;
+    vNormal = (normalMatrix * vec4(0.0, 0.0, 1.0, 1.0)).xyz;
+    vViewPosition = - (viewMatrix * vec4(position, 1.0)).xyz;
+    vUv = uv;
+    vShadowCoord = shadowMatrix * vec4(position, 1.0);
 
-    gl_Position = uPMatrix * vec4(vVertexPosition, 1.0);
+    gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
 }

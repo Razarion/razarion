@@ -36,7 +36,7 @@ public class WaterConfigEntity {
 
     public WaterConfig toWaterConfig() {
         WaterConfig waterConfig = new WaterConfig();
-        waterConfig.setWaterLevel(waterLevel).setGroundLevel(groundLevel).setTransparency(waterTransparency);
+        // TODO waterConfig.setWaterLevel(waterLevel).setGroundLevel(groundLevel).setTransparency(waterTransparency);
         if (normMapId != null) {
             waterConfig.setNormMapId(normMapId.getId());
         }

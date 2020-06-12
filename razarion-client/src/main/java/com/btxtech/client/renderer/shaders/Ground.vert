@@ -9,8 +9,8 @@ uniform highp mat4 normalMatrix;
 uniform highp mat4 shadowMatrix;
 
 varying vec3 vNormal;
-varying vec3 vViewPosition;
 varying vec3 vWorldVertexPosition;
+varying vec3 vViewPosition;
 varying vec4 vShadowCoord;
 
 void main(void) {
@@ -21,4 +21,3 @@ void main(void) {
 
     gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
 }
-

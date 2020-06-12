@@ -79,28 +79,28 @@ public class WaterSidebar extends AbstractEditor {
 
     @PostConstruct
     public void init() {
-        waterDataBinder.setModel(terrainTypeService.getWaterConfig());
-        // TODO terrainUiService.enableEditMode(visualUiService.getStaticVisualConfig().getWaterConfig());
-        reflectionId.setImageId(terrainTypeService.getWaterConfig().getReflectionId(), imageId -> {
-            terrainTypeService.getWaterConfig().setReflectionId(imageId);
-            terrainUiService.onEditorTerrainChanged();
-        });
-        normMapId.setImageId(terrainTypeService.getWaterConfig().getNormMapId(), imageId -> {
-            terrainTypeService.getWaterConfig().setNormMapId(imageId);
-            terrainUiService.onEditorTerrainChanged();
-        });
-        distortionId.setImageId(terrainTypeService.getWaterConfig().getDistortionId(), imageId -> {
-            terrainTypeService.getWaterConfig().setDistortionId(imageId);
-            terrainUiService.onEditorTerrainChanged();
-        });
+//        // TODO waterDataBinder.setModel(terrainTypeService.getWaterConfig());
+//        // TODO terrainUiService.enableEditMode(visualUiService.getStaticVisualConfig().getWaterConfig());
+//        reflectionId.setImageId(terrainTypeService.getWaterConfig().getReflectionId(), imageId -> {
+//            // TODO terrainTypeService.getWaterConfig().setReflectionId(imageId);
+//            terrainUiService.onEditorTerrainChanged();
+//        });
+//        normMapId.setImageId(terrainTypeService.getWaterConfig().getNormMapId(), imageId -> {
+//            terrainTypeService.getWaterConfig().setNormMapId(imageId);
+//            terrainUiService.onEditorTerrainChanged();
+//        });
+//        distortionId.setImageId(terrainTypeService.getWaterConfig().getDistortionId(), imageId -> {
+//            terrainTypeService.getWaterConfig().setDistortionId(imageId);
+//            terrainUiService.onEditorTerrainChanged();
+//        });
     }
 
     @Override
     protected void onConfigureDialog() {
-        registerSaveButton(() -> {
-            terrainElementEditorProvider.call(response -> {
-            }, exceptionHandler.restErrorHandler("saveWaterConfig failed: ")).saveWaterConfig(terrainTypeService.getWaterConfig());
-        });
+//        registerSaveButton(() -> {
+//            terrainElementEditorProvider.call(response -> {
+//            }, exceptionHandler.restErrorHandler("saveWaterConfig failed: ")).saveWaterConfig(terrainTypeService.getWaterConfig());
+//        });
         enableSaveButton(true);
     }
 

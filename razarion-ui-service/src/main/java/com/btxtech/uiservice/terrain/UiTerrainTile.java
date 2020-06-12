@@ -1,13 +1,13 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
@@ -50,7 +50,7 @@ public class UiTerrainTile {
     private boolean active;
     private Collection<UiTerrainGroundTile> uiTerrainGroundTiles;
     private Collection<UiTerrainSlopeTile> uiTerrainSlopeTiles;
-    private UiTerrainWaterTile uiTerrainWaterTile;
+    private Collection<UiTerrainWaterTile> uiTerrainWaterTiles;
     private MapList<Integer, ModelMatrices> terrainObjectModelMatrices;
 
     public void init(Index index) {
@@ -61,13 +61,13 @@ public class UiTerrainTile {
     public void setActive(boolean active) {
         this.active = active;
         if (uiTerrainGroundTiles != null) {
-            uiTerrainGroundTiles.forEach(uiTerrainSlopeTile -> uiTerrainSlopeTile.setActive(active));
+            uiTerrainGroundTiles.forEach(uiTerrainGroundTile -> uiTerrainGroundTile.setActive(active));
         }
         if (uiTerrainSlopeTiles != null) {
             uiTerrainSlopeTiles.forEach(uiTerrainSlopeTile -> uiTerrainSlopeTile.setActive(active));
         }
-        if (uiTerrainWaterTile != null) {
-            uiTerrainWaterTile.setActive(active);
+        if (uiTerrainWaterTiles != null) {
+            uiTerrainWaterTiles.forEach(uiTerrainWaterTile -> uiTerrainWaterTile.setActive(active));
         }
     }
 
@@ -87,7 +87,7 @@ public class UiTerrainTile {
         }
         if (terrainTile.getTerrainSlopeTiles() != null) {
             uiTerrainSlopeTiles = new ArrayList<>();
-            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
+            terrainTile.getTerrainSlopeTiles().forEach(terrainSlopeTile -> {
                 SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainSlopeTile.getSlopeConfigId());
                 if (terrainSlopeTile.getOuterSlopeGeometry() != null) {
                     createAndAddUiTerrainSlopeTile(slopeConfig, terrainSlopeTile.getOuterSlopeGeometry());
@@ -98,12 +98,24 @@ public class UiTerrainTile {
                 if (terrainSlopeTile.getInnerSlopeGeometry() != null) {
                     createAndAddUiTerrainSlopeTile(slopeConfig, terrainSlopeTile.getInnerSlopeGeometry());
                 }
-            }
+            });
         }
-//        if (terrainTile.getTerrainWaterTile() != null) {
-//            uiTerrainWaterTile = uiTerrainWaterTileInstance.get();
-//            uiTerrainWaterTile.init(active, terrainTile.getTerrainWaterTile());
-//        }
+        if (terrainTile.getTerrainWaterTiles() != null) {
+            uiTerrainWaterTiles = new ArrayList<>();
+            terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile -> {
+                try {
+                    SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainWaterTile.getSlopeConfigId());
+                    if (terrainWaterTile.getPositions() != null) {
+                        createAndAddUiTerrainWaterTile(slopeConfig, terrainWaterTile.getPositions(), null);
+                    }
+                    if (terrainWaterTile.getShallowPositions() != null) {
+                        createAndAddUiTerrainWaterTile(slopeConfig, terrainWaterTile.getShallowPositions(), terrainWaterTile.getShallowUvs());
+                    }
+                } catch (Throwable t) {
+                    exceptionHandler.handleException(t);
+                }
+            });
+        }
         if (active) {
             MapList<Integer, ModelMatrices> terrainObjects = getTerrainObjectModelMatrices();
             if (terrainObjects != null) {
@@ -122,14 +134,14 @@ public class UiTerrainTile {
         }
     }
 
-    public TerrainTile getTerrainTile() {
-        return terrainTile;
+    private void createAndAddUiTerrainWaterTile(SlopeConfig slopeConfig, Float32ArrayEmu positions, Float32ArrayEmu uvs) {
+        UiTerrainWaterTile uiTerrainWaterTile = uiTerrainWaterTileInstance.get();
+        uiTerrainWaterTile.init(active, slopeConfig, positions, uvs);
+        uiTerrainWaterTiles.add(uiTerrainWaterTile);
     }
 
-    public void setSlopeSkeletonConfig(SlopeConfig skeletonConfig) {
-        if (uiTerrainSlopeTiles != null) {
-            uiTerrainSlopeTiles.forEach(uiTerrainSlopeTile -> uiTerrainSlopeTile.overrideSlopeSkeletonConfig(skeletonConfig));
-        }
+    public TerrainTile getTerrainTile() {
+        return terrainTile;
     }
 
     public MapList<Integer, ModelMatrices> getTerrainObjectModelMatrices() {
@@ -162,9 +174,9 @@ public class UiTerrainTile {
             uiTerrainSlopeTiles.forEach(UiTerrainSlopeTile::dispose);
             uiTerrainSlopeTiles = null;
         }
-        if (uiTerrainWaterTile != null) {
-            uiTerrainWaterTile.dispose();
-            uiTerrainWaterTile = null;
+        if (uiTerrainWaterTiles != null) {
+            uiTerrainWaterTiles.forEach(UiTerrainWaterTile::dispose);
+            uiTerrainWaterTiles = null;
         }
     }
 

@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 
 import java.util.List;
 
@@ -13,8 +12,6 @@ import java.util.List;
  * 01.04.2017.
  */
 public interface JsInteropObjectFactory {
-    TerrainWaterTile generateTerrainWaterTile();
-
     TerrainTileObjectList generateTerrainTileObjectList();
 
     Float32ArrayEmu newFloat32Array4Vertices(List<Vertex> vertices);

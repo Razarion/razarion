@@ -8,12 +8,12 @@ import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
-import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -27,18 +27,22 @@ import java.util.List;
 public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testWater1() {
+        // WaterConfig
+        List<WaterConfig> waterConfigs = new ArrayList<>();
+        waterConfigs.add(new WaterConfig().id(22).waterLevel(-0.2).groundLevel(-2));
+        // SlopeConfig
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigWater = new SlopeConfig();
-        slopeConfigWater.id(10).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
+        slopeConfigWater.id(10).waterConfigId(22);
         slopeConfigWater.setHorizontalSpace(6);
-        SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 0.5, 0.5),},
-                {GameTestHelper.createSlopeNode(4, -0.1, 1),},
-                {GameTestHelper.createSlopeNode(6, -0.8, 1),},
-                {GameTestHelper.createSlopeNode(9, -2, 1),}
-        };
-        // TODO slopeConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
         slopeConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
+        slopeConfigWater.setSlopeShapes(Arrays.asList(
+                new SlopeShape().slopeFactor(0),
+                new SlopeShape().position(new DecimalPosition(2, 0.5)).slopeFactor(0.5),
+                new SlopeShape().position(new DecimalPosition(4, -0.1)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(6, -0.8)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(9, 0)).slopeFactor(0)
+        ));
         slopeConfigs.add(slopeConfigWater);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
@@ -48,22 +52,9 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
-        double[][] heights = new double[][]{
-                {0, 0, 0},
-                {0, 0, 0},
-                {0, 0, 0},
-                {0, 0, 0},
-                {0, 0, 0}
-        };
-        double[][] splattings = new double[][]{
-                {0.7, 0.8, 0.9, 0.5},
-                {0.4, 0.5, 0.6, 0.6},
-                {0.1, 0.2, 0.3, 0.3}
-        };
+        setupTerrainTypeService(slopeConfigs, waterConfigs, null, null, terrainSlopePositions, null, null);
 
-        setupTerrainTypeService(slopeConfigs, null, null, terrainSlopePositions, null, null);
-
-        // showDisplay();
+        showDisplay();
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testWaterTile1.json");
@@ -232,10 +223,10 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 //        Assert.fail("*** This is not actually a test. Generate Triangles for threejs_razarion ***");
     }
 
-    protected void initShape(SlopeConfig slopeConfig, SlopeShape... slopeShapes) {
-        slopeConfig.setSlopeShapes(Arrays.asList(slopeShapes));
-        SlopeModeler.sculpt(slopeConfig);
-    }
+//    protected void initShape(SlopeConfig slopeConfig, SlopeShape... slopeShapes) {
+//        slopeConfig.setSlopeShapes(Arrays.asList(slopeShapes));
+//        SlopeModeler.sculpt(slopeConfig);
+//    }
 
     @Test
     public void testWater2() {
@@ -273,7 +264,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainTypeService(slopeConfigs, null, null, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, null, null, terrainSlopePositions, null, null);
 
         // showDisplay();
 
@@ -342,7 +333,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(slopeConfigs, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeConfigs, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);
 
         // showDisplay();
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));

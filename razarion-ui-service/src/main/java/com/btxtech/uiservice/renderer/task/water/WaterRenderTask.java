@@ -20,7 +20,7 @@ public class WaterRenderTask extends AbstractRenderTask<UiTerrainWaterTile> {
         CommonRenderComposite<AbstractWaterRendererUnit, UiTerrainWaterTile> renderComposite = modelRenderer.create();
         renderComposite.init(uiTerrainWaterTile);
         renderComposite.setRenderUnit(AbstractWaterRendererUnit.class);
-        renderComposite.setNormRenderUnit(AbstractWaterRendererUnit.class);
+        // renderComposite.setNormRenderUnit(AbstractWaterRendererUnit.class);
         modelRenderer.add(RenderUnitControl.WATER, renderComposite);
         add(modelRenderer);
         modelRenderer.fillBuffers();

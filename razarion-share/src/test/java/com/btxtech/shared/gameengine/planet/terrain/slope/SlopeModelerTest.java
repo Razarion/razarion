@@ -21,7 +21,7 @@ public class SlopeModelerTest {
         slopeConfig.setSlopeShapes(ShapeTest.toSlopeShapeList(new DecimalPosition(0, 100), new DecimalPosition(0, 50), new DecimalPosition(0, 0)));
 
         // TODO double[][] fractalField = FractalFieldGenerator.createFractalField(slopeConfigOLD.toFractalFiledConfig());
-        SlopeModeler.sculpt(slopeConfig);
+        SlopeModeler.sculpt(slopeConfig, null);
 
 
 

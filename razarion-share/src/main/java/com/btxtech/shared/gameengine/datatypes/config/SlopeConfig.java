@@ -35,7 +35,6 @@ public class SlopeConfig implements Config {
 //    private Integer slopeFoamDistortionId;
 //    private Double slopeFoamDistortionStrength;
 //    private Double slopeFoamAnimationDuration;
-    private Double waterLevel;
 //    private Double waterFresnelOffset;
 //    private Double waterFresnelDelta;
 //    private Double waterShininess;
@@ -248,15 +247,6 @@ public class SlopeConfig implements Config {
 //        this.slopeBumpMapId = slopeBumpMapId;
 //        return this;
 //    }
-
-    public Double getWaterLevel() {
-        return waterLevel;
-    }
-
-    public SlopeConfig setWaterLevel(Double waterLevel) {
-        this.waterLevel = waterLevel;
-        return this;
-    }
 
 //    public Double getWaterFresnelOffset() {
 //        return waterFresnelOffset;

@@ -23,6 +23,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
@@ -38,6 +39,7 @@ import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -404,6 +406,7 @@ public class WorkerMarshaller {
         array.push(marshallFloat32ArrayMap(terrainTile.getGroundPositions()));
         array.push(marshallFloat32ArrayMap(terrainTile.getGroundNorms()));
         array.push(marshallTerrainSlopeTiles(terrainTile.getTerrainSlopeTiles()));
+        array.push(marshallTerrainWaterTiles(terrainTile.getTerrainWaterTiles()));
         return array;
     }
 
@@ -449,6 +452,21 @@ public class WorkerMarshaller {
         }
     }
 
+    private static Object marshallTerrainWaterTiles(Collection<TerrainWaterTile> terrainWaterTiles) {
+        Array<JsPropertyMapOfAny> result = new Array<>();
+        if (terrainWaterTiles != null) {
+            for (TerrainWaterTile terrainWaterTile : terrainWaterTiles) {
+                JsPropertyMapOfAny mapOfAny = JsPropertyMap.of();
+                mapOfAny.set("slopeConfigId", terrainWaterTile.getSlopeConfigId());
+                mapOfAny.set("positions", Js.uncheckedCast(terrainWaterTile.getPositions()));
+                mapOfAny.set("shallowPositions", Js.uncheckedCast(terrainWaterTile.getShallowPositions()));
+                mapOfAny.set("shallowUvs", Js.uncheckedCast(terrainWaterTile.getShallowUvs()));
+                result.push(mapOfAny);
+            }
+        }
+        return result;
+    }
+
     private static TerrainTile demarshallTerrainTile(Object data) {
         Any[] array = Js.castToArray(data);
         TerrainTile terrainTile = new TerrainTile();
@@ -456,6 +474,7 @@ public class WorkerMarshaller {
         terrainTile.setGroundPositions(demarshallFloat32ArrayMap(array[1]));
         terrainTile.setGroundNorms(demarshallFloat32ArrayMap(array[2]));
         terrainTile.setTerrainSlopeTiles(demarshallTerrainSlopeTiles(array[3]));
+        terrainTile.setTerrainWaterTiles(demarshallTerrainWaterTiles(array[4]));
         return terrainTile;
     }
 
@@ -503,5 +522,19 @@ public class WorkerMarshaller {
         return slopeGeometry;
     }
 
+    private static List<TerrainWaterTile> demarshallTerrainWaterTiles(Any any) {
+        JsPropertyMapOfAny[] array = Js.cast(any);
+        if (array.length == 0) {
+            return null;
+        }
 
+        return Arrays.stream(array).map(anyTerrainWaterTile -> {
+            TerrainWaterTile terrainWaterTile = new TerrainWaterTile();
+            terrainWaterTile.setSlopeConfigId(((Any) anyTerrainWaterTile.get("slopeConfigId")).asInt());
+            terrainWaterTile.setPositions(Js.uncheckedCast(anyTerrainWaterTile.get("positions")));
+            terrainWaterTile.setShallowPositions(Js.uncheckedCast((anyTerrainWaterTile.get("shallowPositions"))));
+            terrainWaterTile.setShallowUvs(Js.uncheckedCast((anyTerrainWaterTile.get("shallowUvs"))));
+            return terrainWaterTile;
+        }).collect(Collectors.toList());
+    }
 }

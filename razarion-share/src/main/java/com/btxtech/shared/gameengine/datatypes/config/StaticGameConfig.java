@@ -17,8 +17,7 @@ import java.util.List;
  */
 public class StaticGameConfig {
     private List<GroundConfig> groundConfigs;
-    @Deprecated
-    private WaterConfig waterConfig;
+    private List<WaterConfig> waterConfigs;
     private List<SlopeConfig> slopeConfigs;
     private List<TerrainObjectConfig> terrainObjectConfigs;
     private List<BaseItemType> baseItemTypes;
@@ -37,14 +36,12 @@ public class StaticGameConfig {
         return this;
     }
 
-    @Deprecated
-    public WaterConfig getWaterConfig() {
-        return waterConfig;
+    public List<WaterConfig> getWaterConfigs() {
+        return waterConfigs;
     }
 
-    @Deprecated
-    public void setWaterConfig(WaterConfig waterConfig) {
-        this.waterConfig = waterConfig;
+    public void setWaterConfigs(List<WaterConfig> waterConfigs) {
+        this.waterConfigs = waterConfigs;
     }
 
     public List<SlopeConfig> getSlopeConfigs() {

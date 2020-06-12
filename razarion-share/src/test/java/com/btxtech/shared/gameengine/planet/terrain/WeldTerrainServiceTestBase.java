@@ -31,14 +31,14 @@ import java.util.stream.Collectors;
 public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     public static int DRIVEWAY_ID_1 = 1;
 
-    protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundConfig groundConfig) {
+    protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs, List<WaterConfig> waterConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundConfig groundConfig) {
         StaticGameConfig staticGameConfig = FallbackConfig.setupStaticGameConfig();
-        staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
         if(groundConfig == null) {
             groundConfig = new GroundConfig();
         }
         staticGameConfig.setGroundConfigs(Collections.singletonList(groundConfig));
         staticGameConfig.setSlopeConfigs(slopeConfigs);
+        staticGameConfig.setWaterConfigs(waterConfigs);
         staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
         List<DrivewayConfig> drivewayConfigs = new ArrayList<>();
         drivewayConfigs.add(new DrivewayConfig().setId(DRIVEWAY_ID_1).setAngle(Math.toRadians(20)));

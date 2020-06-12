@@ -21,9 +21,9 @@ import java.util.Map;
 public class TerrainTypeService {
     private Map<Integer, SlopeConfig> slopeConfigs = new HashMap<>();
     private Map<Integer, GroundConfig> groundConfigs = new HashMap<>();;
-    private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
+    private Map<Integer,WaterConfig> waterConfigs = new HashMap<>();
     private Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
-    private WaterConfig waterConfig;
+    private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
         init(engineInitEvent.getStaticGameConfig());
@@ -31,8 +31,8 @@ public class TerrainTypeService {
 
     public void init(StaticGameConfig staticGameConfig) {
         setGroundConfigs(staticGameConfig.getGroundConfigs());
-        waterConfig = staticGameConfig.getWaterConfig();
         setSlopeConfigs(staticGameConfig.getSlopeConfigs());
+        setWaterConfigs(staticGameConfig.getWaterConfigs());
         setTerrainObjectConfigs(staticGameConfig.getTerrainObjectConfigs());
         setDrivewayConfigs(staticGameConfig.getDrivewayConfigs());
     }
@@ -51,6 +51,15 @@ public class TerrainTypeService {
         if (slopeConfigs != null) {
             for (SlopeConfig slopeConfig : slopeConfigs) {
                 this.slopeConfigs.put(slopeConfig.getId(), slopeConfig);
+            }
+        }
+    }
+
+    private void setWaterConfigs(Collection<WaterConfig> waterConfigs) {
+        this.waterConfigs.clear();
+        if (waterConfigs != null) {
+            for (WaterConfig waterConfig : waterConfigs) {
+                this.waterConfigs.put(waterConfig.getId(), waterConfig);
             }
         }
     }
@@ -85,7 +94,7 @@ public class TerrainTypeService {
     public SlopeConfig getSlopeConfig(int id) {
         SlopeConfig slopeConfig = slopeConfigs.get(id);
         if (slopeConfig == null) {
-            throw new IllegalArgumentException("No entry in integerSlopeSkeletonMap for id: " + id);
+            throw new IllegalArgumentException("No entry in SlopeConfigs for id: " + id);
         }
         return slopeConfig;
     }
@@ -98,8 +107,11 @@ public class TerrainTypeService {
         return terrainObjectConfigs.values();
     }
 
-    @Deprecated
-    public WaterConfig getWaterConfig() {
+    public WaterConfig getWaterConfig(int id) {
+        WaterConfig waterConfig = waterConfigs.get(id);
+        if (waterConfig == null) {
+            throw new IllegalArgumentException("No entry in WaterConfigs for id: " + id);
+        }
         return waterConfig;
     }
 

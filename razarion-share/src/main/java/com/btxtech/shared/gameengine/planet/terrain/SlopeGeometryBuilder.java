@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Dependent
-public class SlopeGeometryContext {
+public class SlopeGeometryBuilder {
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
     private List<Vertex> positions = new ArrayList<>();

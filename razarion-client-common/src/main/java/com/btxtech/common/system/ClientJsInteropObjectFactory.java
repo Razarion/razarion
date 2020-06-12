@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 import elemental2.core.Float32Array;
 import jsinterop.base.Js;
@@ -20,11 +19,6 @@ import static com.btxtech.shared.utils.CollectionUtils.toArray;
  */
 @ApplicationScoped
 public class ClientJsInteropObjectFactory implements JsInteropObjectFactory {
-    @Override
-    public TerrainWaterTile generateTerrainWaterTile() {
-        return new TerrainWaterTile();
-    }
-
     @Override
     public TerrainTileObjectList generateTerrainTileObjectList() {
         return new TerrainTileObjectList() {

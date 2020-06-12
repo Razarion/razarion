@@ -31,7 +31,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.DiffTriangleElement;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
@@ -103,8 +102,8 @@ public class WeldTestRenderer {
     private TerrainShapeTile[][] terrainShapeTiles;
     private UserDataRenderer userDataRenderer;
     private UserDataRenderer moveUserDataRenderer;
-    private double zMin = 0;
-    private double zMax = 20;
+    private double zMin = -2;
+    private double zMax = 0.5;
     private WeldTestController weldTestController;
 
     public void init(Canvas canvas, double scale) {
@@ -390,10 +389,18 @@ public class WeldTestRenderer {
 
     public void drawTerrainTile(TerrainTile terrainTile) {
         if (weldTestController.renderTerrainTileWater()) {
-//           gc.setLineWidth(LINE_WIDTH);
-//            if (terrainTile.getTerrainWaterTile() != null) {
-//                drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
-//            }
+            if (terrainTile.getTerrainWaterTiles() != null) {
+                gc.setLineWidth(LINE_WIDTH);
+                gc.setStroke(Color.BLUE);
+                terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile -> {
+                    if(terrainWaterTile.getPositions() != null) {
+                        drawTriangles(terrainWaterTile.getPositions());
+                    }
+                    if(terrainWaterTile.getShallowPositions() != null) {
+                        drawTriangles(terrainWaterTile.getShallowPositions());
+                    }
+                });
+            }
         }
         if (weldTestController.renderTerrainTileGround()) {
             gc.setLineWidth(LINE_WIDTH);
@@ -622,20 +629,6 @@ public class WeldTestRenderer {
             return;
         }
         drawTriangles(slopeGeometry.getPositions());
-    }
-
-    private void drawTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
-        gc.setLineWidth(LINE_WIDTH);
-        gc.setStroke(Color.BLUE);
-// TODO        for (int vertexIndex = 0; vertexIndex < terrainWaterTile.getVertexCount(); vertexIndex += 3) {
-//            int vertexScalarIndex = vertexIndex * 3;
-//
-//            double[] xCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex], terrainWaterTile.getVertices()[vertexScalarIndex + 3], terrainWaterTile.getVertices()[vertexScalarIndex + 6]};
-//            double[] yCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex + 1], terrainWaterTile.getVertices()[vertexScalarIndex + 4], terrainWaterTile.getVertices()[vertexScalarIndex + 7]};
-//            gc.strokePolygon(xCorners, yCorners, 3);
-//            //gc.setFill(Color.color(1, 0, 0, 0.3));
-//            //gc.fillPolygon(xCorners, yCorners, 3);
-//        }
     }
 
 

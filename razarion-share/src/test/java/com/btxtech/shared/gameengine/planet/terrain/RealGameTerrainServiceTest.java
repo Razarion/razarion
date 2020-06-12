@@ -29,7 +29,7 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(5120, 512));
 
-        setupTerrainTypeService(slopeConfigs, null, planetConfig, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, null, planetConfig, terrainSlopePositions, null, null);
 
     }
 

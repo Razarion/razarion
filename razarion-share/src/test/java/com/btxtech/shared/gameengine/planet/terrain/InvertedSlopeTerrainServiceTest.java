@@ -71,7 +71,7 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(5120, 5120));
 
-        setupTerrainTypeService(slopeConfigs, null, planetConfig, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, null, planetConfig, terrainSlopePositions, null, null);
     }
 
     private List<TerrainSlopePosition> setupSlope(int slopeConfigId, boolean inverted, List<TerrainSlopePosition> children, TerrainSlopeCorner... slopePolygon) {

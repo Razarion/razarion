@@ -89,7 +89,7 @@ public final class FallbackConfig {
         staticGameConfig.setInventoryItems(setupInventoryItems());
         staticGameConfig.setSlopeConfigs(setupSlopeSkeletonConfigs());
         staticGameConfig.setDrivewayConfigs(setupDriveways());
-        staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
+        staticGameConfig.setWaterConfigs(setupWaterConfigs());
         return staticGameConfig;
     }
 
@@ -299,6 +299,12 @@ public final class FallbackConfig {
         slopeConfigs.add(skeletonConfigLand);
         slopeConfigs.add(skeletonConfigWater);
         return slopeConfigs;
+    }
+
+    public static List<WaterConfig> setupWaterConfigs() {
+        List<WaterConfig> waterConfigs = new ArrayList<>();
+        waterConfigs.add(new WaterConfig().id(WATER_CONFIG_ID).waterLevel(-0.7).groundLevel(-2));
+        return waterConfigs;
     }
 
     public static List<DrivewayConfig> setupDriveways() {

@@ -133,7 +133,7 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
 
     private void drawPlateau(TerrainSlopePosition terrainSlopePosition, SlopeConfig slopeConfig) {
         ctx.setStrokeStyle(SLOPE_COLOR);
-        ctx.setLineWidth((float) SlopeModeler.sculpt(slopeConfig).getWidth());
+        ctx.setLineWidth((float) SlopeModeler.sculpt(slopeConfig, null).getWidth());
 
         doPolygon(terrainSlopePosition);
         ctx.stroke();

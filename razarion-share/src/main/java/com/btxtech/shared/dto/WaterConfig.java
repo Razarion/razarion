@@ -8,6 +8,7 @@ public class WaterConfig implements Config {
     private int id;
     private String internalName;
     private double waterLevel;
+    private double groundLevel;
     private double transparency;
     private Integer reflectionId;
     private double reflectionScale;
@@ -17,7 +18,6 @@ public class WaterConfig implements Config {
     private double distortionScale;
     private double distortionStrength;
     private double distortionDurationSeconds;
-    private double groundLevel;
 
     @Override
     public int getId() {
@@ -38,98 +38,152 @@ public class WaterConfig implements Config {
         return waterLevel;
     }
 
-    public WaterConfig setWaterLevel(double waterLevel) {
+    public void setWaterLevel(double waterLevel) {
         this.waterLevel = waterLevel;
-        return this;
-    }
-
-    public double getTransparency() {
-        return transparency;
-    }
-
-    public WaterConfig setTransparency(double transparency) {
-        this.transparency = transparency;
-        return this;
-    }
-
-    public Integer getReflectionId() {
-        return reflectionId;
-    }
-
-    public WaterConfig setReflectionId(Integer reflectionId) {
-        this.reflectionId = reflectionId;
-        return this;
-    }
-
-    public double getReflectionScale() {
-        return reflectionScale;
-    }
-
-    public WaterConfig setReflectionScale(double reflectionScale) {
-        this.reflectionScale = reflectionScale;
-        return this;
-    }
-
-    public Integer getNormMapId() {
-        return normMapId;
-    }
-
-    public WaterConfig setNormMapId(Integer normMapId) {
-        this.normMapId = normMapId;
-        return this;
-    }
-
-    public double getDistortionDurationSeconds() {
-        return distortionDurationSeconds;
-    }
-
-    public WaterConfig setDistortionDurationSeconds(double distortionDurationSeconds) {
-        this.distortionDurationSeconds = distortionDurationSeconds;
-        return this;
-    }
-
-    public double getNormMapDepth() {
-        return normMapDepth;
-    }
-
-    public WaterConfig setNormMapDepth(double normMapDepth) {
-        this.normMapDepth = normMapDepth;
-        return this;
-    }
-
-    public Integer getDistortionId() {
-        return distortionId;
-    }
-
-    public WaterConfig setDistortionId(Integer distortionId) {
-        this.distortionId = distortionId;
-        return this;
-    }
-
-    public double getDistortionScale() {
-        return distortionScale;
-    }
-
-    public WaterConfig setDistortionScale(double distortionScale) {
-        this.distortionScale = distortionScale;
-        return this;
-    }
-
-    public double getDistortionStrength() {
-        return distortionStrength;
-    }
-
-    public WaterConfig setDistortionStrength(double distortionStrength) {
-        this.distortionStrength = distortionStrength;
-        return this;
     }
 
     public double getGroundLevel() {
         return groundLevel;
     }
 
-    public WaterConfig setGroundLevel(double groundLevel) {
+    public void setGroundLevel(double groundLevel) {
         this.groundLevel = groundLevel;
+    }
+
+    public double getTransparency() {
+        return transparency;
+    }
+
+    public void setTransparency(double transparency) {
+        this.transparency = transparency;
+    }
+
+    public Integer getReflectionId() {
+        return reflectionId;
+    }
+
+    public void setReflectionId(Integer reflectionId) {
+        this.reflectionId = reflectionId;
+    }
+
+    public double getReflectionScale() {
+        return reflectionScale;
+    }
+
+    public void setReflectionScale(double reflectionScale) {
+        this.reflectionScale = reflectionScale;
+    }
+
+    public Integer getNormMapId() {
+        return normMapId;
+    }
+
+    public void setNormMapId(Integer normMapId) {
+        this.normMapId = normMapId;
+    }
+
+    public double getNormMapDepth() {
+        return normMapDepth;
+    }
+
+    public void setNormMapDepth(double normMapDepth) {
+        this.normMapDepth = normMapDepth;
+    }
+
+    public Integer getDistortionId() {
+        return distortionId;
+    }
+
+    public void setDistortionId(Integer distortionId) {
+        this.distortionId = distortionId;
+    }
+
+    public double getDistortionScale() {
+        return distortionScale;
+    }
+
+    public void setDistortionScale(double distortionScale) {
+        this.distortionScale = distortionScale;
+    }
+
+    public double getDistortionStrength() {
+        return distortionStrength;
+    }
+
+    public void setDistortionStrength(double distortionStrength) {
+        this.distortionStrength = distortionStrength;
+    }
+
+    public double getDistortionDurationSeconds() {
+        return distortionDurationSeconds;
+    }
+
+    public void setDistortionDurationSeconds(double distortionDurationSeconds) {
+        this.distortionDurationSeconds = distortionDurationSeconds;
+    }
+
+    public WaterConfig id(int id) {
+        this.id = id;
+        return this;
+    }
+
+    public WaterConfig internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
+    }
+
+    public WaterConfig waterLevel(double waterLevel) {
+        setWaterLevel(waterLevel);
+        return this;
+    }
+
+    public WaterConfig groundLevel(double groundLevel) {
+        setGroundLevel(groundLevel);
+        return this;
+    }
+
+    public WaterConfig transparency(double transparency) {
+        setTransparency(transparency);
+        return this;
+    }
+
+    public WaterConfig reflectionId(Integer reflectionId) {
+        setReflectionId(reflectionId);
+        return this;
+    }
+
+    public WaterConfig reflectionScale(double reflectionScale) {
+        setReflectionScale(reflectionScale);
+        return this;
+    }
+
+    public WaterConfig normMapId(Integer normMapId) {
+        setNormMapId(normMapId);
+        return this;
+    }
+
+    public WaterConfig normMapDepth(double normMapDepth) {
+        setNormMapDepth(normMapDepth);
+        return this;
+    }
+
+    public WaterConfig distortionId(Integer distortionId) {
+        setDistortionId(distortionId);
+        return this;
+    }
+
+    public WaterConfig distortionScale(double distortionScale) {
+        setDistortionScale(distortionScale);
+        return this;
+    }
+
+    public WaterConfig distortionStrength(double distortionStrength) {
+        setDistortionStrength(distortionStrength);
+        return this;
+    }
+
+    public WaterConfig distortionDurationSeconds(double distortionDurationSeconds) {
+        setDistortionDurationSeconds(distortionDurationSeconds);
         return this;
     }
 }

@@ -25,11 +25,11 @@ public class TerrainSlopeTileBuilder {
     private TerrainTileBuilder terrainTileBuilder;
     private Segment[] polygon2Segment;
     @Inject
-    private SlopeGeometryContext outerSlopeGeometryContext;
+    private SlopeGeometryBuilder outerSlopeGeometryBuilder;
     @Inject
-    private SlopeGeometryContext centerSlopeGeometryContext;
+    private SlopeGeometryBuilder centerSlopeGeometryBuilder;
     @Inject
-    private SlopeGeometryContext innerSlopeGeometryContext;
+    private SlopeGeometryBuilder innerSlopeGeometryBuilder;
 
     public void init(SlopeConfig slopeConfig, int xCount, int yCount, TerrainTileBuilder terrainTileBuilder) {
         this.slopeConfig = slopeConfig;
@@ -47,14 +47,14 @@ public class TerrainSlopeTileBuilder {
     public TerrainSlopeTile generate() {
         TerrainSlopeTile terrainSlopeTile = new TerrainSlopeTile();
         terrainSlopeTile.setSlopeConfigId(slopeConfig.getId());
-        if(!outerSlopeGeometryContext.isEmpty()) {
-            terrainSlopeTile.setOuterSlopeGeometry(outerSlopeGeometryContext.generate());
+        if(!outerSlopeGeometryBuilder.isEmpty()) {
+            terrainSlopeTile.setOuterSlopeGeometry(outerSlopeGeometryBuilder.generate());
         }
-        if(!centerSlopeGeometryContext.isEmpty()) {
-            terrainSlopeTile.setCenterSlopeGeometry(centerSlopeGeometryContext.generate());
+        if(!centerSlopeGeometryBuilder.isEmpty()) {
+            terrainSlopeTile.setCenterSlopeGeometry(centerSlopeGeometryBuilder.generate());
         }
-        if(!innerSlopeGeometryContext.isEmpty()) {
-            terrainSlopeTile.setInnerSlopeGeometry(innerSlopeGeometryContext.generate());
+        if(!innerSlopeGeometryBuilder.isEmpty()) {
+            terrainSlopeTile.setInnerSlopeGeometry(innerSlopeGeometryBuilder.generate());
         }
         return terrainSlopeTile;
     }
@@ -152,16 +152,16 @@ public class TerrainSlopeTileBuilder {
     }
 
     private void insertTriangleCorner(Vertex vertex, Vertex norm, DecimalPosition uv, double slopeFactor, Segment segment) {
-        SlopeGeometryContext slopeGeometryContext;
+        SlopeGeometryBuilder slopeGeometryContext;
         switch (segment) {
             case OUTER:
-                slopeGeometryContext = outerSlopeGeometryContext;
+                slopeGeometryContext = outerSlopeGeometryBuilder;
                 break;
             case CENTER:
-                slopeGeometryContext = centerSlopeGeometryContext;
+                slopeGeometryContext = centerSlopeGeometryBuilder;
                 break;
             case INNER:
-                slopeGeometryContext = innerSlopeGeometryContext;
+                slopeGeometryContext = innerSlopeGeometryBuilder;
                 break;
             default:
                 throw new IllegalArgumentException("Unexpected segment: " + segment);

@@ -1,31 +1,46 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import jsinterop.annotations.JsType;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 
 /**
  * Created by Beat
  * 10.04.2017.
  */
-@JsType(isNative = true, name = "TerrainWaterTile", namespace = "com.btxtech.shared.nativejs")
 public class TerrainWaterTile {
-//    private int slopeConfigId;
-//    private double[] vertices;
-//    private double[] shallowVertices;
-//    private double[] shallowUvs;
+    private int slopeConfigId;
+    private Float32ArrayEmu positions;
+    private Float32ArrayEmu shallowPositions;
+    private Float32ArrayEmu shallowUvs;
 
-    public native int getSlopeConfigId();
+    public int getSlopeConfigId() {
+        return slopeConfigId;
+    }
 
-    public native void setSlopeConfigId(int slopeConfigId);
+    public void setSlopeConfigId(int slopeConfigId) {
+        this.slopeConfigId = slopeConfigId;
+    }
 
-    public native void setVertices(double[] vertices);
+    public void setPositions(Float32ArrayEmu positions) {
+        this.positions = positions;
+    }
 
-    public native double[] getVertices();
+    public Float32ArrayEmu getPositions() {
+        return positions;
+    }
 
-    public native double[] getShallowVertices();
+    public Float32ArrayEmu getShallowPositions() {
+        return shallowPositions;
+    }
 
-    public native void setShallowVertices(double[] shallowVertices);
+    public void setShallowPositions(Float32ArrayEmu shallowPositions) {
+        this.shallowPositions = shallowPositions;
+    }
 
-    public native double[] getShallowUvs();
+    public Float32ArrayEmu getShallowUvs() {
+        return shallowUvs;
+    }
 
-    public native void setShallowUvs(double[] shallowUvs);
+    public void setShallowUvs(Float32ArrayEmu shallowUvs) {
+        this.shallowUvs = shallowUvs;
+    }
 }

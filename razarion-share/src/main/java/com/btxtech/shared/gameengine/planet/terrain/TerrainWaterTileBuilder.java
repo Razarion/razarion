@@ -75,11 +75,11 @@ public class TerrainWaterTileBuilder {
         Set<Integer> slopeIds = new HashSet<>(trianglePositions.getKeys());
         slopeIds.addAll(shallowTrianglePositions.getKeys());
         slopeIds.forEach(slopeId -> {
-            TerrainWaterTile terrainWaterTile = jsInteropObjectFactory.generateTerrainWaterTile();
+            TerrainWaterTile terrainWaterTile = new TerrainWaterTile();
             terrainWaterTile.setSlopeConfigId(slopeId);
-            terrainWaterTile.setVertices(Vertex.toArray(trianglePositions.get(slopeId)));
-            terrainWaterTile.setShallowVertices(Vertex.toArray(shallowTrianglePositions.get(slopeId)));
-            terrainWaterTile.setShallowUvs(DecimalPosition.toArray(shallowTriangleUvs.get(slopeId)));
+            terrainWaterTile.setPositions(jsInteropObjectFactory.newFloat32Array4Vertices(trianglePositions.get(slopeId)));
+            terrainWaterTile.setShallowPositions(jsInteropObjectFactory.newFloat32Array4Vertices(shallowTrianglePositions.get(slopeId)));
+            terrainWaterTile.setShallowUvs(jsInteropObjectFactory.newFloat32Array4DecimalPositions(shallowTriangleUvs.get(slopeId)));
             terrainWaterTiles.add(terrainWaterTile);
         });
         return terrainWaterTiles;
