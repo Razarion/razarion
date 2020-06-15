@@ -13,6 +13,8 @@ public class SlopeCrudPersistence extends AbstractCrudPersistence<SlopeConfig, S
     private ImagePersistence imagePersistence;
     @Inject
     private GroundCrudPersistence groundCrudPersistence;
+    @Inject
+    private WaterCrudPersistence waterCrudPersistence;
 
     public SlopeCrudPersistence() {
         super(SlopeConfigEntity.class, SlopeConfigEntity_.id, SlopeConfigEntity_.internalName);
@@ -25,6 +27,9 @@ public class SlopeCrudPersistence extends AbstractCrudPersistence<SlopeConfig, S
 
     @Override
     protected void fromConfig(SlopeConfig config, SlopeConfigEntity entity) {
-        entity.fromSlopeConfig(config, imagePersistence, groundCrudPersistence.getEntity(config.getGroundConfigId()));
+        entity.fromSlopeConfig(config,
+                imagePersistence,
+                groundCrudPersistence.getEntity(config.getGroundConfigId()),
+                waterCrudPersistence.getEntity(config.getWaterConfigId()));
     }
 }

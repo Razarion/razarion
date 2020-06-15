@@ -135,14 +135,17 @@ public class ServerTestHelper {
     public static final String NORMAL_USER_PASSWORD_HASH = "qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==";
     public static int NORMAL_USER_ID;
     // Images
+    public static int IMAGE_1_ID;
+    public static int IMAGE_2_ID;
+    public static int IMAGE_3_ID;
+    // Ground
     public static int GROUND_1_ID;
     public static int GROUND_2_ID;
     public static int GROUND_3_ID;
     public static int GROUND_4_ID;
-    // Images
-    public static int IMAGE_1_ID;
-    public static int IMAGE_2_ID;
-    public static int IMAGE_3_ID;
+    // Water
+    public static int WATER_1_ID;
+    public static int WATER_2_ID;
     // Item types
     public static int BASE_ITEM_TYPE_BULLDOZER_ID;
     public static int BASE_ITEM_TYPE_HARVESTER_ID;
@@ -261,6 +264,12 @@ public class ServerTestHelper {
                 new CleanupAfterTest().entity(SlopeConfigEntity.class)));
     }
 
+    protected void setupWaterConfig() {
+        WATER_1_ID = persistInTransaction(new WaterConfigEntity()).getId();
+        WATER_2_ID = persistInTransaction(new WaterConfigEntity()).getId();
+        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(WaterConfigEntity.class)));
+    }
+
     protected SlopeConfigEntity createLandSlopeConfig() {
         SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
         slopeConfigEntity.fromSlopeConfig(new SlopeConfig()
@@ -270,7 +279,7 @@ public class ServerTestHelper {
                                 new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
                                 new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
                                 new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7)))
-                , EasyMock.createNiceMock(ImagePersistence.class), null);
+                , EasyMock.createNiceMock(ImagePersistence.class), null, null);
         return slopeConfigEntity;
     }
 

@@ -91,7 +91,7 @@ public class SlopeConfigEntity {
         return slopeConfig;
     }
 
-    public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence, GroundConfigEntity groundConfigEntity) {
+    public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence, GroundConfigEntity groundConfigEntity, WaterConfigEntity waterConfigEntity) {
         internalName = slopeConfig.getInternalName();
         innerLineGameEngine = slopeConfig.getInnerLineGameEngine();
         coastDelimiterLineGameEngine = slopeConfig.getCoastDelimiterLineGameEngine();
@@ -109,7 +109,7 @@ public class SlopeConfigEntity {
             }).collect(Collectors.toList()));
         }
         horizontalSpace = slopeConfig.getHorizontalSpace();
-
+        waterConfig = waterConfigEntity;
         material = factorize(slopeConfig.getMaterial(), imagePersistence);
     }
 

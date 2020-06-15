@@ -22,6 +22,7 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
     public void fillTables() {
         setupImages();
         setupGroundConfig();
+        setupWaterConfig();
     }
 
     @After
@@ -37,6 +38,9 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
         registerUpdate(groundConfig -> groundConfig.material(new PhongMaterialConfig().textureId(IMAGE_2_ID).scale(2.1).bumpMapId(IMAGE_3_ID).bumpMapDepth(0.5).shininess(80.0).specularStrength(0.4)));
         registerUpdate(groundConfig -> groundConfig.material(null));
         registerUpdate(groundConfig -> groundConfig.groundConfigId(null));
+        registerUpdate(groundConfig -> groundConfig.waterConfigId(WATER_1_ID));
+        registerUpdate(groundConfig -> groundConfig.waterConfigId(WATER_2_ID));
+        registerUpdate(groundConfig -> groundConfig.waterConfigId(null));
         registerUpdate(groundConfig -> groundConfig.slopeShapes(Arrays.asList(
                 new SlopeShape().slopeFactor(0.5),
                 new SlopeShape().position(new DecimalPosition(1.1, 2.3)).slopeFactor(0.5),

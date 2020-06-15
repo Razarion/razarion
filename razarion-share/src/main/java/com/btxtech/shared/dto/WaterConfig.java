@@ -12,10 +12,10 @@ public class WaterConfig implements Config {
     private double transparency;
     private Integer reflectionId;
     private double reflectionScale;
-    private Integer normMapId;
-    private double normMapDepth;
+    private Integer bumpMapId;
+    private double bumpDistortionScale;
+    private double bumpMapDepth;
     private Integer distortionId;
-    private double distortionScale;
     private double distortionStrength;
     private double distortionDurationSeconds;
 
@@ -74,20 +74,20 @@ public class WaterConfig implements Config {
         this.reflectionScale = reflectionScale;
     }
 
-    public Integer getNormMapId() {
-        return normMapId;
+    public Integer getBumpMapId() {
+        return bumpMapId;
     }
 
-    public void setNormMapId(Integer normMapId) {
-        this.normMapId = normMapId;
+    public void setBumpMapId(Integer bumpMapId) {
+        this.bumpMapId = bumpMapId;
     }
 
-    public double getNormMapDepth() {
-        return normMapDepth;
+    public double getBumpMapDepth() {
+        return bumpMapDepth;
     }
 
-    public void setNormMapDepth(double normMapDepth) {
-        this.normMapDepth = normMapDepth;
+    public void setBumpMapDepth(double bumpMapDepth) {
+        this.bumpMapDepth = bumpMapDepth;
     }
 
     public Integer getDistortionId() {
@@ -98,12 +98,12 @@ public class WaterConfig implements Config {
         this.distortionId = distortionId;
     }
 
-    public double getDistortionScale() {
-        return distortionScale;
+    public double getBumpDistortionScale() {
+        return bumpDistortionScale;
     }
 
-    public void setDistortionScale(double distortionScale) {
-        this.distortionScale = distortionScale;
+    public void setBumpDistortionScale(double bumpDistortionScale) {
+        this.bumpDistortionScale = bumpDistortionScale;
     }
 
     public double getDistortionStrength() {
@@ -157,13 +157,13 @@ public class WaterConfig implements Config {
         return this;
     }
 
-    public WaterConfig normMapId(Integer normMapId) {
-        setNormMapId(normMapId);
+    public WaterConfig bumpMapId(Integer normMapId) {
+        setBumpMapId(normMapId);
         return this;
     }
 
-    public WaterConfig normMapDepth(double normMapDepth) {
-        setNormMapDepth(normMapDepth);
+    public WaterConfig bumpMapDepth(double normMapDepth) {
+        setBumpMapDepth(normMapDepth);
         return this;
     }
 
@@ -172,8 +172,8 @@ public class WaterConfig implements Config {
         return this;
     }
 
-    public WaterConfig distortionScale(double distortionScale) {
-        setDistortionScale(distortionScale);
+    public WaterConfig bumpDistortionScale(double distortionScale) {
+        setBumpDistortionScale(distortionScale);
         return this;
     }
 

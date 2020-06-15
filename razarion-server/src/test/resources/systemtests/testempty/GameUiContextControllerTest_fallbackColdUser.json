@@ -12,7 +12,7 @@
   "levelUnlockConfigs": null,
   "staticGameConfig": {
     "groundConfigs": [],
-    "waterConfig": null,
+    "waterConfigs": [],
     "slopeConfigs": [],
     "terrainObjectConfigs": [],
     "baseItemTypes": [],

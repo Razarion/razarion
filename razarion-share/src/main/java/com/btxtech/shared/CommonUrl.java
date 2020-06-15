@@ -41,6 +41,7 @@ public class CommonUrl {
     public static final String TERRAIN_ELEMENT_SERVICE_PATH = "terrainelement";
     public static final String GROUND_EDITOR_PATH = "editor/ground";
     public static final String SLOPE_EDITOR_PATH = "editor/slope";
+    public static final String WATER_EDITOR_PATH = "editor/water";
     public static final String PLANET_EDITOR_PATH = "editor/planet";
     public static final String LEVEL_EDITOR_PATH = "editor/level";
     public static final String GENERIC_PROPERTY_EDITOR_PATH = "editor/generic-property";

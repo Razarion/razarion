@@ -23,41 +23,66 @@ public class WaterConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     private double waterLevel;
-    private double waterTransparency;
+    private double groundLevel;
+    private double transparency;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ImageLibraryEntity normMapId; // TODO rename on db
-    private double groundLevel;
+    private ImageLibraryEntity reflection;
+    private double reflectionScale;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ImageLibraryEntity bumpMap;
+    private double bumpMapDepth;
+    private double bumpDistortionScale;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ImageLibraryEntity distortion;
+    private double distortionStrength;
+    private double distortionDurationSeconds;
 
     public Integer getId() {
         return id;
     }
 
     public WaterConfig toWaterConfig() {
-        WaterConfig waterConfig = new WaterConfig();
-        // TODO waterConfig.setWaterLevel(waterLevel).setGroundLevel(groundLevel).setTransparency(waterTransparency);
-        if (normMapId != null) {
-            waterConfig.setNormMapId(normMapId.getId());
+        WaterConfig waterConfig = new WaterConfig()
+                .id(id)
+                .internalName(internalName)
+                .waterLevel(waterLevel)
+                .groundLevel(groundLevel)
+                .transparency(transparency)
+                .reflectionScale(reflectionScale)
+                .bumpMapDepth(bumpMapDepth)
+                .bumpDistortionScale(bumpDistortionScale)
+                .distortionStrength(distortionStrength)
+                .distortionDurationSeconds(distortionDurationSeconds);
+        if (reflection != null) {
+            waterConfig.setReflectionId(reflection.getId());
         }
-        // TODO ----------
-        waterConfig.setReflectionId(96); // TODO
-        waterConfig.setReflectionScale(100); // TODO
-        waterConfig.setDistortionId(89); // TODO
-        waterConfig.setDistortionScale(16); // TODO
-        waterConfig.setDistortionStrength(0.11); // TODO
-        waterConfig.setDistortionDurationSeconds(20); // TODO
-        waterConfig.setNormMapDepth(1.0);
-        // TODO ends -----
-
+        if (bumpMap != null) {
+            waterConfig.setBumpMapId(bumpMap.getId());
+        }
+        if (distortion != null) {
+            waterConfig.setDistortionId(distortion.getId());
+        }
         return waterConfig;
     }
 
     public void fromWaterConfig(WaterConfig waterConfig, ImagePersistence imagePersistence) {
+        internalName = waterConfig.getInternalName();
         waterLevel = waterConfig.getWaterLevel();
         groundLevel = waterConfig.getGroundLevel();
-        waterTransparency = waterConfig.getTransparency();
-        normMapId = imagePersistence.getImageLibraryEntity(waterConfig.getNormMapId());
+        transparency = waterConfig.getTransparency();
+        reflection = imagePersistence.getImageLibraryEntity(waterConfig.getReflectionId());
+        reflectionScale = waterConfig.getReflectionScale();
+        bumpMap = imagePersistence.getImageLibraryEntity(waterConfig.getBumpMapId());
+        bumpMapDepth = waterConfig.getBumpMapDepth();
+        bumpDistortionScale = waterConfig.getBumpDistortionScale();
+        distortion = imagePersistence.getImageLibraryEntity(waterConfig.getDistortionId());
+        distortionStrength = waterConfig.getDistortionStrength();
+        distortionDurationSeconds = waterConfig.getDistortionDurationSeconds();
     }
 
     @Override
