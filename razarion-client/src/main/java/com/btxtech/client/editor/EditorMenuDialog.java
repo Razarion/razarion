@@ -25,12 +25,12 @@ import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
-import com.btxtech.client.editor.water.WaterSidebar;
 import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
 import com.btxtech.shared.rest.SlopeEditorController;
+import com.btxtech.shared.rest.WaterEditorController;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -101,9 +101,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button sceneConfigButton;
     @Inject
     @DataField
-    private Button waterButton;
-    @Inject
-    @DataField
     private Button baseItemButton;
     @Inject
     @DataField
@@ -141,6 +138,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
                 new CrudControllerButton(PlanetEditorController.class, "Planets"),
                 new CrudControllerButton(GroundEditorController.class, "Grounds"),
                 new CrudControllerButton(SlopeEditorController.class, "Slope"),
+                new CrudControllerButton(WaterEditorController.class, "Water"),
                 new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context")
         );
     }
@@ -239,12 +237,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private void sceneConfigButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
         editorService.openEditor(SceneConfigSidebar.class, "???Unknown");
-    }
-
-    @EventHandler("waterButton")
-    private void onWaterButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openEditor(WaterSidebar.class, "???Unknown");
     }
 
     @EventHandler("baseItemButton")
