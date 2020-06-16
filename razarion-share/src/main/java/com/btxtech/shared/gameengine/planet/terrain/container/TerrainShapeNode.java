@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeObstacle;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeVertex;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeWaterSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -107,7 +108,18 @@ public class TerrainShapeNode {
             }
         }
         if (nativeTerrainShapeNode.waterSegments != null) {
-            waterSegments = nativeTerrainShapeNode.waterSegments;
+            waterSegments = new HashMap<>();
+            for (NativeWaterSegment nativeWaterSegment : nativeTerrainShapeNode.waterSegments) {
+                List<List<Vertex>> polygons = new ArrayList<>();
+                for (NativeVertex[] nativeVertexPolygon : nativeWaterSegment.polygons) {
+                    List<Vertex> polygon = new ArrayList<>();
+                    polygons.add(polygon);
+                    for (NativeVertex nativeVertex : nativeVertexPolygon) {
+                        polygon.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
+                    }
+                }
+                waterSegments.put(nativeWaterSegment.groundConfigId, polygons);
+            }
 //   TODO         waterSegments = new ArrayList<>();
 //            for (NativeVertex[] nativeWaterSegment : nativeTerrainShapeNode.waterSegments) {
 //                List<Vertex> waterSegment = new ArrayList<>();
@@ -351,7 +363,7 @@ public class TerrainShapeNode {
         nativeTerrainShapeNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);
         nativeTerrainShapeNode.fullGameEngineDriveway = fullGameEngineDriveway;
         nativeTerrainShapeNode.fullRenderEngineDriveway = fullRenderEngineDriveway;
-        if(renderGroundId != null) {
+        if (renderGroundId != null) {
             nativeTerrainShapeNode.renderGround = true;
             nativeTerrainShapeNode.renderGroundId = renderGroundId;
         }
@@ -372,12 +384,14 @@ public class TerrainShapeNode {
             }).toArray(value -> new NativeGroundSlopeConnection[groundSlopeConnections.size()]);
         }
         if (waterSegments != null) {
-//      TODO      nativeTerrainShapeNode.waterSegments = new NativeVertex[waterSegments.size()][];
-//            for (int i = 0; i < waterSegments.size(); i++) {
-//                List<Vertex> waterSegment = waterSegments.get(i);
-//                nativeTerrainShapeNode.waterSegments[i] = waterSegment.stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
-//            }
-            nativeTerrainShapeNode.waterSegments = waterSegments;
+            nativeTerrainShapeNode.waterSegments = waterSegments.entrySet().stream().map(entry -> {
+                NativeWaterSegment nativeWaterSegment = new NativeWaterSegment();
+                nativeWaterSegment.groundConfigId = entry.getKey();
+                nativeWaterSegment.polygons = entry.getValue().stream()
+                        .map(polygons -> polygons.stream().map(NativeHelper::fromVertex).toArray(value -> new NativeVertex[polygons.size()]))
+                        .toArray(value -> new NativeVertex[entry.getValue().size()][]);
+                return nativeWaterSegment;
+            }).toArray(value -> new NativeWaterSegment[waterSegments.size()]);
         }
         nativeTerrainShapeNode.fullWaterLevel = fullWaterLevel;
         if (obstacles != null) {

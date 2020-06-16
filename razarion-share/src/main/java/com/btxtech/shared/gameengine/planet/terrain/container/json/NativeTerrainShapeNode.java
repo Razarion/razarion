@@ -1,10 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.container.json;
 
-import com.btxtech.shared.datatypes.Vertex;
 import jsinterop.annotations.JsType;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -15,7 +11,7 @@ public class NativeTerrainShapeNode {
     public double[] fullDrivewayHeights; // bl, br, tr, tl
     public Double innerGroundHeight;
     public NativeGroundSlopeConnection[] groundSlopeConnections;
-    public Map<Integer, List<List<Vertex>>> waterSegments; // TODO Map not working here
+    public NativeWaterSegment[] waterSegments;
     public boolean renderGround; // Integer is not working here because Integer.intValue() is not defined
     public int renderGroundId; // Integer is not working here because Integer.intValue() is not defined
     public boolean renderHideGround;

@@ -273,9 +273,10 @@ public class TerrainTileFactory {
             } else if (terrainShapeNode != null && terrainShapeNode.isFullWater()) {
                 terrainTileBuilder.getTerrainWaterTileBuilder().insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel(), terrainShapeNode.getRenderInnerWaterSlopeId());
             } else if (terrainShapeNode != null && terrainShapeNode.getWaterSegments() != null) {
-                terrainShapeNode.getWaterSegments().forEach((slopeId, segments) -> segments.forEach(segment -> Triangulator.calculate(segment, IGNORE_SMALLER_TRIANGLE, (vertex1, vertex2, vertex3) -> {
-                    terrainTileBuilder.getTerrainWaterTileBuilder().insertWaterRim(vertex1, vertex2, vertex3, slopeId);
-                })));
+                terrainShapeNode.getWaterSegments().forEach(
+                        (slopeId, segments) -> segments.forEach(
+                                segment -> Triangulator.calculate(segment, IGNORE_SMALLER_TRIANGLE,
+                                        (vertex1, vertex2, vertex3) -> terrainTileBuilder.getTerrainWaterTileBuilder().insertWaterRim(vertex1, vertex2, vertex3, slopeId))));
             }
         });
 
