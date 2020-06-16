@@ -120,14 +120,6 @@ public class TerrainShapeNode {
                 }
                 waterSegments.put(nativeWaterSegment.groundConfigId, polygons);
             }
-//   TODO         waterSegments = new ArrayList<>();
-//            for (NativeVertex[] nativeWaterSegment : nativeTerrainShapeNode.waterSegments) {
-//                List<Vertex> waterSegment = new ArrayList<>();
-//                for (NativeVertex nativeVertex : nativeWaterSegment) {
-//                    waterSegment.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
-//                }
-//                waterSegments.add(waterSegment);
-//            }
         }
         terrainShapeSubNodes = TerrainShapeSubNode.fromNativeTerrainShapeSubNode(0, nativeTerrainShapeNode.nativeTerrainShapeSubNodes);
     }
