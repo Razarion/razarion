@@ -7,7 +7,6 @@ import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.slope.CalculatedSlopeData;
@@ -34,8 +33,6 @@ public class TerrainTileBuilder {
     private Instance<TerrainSlopeTileBuilder> terrainSlopeTileContextInstance;
     @Inject
     private TerrainWaterTileBuilder terrainWaterTileBuilder;
-    @Inject
-    private TerrainTypeService terrainTypeService;
     @Deprecated
     private Index terrainTileIndex;
     private TerrainTile terrainTile;

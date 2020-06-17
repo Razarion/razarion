@@ -21,6 +21,7 @@ import java.util.Set;
  */
 @Dependent
 public class TerrainWaterTileBuilder {
+    // private static Logger LOGGER = Logger.getLogger(TerrainWaterTileBuilder.class.getName());
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
     private TerrainTileBuilder terrainTileBuilder;
@@ -116,7 +117,7 @@ public class TerrainWaterTileBuilder {
     }
 
     public void triangulateShallowWaterMesh(int slopeConfigId) {
-        for (int x = 0; x < tmpShallowWaterMesh.size() - 3; x++) { // TODO -3 ??? remove fragemnt for norm... but why -3???
+        for (int x = 0; x < tmpShallowWaterMesh.size() - 3; x++) { // TODO -3 ??? remove fragment for norm... but why -3???
             for (int y = 0; y < tmpShallowWaterMesh.get(x).length - 1; y++) {
 
                 Vertex vertexBL = tmpShallowWaterMesh.get(x)[y];

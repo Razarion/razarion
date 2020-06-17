@@ -530,7 +530,7 @@ public class WorkerMarshaller {
 
         return Arrays.stream(array).map(anyTerrainWaterTile -> {
             TerrainWaterTile terrainWaterTile = new TerrainWaterTile();
-            terrainWaterTile.setSlopeConfigId(((Any) anyTerrainWaterTile.get("slopeConfigId")).asInt());
+            terrainWaterTile.setSlopeConfigId(((Any)Js.uncheckedCast(anyTerrainWaterTile.get("slopeConfigId"))).asInt());
             terrainWaterTile.setPositions(Js.uncheckedCast(anyTerrainWaterTile.get("positions")));
             terrainWaterTile.setShallowPositions(Js.uncheckedCast((anyTerrainWaterTile.get("shallowPositions"))));
             terrainWaterTile.setShallowUvs(Js.uncheckedCast((anyTerrainWaterTile.get("shallowUvs"))));

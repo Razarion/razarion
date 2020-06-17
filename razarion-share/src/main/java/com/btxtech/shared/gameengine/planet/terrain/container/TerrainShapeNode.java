@@ -76,7 +76,9 @@ public class TerrainShapeNode {
             renderGroundId = nativeTerrainShapeNode.renderGroundId;
         }
         renderHideGround = nativeTerrainShapeNode.renderHideGround;
-        renderInnerWaterSlopeId = nativeTerrainShapeNode.renderInnerWaterSlopeId;
+        if(nativeTerrainShapeNode.renderInnerWaterSlope) {
+            renderInnerWaterSlopeId = nativeTerrainShapeNode.renderInnerWaterSlopeId;
+        }
         if (nativeTerrainShapeNode.groundSlopeConnections != null) {
             groundSlopeConnections = new HashMap<>();
 //
@@ -360,7 +362,10 @@ public class TerrainShapeNode {
             nativeTerrainShapeNode.renderGroundId = renderGroundId;
         }
         nativeTerrainShapeNode.renderHideGround = renderHideGround;
-        nativeTerrainShapeNode.renderInnerWaterSlopeId = renderInnerWaterSlopeId;
+        if (renderInnerWaterSlopeId != null) {
+            nativeTerrainShapeNode.renderInnerWaterSlope = true;
+            nativeTerrainShapeNode.renderInnerWaterSlopeId = renderInnerWaterSlopeId;
+        }
         if (groundSlopeConnections != null) {
             nativeTerrainShapeNode.groundSlopeConnections = groundSlopeConnections.entrySet().stream().map(entry -> {
                 NativeGroundSlopeConnection nativeGroundSlopeConnection = new NativeGroundSlopeConnection();
