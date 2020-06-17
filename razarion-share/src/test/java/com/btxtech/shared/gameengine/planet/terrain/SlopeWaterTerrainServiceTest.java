@@ -41,7 +41,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 new SlopeShape().position(new DecimalPosition(2, 0.5)).slopeFactor(0.5),
                 new SlopeShape().position(new DecimalPosition(4, -0.1)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(6, -0.8)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(9, 0)).slopeFactor(0)
+                new SlopeShape().position(new DecimalPosition(9, 10)).slopeFactor(0)
         ));
         slopeConfigs.add(slopeConfigWater);
 

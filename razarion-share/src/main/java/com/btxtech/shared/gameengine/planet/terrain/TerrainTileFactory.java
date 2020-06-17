@@ -183,7 +183,7 @@ public class TerrainTileFactory {
             for (int row = 0; row < calculatedSlopeData.getRows(); row++) {
                 Vertex skeletonVertex = calculatedSlopeData.setupVertex(fractionalSlopeSegment.getIndex(), row);
                 if (waterConfig != null && row == calculatedSlopeData.getRows() - 1) {
-                    skeletonVertex = skeletonVertex.add(0, 0, waterConfig.getGroundLevel());
+                    skeletonVertex = new Vertex(skeletonVertex.getX(), skeletonVertex.getY(), waterConfig.getGroundLevel());
                 }
                 double slopeFactor = calculatedSlopeData.setupSlopeFactor(fractionalSlopeSegment.getIndex(), row);
                 if (fractionalSlopeSegment.getDrivewayHeightFactor() < 1.0) {
