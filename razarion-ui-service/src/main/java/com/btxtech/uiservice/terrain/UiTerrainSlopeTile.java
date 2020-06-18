@@ -55,7 +55,7 @@ public class UiTerrainSlopeTile {
     }
 
     public double getWaterAnimation() {
-        return SignalGenerator.sawtooth(System.currentTimeMillis(), (int)(waterConfig.getDistortionDurationSeconds() * 1000.0), 0);
+        return SignalGenerator.sawtooth(System.currentTimeMillis(), (int)(waterConfig.getBumpDistortionDurationSeconds() * 1000.0), 0);
     }
 
     public void dispose() {

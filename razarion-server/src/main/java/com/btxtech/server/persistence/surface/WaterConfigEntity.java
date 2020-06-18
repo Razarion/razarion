@@ -31,6 +31,10 @@ public class WaterConfigEntity {
     @JoinColumn
     private ImageLibraryEntity reflection;
     private double reflectionScale;
+    private double fresnelOffset;
+    private double fresnelDelta;
+    private double shininess;
+    private double specularStrength;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity bumpMap;
@@ -54,6 +58,10 @@ public class WaterConfigEntity {
                 .groundLevel(groundLevel)
                 .transparency(transparency)
                 .reflectionScale(reflectionScale)
+                .fresnelOffset(fresnelOffset)
+                .fresnelDelta(fresnelDelta)
+                .shininess(shininess)
+                .specularStrength(specularStrength)
                 .bumpMapDepth(bumpMapDepth)
                 .bumpDistortionScale(bumpDistortionScale)
                 .distortionStrength(distortionStrength)
@@ -77,12 +85,16 @@ public class WaterConfigEntity {
         transparency = waterConfig.getTransparency();
         reflection = imagePersistence.getImageLibraryEntity(waterConfig.getReflectionId());
         reflectionScale = waterConfig.getReflectionScale();
+        fresnelOffset = waterConfig.getFresnelOffset();
+        fresnelDelta = waterConfig.getFresnelDelta();
+        shininess = waterConfig.getShininess();
+        specularStrength = waterConfig.getSpecularStrength();
         bumpMap = imagePersistence.getImageLibraryEntity(waterConfig.getBumpMapId());
         bumpMapDepth = waterConfig.getBumpMapDepth();
         bumpDistortionScale = waterConfig.getBumpDistortionScale();
         distortion = imagePersistence.getImageLibraryEntity(waterConfig.getDistortionId());
         distortionStrength = waterConfig.getDistortionStrength();
-        distortionDurationSeconds = waterConfig.getDistortionDurationSeconds();
+        distortionDurationSeconds = waterConfig.getBumpDistortionDurationSeconds();
     }
 
     @Override

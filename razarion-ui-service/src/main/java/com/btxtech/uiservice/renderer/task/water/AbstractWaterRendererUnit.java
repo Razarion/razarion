@@ -19,12 +19,7 @@ public abstract class AbstractWaterRendererUnit extends AbstractRenderUnit<UiTer
 
     @Override
     public void fillBuffers(UiTerrainWaterTile uiTerrainWaterTile) {
-        if (uiTerrainWaterTile.getWaterConfig().getBumpMapId() == null) {
-            logger.warning("AbstractWaterRendererUnit no BM for water defined");
-            return;
-        }
         fillInternalBuffers(uiTerrainWaterTile);
-        // TODO setElementCount(uiTerrainWaterTile.getVertexCount());
     }
 
     @Override

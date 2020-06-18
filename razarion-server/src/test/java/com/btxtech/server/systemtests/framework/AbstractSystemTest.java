@@ -90,6 +90,7 @@ public abstract class AbstractSystemTest extends ServerTestHelper {
         boolean equals = expectedNode.equals(actualNode);
         if (!equals) {
             displayDifferences(expectedNode, actualNode, JsonPointer.compile(null));
+            displayDifferences(actualNode, expectedNode, JsonPointer.compile(null));
             throw new AssertionError("\nexpected: " + expectedNode + "\nactual  : " + actualNode);
         }
     }

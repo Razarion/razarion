@@ -12,12 +12,16 @@ public class WaterConfig implements Config {
     private double transparency;
     private Integer reflectionId;
     private double reflectionScale;
+    private double fresnelOffset;
+    private double fresnelDelta;
+    private double shininess;
+    private double specularStrength;
     private Integer bumpMapId;
     private double bumpDistortionScale;
+    private double bumpDistortionDurationSeconds;
     private double bumpMapDepth;
     private Integer distortionId;
     private double distortionStrength;
-    private double distortionDurationSeconds;
 
     @Override
     public int getId() {
@@ -74,6 +78,38 @@ public class WaterConfig implements Config {
         this.reflectionScale = reflectionScale;
     }
 
+    public double getFresnelOffset() {
+        return fresnelOffset;
+    }
+
+    public void setFresnelOffset(double fresnelOffset) {
+        this.fresnelOffset = fresnelOffset;
+    }
+
+    public double getFresnelDelta() {
+        return fresnelDelta;
+    }
+
+    public void setFresnelDelta(double fresnelDelta) {
+        this.fresnelDelta = fresnelDelta;
+    }
+
+    public double getShininess() {
+        return shininess;
+    }
+
+    public void setShininess(double shininess) {
+        this.shininess = shininess;
+    }
+
+    public double getSpecularStrength() {
+        return specularStrength;
+    }
+
+    public void setSpecularStrength(double specularStrength) {
+        this.specularStrength = specularStrength;
+    }
+
     public Integer getBumpMapId() {
         return bumpMapId;
     }
@@ -114,12 +150,12 @@ public class WaterConfig implements Config {
         this.distortionStrength = distortionStrength;
     }
 
-    public double getDistortionDurationSeconds() {
-        return distortionDurationSeconds;
+    public double getBumpDistortionDurationSeconds() {
+        return bumpDistortionDurationSeconds;
     }
 
-    public void setDistortionDurationSeconds(double distortionDurationSeconds) {
-        this.distortionDurationSeconds = distortionDurationSeconds;
+    public void setBumpDistortionDurationSeconds(double bumpDistortionDurationSeconds) {
+        this.bumpDistortionDurationSeconds = bumpDistortionDurationSeconds;
     }
 
     public WaterConfig id(int id) {
@@ -152,8 +188,28 @@ public class WaterConfig implements Config {
         return this;
     }
 
+    public WaterConfig shininess(double shininess) {
+        setShininess(shininess);
+        return this;
+    }
+
+    public WaterConfig specularStrength(double specularStrength) {
+        setSpecularStrength(specularStrength);
+        return this;
+    }
+
     public WaterConfig reflectionScale(double reflectionScale) {
         setReflectionScale(reflectionScale);
+        return this;
+    }
+
+    public WaterConfig fresnelOffset(double fresnelOffset) {
+        setFresnelOffset(fresnelOffset);
+        return this;
+    }
+
+    public WaterConfig fresnelDelta(double fresnelDelta) {
+        setFresnelDelta(fresnelDelta);
         return this;
     }
 
@@ -183,7 +239,7 @@ public class WaterConfig implements Config {
     }
 
     public WaterConfig distortionDurationSeconds(double distortionDurationSeconds) {
-        setDistortionDurationSeconds(distortionDurationSeconds);
+        setBumpDistortionDurationSeconds(distortionDurationSeconds);
         return this;
     }
 }

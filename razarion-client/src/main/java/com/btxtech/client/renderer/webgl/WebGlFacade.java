@@ -245,6 +245,14 @@ public class WebGlFacade {
         return webGlUniformTexture;
     }
 
+    public WebGlUniformTexture createSaveWebGLTexture(Integer imageId, String samplerUniformName) {
+        if (imageId != null) {
+            return createWebGLTexture(imageId, samplerUniformName);
+        } else {
+            return createFakeWebGLTexture(samplerUniformName);
+        }
+    }
+
     private TextureIdHandler.WebGlTextureId createWebGlTextureId() {
         return textureIdHandler.create();
     }

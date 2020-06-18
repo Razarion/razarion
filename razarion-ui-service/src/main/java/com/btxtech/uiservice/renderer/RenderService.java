@@ -5,6 +5,7 @@ import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
+import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -48,7 +49,7 @@ public abstract class RenderService {
 // TODO       addRenderTask(TrailRenderTask.class, "Trail");
 // TODO       addRenderTask(ResourceItemRenderTask.class, "Resource");
 // TODO       addRenderTask(BoxItemRenderTask.class, "Box");
-// TODO       addRenderTask(WaterRenderTask.class, "Water");
+        addRenderTask(WaterRenderTask.class, "Water");
 // TODO       addRenderTask(ProjectileRenderTask.class, "Projectile");
 // TODO       addRenderTask(BaseItemPlacerRenderTask.class, "Base Item Placer");
 // TODO       addRenderTask(SelectionFrameRenderTask.class, "Selection Frame");
