@@ -458,9 +458,13 @@ public class WorkerMarshaller {
             for (TerrainWaterTile terrainWaterTile : terrainWaterTiles) {
                 JsPropertyMapOfAny mapOfAny = JsPropertyMap.of();
                 mapOfAny.set("slopeConfigId", terrainWaterTile.getSlopeConfigId());
-                mapOfAny.set("positions", Js.uncheckedCast(terrainWaterTile.getPositions()));
-                mapOfAny.set("shallowPositions", Js.uncheckedCast(terrainWaterTile.getShallowPositions()));
-                mapOfAny.set("shallowUvs", Js.uncheckedCast(terrainWaterTile.getShallowUvs()));
+                if (terrainWaterTile.isPositionsSet()) {
+                    mapOfAny.set("positions", Js.uncheckedCast(terrainWaterTile.getPositions()));
+                }
+                if (terrainWaterTile.isShallowPositionsSet()) {
+                    mapOfAny.set("shallowPositions", Js.uncheckedCast(terrainWaterTile.getShallowPositions()));
+                    mapOfAny.set("shallowUvs", Js.uncheckedCast(terrainWaterTile.getShallowUvs()));
+                }
                 result.push(mapOfAny);
             }
         }
@@ -530,10 +534,14 @@ public class WorkerMarshaller {
 
         return Arrays.stream(array).map(anyTerrainWaterTile -> {
             TerrainWaterTile terrainWaterTile = new TerrainWaterTile();
-            terrainWaterTile.setSlopeConfigId(((Any)Js.uncheckedCast(anyTerrainWaterTile.get("slopeConfigId"))).asInt());
-            terrainWaterTile.setPositions(Js.uncheckedCast(anyTerrainWaterTile.get("positions")));
-            terrainWaterTile.setShallowPositions(Js.uncheckedCast((anyTerrainWaterTile.get("shallowPositions"))));
-            terrainWaterTile.setShallowUvs(Js.uncheckedCast((anyTerrainWaterTile.get("shallowUvs"))));
+            terrainWaterTile.setSlopeConfigId(((Any) Js.uncheckedCast(anyTerrainWaterTile.get("slopeConfigId"))).asInt());
+            if (anyTerrainWaterTile.has("positions")) {
+                terrainWaterTile.setPositions(Js.uncheckedCast(anyTerrainWaterTile.get("positions")));
+            }
+            if (anyTerrainWaterTile.has("shallowPositions")) {
+                terrainWaterTile.setShallowPositions(Js.uncheckedCast((anyTerrainWaterTile.get("shallowPositions"))));
+                terrainWaterTile.setShallowUvs(Js.uncheckedCast((anyTerrainWaterTile.get("shallowUvs"))));
+            }
             return terrainWaterTile;
         }).collect(Collectors.toList());
     }

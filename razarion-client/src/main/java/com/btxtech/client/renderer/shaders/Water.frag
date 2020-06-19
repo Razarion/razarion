@@ -4,22 +4,26 @@ precision mediump float;
 varying vec3 vWorldVertexPosition;
 varying vec3 vViewPosition;
 varying vec3 vNormal;
+uniform highp mat4 normalMatrix;
 
-// Light
-uniform float uShininess;
-uniform float uSpecularStrength;
-
+uniform float uReflectionScale;
+uniform sampler2D uReflection;
 uniform float uTransparency;
 uniform float uFresnelOffset;
 uniform float uFresnelDelta;
+uniform float uShininess;
+uniform float uSpecularStrength;
 uniform sampler2D uBumpMap;
 uniform float uBumpMapDepth;
 uniform sampler2D uDistortionMap;
-uniform float uReflectionScale;
-uniform float distortionStrength;
-uniform sampler2D uReflection;
 uniform float uDistortionStrength;
-uniform float uBumpDistortionAnimatioon;
+uniform float uBumpDistortionScale;
+uniform float uBumpDistortionAnimation;
+
+// Light
+uniform vec3 directLightDirection;
+uniform vec3 directLightColor;
+uniform vec3 ambientLightColor;
 
 #ifdef  RENDER_SHALLOW_WATER
 varying vec2 vUv;
@@ -47,8 +51,8 @@ vec2 dHdxy_fwd(vec2 vUv) {
 }
 
 vec2 dHdxy_fwd_animation() {
-    vec2 dHdxy1 = dHdxy_fwd(vWorldVertexPosition.xy / distortionStrength + vec2(uBumpDistortionAnimatioon, 0.5));
-    vec2 dHdxy2 = dHdxy_fwd(vWorldVertexPosition.xy / distortionStrength + vec2(-uBumpDistortionAnimatioon, uBumpDistortionAnimatioon));
+    vec2 dHdxy1 = dHdxy_fwd(vWorldVertexPosition.xy / uBumpDistortionScale + vec2(uBumpDistortionAnimation, 0.5));
+    vec2 dHdxy2 = dHdxy_fwd(vWorldVertexPosition.xy / uBumpDistortionScale + vec2(-uBumpDistortionAnimation, uBumpDistortionAnimation));
     return (dHdxy1 + dHdxy2) / 2.0;
 }
 
@@ -66,21 +70,19 @@ vec3 perturbNormalArb(vec3 surf_pos, vec3 surf_norm, vec2 dHdxy) {
 
 void main(void) {
     // Reflection diffuse
-    vec2 distortion1 = texture2D(uDistortionMap, vWorldVertexPosition.xy / distortionStrength + vec2(uBumpDistortionAnimatioon, 0.5)).rg * 2.0 - 1.0;
-    vec2 distortion2 = texture2D(uDistortionMap, vWorldVertexPosition.xy / distortionStrength + vec2(-uBumpDistortionAnimatioon, uBumpDistortionAnimatioon)).rg * 2.0 - 1.0;
+    vec2 distortion1 = texture2D(uDistortionMap, vWorldVertexPosition.xy / uBumpDistortionScale + vec2(uBumpDistortionAnimation, 0.5)).rg * 2.0 - 1.0;
+    vec2 distortion2 = texture2D(uDistortionMap, vWorldVertexPosition.xy / uBumpDistortionScale + vec2(-uBumpDistortionAnimation, uBumpDistortionAnimation)).rg * 2.0 - 1.0;
     vec2 totalDistortion = distortion1 + distortion2;
     vec2 reflectionCoord = (vWorldVertexPosition.xy) / uReflectionScale + totalDistortion * uDistortionStrength;
     vec3 reflection = texture2D(uReflection, reflectionCoord).rgb;
 
     // Specular
+    vec3 directLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
     vec3 normal = perturbNormalArb(-vViewPosition, vNormal, dHdxy_fwd_animation());
-    vec3 directLightColor = directionalLights[0].color;
-    vec3 directLightDirection = directionalLights[0].direction;
     vec3 viewDir = normalize(vViewPosition);
     vec3 halfwayDir = normalize(directLightDirection + viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), uShininess);
     vec3 slopeSpecular = uSpecularStrength * spec * directLightColor;
-
     vec3 waterSurface = (ambientLightColor + vec3(0.5, 0.5, 0.5)) * reflection + slopeSpecular;
 
     #ifdef  RENDER_SHALLOW_WATER

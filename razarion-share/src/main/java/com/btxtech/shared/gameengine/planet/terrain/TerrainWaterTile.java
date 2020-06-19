@@ -11,6 +11,8 @@ public class TerrainWaterTile {
     private Float32ArrayEmu positions;
     private Float32ArrayEmu shallowPositions;
     private Float32ArrayEmu shallowUvs;
+    private boolean positionsSet; // positions == null not working -> Float32ArrayEmu to Float32Array problem
+    private boolean shallowPositionsSet; // shallowPositions == null not working -> Float32ArrayEmu to Float32Array problem
 
     public int getSlopeConfigId() {
         return slopeConfigId;
@@ -21,6 +23,7 @@ public class TerrainWaterTile {
     }
 
     public void setPositions(Float32ArrayEmu positions) {
+        positionsSet = true;
         this.positions = positions;
     }
 
@@ -33,6 +36,7 @@ public class TerrainWaterTile {
     }
 
     public void setShallowPositions(Float32ArrayEmu shallowPositions) {
+        shallowPositionsSet = true;
         this.shallowPositions = shallowPositions;
     }
 
@@ -42,5 +46,13 @@ public class TerrainWaterTile {
 
     public void setShallowUvs(Float32ArrayEmu shallowUvs) {
         this.shallowUvs = shallowUvs;
+    }
+
+    public boolean isPositionsSet() {
+        return positionsSet;
+    }
+
+    public boolean isShallowPositionsSet() {
+        return shallowPositionsSet;
     }
 }

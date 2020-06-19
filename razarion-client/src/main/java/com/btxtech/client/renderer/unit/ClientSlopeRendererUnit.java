@@ -208,11 +208,6 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     }
 
     @Override
-    public void setupImages() {
-
-    }
-
-    @Override
     public void dispose() {
         positions.deleteBuffer();
         normals.deleteBuffer();

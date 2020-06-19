@@ -33,6 +33,7 @@ import java.util.Set;
  */
 @Dependent
 public class UiTerrainTile {
+    // private Logger logger = Logger.getLogger(UiTerrainTile.class.getName());
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
@@ -105,10 +106,10 @@ public class UiTerrainTile {
             terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile -> {
                 try {
                     SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainWaterTile.getSlopeConfigId());
-                    if (terrainWaterTile.getPositions() != null) {
+                    if (terrainWaterTile.isPositionsSet()) {
                         createAndAddUiTerrainWaterTile(slopeConfig, terrainWaterTile.getPositions(), null);
                     }
-                    if (terrainWaterTile.getShallowPositions() != null) {
+                    if (terrainWaterTile.isShallowPositionsSet()) {
                         createAndAddUiTerrainWaterTile(slopeConfig, terrainWaterTile.getShallowPositions(), terrainWaterTile.getShallowUvs());
                     }
                 } catch (Throwable t) {

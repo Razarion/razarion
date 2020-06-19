@@ -18,7 +18,9 @@ public abstract class AbstractRenderUnit<D> {
     public abstract void init();
 
     @Deprecated
-    public abstract void setupImages();
+    public void setupImages() {
+
+    }
 
     public abstract void fillBuffers(D d);
 

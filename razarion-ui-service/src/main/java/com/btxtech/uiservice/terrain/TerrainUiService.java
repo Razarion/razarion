@@ -9,6 +9,7 @@ import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -257,7 +258,12 @@ public class TerrainUiService {
     }
 
     public void enableEditMode(SlopeConfig slopeConfig) {
-        terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig);
+        terrainTypeService.overrideSlopeConfig(slopeConfig);
+        onEditorTerrainChanged();
+    }
+
+    public void enableEditMode(WaterConfig waterConfig) {
+        terrainTypeService.overrideWaterConfig(waterConfig);
         onEditorTerrainChanged();
     }
 

@@ -148,8 +148,12 @@ public class TerrainTypeService {
         terrainObjectConfigs.remove(terrainObjectConfig.getId());
     }
 
-    public void overrideSlopeSkeletonConfig(SlopeConfig slopeConfig) {
+    public void overrideSlopeConfig(SlopeConfig slopeConfig) {
         slopeConfigs.put(slopeConfig.getId(), slopeConfig);
+    }
+
+    public void overrideWaterConfig(WaterConfig waterConfig) {
+        waterConfigs.put(waterConfig.getId(), waterConfig);
     }
 
     public void deleteSlopeSkeletonConfig(SlopeConfig slopeConfig) {
