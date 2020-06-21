@@ -34,9 +34,9 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
 
     @Override
     protected void setupUpdate() {
-        registerUpdate(slopeConfig -> slopeConfig.coastDelimiterLineGameEngine(10).outerLineGameEngine(5).innerLineGameEngine(20).horizontalSpace(5));
+        registerUpdate(slopeConfig -> slopeConfig.coastDelimiterLineGameEngine(10).outerLineGameEngine(5).innerLineGameEngine(20).horizontalSpace(5).interpolateNorm(true));
         registerUpdate(slopeConfig -> slopeConfig.coastDelimiterLineGameEngine(20).outerLineGameEngine(27).innerLineGameEngine(50).horizontalSpace(25).groundConfigId(GROUND_1_ID));
-        registerUpdate(slopeConfig -> slopeConfig.material(new PhongMaterialConfig().textureId(IMAGE_2_ID).scale(2.1).bumpMapId(IMAGE_3_ID).bumpMapDepth(0.5).shininess(80.0).specularStrength(0.4)));
+        registerUpdate(slopeConfig -> slopeConfig.material(new PhongMaterialConfig().textureId(IMAGE_2_ID).scale(2.1).bumpMapId(IMAGE_3_ID).bumpMapDepth(0.5).shininess(80.0).specularStrength(0.4)).interpolateNorm(false));
         registerUpdate(slopeConfig -> slopeConfig.material(null));
         registerUpdate(slopeConfig -> slopeConfig.groundConfigId(null));
         registerUpdate(slopeConfig -> slopeConfig.waterConfigId(WATER_1_ID));

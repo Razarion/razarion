@@ -41,6 +41,7 @@ public class SlopeConfigEntity {
     @JoinColumn(nullable = false)
     @OrderColumn(name = "orderColumn")
     private List<SlopeShapeEntity> shape;
+    private boolean interpolateNorm;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private GroundConfigEntity groundConfig;
@@ -85,6 +86,7 @@ public class SlopeConfigEntity {
                 .id(id)
                 .internalName(internalName)
                 .horizontalSpace(horizontalSpace)
+                .interpolateNorm(interpolateNorm)
                 .innerLineGameEngine(innerLineGameEngine)
                 .outerLineGameEngine(outerLineGameEngine)
                 .coastDelimiterLineGameEngine(coastDelimiterLineGameEngine)
@@ -121,6 +123,7 @@ public class SlopeConfigEntity {
                 return slopeShapeEntity;
             }).collect(Collectors.toList()));
         }
+        interpolateNorm = slopeConfig.isInterpolateNorm();
         horizontalSpace = slopeConfig.getHorizontalSpace();
         waterConfig = waterConfigEntity;
         material = factorize(slopeConfig.getMaterial(), imagePersistence);

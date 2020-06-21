@@ -375,6 +375,11 @@ public class SlopeConfig implements Config {
         return this;
     }
 
+    public SlopeConfig interpolateNorm(boolean interpolateNorm) {
+        setInterpolateNorm(interpolateNorm);
+        return this;
+    }
+
     public SlopeConfig groundConfigId(Integer groundConfigId) {
         setGroundConfigId(groundConfigId);
         return this;
