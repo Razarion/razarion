@@ -6,6 +6,7 @@ import com.btxtech.server.systemtests.framework.AbstractCrudTest;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SlopeShape;
+import com.btxtech.shared.gameengine.datatypes.config.ShallowWaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.rest.SlopeEditorController;
 import org.junit.After;
@@ -33,23 +34,26 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
 
     @Override
     protected void setupUpdate() {
-        registerUpdate(groundConfig -> groundConfig.coastDelimiterLineGameEngine(10).outerLineGameEngine(5).innerLineGameEngine(20).horizontalSpace(5));
-        registerUpdate(groundConfig -> groundConfig.coastDelimiterLineGameEngine(20).outerLineGameEngine(27).innerLineGameEngine(50).horizontalSpace(25).groundConfigId(GROUND_1_ID));
-        registerUpdate(groundConfig -> groundConfig.material(new PhongMaterialConfig().textureId(IMAGE_2_ID).scale(2.1).bumpMapId(IMAGE_3_ID).bumpMapDepth(0.5).shininess(80.0).specularStrength(0.4)));
-        registerUpdate(groundConfig -> groundConfig.material(null));
-        registerUpdate(groundConfig -> groundConfig.groundConfigId(null));
-        registerUpdate(groundConfig -> groundConfig.waterConfigId(WATER_1_ID));
-        registerUpdate(groundConfig -> groundConfig.waterConfigId(WATER_2_ID));
-        registerUpdate(groundConfig -> groundConfig.waterConfigId(null));
-        registerUpdate(groundConfig -> groundConfig.slopeShapes(Arrays.asList(
+        registerUpdate(slopeConfig -> slopeConfig.coastDelimiterLineGameEngine(10).outerLineGameEngine(5).innerLineGameEngine(20).horizontalSpace(5));
+        registerUpdate(slopeConfig -> slopeConfig.coastDelimiterLineGameEngine(20).outerLineGameEngine(27).innerLineGameEngine(50).horizontalSpace(25).groundConfigId(GROUND_1_ID));
+        registerUpdate(slopeConfig -> slopeConfig.material(new PhongMaterialConfig().textureId(IMAGE_2_ID).scale(2.1).bumpMapId(IMAGE_3_ID).bumpMapDepth(0.5).shininess(80.0).specularStrength(0.4)));
+        registerUpdate(slopeConfig -> slopeConfig.material(null));
+        registerUpdate(slopeConfig -> slopeConfig.groundConfigId(null));
+        registerUpdate(slopeConfig -> slopeConfig.waterConfigId(WATER_1_ID));
+        registerUpdate(slopeConfig -> slopeConfig.waterConfigId(WATER_2_ID));
+        registerUpdate(slopeConfig -> slopeConfig.waterConfigId(null));
+        registerUpdate(slopeConfig -> slopeConfig.slopeShapes(Arrays.asList(
                 new SlopeShape().slopeFactor(0.5),
                 new SlopeShape().position(new DecimalPosition(1.1, 2.3)).slopeFactor(0.5),
                 new SlopeShape().position(new DecimalPosition(3.4, 4.5)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(5.7, 8.1)).slopeFactor(0.4))));
-        registerUpdate(groundConfig -> groundConfig.slopeShapes(Arrays.asList(
+        registerUpdate(slopeConfig -> slopeConfig.slopeShapes(Arrays.asList(
                 new SlopeShape().slopeFactor(0.4),
                 new SlopeShape().position(new DecimalPosition(2.1, 5.3)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(7.7, 18.1)).slopeFactor(0.0))));
-        registerUpdate(groundConfig -> groundConfig.slopeShapes(null));
+        registerUpdate(slopeConfig -> slopeConfig.slopeShapes(null));
+        registerUpdate(slopeConfig -> slopeConfig.setShallowWaterConfig(new ShallowWaterConfig().textureId(IMAGE_1_ID).scale(123).distortionId(IMAGE_2_ID).distortionStrength(12.5).stencilId(IMAGE_3_ID).durationSeconds(21)));
+        registerUpdate(slopeConfig -> slopeConfig.setShallowWaterConfig(new ShallowWaterConfig().textureId(IMAGE_3_ID).scale(34).distortionId(IMAGE_1_ID).distortionStrength(1.5).stencilId(IMAGE_2_ID).durationSeconds(10.4)));
+        registerUpdate(slopeConfig -> slopeConfig.setShallowWaterConfig(null));
     }
 }

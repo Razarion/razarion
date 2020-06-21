@@ -59,6 +59,18 @@ public class SlopeConfigEntity {
     })
     @Embedded
     private PhongMaterialConfigEmbeddable material;
+    @AssociationOverrides({
+            @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "shallowWaterTextureId")),
+            @AssociationOverride(name = "distortion", joinColumns = @JoinColumn(name = "shallowWaterDistortionId")),
+            @AssociationOverride(name = "stencil", joinColumns = @JoinColumn(name = "shallowWaterStencilId"))
+    })
+    @AttributeOverrides({
+            @AttributeOverride(name = "scale", column = @Column(name = "shallowWaterScale")),
+            @AttributeOverride(name = "distortionStrength", column = @Column(name = "shallowWaterDistortionStrength")),
+            @AttributeOverride(name = "durationSeconds", column = @Column(name = "shallowWaterDurationSeconds")),
+    })
+    @Embedded
+    private ShallowWaterConfigEmbeddable shallowWaterConfig;
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
@@ -75,7 +87,8 @@ public class SlopeConfigEntity {
                 .horizontalSpace(horizontalSpace)
                 .innerLineGameEngine(innerLineGameEngine)
                 .outerLineGameEngine(outerLineGameEngine)
-                .coastDelimiterLineGameEngine(coastDelimiterLineGameEngine);
+                .coastDelimiterLineGameEngine(coastDelimiterLineGameEngine)
+                .shallowWaterConfig(ShallowWaterConfigEmbeddable.to(shallowWaterConfig));
         if (groundConfig != null) {
             slopeConfig.setGroundConfigId(groundConfig.getId());
         }
@@ -111,6 +124,7 @@ public class SlopeConfigEntity {
         horizontalSpace = slopeConfig.getHorizontalSpace();
         waterConfig = waterConfigEntity;
         material = factorize(slopeConfig.getMaterial(), imagePersistence);
+        shallowWaterConfig = ShallowWaterConfigEmbeddable.factorize(slopeConfig.getShallowWaterConfig(), imagePersistence);
     }
 
     @Override

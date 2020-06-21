@@ -86,4 +86,12 @@ public class ImagePersistence {
         }
         return imageLibraryEntity;
     }
+
+    public static Integer idOrNull(ImageLibraryEntity libraryEntity) {
+        if (libraryEntity != null) {
+            return libraryEntity.getId();
+        } else {
+            return null;
+        }
+    }
 }

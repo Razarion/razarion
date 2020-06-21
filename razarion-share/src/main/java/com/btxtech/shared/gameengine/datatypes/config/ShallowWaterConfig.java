@@ -2,11 +2,11 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 public class ShallowWaterConfig  {
     private Integer textureId;
-    private Double scale;
+    private double scale;
     private Integer distortionId;
-    private Double distortionStrength;
+    private double distortionStrength;
     private Integer stencilId;
-    private Double durationSeconds;
+    private double durationSeconds;
 
     public Integer getTextureId() {
         return textureId;
@@ -16,11 +16,11 @@ public class ShallowWaterConfig  {
         this.textureId = textureId;
     }
 
-    public Double getScale() {
+    public double getScale() {
         return scale;
     }
 
-    public void setScale(Double scale) {
+    public void setScale(double scale) {
         this.scale = scale;
     }
 
@@ -32,11 +32,11 @@ public class ShallowWaterConfig  {
         this.distortionId = distortionId;
     }
 
-    public Double getDistortionStrength() {
+    public double getDistortionStrength() {
         return distortionStrength;
     }
 
-    public void setDistortionStrength(Double distortionStrength) {
+    public void setDistortionStrength(double distortionStrength) {
         this.distortionStrength = distortionStrength;
     }
 
@@ -48,11 +48,11 @@ public class ShallowWaterConfig  {
         this.stencilId = stencilId;
     }
 
-    public Double getDurationSeconds() {
+    public double getDurationSeconds() {
         return durationSeconds;
     }
 
-    public void setDurationSeconds(Double durationSeconds) {
+    public void setDurationSeconds(double durationSeconds) {
         this.durationSeconds = durationSeconds;
     }
 
@@ -61,7 +61,7 @@ public class ShallowWaterConfig  {
         return this;
     }
 
-    public ShallowWaterConfig scale(Double scale) {
+    public ShallowWaterConfig scale(double scale) {
         setScale(scale);
         return this;
     }
@@ -71,7 +71,7 @@ public class ShallowWaterConfig  {
         return this;
     }
 
-    public ShallowWaterConfig distortionStrength(Double distortionStrength) {
+    public ShallowWaterConfig distortionStrength(double distortionStrength) {
         setDistortionStrength(distortionStrength);
         return this;
     }
@@ -81,7 +81,7 @@ public class ShallowWaterConfig  {
         return this;
     }
 
-    public ShallowWaterConfig durationSeconds(Double durationSeconds) {
+    public ShallowWaterConfig durationSeconds(double durationSeconds) {
         setDurationSeconds(durationSeconds);
         return this;
     }
