@@ -93,10 +93,10 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
             ShallowWaterConfig shallowWaterConfig = getRenderData().getShallowWaterConfig();
             shallowWater = webGlFacade.createSaveWebGLTexture(shallowWaterConfig.getTextureId(), "uShallowWater");
             shallowWaterScale = webGlFacade.getUniformLocation("uShallowWaterScale");
-            shallowDistortionMap = webGlFacade.createSaveWebGLTexture(shallowWaterConfig.getTextureId(), "uShallowDistortionMap");
+            shallowDistortionMap = webGlFacade.createSaveWebGLTexture(shallowWaterConfig.getDistortionId(), "uShallowDistortionMap");
             shallowDistortionStrength = webGlFacade.getUniformLocation("uShallowDistortionStrength");
             shallowAnimation = webGlFacade.getUniformLocation("uShallowAnimation");
-            waterStencil = webGlFacade.createSaveWebGLTexture(shallowWaterConfig.getTextureId(), "uWaterStencil");
+            waterStencil = webGlFacade.createSaveWebGLTexture(shallowWaterConfig.getStencilId(), "uWaterStencil");
         }
 
         Float32Array waterPositions = Js.uncheckedCast(uiTerrainWaterTile.getPositions());
@@ -115,8 +115,8 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
             ShallowWaterConfig shallowWaterConfig = getRenderData().getShallowWaterConfig();
             webGlFacade.uniform1f(shallowWaterScale, shallowWaterConfig.getScale());
             shallowDistortionMap.activate();
-            webGlFacade.uniform1f(shallowWaterScale, shallowWaterConfig.getDistortionStrength());
-            webGlFacade.uniform1f(shallowWaterScale, uiTerrainWaterTile.getShallowWaterAnimation());
+            webGlFacade.uniform1f(shallowDistortionStrength, shallowWaterConfig.getDistortionStrength());
+            webGlFacade.uniform1f(shallowAnimation, uiTerrainWaterTile.getShallowWaterAnimation());
             waterStencil.activate();
         }
 
