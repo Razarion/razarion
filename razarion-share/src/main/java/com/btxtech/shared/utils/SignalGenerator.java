@@ -19,11 +19,17 @@ public interface SignalGenerator {
     }
 
     static double sawtooth(long millis, int durationMs, int offsetMs) {
+        if(durationMs == 0.0) {
+            return 0;
+        }
         long totMillis = millis + offsetMs;
         return (double) (totMillis % durationMs) / (double)durationMs; // Saegezahn
     }
 
     static double sinus(long millis, int durationMs, int offsetMs) {
+        if(durationMs == 0.0) {
+            return 0;
+        }
         return (1.0 + Math.sin(((millis % durationMs) / (double) durationMs + ((double) offsetMs / (double) durationMs)) * MathHelper.ONE_RADIANT)) / 2.0;
     }
 

@@ -149,6 +149,14 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     }
 
     @Override
+    public List<String> getGlslVertexDefines() {
+        if (hasShallowWater()) {
+            return Collections.singletonList("RENDER_SHALLOW_WATER");
+        }
+        return null;
+    }
+
+    @Override
     public List<String> getGlslFragmentDefines() {
         if (hasShallowWater()) {
             return Collections.singletonList("RENDER_SHALLOW_WATER");

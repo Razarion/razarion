@@ -1,5 +1,7 @@
 precision mediump float;
 
+//-$$$-INCLUDE-DEFINES
+
 attribute vec3 position;
 #ifdef  RENDER_SHALLOW_WATER
 attribute vec2 uv;
