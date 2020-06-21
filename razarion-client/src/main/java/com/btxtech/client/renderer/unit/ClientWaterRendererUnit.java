@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
+import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -33,7 +34,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     // TODO @Inject
     // TODO private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute positions;
-    private Vec3Float32ArrayShaderAttribute uv;
+    private Vec2Float32ArrayShaderAttribute uv;
     private WebGLUniformLocation shininess;
     private WebGLUniformLocation specularStrength;
     private WebGLUniformLocation reflectionScale;
@@ -88,7 +89,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     @Override
     protected void fillInternalBuffers(UiTerrainWaterTile uiTerrainWaterTile) {
         if (hasShallowWater()) {
-            uv = webGlFacade.createVec3Float32ArrayShaderAttribute("uv");
+            uv = webGlFacade.createVec2Float32ArrayShaderAttribute("uv");
             uv.fillFloat32Array(Js.uncheckedCast(uiTerrainWaterTile.getUvs()));
             ShallowWaterConfig shallowWaterConfig = getRenderData().getShallowWaterConfig();
             shallowWater = webGlFacade.createSaveWebGLTexture(shallowWaterConfig.getTextureId(), "uShallowWater");
