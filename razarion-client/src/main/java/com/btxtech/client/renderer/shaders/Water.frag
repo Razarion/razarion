@@ -87,12 +87,6 @@ void main(void) {
     vec3 slopeSpecular = uSpecularStrength * spec * directLightColor;
     vec3 waterSurface = (ambientLightColor + vec3(0.5, 0.5, 0.5)) * reflection + slopeSpecular;
 
-    #ifdef  RENDER_SHALLOW_WATER
-    vec2 totalShallowDistortion = uShallowDistortionStrength  * (texture2D(uShallowDistortionMap, vUv.xy / uShallowWaterScale + vec2(uShallowAnimation, 0)).rg * 2.0 - 1.0);
-    vec4 shallowWater = texture2D(uShallowWater, (vUv.xy + totalShallowDistortion) / uShallowWaterScale);
-    float waterStencil = texture2D(uWaterStencil, (vUv.xy + totalShallowDistortion) / uShallowWaterScale).b;
-    #endif
-
     // Fresnel
     float fresnel = dot(vNormal, viewDir);
     float fresnelTransparency = (uFresnelOffset - fresnel) / uFresnelDelta + 0.5;
@@ -100,6 +94,9 @@ void main(void) {
     float waterSurfaceTransparebcy = max(uSpecularStrength * spec, fresnelTransparency)  * uTransparency;
 
     #ifdef  RENDER_SHALLOW_WATER
+    vec2 totalShallowDistortion = uShallowDistortionStrength  * (texture2D(uShallowDistortionMap, vUv.xy / uShallowWaterScale + vec2(uShallowAnimation, 0)).rg * 2.0 - 1.0);
+    vec4 shallowWater = texture2D(uShallowWater, (vUv.xy + totalShallowDistortion) / uShallowWaterScale);
+    float waterStencil = texture2D(uWaterStencil, (vUv.xy + totalShallowDistortion) / uShallowWaterScale).b;
     // Porter-Duff Composition
     // https://de.wikipedia.org/wiki/Alpha_Blending
     float transparency = shallowWater.a + (1.0 - shallowWater.a) * waterStencil;
