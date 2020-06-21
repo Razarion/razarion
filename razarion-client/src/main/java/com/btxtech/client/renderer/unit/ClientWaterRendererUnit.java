@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.config.ShallowWaterConfig;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.water.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.terrain.UiTerrainWaterTile;
@@ -16,6 +17,8 @@ import jsinterop.base.Js;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -30,6 +33,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     // TODO @Inject
     // TODO private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute positions;
+    private Vec3Float32ArrayShaderAttribute uv;
     private WebGLUniformLocation shininess;
     private WebGLUniformLocation specularStrength;
     private WebGLUniformLocation reflectionScale;
@@ -44,6 +48,12 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     private WebGLUniformLocation bumpDistortionScale;
     private WebGLUniformLocation bumpDistortionAnimation;
     private LightUniforms lightUniforms;
+    private WebGlUniformTexture shallowWater;
+    private WebGLUniformLocation shallowWaterScale;
+    private WebGlUniformTexture shallowDistortionMap;
+    private WebGLUniformLocation shallowDistortionStrength;
+    private WebGLUniformLocation shallowAnimation;
+    private WebGlUniformTexture waterStencil;
 
 //    private WebGlUniformTexture terrainMarkerTexture;
 //    private WebGLUniformLocation terrainMarker2DPoints;
@@ -77,6 +87,18 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
     @Override
     protected void fillInternalBuffers(UiTerrainWaterTile uiTerrainWaterTile) {
+        if (hasShallowWater()) {
+            uv = webGlFacade.createVec3Float32ArrayShaderAttribute("uv");
+            uv.fillFloat32Array(Js.uncheckedCast(uiTerrainWaterTile.getUvs()));
+            ShallowWaterConfig shallowWaterConfig = getRenderData().getShallowWaterConfig();
+            shallowWater = webGlFacade.createSaveWebGLTexture(shallowWaterConfig.getTextureId(), "uShallowWater");
+            shallowWaterScale = webGlFacade.getUniformLocation("uShallowWaterScale");
+            shallowDistortionMap = webGlFacade.createSaveWebGLTexture(shallowWaterConfig.getTextureId(), "uShallowDistortionMap");
+            shallowDistortionStrength = webGlFacade.getUniformLocation("uShallowDistortionStrength");
+            shallowAnimation = webGlFacade.getUniformLocation("uShallowAnimation");
+            waterStencil = webGlFacade.createSaveWebGLTexture(shallowWaterConfig.getTextureId(), "uWaterStencil");
+        }
+
         Float32Array waterPositions = Js.uncheckedCast(uiTerrainWaterTile.getPositions());
         positions.fillFloat32Array(waterPositions);
         setElementCount((int) (waterPositions.length / Vertex.getComponentsPerVertex()));
@@ -87,6 +109,16 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
         webGlFacade.useProgram();
 
         positions.activate();
+        if (uv != null) {
+            uv.activate();
+            shallowWater.activate();
+            ShallowWaterConfig shallowWaterConfig = getRenderData().getShallowWaterConfig();
+            webGlFacade.uniform1f(shallowWaterScale, shallowWaterConfig.getScale());
+            shallowDistortionMap.activate();
+            webGlFacade.uniform1f(shallowWaterScale, shallowWaterConfig.getDistortionStrength());
+            webGlFacade.uniform1f(shallowWaterScale, uiTerrainWaterTile.getShallowWaterAnimation());
+            waterStencil.activate();
+        }
 
         lightUniforms.setLightUniforms(webGlFacade);
 
@@ -117,8 +149,22 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     }
 
     @Override
+    public List<String> getGlslFragmentDefines() {
+        if (hasShallowWater()) {
+            return Collections.singletonList("RENDER_SHALLOW_WATER");
+        }
+        return null;
+    }
+
+    @Override
     public void dispose() {
         positions.deleteBuffer();
+    }
+
+    private boolean hasShallowWater() {
+        // Cast to Float32Array needed due to GWT problems (if not working)
+        Float32Array uvFloat32Array = Js.uncheckedCast(getRenderData().getUvs());
+        return uvFloat32Array != null && getRenderData().getShallowWaterConfig() != null;
     }
 
 }

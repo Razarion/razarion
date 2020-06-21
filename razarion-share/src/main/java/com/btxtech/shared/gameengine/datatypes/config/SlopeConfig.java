@@ -25,35 +25,7 @@ public class SlopeConfig implements Config {
     private Integer waterConfigId;
     private boolean interpolateNorm;
     private PhongMaterialConfig material;
-//    private Integer slopeTextureId;
-//    private double slopeTextureScale;
-//    private Integer slopeBumpMapId;
-//    private double slopeBumpMapDepth;
-//    private double slopeShininess;
-//    private double slopeSpecularStrength;
-//    private Integer slopeFoamTextureId;
-//    private Integer slopeFoamDistortionId;
-//    private Double slopeFoamDistortionStrength;
-//    private Double slopeFoamAnimationDuration;
-//    private Double waterFresnelOffset;
-//    private Double waterFresnelDelta;
-//    private Double waterShininess;
-//    private Integer waterReflectionId;
-//    private Double waterSpecularStrength;
-//    private Double waterReflectionScale;
-//    private Double waterMapScale;
-//    private Integer waterDistortionId;
-//    private Double waterDistortionStrength;
-//    private Integer waterBumpMapId;
-//    private Double waterBumpMapDepth;
-//    private Double waterTransparency;
-//    private Double waterAnimationDuration;
-//    private Integer shallowWaterTextureId;
-//    private Double shallowWaterTextureScale;
-//    private Integer shallowWaterDistortionId;
-//    private Double shallowWaterDistortionStrength;
-//    private Double shallowWaterAnimation;
-//    private Integer shallowWaterStencilId;
+    private ShallowWaterConfig shallowWaterConfig;
 
     public int getId() {
         return id;
@@ -91,69 +63,6 @@ public class SlopeConfig implements Config {
     public ObjectNameId createObjectNameId() {
         return new ObjectNameId(id, internalName);
     }
-
-//    public double getSlopeBumpMapDepth() {
-//        return slopeBumpMapDepth;
-//    }
-//
-//    public SlopeConfig setSlopeBumpMapDepth(double slopeBumpMapDepth) {
-//        this.slopeBumpMapDepth = slopeBumpMapDepth;
-//        return this;
-//    }
-//
-//    public double getSlopeShininess() {
-//        return slopeShininess;
-//    }
-//
-//    public SlopeConfig setSlopeShininess(double slopeShininess) {
-//        this.slopeShininess = slopeShininess;
-//        return this;
-//    }
-//
-//    public double getSlopeSpecularStrength() {
-//        return slopeSpecularStrength;
-//    }
-//
-//    public SlopeConfig setSlopeSpecularStrength(double slopeSpecularStrength) {
-//        this.slopeSpecularStrength = slopeSpecularStrength;
-//        return this;
-//    }
-
-//    public Integer getSlopeFoamTextureId() {
-//        return slopeFoamTextureId;
-//    }
-//
-//    public SlopeConfig setSlopeFoamTextureId(Integer slopeFoamTextureId) {
-//        this.slopeFoamTextureId = slopeFoamTextureId;
-//        return this;
-//    }
-//
-//    public Integer getSlopeFoamDistortionId() {
-//        return slopeFoamDistortionId;
-//    }
-//
-//    public SlopeConfig setSlopeFoamDistortionId(Integer slopeFoamDistortionId) {
-//        this.slopeFoamDistortionId = slopeFoamDistortionId;
-//        return this;
-//    }
-//
-//    public Double getSlopeFoamDistortionStrength() {
-//        return slopeFoamDistortionStrength;
-//    }
-//
-//    public SlopeConfig setSlopeFoamDistortionStrength(Double slopeFoamDistortionStrength) {
-//        this.slopeFoamDistortionStrength = slopeFoamDistortionStrength;
-//        return this;
-//    }
-//
-//    public Double getSlopeFoamAnimationDuration() {
-//        return slopeFoamAnimationDuration;
-//    }
-//
-//    public SlopeConfig setSlopeFoamAnimationDuration(Double slopeFoamAnimationDuration) {
-//        this.slopeFoamAnimationDuration = slopeFoamAnimationDuration;
-//        return this;
-//    }
 
     public double getOuterLineGameEngine() {
         return outerLineGameEngine;
@@ -221,6 +130,13 @@ public class SlopeConfig implements Config {
         return this;
     }
 
+    public ShallowWaterConfig getShallowWaterConfig() {
+        return shallowWaterConfig;
+    }
+
+    public void setShallowWaterConfig(ShallowWaterConfig shallowWaterConfig) {
+        this.shallowWaterConfig = shallowWaterConfig;
+    }
 //    public Integer getSlopeTextureId() {
 //        return slopeTextureId;
 //    }
@@ -466,6 +382,11 @@ public class SlopeConfig implements Config {
 
     public SlopeConfig material(PhongMaterialConfig material) {
         this.material = material;
+        return this;
+    }
+
+    public SlopeConfig shallowWaterConfig(ShallowWaterConfig shallowWaterConfig) {
+        setShallowWaterConfig(shallowWaterConfig);
         return this;
     }
 
