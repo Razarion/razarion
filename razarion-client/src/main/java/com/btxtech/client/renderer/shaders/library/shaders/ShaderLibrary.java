@@ -7,4 +7,7 @@ public interface ShaderLibrary extends ClientBundleWithLookup {
     @Source("Phong.frag")
     TextResource phong();
 
+    @Source("Ground.frag")
+    TextResource ground();
+
 }

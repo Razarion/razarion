@@ -3,6 +3,7 @@ precision mediump float;
 attribute vec3 position;
 attribute vec3 objectNormal;
 attribute vec2 uv;
+attribute float slopeFactor;
 
 uniform highp mat4 viewMatrix;
 uniform highp mat4 projectionMatrix;
@@ -13,6 +14,7 @@ varying vec3 vNormal;
 varying vec3 vWorldVertexPosition;
 varying vec3 vViewPosition;
 varying vec2 vUv;
+varying float vSlopeFactor;
 varying vec4 vShadowCoord;
 
 void main(void) {
@@ -20,6 +22,7 @@ void main(void) {
     vNormal = (normalMatrix * vec4(objectNormal, 1.0)).xyz;
     vViewPosition = - (viewMatrix * vec4(position, 1.0)).xyz;
     vUv = uv;
+    vSlopeFactor = slopeFactor;
     vShadowCoord = shadowMatrix * vec4(position, 1.0);
 
     gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);

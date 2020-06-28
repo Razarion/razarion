@@ -10,88 +10,21 @@ uniform highp mat4 normalMatrix;
 uniform vec3 directLightDirection;
 uniform vec3 directLightColor;
 uniform vec3 ambientLightColor;
+vec3 correctedDirectLightDirection;
 // Shadow
 varying vec4 vShadowCoord;
 
 //-$$$-INCLUDE-DEFINES
 
-struct PhongMaterial {
-    sampler2D texture;
-    float scale;
-    sampler2D bumpMap;
-    float bumpMapDepth;
-    float shininess;
-    float specularStrength;
-};
-uniform PhongMaterial topMaterial;
-#ifdef  RENDER_GROUND_BOTTOM_TEXTURE
-uniform PhongMaterial bottomMaterial;
-struct Splatting {
-    sampler2D texture;
-    float scale1;
-    float scale2;
-    float blur;
-    float offset;
-};
-uniform Splatting splatting;
-#endif
-vec3 correctedDirectLightDirection;
+//-$$$-INCLUDE-CHUNK phong struct
 
-vec3 vec3ToReg(vec3 normVec) {
-    return normVec * 0.5 + 0.5;
-}
+//-$$$-INCLUDE-CHUNK ground variables
 
-vec2 dHdxy_fwd(sampler2D uBumpMap, float uBumpMapDepth, float uTextureScale) {
-    vec2 vUv = vWorldVertexPosition.xy / uTextureScale;
-    vec2 dSTdx = dFdx(vUv);
-    vec2 dSTdy = dFdy(vUv);
-    float Hll = uBumpMapDepth * texture2D(uBumpMap, vUv).x;
-    float dBx = uBumpMapDepth * texture2D(uBumpMap, vUv + dSTdx).x - Hll;
-    float dBy = uBumpMapDepth * texture2D(uBumpMap, vUv + dSTdy).x - Hll;
-    return vec2(dBx, dBy);
-}
+//-$$$-INCLUDE-CHUNK phong functions
 
-vec3 perturbNormalArb(vec3 surf_pos, vec3 surf_norm, vec2 dHdxy) {
-    vec3 vSigmaX = vec3(dFdx(surf_pos.x), dFdx(surf_pos.y), dFdx(surf_pos.z));
-    vec3 vSigmaY = vec3(dFdy(surf_pos.x), dFdy(surf_pos.y), dFdy(surf_pos.z));
-    vec3 vN = surf_norm;
-    vec3 R1 = cross(vSigmaY, vN);
-    vec3 R2 = cross(vN, vSigmaX);
-    float fDet = dot(vSigmaX, R1);
-    fDet *= (float(gl_FrontFacing) * 2.0 - 1.0);
-    vec3 vGrad = sign(fDet) * (dHdxy.x * R1 + dHdxy.y * R2);
-    return normalize(abs(fDet) * surf_norm - vGrad);
-}
-
-
-vec3 phong(PhongMaterial phongMaterial) {
-    vec3 normal = perturbNormalArb(-vViewPosition, normalize(vNormal), dHdxy_fwd(phongMaterial.bumpMap, phongMaterial.bumpMapDepth, phongMaterial.scale));
-    vec3 viewDir = normalize(vViewPosition);
-
-    vec4 texture = texture2D(phongMaterial.texture, vWorldVertexPosition.xy / phongMaterial.scale);
-    vec3 diffuse = max(dot(normal, correctedDirectLightDirection), 0.0) * directLightColor;
-    vec3 halfwayDir = normalize(correctedDirectLightDirection + viewDir);
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), phongMaterial.shininess);
-    vec3 specular = phongMaterial.specularStrength * spec * directLightColor;
-    return (ambientLightColor + diffuse) * texture.rgb + specular;
-}
+//-$$$-INCLUDE-CHUNK ground functions
 
 void main(void) {
     correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
-
-    vec3 top = phong(topMaterial);
-    #ifndef RENDER_GROUND_BOTTOM_TEXTURE
-    gl_FragColor = vec4(top, 1.0);
-    #endif
-
-    #ifdef  RENDER_GROUND_BOTTOM_TEXTURE
-    vec3 bottom = phong(bottomMaterial);
-
-    float splatting1 = texture2D(splatting.texture, vWorldVertexPosition.xy / splatting.scale1).r;
-    float splatting2 = texture2D(splatting.texture, vWorldVertexPosition.xy / splatting.scale2).r;
-    float splattingFactor = (splatting1 + splatting2) / 2.0;
-    splattingFactor = (splattingFactor - splatting.offset) / (2.0 * splatting.blur) + 0.5;
-    splattingFactor = clamp(splattingFactor, 0.0, 1.0);
-    gl_FragColor = vec4(mix(top, bottom, splattingFactor), 1.0);
-    #endif
+    gl_FragColor = vec4(ground(), 1.0);
 }

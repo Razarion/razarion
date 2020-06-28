@@ -2,9 +2,7 @@ package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 
@@ -16,10 +14,6 @@ public class UiTerrainGroundTile {
     @Inject
     private GroundRenderTask groundRenderTask;
     @Inject
-    private TerrainTypeService terrainTypeService;
-    @Inject
-    private GameUiControl gameUiControl;
-    @Inject
     private ExceptionHandler exceptionHandler;
     private ModelRenderer modelRenderer;
     private GroundConfig groundConfig;
@@ -27,14 +21,10 @@ public class UiTerrainGroundTile {
     private Object groundNorms;
 
 
-    public void init(boolean active, Integer groundId, Float32ArrayEmu groundPositions, Object groundNorms) {
-        if(groundId != null) {
-            groundConfig = terrainTypeService.getGroundConfig(groundId);
-        } else {
-            groundConfig = terrainTypeService.getGroundConfig(gameUiControl.getPlanetConfig().getGroundConfigId());
-        }
+    public void init(boolean active, GroundConfig groundConfig, Float32ArrayEmu groundPositions, Object groundNorms) {
         this.groundPositions = groundPositions;
         this.groundNorms = groundNorms;
+        this.groundConfig = groundConfig;
         try {
             modelRenderer = groundRenderTask.createModelRenderer(this);
             modelRenderer.setActive(active);

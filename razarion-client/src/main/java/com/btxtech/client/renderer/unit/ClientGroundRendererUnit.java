@@ -1,14 +1,11 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
-import com.btxtech.client.renderer.engine.WebGlSplatting;
+import com.btxtech.client.renderer.engine.WebGlGroundMaterial;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.system.alarm.Alarm;
-import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
@@ -39,9 +36,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec3Float32ArrayShaderAttribute normals;
-    private WebGlPhongMaterial topMaterial;
-    private WebGlPhongMaterial bottomMaterial;
-    private WebGlSplatting splatting;
+    private WebGlGroundMaterial webGlGroundMaterial;
     private LightUniforms lightUniforms;
 //    private WebGlUniformTexture terrainMarkerTexture;
 //    private WebGLUniformLocation terrainMarker2DPoints;
@@ -54,24 +49,15 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         lightUniforms = new LightUniforms(webGlFacade);
+        webGlGroundMaterial = new WebGlGroundMaterial(webGlFacade, gameUiControl);
 //        terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
 //        terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
 //        terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
     }
 
     @Override
-    public void setupImages() {
-    }
-
-    @Override
     protected void fillBuffersInternal(UiTerrainGroundTile uiTerrainGroundTile) {
-        AlarmRaiser.onNull(uiTerrainGroundTile.getGroundConfig(), Alarm.Type.RENDER_GROUND_FAILED, "No GroundConfig in UiTerrainGroundTile: ", gameUiControl.getPlanetConfig().getId());
-        AlarmRaiser.onNull(uiTerrainGroundTile.getGroundConfig().getTopMaterial(), Alarm.Type.RENDER_GROUND_FAILED, "No top material on GroundConfig: ", uiTerrainGroundTile.getGroundConfig().getId());
-        topMaterial = webGlFacade.createPhongMaterial(uiTerrainGroundTile.getGroundConfig().getTopMaterial(), "topMaterial");
-        bottomMaterial = webGlFacade.createPhongMaterial(uiTerrainGroundTile.getGroundConfig().getBottomMaterial(), "bottomMaterial");
-        if (bottomMaterial != null) {
-            splatting = webGlFacade.createSplatting(uiTerrainGroundTile.getGroundConfig().getSplatting(), "splatting");
-        }
+        webGlGroundMaterial.init(uiTerrainGroundTile.getGroundConfig());
 
         Float32Array groundPositions = Js.uncheckedCast(uiTerrainGroundTile.getGroundPositions());
         positions.fillFloat32Array(groundPositions);
@@ -90,11 +76,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         positions.activate();
         normals.activate();
 
-        topMaterial.activate();
-        if (bottomMaterial != null && splatting != null) {
-            bottomMaterial.activate();
-            splatting.activate();
-        }
+        webGlGroundMaterial.activate();
 
 //        if (inGameQuestVisualizationService.isQuestInGamePlaceVisualization()) {
 //            terrainMarkerTexture.activate();

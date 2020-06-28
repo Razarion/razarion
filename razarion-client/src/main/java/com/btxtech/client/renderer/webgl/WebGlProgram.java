@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.shaders.library.GlslLibrarian;
+import com.btxtech.client.utils.DomConstants;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.renderer.ViewService;
 import elemental2.webgl.WebGLProgram;
@@ -148,9 +149,21 @@ public class WebGlProgram {
             }
             throw new IllegalArgumentException(shaderType + " compilation failed: " + gameCanvas.getCtx3d().getShaderInfoLog(shader)
                     + "\n"
-                    + code);
+                    + addLineNumbers(code));
         }
         return shader;
+    }
+
+    private String addLineNumbers(String code) {
+        StringBuilder result = new StringBuilder();
+        String[] lines = code.split(DomConstants.JAVASCRIPT_LINE_SEPARATOR);
+        for (int i = 0; i < lines.length; i++) {
+            result.append("[");
+            result.append(i + 1);
+            result.append("]");
+            result.append(lines[i]);
+        }
+        return result.toString();
     }
 
     private WebGLProgram createAndUseProgram(WebGLShader vertexShader, WebGLShader fragmentShader) {

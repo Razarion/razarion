@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
+import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
@@ -16,6 +17,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 
 import javax.enterprise.context.Dependent;
@@ -46,6 +48,8 @@ public class UiTerrainTile {
     private TerrainTypeService terrainTypeService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private GameUiControl gameUiControl;
     private Index index;
     private TerrainTile terrainTile;
     private boolean active;
@@ -53,6 +57,7 @@ public class UiTerrainTile {
     private Collection<UiTerrainSlopeTile> uiTerrainSlopeTiles;
     private Collection<UiTerrainWaterTile> uiTerrainWaterTiles;
     private MapList<Integer, ModelMatrices> terrainObjectModelMatrices;
+    private GroundConfig defaultGroundConfig;
 
     public void init(Index index) {
         this.index = index;
@@ -73,13 +78,18 @@ public class UiTerrainTile {
     }
 
     private void terrainTileReceived(TerrainTile terrainTile) {
+        defaultGroundConfig = terrainTypeService.getGroundConfig(gameUiControl.getPlanetConfig().getGroundConfigId());
+
         this.terrainTile = terrainTile;
         if (terrainTile.getGroundPositions() != null) {
             uiTerrainGroundTiles = new ArrayList<>();
             terrainTile.getGroundPositions().forEach((groundId, groundPositions) -> {
                 try {
                     UiTerrainGroundTile uiTerrainGroundTile = uiTerrainGroundTileInstance.get();
-                    uiTerrainGroundTile.init(active, groundId, groundPositions, terrainTile.getGroundNorms().get(groundId));
+                    uiTerrainGroundTile.init(active,
+                            groundId != null ? terrainTypeService.getGroundConfig(groundId) : defaultGroundConfig,
+                            groundPositions,
+                            terrainTile.getGroundNorms().get(groundId));
                     uiTerrainGroundTiles.add(uiTerrainGroundTile);
                 } catch (Throwable t) {
                     exceptionHandler.handleException(t);
@@ -91,13 +101,19 @@ public class UiTerrainTile {
             terrainTile.getTerrainSlopeTiles().forEach(terrainSlopeTile -> {
                 SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainSlopeTile.getSlopeConfigId());
                 if (terrainSlopeTile.getOuterSlopeGeometry() != null) {
-                    createAndAddUiTerrainSlopeTile(slopeConfig, terrainSlopeTile.getOuterSlopeGeometry());
+                    createAndAddUiTerrainSlopeTile(slopeConfig,
+                            // TODO Inherit ground from parent slope
+                            defaultGroundConfig,
+                            terrainSlopeTile.getOuterSlopeGeometry());
                 }
                 if (terrainSlopeTile.getCenterSlopeGeometry() != null) {
-                    createAndAddUiTerrainSlopeTile(slopeConfig, terrainSlopeTile.getCenterSlopeGeometry());
+                    createAndAddUiTerrainSlopeTile(slopeConfig, null, terrainSlopeTile.getCenterSlopeGeometry());
                 }
                 if (terrainSlopeTile.getInnerSlopeGeometry() != null) {
-                    createAndAddUiTerrainSlopeTile(slopeConfig, terrainSlopeTile.getInnerSlopeGeometry());
+                    createAndAddUiTerrainSlopeTile(slopeConfig,
+                            // TODO Inherit ground from parent slope
+                            slopeConfig.getGroundConfigId() != null ? terrainTypeService.getGroundConfig(slopeConfig.getGroundConfigId()) : defaultGroundConfig,
+                            terrainSlopeTile.getInnerSlopeGeometry());
                 }
             });
         }
@@ -125,10 +141,13 @@ public class UiTerrainTile {
         }
     }
 
-    private void createAndAddUiTerrainSlopeTile(SlopeConfig slopeConfig, SlopeGeometry slopeGeometry) {
+    private void createAndAddUiTerrainSlopeTile(SlopeConfig slopeConfig, GroundConfig groundConfig, SlopeGeometry slopeGeometry) {
         try {
             UiTerrainSlopeTile uiTerrainSlopeTile = uiTerrainSlopeTileInstance.get();
-            uiTerrainSlopeTile.init(active, slopeConfig, slopeGeometry);
+            uiTerrainSlopeTile.init(active,
+                    slopeConfig,
+                    groundConfig,
+                    slopeGeometry);
             uiTerrainSlopeTiles.add(uiTerrainSlopeTile);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

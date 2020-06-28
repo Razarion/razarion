@@ -1,6 +1,8 @@
 package com.btxtech.client.utils;
 
 public abstract class DomConstants {
+    public static final String JAVASCRIPT_LINE_SEPARATOR = "\n";
+
     private DomConstants() {
     }
 
