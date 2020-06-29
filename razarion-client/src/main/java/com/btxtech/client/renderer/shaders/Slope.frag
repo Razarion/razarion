@@ -52,7 +52,7 @@ void main(void) {
     float splattingTexture = texture2D(slopeSplatting.texture, vWorldVertexPosition.xy / slopeSplatting.scale).r;
     splatting = (splattingTexture * slopeSplatting.impact + vSlopeFactor) / (1.0 + slopeSplatting.impact);
     splatting = (splatting - slopeSplatting.offset) / (2.0 * slopeSplatting.blur) + 0.5;
-    splatting = clamp(slopeSplatting, 0.0, 1.0);
+    splatting = clamp(splatting, 0.0, 1.0);
     #endif
     vec3 slopeGround = mix(ground(), slope, splatting);
     gl_FragColor = vec4(slopeGround, 1.0);

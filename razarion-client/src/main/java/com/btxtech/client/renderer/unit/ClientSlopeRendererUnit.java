@@ -66,8 +66,8 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         if (uiTerrainSlopeTile.getGroundConfig() != null) {
             webGlGroundMaterial = new WebGlGroundMaterial(webGlFacade, gameUiControl);
             webGlGroundMaterial.init(uiTerrainSlopeTile.getGroundConfig());
-            if (uiTerrainSlopeTile.getSlopeConfig().getSlopeSplattingConfig() != null) {
-                webGlSlopeSplatting = webGlFacade.createSlopeSplatting(uiTerrainSlopeTile.getSlopeConfig().getSlopeSplattingConfig(), "slopeSplatting");
+            if (uiTerrainSlopeTile.getSlopeSplattingConfig() != null) {
+                webGlSlopeSplatting = webGlFacade.createSlopeSplatting(uiTerrainSlopeTile.getSlopeSplattingConfig(), "slopeSplatting");
             }
         }
 
@@ -122,7 +122,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
             if (getRenderData().getGroundConfig().getBottomMaterial() != null && getRenderData().getGroundConfig().getSplatting() != null) {
                 defines.add("RENDER_GROUND_BOTTOM_TEXTURE");
             }
-            if(getRenderData().getSlopeConfig().getSlopeSplattingConfig() != null) {
+            if (getRenderData().getSlopeSplattingConfig() != null) {
                 defines.add("RENDER_SPLATTING");
             }
         }

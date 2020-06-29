@@ -26,7 +26,8 @@ public class SlopeConfig implements Config {
     private boolean interpolateNorm;
     private PhongMaterialConfig material;
     private ShallowWaterConfig shallowWaterConfig;
-    private SlopeSplattingConfig slopeSplattingConfig;
+    private SlopeSplattingConfig outerSlopeSplattingConfig;
+    private SlopeSplattingConfig innerSlopeSplattingConfig;
 
     public int getId() {
         return id;
@@ -139,12 +140,20 @@ public class SlopeConfig implements Config {
         this.shallowWaterConfig = shallowWaterConfig;
     }
 
-    public SlopeSplattingConfig getSlopeSplattingConfig() {
-        return slopeSplattingConfig;
+    public SlopeSplattingConfig getOuterSlopeSplattingConfig() {
+        return outerSlopeSplattingConfig;
     }
 
-    public void setSlopeSplattingConfig(SlopeSplattingConfig slopeSplattingConfig) {
-        this.slopeSplattingConfig = slopeSplattingConfig;
+    public void setOuterSlopeSplattingConfig(SlopeSplattingConfig outerSlopeSplattingConfig) {
+        this.outerSlopeSplattingConfig = outerSlopeSplattingConfig;
+    }
+
+    public SlopeSplattingConfig getInnerSlopeSplattingConfig() {
+        return innerSlopeSplattingConfig;
+    }
+
+    public void setInnerSlopeSplattingConfig(SlopeSplattingConfig innerSlopeSplattingConfig) {
+        this.innerSlopeSplattingConfig = innerSlopeSplattingConfig;
     }
 
     public SlopeConfig id(Integer id) {
@@ -207,8 +216,13 @@ public class SlopeConfig implements Config {
         return this;
     }
 
-    public SlopeConfig slopeSplattingConfig(SlopeSplattingConfig slopeSplattingConfig) {
-        setSlopeSplattingConfig(slopeSplattingConfig);
+    public SlopeConfig outerSlopeSplattingConfig(SlopeSplattingConfig outerSlopeSplattingConfig) {
+        setOuterSlopeSplattingConfig(outerSlopeSplattingConfig);
+        return this;
+    }
+
+    public SlopeConfig innerSlopeSplattingConfig(SlopeSplattingConfig innerSlopeSplattingConfig) {
+        setInnerSlopeSplattingConfig(innerSlopeSplattingConfig);
         return this;
     }
 

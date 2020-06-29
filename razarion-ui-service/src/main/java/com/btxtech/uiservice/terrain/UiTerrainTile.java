@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
@@ -102,15 +103,17 @@ public class UiTerrainTile {
                 SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainSlopeTile.getSlopeConfigId());
                 if (terrainSlopeTile.getOuterSlopeGeometry() != null) {
                     createAndAddUiTerrainSlopeTile(slopeConfig,
+                            slopeConfig.getOuterSlopeSplattingConfig(),
                             // TODO Inherit ground from parent slope
                             defaultGroundConfig,
                             terrainSlopeTile.getOuterSlopeGeometry());
                 }
                 if (terrainSlopeTile.getCenterSlopeGeometry() != null) {
-                    createAndAddUiTerrainSlopeTile(slopeConfig, null, terrainSlopeTile.getCenterSlopeGeometry());
+                    createAndAddUiTerrainSlopeTile(slopeConfig, null, null,terrainSlopeTile.getCenterSlopeGeometry());
                 }
                 if (terrainSlopeTile.getInnerSlopeGeometry() != null) {
                     createAndAddUiTerrainSlopeTile(slopeConfig,
+                            slopeConfig.getInnerSlopeSplattingConfig(),
                             // TODO Inherit ground from parent slope
                             slopeConfig.getGroundConfigId() != null ? terrainTypeService.getGroundConfig(slopeConfig.getGroundConfigId()) : defaultGroundConfig,
                             terrainSlopeTile.getInnerSlopeGeometry());
@@ -141,11 +144,12 @@ public class UiTerrainTile {
         }
     }
 
-    private void createAndAddUiTerrainSlopeTile(SlopeConfig slopeConfig, GroundConfig groundConfig, SlopeGeometry slopeGeometry) {
+    private void createAndAddUiTerrainSlopeTile(SlopeConfig slopeConfig, SlopeSplattingConfig slopeSplattingConfig, GroundConfig groundConfig, SlopeGeometry slopeGeometry) {
         try {
             UiTerrainSlopeTile uiTerrainSlopeTile = uiTerrainSlopeTileInstance.get();
             uiTerrainSlopeTile.init(active,
                     slopeConfig,
+                    slopeSplattingConfig,
                     groundConfig,
                     slopeGeometry);
             uiTerrainSlopeTiles.add(uiTerrainSlopeTile);

@@ -56,8 +56,11 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
         registerUpdate(slopeConfig -> slopeConfig.setShallowWaterConfig(new ShallowWaterConfig().textureId(IMAGE_1_ID).scale(123).distortionId(IMAGE_2_ID).distortionStrength(12.5).stencilId(IMAGE_3_ID).durationSeconds(21)));
         registerUpdate(slopeConfig -> slopeConfig.setShallowWaterConfig(new ShallowWaterConfig().textureId(IMAGE_3_ID).scale(34).distortionId(IMAGE_1_ID).distortionStrength(1.5).stencilId(IMAGE_2_ID).durationSeconds(10.4)));
         registerUpdate(slopeConfig -> slopeConfig.setShallowWaterConfig(null));
-        registerUpdate(slopeConfig -> slopeConfig.setSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_1_ID).scale(1.2).impact(1.7).blur(5).offset(38)));
-        registerUpdate(slopeConfig -> slopeConfig.setSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_2_ID).scale(3.2).impact(5.7).blur(80).offset(1)));
-        registerUpdate(slopeConfig -> slopeConfig.setSlopeSplattingConfig(null));
+        registerUpdate(slopeConfig -> slopeConfig.setOuterSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_1_ID).scale(1.2).impact(1.7).blur(5).offset(38)));
+        registerUpdate(slopeConfig -> slopeConfig.setInnerSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_3_ID).scale(5.2).impact(7.7).blur(0.5).offset(12)));
+        registerUpdate(slopeConfig -> slopeConfig.setOuterSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_2_ID).scale(3.2).impact(5.7).blur(80).offset(1)));
+        registerUpdate(slopeConfig -> slopeConfig.setOuterSlopeSplattingConfig(null));
+        registerUpdate(slopeConfig -> slopeConfig.setInnerSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_1_ID).scale(4.7).impact(9.6).blur(0.2).offset(122)));
+        registerUpdate(slopeConfig -> slopeConfig.setInnerSlopeSplattingConfig(null));
     }
 }

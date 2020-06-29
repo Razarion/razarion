@@ -39,4 +39,24 @@ public class SlopeSplattingConfigEmbeddable {
         return splattingConfig;
     }
 
+    public static SlopeSplattingConfigEmbeddable factorize(SlopeSplattingConfig slopeSplattingConfig, ImagePersistence imagePersistence) {
+        if (slopeSplattingConfig != null) {
+            SlopeSplattingConfigEmbeddable slopeSplattingConfigEmbeddable = new SlopeSplattingConfigEmbeddable();
+            slopeSplattingConfigEmbeddable.from(slopeSplattingConfig, imagePersistence);
+            return slopeSplattingConfigEmbeddable;
+        } else {
+            return null;
+        }
+    }
+
+
+    public static SlopeSplattingConfig to(SlopeSplattingConfigEmbeddable slopeSplattingConfigEmbeddable) {
+        if (slopeSplattingConfigEmbeddable != null) {
+            return slopeSplattingConfigEmbeddable.to();
+        } else {
+            return null;
+        }
+
+    }
+
 }
