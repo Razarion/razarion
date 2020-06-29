@@ -72,6 +72,15 @@ public class SlopeConfigEntity {
     })
     @Embedded
     private ShallowWaterConfigEmbeddable shallowWaterConfig;
+    @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "splattingTextureId"))
+    @AttributeOverrides({
+            @AttributeOverride(name = "scale", column = @Column(name = "splattingScale")),
+            @AttributeOverride(name = "impact", column = @Column(name = "splattingImpact")),
+            @AttributeOverride(name = "blur", column = @Column(name = "splattingBlur")),
+            @AttributeOverride(name = "offset", column = @Column(name = "splattingOffset")),
+    })
+    @Embedded
+    private SlopeSplattingConfigEmbeddable splatting;
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
@@ -103,6 +112,9 @@ public class SlopeConfigEntity {
         if (material != null) {
             slopeConfig.setMaterial(material.to());
         }
+        if (splatting != null) {
+            slopeConfig.setSlopeSplattingConfig(splatting.to());
+        }
         return slopeConfig;
     }
 
@@ -128,6 +140,12 @@ public class SlopeConfigEntity {
         waterConfig = waterConfigEntity;
         material = factorize(slopeConfig.getMaterial(), imagePersistence);
         shallowWaterConfig = ShallowWaterConfigEmbeddable.factorize(slopeConfig.getShallowWaterConfig(), imagePersistence);
+        if (slopeConfig.getSlopeSplattingConfig() != null) {
+            splatting = new SlopeSplattingConfigEmbeddable();
+            splatting.from(slopeConfig.getSlopeSplattingConfig(), imagePersistence);
+        } else {
+            splatting = null;
+        }
     }
 
     @Override
