@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.engine.WebGlGroundMaterial;
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
+import com.btxtech.client.renderer.engine.WebGlSlopeSplatting;
 import com.btxtech.client.renderer.engine.shaderattribute.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
@@ -44,6 +45,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     private Vec2Float32ArrayShaderAttribute uvs;
     private FloatShaderAttribute slopeFactor;
     private WebGlPhongMaterial material;
+    private WebGlSlopeSplatting webGlSlopeSplatting;
     private WebGlGroundMaterial webGlGroundMaterial;
 
     private LightUniforms lightUniforms;
@@ -64,6 +66,9 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         if (uiTerrainSlopeTile.getGroundConfig() != null) {
             webGlGroundMaterial = new WebGlGroundMaterial(webGlFacade, gameUiControl);
             webGlGroundMaterial.init(uiTerrainSlopeTile.getGroundConfig());
+            if (uiTerrainSlopeTile.getSlopeConfig().getSlopeSplattingConfig() != null) {
+                webGlSlopeSplatting = webGlFacade.createSlopeSplatting(uiTerrainSlopeTile.getSlopeConfig().getSlopeSplattingConfig(), "slopeSplatting");
+            }
         }
 
         AlarmRaiser.onNull(uiTerrainSlopeTile.getSlopeConfig().getMaterial(), Alarm.Type.INVALID_SLOPE_CONFIG, "No Material in SlopeConfig: ", uiTerrainSlopeTile.getSlopeConfig().getId());
@@ -92,6 +97,9 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         material.activate();
         if (webGlGroundMaterial != null) {
             webGlGroundMaterial.activate();
+            if (webGlSlopeSplatting != null) {
+                webGlSlopeSplatting.activate();
+            }
         }
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
@@ -113,6 +121,9 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
             defines.add("RENDER_GROUND_TEXTURE");
             if (getRenderData().getGroundConfig().getBottomMaterial() != null && getRenderData().getGroundConfig().getSplatting() != null) {
                 defines.add("RENDER_GROUND_BOTTOM_TEXTURE");
+            }
+            if(getRenderData().getSlopeConfig().getSlopeSplattingConfig() != null) {
+                defines.add("RENDER_SPLATTING");
             }
         }
         return defines;

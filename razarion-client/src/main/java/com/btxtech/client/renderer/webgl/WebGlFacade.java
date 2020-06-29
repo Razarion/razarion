@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.TextureIdHandler;
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
+import com.btxtech.client.renderer.engine.WebGlSlopeSplatting;
 import com.btxtech.client.renderer.engine.WebGlSplatting;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.DecimalPositionShaderAttribute;
@@ -20,6 +21,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.dto.GroundSplattingConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
@@ -237,6 +239,10 @@ public class WebGlFacade {
 
     public WebGlSplatting createSplatting(GroundSplattingConfig splatting, String variableName) {
         return new WebGlSplatting(this, splatting, variableName);
+    }
+
+    public WebGlSlopeSplatting createSlopeSplatting(SlopeSplattingConfig splatting, String variableName) {
+        return new WebGlSlopeSplatting(this, splatting, variableName);
     }
 
     public WebGlUniformTexture createFakeWebGLTexture(String samplerUniformName) {

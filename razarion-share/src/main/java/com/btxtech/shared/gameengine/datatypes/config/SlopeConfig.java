@@ -26,6 +26,7 @@ public class SlopeConfig implements Config {
     private boolean interpolateNorm;
     private PhongMaterialConfig material;
     private ShallowWaterConfig shallowWaterConfig;
+    private SlopeSplattingConfig slopeSplattingConfig;
 
     public int getId() {
         return id;
@@ -137,203 +138,14 @@ public class SlopeConfig implements Config {
     public void setShallowWaterConfig(ShallowWaterConfig shallowWaterConfig) {
         this.shallowWaterConfig = shallowWaterConfig;
     }
-//    public Integer getSlopeTextureId() {
-//        return slopeTextureId;
-//    }
-//
-//    public SlopeConfig setSlopeTextureId(Integer slopeTextureId) {
-//        this.slopeTextureId = slopeTextureId;
-//        return this;
-//    }
-//
-//    public double getSlopeTextureScale() {
-//        return slopeTextureScale;
-//    }
-//
-//    public SlopeConfig setSlopeTextureScale(double slopeTextureScale) {
-//        this.slopeTextureScale = slopeTextureScale;
-//        return this;
-//    }
-//
-//    public Integer getSlopeBumpMapId() {
-//        return slopeBumpMapId;
-//    }
-//
-//    public SlopeConfig setSlopeBumpMapId(Integer slopeBumpMapId) {
-//        this.slopeBumpMapId = slopeBumpMapId;
-//        return this;
-//    }
 
-//    public Double getWaterFresnelOffset() {
-//        return waterFresnelOffset;
-//    }
-//
-//    public SlopeConfig setWaterFresnelOffset(Double waterFresnelOffset) {
-//        this.waterFresnelOffset = waterFresnelOffset;
-//        return this;
-//    }
-//
-//    public Double getWaterFresnelDelta() {
-//        return waterFresnelDelta;
-//    }
-//
-//    public SlopeConfig setWaterFresnelDelta(Double waterFresnelDelta) {
-//        this.waterFresnelDelta = waterFresnelDelta;
-//        return this;
-//    }
-//
-//    public Double getWaterShininess() {
-//        return waterShininess;
-//    }
-//
-//    public SlopeConfig setWaterShininess(Double waterShininess) {
-//        this.waterShininess = waterShininess;
-//        return this;
-//    }
-//
-//    public Double getWaterSpecularStrength() {
-//        return waterSpecularStrength;
-//    }
-//
-//    public SlopeConfig setWaterSpecularStrength(Double waterSpecularStrength) {
-//        this.waterSpecularStrength = waterSpecularStrength;
-//        return this;
-//    }
-//
-//    public Integer getWaterReflectionId() {
-//        return waterReflectionId;
-//    }
-//
-//    public SlopeConfig setWaterReflectionId(Integer waterReflectionId) {
-//        this.waterReflectionId = waterReflectionId;
-//        return this;
-//    }
-//
-//    public Double getWaterReflectionScale() {
-//        return waterReflectionScale;
-//    }
-//
-//    public SlopeConfig setWaterReflectionScale(Double waterReflectionScale) {
-//        this.waterReflectionScale = waterReflectionScale;
-//        return this;
-//    }
-//
-//    public Double getWaterMapScale() {
-//        return waterMapScale;
-//    }
-//
-//    public SlopeConfig setWaterMapScale(Double waterMapScale) {
-//        this.waterMapScale = waterMapScale;
-//        return this;
-//    }
-//
-//    public Integer getWaterDistortionId() {
-//        return waterDistortionId;
-//    }
-//
-//    public SlopeConfig setWaterDistortionId(Integer waterDistortionId) {
-//        this.waterDistortionId = waterDistortionId;
-//        return this;
-//    }
-//
-//    public Double getWaterDistortionStrength() {
-//        return waterDistortionStrength;
-//    }
-//
-//    public SlopeConfig setWaterDistortionStrength(Double waterDistortionStrength) {
-//        this.waterDistortionStrength = waterDistortionStrength;
-//        return this;
-//    }
-//
-//    public Integer getWaterBumpMapId() {
-//        return waterBumpMapId;
-//    }
-//
-//    public SlopeConfig setWaterBumpMapId(Integer waterBumpMapId) {
-//        this.waterBumpMapId = waterBumpMapId;
-//        return this;
-//    }
-//
-//    public Double getWaterBumpMapDepth() {
-//        return waterBumpMapDepth;
-//    }
-//
-//    public SlopeConfig setWaterBumpMapDepth(Double waterBumpMapDepth) {
-//        this.waterBumpMapDepth = waterBumpMapDepth;
-//        return this;
-//    }
-//
-//    public Double getWaterTransparency() {
-//        return waterTransparency;
-//    }
-//
-//    public SlopeConfig setWaterTransparency(Double waterTransparency) {
-//        this.waterTransparency = waterTransparency;
-//        return this;
-//    }
-//
-//    public Double getWaterAnimationDuration() {
-//        return waterAnimationDuration;
-//    }
-//
-//    public SlopeConfig setWaterAnimationDuration(Double waterAnimationDuration) {
-//        this.waterAnimationDuration = waterAnimationDuration;
-//        return this;
-//    }
-//
-//    public Integer getShallowWaterTextureId() {
-//        return shallowWaterTextureId;
-//    }
-//
-//    public SlopeConfig setShallowWaterTextureId(Integer shallowWaterTextureId) {
-//        this.shallowWaterTextureId = shallowWaterTextureId;
-//        return this;
-//    }
-//
-//    public Double getShallowWaterTextureScale() {
-//        return shallowWaterTextureScale;
-//    }
-//
-//    public SlopeConfig setShallowWaterTextureScale(Double shallowWaterTextureScale) {
-//        this.shallowWaterTextureScale = shallowWaterTextureScale;
-//        return this;
-//    }
-//
-//    public Double getShallowWaterDistortionStrength() {
-//        return shallowWaterDistortionStrength;
-//    }
-//
-//    public SlopeConfig setShallowWaterDistortionStrength(Double shallowWaterDistortionStrength) {
-//        this.shallowWaterDistortionStrength = shallowWaterDistortionStrength;
-//        return this;
-//    }
-//
-//    public Double getShallowWaterAnimation() {
-//        return shallowWaterAnimation;
-//    }
-//
-//    public SlopeConfig setShallowWaterAnimation(Double shallowWaterAnimation) {
-//        this.shallowWaterAnimation = shallowWaterAnimation;
-//        return this;
-//    }
-//
-//    public Integer getShallowWaterStencilId() {
-//        return shallowWaterStencilId;
-//    }
-//
-//    public SlopeConfig setShallowWaterStencilId(Integer shallowWaterStencilId) {
-//        this.shallowWaterStencilId = shallowWaterStencilId;
-//        return this;
-//    }
-//
-//    public Integer getShallowWaterDistortionId() {
-//        return shallowWaterDistortionId;
-//    }
-//
-//    public SlopeConfig setShallowWaterDistortionId(Integer shallowWaterDistortionId) {
-//        this.shallowWaterDistortionId = shallowWaterDistortionId;
-//        return this;
-//    }
+    public SlopeSplattingConfig getSlopeSplattingConfig() {
+        return slopeSplattingConfig;
+    }
+
+    public void setSlopeSplattingConfig(SlopeSplattingConfig slopeSplattingConfig) {
+        this.slopeSplattingConfig = slopeSplattingConfig;
+    }
 
     public SlopeConfig id(Integer id) {
         this.id = id;
@@ -392,6 +204,11 @@ public class SlopeConfig implements Config {
 
     public SlopeConfig shallowWaterConfig(ShallowWaterConfig shallowWaterConfig) {
         setShallowWaterConfig(shallowWaterConfig);
+        return this;
+    }
+
+    public SlopeConfig slopeSplattingConfig(SlopeSplattingConfig slopeSplattingConfig) {
+        setSlopeSplattingConfig(slopeSplattingConfig);
         return this;
     }
 

@@ -32,7 +32,7 @@ uniform PhongMaterial material;
 // Slope-Ground Splatting
 struct SlopeSplatting {
     sampler2D texture;
-    float scale1;
+    float scale;
     float impact;
     float blur;
     float offset;
@@ -49,7 +49,7 @@ void main(void) {
     #ifdef RENDER_GROUND_TEXTURE
     float splatting = clamp(vSlopeFactor, 0.0, 1.0);
     #ifdef RENDER_SPLATTING
-    float splattingTexture = texture2D(slopeSplatting.texture, vWorldVertexPosition.xy / slopeSplatting.scale1).r;
+    float splattingTexture = texture2D(slopeSplatting.texture, vWorldVertexPosition.xy / slopeSplatting.scale).r;
     splatting = (splattingTexture * slopeSplatting.impact + vSlopeFactor) / (1.0 + slopeSplatting.impact);
     splatting = (splatting - slopeSplatting.offset) / (2.0 * slopeSplatting.blur) + 0.5;
     splatting = clamp(slopeSplatting, 0.0, 1.0);
