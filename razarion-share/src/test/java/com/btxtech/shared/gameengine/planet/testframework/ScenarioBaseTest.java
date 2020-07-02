@@ -104,13 +104,13 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(5120, 512));
         List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(1).setScale(1).setPosition(new DecimalPosition(340, 140))));
+/*   TODO     terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(1).setScale(1).setPosition(new DecimalPosition(340, 140))));
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(1).setScale(2).setPosition(new DecimalPosition(344, 95))));
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(2).setScale(1).setPosition(new DecimalPosition(362, 65))));
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(2).setScale(1).setPosition(new DecimalPosition(368, 21))));
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(400, 55))));
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(420, 115))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(0.5).setPosition(new DecimalPosition(450, 75))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(0.5).setPosition(new DecimalPosition(450, 75))));*/
 
         setupTerrainTypeService(slopeConfigs, null, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
     }

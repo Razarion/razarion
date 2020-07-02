@@ -65,14 +65,14 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setRadius(10));
 
         List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
-        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(1).setPosition(new DecimalPosition(50, 40)).setScale(10).setRotationZ(0));
+  /* TODO      terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(1).setPosition(new DecimalPosition(50, 40)).setScale(10).setRotationZ(0));
         terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(1).setPosition(new DecimalPosition(100, 80)).setScale(10).setRotationZ(0));
         terrainObjectPositions.add(new TerrainObjectPosition().setId(2).setTerrainObjectId(1).setPosition(new DecimalPosition(150, 120)).setScale(1).setRotationZ(0));
         terrainObjectPositions.add(new TerrainObjectPosition().setId(2).setTerrainObjectId(2).setPosition(new DecimalPosition(200, 160)).setScale(1).setRotationZ(0));
         terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(250, 200)).setScale(0.2).setRotationZ(0));
         terrainObjectPositions.add(new TerrainObjectPosition().setId(2).setTerrainObjectId(3).setPosition(new DecimalPosition(300, 240)).setScale(0.5).setRotationZ(0));
         terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(50, 280)).setScale(1).setRotationZ(Math.toRadians(90)));
-        terrainObjectPositions.add(new TerrainObjectPosition().setId(2).setTerrainObjectId(3).setPosition(new DecimalPosition(100, 40)).setScale(2).setRotationZ(0));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(2).setTerrainObjectId(3).setPosition(new DecimalPosition(100, 40)).setScale(2).setRotationZ(0));*/
 
 
         setupTerrainTypeService(slopeConfigs, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);

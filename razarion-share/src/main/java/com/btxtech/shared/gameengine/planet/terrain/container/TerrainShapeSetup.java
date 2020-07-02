@@ -66,7 +66,7 @@ public class TerrainShapeSetup {
             tileObjects.put(objectPosition.getTerrainObjectId(), objectPosition);
             // Game engine
             TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectId());
-            Circle2D terrainObjectCircle = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius() * objectPosition.getScale());
+            Circle2D terrainObjectCircle = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius() * calculateScale(objectPosition.get_Scale()));
             ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(terrainObjectCircle);
             for (Index nodeIndex : GeometricUtil.rasterizeCircle(obstacleTerrainObject.getCircle(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
                 TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
@@ -88,6 +88,13 @@ public class TerrainShapeSetup {
         }
         fillInRenderTerrainObject(renderTerrainObjects);
         logger.severe("Generate Terrain Objects: " + (System.currentTimeMillis() - time));
+    }
+
+    private double calculateScale(Vertex scale) {
+        if (scale == null) {
+            return 1;
+        }
+        return Math.max(scale.getX(), scale.getY());
     }
 
     public void processSlopes(List<TerrainSlopePosition> terrainSlopePositions) {

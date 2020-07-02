@@ -26,8 +26,8 @@ public class ModifiedTerrainObject {
         this.position = terrainObjectPosition.getPosition();
         terrainObjectId = terrainObjectPosition.getTerrainObjectId();
         originalId = terrainObjectPosition.getId();
-        scale = terrainObjectPosition.getScale();
-        rotationZ = terrainObjectPosition.getRotationZ();
+        // TODO scale = terrainObjectPosition.getScale();
+        // TODO rotationZ = terrainObjectPosition.getRotationZ();
         this.radius = radius;
     }
 
@@ -83,10 +83,10 @@ public class ModifiedTerrainObject {
     }
 
     public TerrainObjectPosition createTerrainObjectPositionNoId() {
-        return new TerrainObjectPosition().setPosition(position).setTerrainObjectId(terrainObjectId).setScale(scale).setRotationZ(rotationZ);
+        return new TerrainObjectPosition().setPosition(position).setTerrainObjectId(terrainObjectId); // TODO .setScale(scale).setRotationZ(rotationZ);
     }
 
     public TerrainObjectPosition createTerrainObjectPosition() {
-        return new TerrainObjectPosition().setId(originalId).setPosition(position).setTerrainObjectId(terrainObjectId).setScale(scale).setRotationZ(rotationZ);
+        return new TerrainObjectPosition().setId(originalId).setPosition(position).setTerrainObjectId(terrainObjectId);// TODO .setScale(scale).setRotationZ(rotationZ);
     }
 }

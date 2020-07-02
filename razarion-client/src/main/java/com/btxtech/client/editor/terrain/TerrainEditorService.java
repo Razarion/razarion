@@ -378,6 +378,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
                 saveDialog = null;
             }
             modalDialogManager.showMessageDialog("Save failed", "Save terrain failed. message: " + message + " throwable: " + throwable);
+            exceptionHandler.handleException(message.toString(), throwable);
             return false;
         }).updateTerrain(getPlanetId(), terrainEditorUpdate);
     }

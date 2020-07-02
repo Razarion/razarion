@@ -84,8 +84,8 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
             TerrainObjectPositionEntity terrainObjectPositionEntity = new TerrainObjectPositionEntity();
             terrainObjectPositionEntity.setTerrainObjectEntity(terrainElementPersistence.getTerrainObjectEntity(terrainObjectPosition.getTerrainObjectId()));
             terrainObjectPositionEntity.setPosition(terrainObjectPosition.getPosition());
-            terrainObjectPositionEntity.setScale(terrainObjectPosition.getScale());
-            terrainObjectPositionEntity.setRotationZ(terrainObjectPosition.getRotationZ());
+            // TODO terrainObjectPositionEntity.setScale(terrainObjectPosition.get_Scale());
+            // TODO terrainObjectPositionEntity.setRotationZ(terrainObjectPosition.getRotationZ());
             terrainObjectPositionEntities.add(terrainObjectPositionEntity);
         }
 
@@ -102,8 +102,8 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
             TerrainObjectPositionEntity terrainObjectPositionEntity = getTerrainObjectPositionEntity(planetEntity, terrainObjectPosition.getId());
             terrainObjectPositionEntity.setTerrainObjectEntity(terrainElementPersistence.getTerrainObjectEntity(terrainObjectPosition.getTerrainObjectId()));
             terrainObjectPositionEntity.setPosition(terrainObjectPosition.getPosition());
-            terrainObjectPositionEntity.setScale(terrainObjectPosition.getScale());
-            terrainObjectPositionEntity.setRotationZ(terrainObjectPosition.getRotationZ());
+            // TODO terrainObjectPositionEntity.setScale(terrainObjectPosition.getScale());
+            // TODO terrainObjectPositionEntity.setRotationZ(terrainObjectPosition.getRotationZ());
         }
         entityManager.merge(planetEntity);
     }

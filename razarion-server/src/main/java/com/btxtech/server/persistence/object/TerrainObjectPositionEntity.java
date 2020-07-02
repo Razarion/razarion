@@ -28,8 +28,6 @@ public class TerrainObjectPositionEntity {
     private TerrainObjectEntity terrainObjectEntity;
     @Embedded
     private DecimalPosition position;
-    private double scale;
-    private double rotationZ;
 
     public Integer getId() {
         return id;
@@ -39,8 +37,6 @@ public class TerrainObjectPositionEntity {
         TerrainObjectPosition objectPosition = new TerrainObjectPosition();
         objectPosition.setId(id);
         objectPosition.setTerrainObjectId(terrainObjectEntity.getId());
-        objectPosition.setScale(scale);
-        objectPosition.setRotationZ(rotationZ);
         objectPosition.setPosition(position);
         return objectPosition;
     }
@@ -51,14 +47,6 @@ public class TerrainObjectPositionEntity {
 
     public void setPosition(DecimalPosition position) {
         this.position = position;
-    }
-
-    public void setScale(double scale) {
-        this.scale = scale;
-    }
-
-    public void setRotationZ(double rotationZ) {
-        this.rotationZ = rotationZ;
     }
 
     @Override

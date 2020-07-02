@@ -1,7 +1,6 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 
 /**
@@ -71,27 +70,6 @@ public class TerrainObjectPosition {
 
     public TerrainObjectPosition setOffset(Vertex offset) {
         this.offset = offset;
-        return this;
-    }
-
-    @Deprecated
-    public double getScale() {
-        return 0;
-    }
-
-    @Deprecated
-    public TerrainObjectPosition setScale(double scale) {
-        this.scale = new Vertex(scale, scale, scale);
-        return this;
-    }
-
-    @Deprecated
-    public double getRotationZ() {
-        return 0;
-    }
-
-    @Deprecated
-    public TerrainObjectPosition setRotationZ(double rotationZ) {
         return this;
     }
 }

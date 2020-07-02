@@ -106,17 +106,17 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(5120, 512));
         List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(76, 30))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(114, 28))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(95, 11))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(223, 95))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(191, 116))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(48, 124))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(132, 131))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(50, 280))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(127, 290))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(212, 325))));
-        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(223, 290))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(76, 30))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(114, 28))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(95, 11))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(223, 95))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(191, 116))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(48, 124))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(132, 131))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(50, 280))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(127, 290))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(212, 325))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(223, 290))));
 
         setupTerrainTypeService(slopeConfigs, null, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
     }

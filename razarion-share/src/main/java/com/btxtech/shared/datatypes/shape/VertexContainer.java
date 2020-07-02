@@ -12,10 +12,10 @@ public class VertexContainer {
     private String materialName;
     private int verticesCount;
     private ShapeTransform shapeTransform;
-    private Color diffuse;
-    private Color specular;
     private Double shininess;
     private Color emission;
+    private Color diffuse;
+    private Color specular;
     private Integer textureId;
     private Integer bumpMapId;
     private Double bumpMapDepth;
