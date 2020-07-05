@@ -33,6 +33,18 @@ public class ColladaEntity implements ColladaConverterMapper {
     @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     @CollectionTable(name = "COLLADA_TEXTURES")
     private Map<String, ImageLibraryEntity> textures;
+    @ManyToMany
+    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    @CollectionTable(name = "COLLADA_BUMP_MAPS")
+    private Map<String, ImageLibraryEntity> bumpMaps;
+    @ElementCollection
+    @CollectionTable(name = "COLLADA_BUMP_MAP_DEPTS")
+    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    private Map<String, Double> bumpMapDepts;
+    @ElementCollection
+    @CollectionTable(name = "COLLADA_ALPHA_CUTOUTS")
+    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    private Map<String, Double> alphaCutouts;
     @ElementCollection
     @CollectionTable(name = "COLLADA_CHARACTER_REPRESENTING")
     @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
@@ -67,17 +79,22 @@ public class ColladaEntity implements ColladaConverterMapper {
 
     @Override
     public Integer getBumpMapId(String materialId) {
-        throw new UnsupportedOperationException("...TODO...");
+        ImageLibraryEntity imageLibraryEntity = bumpMaps.get(materialId);
+        if (imageLibraryEntity != null) {
+            return imageLibraryEntity.getId();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Double getBumpMapDepth(String materialId) {
-        throw new UnsupportedOperationException("...TODO...");
+        return bumpMapDepts.get(materialId);
     }
 
     @Override
     public Double getAlphaCutout(String materialId) {
-        throw new UnsupportedOperationException("...TODO...");
+        return alphaCutouts.get(materialId);
     }
 
     @Override

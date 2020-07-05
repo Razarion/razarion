@@ -1,19 +1,22 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.WebGlUniformTexture;
+import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.shape3d.ClientShape3DUiService;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
+import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
+import jsinterop.base.Js;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -33,75 +36,71 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     @Inject
     private VisualUiService visualUiService;
     private Vec3Float32ArrayShaderAttribute positions;
-    private Vec3Float32ArrayShaderAttribute norms;
-    private Vec2Float32ArrayShaderAttribute textureCoordinateAttribute;
-    private WebGlUniformTexture texture;
-    private WebGLUniformLocation uLightingAmbient;
-    private WebGLUniformLocation uLightingDirection;
-    private WebGLUniformLocation uLightingDiffuse;
+    private Vec3Float32ArrayShaderAttribute normals;
+    private Vec2Float32ArrayShaderAttribute uvs;
+    private WebGlPhongMaterial material;
+    // private WebGLUniformLocation characterRepresenting;
+    // private WebGLUniformLocation characterRepresentingColor;
     private WebGLUniformLocation uModelMatrix;
     private WebGLUniformLocation uModelNormMatrix;
-    private WebGLUniformLocation characterRepresenting;
-    private WebGLUniformLocation characterRepresentingColor;
+
+    private LightUniforms lightUniforms;
 
     @Override
     public void init() {
+        webGlFacade.enableOESStandartDerivatives();
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.vertexContainerVertexShader(), Shaders.INSTANCE.vertexContainerFragmentShader()).enableTransformation(true).enableReceiveShadow());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
-        norms = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
-        textureCoordinateAttribute = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
-
-        uLightingAmbient = webGlFacade.getUniformLocation("uLightingAmbient");
-        uLightingDirection = webGlFacade.getUniformLocation("uLightingDirection");
-        uLightingDiffuse = webGlFacade.getUniformLocation("uLightingDiffuse");
+        normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
+        uvs = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_UV);
+        // lightUniforms = new LightUniforms(webGlFacade);
 
         uModelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
-        uModelNormMatrix = webGlFacade.getUniformLocation("uNMMatrix");
+        uModelNormMatrix = webGlFacade.getUniformLocation("normalMatrix");
 
-        characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
-        characterRepresentingColor = webGlFacade.getUniformLocation("characterRepresentingColor");
-    }
-
-    @Override
-    public void setupImages() {
+        // characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
+        // characterRepresentingColor = webGlFacade.getUniformLocation("characterRepresentingColor");
     }
 
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
-        texture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uSampler");
-        positions.fillFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer));
-        norms.fillFloat32Array(shape3DUiService.getNormFloat32Array(vertexContainer));
-        textureCoordinateAttribute.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
+        // AlarmRaiser.onNull(vertexContainer.getSlopeConfig().getMaterial(), Alarm.Type.INVALID_SLOPE_CONFIG, "No Material in SlopeConfig: ", uiTerrainSlopeTile.getSlopeConfig().getId());
+        // material = webGlFacade.createPhongMaterial(uiTerrainSlopeTile.getSlopeConfig().getMaterial(), "material");
+
+        Float32Array vertexPositions = Js.uncheckedCast(shape3DUiService.getVertexFloat32Array(vertexContainer));
+        positions.fillFloat32Array(vertexPositions);
+        normals.fillFloat32Array(Js.uncheckedCast(shape3DUiService.getNormFloat32Array(vertexContainer)));
+        uvs.fillFloat32Array(Js.uncheckedCast(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer)));
+        setElementCount((int) (vertexPositions.length / Vertex.getComponentsPerVertex()));
     }
 
     @Override
     protected void prepareDraw() {
         webGlFacade.useProgram();
 
-        webGlFacade.uniform3fNoAlpha(uLightingAmbient, visualUiService.getAmbient());
-        webGlFacade.uniform3f(uLightingDirection, visualUiService.getLightDirection());
-        webGlFacade.uniform3fNoAlpha(uLightingDiffuse, visualUiService.getDiffuse());
+//        webGlFacade.uniform3fNoAlpha(uLightingAmbient, visualUiService.getAmbient());
+//        webGlFacade.uniform3f(uLightingDirection, visualUiService.getLightDirection());
+//        webGlFacade.uniform3fNoAlpha(uLightingDiffuse, visualUiService.getDiffuse());
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());
 
         webGlFacade.activateReceiveShadow();
 
-        texture.activate();
         positions.activate();
-        norms.activate();
-        textureCoordinateAttribute.activate();
+        normals.activate();
+        uvs.activate();
     }
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
         webGlFacade.uniformMatrix4fv(uModelMatrix, modelMatrices.getModel());
         webGlFacade.uniformMatrix4fv(uModelNormMatrix, modelMatrices.getNorm());
-        if (modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting()) {
-            webGlFacade.uniform1b(characterRepresenting, true);
-            webGlFacade.uniform3fNoAlpha(characterRepresentingColor, modelMatrices.getColor());
-        } else {
-            webGlFacade.uniform1b(characterRepresenting, false);
-        }
+//        if (modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting()) {
+//            webGlFacade.uniform1b(characterRepresenting, true);
+//            webGlFacade.uniform3fNoAlpha(characterRepresentingColor, modelMatrices.getColor());
+//        } else {
+//            webGlFacade.uniform1b(characterRepresenting, false);
+//        }
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

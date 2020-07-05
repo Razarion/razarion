@@ -1,22 +1,25 @@
-attribute vec3 aVertexPosition;
-attribute vec3 aVertexNormal;
-attribute vec2 aTextureCoord;
+precision mediump float;
 
-uniform highp mat4 uMMatrix;
-uniform highp mat4 uVMatrix;
-uniform highp mat4 uPMatrix;
-uniform highp mat4 uNMMatrix;
-uniform highp mat4 uNVMatrix;
-uniform highp mat4 uShadowMatrix;
+attribute vec3 position;
+attribute vec3 objectNormal;
+attribute vec2 uv;
 
-varying vec3 vVertexNormal;
-varying vec2 vTextureCoord;
+uniform highp mat4 modelMatrix;
+uniform highp mat4 viewMatrix;
+uniform highp mat4 projectionMatrix;
+uniform highp mat4 normalMatrix;
+uniform highp mat4 shadowMatrix;
+
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec2 vUv;
 varying vec4 vShadowCoord;
 
 void main(void) {
-    gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 1.0);
+    vNormal = (normalMatrix * vec4(objectNormal, 1.0)).xyz;
+    vViewPosition = - (viewMatrix * modelMatrix * vec4(position, 1.0)).xyz;
+    vUv = uv;
+    vShadowCoord = shadowMatrix * vec4(position, 1.0);
 
-    vVertexNormal = normalize((uNVMatrix * uNMMatrix * vec4(aVertexNormal, 0.0)).xyz);
-    vTextureCoord = aTextureCoord;
-    vShadowCoord = uShadowMatrix * uMMatrix * vec4(aVertexPosition, 1.0);
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
 }

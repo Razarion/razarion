@@ -1,48 +1,18 @@
+#extension GL_OES_standard_derivatives : enable
 precision mediump float;
 
-varying vec3 vVertexNormal;
-varying vec2 vTextureCoord;
+//-$$$-INCLUDE-DEFINES
 
-uniform highp mat4 uNVMatrix;
-uniform sampler2D uSampler;
-uniform vec3 uLightingAmbient;
-uniform vec3 uLightingDiffuse;
-uniform vec3 uLightingDirection;
+varying vec3 vViewPosition;
+varying vec3 vNormal;
+varying vec2 vUv;
+uniform highp mat4 normalMatrix;
 
-// Shadow
-varying vec4 vShadowCoord;
-uniform float uShadowAlpha;
-uniform sampler2D uShadowTexture;
-uniform bool characterRepresenting;
-uniform vec3 characterRepresentingColor;
-
-float calculateShadowFactor() {
-    float zMap = texture2D(uShadowTexture, vShadowCoord.st).r;
-
-    if(zMap > vShadowCoord.z - 0.001) {
-        return 1.0;
-    } else {
-        return uShadowAlpha;
-    }
-}
+// Light
+uniform vec3 directLightDirection;
+uniform vec3 directLightColor;
+uniform vec3 ambientLightColor;
 
 void main(void) {
-    vec4 textureColor = texture2D(uSampler, vTextureCoord.st);
-    if(!characterRepresenting && textureColor.a < 0.5) {
-        discard;
-    } else {
-        vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightingDirection, 1.0)).xyz);
-        float shadowFactor = calculateShadowFactor();
-
-        vec3 color;
-        if(characterRepresenting) {
-            color = mix(characterRepresentingColor, textureColor.rgb, textureColor.a);
-        } else {
-            color = textureColor.rgb;
-        }
-
-        vec3 ambient = uLightingAmbient * color;
-        vec3 diffuse = max(dot(vVertexNormal, -correctedLightDirection), 0.0) * uLightingDiffuse * color;
-        gl_FragColor = vec4(ambient + diffuse * shadowFactor, 1.0);
-    }
+        gl_FragColor = vec4(0.8, 0.8, 0.8, 1.0);
 }
