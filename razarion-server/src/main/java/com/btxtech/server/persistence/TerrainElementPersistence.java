@@ -4,12 +4,10 @@ import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectEntity_;
 import com.btxtech.server.persistence.surface.DrivewayConfigEntity;
 import com.btxtech.server.persistence.surface.DrivewayConfigEntity_;
-import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.dto.WaterConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,29 +32,6 @@ public class TerrainElementPersistence {
     private EntityManager entityManager;
     @Inject
     private Shape3DPersistence shape3DPersistence;
-    @Inject
-    private ImagePersistence imagePersistence;
-
-    @Transactional
-    public WaterConfig readWaterConfig() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<WaterConfigEntity> userQuery = criteriaBuilder.createQuery(WaterConfigEntity.class);
-        Root<WaterConfigEntity> from = userQuery.from(WaterConfigEntity.class);
-        CriteriaQuery<WaterConfigEntity> userSelect = userQuery.select(from);
-        return entityManager.createQuery(userSelect).getResultList().stream().findFirst().map(WaterConfigEntity::toWaterConfig).orElse(null);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public WaterConfig saveWaterConfig(WaterConfig waterConfig) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<WaterConfigEntity> userQuery = criteriaBuilder.createQuery(WaterConfigEntity.class);
-        Root<WaterConfigEntity> from = userQuery.from(WaterConfigEntity.class);
-        CriteriaQuery<WaterConfigEntity> userSelect = userQuery.select(from);
-        WaterConfigEntity waterConfigEntity = entityManager.createQuery(userSelect).getSingleResult();
-        waterConfigEntity.fromWaterConfig(waterConfig, imagePersistence);
-        return entityManager.merge(waterConfigEntity).toWaterConfig();
-    }
 
     @Transactional
     public List<ObjectNameId> getTerrainObjectNameIds() {

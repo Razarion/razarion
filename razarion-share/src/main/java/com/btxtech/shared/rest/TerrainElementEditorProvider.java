@@ -3,7 +3,6 @@ package com.btxtech.shared.rest;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.dto.WaterConfig;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -22,12 +21,6 @@ import java.util.List;
  */
 @Path(CommonUrl.TERRAIN_ELEMENT_SERVICE_PATH)
 public interface TerrainElementEditorProvider {
-    @PUT
-    @Path("saveWaterConfig")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    WaterConfig saveWaterConfig(WaterConfig waterConfig);
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("getTerrainObjectNameIds")

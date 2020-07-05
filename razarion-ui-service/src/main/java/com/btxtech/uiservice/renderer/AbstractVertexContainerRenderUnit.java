@@ -19,10 +19,6 @@ public abstract class AbstractVertexContainerRenderUnit extends AbstractRenderUn
             logger.warning("No vertices to render");
             return;
         }
-        if (!vertexContainer.hasTextureId()) {
-            logger.warning("No texture id: "+ vertexContainer.getKey());
-            return;
-        }
 
         internalFillBuffers(vertexContainer);
 

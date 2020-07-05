@@ -3,6 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
@@ -43,7 +44,7 @@ public abstract class RenderService {
 
         addRenderTask(GroundRenderTask.class, "Ground");
         addRenderTask(SlopeRenderTask.class, "Slope");
-// TODO       addRenderTask(TerrainObjectRenderTask.class, "Terrain Object");
+        addRenderTask(TerrainObjectRenderTask.class, "Terrain Object");
 // TODO       addRenderTask(ItemMarkerRenderTask.class, "Item Marker");
 // TODO       addRenderTask(BaseItemRenderTask.class, "Base Item");
 // TODO       addRenderTask(TrailRenderTask.class, "Trail");

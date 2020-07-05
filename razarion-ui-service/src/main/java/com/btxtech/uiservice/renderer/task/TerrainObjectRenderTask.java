@@ -52,8 +52,8 @@ public class TerrainObjectRenderTask extends AbstractRenderTask<TerrainObjectCon
                     CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                     compositeRenderer.init(vertexContainer);
                     compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-                    compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
-                    compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    // compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    // compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.TERRAIN, compositeRenderer);
                     if (fillBuffer) {
@@ -63,7 +63,7 @@ public class TerrainObjectRenderTask extends AbstractRenderTask<TerrainObjectCon
             }
             add(modelRenderer);
         } else {
-            logger.warning("No shape3DId for TerrainObjectConfig: " + terrainObjectConfig);
+            logger.warning("TerrainObjectRenderTask: No shape3DId for TerrainObjectConfig: " + terrainObjectConfig);
         }
     }
 

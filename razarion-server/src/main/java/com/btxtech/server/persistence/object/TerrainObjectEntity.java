@@ -44,6 +44,7 @@ public class TerrainObjectEntity {
     public void fromTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig, ColladaEntity colladaEntity) {
         this.internalName = terrainObjectConfig.getInternalName();
         this.colladaEntity = colladaEntity;
+        radius = terrainObjectConfig.getRadius();
     }
 
     @Override
