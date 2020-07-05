@@ -29,7 +29,9 @@ import com.btxtech.shared.utils.MathHelper;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -372,8 +374,9 @@ public class TerrainTileFactory {
             if (nativeTerrainShapeObjectList.positions == null || nativeTerrainShapeObjectList.positions.length == 0) {
                 return;
             }
-            TerrainTileObjectList terrainTileObjectList = terrainTileBuilder.createAndAddTerrainTileObjectList();
+            TerrainTileObjectList terrainTileObjectList = new TerrainTileObjectList();
             terrainTileObjectList.setTerrainObjectConfigId(nativeTerrainShapeObjectList.terrainObjectId);
+            List<NativeMatrix> models = new ArrayList<>();
             Arrays.stream(nativeTerrainShapeObjectList.positions).forEach(nativeTerrainObjectPosition -> {
                 try {
                     double z = terrainService.getSurfaceAccess().getInterpolatedZ(new DecimalPosition(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y));
@@ -389,11 +392,13 @@ public class TerrainTileFactory {
                         newMatrix = newMatrix.multiply(nativeMatrixFactory.createYRotation(nativeTerrainObjectPosition.rotation.y));
                         newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(nativeTerrainObjectPosition.rotation.z));
                     }
-                    terrainTileObjectList.addModel(newMatrix);
+                    models.add(newMatrix);
                 } catch (Throwable t) {
                     exceptionHandler.handleException(t);
                 }
             });
+            terrainTileObjectList.setModel(models);
+            terrainTileBuilder.addTerrainTileObjectList(terrainTileObjectList);
         });
     }
 

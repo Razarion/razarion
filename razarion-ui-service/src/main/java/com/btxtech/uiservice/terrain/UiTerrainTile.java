@@ -12,7 +12,6 @@ import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -25,7 +24,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -175,14 +173,13 @@ public class UiTerrainTile {
         if (terrainTile == null) {
             return null;
         }
-        TerrainTileObjectList[] terrainTileObjectLists = terrainTile.getTerrainTileObjectLists();
-        if (terrainTileObjectLists == null) {
+        if (terrainTile.getTerrainTileObjectLists() == null) {
             return null;
         }
         terrainObjectModelMatrices = new MapList<>();
-        Arrays.stream(terrainTileObjectLists).forEach(terrainTileObjectList -> {
+        terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList -> {
             List<ModelMatrices> modelMatrices = new ArrayList<>();
-            Arrays.stream(terrainTileObjectList.getModels()).forEach(nativeMatrix -> modelMatrices.add(new ModelMatrices(nativeMatrix)));
+            terrainTileObjectList.getModels().forEach(nativeMatrix -> modelMatrices.add(new ModelMatrices(nativeMatrix)));
             terrainObjectModelMatrices.putAll(terrainTileObjectList.getTerrainObjectConfigId(), modelMatrices);
         });
 

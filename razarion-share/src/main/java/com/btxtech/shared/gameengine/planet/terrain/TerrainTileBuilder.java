@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,7 @@ public class TerrainTileBuilder {
     private MapList<Integer, Vertex> groundPositions = new MapList<>();
     private MapList<Integer, Vertex> groundNorms = new MapList<>();
     private Rectangle2D playGround;
-
+    private List<TerrainTileObjectList> terrainTileObjectLists = new ArrayList<>();
 
     public void init(Index terrainTileIndex, TerrainShapeTile terrainShapeTile, Rectangle2D playGround) {
         this.terrainTileIndex = terrainTileIndex;
@@ -81,6 +82,9 @@ public class TerrainTileBuilder {
 
         if (terrainSlopeTileBuilders != null && !terrainSlopeTileBuilders.isEmpty()) {
             terrainTile.setTerrainSlopeTiles(terrainSlopeTileBuilders.stream().map(TerrainSlopeTileBuilder::generate).collect(Collectors.toList()));
+        }
+        if (!terrainTileObjectLists.isEmpty()) {
+            terrainTile.setTerrainTileObjectLists(terrainTileObjectLists);
         }
         return terrainTile;
     }
@@ -126,6 +130,10 @@ public class TerrainTileBuilder {
 
     public TerrainWaterTileBuilder getTerrainWaterTileBuilder() {
         return terrainWaterTileBuilder;
+    }
+
+    public void addTerrainTileObjectList(TerrainTileObjectList terrainTileObjectList) {
+        terrainTileObjectLists.add(terrainTileObjectList);
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
@@ -221,11 +229,5 @@ public class TerrainTileBuilder {
             }
         }
         return true;
-    }
-
-    public TerrainTileObjectList createAndAddTerrainTileObjectList() {
-        TerrainTileObjectList terrainTileObjectList = jsInteropObjectFactory.generateTerrainTileObjectList();
-        terrainTile.addTerrainTileObjectList(terrainTileObjectList);
-        return terrainTileObjectList;
     }
 }

@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ public class TerrainTile {
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
     private double height;
-    private Collection<TerrainTileObjectList> terrainTileObjectLists;
+    private List<TerrainTileObjectList> terrainTileObjectLists;
 
 
     public void setIndex(Index index) {
@@ -92,17 +91,11 @@ public class TerrainTile {
         return height;
     }
 
-    public TerrainTileObjectList[] getTerrainTileObjectLists() {
-        if (terrainTileObjectLists == null) {
-            return null;
-        }
-        return terrainTileObjectLists.toArray(new TerrainTileObjectList[0]);
+    public List<TerrainTileObjectList> getTerrainTileObjectLists() {
+        return terrainTileObjectLists;
     }
 
-    public void addTerrainTileObjectList(TerrainTileObjectList terrainTileObjectList) {
-        if (terrainTileObjectLists == null) {
-            terrainTileObjectLists = new ArrayList<>();
-        }
-        terrainTileObjectLists.add(terrainTileObjectList);
+    public void setTerrainTileObjectLists(List<TerrainTileObjectList> terrainTileObjectLists) {
+        this.terrainTileObjectLists = terrainTileObjectLists;
     }
 }

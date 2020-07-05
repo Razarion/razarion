@@ -1,5 +1,6 @@
 package com.btxtech.shared.nativejs;
 
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import jsinterop.annotations.JsType;
 
 /**
@@ -12,7 +13,7 @@ public class NativeMatrix {
 
     public native NativeVertexDto multiplyVertex(NativeVertexDto other, double w);
 
-    public native double[] toColumnMajorArray();
+    public native Float32ArrayEmu getColumnMajorFloat32Array();
 
     public native NativeMatrix invert();
 

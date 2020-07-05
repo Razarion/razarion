@@ -1,5 +1,6 @@
 package com.btxtech.shared.nativejs;
 
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import jsinterop.annotations.JsType;
 
 /**
@@ -9,6 +10,8 @@ import jsinterop.annotations.JsType;
 @JsType(name = "NativeMatrixFactory", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public abstract class NativeMatrixFactory {
     public native NativeMatrix createFromColumnMajorArray(double[] array);
+
+    public native NativeMatrix createFromColumnMajorFloat32ArrayEmu(Float32ArrayEmu float32ArrayEmu);
 
     public native NativeMatrix createTranslation(double x, double y, double z);
 

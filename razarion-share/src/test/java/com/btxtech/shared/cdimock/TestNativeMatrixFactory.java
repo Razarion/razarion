@@ -1,5 +1,6 @@
 package com.btxtech.shared.cdimock;
 
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.nativejs.NativeMatrix;
@@ -84,8 +85,9 @@ public class TestNativeMatrixFactory extends NativeMatrixFactory {
         }
 
         @Override
-        public double[] toColumnMajorArray() {
-            return matrix4.toWebGlArray();
+        public Float32ArrayEmu getColumnMajorFloat32Array() {
+           //  return matrix4.toWebGlArray();
+            throw new UnsupportedOperationException("???");
         }
 
         @Override

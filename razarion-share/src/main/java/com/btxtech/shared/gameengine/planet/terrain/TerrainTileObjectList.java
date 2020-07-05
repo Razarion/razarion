@@ -1,19 +1,30 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.nativejs.NativeMatrix;
-import jsinterop.annotations.JsType;
+
+import java.util.List;
 
 /**
  * Created by Beat
  * on 18.01.2018.
  */
-@JsType(isNative = true, name = "TerrainTileObjectList", namespace = "com.btxtech.shared.nativejs")
 public class TerrainTileObjectList {
-    public native int getTerrainObjectConfigId();
+    private int terrainObjectConfigId;
+    private List<NativeMatrix> models;
 
-    public native void setTerrainObjectConfigId(int terrainObjectConfigId);
+    public int getTerrainObjectConfigId() {
+        return terrainObjectConfigId;
+    }
 
-    public native void addModel(NativeMatrix newMatrix);
+    public void setTerrainObjectConfigId(int terrainObjectConfigId) {
+        this.terrainObjectConfigId = terrainObjectConfigId;
+    }
 
-    public native NativeMatrix[] getModels();
+    public void setModel(List<NativeMatrix> models) {
+        this.models = models;
+    }
+
+    public List<NativeMatrix> getModels() {
+        return models;
+    }
 }

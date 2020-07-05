@@ -1,10 +1,8 @@
 package com.btxtech.shared.cdimock;
 
-import com.btxtech.shared.TestTerrainTileObjectList;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.mocks.TestFloat32Array;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
@@ -19,11 +17,6 @@ import static com.btxtech.shared.utils.CollectionUtils.toArray;
  */
 @Singleton
 public class TestJsInteropObjectFactory implements JsInteropObjectFactory {
-    @Override
-    public TerrainTileObjectList generateTerrainTileObjectList() {
-        return new TestTerrainTileObjectList();
-    }
-
     @Override
     public Float32ArrayEmu newFloat32Array4Vertices(List<Vertex> vertices) {
         return new TestFloat32Array().doubles(Vertex.toArray(vertices));
