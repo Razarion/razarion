@@ -1,24 +1,24 @@
 package com.btxtech.client.shape3d;
 
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
-import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.JsonUtils;
-import com.google.gwt.xhr.client.XMLHttpRequest;
 import elemental2.core.Float32Array;
-import elemental.js.util.Xhr;
+import elemental2.core.Global;
+import elemental2.dom.XMLHttpRequest;
+import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMapOfAny;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,29 +64,47 @@ public class ClientShape3DUiService extends Shape3DUiService {
     }
 
     public void loadBuffer(DeferredStartup deferredStartup) {
-        Xhr.get(CommonUrl.loadShape3dBufferUrl(), new Xhr.Callback() {
-            @Override
-            public void onFail(XMLHttpRequest xhr) {
-                deferredStartup.failed("Calling Shape3D buffer failed: " + xhr.getStatus());
-            }
-
-            @Override
-            public void onSuccess(XMLHttpRequest xhr) {
-                try {
+        XMLHttpRequest xmlHttpRequest = new XMLHttpRequest();
+        xmlHttpRequest.onload = progressEvent -> {
+            try {
+                if (xmlHttpRequest.readyState == 4 && xmlHttpRequest.status == 200) {
                     buffer.clear();
-                    String responseText = xhr.getResponseText();
-                    JsArray array = JsonUtils.safeEval(responseText);
-                    for (int i = 0; i < array.length(); i++) {
-                        JavaScriptObject jsonObject = array.get(i);
-                        buffer.put(getKey(jsonObject), new Shape3DBuffer(getVertexData(jsonObject), getNormData(jsonObject), getTextureCoordinate(jsonObject)));
-                    }
+                    JsPropertyMapOfAny[] vertexContainerBuffers = Js.cast(Global.JSON.parse(xmlHttpRequest.responseText));
+                    Arrays.stream(vertexContainerBuffers).forEach(vertexContainerBuffer ->
+                            buffer.put(
+                                    Js.cast(vertexContainerBuffer.get("key")),
+                                    new Shape3DBuffer(
+                                            new Float32Array((double[]) Js.cast(vertexContainerBuffer.get("vertexData"))),
+                                            new Float32Array((double[]) Js.cast(vertexContainerBuffer.get("normData"))),
+                                            new Float32Array((double[]) Js.cast(vertexContainerBuffer.get("textureCoordinate"))))));
                     deferredStartup.finished();
-                } catch (Throwable t) {
-                    exceptionHandler.handleException(t);
-                    deferredStartup.failed(t);
+                } else {
+                    deferredStartup.failed("Shape3DEditorController onload error. Status: '" + xmlHttpRequest.status + "' StatusText: '" + xmlHttpRequest.statusText + "'");
                 }
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+                deferredStartup.failed(t);
+            }
+        };
+        xmlHttpRequest.addEventListener("error", evt -> {
+            try {
+                deferredStartup.failed("Shape3DEditorController error. Status: '" + xmlHttpRequest.status + "' StatusText: '" + xmlHttpRequest.statusText + "'");
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
+                deferredStartup.failed(throwable);
             }
         });
+        xmlHttpRequest.onabort = progressEvent -> {
+            try {
+                deferredStartup.failed("Shape3DEditorController abort. Status: '" + xmlHttpRequest.status + "' StatusText: '" + xmlHttpRequest.statusText + "'");
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
+                deferredStartup.failed(throwable);
+            }
+        };
+        xmlHttpRequest.open("GET", CommonUrl.loadShape3dBufferUrl());
+        xmlHttpRequest.responseType = "json";
+        xmlHttpRequest.send();
     }
 
     @Override
@@ -103,20 +121,4 @@ public class ClientShape3DUiService extends Shape3DUiService {
 
         return maxZ;
     }
-
-    private native String getKey(JavaScriptObject jsonObject) /*-{
-        return jsonObject.key;
-    }-*/;
-
-    private native Float32Array getVertexData(JavaScriptObject jsonObject) /*-{
-        return new Float32Array(jsonObject.vertexData);
-    }-*/;
-
-    private native Float32Array getNormData(JavaScriptObject jsonObject) /*-{
-        return new Float32Array(jsonObject.normData);
-    }-*/;
-
-    private native Float32Array getTextureCoordinate(JavaScriptObject jsonObject) /*-{
-        return new Float32Array(jsonObject.textureCoordinate);
-    }-*/;
 }
