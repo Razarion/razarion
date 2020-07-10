@@ -37,16 +37,16 @@ public abstract class Shape3DUiService {
         this.shape3Ds.clear();
         if (shape3Ds != null) {
             for (Shape3D shape3D : shape3Ds) {
-                this.shape3Ds.put(shape3D.getDbId(), shape3D);
+                this.shape3Ds.put(shape3D.getId(), shape3D);
             }
         }
     }
 
     public void override(Shape3D shape3D) {
-        shape3Ds.put(shape3D.getDbId(), shape3D);
+        shape3Ds.put(shape3D.getId(), shape3D);
     }
 
     public void remove(Shape3D shape3D) {
-        shape3Ds.remove(shape3D.getDbId());
+        shape3Ds.remove(shape3D.getId());
     }
 }

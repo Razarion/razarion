@@ -1,7 +1,6 @@
 package com.btxtech.shared.datatypes.shape;
 
-import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ObjectNameIdProvider;
+import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -13,46 +12,41 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 28.07.2016.
  */
-public class Shape3D implements ObjectNameIdProvider {
-    private int dbId;
+public class Shape3D implements Config {
+    private int id;
     private String internalName;
     private List<Element3D> element3Ds;
     private List<ModelMatrixAnimation> modelMatrixAnimations;
 
-    public int getDbId() {
-        return dbId;
+    @Override
+    public int getId() {
+        return id;
     }
 
-    public Shape3D setDbId(int dbId) {
-        this.dbId = dbId;
-        return this;
-    }
-
+    @Override
     public String getInternalName() {
         return internalName;
     }
 
-    public Shape3D setInternalName(String internalName) {
+    @Override
+    public void setInternalName(String internalName) {
         this.internalName = internalName;
-        return this;
     }
 
     public List<Element3D> getElement3Ds() {
         return element3Ds;
     }
 
-    public Shape3D setElement3Ds(List<Element3D> element3Ds) {
+    public void setElement3Ds(List<Element3D> element3Ds) {
         this.element3Ds = element3Ds;
-        return this;
     }
 
     public List<ModelMatrixAnimation> getModelMatrixAnimations() {
         return modelMatrixAnimations;
     }
 
-    public Shape3D setModelMatrixAnimations(List<ModelMatrixAnimation> modelMatrixAnimations) {
+    public void setModelMatrixAnimations(List<ModelMatrixAnimation> modelMatrixAnimations) {
         this.modelMatrixAnimations = modelMatrixAnimations;
-        return this;
     }
 
     public int calculateAnimationDuration() {
@@ -73,11 +67,6 @@ public class Shape3D implements ObjectNameIdProvider {
         return (int) (last - first);
     }
 
-    @Override
-    public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(dbId, internalName);
-    }
-
     public Collection<ModelMatrixAnimation> setupAnimations(Element3D element3D) {
         if (modelMatrixAnimations == null) {
             return null;
@@ -90,29 +79,23 @@ public class Shape3D implements ObjectNameIdProvider {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Shape3D shape3D = (Shape3D) o;
-        return dbId == shape3D.dbId;
+    public Shape3D id(int id) {
+        this.id = id;
+        return this;
     }
 
-    @Override
-    public int hashCode() {
-        return dbId;
+    public Shape3D internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
     }
 
-    @Override
-    public String toString() {
-        return "Shape3D{" +
-                "element3Ds=" + element3Ds +
-                ", modelMatrixAnimations=" + modelMatrixAnimations +
-                '}';
+    public Shape3D element3Ds(List<Element3D> element3Ds) {
+        setElement3Ds(element3Ds);
+        return this;
+    }
+
+    public Shape3D modelMatrixAnimations(List<ModelMatrixAnimation> modelMatrixAnimations) {
+        setModelMatrixAnimations(modelMatrixAnimations);
+        return this;
     }
 }

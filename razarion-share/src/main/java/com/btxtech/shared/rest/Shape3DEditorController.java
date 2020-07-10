@@ -21,7 +21,7 @@ import java.util.List;
  * 16.08.2016.
  */
 @Path(CommonUrl.SHAPE_3D_PROVIDER)
-public interface Shape3DProvider {
+public interface Shape3DEditorController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path(CommonUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER)

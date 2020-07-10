@@ -12,7 +12,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
-import com.btxtech.shared.rest.Shape3DProvider;
+import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
@@ -41,7 +41,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
-    private Caller<Shape3DProvider> caller;
+    private Caller<Shape3DEditorController> caller;
     @Inject
     private ClientShape3DUiService shape3DUiService;
     @Inject
@@ -91,16 +91,16 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             Shape3DUtils.saveTextureIds(originalShape3D, shape3DComposite.getShape3D());
             Shape3DUtils.saveCharacterRepresentings(originalShape3D, shape3DComposite.getShape3D());
             Shape3DUtils.saveAnimationTriggers(originalShape3D, shape3DComposite.getShape3D());
-            addChangesCollada(originalShape3D.getDbId(), colladaText);
+            addChangesCollada(originalShape3D.getId(), colladaText);
             shape3DUiService.override(shape3DComposite);
             fireChange(shape3DComposite.getShape3D());
-        }, exceptionHandler.restErrorHandler("Shape3DProvider.getShape3Ds failed: ")).colladaConvert(originalShape3D.getDbId(), colladaText);
+        }, exceptionHandler.restErrorHandler("Shape3DProvider.getShape3Ds failed: ")).colladaConvert(originalShape3D.getId(), colladaText);
     }
 
     public void updateTexture(Shape3D shape3D, String materialId, Integer imageId) {
         Shape3DUtils.replaceTextureId(shape3D, materialId, imageId);
         // Update changes set
-        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
+        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getId());
         Map<String, Integer> textureMap = new HashMap<>();
         Shape3DUtils.getAllVertexContainers(shape3D).stream().filter(vertexContainer -> vertexContainer.getTextureId() != null).forEach(vertexContainer -> textureMap.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId()));
         shape3DConfig.setTextures(textureMap);
@@ -111,7 +111,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     public void updateCharacterRepresenting(Shape3D shape3D, String materialId, boolean characterRepresenting) {
         Shape3DUtils.updateCharacterRepresenting(shape3D, materialId, characterRepresenting);
         // Update changes set
-        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
+        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getId());
         Map<String, Boolean> characterRepresentings = new HashMap<>();
         Shape3DUtils.getAllVertexContainers(shape3D).forEach(vertexContainer -> characterRepresentings.put(vertexContainer.getMaterialId(), vertexContainer.isCharacterRepresenting()));
         shape3DConfig.setCharacterRepresentings(characterRepresentings);
@@ -122,7 +122,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     public void updateAnimation(Shape3D shape3D, String animationId, AnimationTrigger animationTrigger) {
         Shape3DUtils.replaceAnimation(shape3D, animationId, animationTrigger);
         // Update changes set
-        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
+        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getId());
         Map<String, AnimationTrigger> animationMap = new HashMap<>();
         shape3D.getModelMatrixAnimations().stream().filter(modelMatrixAnimation -> modelMatrixAnimation.getAnimationTrigger() != null).forEach(modelMatrixAnimation -> animationMap.put(modelMatrixAnimation.getId(), modelMatrixAnimation.getAnimationTrigger()));
         shape3DConfig.setAnimations(animationMap);
@@ -132,12 +132,12 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
 
     @Override
     public void save(Shape3D shape3D) {
-        Shape3DConfig shape3DConfig = changes.get(shape3D.getDbId());
+        Shape3DConfig shape3DConfig = changes.get(shape3D.getId());
         if (shape3DConfig == null) {
             return;
         }
 
-        caller.call(response -> changes.remove(shape3D.getDbId()), exceptionHandler.restErrorHandler("Shape3DProvider.save failed: ")).save(shape3DConfig);
+        caller.call(response -> changes.remove(shape3D.getId()), exceptionHandler.restErrorHandler("Shape3DProvider.save failed: ")).save(shape3DConfig);
     }
 
 
@@ -146,7 +146,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
         caller.call(response -> {
             shape3DUiService.remove(shape3D);
             fire();
-        }, exceptionHandler.restErrorHandler("Shape3DProvider.delete failed: ")).delete(shape3D.getDbId());
+        }, exceptionHandler.restErrorHandler("Shape3DEditorController.delete failed: ")).delete(shape3D.getId());
     }
 
     private void addChangesCollada(int dbId, String colladaText) {
@@ -173,33 +173,33 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     public void onChange(Shape3D shape3D) {
         // Update BaseItemType renderer
         for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
-            if (baseItemType.getShape3DId() != null && shape3D.getDbId() == baseItemType.getShape3DId()) {
+            if (baseItemType.getShape3DId() != null && shape3D.getId() == baseItemType.getShape3DId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
             }
-            if (baseItemType.getSpawnShape3DId() != null && shape3D.getDbId() == baseItemType.getSpawnShape3DId()) {
+            if (baseItemType.getSpawnShape3DId() != null && shape3D.getId() == baseItemType.getSpawnShape3DId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
             }
             if (baseItemType.getWeaponType() != null) {
                 WeaponType weaponType = baseItemType.getWeaponType();
-                if (weaponType.getProjectileShape3DId() != null && shape3D.getDbId() == weaponType.getProjectileShape3DId()) {
+                if (weaponType.getProjectileShape3DId() != null && shape3D.getId() == weaponType.getProjectileShape3DId()) {
                     projectileRenderTask.onBaseItemTypeChanged(baseItemType);
                 }
             }
-            if (baseItemType.getHarvesterType() != null && baseItemType.getHarvesterType().getAnimationShape3dId() != null && baseItemType.getHarvesterType().getAnimationShape3dId() == shape3D.getDbId()) {
+            if (baseItemType.getHarvesterType() != null && baseItemType.getHarvesterType().getAnimationShape3dId() != null && baseItemType.getHarvesterType().getAnimationShape3dId() == shape3D.getId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
             }
-            if (baseItemType.getBuilderType() != null && baseItemType.getBuilderType().getAnimationShape3dId() != null && baseItemType.getBuilderType().getAnimationShape3dId() == shape3D.getDbId()) {
+            if (baseItemType.getBuilderType() != null && baseItemType.getBuilderType().getAnimationShape3dId() != null && baseItemType.getBuilderType().getAnimationShape3dId() == shape3D.getId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
             }
-            if (baseItemType.getWreckageShape3DId() != null && shape3D.getDbId() == baseItemType.getWreckageShape3DId()) {
+            if (baseItemType.getWreckageShape3DId() != null && shape3D.getId() == baseItemType.getWreckageShape3DId()) {
                 trailRenderTask.onWreckageChanged(baseItemType);
             }
         }
         // Update ResourceItemType renderer
-        itemTypeService.getResourceItemTypes().stream().filter(resourceItemType -> resourceItemType.getShape3DId() != null && shape3D.getDbId() == resourceItemType.getShape3DId()).forEach(resourceItemType -> resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType));
+        itemTypeService.getResourceItemTypes().stream().filter(resourceItemType -> resourceItemType.getShape3DId() != null && shape3D.getId() == resourceItemType.getShape3DId()).forEach(resourceItemType -> resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType));
         // Update BoxItemType renderer
-        itemTypeService.getBoxItemTypes().stream().filter(boxItemType -> boxItemType.getShape3DId() != null && shape3D.getDbId() == boxItemType.getShape3DId()).forEach(boxItemType -> boxItemRenderTask.onBoxItemTypeChanged(boxItemType));
+        itemTypeService.getBoxItemTypes().stream().filter(boxItemType -> boxItemType.getShape3DId() != null && shape3D.getId() == boxItemType.getShape3DId()).forEach(boxItemType -> boxItemRenderTask.onBoxItemTypeChanged(boxItemType));
         // Update TerrainObject renderer
-        terrainTypeService.getTerrainObjectConfigs().stream().filter(terrainObjectConfig -> terrainObjectConfig.getShape3DId() != null && shape3D.getDbId() == terrainObjectConfig.getShape3DId()).forEach(terrainObjectConfig -> terrainObjectRenderTask.onTerrainObjectChanged(terrainObjectConfig));
+        terrainTypeService.getTerrainObjectConfigs().stream().filter(terrainObjectConfig -> terrainObjectConfig.getShape3DId() != null && shape3D.getId() == terrainObjectConfig.getShape3DId()).forEach(terrainObjectConfig -> terrainObjectRenderTask.onTerrainObjectChanged(terrainObjectConfig));
     }
 }

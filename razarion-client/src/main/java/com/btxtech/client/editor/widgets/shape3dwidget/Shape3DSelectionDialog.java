@@ -57,7 +57,7 @@ public class Shape3DSelectionDialog extends Composite implements ModalDialogCont
         if (isAttached()) {
             shape3Ds.deselectAll();
             shape3Ds.selectComponent(widget);
-            modalDialogPanel.setApplyValue(widget.getValue().getDbId());
+            modalDialogPanel.setApplyValue(widget.getValue().getId());
         }
     }
 

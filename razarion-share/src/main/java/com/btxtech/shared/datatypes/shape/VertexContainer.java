@@ -1,6 +1,6 @@
 package com.btxtech.shared.datatypes.shape;
 
-import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 
 /**
  * Created by Beat
@@ -10,17 +10,24 @@ public class VertexContainer {
     private String key;
     private String materialId;
     private String materialName;
+    private PhongMaterialConfig phongMaterialConfig;
     private int verticesCount;
     private ShapeTransform shapeTransform;
-    private Double shininess;
-    private Color emission;
-    private Color diffuse;
-    private Color specular;
-    private Integer textureId;
-    private Integer bumpMapId;
-    private Double bumpMapDepth;
     private Double alphaCutout;
     private boolean characterRepresenting;
+
+    public PhongMaterialConfig getPhongMaterialConfig() {
+        return phongMaterialConfig;
+    }
+
+    public void setPhongMaterialConfig(PhongMaterialConfig phongMaterialConfig) {
+        this.phongMaterialConfig = phongMaterialConfig;
+    }
+
+    public VertexContainer phongMaterialConfig(PhongMaterialConfig phongMaterialConfig) {
+        setPhongMaterialConfig(phongMaterialConfig);
+        return this;
+    }
 
     public String getKey() {
         return key;
@@ -55,73 +62,23 @@ public class VertexContainer {
         return this;
     }
 
-    public VertexContainer setDiffuse(Color diffuse) {
-        this.diffuse = diffuse;
-        return this;
-    }
-
-    public VertexContainer setSpecular(Color specular) {
-        this.specular = specular;
-        return this;
-    }
-
-    public VertexContainer setShininess(Double shininess) {
-        this.shininess = shininess;
-        return this;
-    }
-
-    public VertexContainer setEmission(Color emission) {
-        this.emission = emission;
-        return this;
-    }
-
     public VertexContainer setCharacterRepresenting(boolean characterRepresenting) {
         this.characterRepresenting = characterRepresenting;
         return this;
     }
 
-    public Color getDiffuse() {
-        return diffuse;
-    }
-
-    public Color getSpecular() {
-        return specular;
-    }
-
-    public Double getShininess() {
-        return shininess;
-    }
-
-    public Color getEmission() {
-        return emission;
-    }
-
+    @Deprecated
     public void setTextureId(Integer textureId) {
-        this.textureId = textureId;
     }
 
+    @Deprecated
     public boolean hasTextureId() {
-        return textureId != null;
+        return false;
     }
 
+    @Deprecated
     public Integer getTextureId() {
-        return textureId;
-    }
-
-    public Integer getBumpMapId() {
-        return bumpMapId;
-    }
-
-    public void setBumpMapId(Integer bumpMapId) {
-        this.bumpMapId = bumpMapId;
-    }
-
-    public Double getBumpMapDepth() {
-        return bumpMapDepth;
-    }
-
-    public void setBumpMapDepth(Double bumpMapDepth) {
-        this.bumpMapDepth = bumpMapDepth;
+        return 0;
     }
 
     public Double getAlphaCutout() {
@@ -146,22 +103,5 @@ public class VertexContainer {
 
     public boolean isCharacterRepresenting() {
         return characterRepresenting;
-    }
-
-    @Override
-    public String toString() {
-        return "VertexContainer{" +
-                "key='" + key + '\'' +
-                ", materialId='" + materialId + '\'' +
-                ", materialName='" + materialName + '\'' +
-                ", verticesCount=" + verticesCount +
-                ", shapeTransform=" + shapeTransform +
-                ", diffuse=" + diffuse +
-                ", specular=" + specular +
-                ", shininess=" + shininess +
-                ", emission=" + emission +
-                ", textureId=" + textureId +
-                ", characterRepresenting=" + characterRepresenting +
-                '}';
     }
 }

@@ -9,6 +9,8 @@ import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.shape3d.ClientShape3DUiService;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
@@ -43,7 +45,6 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     // private WebGLUniformLocation characterRepresentingColor;
     private WebGLUniformLocation uModelMatrix;
     private WebGLUniformLocation uModelNormMatrix;
-
     private LightUniforms lightUniforms;
 
     @Override
@@ -53,7 +54,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         uvs = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_UV);
-        // lightUniforms = new LightUniforms(webGlFacade);
+        lightUniforms = new LightUniforms(webGlFacade);
 
         uModelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
         uModelNormMatrix = webGlFacade.getUniformLocation("normalMatrix");
@@ -64,8 +65,8 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
-        // AlarmRaiser.onNull(vertexContainer.getSlopeConfig().getMaterial(), Alarm.Type.INVALID_SLOPE_CONFIG, "No Material in SlopeConfig: ", uiTerrainSlopeTile.getSlopeConfig().getId());
-        // material = webGlFacade.createPhongMaterial(uiTerrainSlopeTile.getSlopeConfig().getMaterial(), "material");
+        AlarmRaiser.onNull(vertexContainer.getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No Material in VertexContainer: " + vertexContainer.getMaterialName(), null);
+        material = webGlFacade.createPhongMaterial(vertexContainer.getPhongMaterialConfig(), "material");
 
         Float32Array vertexPositions = Js.uncheckedCast(shape3DUiService.getVertexFloat32Array(vertexContainer));
         positions.fillFloat32Array(vertexPositions);
@@ -78,11 +79,9 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     protected void prepareDraw() {
         webGlFacade.useProgram();
 
-//        webGlFacade.uniform3fNoAlpha(uLightingAmbient, visualUiService.getAmbient());
-//        webGlFacade.uniform3f(uLightingDirection, visualUiService.getLightDirection());
-//        webGlFacade.uniform3fNoAlpha(uLightingDiffuse, visualUiService.getDiffuse());
-        // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
-        // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());
+        lightUniforms.setLightUniforms(webGlFacade);
+
+        material.activate();
 
         webGlFacade.activateReceiveShadow();
 

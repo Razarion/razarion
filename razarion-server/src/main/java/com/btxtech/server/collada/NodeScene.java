@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 import org.w3c.dom.Node;
@@ -65,10 +66,12 @@ public class NodeScene extends NameIdColladaXml {
             vertexContainer.setMaterialName(materialName);
             vertexContainer.setVerticesCount(vertexContainerBuffer.calculateVertexCount());
             if (effect != null && effect.getTechnique() != null) {
-                vertexContainer.setDiffuse(effect.getTechnique().getDiffuse());
-                vertexContainer.setSpecular(effect.getTechnique().getSpecular());
-                vertexContainer.setShininess(effect.getTechnique().getShininess());
-                vertexContainer.setEmission(effect.getTechnique().getEmission());
+                vertexContainer.setPhongMaterialConfig(new PhongMaterialConfig()
+                        .scale(1)
+                        .shininess(effect.getTechnique().getShininess()));
+                // vertexContainer.setDiffuse(effect.getTechnique().getDiffuse());
+                // vertexContainer.setSpecular(effect.getTechnique().getSpecular());
+                // vertexContainer.setEmission(effect.getTechnique().getEmission());
             }
             element3DBuilder.addVertexContainer(vertexContainer, vertexContainerBuffer);
         }

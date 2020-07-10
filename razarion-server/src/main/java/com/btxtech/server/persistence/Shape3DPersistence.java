@@ -47,7 +47,7 @@ public class Shape3DPersistence {
     }
 
     @Transactional
-    public List<Shape3D> getShape3Ds() throws ParserConfigurationException, SAXException, IOException {
+    public List<Shape3D> getShape3Ds() {
         List<Shape3D> shape3Ds = new ArrayList<>();
         for (ColladaEntity colladaEntity : readColladaEntities()) {
             try {
@@ -70,10 +70,10 @@ public class Shape3DPersistence {
 
     @Transactional
     @SecurityCheck
-    public Shape3D create() throws ParserConfigurationException, SAXException, IOException {
+    public Shape3D create() {
         ColladaEntity colladaEntity = new ColladaEntity();
         entityManager.persist(colladaEntity);
-        return new Shape3D().setDbId(colladaEntity.getId());
+        return new Shape3D().id(colladaEntity.getId());
     }
 
     @Transactional

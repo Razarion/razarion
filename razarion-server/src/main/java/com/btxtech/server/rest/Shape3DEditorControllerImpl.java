@@ -7,7 +7,7 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
-import com.btxtech.shared.rest.Shape3DProvider;
+import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;
 
@@ -20,7 +20,7 @@ import java.util.List;
  * Created by Beat
  * 16.08.2016.
  */
-public class Shape3DProviderImpl implements Shape3DProvider {
+public class Shape3DEditorControllerImpl implements Shape3DEditorController {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject

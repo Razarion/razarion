@@ -66,7 +66,7 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
 
     @Override
     public void init(Shape3D shape3D) {
-        dbId.setText(DisplayUtils.handleInteger(shape3D.getDbId()));
+        dbId.setText(DisplayUtils.handleInteger(shape3D.getId()));
         internalName.setText(shape3D.getInternalName());
         textures.addComponentCreationHandler(texturePanel -> texturePanel.setShape3DPropertyPanel(this));
         animations.addComponentCreationHandler(animationPanel -> animationPanel.setShape3DPropertyPanel(this));

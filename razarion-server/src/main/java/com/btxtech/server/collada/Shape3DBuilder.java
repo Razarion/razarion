@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +39,7 @@ public class Shape3DBuilder {
 
     public Shape3D createShape3D(int id) {
         Shape3D shape3D = new Shape3D();
-        shape3D.setDbId(id).setInternalName(internalName);
+        shape3D.id(id).internalName(internalName);
 
         List<Element3D> element3Ds = new ArrayList<>();
         for (Element3DBuilder element3DBuilder : element3DBuilders) {
@@ -52,10 +53,11 @@ public class Shape3DBuilder {
                 }
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                     String materialId = vertexContainer.getMaterialId();
-                    if (materialId != null) {
-                        vertexContainer.setTextureId(colladaConverterMapper.getTextureId(materialId));
-                        vertexContainer.setBumpMapId(colladaConverterMapper.getBumpMapId(materialId));
-                        vertexContainer.setBumpMapDepth(colladaConverterMapper.getBumpMapDepth(materialId));
+                    PhongMaterialConfig phongMaterialConfig = vertexContainer.getPhongMaterialConfig();
+                    if (materialId != null && phongMaterialConfig != null) {
+                        phongMaterialConfig.setTextureId(colladaConverterMapper.getTextureId(materialId));
+                        phongMaterialConfig.setBumpMapId(colladaConverterMapper.getBumpMapId(materialId));
+                        phongMaterialConfig.setBumpMapDepth(colladaConverterMapper.getBumpMapDepth(materialId));
                         vertexContainer.setAlphaCutout(colladaConverterMapper.getAlphaCutout(materialId));
                     }
                     vertexContainer.setCharacterRepresenting(colladaConverterMapper.isCharacterRepresenting(materialId));

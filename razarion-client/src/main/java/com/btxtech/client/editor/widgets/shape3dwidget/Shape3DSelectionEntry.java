@@ -47,7 +47,7 @@ public class Shape3DSelectionEntry implements TakesValue<Shape3D>, IsElement {
     @Override
     public void setValue(Shape3D shape3D) {
         this.shape3D = shape3D;
-        dbId.setText(DisplayUtils.handleInteger(shape3D.getDbId()));
+        dbId.setText(DisplayUtils.handleInteger(shape3D.getId()));
         internalName.setText(shape3D.getInternalName());
     }
 
