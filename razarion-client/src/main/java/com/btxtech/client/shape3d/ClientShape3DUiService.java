@@ -11,7 +11,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import elemental2.core.Float32Array;
-import elemental2.core.Global;
 import elemental2.dom.XMLHttpRequest;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMapOfAny;
@@ -69,7 +68,7 @@ public class ClientShape3DUiService extends Shape3DUiService {
             try {
                 if (xmlHttpRequest.readyState == 4 && xmlHttpRequest.status == 200) {
                     buffer.clear();
-                    JsPropertyMapOfAny[] vertexContainerBuffers = Js.cast(Global.JSON.parse(xmlHttpRequest.responseText));
+                    JsPropertyMapOfAny[] vertexContainerBuffers = Js.cast(xmlHttpRequest.response);
                     Arrays.stream(vertexContainerBuffers).forEach(vertexContainerBuffer ->
                             buffer.put(
                                     Js.cast(vertexContainerBuffer.get("key")),
