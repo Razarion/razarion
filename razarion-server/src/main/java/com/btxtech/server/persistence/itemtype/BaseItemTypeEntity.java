@@ -3,7 +3,7 @@ package com.btxtech.server.persistence.itemtype;
 import com.btxtech.server.persistence.AudioLibraryEntity;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.server.persistence.Shape3DPersistence;
+import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.tracker.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
@@ -185,7 +185,7 @@ public class BaseItemTypeEntity {
         return baseItemType;
     }
 
-    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, Shape3DPersistence shape3DPersistence) {
+    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, Shape3DCrudPersistence shape3DPersistence) {
         internalName = baseItemType.getInternalName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
         fixVerticalNorm = baseItemType.getPhysicalAreaConfig().getFixVerticalNorm();

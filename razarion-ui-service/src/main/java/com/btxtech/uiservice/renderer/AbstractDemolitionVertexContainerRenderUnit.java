@@ -23,10 +23,6 @@ public abstract class AbstractDemolitionVertexContainerRenderUnit extends Abstra
             logger.warning("No vertices to render");
             return;
         }
-        if (!vertexContainer.hasTextureId()) {
-            logger.warning("No texture id: " + vertexContainer.getKey());
-            return;
-        }
         if (baseItemDemolitionImageId == null) {
             return;
         }

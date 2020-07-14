@@ -31,7 +31,7 @@ public class TerrainElementPersistence {
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
-    private Shape3DPersistence shape3DPersistence;
+    private Shape3DCrudPersistence shape3DPersistence;
 
     @Transactional
     public List<ObjectNameId> getTerrainObjectNameIds() {
@@ -63,7 +63,7 @@ public class TerrainElementPersistence {
     @SecurityCheck
     public void saveTerrainObject(TerrainObjectConfig terrainObjectConfig) {
         TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, terrainObjectConfig.getId());
-        terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, shape3DPersistence.getColladaEntity(terrainObjectConfig.getShape3DId()));
+        terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, shape3DPersistence.getEntity(terrainObjectConfig.getShape3DId()));
     }
 
     @Transactional

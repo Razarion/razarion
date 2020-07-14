@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.Shape3DPersistence;
+import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.user.SecurityCheck;
@@ -35,7 +35,7 @@ public class ItemTypePersistence {
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
-    private Shape3DPersistence shape3DPersistence;
+    private Shape3DCrudPersistence shape3DPersistence;
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
@@ -79,11 +79,11 @@ public class ItemTypePersistence {
     public void updateBaseItemType(BaseItemType baseItemType) {
         BaseItemTypeEntity baseItemTypeEntity = entityManager.find(BaseItemTypeEntity.class, baseItemType.getId());
         baseItemTypeEntity.fromBaseItemType(baseItemType, this, shape3DPersistence);
-        baseItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(baseItemType.getShape3DId()));
-        baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getColladaEntity(baseItemType.getSpawnShape3DId()));
+        baseItemTypeEntity.setShape3DId(shape3DPersistence.getEntity(baseItemType.getShape3DId()));
+        baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getEntity(baseItemType.getSpawnShape3DId()));
         baseItemTypeEntity.setBuildupTexture(imagePersistence.getImageLibraryEntity(baseItemType.getBuildupTextureId()));
         baseItemTypeEntity.setDemolitionImage(imagePersistence.getImageLibraryEntity(baseItemType.getDemolitionImageId()));
-        baseItemTypeEntity.setWreckageShape3D(shape3DPersistence.getColladaEntity(baseItemType.getWreckageShape3DId()));
+        baseItemTypeEntity.setWreckageShape3D(shape3DPersistence.getEntity(baseItemType.getWreckageShape3DId()));
         baseItemTypeEntity.setSpawnAudio(audioPersistence.getAudioLibraryEntity(baseItemType.getSpawnAudioId()));
         baseItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(baseItemType.getThumbnail()));
         entityManager.merge(baseItemTypeEntity);
@@ -132,7 +132,7 @@ public class ItemTypePersistence {
     public void updateResourceItemType(ResourceItemType resourceItemType) {
         ResourceItemTypeEntity resourceItemTypeEntity = entityManager.find(ResourceItemTypeEntity.class, resourceItemType.getId());
         resourceItemTypeEntity.fromResourceItemType(resourceItemType);
-        resourceItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(resourceItemType.getShape3DId()));
+        resourceItemTypeEntity.setShape3DId(shape3DPersistence.getEntity(resourceItemType.getShape3DId()));
         resourceItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(resourceItemType.getThumbnail()));
         entityManager.merge(resourceItemTypeEntity);
     }
@@ -185,7 +185,7 @@ public class ItemTypePersistence {
     public void updateBoxItemType(BoxItemType boxItemType) {
         BoxItemTypeEntity boxItemTypeEntity = entityManager.find(BoxItemTypeEntity.class, boxItemType.getId());
         boxItemTypeEntity.fromBoxItemType(boxItemType, inventoryPersistence);
-        boxItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(boxItemType.getShape3DId()));
+        boxItemTypeEntity.setShape3DId(shape3DPersistence.getEntity(boxItemType.getShape3DId()));
         boxItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(boxItemType.getThumbnail()));
         entityManager.merge(boxItemTypeEntity);
     }

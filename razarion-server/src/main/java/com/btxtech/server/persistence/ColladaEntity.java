@@ -1,7 +1,9 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.server.collada.ColladaConverterMapper;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
+import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -27,6 +29,7 @@ public class ColladaEntity implements ColladaConverterMapper {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     @Lob
     private String colladaString;
     @ManyToMany
@@ -65,6 +68,15 @@ public class ColladaEntity implements ColladaConverterMapper {
 
     public void setColladaString(String colladaString) {
         this.colladaString = colladaString;
+    }
+
+    public Shape3DConfig toShape3DConfig() {
+        try {
+            return ColladaConverter.createShape3DBuilder(colladaString, this).createShape3DConfig(id)
+                    .internalName(internalName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -108,9 +120,28 @@ public class ColladaEntity implements ColladaConverterMapper {
         return animations.get(animationId);
     }
 
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
+    }
+
     public void setTextures(Map<String, ImageLibraryEntity> textures) {
         this.textures.clear();
         this.textures.putAll(textures);
+    }
+
+    public void setBumpMaps(Map<String, ImageLibraryEntity> bumpMaps) {
+        this.bumpMaps.clear();
+        this.bumpMaps.putAll(bumpMaps);
+    }
+
+    public void setBumpMapDepts(Map<String, Double> bumpMapDepts) {
+        this.bumpMapDepts.clear();
+        this.bumpMapDepts.putAll(bumpMapDepts);
+    }
+
+    public void setAlphaCutouts(Map<String, Double> alphaCutouts) {
+        this.alphaCutouts.clear();
+        this.alphaCutouts.putAll(alphaCutouts);
     }
 
     public void setCharacterRepresentings(Map<String, Boolean> characterRepresentings) {

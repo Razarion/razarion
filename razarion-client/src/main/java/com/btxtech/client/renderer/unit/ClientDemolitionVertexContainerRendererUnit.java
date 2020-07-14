@@ -66,7 +66,7 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
 
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer, Integer baseItemDemolitionImageId) {
-        texture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uSampler");
+        // texture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uSampler");
         templateTexture = webGlFacade.createWebGLTexture(baseItemDemolitionImageId, "uDemolitionSampler");
         positions.fillFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer));
         norms.fillFloat32Array(shape3DUiService.getNormFloat32Array(vertexContainer));

@@ -27,7 +27,7 @@ public class DbPropertiesService {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
-    private Shape3DPersistence shape3DPersistence;
+    private Shape3DCrudPersistence shape3DPersistence;
     @Inject
     private AlarmService alarmService;
 
@@ -151,7 +151,7 @@ public class DbPropertiesService {
             dbPropertiesEntity = new DbPropertiesEntity(dbPropertyKey.getKey());
         }
         if (shape3DId != null) {
-            dbPropertiesEntity.setShape3DId(shape3DPersistence.getColladaEntity(shape3DId));
+            dbPropertiesEntity.setShape3DId(shape3DPersistence.getEntity(shape3DId));
         } else {
             dbPropertiesEntity.setShape3DId(null);
         }

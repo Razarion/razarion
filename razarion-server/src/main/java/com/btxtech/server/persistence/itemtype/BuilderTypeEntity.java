@@ -1,13 +1,12 @@
 package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.ColladaEntity;
-import com.btxtech.server.persistence.Shape3DPersistence;
+import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -67,7 +66,7 @@ public class BuilderTypeEntity {
         return builderType;
     }
 
-    public void fromBuilderType(BuilderType builderType, ItemTypePersistence itemTypePersistence, Shape3DPersistence shape3DPersistence) {
+    public void fromBuilderType(BuilderType builderType, ItemTypePersistence itemTypePersistence, Shape3DCrudPersistence shape3DPersistence) {
         buildRange = builderType.getRange();
         progress = builderType.getProgress();
         if (builderType.getAbleToBuildIds() != null && !builderType.getAbleToBuildIds().isEmpty()) {
@@ -82,7 +81,7 @@ public class BuilderTypeEntity {
             ableToBuilds = null;
         }
         animationOrigin = builderType.getAnimationOrigin();
-        animationShape3d = shape3DPersistence.getColladaEntity(builderType.getAnimationShape3dId());
+        animationShape3d = shape3DPersistence.getEntity(builderType.getAnimationShape3dId());
     }
 
     @Override

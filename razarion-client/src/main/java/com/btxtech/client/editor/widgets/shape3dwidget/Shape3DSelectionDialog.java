@@ -40,7 +40,7 @@ public class Shape3DSelectionDialog extends Composite implements ModalDialogCont
     @Override
     public void init(Integer selectedId) {
         DOMUtil.removeAllElementChildren(shape3Ds.getElement()); // Remove placeholder table row from template.
-        binder.setModel(shape3DUiService.getShape3Ds());
+        // TODO get from server binder.setModel(shape3DUiService.getShape3Ds());
         shape3Ds.setSelector(shape3DSelectionEntry -> shape3DSelectionEntry.setSelected(true));
         shape3Ds.setDeselector(shape3DSelectionEntry -> shape3DSelectionEntry.setSelected(false));
         if (selectedId != null) {

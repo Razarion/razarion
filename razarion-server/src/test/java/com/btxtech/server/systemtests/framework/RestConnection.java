@@ -13,9 +13,22 @@ import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.ext.ContextResolver;
 
 public class RestConnection {
+    public enum TestUser {
+        NONE(null, null),
+        USER(ServerTestHelper.NORMAL_USER_EMAIL, ServerTestHelper.NORMAL_USER_PASSWORD),
+        ADMIN(ServerTestHelper.ADMIN_USER_EMAIL, ServerTestHelper.ADMIN_USER_PASSWORD);
+
+        private final String email;
+        private final String password;
+
+        TestUser(String email, String password) {
+            this.email = email;
+            this.password = password;
+        }
+    }
     public static String URL = "http://localhost:32778";
     public static String REST_URL = URL + "/rest/";
-    private boolean loggedIn = false;
+    private TestUser loggedIn = TestUser.NONE;
     private ResteasyWebTarget target;
 
     public RestConnection(ContextResolver contextResolver) {
@@ -46,28 +59,33 @@ public class RestConnection {
     }
 
     public void loginAdmin() {
-        login(ServerTestHelper.ADMIN_USER_EMAIL, ServerTestHelper.ADMIN_USER_PASSWORD);
+        login(TestUser.ADMIN);
     }
 
     public void loginUser() {
-        login(ServerTestHelper.NORMAL_USER_EMAIL, ServerTestHelper.NORMAL_USER_PASSWORD);
+        login(TestUser.USER);
     }
 
-    public void login(String email, String password) {
-        logout();
-        LoginResult loginResult = target.proxy(FrontendController.class).loginUser(email, password, false);
-        if (loginResult != LoginResult.OK) {
-            throw new AssertionError("Can not login with email: " + email + " and password: " + password + ". Result: " + loginResult);
+    public void login(TestUser testUser) {
+        if(testUser == loggedIn) {
+            return;
         }
-        loggedIn = true;
+        logout();
+        if (testUser != TestUser.NONE) {
+            LoginResult loginResult = target.proxy(FrontendController.class).loginUser(testUser.email, testUser.password, false);
+            if (loginResult != LoginResult.OK) {
+                throw new AssertionError("Can not login with email: " + testUser.email + " and password: " + testUser.password + ". Result: " + loginResult);
+            }
+        }
+        loggedIn = testUser;
     }
 
     public void logout() {
-        if (!loggedIn) {
+        if (loggedIn == TestUser.NONE) {
             return;
         }
         target.proxy(FrontendController.class).logout();
-        loggedIn = false;
+        loggedIn = TestUser.NONE;
     }
 
     public <T> T proxy(Class<T> clazz) {

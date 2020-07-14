@@ -17,7 +17,6 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -26,7 +25,6 @@ import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
-import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.cockpit.CockpitService;
@@ -332,23 +330,24 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public Set<Integer> getAllTextureIds() {
-        Set<Integer> textureIds = Shape3DUtils.getAllTextures(coldGameUiContext.getShape3Ds());
-        for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
-            if (baseItemType.getBuildupTextureId() != null) {
-                textureIds.add(baseItemType.getBuildupTextureId());
-            }
-            if (baseItemType.getDemolitionImageId() != null) {
-                textureIds.add(baseItemType.getDemolitionImageId());
-            }
-        }
-
-        for (SlopeConfig slopeConfig : coldGameUiContext.getStaticGameConfig().getSlopeConfigs()) {
-            // TODO if (slopeConfig.getSlopeTextureId() != null) {
-            // TODO     textureIds.add(slopeConfig.getSlopeTextureId());
-            // TODO }
-        }
-
         logger.severe("GameUiControl.getAllTextureIds(): Fix TODO");
+        return new HashSet<>();
+        // TODO  Set<Integer> textureIds = Shape3DUtils.getAllTextures(coldGameUiContext.getShape3Ds());
+        // TODO  for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
+        // TODO     if (baseItemType.getBuildupTextureId() != null) {
+        // TODO         textureIds.add(baseItemType.getBuildupTextureId());
+        // TODO     }
+        // TODO     if (baseItemType.getDemolitionImageId() != null) {
+        // TODO         textureIds.add(baseItemType.getDemolitionImageId());
+        // TODO     }
+        // TODO }
+
+        // TODO for (SlopeConfig slopeConfig : coldGameUiContext.getStaticGameConfig().getSlopeConfigs()) {
+        // TODO if (slopeConfig.getSlopeTextureId() != null) {
+        // TODO     textureIds.add(slopeConfig.getSlopeTextureId());
+        // TODO }
+        // TODO }
+
         // TODO GroundSkeletonConfig groundSkeletonConfig = coldGameUiContext.getStaticGameConfig().getGroundSkeletonConfig();
         //  if (groundSkeletonConfig.getTopTextureId() != null) {
         //      textureIds.add(groundSkeletonConfig.getTopTextureId());
@@ -356,7 +355,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         //  if (groundSkeletonConfig.getBottomTextureId() != null) {
         //      textureIds.add(groundSkeletonConfig.getBottomTextureId());
         //  }
-        return textureIds;
+        // return textureIds;
     }
 
     public Set<Integer> getAllBumpTextureIds() {

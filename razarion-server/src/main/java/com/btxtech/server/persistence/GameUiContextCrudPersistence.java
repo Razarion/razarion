@@ -71,7 +71,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
-    private Shape3DPersistence shape3DPersistence;
+    private Shape3DCrudPersistence shape3DPersistence;
     @Inject
     private StaticGameConfigPersistence staticGameConfigPersistence;
     @Inject

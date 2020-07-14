@@ -67,20 +67,6 @@ public class VertexContainer {
         return this;
     }
 
-    @Deprecated
-    public void setTextureId(Integer textureId) {
-    }
-
-    @Deprecated
-    public boolean hasTextureId() {
-        return false;
-    }
-
-    @Deprecated
-    public Integer getTextureId() {
-        return 0;
-    }
-
     public Double getAlphaCutout() {
         return alphaCutout;
     }

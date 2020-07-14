@@ -22,7 +22,6 @@ import com.btxtech.client.editor.server.box.BoxRegionSidebar;
 import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
 import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
-import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
 import com.btxtech.shared.rest.GameUiContextEditorController;
@@ -139,7 +138,8 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
                 new CrudControllerButton(GroundEditorController.class, "Grounds"),
                 new CrudControllerButton(SlopeEditorController.class, "Slope"),
                 new CrudControllerButton(WaterEditorController.class, "Water"),
-                new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context")
+                new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context"),
+                new CrudControllerButton(GameUiContextEditorController.class, "Shape 3D")
         );
     }
 
@@ -273,12 +273,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private void onAudioButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
         modalDialogManager.show("Audio Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, AudioGalleryDialog.class, null, null, null, DialogButton.Button.CLOSE);
-    }
-
-    @EventHandler("shape3DButton")
-    private void onShape3DButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openEditor(Shape3DCrudeSidebar.class, "???Unknown");
     }
 
     @EventHandler("particleButton")

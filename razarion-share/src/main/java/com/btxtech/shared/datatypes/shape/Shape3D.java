@@ -18,17 +18,14 @@ public class Shape3D implements Config {
     private List<Element3D> element3Ds;
     private List<ModelMatrixAnimation> modelMatrixAnimations;
 
-    @Override
     public int getId() {
         return id;
     }
 
-    @Override
     public String getInternalName() {
         return internalName;
     }
 
-    @Override
     public void setInternalName(String internalName) {
         this.internalName = internalName;
     }

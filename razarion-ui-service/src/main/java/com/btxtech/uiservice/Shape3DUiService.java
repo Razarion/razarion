@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
 import javax.enterprise.event.Observes;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +25,6 @@ public abstract class Shape3DUiService {
 
     public Shape3D getShape3D(int id) {
         return shape3Ds.get(id);
-    }
-
-    // Methods only used by the editor ----------------------------------------------------
-    public List<Shape3D> getShape3Ds() {
-        return new ArrayList<>(shape3Ds.values());
     }
 
     public void setShapes3Ds(List<Shape3D> shape3Ds) {

@@ -51,7 +51,7 @@ public class ClientDemolitionVertexContainerDepthBufferRendererUnit extends Abst
     protected void internalFillBuffers(VertexContainer vertexContainer, Integer baseItemDemolitionImageId) {
         positions.fillFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer));
         textureCoordinate.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
-        webGLTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), WebGlFacade.U_TEXTURE);
+        // webGLTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), WebGlFacade.U_TEXTURE);
         characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
     }
 

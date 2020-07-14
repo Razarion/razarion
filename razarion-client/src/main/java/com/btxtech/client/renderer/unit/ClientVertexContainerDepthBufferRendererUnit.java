@@ -52,7 +52,7 @@ public class ClientVertexContainerDepthBufferRendererUnit extends AbstractVertex
     protected void internalFillBuffers(VertexContainer vertexContainer) {
         positions.fillFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer));
         textureCoordinate.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
-        webGLTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uTexture");
+        // webGLTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uTexture");
         characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
     }
 

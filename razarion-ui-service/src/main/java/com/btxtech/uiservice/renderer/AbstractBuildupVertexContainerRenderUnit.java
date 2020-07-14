@@ -34,15 +34,6 @@ public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractR
 
     @Override
     public void fillBuffers(VertexContainer vertexContainer) {
-        if (!vertexContainer.hasTextureId()) {
-            logger.warning("No texture id: " + vertexContainer.getKey());
-            return;
-        }
-        if (baseItemBuildupImageId == null) {
-            // logger.warning("No buildup baseItemBuildupImageId Texture Id set: " + helperString());
-            return;
-        }
-
         buildupMatrix = vertexContainer.getShapeTransform().setupMatrix();
         internalFillBuffers(vertexContainer, buildupMatrix, baseItemBuildupImageId);
 

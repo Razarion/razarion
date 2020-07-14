@@ -7,12 +7,9 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Beat
@@ -70,59 +67,6 @@ public class Shape3DUtils {
             }
         }
         return new ArrayList<>(vertexContainers.values());
-    }
-
-    public static Set<Integer> getAllTextures(Collection<Shape3D> shape3Ds) {
-        Set<Integer> textureIds = new HashSet<>();
-        for (Shape3D shape3D : shape3Ds) {
-            if (shape3D.getElement3Ds() == null) {
-                continue;
-            }
-            for (Element3D element3D : shape3D.getElement3Ds()) {
-                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                    if (vertexContainer.getTextureId() != null) {
-                        textureIds.add(vertexContainer.getTextureId());
-                    }
-                }
-            }
-        }
-        return textureIds;
-    }
-
-    public static void saveTextureIds(Shape3D source, Shape3D target) {
-        Map<String, Integer> materials = new HashMap<>();
-        for (VertexContainer vertexContainer : getAllVertexContainers(source)) {
-            materials.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId());
-        }
-        for (VertexContainer vertexContainer : getAllVertexContainers(target)) {
-            vertexContainer.setTextureId(materials.get(vertexContainer.getMaterialId()));
-        }
-    }
-
-    public static void saveCharacterRepresentings(Shape3D source, Shape3D target) {
-        Map<String, Boolean> characterRepresentings = new HashMap<>();
-        for (VertexContainer vertexContainer : getAllVertexContainers(source)) {
-            characterRepresentings.put(vertexContainer.getMaterialId(), vertexContainer.isCharacterRepresenting());
-        }
-        for (VertexContainer vertexContainer : getAllVertexContainers(target)) {
-            Boolean characterRepresenting = characterRepresentings.get(vertexContainer.getMaterialId());
-            if(characterRepresenting != null) {
-                vertexContainer.setCharacterRepresenting(characterRepresenting);
-            }
-        }
-    }
-
-    public static void replaceTextureId(Shape3D shape3D, String materialId, Integer newImageId) {
-        boolean found = false;
-        for (VertexContainer vertexContainer : getAllVertexContainers(shape3D)) {
-            if (vertexContainer.getMaterialId() != null && vertexContainer.getMaterialId().equals(materialId)) {
-                vertexContainer.setTextureId(newImageId);
-                found = true;
-            }
-        }
-        if (!found) {
-            throw new IllegalArgumentException("MaterialId not found: " + materialId);
-        }
     }
 
     public static void updateCharacterRepresenting(Shape3D shape3D, String materialId, boolean characterRepresenting) {

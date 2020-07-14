@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.ColladaEntity;
-import com.btxtech.server.persistence.Shape3DPersistence;
+import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 
 import javax.persistence.CascadeType;
@@ -66,7 +66,7 @@ public class WeaponTypeEntity {
         return weaponType;
     }
 
-    public void fromWeaponType(WeaponType weaponType, ItemTypePersistence itemTypePersistence, Shape3DPersistence shape3DPersistence) {
+    public void fromWeaponType(WeaponType weaponType, ItemTypePersistence itemTypePersistence, Shape3DCrudPersistence shape3DPersistence) {
         attackRange = weaponType.getRange();
         damage = weaponType.getDamage();
         detonationRadius = weaponType.getDetonationRadius();
@@ -83,7 +83,7 @@ public class WeaponTypeEntity {
             disallowedItemTypes = null;
         }
         projectileSpeed = weaponType.getProjectileSpeed();
-        projectileShape3D = shape3DPersistence.getColladaEntity(weaponType.getProjectileShape3DId());
+        projectileShape3D = shape3DPersistence.getEntity(weaponType.getProjectileShape3DId());
         muzzleFlashParticleConfigId_TMP = weaponType.getMuzzleFlashParticleConfigId();
         detonationParticleConfigId_TMP = weaponType.getDetonationParticleConfigId();
         if(weaponType.getTurretType() != null) {

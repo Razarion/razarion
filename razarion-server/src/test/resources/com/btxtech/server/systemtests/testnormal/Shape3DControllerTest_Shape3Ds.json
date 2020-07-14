@@ -1,0 +1,129 @@
+[
+  {
+    "id": 78,
+    "internalName": "Scene:Scene",
+    "element3Ds": [
+      {
+        "id": "Plane_029",
+        "vertexContainers": [
+          {
+            "key": "78-Plane_029-Material-material",
+            "materialId": "Material-material",
+            "materialName": "Material",
+            "phongMaterialConfig": {
+              "textureId": "$textureId1$",
+              "scale": 1.0,
+              "bumpMapId": "$bumpMapId1$",
+              "bumpMapDepth": 0.5,
+              "shininess": null,
+              "specularStrength": null
+            },
+            "verticesCount": 180,
+            "shapeTransform": {
+              "staticMatrix": {
+                "numbers": [
+                  [
+                    0.236287,
+                    0.5516105,
+                    -0.8068994,
+                    0.3996008
+                  ],
+                  [
+                    0.5569909,
+                    -0.227099,
+                    0.3469931,
+                    -0.2063196
+                  ],
+                  [
+                    0.004379266,
+                    -0.878312,
+                    -0.5964805,
+                    1.303951
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ]
+              },
+              "translateX": 0.0,
+              "translateY": 0.0,
+              "translateZ": 0.0,
+              "rotateX": 0.0,
+              "rotateY": 0.0,
+              "rotateZ": 0.0,
+              "scaleX": 0.0,
+              "scaleY": 0.0,
+              "scaleZ": 0.0
+            },
+            "alphaCutout": null,
+            "characterRepresenting": false
+          }
+        ]
+      },
+      {
+        "id": "Trunk33",
+        "vertexContainers": [
+          {
+            "key": "78-Trunk33-Material_002-material",
+            "materialId": "Material_002-material",
+            "materialName": "Material_002",
+            "phongMaterialConfig": {
+              "textureId": "$textureId2$",
+              "scale": 1.0,
+              "bumpMapId": "$bumpMapId2$",
+              "bumpMapDepth": 0.9,
+              "shininess": 50.0,
+              "specularStrength": null
+            },
+            "verticesCount": 60,
+            "shapeTransform": {
+              "staticMatrix": {
+                "numbers": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.102908,
+                    3.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ]
+              },
+              "translateX": 0.0,
+              "translateY": 0.0,
+              "translateZ": 0.0,
+              "rotateX": 0.0,
+              "rotateY": 0.0,
+              "rotateZ": 0.0,
+              "scaleX": 0.0,
+              "scaleY": 0.0,
+              "scaleZ": 0.0
+            },
+            "alphaCutout": null,
+            "characterRepresenting": false
+          }
+        ]
+      }
+    ],
+    "modelMatrixAnimations": null
+  }
+]

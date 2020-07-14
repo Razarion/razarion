@@ -4,7 +4,7 @@ import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PlanetEntity;
-import com.btxtech.server.persistence.Shape3DPersistence;
+import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.history.UserHistoryEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
@@ -356,7 +356,7 @@ public class ServerTestHelper {
     private int createBaseItemTypeEntity(BaseItemType baseItemType) {
         BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
         ItemTypePersistence itemTypePersistence = EasyMock.createNiceMock(ItemTypePersistence.class);
-        Shape3DPersistence shape3DPersistence = EasyMock.createNiceMock(Shape3DPersistence.class);
+        Shape3DCrudPersistence shape3DPersistence = EasyMock.createNiceMock(Shape3DCrudPersistence.class);
         EasyMock.replay(itemTypePersistence, shape3DPersistence);
         baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, shape3DPersistence);
         persistInTransaction(baseItemTypeEntity);

@@ -7,13 +7,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import org.junit.Assert;
 
+import javax.ws.rs.NotAuthorizedException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,6 +43,19 @@ public abstract class AbstractSystemTest extends ServerTestHelper {
             this.array = array;
             this.children = children;
         }
+    }
+
+    public <T> void runUnauthorizedTest(Class<T> testClass, Consumer<T> underTestConsumer, RestConnection.TestUser ... unauthorizedUsers) {
+        T underTest = defaultRestConnection.proxy(testClass);
+        Arrays.stream(unauthorizedUsers).forEach(unauthorizedUser -> {
+            defaultRestConnection.login(unauthorizedUser);
+            try {
+                underTestConsumer.accept(underTest);
+                Assert.fail("NotAuthorizedException expected for " + unauthorizedUser);
+            } catch (NotAuthorizedException e) {
+                // Ignore
+            }
+        });
     }
 
     protected <T> T setupRestAccess(Class<T> clazz) {

@@ -70,7 +70,7 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
 
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer, Matrix4 buildupMatrix, int buildupTextureId) {
-        finishTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uFinishTextureSampler");
+        // finishTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uFinishTextureSampler");
         buildupTexture = webGlFacade.createWebGLTexture(buildupTextureId, "uBuildupTextureSampler");
         Float32Array vertices = shape3DUiService.getVertexFloat32Array(vertexContainer);
         positions.fillFloat32Array(vertices);

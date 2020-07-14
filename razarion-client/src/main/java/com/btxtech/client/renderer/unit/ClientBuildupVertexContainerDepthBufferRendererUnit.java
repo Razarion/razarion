@@ -57,7 +57,7 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
     protected void internalFillBuffers(VertexContainer vertexContainer, Matrix4 buildupMatrix, int buildupTextureId) {
         positions.fillFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer));
         textureCoordinate.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
-        finishTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uFinishTextureSampler");
+        // finishTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uFinishTextureSampler");
         buildupTexture = webGlFacade.createWebGLTexture(buildupTextureId, "uBuildupTextureSampler");
         characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
     }
