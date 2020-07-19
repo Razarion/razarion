@@ -10,7 +10,7 @@ import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.rest.GameUiContextController;
-import com.btxtech.shared.rest.Shape3DConfigEditorController;
+import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.rest.Shape3DController;
 import com.btxtech.test.TestHelper;
 import org.junit.After;
@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static com.btxtech.server.systemtests.editors.Shape3DConfigEditorControllerTest.findMaterial;
+import static com.btxtech.server.systemtests.editors.Shape3DEditorControllerTest.findMaterial;
 
 public class Shape3DControllerTest extends AbstractSystemTest {
     @Before
@@ -42,7 +42,7 @@ public class Shape3DControllerTest extends AbstractSystemTest {
     public void shape3DController() {
         RestConnection restConnection = new RestConnection(new ObjectMapperResolver(() -> Shape3DConfig.class));
         restConnection.loginAdmin();
-        Shape3DConfigEditorController editorConnection = restConnection.proxy(Shape3DConfigEditorController.class);
+        Shape3DEditorController editorConnection = restConnection.proxy(Shape3DEditorController.class);
         Shape3DConfig shape3DConfig = editorConnection.create();
         shape3DConfig.setInternalName("Shape 1");
         shape3DConfig.setColladaString(TestHelper.resource2Text("Shape3DControllerTest.dae", getClass()));

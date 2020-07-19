@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.generic.updater;
 
+import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
@@ -27,6 +28,9 @@ public class EngineUpdater {
             viewService.onViewChanged();
         } else if (config instanceof WaterConfig) {
             terrainUiService.enableEditMode((WaterConfig) config);
+            viewService.onViewChanged();
+        } else if (config instanceof Shape3DConfig) {
+            terrainUiService.enableEditMode((Shape3DConfig)config);
             viewService.onViewChanged();
         } else {
             logger.warning("EngineUpdater can not connect editor to render engine: " + config.getClass());

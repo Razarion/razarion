@@ -7,7 +7,7 @@ import com.btxtech.server.systemtests.framework.RestConnection;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.Shape3DMaterialConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;
-import com.btxtech.shared.rest.Shape3DConfigEditorController;
+import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.test.TestHelper;
 import org.junit.After;
 import org.junit.Assert;
@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
-public class Shape3DConfigEditorControllerTest extends AbstractSystemTest {
+public class Shape3DEditorControllerTest extends AbstractSystemTest {
     @Before
     public void fillTables() {
         setupImages();
@@ -40,16 +40,16 @@ public class Shape3DConfigEditorControllerTest extends AbstractSystemTest {
 
     @Test
     public void testNotAuthorized() {
-        runUnauthorizedTest(Shape3DConfigEditorController.class, Shape3DConfigEditorController::create, RestConnection.TestUser.NONE, RestConnection.TestUser.USER);
-        runUnauthorizedTest(Shape3DConfigEditorController.class, shape3DEditorController -> shape3DEditorController.update(new Shape3DConfig()), RestConnection.TestUser.NONE, RestConnection.TestUser.USER);
-        runUnauthorizedTest(Shape3DConfigEditorController.class, shape3DEditorController -> shape3DEditorController.delete(1), RestConnection.TestUser.NONE, RestConnection.TestUser.USER);
+        runUnauthorizedTest(Shape3DEditorController.class, Shape3DEditorController::create, RestConnection.TestUser.NONE, RestConnection.TestUser.USER);
+        runUnauthorizedTest(Shape3DEditorController.class, shape3DEditorController -> shape3DEditorController.update(new Shape3DConfig()), RestConnection.TestUser.NONE, RestConnection.TestUser.USER);
+        runUnauthorizedTest(Shape3DEditorController.class, shape3DEditorController -> shape3DEditorController.delete(1), RestConnection.TestUser.NONE, RestConnection.TestUser.USER);
     }
 
     @Test
     public void crud() {
         RestConnection restConnection = new RestConnection(new ObjectMapperResolver(() -> Shape3DConfig.class));
         restConnection.loginAdmin();
-        Shape3DConfigEditorController underTest = restConnection.proxy(Shape3DConfigEditorController.class);
+        Shape3DEditorController underTest = restConnection.proxy(Shape3DEditorController.class);
         Assert.assertTrue(underTest.getObjectNameIds().isEmpty());
         // Create
         Shape3DConfig shape3DConfig = underTest.create();

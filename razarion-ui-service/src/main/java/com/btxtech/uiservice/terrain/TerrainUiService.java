@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -17,6 +18,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
+import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ViewField;
@@ -44,6 +46,8 @@ public class TerrainUiService {
     // private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
+    @Inject
+    private Shape3DUiService shape3DUiService;
     @Inject
     private GameEngineControl gameEngineControl;
     @Inject
@@ -264,6 +268,11 @@ public class TerrainUiService {
 
     public void enableEditMode(WaterConfig waterConfig) {
         terrainTypeService.overrideWaterConfig(waterConfig);
+        onEditorTerrainChanged();
+    }
+
+    public void enableEditMode(Shape3DConfig config) {
+        shape3DUiService.overrideShape3DConfig(config);
         onEditorTerrainChanged();
     }
 

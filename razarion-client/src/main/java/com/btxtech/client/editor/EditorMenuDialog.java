@@ -27,7 +27,7 @@ import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
-import com.btxtech.shared.rest.Shape3DConfigEditorController;
+import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainObjectEditorController;
 import com.btxtech.shared.rest.WaterEditorController;
@@ -134,7 +134,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
                 new CrudControllerButton(SlopeEditorController.class, "Slope"),
                 new CrudControllerButton(WaterEditorController.class, "Water"),
                 new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context"),
-                new CrudControllerButton(Shape3DConfigEditorController.class, "Shape 3D"),
+                new CrudControllerButton(Shape3DEditorController.class, "Shape 3D"),
                 new CrudControllerButton(TerrainObjectEditorController.class, "Terrain Object")
         );
     }

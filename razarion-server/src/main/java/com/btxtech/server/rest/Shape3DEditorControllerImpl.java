@@ -7,7 +7,7 @@ import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
-import com.btxtech.shared.rest.Shape3DConfigEditorController;
+import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;
 
@@ -19,7 +19,7 @@ import java.io.IOException;
  * Created by Beat
  * 16.08.2016.
  */
-public class Shape3DConfigEditorControllerImpl extends AbstractCrudController<Shape3DConfig, ColladaEntity> implements Shape3DConfigEditorController {
+public class Shape3DEditorControllerImpl extends AbstractCrudController<Shape3DConfig, ColladaEntity> implements Shape3DEditorController {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
