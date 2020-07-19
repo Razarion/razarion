@@ -9,6 +9,6 @@ import javax.ws.rs.Path;
  * Created by Beat
  * 16.08.2016.
  */
-@Path(CommonUrl.SHAPE_3D_EDITOR_PART)
+@Path(CommonUrl.SHAPE_3D_EDITOR_PATH)
 public interface Shape3DConfigEditorController extends CrudController<Shape3DConfig> {
 }

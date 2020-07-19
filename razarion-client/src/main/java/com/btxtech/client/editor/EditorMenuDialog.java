@@ -28,6 +28,7 @@ import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
+import com.btxtech.shared.rest.Shape3DConfigEditorController;
 import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.WaterEditorController;
 import com.btxtech.uiservice.dialog.DialogButton;
@@ -118,9 +119,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button audioButton;
     @Inject
     @DataField
-    private Button shape3DButton;
-    @Inject
-    @DataField
     private Button particleButton;
     @Inject
     @DataField
@@ -139,7 +137,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
                 new CrudControllerButton(SlopeEditorController.class, "Slope"),
                 new CrudControllerButton(WaterEditorController.class, "Water"),
                 new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context"),
-                new CrudControllerButton(GameUiContextEditorController.class, "Shape 3D")
+                new CrudControllerButton(Shape3DConfigEditorController.class, "Shape 3D")
         );
     }
 

@@ -69,13 +69,18 @@ public class ClientShape3DUiService extends Shape3DUiService {
                 if (xmlHttpRequest.readyState == 4 && xmlHttpRequest.status == 200) {
                     buffer.clear();
                     JsPropertyMapOfAny[] vertexContainerBuffers = Js.cast(xmlHttpRequest.response);
-                    Arrays.stream(vertexContainerBuffers).forEach(vertexContainerBuffer ->
-                            buffer.put(
-                                    Js.cast(vertexContainerBuffer.get("key")),
-                                    new Shape3DBuffer(
-                                            new Float32Array((double[]) Js.cast(vertexContainerBuffer.get("vertexData"))),
-                                            new Float32Array((double[]) Js.cast(vertexContainerBuffer.get("normData"))),
-                                            new Float32Array((double[]) Js.cast(vertexContainerBuffer.get("textureCoordinate"))))));
+                    Arrays.stream(vertexContainerBuffers).forEach(vertexContainerBuffer -> {
+                        // GWT compiler issue. Can not be inlined. Must be double[] explicit declaration.
+                        double[] vertexData = Js.uncheckedCast(vertexContainerBuffer.get("vertexData"));
+                        double[] normData = Js.uncheckedCast(vertexContainerBuffer.get("normData"));
+                        double[] textureCoordinate = Js.uncheckedCast(vertexContainerBuffer.get("textureCoordinate"));
+                        buffer.put(
+                                vertexContainerBuffer.getAny("key").asString(),
+                                new Shape3DBuffer(
+                                        new Float32Array(vertexData),
+                                        new Float32Array(normData),
+                                        new Float32Array(textureCoordinate)));
+                    });
                     deferredStartup.finished();
                 } else {
                     deferredStartup.failed("Shape3DEditorController onload error. Status: '" + xmlHttpRequest.status + "' StatusText: '" + xmlHttpRequest.statusText + "'");

@@ -44,7 +44,7 @@ public class CommonUrl {
     public static final String WATER_EDITOR_PATH = "editor/water";
     public static final String PLANET_EDITOR_PATH = "editor/planet";
     public static final String LEVEL_EDITOR_PATH = "editor/level";
-    public static final String SHAPE_3D_EDITOR_PART = "editor/shape-3d";
+    public static final String SHAPE_3D_EDITOR_PATH = "editor/shape-3d";
     public static final String GENERIC_PROPERTY_EDITOR_PATH = "editor/generic-property";
     public static final String GAME_UI_CONTEXT_EDITOR_PATH = "editor/game-ui-context";
     public static final String SHAPE_3D_CONTROLLER = G_ZIPPED + "/" + "shape3d-controller";
