@@ -1,5 +1,6 @@
 package com.btxtech.server;
 
+import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
@@ -138,6 +139,10 @@ public class ServerTestHelper {
     public static int IMAGE_1_ID;
     public static int IMAGE_2_ID;
     public static int IMAGE_3_ID;
+    // Shape3D ColladaEntity
+    public static int SHAPE_3D_1_ID;
+    public static int SHAPE_3D_2_ID;
+    public static int SHAPE_3D_3_ID;
     // Ground
     public static int GROUND_1_ID;
     public static int GROUND_2_ID;
@@ -249,6 +254,13 @@ public class ServerTestHelper {
         cleanTable(UserEntity.class);
     }
 
+    protected void setupImages() {
+        IMAGE_1_ID = persistInTransaction(new ImageLibraryEntity()).getId();
+        IMAGE_2_ID = persistInTransaction(new ImageLibraryEntity()).getId();
+        IMAGE_3_ID = persistInTransaction(new ImageLibraryEntity()).getId();
+        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(ImageLibraryEntity.class)));
+    }
+
     protected void setupGroundConfig() {
         GROUND_1_ID = persistInTransaction(new GroundConfigEntity()).getId();
         GROUND_2_ID = persistInTransaction(new GroundConfigEntity()).getId();
@@ -257,17 +269,11 @@ public class ServerTestHelper {
         cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(GroundConfigEntity.class)));
     }
 
-    protected void setupSlopeConfigs() {
+    protected void setupSlopeConfig() {
         SLOPE_LAND_CONFIG_ENTITY_1 = persistInTransaction(createLandSlopeConfig()).getId();
         cleanupAfterTests.add(Arrays.asList(
                 new CleanupAfterTest().entity(SlopeShapeEntity.class),
                 new CleanupAfterTest().entity(SlopeConfigEntity.class)));
-    }
-
-    protected void setupWaterConfig() {
-        WATER_1_ID = persistInTransaction(new WaterConfigEntity()).getId();
-        WATER_2_ID = persistInTransaction(new WaterConfigEntity()).getId();
-        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(WaterConfigEntity.class)));
     }
 
     protected SlopeConfigEntity createLandSlopeConfig() {
@@ -283,11 +289,17 @@ public class ServerTestHelper {
         return slopeConfigEntity;
     }
 
-    protected void setupImages() {
-        IMAGE_1_ID = persistInTransaction(new ImageLibraryEntity()).getId();
-        IMAGE_2_ID = persistInTransaction(new ImageLibraryEntity()).getId();
-        IMAGE_3_ID = persistInTransaction(new ImageLibraryEntity()).getId();
-        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(ImageLibraryEntity.class)));
+    protected void setupWaterConfig() {
+        WATER_1_ID = persistInTransaction(new WaterConfigEntity()).getId();
+        WATER_2_ID = persistInTransaction(new WaterConfigEntity()).getId();
+        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(WaterConfigEntity.class)));
+    }
+
+    protected void setupShape3dConfig() {
+        SHAPE_3D_1_ID = persistInTransaction(new ColladaEntity()).getId();
+        SHAPE_3D_2_ID = persistInTransaction(new ColladaEntity()).getId();
+        SHAPE_3D_3_ID = persistInTransaction(new ColladaEntity()).getId();
+        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(ColladaEntity.class)));
     }
 
     protected void setupItemTypes() {
@@ -459,7 +471,7 @@ public class ServerTestHelper {
 
     public void setupPlanetDb() {
         setupGroundConfig();
-        setupSlopeConfigs();
+        setupSlopeConfig();
 
         runInTransaction(entityManager -> {
             PlanetEntity planetEntity = new PlanetEntity();
@@ -590,7 +602,7 @@ public class ServerTestHelper {
     }
 
     protected void setupPlanetWithSlopes() throws Exception {
-        setupSlopeConfigs();
+        setupSlopeConfig();
         setupPlanetDb();
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

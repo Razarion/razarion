@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig, PlanetEntity> {
     @Inject
-    private TerrainElementPersistence terrainElementPersistence;
+    private TerrainObjectCrudPersistence terrainElementPersistence;
     @Inject
     private ItemTypePersistence itemTypePersistence;
     @Inject
@@ -82,7 +82,7 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
         List<TerrainObjectPositionEntity> terrainObjectPositionEntities = new ArrayList<>();
         for (TerrainObjectPosition terrainObjectPosition : createdTerrainObjects) {
             TerrainObjectPositionEntity terrainObjectPositionEntity = new TerrainObjectPositionEntity();
-            terrainObjectPositionEntity.setTerrainObjectEntity(terrainElementPersistence.getTerrainObjectEntity(terrainObjectPosition.getTerrainObjectId()));
+            terrainObjectPositionEntity.setTerrainObjectEntity(terrainElementPersistence.getEntity(terrainObjectPosition.getTerrainObjectId()));
             terrainObjectPositionEntity.setPosition(terrainObjectPosition.getPosition());
             // TODO terrainObjectPositionEntity.setScale(terrainObjectPosition.get_Scale());
             // TODO terrainObjectPositionEntity.setRotationZ(terrainObjectPosition.getRotationZ());
@@ -100,7 +100,7 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
         PlanetEntity planetEntity = getEntity(planetId);
         for (TerrainObjectPosition terrainObjectPosition : updatedTerrainObjects) {
             TerrainObjectPositionEntity terrainObjectPositionEntity = getTerrainObjectPositionEntity(planetEntity, terrainObjectPosition.getId());
-            terrainObjectPositionEntity.setTerrainObjectEntity(terrainElementPersistence.getTerrainObjectEntity(terrainObjectPosition.getTerrainObjectId()));
+            terrainObjectPositionEntity.setTerrainObjectEntity(terrainElementPersistence.getEntity(terrainObjectPosition.getTerrainObjectId()));
             terrainObjectPositionEntity.setPosition(terrainObjectPosition.getPosition());
             // TODO terrainObjectPositionEntity.setScale(terrainObjectPosition.getScale());
             // TODO terrainObjectPositionEntity.setRotationZ(terrainObjectPosition.getRotationZ());

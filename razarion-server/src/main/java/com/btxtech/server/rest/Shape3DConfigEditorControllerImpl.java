@@ -2,7 +2,6 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.server.collada.Shape3DBuilder;
-import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
@@ -42,7 +41,7 @@ public class Shape3DConfigEditorControllerImpl extends AbstractCrudController<Sh
     }
 
     @Override
-    protected AbstractCrudPersistence getCrudPersistence() {
+    protected Shape3DCrudPersistence getCrudPersistence() {
         return shape3DPersistence;
     }
 }

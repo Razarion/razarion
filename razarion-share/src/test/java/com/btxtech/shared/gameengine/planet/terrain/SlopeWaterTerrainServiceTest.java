@@ -139,12 +139,12 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 //                {0, 0, 0}}));
 //        // Terrain Objects
 //        List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
-//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(1).setInternalName("Palm Tree").setShape3DId(2).setRadius(2));
-//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(2).setInternalName("Rock 1").setShape3DId(4).setRadius(2));
-//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setInternalName("Bush").setShape3DId(1).setRadius(2));
-//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(4).setInternalName("Helper").setShape3DId(3).setRadius(3));
-//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(5).setInternalName("Rock 2").setShape3DId(5).setRadius(3));
-//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(6).setInternalName("Palm Tree 1").setShape3DId(6).setRadius(3));
+//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(1).setInternalName("Palm Tree").setShape3DId(2).radius(2));
+//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(2).setInternalName("Rock 1").setShape3DId(4).radius(2));
+//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setInternalName("Bush").setShape3DId(1).radius(2));
+//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(4).setInternalName("Helper").setShape3DId(3).radius(3));
+//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(5).setInternalName("Rock 2").setShape3DId(5).radius(3));
+//        terrainObjectConfigs.add(new TerrainObjectConfig().setId(6).setInternalName("Palm Tree 1").setShape3DId(6).radius(3));
 //        List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
 //
 //        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(1).setPosition(new DecimalPosition(276.875, 227.350)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(0))));
@@ -307,9 +307,9 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         slopeConfigs.add(slopeConfigWater);
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
-        terrainObjectConfigs.add(new TerrainObjectConfig().setId(1).setRadius(1));
-        terrainObjectConfigs.add(new TerrainObjectConfig().setId(2).setRadius(5));
-        terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setRadius(10));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10));
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();

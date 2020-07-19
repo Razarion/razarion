@@ -9,7 +9,7 @@ import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.SlopeEditorController;
-import com.btxtech.shared.rest.TerrainElementEditorProvider;
+import com.btxtech.shared.rest.TerrainObjectEditorController;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.renderer.Camera;
@@ -50,7 +50,7 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @Inject
     private Caller<SlopeEditorController> slopeEditorController;
     @Inject
-    private Caller<TerrainElementEditorProvider> elementEditorProvider;
+    private Caller<TerrainObjectEditorController> elementEditorProvider;
     @Inject
     private Camera camera;
     @Inject
@@ -167,7 +167,7 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
             terrainObjectSelection.setAcceptableValues(objectNameIds);
             terrainObjectSelection.setValue(objectNameId);
             terrainEditor.setTerrainObject4New(objectNameId);
-        }, exceptionHandler.restErrorHandler("getTerrainObjectNameIds failed: ")).getTerrainObjectNameIds();
+        }, exceptionHandler.restErrorHandler("getObjectNameIds failed: ")).getObjectNameIds();
         terrainEditor.setTerrainPositionListener(vertex -> terrainPositionLabel.setTextContent(DisplayUtils.formatVertex(vertex)));
         viewService.addViewFieldListeners(this);
         radarPanel.show();

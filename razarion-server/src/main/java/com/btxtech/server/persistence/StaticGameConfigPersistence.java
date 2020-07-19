@@ -15,7 +15,7 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class StaticGameConfigPersistence {
     @Inject
-    private TerrainElementPersistence terrainElementPersistence;
+    private TerrainObjectCrudPersistence terrainElementPersistence;
     @Inject
     private GroundCrudPersistence groundCrudPersistence;
     @Inject
@@ -34,7 +34,7 @@ public class StaticGameConfigPersistence {
         staticGameConfig.setSlopeConfigs(slopeCrudPersistence.read());
         staticGameConfig.setDrivewayConfigs(terrainElementPersistence.loadDrivewayConfigs());
         staticGameConfig.setGroundConfigs(groundCrudPersistence.read());
-        staticGameConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
+        staticGameConfig.setTerrainObjectConfigs(terrainElementPersistence.read());
         staticGameConfig.setWaterConfigs(waterCrudPersistence.read());
         staticGameConfig.setBaseItemTypes(itemTypePersistence.readBaseItemTypes());
         staticGameConfig.setResourceItemTypes(itemTypePersistence.readResourceItemTypes());

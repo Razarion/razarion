@@ -31,7 +31,7 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
     @Before
     public void before() throws Exception {
         setupPlanetDb();
-        setupSlopeConfigs();
+        setupSlopeConfig();
     }
 
     @After

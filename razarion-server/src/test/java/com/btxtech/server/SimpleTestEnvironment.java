@@ -217,7 +217,7 @@ public class SimpleTestEnvironment {
 
 //    public SyncBaseItem createSimpleSyncBaseItem(PlayerBase playerBase) {
 //        SyncBaseItem syncBaseItem = new SyncBaseItem();
-//        syncBaseItem.init(1, SIMPLE_MOVABLE_ITEM_TYPE, new SyncPhysicalMovable(syncBaseItem, new PhysicalAreaConfig().setAngularVelocity(Math.toDegrees(30)).setSpeed(80.0).setMinTurnSpeed(10.0).setAcceleration(100.0).setRadius(20), new Vertex(0, 0, 0), new Vertex(0, 0, 1), 0.0, new DecimalPosition(0, 0)));
+//        syncBaseItem.init(1, SIMPLE_MOVABLE_ITEM_TYPE, new SyncPhysicalMovable(syncBaseItem, new PhysicalAreaConfig().setAngularVelocity(Math.toDegrees(30)).setSpeed(80.0).setMinTurnSpeed(10.0).setAcceleration(100.0).radius(20), new Vertex(0, 0, 0), new Vertex(0, 0, 1), 0.0, new DecimalPosition(0, 0)));
 //        syncBaseItem.setup(playerBase, ItemLifecycle.ALIVE);
 //        return syncBaseItem;
 //    }

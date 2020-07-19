@@ -33,8 +33,10 @@ public class TerrainObjectEntity {
     }
 
     public TerrainObjectConfig toTerrainObjectConfig() {
-        TerrainObjectConfig terrainObjectConfig = new TerrainObjectConfig();
-        terrainObjectConfig.setId(id).setInternalName(internalName).setRadius(radius);
+        TerrainObjectConfig terrainObjectConfig = new TerrainObjectConfig()
+                .id(id)
+                .internalName(internalName)
+                .radius(radius);
         if (colladaEntity != null) {
             terrainObjectConfig.setShape3DId(colladaEntity.getId());
         }

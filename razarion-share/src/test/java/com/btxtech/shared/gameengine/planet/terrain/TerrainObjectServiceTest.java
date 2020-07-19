@@ -60,9 +60,9 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         };
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
-        terrainObjectConfigs.add(new TerrainObjectConfig().setId(1).setRadius(1));
-        terrainObjectConfigs.add(new TerrainObjectConfig().setId(2).setRadius(5));
-        terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setRadius(10));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10));
 
         List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
   /* TODO      terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(1).setPosition(new DecimalPosition(50, 40)).setScale(10).setRotationZ(0));
