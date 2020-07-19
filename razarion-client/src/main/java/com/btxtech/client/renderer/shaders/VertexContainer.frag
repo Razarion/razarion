@@ -12,7 +12,16 @@ uniform highp mat4 normalMatrix;
 uniform vec3 directLightDirection;
 uniform vec3 directLightColor;
 uniform vec3 ambientLightColor;
+vec3 correctedDirectLightDirection;
+
+//-$$$-INCLUDE-CHUNK phong struct
+uniform PhongMaterial material;
+
+//-$$$-INCLUDE-CHUNK phong functions
+
 
 void main(void) {
-        gl_FragColor = vec4(0.8, 0.8, 0.8, 1.0);
+        correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
+
+        gl_FragColor = vec4(phong(material, vUv), 1.0);
 }
