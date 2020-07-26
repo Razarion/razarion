@@ -68,9 +68,9 @@ public class NodeScene extends NameIdColladaXml {
             if (effect != null && effect.getTechnique() != null) {
                 vertexContainer.setPhongMaterialConfig(new PhongMaterialConfig()
                         .scale(1)
-                        .shininess(effect.getTechnique().getShininess()));
+                        .shininess(effect.getTechnique().getShininess())
+                        .specularStrength(effect.getTechnique().getSpecular().getR()));
                 // vertexContainer.setDiffuse(effect.getTechnique().getDiffuse());
-                // vertexContainer.setSpecular(effect.getTechnique().getSpecular());
                 // vertexContainer.setEmission(effect.getTechnique().getEmission());
             }
             element3DBuilder.addVertexContainer(vertexContainer, vertexContainerBuffer);

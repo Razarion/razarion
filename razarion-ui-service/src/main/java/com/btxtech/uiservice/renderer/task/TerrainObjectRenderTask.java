@@ -34,37 +34,39 @@ public class TerrainObjectRenderTask extends AbstractRenderTask<TerrainObjectCon
 
     @PostConstruct
     public void postConstruct() {
-        terrainTypeService.getTerrainObjectConfigs().forEach(terrainObjectConfig -> setupTerrainObject(terrainObjectConfig, false));
+        setupTerrainObject(false);
     }
 
-    public void onTerrainObjectChanged(TerrainObjectConfig terrainObjectConfig) {
-        removeAll(terrainObjectConfig);
-        setupTerrainObject(terrainObjectConfig, true);
+    public void reloadEditMode() {
+        clear();
+        setupTerrainObject(true);
     }
 
-    private void setupTerrainObject(TerrainObjectConfig terrainObjectConfig, boolean fillBuffer) {
-        if (terrainObjectConfig.getShape3DId() != null) {
-            ModelRenderer<TerrainObjectConfig, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(terrainObjectConfig, timeStamp -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig.getId()));
-            Shape3D shape3D = shape3DUiService.getShape3D(terrainObjectConfig.getShape3DId());
-            for (Element3D element3D : shape3D.getElement3Ds()) {
-                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                    CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
-                    compositeRenderer.init(vertexContainer);
-                    compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-                    // compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
-                    // compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-                    compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderUnitControl.TERRAIN, compositeRenderer);
-                    if (fillBuffer) {
-                        compositeRenderer.fillBuffers();
+    private void setupTerrainObject(boolean fillBuffer) {
+        terrainTypeService.getTerrainObjectConfigs().forEach(terrainObjectConfig -> {
+            if (terrainObjectConfig.getShape3DId() != null) {
+                ModelRenderer<TerrainObjectConfig, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+                modelRenderer.init(terrainObjectConfig, timeStamp -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig.getId()));
+                Shape3D shape3D = shape3DUiService.getShape3D(terrainObjectConfig.getShape3DId());
+                for (Element3D element3D : shape3D.getElement3Ds()) {
+                    for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                        CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
+                        compositeRenderer.init(vertexContainer);
+                        compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
+                        // compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
+                        // compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
+                        compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
+                        modelRenderer.add(RenderUnitControl.TERRAIN, compositeRenderer);
+                        if (fillBuffer) {
+                            compositeRenderer.fillBuffers();
+                        }
                     }
                 }
+                add(modelRenderer);
+            } else {
+                logger.warning("TerrainObjectRenderTask: No shape3DId for TerrainObjectConfig: " + terrainObjectConfig);
             }
-            add(modelRenderer);
-        } else {
-            logger.warning("TerrainObjectRenderTask: No shape3DId for TerrainObjectConfig: " + terrainObjectConfig);
-        }
+        });
     }
 
 
