@@ -49,7 +49,7 @@ public class ClientRenderServiceImpl extends RenderService {
 
     @Override
     protected void prepare(RenderUnitControl renderUnitControl) {
-        if (renderUnitControl.isDpDepthTest()) {
+        if (renderUnitControl.isDepthTest()) {
             gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
         } else {
             gameCanvas.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);

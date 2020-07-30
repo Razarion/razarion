@@ -10,25 +10,25 @@ import java.util.List;
 public class RenderUnitControl {
     private static final List<RenderUnitControl> RENDER_UNIT_CONTROLS = new ArrayList<>();
     public static final RenderUnitControl TERRAIN = new RenderUnitControl();
-    public static final RenderUnitControl SELECTED_ITEM = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA).setWriteDepthBuffer(false).setDpDepthTest(false);
+    public static final RenderUnitControl SELECTED_ITEM = new RenderUnitControl().blend(Blend.SOURCE_ALPHA).writeDepthBuffer(false).depthTest(false);
     public static final RenderUnitControl ITEMS = new RenderUnitControl();
     public static final RenderUnitControl NORMAL = new RenderUnitControl();
-    public static final RenderUnitControl WATER = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA);
-    public static final RenderUnitControl PARTICLE = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA).setWriteDepthBuffer(false).setDpDepthTest(true);
-    public static final RenderUnitControl SEMI_TRANSPARENT = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA);
-    public static final RenderUnitControl STATUS_BAR = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA).setWriteDepthBuffer(false).setDpDepthTest(false);
-    public static final RenderUnitControl SELECTION_FRAME = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
-    public static final RenderUnitControl START_POINT_CIRCLE = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA).setDpDepthTest(false).setWriteDepthBuffer(false);
-    public static final RenderUnitControl START_POINT_ITEM = new RenderUnitControl().setBlend(Blend.CONST_ALPHA).setConstAlpha(0.5);
-    public static final RenderUnitControl TERRAIN_ITEM_VISUALIZATION_IMAGE = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
-    public static final RenderUnitControl TERRAIN_ITEM_VISUALIZATION_CORNERS = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
+    public static final RenderUnitControl WATER = new RenderUnitControl().blend(Blend.SOURCE_ALPHA);
+    public static final RenderUnitControl PARTICLE = new RenderUnitControl().blend(Blend.SOURCE_ALPHA).writeDepthBuffer(false).depthTest(true);
+    public static final RenderUnitControl SEMI_TRANSPARENT = new RenderUnitControl().blend(Blend.SOURCE_ALPHA);
+    public static final RenderUnitControl STATUS_BAR = new RenderUnitControl().blend(Blend.SOURCE_ALPHA).writeDepthBuffer(false).depthTest(false);
+    public static final RenderUnitControl SELECTION_FRAME = new RenderUnitControl().depthTest(false).writeDepthBuffer(false);
+    public static final RenderUnitControl START_POINT_CIRCLE = new RenderUnitControl().blend(Blend.SOURCE_ALPHA).depthTest(false).writeDepthBuffer(false);
+    public static final RenderUnitControl START_POINT_ITEM = new RenderUnitControl().blend(Blend.CONST_ALPHA).constAlpha(0.5);
+    public static final RenderUnitControl TERRAIN_ITEM_VISUALIZATION_IMAGE = new RenderUnitControl().depthTest(false).writeDepthBuffer(false);
+    public static final RenderUnitControl TERRAIN_ITEM_VISUALIZATION_CORNERS = new RenderUnitControl().depthTest(false).writeDepthBuffer(false);
 
     public enum Blend {
         SOURCE_ALPHA,
         CONST_ALPHA
     }
 
-    private boolean dpDepthTest = true;
+    private boolean depthTest = true;
     private boolean writeDepthBuffer = true;
     private Blend blend;
     private double constAlpha;
@@ -41,38 +41,38 @@ public class RenderUnitControl {
         RENDER_UNIT_CONTROLS.add(this);
     }
 
-    public boolean isDpDepthTest() {
-        return dpDepthTest;
-    }
-
-    private RenderUnitControl setDpDepthTest(boolean dpDepthTest) {
-        this.dpDepthTest = dpDepthTest;
-        return this;
+    public boolean isDepthTest() {
+        return depthTest;
     }
 
     public boolean isWriteDepthBuffer() {
         return writeDepthBuffer;
     }
 
-    private RenderUnitControl setWriteDepthBuffer(boolean writeDepthBuffer) {
-        this.writeDepthBuffer = writeDepthBuffer;
-        return this;
-    }
-
     public Blend getBlend() {
         return blend;
-    }
-
-    private RenderUnitControl setBlend(Blend blend) {
-        this.blend = blend;
-        return this;
     }
 
     public float getConstAlpha() {
         return (float) constAlpha;
     }
 
-    private RenderUnitControl setConstAlpha(double constAlpha) {
+    private RenderUnitControl depthTest(boolean dpDepthTest) {
+        this.depthTest = dpDepthTest;
+        return this;
+    }
+
+    private RenderUnitControl writeDepthBuffer(boolean writeDepthBuffer) {
+        this.writeDepthBuffer = writeDepthBuffer;
+        return this;
+    }
+
+    private RenderUnitControl blend(Blend blend) {
+        this.blend = blend;
+        return this;
+    }
+
+    private RenderUnitControl constAlpha(double constAlpha) {
         this.constAlpha = constAlpha;
         return this;
     }
