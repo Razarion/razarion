@@ -207,7 +207,8 @@ public class ColladaConverterTest {
         Assert.assertEquals("Chassis_Material-material", vertexContainer.getMaterialId());
         Assert.assertNull(vertexContainer.getPhongMaterialConfig().getTextureId());
         // TODO Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getEmission());
-        // TODO Assert.assertEquals(new Color(0.5, 0.5, 0.5), vertexContainer.getSpecular());
+        Assert.assertEquals(0.5, vertexContainer.getPhongMaterialConfig().getSpecularStrength(), 0.0);
+        Assert.assertEquals(50, vertexContainer.getPhongMaterialConfig().getShininess(), 0.0);
         Assert.assertEquals(42, vertexContainer.getVerticesCount());
         VertexContainerBuffer buffer = getVertexContainerBuffer4Key(vertexContainer.getKey(), vertexContainerBuffers);
         double[] vertices = TestHelper.transform(buffer.getVertexData(), vertexContainer.getShapeTransform().setupMatrix());
@@ -224,7 +225,6 @@ public class ColladaConverterTest {
         Assert.assertNull("Chassis_Material-material", vertexContainer.getMaterialId());
         Assert.assertNull(vertexContainer.getPhongMaterialConfig());
         // TODO Assert.assertNull(vertexContainer.getEmission());
-        // TODO Assert.assertNull(vertexContainer.getSpecular());
         Assert.assertEquals(57, vertexContainer.getVerticesCount());
         buffer = getVertexContainerBuffer4Key(vertexContainer.getKey(), vertexContainerBuffers);
         vertices = TestHelper.transform(buffer.getVertexData(), vertexContainer.getShapeTransform().setupMatrix());
@@ -253,7 +253,8 @@ public class ColladaConverterTest {
         Assert.assertEquals("Material-material", vertexContainer.getMaterialId());
         Assert.assertEquals(99, (int) vertexContainer.getPhongMaterialConfig().getTextureId());
         // TODO Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getEmission());
-        // TODO Assert.assertEquals(new Color(0.5, 0.5, 0.5), vertexContainer.getSpecular());
+        Assert.assertEquals(0.5, vertexContainer.getPhongMaterialConfig().getSpecularStrength(), 0.0);
+        Assert.assertEquals(50, vertexContainer.getPhongMaterialConfig().getShininess(), 0.0);
         Assert.assertEquals(6, vertexContainer.getVerticesCount());
         VertexContainerBuffer buffer = getVertexContainerBuffer4Key(vertexContainer.getKey(), vertexContainerBuffers);
         double[] vertices = TestHelper.transform(buffer.getVertexData(), vertexContainer.getShapeTransform().setupMatrix());
@@ -280,7 +281,8 @@ public class ColladaConverterTest {
         Assert.assertEquals("Material", vertexContainer.getMaterialName());
         Assert.assertEquals("Material-material", vertexContainer.getMaterialId());
         Assert.assertEquals(101, (int) vertexContainer.getPhongMaterialConfig().getTextureId());
-        // TODO Assert.assertNull(vertexContainer.getSpecular());
+        Assert.assertNull(vertexContainer.getPhongMaterialConfig().getSpecularStrength());
+        Assert.assertNull(vertexContainer.getPhongMaterialConfig().getShininess());
         // TODO TestHelper.assertColor(new Color(0, 0, 0), vertexContainer.getEmission());
         VertexContainerBuffer buffer = getVertexContainerBuffer4Key(vertexContainer.getKey(), vertexContainerBuffers);
         double[] vertices = TestHelper.transform(buffer.getVertexData(), vertexContainer.getShapeTransform().setupMatrix());
@@ -299,7 +301,8 @@ public class ColladaConverterTest {
         Assert.assertEquals("Material_002-material", vertexContainer.getMaterialId());
         Assert.assertEquals("Material_002", vertexContainer.getMaterialName());
         Assert.assertEquals(201, (int) vertexContainer.getPhongMaterialConfig().getTextureId());
-        // TODO TestHelper.assertColor(new Color(0.2, 0.3, 0.4, 1.0), vertexContainer.getSpecular());
+        Assert.assertEquals(0.2, vertexContainer.getPhongMaterialConfig().getSpecularStrength(), 0.0);
+        Assert.assertEquals(50, vertexContainer.getPhongMaterialConfig().getShininess(), 0.0);
         // TODO TestHelper.assertColor(new Color(123, 123, 123), vertexContainer.getEmission());
         buffer = getVertexContainerBuffer4Key(vertexContainer.getKey(), vertexContainerBuffers);
         vertices = TestHelper.transform(buffer.getVertexData(), vertexContainer.getShapeTransform().setupMatrix());
@@ -410,11 +413,11 @@ public class ColladaConverterTest {
         textures.put("Rock1Material-material", 23);
         textures.put("Sphere-material", 28);
         textures.put("MatRock2-material", 30);
-        Map<String, Double> alphaCutouts = new HashMap<>();
-        alphaCutouts.put("Material_001-material", 0.33);
-        alphaCutouts.put("Trunk-material", 0.0);
-        alphaCutouts.put("Leaves-material", 0.5);
-        alphaCutouts.put("Leaf_Materail-material", 0.5);
+        Map<String, Boolean> alphaCutouts = new HashMap<>();
+        alphaCutouts.put("Material_001-material", true);
+        alphaCutouts.put("Trunk-material", false);
+        alphaCutouts.put("Leaves-material", true);
+        alphaCutouts.put("Leaf_Materail-material", true);
         Map<String, Integer> bumpMapIds = new HashMap<>();
         bumpMapIds.put("Rock1Material-material", 24);
         bumpMapIds.put("Trunk-material", 33);
@@ -491,14 +494,14 @@ public class ColladaConverterTest {
         private Map<String, Integer> bumpMapIds;
         private Map<String, Double> bumpMapDepths;
         private Map<String, AnimationTrigger> animationTriggers;
-        private Map<String, Double> alphaCutouts;
+        private Map<String, Boolean> alphaToCoverages;
 
-        public TestMapper(Map<String, Integer> textures, Map<String, Integer> bumpMapIds, Map<String, Double> bumpMapDepths, Map<String, AnimationTrigger> animationTriggers, Map<String, Double> alphaCutouts) {
+        public TestMapper(Map<String, Integer> textures, Map<String, Integer> bumpMapIds, Map<String, Double> bumpMapDepths, Map<String, AnimationTrigger> animationTriggers, Map<String, Boolean> alphaToCoverages) {
             this.textures = textures;
             this.bumpMapIds = bumpMapIds;
             this.bumpMapDepths = bumpMapDepths;
             this.animationTriggers = animationTriggers;
-            this.alphaCutouts = alphaCutouts;
+            this.alphaToCoverages = alphaToCoverages;
         }
 
         @Override
@@ -529,11 +532,11 @@ public class ColladaConverterTest {
         }
 
         @Override
-        public Double getAlphaCutout(String materialId) {
-            if (alphaCutouts != null) {
-                return alphaCutouts.get(materialId);
+        public boolean getAlphaToCoverage(String materialId) {
+            if (alphaToCoverages != null && alphaToCoverages.containsKey(materialId)) {
+                return alphaToCoverages.get(materialId);
             } else {
-                return null;
+                return false;
             }
         }
 

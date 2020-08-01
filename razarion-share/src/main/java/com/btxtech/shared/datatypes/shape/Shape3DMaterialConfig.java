@@ -7,7 +7,7 @@ public class Shape3DMaterialConfig {
     private String materialName;
     private PhongMaterialConfig phongMaterialConfig;
     private boolean characterRepresenting;
-    private Double alphaCutout;
+    private boolean alphaToCoverage;
 
     public String getMaterialId() {
         return materialId;
@@ -41,12 +41,12 @@ public class Shape3DMaterialConfig {
         this.characterRepresenting = characterRepresenting;
     }
 
-    public Double getAlphaCutout() {
-        return alphaCutout;
+    public boolean isAlphaToCoverage() {
+        return alphaToCoverage;
     }
 
-    public void setAlphaCutout(Double alphaCutout) {
-        this.alphaCutout = alphaCutout;
+    public void setAlphaToCoverage(boolean alphaToCoverage) {
+        this.alphaToCoverage = alphaToCoverage;
     }
 
     public Shape3DMaterialConfig materialId(String materialId) {
@@ -69,8 +69,8 @@ public class Shape3DMaterialConfig {
         return this;
     }
 
-    public Shape3DMaterialConfig alphaCutout(Double alphaCutout) {
-        setAlphaCutout(alphaCutout);
+    public Shape3DMaterialConfig alphaToCoverage(boolean alphaToCoverage) {
+        setAlphaToCoverage(alphaToCoverage);
         return this;
     }
 }

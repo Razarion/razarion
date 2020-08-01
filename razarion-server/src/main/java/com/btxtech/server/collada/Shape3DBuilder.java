@@ -83,7 +83,7 @@ public class Shape3DBuilder {
                     phongMaterialConfig.setBumpMapId(colladaConverterMapper.getBumpMapId(materialId));
                     phongMaterialConfig.setBumpMapDepth(colladaConverterMapper.getBumpMapDepth(materialId));
                 }
-                vertexContainer.setAlphaCutout(colladaConverterMapper.getAlphaCutout(materialId));
+                vertexContainer.setAlphaToCoverage(colladaConverterMapper.getAlphaToCoverage(materialId));
                 vertexContainer.setCharacterRepresenting(colladaConverterMapper.isCharacterRepresenting(materialId));
             }
         }
@@ -116,7 +116,7 @@ public class Shape3DBuilder {
                     .materialName(vertexContainer.getMaterialName())
                     .phongMaterialConfig(vertexContainer.getPhongMaterialConfig())
                     .characterRepresenting(vertexContainer.isCharacterRepresenting())
-                    .alphaCutout(vertexContainer.getAlphaCutout()));
+                    .alphaToCoverage(vertexContainer.isAlphaToCoverage()));
         }));
         shape3DConfig.setShape3DMaterialConfigs(shape3DMaterialConfigs);
         return shape3DConfig;

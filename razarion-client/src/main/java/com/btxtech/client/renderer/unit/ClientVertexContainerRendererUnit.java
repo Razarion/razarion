@@ -23,6 +23,8 @@ import jsinterop.base.Js;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import static elemental2.webgl.WebGLRenderingContext.SAMPLE_ALPHA_TO_COVERAGE;
+
 /**
  * Created by Beat
  * 03.08.2016.
@@ -77,6 +79,12 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
     @Override
     protected void prepareDraw() {
+        if(getRenderData().isAlphaToCoverage()) {
+            webGlFacade.getCtx3d().enable(SAMPLE_ALPHA_TO_COVERAGE);
+        } else {
+            webGlFacade.getCtx3d().disable(SAMPLE_ALPHA_TO_COVERAGE);
+        }
+
         webGlFacade.useProgram();
 
         lightUniforms.setLightUniforms(webGlFacade);

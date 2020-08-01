@@ -32,7 +32,7 @@ vec3 perturbNormalArb(vec3 surf_pos, vec3 surf_norm, vec2 dHdxy) {
     return normalize(abs(fDet) * surf_norm - vGrad);
 }
 
-vec3 phong(PhongMaterial phongMaterial, vec2 uv) {
+vec4 phongCutoff(PhongMaterial phongMaterial, vec2 uv) {
     vec3 normal = perturbNormalArb(-vViewPosition, normalize(vNormal), dHdxy_fwd(phongMaterial.bumpMap, phongMaterial.bumpMapDepth, phongMaterial.scale, uv));
     vec3 viewDir = normalize(vViewPosition);
 
@@ -41,6 +41,11 @@ vec3 phong(PhongMaterial phongMaterial, vec2 uv) {
     vec3 halfwayDir = normalize(correctedDirectLightDirection + viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), phongMaterial.shininess);
     vec3 specular = phongMaterial.specularStrength * spec * directLightColor;
-    return (ambientLightColor + diffuse) * texture.rgb + specular;
+    return vec4((ambientLightColor + diffuse) * texture.rgb + specular, texture.a);
 }
+
+vec3 phong(PhongMaterial phongMaterial, vec2 uv) {
+    return phongCutoff(phongMaterial, uv).rgb;
+}
+
 //-$$$-CHUNK functions END

@@ -5,6 +5,7 @@ import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.server.systemtests.framework.ObjectMapperResolver;
 import com.btxtech.server.systemtests.framework.RestConnection;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.Shape3DMaterialConfig;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
@@ -32,7 +33,7 @@ public class Shape3DControllerTest extends AbstractSystemTest {
         cleanTableNative("COLLADA_TEXTURES");
         cleanTableNative("COLLADA_BUMP_MAPS");
         cleanTableNative("COLLADA_BUMP_MAP_DEPTS");
-        cleanTableNative("COLLADA_ALPHA_CUTOUTS");
+        cleanTableNative("COLLADA_ALPHA_TO_COVERAGE");
         cleanTableNative("COLLADA_CHARACTER_REPRESENTING");
         cleanTableNative("COLLADA_ANIMATIONS");
         cleanTable(ColladaEntity.class);
@@ -48,7 +49,10 @@ public class Shape3DControllerTest extends AbstractSystemTest {
         shape3DConfig.setColladaString(TestHelper.resource2Text("Shape3DControllerTest.dae", getClass()));
         editorConnection.update(shape3DConfig);
         shape3DConfig = editorConnection.read(shape3DConfig.getId());
-        PhongMaterialConfig phongMaterialConfig = findMaterial(shape3DConfig, "Material_002-material").getPhongMaterialConfig();
+        Shape3DMaterialConfig shape3DMaterialConfig = findMaterial(shape3DConfig, "Material_002-material");
+        shape3DMaterialConfig.setCharacterRepresenting(true);
+        shape3DMaterialConfig.setAlphaToCoverage(true);
+        PhongMaterialConfig phongMaterialConfig = shape3DMaterialConfig.getPhongMaterialConfig();
         phongMaterialConfig.setTextureId(IMAGE_2_ID);
         phongMaterialConfig.setBumpMapId(IMAGE_3_ID);
         phongMaterialConfig.setBumpMapDepth(0.9);

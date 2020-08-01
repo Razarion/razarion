@@ -58,7 +58,7 @@
               "scaleY": 0.0,
               "scaleZ": 0.0
             },
-            "alphaCutout": null,
+            "alphaToCoverage": false,
             "characterRepresenting": false
           }
         ]
@@ -76,7 +76,7 @@
               "bumpMapId": "$bumpMapId2$",
               "bumpMapDepth": 0.9,
               "shininess": 50.0,
-              "specularStrength": null
+              "specularStrength": 0.2
             },
             "verticesCount": 60,
             "shapeTransform": {
@@ -118,8 +118,8 @@
               "scaleY": 0.0,
               "scaleZ": 0.0
             },
-            "alphaCutout": null,
-            "characterRepresenting": false
+            "alphaToCoverage": true,
+            "characterRepresenting": true
           }
         ]
       }

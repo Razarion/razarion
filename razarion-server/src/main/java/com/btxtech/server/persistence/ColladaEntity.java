@@ -45,9 +45,9 @@ public class ColladaEntity implements ColladaConverterMapper {
     @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private Map<String, Double> bumpMapDepts;
     @ElementCollection
-    @CollectionTable(name = "COLLADA_ALPHA_CUTOUTS")
+    @CollectionTable(name = "COLLADA_ALPHA_TO_COVERAGE")
     @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
-    private Map<String, Double> alphaCutouts;
+    private Map<String, Boolean> alphaToCoverages;
     @ElementCollection
     @CollectionTable(name = "COLLADA_CHARACTER_REPRESENTING")
     @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
@@ -105,8 +105,9 @@ public class ColladaEntity implements ColladaConverterMapper {
     }
 
     @Override
-    public Double getAlphaCutout(String materialId) {
-        return alphaCutouts.get(materialId);
+    public boolean getAlphaToCoverage(String materialId) {
+        Boolean alphaToCoverage = alphaToCoverages.get(materialId);
+        return alphaToCoverage != null && alphaToCoverage;
     }
 
     @Override
@@ -139,9 +140,9 @@ public class ColladaEntity implements ColladaConverterMapper {
         this.bumpMapDepts.putAll(bumpMapDepts);
     }
 
-    public void setAlphaCutouts(Map<String, Double> alphaCutouts) {
-        this.alphaCutouts.clear();
-        this.alphaCutouts.putAll(alphaCutouts);
+    public void setAlphaToCoverages(Map<String, Boolean> alphaToCoverages) {
+        this.alphaToCoverages.clear();
+        this.alphaToCoverages.putAll(alphaToCoverages);
     }
 
     public void setCharacterRepresentings(Map<String, Boolean> characterRepresentings) {

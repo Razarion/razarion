@@ -50,21 +50,21 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
             Map<String, ImageLibraryEntity> bumpMaps = new HashMap<>();
             Map<String, Double> bumpMapDepts = new HashMap<>();
             Map<String, Boolean> characterRepresentings = new HashMap<>();
-            Map<String, Double> alphaCutouts = new HashMap<>();
+            Map<String, Boolean> alphaToCoverages = new HashMap<>();
             if (config.getShape3DMaterialConfigs() != null) {
                 config.getShape3DMaterialConfigs().forEach(shape3DMaterialConfig -> {
                     textures.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getTextureId()));
                     bumpMaps.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapId()));
                     bumpMapDepts.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapDepth());
                     characterRepresentings.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.isCharacterRepresenting());
-                    alphaCutouts.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getAlphaCutout());
+                    alphaToCoverages.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.isAlphaToCoverage());
                 });
             }
             entity.setTextures(textures);
             entity.setBumpMaps(bumpMaps);
             entity.setBumpMapDepts(bumpMapDepts);
             entity.setCharacterRepresentings(characterRepresentings);
-            entity.setAlphaCutouts(alphaCutouts);
+            entity.setAlphaToCoverages(alphaToCoverages);
             if (config.getAnimations() != null) {
                 Map<String, AnimationTrigger> animations = new HashMap<>();
                 for (Map.Entry<String, AnimationTrigger> entry : config.getAnimations().entrySet()) {

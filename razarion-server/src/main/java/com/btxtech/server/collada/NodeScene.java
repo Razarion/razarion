@@ -66,10 +66,13 @@ public class NodeScene extends NameIdColladaXml {
             vertexContainer.setMaterialName(materialName);
             vertexContainer.setVerticesCount(vertexContainerBuffer.calculateVertexCount());
             if (effect != null && effect.getTechnique() != null) {
-                vertexContainer.setPhongMaterialConfig(new PhongMaterialConfig()
+                PhongMaterialConfig phongMaterialConfig = new PhongMaterialConfig()
                         .scale(1)
-                        .shininess(effect.getTechnique().getShininess())
-                        .specularStrength(effect.getTechnique().getSpecular().getR()));
+                        .shininess(effect.getTechnique().getShininess());
+                if (effect.getTechnique().getSpecular() != null) {
+                    phongMaterialConfig.setSpecularStrength(effect.getTechnique().getSpecular().getR());
+                }
+                vertexContainer.setPhongMaterialConfig(phongMaterialConfig);
                 // vertexContainer.setDiffuse(effect.getTechnique().getDiffuse());
                 // vertexContainer.setEmission(effect.getTechnique().getEmission());
             }

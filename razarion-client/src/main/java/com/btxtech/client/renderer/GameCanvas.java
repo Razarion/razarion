@@ -113,6 +113,7 @@ public class GameCanvas {
         // http://stackoverflow.com/questions/7156971/webgl-readpixels-is-always-returning-0-0-0-0
         args.set("alpha", false);
         args.set("preserveDrawingBuffer", true);
+        args.set("antialias", true);
         ctx3d = Js.cast(canvasElement.getContext("webgl", (JsObject) args));
         if (ctx3d == null) {
             DomGlobal.window.alert("WebGL not supported ?!?!?!");
