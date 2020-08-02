@@ -13,7 +13,7 @@ public interface ColladaConverterMapper {
 
     Double getBumpMapDepth(String materialId);
 
-    boolean getAlphaToCoverage(String materialId);
+    Double getAlphaToCoverage(String materialId);
 
     boolean isCharacterRepresenting(String materialId);
 

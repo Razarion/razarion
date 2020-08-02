@@ -50,14 +50,14 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
             Map<String, ImageLibraryEntity> bumpMaps = new HashMap<>();
             Map<String, Double> bumpMapDepts = new HashMap<>();
             Map<String, Boolean> characterRepresentings = new HashMap<>();
-            Map<String, Boolean> alphaToCoverages = new HashMap<>();
+            Map<String, Double> alphaToCoverages = new HashMap<>();
             if (config.getShape3DMaterialConfigs() != null) {
                 config.getShape3DMaterialConfigs().forEach(shape3DMaterialConfig -> {
                     textures.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getTextureId()));
                     bumpMaps.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapId()));
                     bumpMapDepts.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapDepth());
                     characterRepresentings.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.isCharacterRepresenting());
-                    alphaToCoverages.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.isAlphaToCoverage());
+                    alphaToCoverages.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getAlphaToCoverage());
                 });
             }
             entity.setTextures(textures);

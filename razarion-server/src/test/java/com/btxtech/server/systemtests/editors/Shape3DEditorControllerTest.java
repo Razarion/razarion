@@ -70,7 +70,7 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
                                         hasProperty("materialId", equalTo("Material_002-material")),
                                         hasProperty("materialName", equalTo("Material_002")),
                                         hasProperty("characterRepresenting", equalTo(false)),
-                                        hasProperty("alphaToCoverage", equalTo(false)),
+                                        hasProperty("alphaToCoverage", nullValue()),
                                         hasProperty("phongMaterialConfig", allOf(
                                                 hasProperty("textureId", nullValue()),
                                                 hasProperty("scale", equalTo(1.0)),
@@ -84,7 +84,7 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
                                         hasProperty("materialId", equalTo("Material-material")),
                                         hasProperty("materialName", equalTo("Material")),
                                         hasProperty("characterRepresenting", equalTo(false)),
-                                        hasProperty("alphaToCoverage", equalTo(false)),
+                                        hasProperty("alphaToCoverage", nullValue()),
                                         hasProperty("phongMaterialConfig", allOf(
                                                 hasProperty("textureId", nullValue()),
                                                 hasProperty("scale", equalTo(1.0)),
@@ -99,7 +99,7 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
         ));
         // Set values directly
         Shape3DMaterialConfig shape3DMaterialConfig = findMaterial(shape3DConfig2, "Material_002-material");
-        shape3DMaterialConfig.setAlphaToCoverage(true);
+        shape3DMaterialConfig.setAlphaToCoverage(0.1);
         shape3DMaterialConfig.setCharacterRepresenting(true);
         PhongMaterialConfig phongMaterialConfig = shape3DMaterialConfig.getPhongMaterialConfig();
         phongMaterialConfig.setTextureId(IMAGE_2_ID);
@@ -122,7 +122,7 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
                                         hasProperty("materialId", equalTo("Material_002-material")),
                                         hasProperty("materialName", equalTo("Material_002")),
                                         hasProperty("characterRepresenting", equalTo(true)),
-                                        hasProperty("alphaToCoverage", equalTo(true)),
+                                        hasProperty("alphaToCoverage", equalTo(0.1)),
                                         hasProperty("phongMaterialConfig", allOf(
                                                 hasProperty("textureId", equalTo(IMAGE_2_ID)),
                                                 hasProperty("scale", equalTo(1.0)),
@@ -136,7 +136,7 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
                                         hasProperty("materialId", equalTo("Material-material")),
                                         hasProperty("materialName", equalTo("Material")),
                                         hasProperty("characterRepresenting", equalTo(false)),
-                                        hasProperty("alphaToCoverage", equalTo(false)),
+                                        hasProperty("alphaToCoverage", nullValue()),
                                         hasProperty("phongMaterialConfig", allOf(
                                                 hasProperty("textureId", equalTo(IMAGE_1_ID)),
                                                 hasProperty("scale", equalTo(1.0)),

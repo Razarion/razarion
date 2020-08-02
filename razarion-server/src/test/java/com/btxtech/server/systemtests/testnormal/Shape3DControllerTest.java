@@ -51,7 +51,7 @@ public class Shape3DControllerTest extends AbstractSystemTest {
         shape3DConfig = editorConnection.read(shape3DConfig.getId());
         Shape3DMaterialConfig shape3DMaterialConfig = findMaterial(shape3DConfig, "Material_002-material");
         shape3DMaterialConfig.setCharacterRepresenting(true);
-        shape3DMaterialConfig.setAlphaToCoverage(true);
+        shape3DMaterialConfig.setAlphaToCoverage(0.2);
         PhongMaterialConfig phongMaterialConfig = shape3DMaterialConfig.getPhongMaterialConfig();
         phongMaterialConfig.setTextureId(IMAGE_2_ID);
         phongMaterialConfig.setBumpMapId(IMAGE_3_ID);

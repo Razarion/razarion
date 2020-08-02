@@ -413,11 +413,10 @@ public class ColladaConverterTest {
         textures.put("Rock1Material-material", 23);
         textures.put("Sphere-material", 28);
         textures.put("MatRock2-material", 30);
-        Map<String, Boolean> alphaCutouts = new HashMap<>();
-        alphaCutouts.put("Material_001-material", true);
-        alphaCutouts.put("Trunk-material", false);
-        alphaCutouts.put("Leaves-material", true);
-        alphaCutouts.put("Leaf_Materail-material", true);
+        Map<String, Double> alphaToCoverage = new HashMap<>();
+        alphaToCoverage.put("Trunk-material", null);
+        alphaToCoverage.put("Leaves-material", 0.1);
+        alphaToCoverage.put("Leaf_Materail-material", 0.2);
         Map<String, Integer> bumpMapIds = new HashMap<>();
         bumpMapIds.put("Rock1Material-material", 24);
         bumpMapIds.put("Trunk-material", 33);
@@ -434,7 +433,7 @@ public class ColladaConverterTest {
         bumpMapDepths.put("MatRock2-material", 0.3);
         bumpMapDepths.put("Leaf_Materail-material", 0.3);
         bumpMapDepths.put("Trunk_Materail-material", 0.3);
-        TestMapper testMapper = new TestMapper(textures, bumpMapIds, bumpMapDepths, null, alphaCutouts);
+        TestMapper testMapper = new TestMapper(textures, bumpMapIds, bumpMapDepths, null, alphaToCoverage);
         List<ThreeJsShape> threeJsShapes = new ArrayList<>();
         threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Plant02.dae", 1, testMapper));
         threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\PalmTree3.dae", 2, testMapper));
@@ -494,9 +493,9 @@ public class ColladaConverterTest {
         private Map<String, Integer> bumpMapIds;
         private Map<String, Double> bumpMapDepths;
         private Map<String, AnimationTrigger> animationTriggers;
-        private Map<String, Boolean> alphaToCoverages;
+        private Map<String, Double> alphaToCoverages;
 
-        public TestMapper(Map<String, Integer> textures, Map<String, Integer> bumpMapIds, Map<String, Double> bumpMapDepths, Map<String, AnimationTrigger> animationTriggers, Map<String, Boolean> alphaToCoverages) {
+        public TestMapper(Map<String, Integer> textures, Map<String, Integer> bumpMapIds, Map<String, Double> bumpMapDepths, Map<String, AnimationTrigger> animationTriggers, Map<String, Double> alphaToCoverages) {
             this.textures = textures;
             this.bumpMapIds = bumpMapIds;
             this.bumpMapDepths = bumpMapDepths;
@@ -532,11 +531,11 @@ public class ColladaConverterTest {
         }
 
         @Override
-        public boolean getAlphaToCoverage(String materialId) {
-            if (alphaToCoverages != null && alphaToCoverages.containsKey(materialId)) {
+        public Double getAlphaToCoverage(String materialId) {
+            if (alphaToCoverages != null) {
                 return alphaToCoverages.get(materialId);
             } else {
-                return false;
+                return null;
             }
         }
 

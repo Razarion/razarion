@@ -16,12 +16,20 @@ vec3 correctedDirectLightDirection;
 
 //-$$$-INCLUDE-CHUNK phong struct
 uniform PhongMaterial material;
+#ifdef  ALPHA_TO_COVERAGE
+uniform float alphaToCoverage;
+#endif
 
 //-$$$-INCLUDE-CHUNK phong functions
 
 
 void main(void) {
-        correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
+    correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
 
-        gl_FragColor = phongAlpha(material, vUv);
+    vec4 rgba = phongAlpha(material, vUv);
+    float sharpenAlpha = 1.0;
+    #ifdef  ALPHA_TO_COVERAGE
+    sharpenAlpha = (rgba.a - alphaToCoverage) / max(fwidth(rgba.a), 0.0001) + 0.5;
+    #endif
+    gl_FragColor = vec4(rgba.rgb, sharpenAlpha);
 }
