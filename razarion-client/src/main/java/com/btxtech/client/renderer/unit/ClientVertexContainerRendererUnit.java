@@ -79,10 +79,8 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
     @Override
     protected void prepareDraw() {
-        if(getRenderData().getShape3DMaterialConfig().isAlphaToCoverage()) {
+        if (getRenderData().getShape3DMaterialConfig().isAlphaToCoverage()) {
             webGlFacade.getCtx3d().enable(SAMPLE_ALPHA_TO_COVERAGE);
-        } else {
-            webGlFacade.getCtx3d().disable(SAMPLE_ALPHA_TO_COVERAGE);
         }
 
         webGlFacade.useProgram();
@@ -96,6 +94,13 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
         positions.activate();
         normals.activate();
         uvs.activate();
+    }
+
+    @Override
+    protected void afterDraw() {
+        if (getRenderData().getShape3DMaterialConfig().isAlphaToCoverage()) {
+            webGlFacade.getCtx3d().disable(SAMPLE_ALPHA_TO_COVERAGE);
+        }
     }
 
     @Override

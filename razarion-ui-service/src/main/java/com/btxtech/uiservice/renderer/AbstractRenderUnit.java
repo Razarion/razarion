@@ -26,6 +26,10 @@ public abstract class AbstractRenderUnit<D> {
 
     protected abstract void prepareDraw();
 
+    protected void afterDraw() {
+
+    }
+
     protected abstract void draw(ModelMatrices modelMatrices);
 
     public boolean hasElements() {

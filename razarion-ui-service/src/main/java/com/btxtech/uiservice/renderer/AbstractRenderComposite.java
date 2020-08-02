@@ -152,6 +152,8 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         } else {
             renderUnit.draw(null);
         }
+
+        renderUnit.afterDraw();
     }
 
     @Deprecated
