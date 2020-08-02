@@ -67,7 +67,7 @@ public class ClientDemolitionVertexContainerDepthBufferRendererUnit extends Abst
     @Override
     protected void draw(ModelMatrices modelMatrices, double health) {
         webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
-        webGlFacade.uniform1b(characterRepresenting, modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting());
+        webGlFacade.uniform1b(characterRepresenting, modelMatrices.getColor() != null && getRenderData().getShape3DMaterialConfig().isCharacterRepresenting());
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

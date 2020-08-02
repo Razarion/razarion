@@ -2,7 +2,6 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
-import com.btxtech.shared.datatypes.shape.Shape3DMaterialConfig;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
@@ -38,11 +37,10 @@ public abstract class Shape3DUiService {
             return;
         }
         shape3Ds.get(shape3DConfig.getId()).getElement3Ds().forEach(element3D -> element3D.getVertexContainers().forEach(vertexContainer -> {
-            vertexContainer.setPhongMaterialConfig(shape3DConfig.getShape3DMaterialConfigs()
+            vertexContainer.setShape3DMaterialConfig(shape3DConfig.getShape3DMaterialConfigs()
                     .stream()
-                    .filter(shape3DMaterialConfig -> shape3DMaterialConfig.getMaterialId().equals(vertexContainer.getMaterialId()))
+                    .filter(shape3DMaterialConfig -> shape3DMaterialConfig.getMaterialId().equals(vertexContainer.getShape3DMaterialConfig().getMaterialId()))
                     .findFirst()
-                    .map(Shape3DMaterialConfig::getPhongMaterialConfig)
                     .orElse(null));
         }));
     }

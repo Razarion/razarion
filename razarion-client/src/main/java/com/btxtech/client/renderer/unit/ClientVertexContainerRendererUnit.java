@@ -67,8 +67,8 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
-        AlarmRaiser.onNull(vertexContainer.getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No Material in VertexContainer: " + vertexContainer.getMaterialName(), null);
-        material = webGlFacade.createPhongMaterial(vertexContainer.getPhongMaterialConfig(), "material");
+        AlarmRaiser.onNull(vertexContainer.getShape3DMaterialConfig().getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No Material in VertexContainer: " + vertexContainer.getShape3DMaterialConfig().getMaterialName(), null);
+        material = webGlFacade.createPhongMaterial(vertexContainer.getShape3DMaterialConfig().getPhongMaterialConfig(), "material");
 
         Float32Array vertexPositions = Js.uncheckedCast(shape3DUiService.getVertexFloat32Array(vertexContainer));
         positions.fillFloat32Array(vertexPositions);
@@ -79,7 +79,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
     @Override
     protected void prepareDraw() {
-        if(getRenderData().isAlphaToCoverage()) {
+        if(getRenderData().getShape3DMaterialConfig().isAlphaToCoverage()) {
             webGlFacade.getCtx3d().enable(SAMPLE_ALPHA_TO_COVERAGE);
         } else {
             webGlFacade.getCtx3d().disable(SAMPLE_ALPHA_TO_COVERAGE);

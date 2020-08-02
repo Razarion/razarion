@@ -101,7 +101,7 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
         webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
         webGlFacade.uniformMatrix4fv(modelNormMatrix, modelMatrices.getNorm());
         webGlFacade.uniform1f(uHealth, health);
-        if (modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting()) {
+        if (modelMatrices.getColor() != null && getRenderData().getShape3DMaterialConfig().isCharacterRepresenting()) {
             webGlFacade.uniform1b(characterRepresenting, true);
             webGlFacade.uniform3fNoAlpha(characterRepresentingColor, modelMatrices.getColor());
         } else {

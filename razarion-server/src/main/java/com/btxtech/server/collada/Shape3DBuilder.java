@@ -75,16 +75,16 @@ public class Shape3DBuilder {
                 continue;
             }
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                String materialId = vertexContainer.getMaterialId();
-                PhongMaterialConfig phongMaterialConfig = vertexContainer.getPhongMaterialConfig();
+                String materialId = vertexContainer.getShape3DMaterialConfig().getMaterialId();
+                PhongMaterialConfig phongMaterialConfig = vertexContainer.getShape3DMaterialConfig().getPhongMaterialConfig();
                 if (materialId != null && phongMaterialConfig != null) {
                     phongMaterialConfig.setScale(1.0);
                     phongMaterialConfig.setTextureId(colladaConverterMapper.getTextureId(materialId));
                     phongMaterialConfig.setBumpMapId(colladaConverterMapper.getBumpMapId(materialId));
                     phongMaterialConfig.setBumpMapDepth(colladaConverterMapper.getBumpMapDepth(materialId));
                 }
-                vertexContainer.setAlphaToCoverage(colladaConverterMapper.getAlphaToCoverage(materialId));
-                vertexContainer.setCharacterRepresenting(colladaConverterMapper.isCharacterRepresenting(materialId));
+                vertexContainer.getShape3DMaterialConfig().setAlphaToCoverage(colladaConverterMapper.getAlphaToCoverage(materialId));
+                vertexContainer.getShape3DMaterialConfig().setCharacterRepresenting(colladaConverterMapper.isCharacterRepresenting(materialId));
             }
         }
     }
@@ -112,11 +112,11 @@ public class Shape3DBuilder {
         List<Shape3DMaterialConfig> shape3DMaterialConfigs = new ArrayList<>();
         element3Ds.forEach(element3D -> element3D.getVertexContainers().forEach(vertexContainer -> {
             shape3DMaterialConfigs.add(new Shape3DMaterialConfig()
-                    .materialId(vertexContainer.getMaterialId())
-                    .materialName(vertexContainer.getMaterialName())
-                    .phongMaterialConfig(vertexContainer.getPhongMaterialConfig())
-                    .characterRepresenting(vertexContainer.isCharacterRepresenting())
-                    .alphaToCoverage(vertexContainer.isAlphaToCoverage()));
+                    .materialId(vertexContainer.getShape3DMaterialConfig().getMaterialId())
+                    .materialName(vertexContainer.getShape3DMaterialConfig().getMaterialName())
+                    .phongMaterialConfig(vertexContainer.getShape3DMaterialConfig().getPhongMaterialConfig())
+                    .characterRepresenting(vertexContainer.getShape3DMaterialConfig().isCharacterRepresenting())
+                    .alphaToCoverage(vertexContainer.getShape3DMaterialConfig().isAlphaToCoverage()));
         }));
         shape3DConfig.setShape3DMaterialConfigs(shape3DMaterialConfigs);
         return shape3DConfig;

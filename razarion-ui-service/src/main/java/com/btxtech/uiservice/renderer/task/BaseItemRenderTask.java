@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
-import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractDemolitionVertexContainerRenderUnit;
@@ -34,8 +33,6 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private BaseItemUiService baseItemUiService;
     @Inject
     private Shape3DUiService shape3DUiService;
-    @Inject
-    private VisualUiService visualUiService;
 
     @PostConstruct
     public void postConstruct() {
@@ -135,7 +132,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                    if (turretMaterialId != null && turretMaterialId.equals(vertexContainer.getMaterialId())) {
+                    if (turretMaterialId != null && turretMaterialId.equals(vertexContainer.getShape3DMaterialConfig().getMaterialId())) {
                         continue;
                     }
                     CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
@@ -167,7 +164,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                    if (turretMaterialId != null && turretMaterialId.equals(vertexContainer.getMaterialId())) {
+                    if (turretMaterialId != null && turretMaterialId.equals(vertexContainer.getShape3DMaterialConfig().getMaterialId())) {
                         continue;
                     }
                     CommonRenderComposite<AbstractDemolitionVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();

@@ -1,6 +1,7 @@
 package com.btxtech.server.collada;
 
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.shape.Shape3DMaterialConfig;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
@@ -62,8 +63,9 @@ public class NodeScene extends NameIdColladaXml {
             VertexContainerBuffer vertexContainerBuffer = geometry.getMesh().createVertexContainerBuffer();
             VertexContainer vertexContainer = new VertexContainer();
             vertexContainer.setShapeTransform(transform);
-            vertexContainer.setMaterialId(materialId);
-            vertexContainer.setMaterialName(materialName);
+            Shape3DMaterialConfig shape3DMaterialConfig = new Shape3DMaterialConfig();
+            shape3DMaterialConfig.setMaterialId(materialId);
+            shape3DMaterialConfig.setMaterialName(materialName);
             vertexContainer.setVerticesCount(vertexContainerBuffer.calculateVertexCount());
             if (effect != null && effect.getTechnique() != null) {
                 PhongMaterialConfig phongMaterialConfig = new PhongMaterialConfig()
@@ -72,10 +74,11 @@ public class NodeScene extends NameIdColladaXml {
                 if (effect.getTechnique().getSpecular() != null) {
                     phongMaterialConfig.setSpecularStrength(effect.getTechnique().getSpecular().getR());
                 }
-                vertexContainer.setPhongMaterialConfig(phongMaterialConfig);
+                shape3DMaterialConfig.setPhongMaterialConfig(phongMaterialConfig);
                 // vertexContainer.setDiffuse(effect.getTechnique().getDiffuse());
                 // vertexContainer.setEmission(effect.getTechnique().getEmission());
             }
+            vertexContainer.setShape3DMaterialConfig(shape3DMaterialConfig);
             element3DBuilder.addVertexContainer(vertexContainer, vertexContainerBuffer);
         }
         return element3DBuilder;

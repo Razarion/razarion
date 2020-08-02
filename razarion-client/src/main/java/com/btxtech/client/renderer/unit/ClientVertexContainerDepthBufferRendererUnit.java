@@ -68,7 +68,7 @@ public class ClientVertexContainerDepthBufferRendererUnit extends AbstractVertex
     @Override
     protected void draw(ModelMatrices modelMatrices) {
         webGlFacade.uniformMatrix4fv(uModelMatrix, modelMatrices.getModel());
-        webGlFacade.uniform1b(characterRepresenting, modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting());
+        webGlFacade.uniform1b(characterRepresenting, modelMatrices.getColor() != null && getRenderData().getShape3DMaterialConfig().isCharacterRepresenting());
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
