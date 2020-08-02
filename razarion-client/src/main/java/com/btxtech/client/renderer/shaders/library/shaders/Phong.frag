@@ -32,7 +32,7 @@ vec3 perturbNormalArb(vec3 surf_pos, vec3 surf_norm, vec2 dHdxy) {
     return normalize(abs(fDet) * surf_norm - vGrad);
 }
 
-vec4 phongCutoff(PhongMaterial phongMaterial, vec2 uv) {
+vec4 phongAlpha(PhongMaterial phongMaterial, vec2 uv) {
     vec3 normal = perturbNormalArb(-vViewPosition, normalize(vNormal), dHdxy_fwd(phongMaterial.bumpMap, phongMaterial.bumpMapDepth, phongMaterial.scale, uv));
     vec3 viewDir = normalize(vViewPosition);
 
@@ -45,7 +45,7 @@ vec4 phongCutoff(PhongMaterial phongMaterial, vec2 uv) {
 }
 
 vec3 phong(PhongMaterial phongMaterial, vec2 uv) {
-    return phongCutoff(phongMaterial, uv).rgb;
+    return phongAlpha(phongMaterial, uv).rgb;
 }
 
 //-$$$-CHUNK functions END
