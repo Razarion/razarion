@@ -1,8 +1,6 @@
 package com.btxtech.server.persistence.surface;
 
 import com.btxtech.shared.dto.DrivewayConfig;
-import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ObjectNameIdProvider;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,7 +14,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "SLOPE_DRIVEWAY")
-public class DrivewayConfigEntity implements ObjectNameIdProvider {
+public class DrivewayConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -28,12 +26,12 @@ public class DrivewayConfigEntity implements ObjectNameIdProvider {
     }
 
     public DrivewayConfig toDrivewayConfig() {
-        return new DrivewayConfig().setId(id).setAngle(angle);
+        return new DrivewayConfig().id(id).angle(angle).internalName(internalName);
     }
 
-    @Override
-    public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(id, internalName);
+    public void fromDrivewayConfig(DrivewayConfig config) {
+        internalName = config.getInternalName();
+        angle = config.getAngle();
     }
 
     @Override

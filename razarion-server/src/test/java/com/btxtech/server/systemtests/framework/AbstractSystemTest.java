@@ -45,7 +45,7 @@ public abstract class AbstractSystemTest extends ServerTestHelper {
         }
     }
 
-    public <T> void runUnauthorizedTest(Class<T> testClass, Consumer<T> underTestConsumer, RestConnection.TestUser ... unauthorizedUsers) {
+    public <T> void runUnauthorizedTest(Class<T> testClass, Consumer<T> underTestConsumer, RestConnection.TestUser... unauthorizedUsers) {
         T underTest = defaultRestConnection.proxy(testClass);
         Arrays.stream(unauthorizedUsers).forEach(unauthorizedUser -> {
             defaultRestConnection.login(unauthorizedUser);
@@ -91,6 +91,7 @@ public abstract class AbstractSystemTest extends ServerTestHelper {
             }
             // https://www.baeldung.com/jackson-compare-two-json-objects
             ObjectMapper mapper = new ObjectMapper();
+//            mapper.writeValue(new File("actual.json"), actual);
 //            System.out.println("-----------------------------------");
 //            System.out.println(mapper.writeValueAsString(actual));
 //            System.out.println("-----------------------------------");

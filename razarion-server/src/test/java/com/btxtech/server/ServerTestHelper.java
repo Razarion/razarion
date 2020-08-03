@@ -30,6 +30,7 @@ import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.scene.SceneEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
+import com.btxtech.server.persistence.surface.DrivewayConfigEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeShapeEntity;
@@ -48,6 +49,7 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
@@ -188,6 +190,8 @@ public class ServerTestHelper {
     // SlopeConfigEntity
     public static int SLOPE_LAND_CONFIG_ENTITY_1;
     public static int SLOPE_WATER_CONFIG_ENTITY_2;
+    // SlopeConfigEntity
+    public static int DRIVEWAY_CONFIG_ENTITY_1;
     // Image
     public static int onePixelImageId;
     private EntityManagerFactory entityManagerFactory;
@@ -274,6 +278,13 @@ public class ServerTestHelper {
         cleanupAfterTests.add(Arrays.asList(
                 new CleanupAfterTest().entity(SlopeShapeEntity.class),
                 new CleanupAfterTest().entity(SlopeConfigEntity.class)));
+    }
+
+    protected void setupDrivewayConfig() {
+        DrivewayConfigEntity drivewayConfigEntity = new DrivewayConfigEntity();
+        drivewayConfigEntity.fromDrivewayConfig(new DrivewayConfig().angle(Math.toRadians(20)));
+        DRIVEWAY_CONFIG_ENTITY_1 = persistInTransaction(drivewayConfigEntity).getId();
+        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(DrivewayConfigEntity.class)));
     }
 
     protected SlopeConfigEntity createLandSlopeConfig() {
@@ -472,6 +483,7 @@ public class ServerTestHelper {
     public void setupPlanetDb() {
         setupGroundConfig();
         setupSlopeConfig();
+        setupDrivewayConfig();
 
         runInTransaction(entityManager -> {
             PlanetEntity planetEntity = new PlanetEntity();
@@ -529,8 +541,8 @@ public class ServerTestHelper {
         terrainSlopePositionLand.setSlopeConfigEntity(entityManager.find(SlopeConfigEntity.class, SLOPE_LAND_CONFIG_ENTITY_1));
         terrainSlopePositionLand.setPolygon(Arrays.asList(
                 new TerrainSlopeCornerEntity().position(new DecimalPosition(50, 50)),
-                new TerrainSlopeCornerEntity().position(new DecimalPosition(400, 50)),
-                new TerrainSlopeCornerEntity().position(new DecimalPosition(400, 200)),
+                new TerrainSlopeCornerEntity().position(new DecimalPosition(400, 50)).drivewayConfigEntity(entityManager.find(DrivewayConfigEntity.class, DRIVEWAY_CONFIG_ENTITY_1)),
+                new TerrainSlopeCornerEntity().position(new DecimalPosition(400, 200)).drivewayConfigEntity(entityManager.find(DrivewayConfigEntity.class, DRIVEWAY_CONFIG_ENTITY_1)),
                 new TerrainSlopeCornerEntity().position(new DecimalPosition(50, 200))));
         return terrainSlopePositionLand;
     }

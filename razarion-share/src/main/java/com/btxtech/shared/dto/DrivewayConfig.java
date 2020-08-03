@@ -4,25 +4,46 @@ package com.btxtech.shared.dto;
  * Created by Beat
  * on 07.07.2017.
  */
-public class DrivewayConfig {
+public class DrivewayConfig implements Config {
     private int id;
+    private String internalName;
     double angle; // 0 is flat, 90 is perpendicularly
 
+    @Override
     public int getId() {
         return id;
     }
 
-    public DrivewayConfig setId(int id) {
-        this.id = id;
-        return this;
+    @Override
+    public String getInternalName() {
+        return internalName;
+    }
+
+    @Override
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
     }
 
     public double getAngle() {
         return angle;
     }
 
-    public DrivewayConfig setAngle(double angle) {
+    public void setAngle(double angle) {
         this.angle = angle;
+    }
+
+    public DrivewayConfig id(int id) {
+        this.id = id;
+        return this;
+    }
+
+    public DrivewayConfig internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
+    }
+
+    public DrivewayConfig angle(double angle) {
+        setAngle(angle);
         return this;
     }
 

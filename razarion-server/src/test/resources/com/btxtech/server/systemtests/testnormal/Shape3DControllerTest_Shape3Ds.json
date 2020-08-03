@@ -1,6 +1,6 @@
 [
   {
-    "id": 78,
+    "id": 6,
     "internalName": "Scene:Scene",
     "element3Ds": [
       {
@@ -8,15 +8,19 @@
         "vertexContainers": [
           {
             "key": "78-Plane_029-Material-material",
-            "materialId": "Material-material",
-            "materialName": "Material",
-            "phongMaterialConfig": {
-              "textureId": "$textureId1$",
-              "scale": 1.0,
-              "bumpMapId": "$bumpMapId1$",
-              "bumpMapDepth": 0.5,
-              "shininess": null,
-              "specularStrength": null
+            "shape3DMaterialConfig": {
+              "materialId": "Material-material",
+              "materialName": "Material",
+              "phongMaterialConfig": {
+                "textureId": "$textureId1$",
+                "scale": 1.0,
+                "bumpMapId": "$bumpMapId1$",
+                "bumpMapDepth": 0.5,
+                "shininess": null,
+                "specularStrength": null
+              },
+              "characterRepresenting": false,
+              "alphaToCoverage": null
             },
             "verticesCount": 180,
             "shapeTransform": {
@@ -57,9 +61,7 @@
               "scaleX": 0.0,
               "scaleY": 0.0,
               "scaleZ": 0.0
-            },
-            "alphaToCoverage": false,
-            "characterRepresenting": false
+            }
           }
         ]
       },
@@ -68,15 +70,19 @@
         "vertexContainers": [
           {
             "key": "78-Trunk33-Material_002-material",
-            "materialId": "Material_002-material",
-            "materialName": "Material_002",
-            "phongMaterialConfig": {
-              "textureId": "$textureId2$",
-              "scale": 1.0,
-              "bumpMapId": "$bumpMapId2$",
-              "bumpMapDepth": 0.9,
-              "shininess": 50.0,
-              "specularStrength": 0.2
+            "shape3DMaterialConfig": {
+              "materialId": "Material_002-material",
+              "materialName": "Material_002",
+              "phongMaterialConfig": {
+                "textureId": "$textureId2$",
+                "scale": 1.0,
+                "bumpMapId": "$bumpMapId2$",
+                "bumpMapDepth": 0.9,
+                "shininess": 50.0,
+                "specularStrength": 0.2
+              },
+              "characterRepresenting": true,
+              "alphaToCoverage": 0.2
             },
             "verticesCount": 60,
             "shapeTransform": {
@@ -117,9 +123,7 @@
               "scaleX": 0.0,
               "scaleY": 0.0,
               "scaleZ": 0.0
-            },
-            "alphaToCoverage": true,
-            "characterRepresenting": true
+            }
           }
         ]
       }

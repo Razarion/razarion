@@ -8,6 +8,7 @@ import com.btxtech.common.DisplayUtils;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.rest.DrivewayEditorController;
 import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainObjectEditorController;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -50,7 +51,9 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @Inject
     private Caller<SlopeEditorController> slopeEditorController;
     @Inject
-    private Caller<TerrainObjectEditorController> elementEditorProvider;
+    private Caller<DrivewayEditorController> drivewayEditorController;
+    @Inject
+    private Caller<TerrainObjectEditorController> terrainObjectEditorController;
     @Inject
     private Camera camera;
     @Inject
@@ -149,7 +152,7 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
         }, exceptionHandler.restErrorHandler("SlopeEditorController.getObjectNameIds() failed: ")).getObjectNameIds();
         drivewayMode.setChecked(terrainEditor.isDrivewayMode());
         drivewaySelection.addValueChangeHandler(event -> terrainEditor.setDriveway4New(drivewaySelection.getValue()));
-        elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
+        drivewayEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
             if (objectNameIds == null || objectNameIds.isEmpty()) {
                 return;
             }
@@ -157,9 +160,9 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
             drivewaySelection.setAcceptableValues(objectNameIds);
             drivewaySelection.setValue(objectNameId);
             terrainEditor.setDriveway4New(objectNameId);
-        }, exceptionHandler.restErrorHandler("readDrivewayObjectNameIds failed: ")).readDrivewayObjectNameIds();
+        }, exceptionHandler.restErrorHandler("DrivewayEditorController.getObjectNameIds failed: ")).getObjectNameIds();
         terrainObjectSelection.addValueChangeHandler(event -> terrainEditor.setTerrainObject4New(terrainObjectSelection.getValue()));
-        elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
+        terrainObjectEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
             if (objectNameIds == null || objectNameIds.isEmpty()) {
                 return;
             }

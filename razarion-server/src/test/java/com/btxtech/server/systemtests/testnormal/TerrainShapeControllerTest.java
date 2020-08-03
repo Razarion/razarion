@@ -62,12 +62,12 @@ public class TerrainShapeControllerTest extends AbstractSystemTest {
     }
 
     @Test
-    public void getTerrainShape() throws Exception {
+    public void getTerrainShape() {
         getDefaultRestConnection().loginAdmin();
         terrainShapeController.createTerrainShape(PLANET_1_ID);
         NativeTerrainShape nativeTerrainShape = terrainShapeController.getTerrainShape(PLANET_1_ID);
         assertViaJson("/systemtests/testnormal/TerrainShapeControllerTest_getTerrainShape.json",
-                s -> s.replace("\"$SLOPE_ID$\"", Integer.toString(SLOPE_LAND_CONFIG_ENTITY_1)).replace("\"$RENDER_INNER_SLOPE_ID$\"", Integer.toString(SLOPE_LAND_CONFIG_ENTITY_1)),
+                s -> s.replace("\"$SLOPE_ID$\"", Integer.toString(SLOPE_LAND_CONFIG_ENTITY_1)),
                 null,
                 getClass(),
                 nativeTerrainShape);

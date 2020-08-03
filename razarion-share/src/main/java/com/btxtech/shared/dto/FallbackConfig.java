@@ -309,7 +309,7 @@ public final class FallbackConfig {
 
     public static List<DrivewayConfig> setupDriveways() {
         List<DrivewayConfig> drivewayConfigs = new ArrayList<>();
-        drivewayConfigs.add(new DrivewayConfig().setId(DRIVEWAY_ID_ID).setAngle(Math.toRadians(30)));
+        drivewayConfigs.add(new DrivewayConfig().id(DRIVEWAY_ID_ID).angle(Math.toRadians(30)));
         return drivewayConfigs;
     }
 

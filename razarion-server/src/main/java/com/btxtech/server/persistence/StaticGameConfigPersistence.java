@@ -15,11 +15,13 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class StaticGameConfigPersistence {
     @Inject
-    private TerrainObjectCrudPersistence terrainElementPersistence;
+    private TerrainObjectCrudPersistence terrainObjectCrudPersistence;
     @Inject
     private GroundCrudPersistence groundCrudPersistence;
     @Inject
     private SlopeCrudPersistence slopeCrudPersistence;
+    @Inject
+    private DrivewayCrudPersistence drivewayCrudPersistence;
     @Inject
     private WaterCrudPersistence waterCrudPersistence;
     @Inject
@@ -32,9 +34,9 @@ public class StaticGameConfigPersistence {
     public StaticGameConfig loadStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
         staticGameConfig.setSlopeConfigs(slopeCrudPersistence.read());
-        staticGameConfig.setDrivewayConfigs(terrainElementPersistence.loadDrivewayConfigs());
+        staticGameConfig.setDrivewayConfigs(drivewayCrudPersistence.read());
         staticGameConfig.setGroundConfigs(groundCrudPersistence.read());
-        staticGameConfig.setTerrainObjectConfigs(terrainElementPersistence.read());
+        staticGameConfig.setTerrainObjectConfigs(terrainObjectCrudPersistence.read());
         staticGameConfig.setWaterConfigs(waterCrudPersistence.read());
         staticGameConfig.setBaseItemTypes(itemTypePersistence.readBaseItemTypes());
         staticGameConfig.setResourceItemTypes(itemTypePersistence.readResourceItemTypes());
