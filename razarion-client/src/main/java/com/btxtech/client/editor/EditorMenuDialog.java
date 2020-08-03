@@ -23,6 +23,7 @@ import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
 import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditor;
+import com.btxtech.shared.rest.DrivewayEditorController;
 import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
@@ -132,6 +133,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
                 new CrudControllerButton(PlanetEditorController.class, "Planets"),
                 new CrudControllerButton(GroundEditorController.class, "Grounds"),
                 new CrudControllerButton(SlopeEditorController.class, "Slope"),
+                new CrudControllerButton(DrivewayEditorController.class, "Driveway"),
                 new CrudControllerButton(WaterEditorController.class, "Water"),
                 new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context"),
                 new CrudControllerButton(Shape3DEditorController.class, "Shape 3D"),
