@@ -94,8 +94,6 @@ public class TerrainEditorSlopeDrivewayRenderUnit extends AbstractRenderUnit<Mod
             webGlFacade.uniform4f(uColor, COLOR_NORMAL);
         }
 
-        webGlFacade.uniform1b(uColor, false);
-
         vertices.activate();
 
         webGlFacade.drawArrays(WebGLRenderingContext.LINES);
