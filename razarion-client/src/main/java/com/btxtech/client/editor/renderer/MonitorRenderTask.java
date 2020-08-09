@@ -17,7 +17,7 @@ import javax.enterprise.context.ApplicationScoped;
 public class MonitorRenderTask extends AbstractRenderTask<Void> {
     @Inject
     private RenderService renderService;
-    private boolean showDeep;
+    private boolean showDeep = true;
 
     public void showMonitor() {
         ModelRenderer<Void, CommonRenderComposite<ShadowMonitorRendererUnit, Void>, ShadowMonitorRendererUnit, Void> modelRenderer = create();
@@ -46,5 +46,11 @@ public class MonitorRenderTask extends AbstractRenderTask<Void> {
 
     public void setShowDeep(boolean showDeep) {
         this.showDeep = showDeep;
+    }
+
+    @Override
+    public boolean castShadow() {
+        // Prevent [.WebGL-0000019514AD4DA0] GL_INVALID_OPERATION: Feedback loop formed between Framebuffer and active Texture.
+        return false;
     }
 }

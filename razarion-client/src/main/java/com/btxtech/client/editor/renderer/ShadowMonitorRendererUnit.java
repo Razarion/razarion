@@ -3,18 +3,15 @@ package com.btxtech.client.editor.renderer;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
-import com.btxtech.client.renderer.engine.shaderattribute.ShaderTextureCoordinateAttribute;
-import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
-import com.btxtech.shared.datatypes.TextureCoordinate;
-import com.btxtech.shared.datatypes.Triangle;
-import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
+import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
@@ -37,45 +34,50 @@ public class ShadowMonitorRendererUnit extends AbstractRenderUnit<Void> {
     private ClientRenderServiceImpl renderService;
     @Inject
     private MonitorRenderTask monitorRenderTask;
-    private VertexShaderAttribute positions;
-    private ShaderTextureCoordinateAttribute textureCoordinates;
-    private WebGlUniformTexture textureColor;
-    private WebGlUniformTexture textureDepth;
+    private Vec3Float32ArrayShaderAttribute positions;
+    private Vec2Float32ArrayShaderAttribute uvs;
+   private WebGlUniformTexture colorTexture;
+   private WebGlUniformTexture depthTesture;
     private WebGLUniformLocation uDeepMap;
 
     @Override
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.monitorVertexShader(), Shaders.INSTANCE.monitorFragmentShader()));
-        positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
-        textureCoordinates = webGlFacade.createShaderTextureCoordinateAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
-        textureColor = webGlFacade.createEmptyWebGLTexture("uColorSampler");
-        textureDepth = webGlFacade.createEmptyWebGLTexture("uDeepSampler");
-        uDeepMap = webGlFacade.getUniformLocation("uDeepMap");
-    }
-
-    @Override
-    public void setupImages() {
-
+        positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        uvs = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_UV);
+        colorTexture = webGlFacade.createEmptyWebGLTexture("uColorSampler");
+        depthTesture = webGlFacade.createEmptyWebGLTexture("uDepthSampler");
+        uDeepMap = webGlFacade.getUniformLocation("uDepthMap");
     }
 
     @Override
     public void fillBuffers(Void aVoid) {
-        VertexList vertexList = new VertexList();
         double monitorWidth = 2.0 * SIDE_LENGTH / (double) gameCanvas.getWidth();
         double monitorHeight = 2.0 * SIDE_LENGTH / (double) gameCanvas.getHeight();
-        Triangle triangle = new Triangle(new Vertex(0, 0, 0), new TextureCoordinate(0, 0),
-                new Vertex(monitorWidth, 0, 0), new TextureCoordinate(1, 0),
-                new Vertex(0, monitorHeight, 0), new TextureCoordinate(0, 1));
-        vertexList.add(triangle);
-        triangle = new Triangle(new Vertex(monitorWidth, monitorHeight, 0), new TextureCoordinate(1, 1),
-                new Vertex(0, monitorHeight, 0), new TextureCoordinate(0, 1),
-                new Vertex(monitorWidth, 0, 0), new TextureCoordinate(1, 0));
-        vertexList.add(triangle);
 
-        positions.fillBuffer(vertexList.getVertices());
-        textureCoordinates.fillBuffer(vertexList.getTextureCoordinates());
+        Float32Array positions = new Float32Array(18);
+        // Triangle 1
+        positions.set(new double[]{0, 0, 0}, 0);
+        positions.set(new double[]{monitorWidth, 0, 0}, 3);
+        positions.set(new double[]{0, monitorHeight, 0}, 6);
+        // Triangle 2
+        positions.set(new double[]{monitorWidth, 0, 0}, 9);
+        positions.set(new double[]{monitorWidth, monitorHeight, 0}, 12);
+        positions.set(new double[]{0, monitorHeight, 0}, 15);
+        this.positions.fillFloat32Array(positions);
 
-        setElementCount(vertexList);
+        Float32Array uvs = new Float32Array(12);
+        // Triangle 1
+        uvs.set(new double[]{0, 0}, 0);
+        uvs.set(new double[]{1, 0}, 2);
+        uvs.set(new double[]{0, 1}, 4);
+        // Triangle 2
+        uvs.set(new double[]{1, 0}, 6);
+        uvs.set(new double[]{1, 1}, 8);
+        uvs.set(new double[]{0, 1}, 10);
+        this.uvs.fillFloat32Array(uvs);
+
+        setElementCount(6);
     }
 
     @Override
@@ -90,14 +92,24 @@ public class ShadowMonitorRendererUnit extends AbstractRenderUnit<Void> {
         webGlFacade.uniform1b(uDeepMap, monitorRenderTask.isShowDeep());
 
         positions.activate();
-        textureCoordinates.activate();
+        uvs.activate();
 
-
-        textureColor.setWebGLTexture(renderService.getColorTexture());
-        textureColor.activate();
-        textureDepth.setWebGLTexture(renderService.getDepthTexture());
-        textureDepth.activate();
+        colorTexture.setWebGLTexture(renderService.getColorTexture());
+        colorTexture.activate();
+        depthTesture.setWebGLTexture(renderService.getDepthTexture());
+        depthTesture.activate();
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
+    }
+
+    @Override
+    public void dispose() {
+        positions.deleteBuffer();
+        uvs.deleteBuffer();
+    }
+
+    @Override
+    public String helperString() {
+        return "ShadowMonitorRendererUnit";
     }
 }

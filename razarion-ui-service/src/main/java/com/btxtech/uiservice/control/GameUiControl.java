@@ -31,7 +31,6 @@ import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.cockpit.TopRightCockpit;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
-import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -167,10 +166,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void start() {
-        if (!renderService.depthTextureSupported()) {
-            modalDialogManager.showMessageDialog(I18nHelper.getConstants().oldBrowserDialogTitle(), I18nHelper.getConstants().oldBrowserDialogMessage());
-        }
-
         startTimeStamp = new Date();
         cockpitService.show(userUiService.getUserContext());
         chatUiService.start();

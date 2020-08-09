@@ -30,9 +30,4 @@ public class TestRenderService extends RenderService {
     protected void prepare(RenderUnitControl renderUnitControl) {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public boolean depthTextureSupported() {
-        throw new UnsupportedOperationException();
-    }
 }

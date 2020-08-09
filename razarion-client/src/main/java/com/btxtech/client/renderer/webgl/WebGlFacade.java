@@ -43,26 +43,15 @@ public class WebGlFacade {
     public static final String A_VERTEX_NORMAL = "objectNormal";
     public static final String A_VERTEX_UV = "uv";
     @Deprecated
-    public static final String A_VERTEX_TANGENT = "aVertexTangent";
     public static final String A_TEXTURE_COORDINATE = "aTextureCoord";
-    public static final String A_BARYCENTRIC = "aBarycentric";
-    // Attributes Terrain
-    public static final String A_GROUND_SPLATTING = "aGroundSplatting";
     // Uniform common
     public static final String U_COLOR = "uColor";
-    public static final String U_TEXTURE = "uTexture";
     // Uniform model matrix
     public static final String U_VIEW_MATRIX = "viewMatrix";
     public static final String U_PROJECTION_MATRIX = "projectionMatrix";
     public static final String U_VIEW_NORM_MATRIX = "normalMatrix";
     public static final String U_MODEL_MATRIX = "modelMatrix";
     public static final String U_SHADOW_MATRIX = "shadowMatrix";
-    // Uniform Light
-    public static final String U_LIGHT_DIRECTION = "uLightDirection";
-    public static final String U_LIGHT_DIFFUSE = "uLightDiffuse";
-    public static final String U_LIGHT_AMBIENT = "uLightAmbient";
-    public static final String U_LIGHT_SPECULAR_INTENSITY = "uLightSpecularIntensity";
-    public static final String U_LIGHT_SPECULAR_HARDNESS = "uLightSpecularHardness";
     // Unifrom Editor
     public static final String U_CURSOR_TYPE = "uCursorType";
 

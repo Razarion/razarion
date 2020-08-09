@@ -895,10 +895,6 @@ public interface I18nConstants {
 
     String planetRestartMessage();
 
-    String oldBrowserDialogTitle();
-
-    String oldBrowserDialogMessage();
-
     String serverRestartTitle();
 
     String serverShuttingDown();
