@@ -1,10 +1,8 @@
 package com.btxtech.client.editor.renderpanel;
 
-import com.btxtech.client.editor.renderer.MonitorRenderTask;
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
+import com.btxtech.client.editor.renderer.MonitorRenderTask;
 import com.btxtech.client.guielements.CommaDoubleBox;
-import com.btxtech.common.DisplayUtils;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
@@ -92,9 +90,6 @@ public class RenderEngineEditorPanel extends AbstractEditor {
     private HTMLInputElement rotateZBox;
     @Inject
     @DataField
-    private Label directionLabel;
-    @Inject
-    @DataField
     private DoubleBox openingAngleYSlider;
     @Inject
     @DataField
@@ -110,7 +105,6 @@ public class RenderEngineEditorPanel extends AbstractEditor {
         showDeepMap.setChecked(monitorRenderTask.isShowDeep());
         // TODO wireMode.setChecked(renderService.isWire());
         showNorm.setChecked(renderService.isShowNorm());
-        displayLightDirectionLabel();
         rendererCount.setText(Integer.toString(renderService.getRenderQueueSize()));
         renderTasks.setValue(renderService.getRenderTasks().stream().map(RenderTaskModel::new).collect(Collectors.toList()));
         updateCamera();
@@ -150,11 +144,6 @@ public class RenderEngineEditorPanel extends AbstractEditor {
     @EventHandler("showNorm")
     public void showNormChanged(ChangeEvent e) {
         renderService.setShowNorm(showNorm.getChecked());
-    }
-
-    private void displayLightDirectionLabel() {
-        Vertex direction = camera.getDirection();
-        directionLabel.setText(DisplayUtils.formatVertex(direction));
     }
 
     @EventHandler("translateX")
