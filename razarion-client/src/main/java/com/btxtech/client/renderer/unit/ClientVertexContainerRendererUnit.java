@@ -55,7 +55,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     @Override
     public void init() {
         webGlFacade.enableOESStandartDerivatives();
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.vertexContainerVertexShader(), Shaders.INSTANCE.vertexContainerFragmentShader()).enableTransformation(true).enableReceiveShadow());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.vertexContainerVertexShader(), Shaders.INSTANCE.vertexContainerFragmentShader()).enableTransformation(true)/*.enableReceiveShadow()*/.enableCastShadow());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         uvs = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_UV);
@@ -87,6 +87,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     @Override
     protected void prepareDraw() {
         webGlFacade.useProgram();
+        webGlFacade.setTransformationUniforms();
         if (getRenderData().getShape3DMaterialConfig().getAlphaToCoverage() != null) {
             webGlFacade.getCtx3d().enable(SAMPLE_ALPHA_TO_COVERAGE);
             webGlFacade.uniform1f(alphaToCoverage, getRenderData().getShape3DMaterialConfig().getAlphaToCoverage());

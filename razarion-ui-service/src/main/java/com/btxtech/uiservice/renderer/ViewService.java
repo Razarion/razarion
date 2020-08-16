@@ -155,4 +155,28 @@ public class ViewService {
     public Rectangle2D getCurrentInnerAabb() {
         return currentInnerAabb;
     }
+
+    public NativeMatrix getViewMatrix() {
+        return viewMatrix;
+    }
+
+    public NativeMatrix getViewNormMatrix() {
+        return viewNormMatrix;
+    }
+
+    public NativeMatrix getPerspectiveMatrix() {
+        return perspectiveMatrix;
+    }
+
+    public NativeMatrix getViewShadowMatrix() {
+        return viewShadowMatrix;
+    }
+
+    public NativeMatrix getPerspectiveShadowMatrix() {
+        return perspectiveShadowMatrix;
+    }
+
+    public NativeMatrix getShadowLookupMatrix() {
+        return shadowLookupMatrix;
+    }
 }

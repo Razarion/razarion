@@ -25,6 +25,8 @@ import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
+import com.btxtech.uiservice.renderer.RenderService;
+import com.btxtech.uiservice.renderer.ViewService;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
@@ -60,6 +62,8 @@ public class WebGlFacade {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
+    private ViewService viewService;
+    @Inject
     private VisualUiService visualUiService;
     @Inject
     private ClientRenderServiceImpl renderService;
@@ -68,18 +72,36 @@ public class WebGlFacade {
     @Inject
     private WebGLTextureContainer textureContainer;
     private AbstractRenderUnit abstractRenderUnit;
+    private WebGlFacadeConfig webGlFacadeConfig;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
     private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
+    private WebGLUniformLocation viewMatrixUniformLocation;
+    private WebGLUniformLocation viewNormMatrixUniformLocation;
+    private WebGLUniformLocation perspectiveMatrixUniformLocation;
+    private WebGLUniformLocation receiveShadowMatrixUniformLocation;
     private WebGLUniformLocation uShadowAlpha;
     private WebGLUniformLocation uShadowTexture;
 
+
     public void init(WebGlFacadeConfig webGlFacadeConfig) {
+        this.webGlFacadeConfig = webGlFacadeConfig;
         abstractRenderUnit = webGlFacadeConfig.getAbstractRenderUnit();
         webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig);
+        if (webGlFacadeConfig.isTransformation()) {
+            if (webGlFacadeConfig.isNormTransformation()) {
+                viewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
+                viewNormMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_NORM_MATRIX);
+                perspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
+            } else {
+                viewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
+                perspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
+            }
+        }
         if (webGlFacadeConfig.isReceiveShadow()) {
+            receiveShadowMatrixUniformLocation = getUniformLocation(WebGlFacade.U_SHADOW_MATRIX);
             shadowWebGlTextureId = createWebGlTextureId();
-            // TODO uShadowAlpha = getUniformLocation("uShadowAlpha");
-            // TODO uShadowTexture = getUniformLocation("uShadowTexture");
+            uShadowAlpha = getUniformLocation("uShadowAlpha");
+            uShadowTexture = getUniformLocation("uDepthTexture");
         }
     }
 
@@ -257,8 +279,8 @@ public class WebGlFacade {
     }
 
     public void activateReceiveShadow() {
-        if (shadowWebGlTextureId == null) {
-            throw new IllegalStateException("Shadow must be enabled before");
+        if (shadowWebGlTextureId == null || renderService.getPass() == RenderService.Pass.SHADOW) {
+            return;
         }
         uniform1f(uShadowAlpha, (float) visualUiService.getPlanetVisualConfig().getShadowAlpha());
         uniform1i(uShadowTexture, shadowWebGlTextureId.getUniformValue());
@@ -280,5 +302,45 @@ public class WebGlFacade {
 
     public VisualUiService getVisualUiService() {
         return visualUiService;
+    }
+
+    public void setTransformationUniforms() {
+        switch (renderService.getPass()) {
+            case MAIN:
+                if (viewMatrixUniformLocation != null) {
+                    gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getViewMatrix()));
+                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
+                }
+                if (viewNormMatrixUniformLocation != null) {
+                    gameCanvas.getCtx3d().uniformMatrix4fv(viewNormMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getViewNormMatrix()));
+                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_NORM_MATRIX", gameCanvas.getCtx3d());
+                }
+                if (perspectiveMatrixUniformLocation != null) {
+                    // Perspective
+                    gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getPerspectiveMatrix()));
+                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", gameCanvas.getCtx3d());
+                }
+                if(receiveShadowMatrixUniformLocation != null) {
+                    gameCanvas.getCtx3d().uniformMatrix4fv(receiveShadowMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getShadowLookupMatrix()));
+                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv uShadowMatrix", gameCanvas.getCtx3d());
+                }
+                break;
+            case SHADOW:
+                if (!webGlFacadeConfig.isCastShadow()) {
+                    return;
+                }
+                if (viewMatrixUniformLocation != null) {
+                    gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getViewShadowMatrix()));
+                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
+                }
+                if (perspectiveMatrixUniformLocation != null) {
+                    // Perspective
+                    gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getPerspectiveShadowMatrix()));
+                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", gameCanvas.getCtx3d());
+                }
+                break;
+            default:
+                throw new IllegalStateException("Dont know how to setup transformation uniforms for render pass: " + renderService.getPass());
+        }
     }
 }

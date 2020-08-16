@@ -27,6 +27,7 @@ public abstract class RenderService {
     private PerfmonService perfmonService;
     private List<AbstractRenderTask> renderTasks = new ArrayList<>();
     private boolean showNorm;
+    private Pass pass;
 
     protected abstract void internalSetup();
 
@@ -78,19 +79,26 @@ public abstract class RenderService {
     public void render() {
         try {
             perfmonService.onEntered(PerfmonEnum.RENDERER);
+
             long timeStamp = System.currentTimeMillis();
             renderTasks.forEach(renderTask -> renderTask.prepareRender(timeStamp));
+
+            pass = Pass.SHADOW;
             prepareDepthBufferRendering();
             for (RenderUnitControl renderUnitControl : RenderUnitControl.getRenderUnitControls()) {
                 // prepare(renderUnitControl);
                 renderTasks.stream().filter(abstractRenderTask -> abstractRenderTask.castShadow()).forEach(abstractRenderTask -> abstractRenderTask.draw(renderUnitControl));
             }
+
+            pass = Pass.MAIN;
             prepareMainRendering();
 
             for (RenderUnitControl renderUnitControl : RenderUnitControl.getRenderUnitControls()) {
                 prepare(renderUnitControl);
                 renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(renderUnitControl));
             }
+
+            pass = null;
             prepare(RenderUnitControl.NORMAL);
 
             if (showNorm) {
@@ -128,6 +136,10 @@ public abstract class RenderService {
         return showNorm;
     }
 
+    public Pass getPass() {
+        return pass;
+    }
+
     public void setShowNorm(boolean showNorm) {
         this.showNorm = showNorm;
         if (showNorm) {
@@ -143,5 +155,10 @@ public abstract class RenderService {
 
     public List<AbstractRenderTask> getRenderTasks() {
         return renderTasks;
+    }
+
+    public enum Pass {
+        SHADOW,
+        MAIN
     }
 }

@@ -53,7 +53,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     @Override
     public void init() {
         webGlFacade.enableOESStandartDerivatives();
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader()).enableTransformation(true).enableReceiveShadow());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader()).enableTransformation(true).enableCastShadow()/*.enableReceiveShadow()*/);
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         uvs = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_UV);
@@ -87,6 +87,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     @Override
     protected void draw(UiTerrainSlopeTile uiTerrainSlopeTile) {
         webGlFacade.useProgram();
+        webGlFacade.setTransformationUniforms();
 
         lightUniforms.setLightUniforms(webGlFacade);
 

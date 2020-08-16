@@ -45,7 +45,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     @Override
     public void init() {
         webGlFacade.enableOESStandartDerivatives();
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader()).enableTransformation(true).enableReceiveShadow());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader()).enableTransformation(true).enableReceiveShadow().enableCastShadow());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         lightUniforms = new LightUniforms(webGlFacade);
@@ -68,6 +68,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     @Override
     public void draw(UiTerrainGroundTile uiTerrainGroundTile) {
         webGlFacade.useProgram();
+        webGlFacade.setTransformationUniforms();
 
         lightUniforms.setLightUniforms(webGlFacade);
 

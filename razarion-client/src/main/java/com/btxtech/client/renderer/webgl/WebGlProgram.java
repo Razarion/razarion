@@ -4,7 +4,6 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.shaders.library.GlslLibrarian;
 import com.btxtech.client.utils.DomConstants;
 import com.btxtech.shared.system.alarm.AlarmService;
-import com.btxtech.uiservice.renderer.ViewService;
 import elemental2.webgl.WebGLProgram;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLShader;
@@ -28,82 +27,16 @@ public class WebGlProgram {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private ViewService viewService;
-    @Inject
     private AlarmService alarmService;
     @Inject
     private GlslLibrarian glslLibrarian;
     private Runnable transformUnregisterHandler;
     private Runnable shadowLookupUnregisterHandler;
-    private WebGLUniformLocation viewMatrixUniformLocation;
-    private WebGLUniformLocation viewNormMatrixUniformLocation;
-    private WebGLUniformLocation perspectiveMatrixUniformLocation;
-    private WebGLUniformLocation shadowViewMatrixUniformLocation;
-    private WebGLUniformLocation shadowPerspectiveMatrixUniformLocation;
-    private WebGLUniformLocation shadowMatrixUniformLocation;
 
     public void createProgram(WebGlFacadeConfig webGlFacadeConfig) {
         vs = createShader(WebGLRenderingContext.VERTEX_SHADER, glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode(), webGlFacadeConfig.getAbstractRenderUnit().getGlslVertexDefines()));
         fs = createShader(WebGLRenderingContext.FRAGMENT_SHADER, glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode(), webGlFacadeConfig.getAbstractRenderUnit().getGlslFragmentDefines()));
         program = createAndUseProgram(vs, fs);
-
-        if (webGlFacadeConfig.isTransformation()) {
-            if (webGlFacadeConfig.isNormTransformation()) {
-                useProgram();
-                viewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
-                viewNormMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_NORM_MATRIX);
-                perspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
-                transformUnregisterHandler = viewService.addAndCallTransformationNormListener((viewMatrix, viewNormMatrix, perspectiveMatrix) -> {
-                    useProgram();
-                    // View
-                    gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewMatrix));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
-                    // View Norm
-                    gameCanvas.getCtx3d().uniformMatrix4fv(viewNormMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewNormMatrix));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_NORM_MATRIX", gameCanvas.getCtx3d());
-                    // Perspective
-                    gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveMatrixUniformLocation, false, WebGlUtil.toFloat32Array(perspectiveMatrix));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", gameCanvas.getCtx3d());
-                });
-            } else {
-                useProgram();
-                viewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
-                perspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
-                transformUnregisterHandler = viewService.addAndCallTransformationListener((viewMatrix, perspectiveMatrix) -> {
-                    useProgram();
-                    // View
-                    gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewMatrix));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
-                    // Perspective
-                    gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveMatrixUniformLocation, false, WebGlUtil.toFloat32Array(perspectiveMatrix));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", gameCanvas.getCtx3d());
-                });
-            }
-        } else if (webGlFacadeConfig.isShadowTransformation()) {
-            useProgram();
-            shadowViewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
-            shadowPerspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
-            transformUnregisterHandler = viewService.addAndCallShadowTransformationListener((viewShadowMatrix, perspectiveShadowMatrix) -> {
-                useProgram();
-                // View
-                gameCanvas.getCtx3d().uniformMatrix4fv(shadowViewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewShadowMatrix));
-                WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
-                // Perspective
-                gameCanvas.getCtx3d().uniformMatrix4fv(shadowPerspectiveMatrixUniformLocation, false, WebGlUtil.toFloat32Array(perspectiveShadowMatrix));
-                WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", gameCanvas.getCtx3d());
-            });
-        }
-
-        if (webGlFacadeConfig.isReceiveShadow()) {
-            useProgram();
-            shadowMatrixUniformLocation = getUniformLocation(WebGlFacade.U_SHADOW_MATRIX);
-            shadowLookupUnregisterHandler = viewService.addAndCallShadowLookupTransformationListener(shadowLookupMatrix -> {
-                useProgram();
-                gameCanvas.getCtx3d().uniformMatrix4fv(shadowMatrixUniformLocation, false, WebGlUtil.toFloat32Array(shadowLookupMatrix));
-                WebGlUtil.checkLastWebGlError("uniformMatrix4fv uShadowMatrix", gameCanvas.getCtx3d());
-            });
-        }
-
     }
 
     public double getAttributeLocation(String attributeName) {

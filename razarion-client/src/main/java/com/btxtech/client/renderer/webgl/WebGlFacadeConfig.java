@@ -13,8 +13,8 @@ public class WebGlFacadeConfig {
     private TextResource fragmentShaderCode;
     private boolean transformation;
     private boolean normTransformation;
-    private boolean shadowTransformation;
     private boolean receiveShadow;
+    private boolean castShadow;
 
     public WebGlFacadeConfig(AbstractRenderUnit abstractRenderUnit, TextResource vertexShaderCode, TextResource fragmentShaderCode) {
         this.abstractRenderUnit = abstractRenderUnit;
@@ -24,19 +24,22 @@ public class WebGlFacadeConfig {
 
     public WebGlFacadeConfig enableTransformation(boolean normTransformation) {
         transformation = true;
-        shadowTransformation = false;
         this.normTransformation = normTransformation;
         return this;
     }
 
+    @Deprecated
     public WebGlFacadeConfig enableShadowTransformation() {
-        shadowTransformation = true;
-        transformation = false;
         return this;
     }
 
     public WebGlFacadeConfig enableReceiveShadow() {
         receiveShadow = true;
+        return this;
+    }
+
+    public WebGlFacadeConfig enableCastShadow() {
+        castShadow = true;
         return this;
     }
 
@@ -60,11 +63,11 @@ public class WebGlFacadeConfig {
         return normTransformation;
     }
 
-    public boolean isShadowTransformation() {
-        return shadowTransformation;
-    }
-
     public boolean isReceiveShadow() {
         return receiveShadow;
+    }
+
+    public boolean isCastShadow() {
+        return castShadow;
     }
 }
