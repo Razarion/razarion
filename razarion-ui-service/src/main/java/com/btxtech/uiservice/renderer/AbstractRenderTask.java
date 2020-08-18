@@ -41,11 +41,6 @@ public abstract class AbstractRenderTask<T> {
         return 0;
     }
 
-    // Override in subclasses
-    public boolean castShadow() {
-        return true;
-    }
-
     public void removeAll(T model) {
         for (Iterator<ModelRenderer> iterator = modelRenderers.iterator(); iterator.hasNext(); ) {
             ModelRenderer modelRenderer = iterator.next();
@@ -93,12 +88,6 @@ public abstract class AbstractRenderTask<T> {
     public void draw(RenderUnitControl renderUnitControl) {
         if (active) {
             modelRenderers.forEach(modelRenderer -> modelRenderer.draw(renderUnitControl, interpolationFactor));
-        }
-    }
-
-    public void drawDepthBuffer() {
-        if (active) {
-            modelRenderers.forEach(modelRenderer -> modelRenderer.drawDepthBuffer(interpolationFactor));
         }
     }
 

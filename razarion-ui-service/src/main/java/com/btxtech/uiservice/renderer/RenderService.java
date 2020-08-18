@@ -87,7 +87,7 @@ public abstract class RenderService {
             prepareDepthBufferRendering();
             for (RenderUnitControl renderUnitControl : RenderUnitControl.getRenderUnitControls()) {
                 // prepare(renderUnitControl);
-                renderTasks.stream().filter(abstractRenderTask -> abstractRenderTask.castShadow()).forEach(abstractRenderTask -> abstractRenderTask.draw(renderUnitControl));
+                renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(renderUnitControl));
             }
 
             pass = Pass.MAIN;

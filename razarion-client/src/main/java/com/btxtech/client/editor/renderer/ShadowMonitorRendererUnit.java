@@ -87,6 +87,9 @@ public class ShadowMonitorRendererUnit extends AbstractRenderUnit<Void> {
 
     @Override
     public void draw(ModelMatrices modelMatrices) {
+        if(webGlFacade.canBeSkipped()) {
+            return;
+        }
         webGlFacade.useProgram();
 
         webGlFacade.uniform1b(uDeepMap, monitorRenderTask.isShowDeep());

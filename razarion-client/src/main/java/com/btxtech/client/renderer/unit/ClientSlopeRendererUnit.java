@@ -86,6 +86,9 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
     @Override
     protected void draw(UiTerrainSlopeTile uiTerrainSlopeTile) {
+        if(webGlFacade.canBeSkipped()) {
+            return;
+        }
         webGlFacade.useProgram();
         webGlFacade.setTransformationUniforms();
 

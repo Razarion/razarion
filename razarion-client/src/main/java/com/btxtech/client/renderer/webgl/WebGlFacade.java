@@ -326,9 +326,6 @@ public class WebGlFacade {
                 }
                 break;
             case SHADOW:
-                if (!webGlFacadeConfig.isCastShadow()) {
-                    return;
-                }
                 if (viewMatrixUniformLocation != null) {
                     gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getViewShadowMatrix()));
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
@@ -342,5 +339,9 @@ public class WebGlFacade {
             default:
                 throw new IllegalStateException("Dont know how to setup transformation uniforms for render pass: " + renderService.getPass());
         }
+    }
+
+    public boolean canBeSkipped() {
+        return renderService.getPass() == RenderService.Pass.SHADOW && !webGlFacadeConfig.isCastShadow();
     }
 }

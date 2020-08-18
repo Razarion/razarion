@@ -67,6 +67,9 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 
     @Override
     public void draw(UiTerrainGroundTile uiTerrainGroundTile) {
+        if (webGlFacade.canBeSkipped()) {
+            return;
+        }
         webGlFacade.useProgram();
         webGlFacade.setTransformationUniforms();
 

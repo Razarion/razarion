@@ -86,6 +86,9 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
     @Override
     protected void prepareDraw() {
+        if(webGlFacade.canBeSkipped()) {
+            return;
+        }
         webGlFacade.useProgram();
         webGlFacade.setTransformationUniforms();
         if (getRenderData().getShape3DMaterialConfig().getAlphaToCoverage() != null) {
