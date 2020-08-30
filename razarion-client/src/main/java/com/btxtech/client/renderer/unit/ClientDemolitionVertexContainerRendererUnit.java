@@ -87,7 +87,7 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());
 
-        webGlFacade.activateReceiveShadow();
+        // webGlFacade.activateReceiveShadow();
 
         texture.activate();
         templateTexture.activate();

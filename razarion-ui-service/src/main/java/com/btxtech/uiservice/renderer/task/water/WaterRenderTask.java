@@ -16,14 +16,13 @@ import javax.inject.Singleton;
 public class WaterRenderTask extends AbstractRenderTask<UiTerrainWaterTile> {
 
     public ModelRenderer createModelRenderer(UiTerrainWaterTile uiTerrainWaterTile) {
-        ModelRenderer<UiTerrainWaterTile, CommonRenderComposite<AbstractWaterRendererUnit, UiTerrainWaterTile>, AbstractWaterRendererUnit, UiTerrainWaterTile> modelRenderer = create();
+        ModelRenderer<UiTerrainWaterTile> modelRenderer = create();
         CommonRenderComposite<AbstractWaterRendererUnit, UiTerrainWaterTile> renderComposite = modelRenderer.create();
         renderComposite.init(uiTerrainWaterTile);
         renderComposite.setRenderUnit(AbstractWaterRendererUnit.class);
         // renderComposite.setNormRenderUnit(AbstractWaterRendererUnit.class);
         modelRenderer.add(RenderUnitControl.WATER, renderComposite);
         add(modelRenderer);
-        modelRenderer.fillBuffers();
         return modelRenderer;
     }
 }

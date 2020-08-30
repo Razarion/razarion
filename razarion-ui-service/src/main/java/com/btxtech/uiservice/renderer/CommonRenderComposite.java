@@ -11,6 +11,7 @@ import javax.inject.Inject;
  * U: render unit
  * D: render data
  */
+@Deprecated
 @Dependent
 public class CommonRenderComposite<U extends AbstractRenderUnit<D>, D> extends AbstractRenderComposite<U, D> {
     @SuppressWarnings("CdiInjectionPointsInspection")

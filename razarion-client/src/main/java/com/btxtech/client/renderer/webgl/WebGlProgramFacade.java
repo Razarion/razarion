@@ -19,7 +19,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.RENDER_ENGINE_UNIFORM;
  * 11.04.2015.
  */
 @Dependent
-public class WebGlProgram {
+public class WebGlProgramFacade {
     // private Logger logger = Logger.getLogger(WebGlProgram.class.getName());
     private WebGLProgram program;
     private WebGLShader vs;
@@ -33,9 +33,9 @@ public class WebGlProgram {
     private Runnable transformUnregisterHandler;
     private Runnable shadowLookupUnregisterHandler;
 
-    public void createProgram(WebGlFacadeConfig webGlFacadeConfig) {
-        vs = createShader(WebGLRenderingContext.VERTEX_SHADER, glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode(), webGlFacadeConfig.getAbstractRenderUnit().getGlslVertexDefines()));
-        fs = createShader(WebGLRenderingContext.FRAGMENT_SHADER, glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode(), webGlFacadeConfig.getAbstractRenderUnit().getGlslFragmentDefines()));
+    public void createProgram(String vertexShaderCodee, String fragmentShaderCode) {
+        vs = createShader(WebGLRenderingContext.VERTEX_SHADER, vertexShaderCodee);
+        fs = createShader(WebGLRenderingContext.FRAGMENT_SHADER, fragmentShaderCode);
         program = createAndUseProgram(vs, fs);
     }
 

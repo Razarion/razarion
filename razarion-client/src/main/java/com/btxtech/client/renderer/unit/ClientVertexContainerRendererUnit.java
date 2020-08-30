@@ -86,11 +86,11 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
     @Override
     protected void prepareDraw() {
-        if(webGlFacade.canBeSkipped()) {
-            return;
-        }
+//        if(webGlFacade.canBeSkipped()) {
+//            return;
+//        }
         webGlFacade.useProgram();
-        webGlFacade.setTransformationUniforms();
+//        webGlFacade.setTransformationUniforms();
         if (getRenderData().getShape3DMaterialConfig().getAlphaToCoverage() != null) {
             webGlFacade.getCtx3d().enable(SAMPLE_ALPHA_TO_COVERAGE);
             webGlFacade.uniform1f(alphaToCoverage, getRenderData().getShape3DMaterialConfig().getAlphaToCoverage());
@@ -100,7 +100,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
         material.activate();
 
-        webGlFacade.activateReceiveShadow();
+//        webGlFacade.activateReceiveShadow();
 
         positions.activate();
         normals.activate();

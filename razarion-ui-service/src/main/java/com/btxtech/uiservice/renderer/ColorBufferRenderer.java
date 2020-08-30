@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
  * Created by Beat
  * 10.08.2016.
  */
+@Deprecated
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})

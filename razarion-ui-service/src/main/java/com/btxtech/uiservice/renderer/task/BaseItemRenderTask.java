@@ -61,7 +61,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
 
     private void spawn(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getSpawnShape3DId() != null) {
-            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            ModelRenderer<BaseItemType> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideSpawningModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getSpawnShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
@@ -100,7 +100,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                 }
             }
 
-            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractBuildupVertexContainerRenderUnit, VertexContainer>, AbstractBuildupVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            ModelRenderer<BaseItemType> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideBuildupModelMatrices(baseItemType));
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
@@ -127,7 +127,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
             if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
                 turretMaterialId = baseItemType.getWeaponType().getTurretType().getShape3dMaterialId();
             }
-            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            ModelRenderer<BaseItemType> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideAliveModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
@@ -159,7 +159,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
             if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
                 turretMaterialId = baseItemType.getWeaponType().getTurretType().getShape3dMaterialId();
             }
-            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractDemolitionVertexContainerRenderUnit, VertexContainer>, AbstractDemolitionVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            ModelRenderer<BaseItemType> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideDemolitionModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
@@ -196,7 +196,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                 return;
             }
 
-            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            ModelRenderer<BaseItemType> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideHarvestAnimationModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(harvesterType.getAnimationShape3dId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
@@ -229,7 +229,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                 return;
             }
 
-            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            ModelRenderer<BaseItemType> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideBuildAnimationModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(builderType.getAnimationShape3dId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
@@ -264,7 +264,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
             return;
         }
 
-        ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        ModelRenderer<BaseItemType> modelRenderer = create();
         modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideTurretModelMatrices(baseItemType));
         Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
         VertexContainer vertexContainer = Shape3DUtils.getVertexContainer4MaterialId(shape3D, shape3dMaterialId);

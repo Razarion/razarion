@@ -42,7 +42,7 @@ public class SelectionFrameRenderTask extends AbstractRenderTask<GroupSelectionF
     }
 
     private void setupRenderer(GroupSelectionFrame groupSelectionFrame) {
-        ModelRenderer<GroupSelectionFrame, CommonRenderComposite<AbstractSelectionFrameRenderUnit, GroupSelectionFrame>, AbstractSelectionFrameRenderUnit, GroupSelectionFrame> modelRenderer = create();
+        ModelRenderer<GroupSelectionFrame> modelRenderer = create();
         CommonRenderComposite<AbstractSelectionFrameRenderUnit, GroupSelectionFrame> renderComposite = modelRenderer.create();
         renderComposite.init(groupSelectionFrame);
         renderComposite.setRenderUnit(AbstractSelectionFrameRenderUnit.class);

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  * U AbstractRenderUnit (e.g.: AbstractVertexContainerRenderUnit)
  * D render data (e.g.: VertexContainerRender)
  */
+@Deprecated
 public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D> {
     private U renderUnit;
     private U depthBufferRenderUnit;

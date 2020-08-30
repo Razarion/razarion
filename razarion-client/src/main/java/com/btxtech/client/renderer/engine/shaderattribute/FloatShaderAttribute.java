@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer.engine.shaderattribute;
 
-import com.btxtech.client.renderer.webgl.WebGlProgram;
+import com.btxtech.client.renderer.webgl.WebGlProgramFacade;
 import elemental2.webgl.WebGLRenderingContext;
 
 /**
@@ -9,7 +9,7 @@ import elemental2.webgl.WebGLRenderingContext;
  */
 public class FloatShaderAttribute extends AbstractShaderAttribute {
 
-    public FloatShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName) {
+    public FloatShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgramFacade webGlProgram, String attributeName) {
         super(ctx3d, webGlProgram, attributeName, 1);
     }
 

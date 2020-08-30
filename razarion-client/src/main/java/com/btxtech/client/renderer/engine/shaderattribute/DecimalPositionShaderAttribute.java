@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer.engine.shaderattribute;
 
-import com.btxtech.client.renderer.webgl.WebGlProgram;
+import com.btxtech.client.renderer.webgl.WebGlProgramFacade;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import elemental2.webgl.WebGLRenderingContext;
 
@@ -12,7 +12,7 @@ import java.util.List;
  * 05.02.2017.
  */
 public class DecimalPositionShaderAttribute extends AbstractShaderAttribute {
-    public DecimalPositionShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName) {
+    public DecimalPositionShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgramFacade webGlProgram, String attributeName) {
         super(ctx3d, webGlProgram, attributeName, 2);
     }
 

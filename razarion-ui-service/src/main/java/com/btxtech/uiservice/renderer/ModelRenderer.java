@@ -19,12 +19,10 @@ import java.util.function.Function;
  * D: render unit data (e.g.: VertexContainer)
  */
 @Dependent
-public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends AbstractRenderUnit<D>, D> {
+public class ModelRenderer<T> {
     @Inject
-    private Instance<AbstractRenderComposite> instance;
-    @Inject
-    private Instance<CommonRenderComposite<?, ?>> instanceCommonRenderComposite;
-    private MapList<RenderUnitControl, AbstractRenderComposite> abstractRenderComposites = new MapList<>();
+    private Instance<RenderSubTask<T>> instance;
+    private MapList<RenderUnitControl, RenderSubTask<T>> renderSubTasks = new MapList<>();
     private List<ModelMatrices> modelMatrices;
     private Function<Long, List<ModelMatrices>> modelMatricesSupplier;
     private T model;
@@ -40,20 +38,23 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
         return model;
     }
 
+    public void create(RenderUnitControl renderUnitControl, Class<? extends RenderSubTask<T>> clazz, T t) {
+        RenderSubTask<T> webGlProgram = instance.select(clazz).get();
+        webGlProgram.init(t);
+        this.renderSubTasks.put(renderUnitControl, webGlProgram);
+    }
+
+    @Deprecated
     public void add(RenderUnitControl renderUnitControl, AbstractRenderComposite abstractRenderCompositeRenderers) {
-        this.abstractRenderComposites.put(renderUnitControl, abstractRenderCompositeRenderers);
+        // TODO Backward compatibility remove this method
     }
 
+    @Deprecated
     public <U extends AbstractRenderUnit<D>, D> CommonRenderComposite<U, D> create() {
-        CommonRenderComposite<U, D> commonRenderComposite = (CommonRenderComposite<U, D>) instanceCommonRenderComposite.get();
-        commonRenderComposite.setModelRenderer(this);
-        return commonRenderComposite;
-    }
-
-    public C create(Class<C> clazz) {
-        C c = instance.select(clazz).get();
-        c.setModelRenderer(this);
-        return c;
+//        CommonRenderComposite<U, D> commonRenderComposite = (CommonRenderComposite<U, D>) instanceCommonRenderComposite.get();
+//        commonRenderComposite.setModelRenderer(this);
+//        return commonRenderComposite;
+        return null;
     }
 
     public void setupModelMatrices(long timeStamp) {
@@ -74,29 +75,7 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
         if (!active || !hasSomethingToDraw) {
             return;
         }
-        abstractRenderComposites.getSave(renderUnitControl).forEach(abstractRenderComposite -> abstractRenderComposite.draw(modelMatrices, interpolationFactor));
-    }
-
-    public void drawDepthBuffer(double interpolationFactor) {
-        if (!active || !hasSomethingToDraw) {
-            return;
-        }
-        abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawDepthBuffer(modelMatrices, interpolationFactor));
-    }
-
-    public void drawNorm(double interpolationFactor) {
-        if (!active || !hasSomethingToDraw) {
-            return;
-        }
-        abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawNorm(modelMatrices, interpolationFactor));
-    }
-
-    public void fillBuffers() {
-        abstractRenderComposites.getAll().forEach(AbstractRenderComposite::fillBuffers);
-    }
-
-    public void fillNormBuffer() {
-        abstractRenderComposites.getAll().forEach(AbstractRenderComposite::fillNormBuffer);
+        renderSubTasks.getSave(renderUnitControl).forEach(webGlProgram -> webGlProgram.draw(modelMatrices, interpolationFactor));
     }
 
     public void setActive(boolean active) {
@@ -104,8 +83,6 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
     }
 
     public void dispose() {
-        for (AbstractRenderComposite abstractRenderComposite : abstractRenderComposites.getAll()) {
-            abstractRenderComposite.dispose();
-        }
+        renderSubTasks.getAll().forEach(RenderSubTask::dispose);
     }
 }

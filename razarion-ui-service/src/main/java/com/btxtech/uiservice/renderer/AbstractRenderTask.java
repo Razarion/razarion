@@ -11,12 +11,9 @@ import java.util.List;
  * 31.08.2016.
  */
 public abstract class AbstractRenderTask<T> {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private RenderService renderService;
-    @Inject
-    private Instance<ModelRenderer<T, ?, ?, ?>> instance;
-    private List<ModelRenderer> modelRenderers = new ArrayList<>();
+    private Instance<ModelRenderer<T>> instance;
+    private List<ModelRenderer<T>> modelRenderers = new ArrayList<>();
     private boolean active;
     private double interpolationFactor;
     private String name;
@@ -42,7 +39,7 @@ public abstract class AbstractRenderTask<T> {
     }
 
     public void removeAll(T model) {
-        for (Iterator<ModelRenderer> iterator = modelRenderers.iterator(); iterator.hasNext(); ) {
+        for (Iterator<ModelRenderer<T>> iterator = modelRenderers.iterator(); iterator.hasNext(); ) {
             ModelRenderer modelRenderer = iterator.next();
             if (model == null) {
                 if (modelRenderer.getModel() == null) {
@@ -56,15 +53,16 @@ public abstract class AbstractRenderTask<T> {
         }
     }
 
+    @Deprecated
     protected void add(ModelRenderer modelRenderer) {
-        this.modelRenderers.add(modelRenderer);
+      // Already added to modelRenderers in create
     }
 
     public void remove(ModelRenderer modelRenderer) {
         this.modelRenderers.remove(modelRenderer);
     }
 
-    protected List<ModelRenderer> getAll() {
+    protected List<ModelRenderer<T>> getAll() {
         return modelRenderers;
     }
 
@@ -72,8 +70,15 @@ public abstract class AbstractRenderTask<T> {
         modelRenderers.clear();
     }
 
-    protected <T, C extends AbstractRenderComposite<U, D>, U extends AbstractRenderUnit<D>, D> ModelRenderer<T, C, U, D> create() {
-        return (ModelRenderer) instance.get();
+    @Deprecated
+    protected <T, C extends AbstractRenderComposite<U, D>, U extends AbstractRenderUnit<D>, D> ModelRenderer<T> create() {
+        return null;
+    }
+
+    protected ModelRenderer<T> createNew() {
+        ModelRenderer<T> modelRenderer =  instance.get();
+        this.modelRenderers.add(modelRenderer);
+        return modelRenderer;
     }
 
     public void prepareRender(long timeStamp) {
@@ -89,20 +94,6 @@ public abstract class AbstractRenderTask<T> {
         if (active) {
             modelRenderers.forEach(modelRenderer -> modelRenderer.draw(renderUnitControl, interpolationFactor));
         }
-    }
-
-    public void drawNorm() {
-        if (active) {
-            modelRenderers.forEach(modelRenderer -> modelRenderer.drawNorm(interpolationFactor));
-        }
-    }
-
-    public void fillBuffers() {
-        modelRenderers.forEach(ModelRenderer::fillBuffers);
-    }
-
-    public void fillNormBuffer() {
-        modelRenderers.forEach(ModelRenderer::fillNormBuffer);
     }
 
     public String getName() {

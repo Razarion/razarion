@@ -10,7 +10,6 @@ import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
-import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
@@ -22,7 +21,6 @@ import javax.inject.Inject;
  * Created by Beat
  * 11.09.2015.
  */
-@ColorBufferRenderer
 @Dependent
 public class ShadowMonitorRendererUnit extends AbstractRenderUnit<Void> {
     private static final int SIDE_LENGTH = 256;
@@ -36,8 +34,8 @@ public class ShadowMonitorRendererUnit extends AbstractRenderUnit<Void> {
     private MonitorRenderTask monitorRenderTask;
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec2Float32ArrayShaderAttribute uvs;
-   private WebGlUniformTexture colorTexture;
-   private WebGlUniformTexture depthTesture;
+    private WebGlUniformTexture colorTexture;
+    private WebGlUniformTexture depthTesture;
     private WebGLUniformLocation uDeepMap;
 
     @Override
@@ -87,9 +85,9 @@ public class ShadowMonitorRendererUnit extends AbstractRenderUnit<Void> {
 
     @Override
     public void draw(ModelMatrices modelMatrices) {
-        if(webGlFacade.canBeSkipped()) {
-            return;
-        }
+        // if(webGlFacade.canBeSkipped()) {
+        //    return;
+        //}
         webGlFacade.useProgram();
 
         webGlFacade.uniform1b(uDeepMap, monitorRenderTask.isShowDeep());

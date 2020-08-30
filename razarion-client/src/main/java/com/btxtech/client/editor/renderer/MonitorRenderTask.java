@@ -20,7 +20,7 @@ public class MonitorRenderTask extends AbstractRenderTask<Void> {
     private boolean showDeep = true;
 
     public void showMonitor() {
-        ModelRenderer<Void, CommonRenderComposite<ShadowMonitorRendererUnit, Void>, ShadowMonitorRendererUnit, Void> modelRenderer = create();
+        ModelRenderer<Void> modelRenderer = create();
         CommonRenderComposite<ShadowMonitorRendererUnit, Void> renderComposite = modelRenderer.create();
         renderComposite.init(null);
         renderComposite.setRenderUnit(ShadowMonitorRendererUnit.class);

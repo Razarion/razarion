@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer.engine.shaderattribute;
 
-import com.btxtech.client.renderer.webgl.WebGlProgram;
+import com.btxtech.client.renderer.webgl.WebGlProgramFacade;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLBuffer;
@@ -19,7 +19,7 @@ abstract public class AbstractShaderAttribute {
     private double attributeLocation;
     private WebGLBuffer webGlBuffer;
 
-    protected AbstractShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName, int size) {
+    protected AbstractShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgramFacade webGlProgram, String attributeName, int size) {
         this.ctx3d = ctx3d;
         this.size = size;
         attributeLocation = webGlProgram.getAttributeLocation(attributeName);

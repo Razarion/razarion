@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer.engine.shaderattribute;
 
-import com.btxtech.client.renderer.webgl.WebGlProgram;
+import com.btxtech.client.renderer.webgl.WebGlProgramFacade;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import elemental.html.WebGLBuffer;
 import elemental2.webgl.WebGLRenderingContext;
@@ -16,7 +16,7 @@ public class ShaderTextureCoordinateAttribute extends AbstractShaderAttribute {
     private int attributeLocation;
     private WebGLBuffer webGlBuffer;
 
-    public ShaderTextureCoordinateAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName) {
+    public ShaderTextureCoordinateAttribute(WebGLRenderingContext ctx3d, WebGlProgramFacade webGlProgram, String attributeName) {
         super(ctx3d, webGlProgram, attributeName, TextureCoordinate.getComponentCount());
     }
 

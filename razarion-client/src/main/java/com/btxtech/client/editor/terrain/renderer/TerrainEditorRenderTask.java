@@ -68,7 +68,7 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
     }
 
     private void setupCursor(Polygon2D cursor) {
-        ModelRenderer<Polygon2D, CommonRenderComposite<TerrainEditorCursorRenderUnit, Polygon2D>, TerrainEditorCursorRenderUnit, Polygon2D> modelRenderer = create();
+        ModelRenderer<Polygon2D> modelRenderer = create();
         CommonRenderComposite<TerrainEditorCursorRenderUnit, Polygon2D> renderComposite = modelRenderer.create();
         renderComposite.init(cursor);
         cursorRenderer = renderComposite.setRenderUnit(TerrainEditorCursorRenderUnit.class);
@@ -85,7 +85,7 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
     }
 
     private void setupModifiedSlope(ModifiedSlope modifiedSlope) {
-        ModelRenderer<ModifiedSlope, CommonRenderComposite<TerrainEditorSlopeRenderUnit, ModifiedSlope>, TerrainEditorSlopeRenderUnit, ModifiedSlope> modelRenderer = create();
+        ModelRenderer<ModifiedSlope> modelRenderer = create();
         CommonRenderComposite<TerrainEditorSlopeRenderUnit, ModifiedSlope> renderComposite = modelRenderer.create();
         renderComposite.init(modifiedSlope);
         TerrainEditorSlopeRenderUnit slopeRenderer = renderComposite.setRenderUnit(TerrainEditorSlopeRenderUnit.class);
@@ -96,7 +96,7 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
     }
 
     private void setupModifiedSlopeDriveways(ModifiedSlope modifiedSlope) {
-        ModelRenderer<ModifiedSlope, CommonRenderComposite<TerrainEditorSlopeDrivewayRenderUnit, ModifiedSlope>, TerrainEditorSlopeDrivewayRenderUnit, ModifiedSlope> modelRenderer = create();
+        ModelRenderer<ModifiedSlope> modelRenderer = create();
         CommonRenderComposite<TerrainEditorSlopeDrivewayRenderUnit, ModifiedSlope> renderComposite = modelRenderer.create();
         renderComposite.init(modifiedSlope);
         TerrainEditorSlopeDrivewayRenderUnit drivewayRenderer = renderComposite.setRenderUnit(TerrainEditorSlopeDrivewayRenderUnit.class);
@@ -107,7 +107,7 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
     }
 
     private void setupModifiedTerrainObject() {
-        ModelRenderer<Void, CommonRenderComposite<TerrainEditorTerrainObjectRendererUnit, Void>, TerrainEditorTerrainObjectRendererUnit, Void> modelRenderer = create();
+        ModelRenderer<Void> modelRenderer = create();
         modelRenderer.init(null, timeStamp -> terrainEditor.provideTerrainObjectModelMatrices());
         CommonRenderComposite<TerrainEditorTerrainObjectRendererUnit, Void> renderComposite = modelRenderer.create();
         renderComposite.init(null);

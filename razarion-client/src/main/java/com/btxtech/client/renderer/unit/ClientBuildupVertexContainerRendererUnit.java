@@ -92,7 +92,7 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());
 
-        webGlFacade.activateReceiveShadow();
+        // webGlFacade.activateReceiveShadow();
 
         finishTexture.activate();
         buildupTexture.activate();

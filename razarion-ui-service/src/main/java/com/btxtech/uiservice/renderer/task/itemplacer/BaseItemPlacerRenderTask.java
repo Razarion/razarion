@@ -44,7 +44,7 @@ public class BaseItemPlacerRenderTask extends AbstractRenderTask<BaseItemPlacer>
     }
 
     private void setupCircle(BaseItemPlacer baseItemPlacer) {
-        ModelRenderer<BaseItemPlacer, CommonRenderComposite<AbstractBaseItemPlacerCircleRendererUnit, BaseItemPlacer>, AbstractBaseItemPlacerCircleRendererUnit, BaseItemPlacer> modelRenderer = create();
+        ModelRenderer<BaseItemPlacer> modelRenderer = create();
         modelRenderer.init(baseItemPlacer, timeStamp -> baseItemPlacer.provideCircleModelMatrices());
         CommonRenderComposite<AbstractBaseItemPlacerCircleRendererUnit, BaseItemPlacer> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(baseItemPlacer);
@@ -60,7 +60,7 @@ public class BaseItemPlacerRenderTask extends AbstractRenderTask<BaseItemPlacer>
             return;
         }
 
-        ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        ModelRenderer<BaseItemType> modelRenderer = create();
         modelRenderer.init(baseItemPlacer.getBaseItemType(), timeStamp -> baseItemPlacer.provideItemModelMatrices());
 
         Shape3D shape3D = shape3DUiService.getShape3D(baseItemPlacer.getBaseItemType().getShape3DId());

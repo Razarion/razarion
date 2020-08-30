@@ -104,7 +104,7 @@ public class RenderEngineEditorPanel extends AbstractEditor {
         showMonitor.setChecked(monitorRenderTask.isShown());
         showDeepMap.setChecked(monitorRenderTask.isShowDeep());
         // TODO wireMode.setChecked(renderService.isWire());
-        showNorm.setChecked(renderService.isShowNorm());
+        // TODO showNorm.setChecked(renderService.isShowNorm());
         rendererCount.setText(Integer.toString(renderService.getRenderQueueSize()));
         renderTasks.setValue(renderService.getRenderTasks().stream().map(RenderTaskModel::new).collect(Collectors.toList()));
         updateCamera();
@@ -143,7 +143,7 @@ public class RenderEngineEditorPanel extends AbstractEditor {
 
     @EventHandler("showNorm")
     public void showNormChanged(ChangeEvent e) {
-        renderService.setShowNorm(showNorm.getChecked());
+        // TODO renderService.setShowNorm(showNorm.getChecked());
     }
 
     @EventHandler("translateX")

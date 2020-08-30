@@ -73,7 +73,7 @@ public class TerrainMarkerEditorRenderTask extends AbstractRenderTask<List<Verte
 
     private void showTriangles(List<Vertex> triangles) {
         hide();
-        ModelRenderer<List<Vertex>, CommonRenderComposite<TerrainMarkerEditorRendererUnit, List<Vertex>>, TerrainMarkerEditorRendererUnit, List<Vertex>> modelRenderer = create();
+        ModelRenderer<List<Vertex>> modelRenderer = create();
         CommonRenderComposite<TerrainMarkerEditorRendererUnit, List<Vertex>> renderComposite = modelRenderer.create();
         renderComposite.init(triangles);
         renderComposite.setRenderUnit(TerrainMarkerEditorRendererUnit.class);

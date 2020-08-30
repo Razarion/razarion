@@ -107,11 +107,11 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
     @Override
     public void draw(UiTerrainWaterTile uiTerrainWaterTile) {
-        if(webGlFacade.canBeSkipped()) {
-            return;
-        }
+//        if(webGlFacade.canBeSkipped()) {
+//            return;
+//        }
         webGlFacade.useProgram();
-        webGlFacade.setTransformationUniforms();
+        // webGlFacade.setTransformationUniforms();
 
         positions.activate();
         if (uv != null) {

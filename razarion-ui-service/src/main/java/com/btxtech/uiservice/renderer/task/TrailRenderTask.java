@@ -43,7 +43,7 @@ public class TrailRenderTask extends AbstractRenderTask<BaseItemType> {
 
     private void setupWreckage(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getWreckageShape3DId() != null) {
-            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            ModelRenderer<BaseItemType> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> trailService.provideWreckageModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getWreckageShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {

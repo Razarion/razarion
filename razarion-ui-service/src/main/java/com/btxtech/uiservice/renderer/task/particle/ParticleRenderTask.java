@@ -32,7 +32,7 @@ public class ParticleRenderTask extends AbstractRenderTask<Void> {
     }
 
     private void setupParticleConfig(ParticleShapeConfig particleShapeConfig) {
-        ModelRenderer<Void, CommonRenderComposite<AbstractParticleRenderUnit, ParticleShapeConfig>, AbstractParticleRenderUnit, ParticleShapeConfig> modelRenderer = create();
+        ModelRenderer<Void> modelRenderer = create();
         modelRenderer.init(null, timeStamp -> particleService.provideModelMatrices());
         CommonRenderComposite<AbstractParticleRenderUnit, ParticleShapeConfig> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(particleShapeConfig);

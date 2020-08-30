@@ -8,6 +8,7 @@ import com.btxtech.uiservice.terrain.UiTerrainGroundTile;
  * Created by Beat
  * 07.08.2016.
  */
+@Deprecated
 public abstract class AbstractGroundRendererUnit extends AbstractRenderUnit<UiTerrainGroundTile> {
 //    private Logger logger = Logger.getLogger(AbstractGroundRendererUnit.class.getName());
 

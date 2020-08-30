@@ -44,7 +44,7 @@ public class BoxItemRenderTask extends AbstractRenderTask<BoxItemType> {
 
     private void setupBoxItemType(BoxItemType boxItemType, boolean fillBuffer) {
         if (boxItemType.getShape3DId() != null) {
-            ModelRenderer<BoxItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            ModelRenderer<BoxItemType> modelRenderer = create();
             modelRenderer.init(boxItemType, timeStamp -> boxUiService.provideModelMatrices(boxItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(boxItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {

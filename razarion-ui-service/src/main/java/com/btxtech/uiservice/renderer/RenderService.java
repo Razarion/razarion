@@ -3,9 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
-import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
 import javax.enterprise.inject.Instance;
@@ -26,7 +24,6 @@ public abstract class RenderService {
     @Inject
     private PerfmonService perfmonService;
     private List<AbstractRenderTask> renderTasks = new ArrayList<>();
-    private boolean showNorm;
     private Pass pass;
 
     protected abstract void internalSetup();
@@ -42,8 +39,8 @@ public abstract class RenderService {
         renderTasks.clear();
 
         addRenderTask(GroundRenderTask.class, "Ground");
-        addRenderTask(SlopeRenderTask.class, "Slope");
-        addRenderTask(TerrainObjectRenderTask.class, "Terrain Object");
+// TODO        addRenderTask(SlopeRenderTask.class, "Slope");
+// TODO        addRenderTask(TerrainObjectRenderTask.class, "Terrain Object");
 // TODO       addRenderTask(ItemMarkerRenderTask.class, "Item Marker");
 // TODO       addRenderTask(BaseItemRenderTask.class, "Base Item");
 // TODO       addRenderTask(TrailRenderTask.class, "Trail");
@@ -55,8 +52,6 @@ public abstract class RenderService {
 // TODO       addRenderTask(SelectionFrameRenderTask.class, "Selection Frame");
 // TODO       addRenderTask(ItemVisualizationRenderTask.class, "Tip");
 // TODO       addRenderTask(ParticleRenderTask.class, "Particle");
-
-        fillBuffers();
     }
 
     private void addRenderTask(Class<? extends AbstractRenderTask> clazz, String name) {
@@ -99,13 +94,6 @@ public abstract class RenderService {
             }
 
             pass = null;
-            prepare(RenderUnitControl.NORMAL);
-
-            if (showNorm) {
-                // depthTest(false);
-                renderTasks.forEach(AbstractRenderTask::drawNorm);
-                // depthTest(true);
-            }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         } finally {
@@ -113,16 +101,6 @@ public abstract class RenderService {
         }
     }
 
-
-    public void fillBuffers() {
-        for (AbstractRenderTask renderTask : renderTasks) {
-            try {
-                renderTask.fillBuffers();
-            } catch (Throwable t) {
-                exceptionHandler.handleException(t);
-            }
-        }
-    }
 
     public int getRenderQueueSize() {
         int i = 0;
@@ -132,25 +110,8 @@ public abstract class RenderService {
         return i;
     }
 
-    public boolean isShowNorm() {
-        return showNorm;
-    }
-
     public Pass getPass() {
         return pass;
-    }
-
-    public void setShowNorm(boolean showNorm) {
-        this.showNorm = showNorm;
-        if (showNorm) {
-            for (AbstractRenderTask compositeRenderer : renderTasks) {
-                try {
-                    compositeRenderer.fillNormBuffer();
-                } catch (Throwable t) {
-                    exceptionHandler.handleException(t);
-                }
-            }
-        }
     }
 
     public List<AbstractRenderTask> getRenderTasks() {

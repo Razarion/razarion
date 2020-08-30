@@ -77,7 +77,7 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
     }
 
     private void setupCorners() {
-        ModelRenderer<InGameItemVisualization, CommonRenderComposite<AbstractInGameItemCornerRendererUnit, InGameItemVisualization>, AbstractInGameItemCornerRendererUnit, InGameItemVisualization> modelRenderer = create();
+        ModelRenderer<InGameItemVisualization> modelRenderer = create();
         modelRenderer.init(gameItemVisualization, timeStamp -> gameItemVisualization.provideCornerModelMatrices(timeStamp));
         CommonRenderComposite<AbstractInGameItemCornerRendererUnit, InGameItemVisualization> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(gameItemVisualization);
@@ -93,7 +93,7 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
             return;
         }
 
-        ModelRenderer<InGameItemVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        ModelRenderer<InGameItemVisualization> modelRenderer = create();
         modelRenderer.init(gameItemVisualization, timeStamp -> gameItemVisualization.provideShape3DModelMatrices());
 
         setupRenderer(modelRenderer, gameItemVisualization.getShape3DId());
@@ -106,7 +106,7 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
             return;
         }
 
-        ModelRenderer<InGameItemVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        ModelRenderer<InGameItemVisualization> modelRenderer = create();
         modelRenderer.init(gameItemVisualization, timeStamp -> gameItemVisualization.provideOutOfViewShape3DModelMatrices());
 
         setupRenderer(modelRenderer, gameItemVisualization.getOutOfViewShape3DId());
@@ -119,7 +119,7 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
             return;
         }
 
-        ModelRenderer<InGameDirectionVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        ModelRenderer<InGameDirectionVisualization> modelRenderer = create();
         modelRenderer.init(inGameDirectionVisualization, timeStamp -> inGameDirectionVisualization.provideDModelMatrices());
 
         setupRenderer(modelRenderer, inGameDirectionVisualization.getShape3DId());
@@ -131,13 +131,13 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
             return;
         }
 
-        ModelRenderer<QuestInGamePlaceVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        ModelRenderer<QuestInGamePlaceVisualization> modelRenderer = create();
         modelRenderer.init(questInGameOutOfViewVisualization, timeStamp -> questInGameOutOfViewVisualization.provideOutOfViewModelMatrices());
 
         setupRenderer(modelRenderer, questInGameOutOfViewVisualization.getOutOfViewShape3DId());
     }
 
-    private void setupRenderer(ModelRenderer<?, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer, int shape3DId) {
+    private void setupRenderer(ModelRenderer<?> modelRenderer, int shape3DId) {
         Shape3D shape3D = shape3DUiService.getShape3D(shape3DId);
         for (Element3D element3D : shape3D.getElement3Ds()) {
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {

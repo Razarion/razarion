@@ -34,7 +34,7 @@ public class ItemMarkerRenderTask extends AbstractRenderTask<Void> {
     }
 
     private void setupItemMarker() {
-        ModelRenderer<Void, CommonRenderComposite<AbstractSelectedMarkerRendererUnit, Void>, AbstractSelectedMarkerRendererUnit, Void> modelRenderer = create();
+        ModelRenderer<Void> modelRenderer = create();
         modelRenderer.init(null, timeStamp -> itemMarkerService.provideSelectedModelMatrices());
         CommonRenderComposite<AbstractSelectedMarkerRendererUnit, Void> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(null);
@@ -45,7 +45,7 @@ public class ItemMarkerRenderTask extends AbstractRenderTask<Void> {
     }
 
     private void setupStatusBar() {
-        ModelRenderer<Void, CommonRenderComposite<AbstractStatusBarRendererUnit, Void>, AbstractStatusBarRendererUnit, Void> modelRenderer = create();
+        ModelRenderer<Void> modelRenderer = create();
         modelRenderer.init(null, timeStamp -> itemMarkerService.provideStatusBarModelMatrices());
         CommonRenderComposite<AbstractStatusBarRendererUnit, Void> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(null);

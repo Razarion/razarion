@@ -49,7 +49,7 @@ public class ProjectileRenderTask extends AbstractRenderTask<BaseItemType> {
 
     private void setupBaseItemType(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getWeaponType().getProjectileShape3DId() != null) {
-            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            ModelRenderer<BaseItemType> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> projectileUiService.getProjectiles(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getWeaponType().getProjectileShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {

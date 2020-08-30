@@ -16,21 +16,23 @@ import java.util.Map;
 public class WebGlProgramService {
     // private Logger logger = Logger.getLogger(WebGlProgramService.class.getName());
     @Inject
-    private Instance<WebGlProgram> webGlProgramInstance;
+    private Instance<WebGlProgramFacade> webGlProgramInstance;
     @Inject
     private GlslLibrarian glslLibrarian;
-    private Map<String, WebGlProgram> webGlProgramCache = new HashMap<>();
+    private Map<String, WebGlProgramFacade> webGlProgramCache = new HashMap<>();
 
-    public WebGlProgram getWebGlProgram(WebGlFacadeConfig webGlFacadeConfig) {
-        String key = glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode(), webGlFacadeConfig.getAbstractRenderUnit().getGlslVertexDefines()) +
-                glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode(), webGlFacadeConfig.getAbstractRenderUnit().getGlslFragmentDefines());
-        WebGlProgram webGlProgram = webGlProgramCache.get(key);
+    public WebGlProgramFacade getWebGlProgram(WebGlFacadeConfig webGlFacadeConfig) {
+        String vertexShaderCodee = glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode(), webGlFacadeConfig.getGlslVertexDefines());
+        String fragmentShaderCode = glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode(), webGlFacadeConfig.getGlslFragmentDefines());
+
+        String key = vertexShaderCodee + fragmentShaderCode;
+        WebGlProgramFacade webGlProgram = webGlProgramCache.get(key);
         if (webGlProgram != null) {
             return webGlProgram;
         }
 
         webGlProgram = webGlProgramInstance.get();
-        webGlProgram.createProgram(webGlFacadeConfig);
+        webGlProgram.createProgram(vertexShaderCodee, fragmentShaderCode);
         webGlProgramCache.put(key, webGlProgram);
         return webGlProgram;
     }

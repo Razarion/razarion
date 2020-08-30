@@ -1,7 +1,6 @@
 package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.TextureIdHandler;
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
 import com.btxtech.client.renderer.engine.WebGlSlopeSplatting;
@@ -25,8 +24,6 @@ import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
-import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.renderer.ViewService;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
@@ -58,51 +55,21 @@ public class WebGlFacade {
     public static final String U_CURSOR_TYPE = "uCursorType";
 
     // private Logger logger = Logger.getLogger(AbstractWebGlUnitRenderer.class.getName());
-    private WebGlProgram webGlProgram;
+    private WebGlProgramFacade webGlProgram;
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private ViewService viewService;
-    @Inject
     private VisualUiService visualUiService;
-    @Inject
-    private ClientRenderServiceImpl renderService;
     @Inject
     private WebGlProgramService webGlProgramService;
     @Inject
     private WebGLTextureContainer textureContainer;
     private AbstractRenderUnit abstractRenderUnit;
-    private WebGlFacadeConfig webGlFacadeConfig;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
-    private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
-    private WebGLUniformLocation viewMatrixUniformLocation;
-    private WebGLUniformLocation viewNormMatrixUniformLocation;
-    private WebGLUniformLocation perspectiveMatrixUniformLocation;
-    private WebGLUniformLocation receiveShadowMatrixUniformLocation;
-    private WebGLUniformLocation uShadowAlpha;
-    private WebGLUniformLocation uShadowTexture;
-
 
     public void init(WebGlFacadeConfig webGlFacadeConfig) {
-        this.webGlFacadeConfig = webGlFacadeConfig;
         abstractRenderUnit = webGlFacadeConfig.getAbstractRenderUnit();
         webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig);
-        if (webGlFacadeConfig.isTransformation()) {
-            if (webGlFacadeConfig.isNormTransformation()) {
-                viewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
-                viewNormMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_NORM_MATRIX);
-                perspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
-            } else {
-                viewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
-                perspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
-            }
-        }
-        if (webGlFacadeConfig.isReceiveShadow()) {
-            receiveShadowMatrixUniformLocation = getUniformLocation(WebGlFacade.U_SHADOW_MATRIX);
-            shadowWebGlTextureId = createWebGlTextureId();
-            uShadowAlpha = getUniformLocation("uShadowAlpha");
-            uShadowTexture = getUniformLocation("uDepthTexture");
-        }
     }
 
     public VertexShaderAttribute createVertexShaderAttribute(String attributeName) {
@@ -270,7 +237,7 @@ public class WebGlFacade {
         }
     }
 
-    private TextureIdHandler.WebGlTextureId createWebGlTextureId() {
+    public TextureIdHandler.WebGlTextureId createWebGlTextureId() {
         return textureIdHandler.create();
     }
 
@@ -278,19 +245,15 @@ public class WebGlFacade {
         return gameCanvas.getCtx3d();
     }
 
-    public void activateReceiveShadow() {
-        if (shadowWebGlTextureId == null || renderService.getPass() == RenderService.Pass.SHADOW) {
-            return;
-        }
-        uniform1f(uShadowAlpha, (float) visualUiService.getPlanetVisualConfig().getShadowAlpha());
-        uniform1i(uShadowTexture, shadowWebGlTextureId.getUniformValue());
-        gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
-    }
-
+    @Deprecated
     public void drawArrays(double mode) {
         getCtx3d().drawArrays(mode, 0, abstractRenderUnit.getElementCount());
         WebGlUtil.checkLastWebGlError("drawArrays for " + abstractRenderUnit.helperString(), getCtx3d());
+    }
+
+    public void drawArrays(double mode, int elementCount, String helperString) {
+        getCtx3d().drawArrays(mode, 0, elementCount);
+        WebGlUtil.checkLastWebGlError("drawArrays for " + helperString, getCtx3d());
     }
 
     public void enableOESStandartDerivatives() {
@@ -302,46 +265,5 @@ public class WebGlFacade {
 
     public VisualUiService getVisualUiService() {
         return visualUiService;
-    }
-
-    public void setTransformationUniforms() {
-        switch (renderService.getPass()) {
-            case MAIN:
-                if (viewMatrixUniformLocation != null) {
-                    gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getViewMatrix()));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
-                }
-                if (viewNormMatrixUniformLocation != null) {
-                    gameCanvas.getCtx3d().uniformMatrix4fv(viewNormMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getViewNormMatrix()));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_NORM_MATRIX", gameCanvas.getCtx3d());
-                }
-                if (perspectiveMatrixUniformLocation != null) {
-                    // Perspective
-                    gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getPerspectiveMatrix()));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", gameCanvas.getCtx3d());
-                }
-                if(receiveShadowMatrixUniformLocation != null) {
-                    gameCanvas.getCtx3d().uniformMatrix4fv(receiveShadowMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getShadowLookupMatrix()));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv uShadowMatrix", gameCanvas.getCtx3d());
-                }
-                break;
-            case SHADOW:
-                if (viewMatrixUniformLocation != null) {
-                    gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getViewShadowMatrix()));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
-                }
-                if (perspectiveMatrixUniformLocation != null) {
-                    // Perspective
-                    gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewService.getPerspectiveShadowMatrix()));
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", gameCanvas.getCtx3d());
-                }
-                break;
-            default:
-                throw new IllegalStateException("Dont know how to setup transformation uniforms for render pass: " + renderService.getPass());
-        }
-    }
-
-    public boolean canBeSkipped() {
-        return renderService.getPass() == RenderService.Pass.SHADOW && !webGlFacadeConfig.isCastShadow();
     }
 }

@@ -16,7 +16,7 @@ import javax.inject.Singleton;
 @Singleton
 public class SlopeRenderTask extends AbstractRenderTask<Slope> {
     public ModelRenderer createModelRenderer(UiTerrainSlopeTile uiTerrainSlopeTile) {
-        ModelRenderer<UiTerrainSlopeTile, CommonRenderComposite<AbstractSlopeRendererUnit, UiTerrainSlopeTile>, AbstractSlopeRendererUnit, UiTerrainSlopeTile> modelRenderer = create();
+        ModelRenderer<UiTerrainSlopeTile> modelRenderer = create();
         CommonRenderComposite<AbstractSlopeRendererUnit, UiTerrainSlopeTile> renderComposite = modelRenderer.create();
         renderComposite.init(uiTerrainSlopeTile);
         renderComposite.setRenderUnit(AbstractSlopeRendererUnit.class);

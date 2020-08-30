@@ -12,7 +12,6 @@ import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
@@ -38,8 +37,6 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     private WebGlFacade webGlFacade;
     @Inject
     private InGameQuestVisualizationService inGameQuestVisualizationService;
-    @Inject
-    private GameUiControl gameUiControl;
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec3Float32ArrayShaderAttribute normals;
     private Vec2Float32ArrayShaderAttribute uvs;
@@ -64,8 +61,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     @Override
     protected void fillBufferInternal(UiTerrainSlopeTile uiTerrainSlopeTile) {
         if (uiTerrainSlopeTile.getGroundConfig() != null) {
-            webGlGroundMaterial = new WebGlGroundMaterial(webGlFacade, gameUiControl);
-            webGlGroundMaterial.init(uiTerrainSlopeTile.getGroundConfig());
+            webGlGroundMaterial = new WebGlGroundMaterial(webGlFacade, uiTerrainSlopeTile.getGroundConfig());
             if (uiTerrainSlopeTile.getSlopeSplattingConfig() != null) {
                 webGlSlopeSplatting = webGlFacade.createSlopeSplatting(uiTerrainSlopeTile.getSlopeSplattingConfig(), "slopeSplatting");
             }
@@ -86,11 +82,11 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
     @Override
     protected void draw(UiTerrainSlopeTile uiTerrainSlopeTile) {
-        if(webGlFacade.canBeSkipped()) {
-            return;
-        }
+//        if(webGlFacade.canBeSkipped()) {
+//            return;
+//        }
         webGlFacade.useProgram();
-        webGlFacade.setTransformationUniforms();
+//        webGlFacade.setTransformationUniforms();
 
         lightUniforms.setLightUniforms(webGlFacade);
 

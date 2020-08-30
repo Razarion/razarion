@@ -11,6 +11,7 @@ import java.util.List;
  * Created by Beat
  * 03.09.2015.
  */
+@Deprecated
 public abstract class AbstractRenderUnit<D> {
     private AbstractRenderComposite<AbstractRenderUnit<D>, D> abstractRenderComposite;
     private int elementCount;
