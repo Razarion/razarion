@@ -14,7 +14,7 @@ public class WebGlGroundMaterial {
         AlarmRaiser.onNull(groundConfig.getTopMaterial(), Alarm.Type.RENDER_GROUND_FAILED, "No top material on GroundConfig: ", groundConfig.getId());
         topMaterial = webGlFacade.createPhongMaterial(groundConfig.getTopMaterial(), "topMaterial");
         bottomMaterial = webGlFacade.createPhongMaterial(groundConfig.getBottomMaterial(), "bottomMaterial");
-        if (bottomMaterial != null) {
+        if (bottomMaterial != null && groundConfig.getSplatting() != null) {
             splatting = webGlFacade.createSplatting(groundConfig.getSplatting(), "splatting");
         }
 

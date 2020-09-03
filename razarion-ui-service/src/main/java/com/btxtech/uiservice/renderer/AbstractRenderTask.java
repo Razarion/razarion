@@ -58,8 +58,9 @@ public abstract class AbstractRenderTask<T> {
       // Already added to modelRenderers in create
     }
 
-    public void remove(ModelRenderer modelRenderer) {
+    public void destroy(ModelRenderer modelRenderer) {
         this.modelRenderers.remove(modelRenderer);
+        modelRenderer.dispose();
     }
 
     protected List<ModelRenderer<T>> getAll() {

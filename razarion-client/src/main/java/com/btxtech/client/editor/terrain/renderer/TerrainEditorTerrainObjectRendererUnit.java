@@ -44,7 +44,7 @@ public class TerrainEditorTerrainObjectRendererUnit extends AbstractRenderUnit<V
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainObjectEditorVertexShader(), Shaders.INSTANCE.terrainObjectEditorFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.terrainObjectEditorVertexShader(), Shaders.INSTANCE.terrainObjectEditorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
         uDelete = webGlFacade.getUniformLocation("uDelete");

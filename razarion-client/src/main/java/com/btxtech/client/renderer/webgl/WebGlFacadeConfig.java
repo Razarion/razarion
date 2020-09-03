@@ -1,6 +1,5 @@
 package com.btxtech.client.renderer.webgl;
 
-import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.google.gwt.resources.client.TextResource;
 
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.List;
  */
 // TODO better name
 public class WebGlFacadeConfig {
-    private AbstractRenderUnit abstractRenderUnit;
     private TextResource vertexShaderCode;
     private TextResource fragmentShaderCode;
     private boolean transformation;
@@ -23,8 +21,7 @@ public class WebGlFacadeConfig {
     private List<String> glslVertexDefines;
     private List<String> glslFragmentDefines;
 
-    public WebGlFacadeConfig(AbstractRenderUnit abstractRenderUnit, TextResource vertexShaderCode, TextResource fragmentShaderCode) {
-        this.abstractRenderUnit = abstractRenderUnit;
+    public WebGlFacadeConfig(TextResource vertexShaderCode, TextResource fragmentShaderCode) {
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
     }
@@ -68,10 +65,6 @@ public class WebGlFacadeConfig {
     public WebGlFacadeConfig glslFragmentDefines(List<String> glslFragmentDefines) {
         this. glslFragmentDefines = glslFragmentDefines;
         return this;
-    }
-
-    public AbstractRenderUnit getAbstractRenderUnit() {
-        return abstractRenderUnit;
     }
 
     public TextResource getVertexShaderCode() {

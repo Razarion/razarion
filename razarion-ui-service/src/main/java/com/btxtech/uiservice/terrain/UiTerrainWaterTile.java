@@ -67,8 +67,7 @@ public class UiTerrainWaterTile {
 
     public void dispose() {
         if (modelRenderer != null) {
-            waterRenderTask.remove(modelRenderer);
-            modelRenderer.dispose();
+            waterRenderTask.destroy(modelRenderer);
         }
     }
 }

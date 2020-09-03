@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
 import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.common.client.dom.CheckboxInput;
+import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -106,6 +107,7 @@ public class RenderEngineEditorPanel extends AbstractEditor {
         // TODO wireMode.setChecked(renderService.isWire());
         // TODO showNorm.setChecked(renderService.isShowNorm());
         rendererCount.setText(Integer.toString(renderService.getRenderQueueSize()));
+        DOMUtil.removeAllElementChildren(renderTasks.getElement());
         renderTasks.setValue(renderService.getRenderTasks().stream().map(RenderTaskModel::new).collect(Collectors.toList()));
         updateCamera();
     }

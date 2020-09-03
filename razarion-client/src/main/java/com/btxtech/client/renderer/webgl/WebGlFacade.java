@@ -3,7 +3,6 @@ package com.btxtech.client.renderer.webgl;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.TextureIdHandler;
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
-import com.btxtech.client.renderer.engine.WebGlSlopeSplatting;
 import com.btxtech.client.renderer.engine.WebGlSplatting;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.DecimalPositionShaderAttribute;
@@ -20,15 +19,15 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.dto.GroundSplattingConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.uiservice.VisualUiService;
-import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLTexture;
 import elemental2.webgl.WebGLUniformLocation;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.function.Supplier;
 
 /**
  * Created by Beat
@@ -64,11 +63,9 @@ public class WebGlFacade {
     private WebGlProgramService webGlProgramService;
     @Inject
     private WebGLTextureContainer textureContainer;
-    private AbstractRenderUnit abstractRenderUnit;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
 
     public void init(WebGlFacadeConfig webGlFacadeConfig) {
-        abstractRenderUnit = webGlFacadeConfig.getAbstractRenderUnit();
         webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig);
     }
 
@@ -176,35 +173,27 @@ public class WebGlFacade {
         uniform4f(uniformLocation, vertex4.getX(), vertex4.getY(), vertex4.getZ(), vertex4.getW());
     }
 
-    public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName) {
-        return createWebGLTexture(imageId, samplerUniformName, null, null);
+    public WebGlUniformTexture createWebGLTexture(String uniformName, Supplier<WebGLTexture> webGLTextureSupplier) {
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(),
+                this,
+                uniformName,
+                textureIdHandler.create(),
+                webGLTextureSupplier);
     }
 
-    public WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName) {
-        return createWebGLBumpMapTexture(imageId, samplerUniformName, null, null, null);
+    public WebGlUniformTexture createWebGLTexture(int imageId, String uniformName) {
+        WebGLTexture webGLTexture = textureContainer.getTexture(imageId);
+        return createWebGLTexture(uniformName, () -> webGLTexture);
     }
 
-    public WebGlUniformTexture createEmptyWebGLTexture(String samplerUniformName) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
+    public WebGlUniformTexture createTerrainMarkerWebGLTexture(String uniformName) {
+        WebGLTexture webGLTexture = textureContainer.getTerrainMarkerTexture();
+        return createWebGLTexture(uniformName, () -> webGLTexture);
     }
 
-    public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale) {
-        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale, null);
-        webGlUniformTexture.setWebGLTexture(textureContainer.getTexture(imageId));
-        return webGlUniformTexture;
-    }
-
-    public WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale, String onePixelUniformLocation) {
-        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale, onePixelUniformLocation);
-        webGlUniformTexture.setWebGLTexture(textureContainer.getTextureForBumpMap(imageId));
-        textureContainer.handleImageSize(imageId, webGlUniformTexture::onImageSizeReceived);
-        return webGlUniformTexture;
-    }
-
-    public WebGlUniformTexture createTerrainMarkerWebGLTexture(String samplerUniformName) {
-        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
-        webGlUniformTexture.setWebGLTexture(textureContainer.getTerrainMarkerTexture());
-        return webGlUniformTexture;
+    public WebGlUniformTexture createFakeWebGLTexture(String uniformName) {
+        WebGLTexture webGLTexture = textureContainer.getFakeTexture();
+        return createWebGLTexture(uniformName, () -> webGLTexture);
     }
 
     public WebGlPhongMaterial createPhongMaterial(PhongMaterialConfig phongMaterialConfig, String variableName) {
@@ -219,15 +208,6 @@ public class WebGlFacade {
         return new WebGlSplatting(this, splatting, variableName);
     }
 
-    public WebGlSlopeSplatting createSlopeSplatting(SlopeSplattingConfig splatting, String variableName) {
-        return new WebGlSlopeSplatting(this, splatting, variableName);
-    }
-
-    public WebGlUniformTexture createFakeWebGLTexture(String samplerUniformName) {
-        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
-        webGlUniformTexture.setWebGLTexture(textureContainer.getFakeTexture());
-        return webGlUniformTexture;
-    }
 
     public WebGlUniformTexture createSaveWebGLTexture(Integer imageId, String samplerUniformName) {
         if (imageId != null) {
@@ -247,8 +227,6 @@ public class WebGlFacade {
 
     @Deprecated
     public void drawArrays(double mode) {
-        getCtx3d().drawArrays(mode, 0, abstractRenderUnit.getElementCount());
-        WebGlUtil.checkLastWebGlError("drawArrays for " + abstractRenderUnit.helperString(), getCtx3d());
     }
 
     public void drawArrays(double mode, int elementCount, String helperString) {
@@ -256,7 +234,7 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("drawArrays for " + helperString, getCtx3d());
     }
 
-    public void enableOESStandartDerivatives() {
+    public void enableOESStandardDerivatives() {
         Object extension = getCtx3d().getExtension("OES_standard_derivatives");
         if (extension == null) {
             throw new WebGlException("OES_standard_derivatives is no supported");

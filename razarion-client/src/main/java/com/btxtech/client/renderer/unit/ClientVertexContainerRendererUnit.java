@@ -54,8 +54,8 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
     @Override
     public void init() {
-        webGlFacade.enableOESStandartDerivatives();
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.vertexContainerVertexShader(), Shaders.INSTANCE.vertexContainerFragmentShader()).enableTransformation(true)/*.enableReceiveShadow()*/.enableCastShadow());
+        webGlFacade.enableOESStandardDerivatives();
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.vertexContainerVertexShader(), Shaders.INSTANCE.vertexContainerFragmentShader()).enableTransformation(true)/*.enableReceiveShadow()*/.enableCastShadow());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         uvs = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_UV);

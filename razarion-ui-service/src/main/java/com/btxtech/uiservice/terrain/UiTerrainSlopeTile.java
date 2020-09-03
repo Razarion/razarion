@@ -55,8 +55,7 @@ public class UiTerrainSlopeTile {
 
     public void dispose() {
         if (modelRenderer != null) {
-            slopeRenderTask.remove(modelRenderer);
-            modelRenderer.dispose();
+            slopeRenderTask.destroy(modelRenderer);
         }
     }
 }

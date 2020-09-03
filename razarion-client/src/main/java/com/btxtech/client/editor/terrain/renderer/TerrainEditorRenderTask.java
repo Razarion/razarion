@@ -63,8 +63,8 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
     }
 
     public void removeSlope(ModifiedSlope modifiedSlope) {
-        remove(slopeRenderers.remove(modifiedSlope).getRenderComposite().getModelRenderer());
-        remove(slopeDrivewayRenderers.remove(modifiedSlope).getRenderComposite().getModelRenderer());
+        destroy(slopeRenderers.remove(modifiedSlope).getRenderComposite().getModelRenderer());
+        destroy(slopeDrivewayRenderers.remove(modifiedSlope).getRenderComposite().getModelRenderer());
     }
 
     private void setupCursor(Polygon2D cursor) {

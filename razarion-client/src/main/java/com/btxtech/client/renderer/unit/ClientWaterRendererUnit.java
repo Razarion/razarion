@@ -62,8 +62,8 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
     @Override
     public void init() {
-        webGlFacade.enableOESStandartDerivatives();
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader()).enableTransformation(true));
+        webGlFacade.enableOESStandardDerivatives();
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader()).enableTransformation(true));
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         shininess = webGlFacade.getUniformLocation("uShininess");
         specularStrength = webGlFacade.getUniformLocation("uSpecularStrength");

@@ -33,7 +33,7 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.itemMarkerFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.itemMarkerFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);

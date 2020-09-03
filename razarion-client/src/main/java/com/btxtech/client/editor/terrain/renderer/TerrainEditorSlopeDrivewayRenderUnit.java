@@ -45,7 +45,7 @@ public class TerrainEditorSlopeDrivewayRenderUnit extends AbstractRenderUnit<Mod
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainEditorVertexShader(), Shaders.INSTANCE.terrainEditorFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.terrainEditorVertexShader(), Shaders.INSTANCE.terrainEditorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         uColor = webGlFacade.getUniformLocation("uColor");
     }

@@ -30,6 +30,18 @@ public class GroundRenderSubTask extends AbstractRenderSubTask<UiTerrainGroundTi
 //    private WebGLUniformLocation terrainMarker2DPoints;
 //    private WebGLUniformLocation terrainMarkerAnimation;
 
+@Override
+protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainGroundTile uiTerrainGroundTile) {
+    return new WebGlFacadeConfig(Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader())
+            .enableTransformation(true)
+            .enableReceiveShadow()
+            .enableCastShadow()
+            .enableOESStandardDerivatives()
+            .enablelight()
+            .glslFragmentDefines(glslFragmentDefines(uiTerrainGroundTile));
+}
+
+
     @Override
     public void setup(UiTerrainGroundTile uiTerrainGroundTile) {
         setupVec3PositionArray(uiTerrainGroundTile.getGroundPositions());
@@ -41,17 +53,6 @@ public class GroundRenderSubTask extends AbstractRenderSubTask<UiTerrainGroundTi
 //        terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
 //        terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
 //        terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
-    }
-
-    @Override
-    protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainGroundTile uiTerrainGroundTile) {
-        return new WebGlFacadeConfig(null, Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader())
-                .enableTransformation(true)
-                .enableReceiveShadow()
-                .enableCastShadow()
-                .enableOESStandardDerivatives()
-                .enablelight()
-                .glslFragmentDefines(glslFragmentDefines(uiTerrainGroundTile));
     }
 
     private List<String> glslFragmentDefines(UiTerrainGroundTile uiTerrainGroundTile) {

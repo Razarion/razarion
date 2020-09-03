@@ -40,7 +40,7 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleDeptBufferFragmentShader()).enableShadowTransformation());
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleDeptBufferFragmentShader()).enableShadowTransformation());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         alphaTextureCoordinates = webGlFacade.createDecimalPositionShaderAttribute("aAlphaTextureCoordinate");
         modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);

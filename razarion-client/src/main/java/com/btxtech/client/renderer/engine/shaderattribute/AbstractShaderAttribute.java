@@ -41,13 +41,6 @@ abstract public class AbstractShaderAttribute {
         WebGlUtil.checkLastWebGlError("bufferData", ctx3d);
     }
 
-    public void fillFloatBuffer(List<Float> floatList) {
-        ctx3d.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, webGlBuffer);
-        WebGlUtil.checkLastWebGlError("bindBuffer", ctx3d);
-        ctx3d.bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(floatList), WebGLRenderingContext.STATIC_DRAW);
-        WebGlUtil.checkLastWebGlError("bufferData", ctx3d);
-    }
-
     public void activate() {
         ctx3d.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, webGlBuffer);
         WebGlUtil.checkLastWebGlError("bindBuffer", ctx3d);

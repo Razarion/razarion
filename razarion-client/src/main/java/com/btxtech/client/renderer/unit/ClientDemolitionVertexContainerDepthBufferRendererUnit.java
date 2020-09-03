@@ -37,7 +37,7 @@ public class ClientDemolitionVertexContainerDepthBufferRendererUnit extends Abst
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.vertexContainerDeptBufferVertexShader(), Shaders.INSTANCE.vertexContainerDeptBufferFragmentShader()).enableShadowTransformation());
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.vertexContainerDeptBufferVertexShader(), Shaders.INSTANCE.vertexContainerDeptBufferFragmentShader()).enableShadowTransformation());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         textureCoordinate = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
         modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);

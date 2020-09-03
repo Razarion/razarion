@@ -95,29 +95,29 @@ public class UiTerrainTile {
                 }
             });
         }
-//        if (terrainTile.getTerrainSlopeTiles() != null) {
-//            uiTerrainSlopeTiles = new ArrayList<>();
-//            terrainTile.getTerrainSlopeTiles().forEach(terrainSlopeTile -> {
-//                SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainSlopeTile.getSlopeConfigId());
-//                if (terrainSlopeTile.getOuterSlopeGeometry() != null) {
-//                    createAndAddUiTerrainSlopeTile(slopeConfig,
-//                            slopeConfig.getOuterSlopeSplattingConfig(),
-//                            // TODO Inherit ground from parent slope
-//                            defaultGroundConfig,
-//                            terrainSlopeTile.getOuterSlopeGeometry());
-//                }
-//                if (terrainSlopeTile.getCenterSlopeGeometry() != null) {
-//                    createAndAddUiTerrainSlopeTile(slopeConfig, null, null,terrainSlopeTile.getCenterSlopeGeometry());
-//                }
-//                if (terrainSlopeTile.getInnerSlopeGeometry() != null) {
-//                    createAndAddUiTerrainSlopeTile(slopeConfig,
-//                            slopeConfig.getInnerSlopeSplattingConfig(),
-//                            // TODO Inherit ground from parent slope
-//                            slopeConfig.getGroundConfigId() != null ? terrainTypeService.getGroundConfig(slopeConfig.getGroundConfigId()) : defaultGroundConfig,
-//                            terrainSlopeTile.getInnerSlopeGeometry());
-//                }
-//            });
-//        }
+        if (terrainTile.getTerrainSlopeTiles() != null) {
+            uiTerrainSlopeTiles = new ArrayList<>();
+            terrainTile.getTerrainSlopeTiles().forEach(terrainSlopeTile -> {
+                SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainSlopeTile.getSlopeConfigId());
+                if (terrainSlopeTile.getOuterSlopeGeometry() != null) {
+                    createAndAddUiTerrainSlopeTile(slopeConfig,
+                            slopeConfig.getOuterSlopeSplattingConfig(),
+                            // TODO Inherit ground from parent slope
+                            defaultGroundConfig,
+                            terrainSlopeTile.getOuterSlopeGeometry());
+                }
+                if (terrainSlopeTile.getCenterSlopeGeometry() != null) {
+                    createAndAddUiTerrainSlopeTile(slopeConfig, null, null,terrainSlopeTile.getCenterSlopeGeometry());
+                }
+                if (terrainSlopeTile.getInnerSlopeGeometry() != null) {
+                    createAndAddUiTerrainSlopeTile(slopeConfig,
+                            slopeConfig.getInnerSlopeSplattingConfig(),
+                            // TODO Inherit ground from parent slope
+                            slopeConfig.getGroundConfigId() != null ? terrainTypeService.getGroundConfig(slopeConfig.getGroundConfigId()) : defaultGroundConfig,
+                            terrainSlopeTile.getInnerSlopeGeometry());
+                }
+            });
+        }
 //        if (terrainTile.getTerrainWaterTiles() != null) {
 //            uiTerrainWaterTiles = new ArrayList<>();
 //            terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile -> {

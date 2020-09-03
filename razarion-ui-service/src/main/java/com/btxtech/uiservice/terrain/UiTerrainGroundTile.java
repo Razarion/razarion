@@ -41,8 +41,7 @@ public class UiTerrainGroundTile {
 
     public void dispose() {
         if (modelRenderer != null) {
-            groundRenderTask.remove(modelRenderer);
-            modelRenderer.dispose();
+            groundRenderTask.destroy(modelRenderer);
         }
     }
 

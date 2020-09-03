@@ -1,9 +1,8 @@
 package com.btxtech.uiservice.renderer.task.slope;
 
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
-import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
+import com.btxtech.uiservice.renderer.RenderSubTask;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
 import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 
@@ -14,17 +13,13 @@ import javax.inject.Singleton;
  * 31.08.2016.
  */
 @Singleton
-public class SlopeRenderTask extends AbstractRenderTask<Slope> {
+public class SlopeRenderTask extends AbstractRenderTask<UiTerrainSlopeTile> {
+    public interface SubTask extends RenderSubTask<UiTerrainSlopeTile> {
+    }
+
     public ModelRenderer createModelRenderer(UiTerrainSlopeTile uiTerrainSlopeTile) {
-        ModelRenderer<UiTerrainSlopeTile> modelRenderer = create();
-        CommonRenderComposite<AbstractSlopeRendererUnit, UiTerrainSlopeTile> renderComposite = modelRenderer.create();
-        renderComposite.init(uiTerrainSlopeTile);
-        renderComposite.setRenderUnit(AbstractSlopeRendererUnit.class);
-        // renderComposite.setDepthBufferRenderUnit(depthBufferRendererInstance.get());
-        // renderComposite.setNormRenderUnit(normRendererInstance.get());
-        modelRenderer.add(RenderUnitControl.TERRAIN, renderComposite);
-        add(modelRenderer);
-        renderComposite.fillBuffers();
+        ModelRenderer<UiTerrainSlopeTile> modelRenderer = createNew();
+        modelRenderer.create(RenderUnitControl.TERRAIN, SlopeRenderTask.SubTask.class, uiTerrainSlopeTile);
         return modelRenderer;
     }
 }

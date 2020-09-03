@@ -4,7 +4,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
-import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
+import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -39,14 +39,14 @@ public abstract class RenderService {
         renderTasks.clear();
 
         addRenderTask(GroundRenderTask.class, "Ground");
-// TODO        addRenderTask(SlopeRenderTask.class, "Slope");
+        addRenderTask(SlopeRenderTask.class, "Slope");
 // TODO        addRenderTask(TerrainObjectRenderTask.class, "Terrain Object");
 // TODO       addRenderTask(ItemMarkerRenderTask.class, "Item Marker");
 // TODO       addRenderTask(BaseItemRenderTask.class, "Base Item");
 // TODO       addRenderTask(TrailRenderTask.class, "Trail");
 // TODO       addRenderTask(ResourceItemRenderTask.class, "Resource");
 // TODO       addRenderTask(BoxItemRenderTask.class, "Box");
-        addRenderTask(WaterRenderTask.class, "Water");
+// TODO       addRenderTask(WaterRenderTask.class, "Water");
 // TODO       addRenderTask(ProjectileRenderTask.class, "Projectile");
 // TODO       addRenderTask(BaseItemPlacerRenderTask.class, "Base Item Placer");
 // TODO       addRenderTask(SelectionFrameRenderTask.class, "Selection Frame");
@@ -67,10 +67,6 @@ public abstract class RenderService {
         renderTasks.remove(abstractRenderTask);
     }
 
-    public boolean containsRenderTask(AbstractRenderTask abstractRenderTask) {
-        return renderTasks.contains(abstractRenderTask);
-    }
-
     public void render() {
         try {
             perfmonService.onEntered(PerfmonEnum.RENDERER);
@@ -79,9 +75,9 @@ public abstract class RenderService {
             renderTasks.forEach(renderTask -> renderTask.prepareRender(timeStamp));
 
             pass = Pass.SHADOW;
+            prepare(RenderUnitControl.NORMAL);
             prepareDepthBufferRendering();
             for (RenderUnitControl renderUnitControl : RenderUnitControl.getRenderUnitControls()) {
-                // prepare(renderUnitControl);
                 renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(renderUnitControl));
             }
 
