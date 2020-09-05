@@ -12,7 +12,7 @@ import jsinterop.base.Js;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,9 +56,11 @@ protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainGroundTile uiTerrainGr
     }
 
     private List<String> glslFragmentDefines(UiTerrainGroundTile uiTerrainGroundTile) {
+        List<String> defines = new ArrayList<>();
+        defines.add("RECEIVE_SHADOW");
         if (uiTerrainGroundTile.getGroundConfig().getBottomMaterial() != null && uiTerrainGroundTile.getGroundConfig().getSplatting() != null) {
-            return Collections.singletonList("RENDER_GROUND_BOTTOM_TEXTURE");
+            defines.add("RENDER_GROUND_BOTTOM_TEXTURE");
         }
-        return null;
+        return defines;
     }
 }

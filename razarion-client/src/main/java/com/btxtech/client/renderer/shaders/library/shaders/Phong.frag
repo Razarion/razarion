@@ -41,7 +41,11 @@ vec4 phongAlpha(PhongMaterial phongMaterial, vec2 uv) {
     vec3 halfwayDir = normalize(correctedDirectLightDirection + viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), phongMaterial.shininess);
     vec3 specular = phongMaterial.specularStrength * spec * directLightColor;
+    #ifdef RECEIVE_SHADOW
+    return vec4((ambientLightColor + diffuse * shadowFactor) * texture.rgb + specular * shadowFactor, texture.a);
+    #else
     return vec4((ambientLightColor + diffuse) * texture.rgb + specular, texture.a);
+    #endif
 }
 
 vec3 phong(PhongMaterial phongMaterial, vec2 uv) {

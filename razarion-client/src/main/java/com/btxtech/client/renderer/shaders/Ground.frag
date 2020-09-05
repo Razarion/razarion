@@ -14,6 +14,8 @@ vec3 correctedDirectLightDirection;
 
 //-$$$-INCLUDE-DEFINES
 
+//-$$$-INCLUDE-CHUNK shadow uniforms-and-code
+
 //-$$$-INCLUDE-CHUNK phong struct
 
 //-$$$-INCLUDE-CHUNK ground variables
@@ -21,27 +23,8 @@ vec3 correctedDirectLightDirection;
 //-$$$-INCLUDE-CHUNK phong functions
 
 //-$$$-INCLUDE-CHUNK ground functions
-
-// Shadow
-varying vec4 shadowPosition;
-uniform float uShadowAlpha;
-uniform sampler2D uDepthTexture;
-
-
-float calculateShadowFactor() {
-    float zMap = texture2D(uDepthTexture, shadowPosition.xy).r;
-
-    if (zMap > shadowPosition.z - 0.01) {
-        return 1.0;
-    } else {
-        return uShadowAlpha;
-    }
-}
-
-
-
 void main(void) {
+    //-$$$-INCLUDE-CHUNK shadow chunk
     correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
-    float shadow = calculateShadowFactor();
-    gl_FragColor = vec4(shadow * ground(), 1.0);
+    gl_FragColor = vec4(ground(), 1.0);
 }

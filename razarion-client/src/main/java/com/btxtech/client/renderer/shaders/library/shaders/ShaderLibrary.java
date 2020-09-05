@@ -10,4 +10,7 @@ public interface ShaderLibrary extends ClientBundleWithLookup {
     @Source("Ground.frag")
     TextResource ground();
 
+    @Source("Shadow.frag")
+    TextResource shadow();
+
 }
