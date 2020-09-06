@@ -1,8 +1,6 @@
 #extension GL_OES_standard_derivatives : enable
 precision mediump float;
 
-//-$$$-INCLUDE-DEFINES
-
 varying vec3 vWorldVertexPosition;
 varying vec3 vViewPosition;
 varying vec3 vNormal;
@@ -15,8 +13,10 @@ uniform vec3 directLightDirection;
 uniform vec3 directLightColor;
 uniform vec3 ambientLightColor;
 vec3 correctedDirectLightDirection;
-// Shadow
-varying vec4 vShadowCoord;
+
+//-$$$-INCLUDE-DEFINES
+
+//-$$$-INCLUDE-CHUNK shadow uniforms-and-code
 
 //-$$$-INCLUDE-CHUNK phong struct
 uniform PhongMaterial material;
@@ -42,6 +42,7 @@ uniform SlopeSplatting slopeSplatting;
 #endif
 
 void main(void) {
+    //-$$$-INCLUDE-CHUNK shadow chunk
     correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
 
     vec3 slope = phong(material, vUv);

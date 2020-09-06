@@ -24,7 +24,7 @@ public class SlopeRenderSubTask extends AbstractRenderSubTask<UiTerrainSlopeTile
     protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainSlopeTile uiTerrainSlopeTile) {
         return new WebGlFacadeConfig(Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader())
                 .enableTransformation(true)
-                //.enableReceiveShadow()
+                .enableReceiveShadow()
                 .enableCastShadow()
                 .enableOESStandardDerivatives()
                 .enablelight()
@@ -48,6 +48,7 @@ public class SlopeRenderSubTask extends AbstractRenderSubTask<UiTerrainSlopeTile
 
     private List<String> glslFragmentDefines(UiTerrainSlopeTile uiTerrainSlopeTile) {
         List<String> defines = new ArrayList<>();
+        defines.add("RECEIVE_SHADOW");
         if (uiTerrainSlopeTile.getGroundConfig() != null) {
             defines.add("RENDER_GROUND_TEXTURE");
             if (uiTerrainSlopeTile.getGroundConfig().getBottomMaterial() != null && uiTerrainSlopeTile.getGroundConfig().getSplatting() != null) {

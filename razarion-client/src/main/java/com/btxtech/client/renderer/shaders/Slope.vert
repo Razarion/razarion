@@ -15,7 +15,7 @@ varying vec3 vWorldVertexPosition;
 varying vec3 vViewPosition;
 varying vec2 vUv;
 varying float vSlopeFactor;
-varying vec4 vShadowCoord;
+varying vec4 shadowPosition;
 
 void main(void) {
     vWorldVertexPosition = position.xyz;
@@ -23,7 +23,7 @@ void main(void) {
     vViewPosition = - (viewMatrix * vec4(position, 1.0)).xyz;
     vUv = uv;
     vSlopeFactor = slopeFactor;
-    vShadowCoord = shadowMatrix * vec4(position, 1.0);
+    shadowPosition = shadowMatrix * vec4(position, 1.0);
 
     gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
 }
