@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.subtask;
 
+import com.btxtech.client.renderer.engine.LightUniforms;
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;

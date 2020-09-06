@@ -2,7 +2,7 @@ package com.btxtech.client.editor.renderer;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.client.renderer.engine.shaderattribute.UniformLocation;
+import com.btxtech.client.renderer.engine.UniformLocation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.subtask.AbstractRenderSubTask;
 import com.btxtech.client.renderer.webgl.WebGlFacade;

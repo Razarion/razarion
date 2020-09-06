@@ -1,13 +1,14 @@
 package com.btxtech.client.renderer.subtask;
 
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
+import com.btxtech.client.renderer.engine.LightUniforms;
 import com.btxtech.client.renderer.engine.TextureIdHandler;
 import com.btxtech.client.renderer.engine.WebGlGroundMaterial;
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.AbstractShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Float32ArrayShaderAttribute;
-import com.btxtech.client.renderer.engine.shaderattribute.UniformLocation;
+import com.btxtech.client.renderer.engine.UniformLocation;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.webgl.WebGlFacade;

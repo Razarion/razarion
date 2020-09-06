@@ -1,4 +1,4 @@
-package com.btxtech.client.renderer.engine.shaderattribute;
+package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import elemental2.webgl.WebGLUniformLocation;
