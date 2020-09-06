@@ -4,7 +4,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.shaderattribute.UniformLocation;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.renderer.unit.AbstractRenderSubTask;
+import com.btxtech.client.renderer.subtask.AbstractRenderSubTask;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import elemental2.core.Float32Array;

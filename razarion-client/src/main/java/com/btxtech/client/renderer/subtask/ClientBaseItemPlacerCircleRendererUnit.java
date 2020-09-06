@@ -1,4 +1,4 @@
-package com.btxtech.client.renderer.unit;
+package com.btxtech.client.renderer.subtask;
 
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
@@ -8,7 +8,7 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
-import com.btxtech.uiservice.renderer.task.visualization.AbstractInGameItemCornerRendererUnit;
+import com.btxtech.uiservice.renderer.task.itemplacer.AbstractBaseItemPlacerCircleRendererUnit;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
@@ -18,11 +18,11 @@ import java.util.List;
 
 /**
  * Created by Beat
- * 07.12.2016.
+ * 10.09.2016.
  */
 @ColorBufferRenderer
 @Dependent
-public class ClientInGameItemCornerRendererUnit extends AbstractInGameItemCornerRendererUnit {
+public class ClientBaseItemPlacerCircleRendererUnit extends AbstractBaseItemPlacerCircleRendererUnit {
     @Inject
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute positions;
@@ -43,18 +43,16 @@ public class ClientInGameItemCornerRendererUnit extends AbstractInGameItemCorner
     }
 
     @Override
-    protected void prepareDraw(Color cornerColor) {
+    protected void prepareDraw() {
         webGlFacade.useProgram();
-
-        webGlFacade.uniform4f(colorUniformLocation, cornerColor);
 
         positions.activate();
     }
 
     @Override
-    protected void draw(ModelMatrices modelMatrices) {
+    protected void draw(ModelMatrices modelMatrices, Color color) {
         webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
-        webGlFacade.drawArrays(WebGLRenderingContext.LINES);
+        webGlFacade.uniform4f(colorUniformLocation, color);
+        webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
-
 }

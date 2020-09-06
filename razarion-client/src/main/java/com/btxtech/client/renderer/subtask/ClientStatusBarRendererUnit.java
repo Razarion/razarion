@@ -1,14 +1,14 @@
-package com.btxtech.client.renderer.unit;
+package com.btxtech.client.renderer.subtask;
 
+import com.btxtech.client.renderer.engine.shaderattribute.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
-import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
-import com.btxtech.uiservice.renderer.task.itemplacer.AbstractBaseItemPlacerCircleRendererUnit;
+import com.btxtech.uiservice.renderer.task.selection.AbstractStatusBarRendererUnit;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
 
@@ -18,28 +18,35 @@ import java.util.List;
 
 /**
  * Created by Beat
- * 10.09.2016.
+ * 23.01.2017.
  */
-@ColorBufferRenderer
 @Dependent
-public class ClientBaseItemPlacerCircleRendererUnit extends AbstractBaseItemPlacerCircleRendererUnit {
+@ColorBufferRenderer
+public class ClientStatusBarRendererUnit extends AbstractStatusBarRendererUnit {
     @Inject
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute positions;
+    private FloatShaderAttribute visibilityAttribute;
     private WebGLUniformLocation colorUniformLocation;
+    private WebGLUniformLocation bgColorUniformLocation;
     private WebGLUniformLocation modelMatrix;
+    private WebGLUniformLocation uProgress;
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.rgbaMvpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.statusBarFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
+        bgColorUniformLocation = webGlFacade.getUniformLocation("uBgColor");
         modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        uProgress = webGlFacade.getUniformLocation("uProgress");
     }
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices) {
+    protected void fillBuffers(List<Vertex> vertices, List<Double> visibilities) {
         positions.fillBuffer(vertices);
+        visibilityAttribute.fillDoubleBuffer(visibilities);
     }
 
     @Override
@@ -47,12 +54,15 @@ public class ClientBaseItemPlacerCircleRendererUnit extends AbstractBaseItemPlac
         webGlFacade.useProgram();
 
         positions.activate();
+        visibilityAttribute.activate();
     }
 
     @Override
-    protected void draw(ModelMatrices modelMatrices, Color color) {
+    protected void draw(ModelMatrices modelMatrices) {
         webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
-        webGlFacade.uniform4f(colorUniformLocation, color);
+        webGlFacade.uniform4f(colorUniformLocation, modelMatrices.getColor());
+        webGlFacade.uniform4f(bgColorUniformLocation, modelMatrices.getBgColor());
+        webGlFacade.uniform1f(uProgress, modelMatrices.getProgress());
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }
