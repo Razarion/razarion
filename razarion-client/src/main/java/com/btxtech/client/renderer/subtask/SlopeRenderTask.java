@@ -5,7 +5,7 @@ import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
-import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
+import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
 import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 
 import javax.enterprise.context.Dependent;
@@ -17,7 +17,7 @@ import java.util.List;
  * 24.01.2016.
  */
 @Dependent
-public class SlopeRenderSubTask extends AbstractRenderSubTask<UiTerrainSlopeTile> implements SlopeRenderTask.SubTask  {
+public class SlopeRenderTask extends AbstractRenderTask<UiTerrainSlopeTile> implements SlopeRenderTaskRunner.RenderTask {
     // private static Logger logger = Logger.getLogger(ClientSlopeRendererUnit.class.getName());
 
     @Override

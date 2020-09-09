@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.renderpanel;
 
-import com.btxtech.uiservice.renderer.AbstractRenderTask;
+import com.btxtech.uiservice.renderer.AbstractRenderTaskRunner;
 import org.jboss.errai.databinding.client.api.Bindable;
 
 /**
@@ -10,7 +10,7 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Bindable
 public class RenderTaskModel {
     private String name;
-    private AbstractRenderTask abstractRenderTask;
+    private AbstractRenderTaskRunner abstractRenderTask;
     private boolean enabled;
 
     /**
@@ -19,7 +19,7 @@ public class RenderTaskModel {
     public RenderTaskModel() {
     }
 
-    public RenderTaskModel(AbstractRenderTask abstractRenderTask) {
+    public RenderTaskModel(AbstractRenderTaskRunner abstractRenderTask) {
         name = abstractRenderTask.getName();
         enabled = abstractRenderTask.isEnabled();
         this.abstractRenderTask = abstractRenderTask;

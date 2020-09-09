@@ -2,7 +2,7 @@ package com.btxtech.uiservice.renderer.task.selection;
 
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.ItemMarkerService;
-import com.btxtech.uiservice.renderer.AbstractRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
  * 23.01.2017.
  */
 @ApplicationScoped
-public class ItemMarkerRenderTask extends AbstractRenderTask<Void> {
+public class ItemMarkerRenderTask extends AbstractModelRenderTask<Void> {
     @Inject
     private ItemMarkerService itemMarkerService;
     @Inject

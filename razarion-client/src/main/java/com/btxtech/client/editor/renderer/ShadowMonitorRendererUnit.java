@@ -4,7 +4,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.UniformLocation;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.renderer.subtask.AbstractRenderSubTask;
+import com.btxtech.client.renderer.subtask.AbstractRenderTask;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import elemental2.core.Float32Array;
@@ -18,14 +18,14 @@ import javax.inject.Inject;
  * 11.09.2015.
  */
 @Dependent
-public class ShadowMonitorRendererUnit extends AbstractRenderSubTask<Void> implements MonitorRenderTask.SubTask {
+public class ShadowMonitorRendererUnit extends AbstractRenderTask<Void> implements MonitorRenderTaskRunner.SubTask {
     private static final int SIDE_LENGTH = 256;
     @Inject
     private GameCanvas gameCanvas;
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
-    private MonitorRenderTask monitorRenderTask;
+    private MonitorRenderTaskRunner monitorRenderTask;
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(Void aVoid) {

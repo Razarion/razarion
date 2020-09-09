@@ -2,7 +2,7 @@ package com.btxtech.uiservice.renderer.task.selection;
 
 import com.btxtech.uiservice.GroupSelectionFrame;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.renderer.AbstractRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
  * 27.09.2016.
  */
 @ApplicationScoped
-public class SelectionFrameRenderTask extends AbstractRenderTask<GroupSelectionFrame> {
+public class SelectionFrameRenderTask extends AbstractModelRenderTask<GroupSelectionFrame> {
     @Inject
     private SelectionHandler selectionHandler;
     private boolean active;

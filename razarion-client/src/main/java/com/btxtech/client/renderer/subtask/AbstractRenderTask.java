@@ -21,7 +21,7 @@ import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.renderer.RenderSubTask;
+import com.btxtech.uiservice.renderer.RenderTask;
 import com.btxtech.uiservice.renderer.ViewService;
 import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLRenderingContext;
@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class AbstractRenderSubTask<T> implements RenderSubTask<T> {
+public abstract class AbstractRenderTask<T> implements RenderTask<T> {
     @Inject
     private WebGlFacade webGlFacade;
     @Inject
@@ -48,6 +48,7 @@ public abstract class AbstractRenderSubTask<T> implements RenderSubTask<T> {
 
     private Collection<AbstractShaderAttribute> arrays = new ArrayList<>();
     private int elementCount;
+    private boolean active;
     private LightUniforms lightUniforms;
     private Collection<WebGlPhongMaterial> materials = new ArrayList<>();
     private Collection<WebGlGroundMaterial> webGlGroundMaterials = new ArrayList<>();
@@ -154,7 +155,10 @@ public abstract class AbstractRenderSubTask<T> implements RenderSubTask<T> {
     }
 
     @Override
-    public final void draw(List<ModelMatrices> modelMatrices, double interpolationFactor) {
+    public final void draw() {
+        if (!active) {
+            return;
+        }
         if (canBeSkipped()) {
             return;
         }
@@ -229,7 +233,7 @@ public abstract class AbstractRenderSubTask<T> implements RenderSubTask<T> {
         webGlFacade.uniform1f(uShadowAlpha, (float) visualUiService.getPlanetVisualConfig().getShadowAlpha());
         webGlFacade.uniform1i(uShadowTexture, shadowWebGlTextureId.getUniformValue());
         webGlFacade.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
-        if(renderService.getPass() == RenderService.Pass.SHADOW) {
+        if (renderService.getPass() == RenderService.Pass.SHADOW) {
             webGlFacade.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
         } else {
             webGlFacade.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
@@ -241,6 +245,12 @@ public abstract class AbstractRenderSubTask<T> implements RenderSubTask<T> {
         return renderService.getPass() == RenderService.Pass.SHADOW && !webGlFacadeConfig.isCastShadow();
     }
 
+    @Override
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    @Override
     public void dispose() {
         arrays.forEach(AbstractShaderAttribute::deleteBuffer);
     }

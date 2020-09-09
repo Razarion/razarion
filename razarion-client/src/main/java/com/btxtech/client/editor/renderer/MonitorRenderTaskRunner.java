@@ -1,10 +1,8 @@
 package com.btxtech.client.editor.renderer;
 
-import com.btxtech.uiservice.renderer.AbstractRenderTask;
-import com.btxtech.uiservice.renderer.ModelRenderer;
+import com.btxtech.uiservice.renderer.AbstractSimpleRenderTaskRunner;
 import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.renderer.RenderSubTask;
-import com.btxtech.uiservice.renderer.RenderUnitControl;
+import com.btxtech.uiservice.renderer.RenderTask;
 import com.google.inject.Inject;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -14,35 +12,34 @@ import javax.enterprise.context.ApplicationScoped;
  * 23.11.2016.
  */
 @ApplicationScoped
-public class MonitorRenderTask extends AbstractRenderTask<Void> {
-    public interface SubTask extends RenderSubTask<Void> {
+public class MonitorRenderTaskRunner extends AbstractSimpleRenderTaskRunner<Void> {
+    public interface SubTask extends RenderTask<Void> {
     }
 
     @Inject
     private RenderService renderService;
     private boolean showDeep = true;
-    private ModelRenderer<Void> modelRenderer;
+    private RenderTask<Void> renderTask;
 
     public void showMonitor() {
-        if(modelRenderer != null) {
+        if(renderTask != null) {
             throw new IllegalStateException("Shadow monitor is already showing");
         }
-        modelRenderer = createNew();
-        modelRenderer.create(RenderUnitControl.NORMAL, MonitorRenderTask.SubTask.class, null);
-        renderService.addRenderTask(this, "Monitor");
+        renderTask = createRenderTask(MonitorRenderTaskRunner.SubTask.class, null);
+        renderService.addRenderTaskRunner(this, "Monitor");
     }
 
     public void hideMonitor() {
-        if(modelRenderer == null) {
+        if(renderTask == null) {
             throw new IllegalStateException("Shadow monitor is already showing");
         }
-        renderService.removeRenderTask(this);
-        destroy(modelRenderer);
-        modelRenderer = null;
+        renderService.removeRenderTaskRunner(this);
+        destroyRenderTask(renderTask);
+        renderTask = null;
     }
 
     public boolean isShown() {
-        return modelRenderer != null;
+        return renderTask != null;
     }
 
 

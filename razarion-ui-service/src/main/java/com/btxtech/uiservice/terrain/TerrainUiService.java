@@ -107,12 +107,15 @@ public class TerrainUiService {
             newUiTerrainTile.setActive(true);
             newDisplayTerrainTiles.put(index, newUiTerrainTile);
         }
-        for (Map.Entry<Index, UiTerrainTile> entry : displayTerrainTiles.entrySet()) {
-            entry.getValue().setActive(false);
-            cacheTerrainTiles.put(entry.getKey(), entry.getValue());
+        for (Map.Entry<Index, UiTerrainTile> hidden : displayTerrainTiles.entrySet()) {
+            hidden.getValue().setActive(false);
+            cacheTerrainTiles.put(hidden.getKey(), hidden.getValue());
         }
         displayTerrainTiles = newDisplayTerrainTiles;
-        // Terrain objects
+        onViewChangedTerrainObjects();
+    }
+
+    private void onViewChangedTerrainObjects() {
         terrainObjectConfigModelMatrices.clear();
         displayTerrainTiles.values().forEach(uiTerrainTile -> {
             MapList<Integer, ModelMatrices> terrainObjectModelMatrices = uiTerrainTile.getTerrainObjectModelMatrices();

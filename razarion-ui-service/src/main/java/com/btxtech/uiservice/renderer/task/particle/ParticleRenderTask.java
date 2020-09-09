@@ -2,7 +2,7 @@ package com.btxtech.uiservice.renderer.task.particle;
 
 import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.particle.ParticleShapeConfig;
-import com.btxtech.uiservice.renderer.AbstractRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
  * 01.02.2017.
  */
 @ApplicationScoped
-public class ParticleRenderTask extends AbstractRenderTask<Void> {
+public class ParticleRenderTask extends AbstractModelRenderTask<Void> {
     // private Logger logger = Logger.getLogger(ParticleRenderTask.class.getName());
     @Inject
     private ParticleService particleService;

@@ -1,11 +1,8 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Function;
 
@@ -20,9 +17,6 @@ import java.util.function.Function;
  */
 @Dependent
 public class ModelRenderer<T> {
-    @Inject
-    private Instance<RenderSubTask<T>> instance;
-    private MapList<RenderUnitControl, RenderSubTask<T>> renderSubTasks = new MapList<>();
     private List<ModelMatrices> modelMatrices;
     private Function<Long, List<ModelMatrices>> modelMatricesSupplier;
     private T model;
@@ -36,12 +30,6 @@ public class ModelRenderer<T> {
 
     public T getModel() {
         return model;
-    }
-
-    public void create(RenderUnitControl renderUnitControl, Class<? extends RenderSubTask<T>> clazz, T t) {
-        RenderSubTask<T> webGlProgram = instance.select(clazz).get();
-        webGlProgram.init(t);
-        this.renderSubTasks.put(renderUnitControl, webGlProgram);
     }
 
     @Deprecated
@@ -75,7 +63,7 @@ public class ModelRenderer<T> {
         if (!active || !hasSomethingToDraw) {
             return;
         }
-        renderSubTasks.getSave(renderUnitControl).forEach(webGlProgram -> webGlProgram.draw(modelMatrices, interpolationFactor));
+        // TODO renderSubTasks.getSave(renderUnitControl).forEach(webGlProgram -> webGlProgram.draw(modelMatrices, interpolationFactor));
     }
 
     public void setActive(boolean active) {
@@ -83,6 +71,6 @@ public class ModelRenderer<T> {
     }
 
     public void dispose() {
-        renderSubTasks.getAll().forEach(RenderSubTask::dispose);
+        // TODO renderSubTasks.getAll().forEach(RenderTask::dispose);
     }
 }

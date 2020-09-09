@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
+import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -37,7 +37,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig_
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
-    private SlopeRenderTask slopeRenderTask;
+    private SlopeRenderTaskRunner slopeRenderTask;
     @Inject
     private TerrainUiService terrainUiService;
     @Inject

@@ -269,7 +269,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         }
         active = true;
         cursor = setupCursor();
-        renderService.addRenderTask(terrainEditorRenderTask, "Terrain Editor");
+        renderService.addRenderTaskRunner(terrainEditorRenderTask, "Terrain Editor");
         terrainMouseHandler.setEditorMouseListener(this);
         keyboardEventHandler.setEditorKeyboardListener(this);
         modifiedSlopeContainer = new ModifiedSlopeContainer(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
@@ -315,7 +315,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         active = false;
         cursor = null;
         modifiedSlopeContainer = null;
-        renderService.removeRenderTask(terrainEditorRenderTask);
+        renderService.removeRenderTaskRunner(terrainEditorRenderTask);
         terrainMouseHandler.setEditorMouseListener(null);
         keyboardEventHandler.setEditorKeyboardListener(null);
         terrainEditorRenderTask.deactivate();

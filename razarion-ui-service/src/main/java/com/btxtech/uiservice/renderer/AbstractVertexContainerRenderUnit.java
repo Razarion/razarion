@@ -8,6 +8,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 29.07.2016.
  */
+@Deprecated
 public abstract class AbstractVertexContainerRenderUnit extends AbstractRenderUnit<VertexContainer> {
     private Logger logger = Logger.getLogger(AbstractVertexContainerRenderUnit.class.getName());
 

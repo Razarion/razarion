@@ -6,7 +6,7 @@ import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
+import com.btxtech.uiservice.renderer.task.simple.GroundRenderTaskRunner;
 import com.btxtech.uiservice.terrain.UiTerrainGroundTile;
 import jsinterop.base.Js;
 
@@ -20,7 +20,7 @@ import java.util.List;
  * 01.05.2015.
  */
 @Dependent
-public class GroundRenderSubTask extends AbstractRenderSubTask<UiTerrainGroundTile> implements GroundRenderTask.SubTask {
+public class GroundRenderTask extends AbstractRenderTask<UiTerrainGroundTile> implements GroundRenderTaskRunner.RenderTask {
     // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());
     @Inject
     private GameUiControl gameUiControl;

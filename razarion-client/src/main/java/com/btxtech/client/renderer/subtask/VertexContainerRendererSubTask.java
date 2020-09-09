@@ -15,7 +15,6 @@ import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
-import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLUniformLocation;
@@ -32,9 +31,8 @@ import static elemental2.webgl.WebGLRenderingContext.SAMPLE_ALPHA_TO_COVERAGE;
  * Created by Beat
  * 03.08.2016.
  */
-@ColorBufferRenderer
 @Dependent
-public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRenderUnit {
+public class VertexContainerRendererSubTask extends AbstractVertexContainerRenderUnit {
     // private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;

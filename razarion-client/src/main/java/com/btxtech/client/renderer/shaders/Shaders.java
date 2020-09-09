@@ -77,12 +77,6 @@ public interface Shaders extends ClientBundle {
     @Source("DemolitionVertexContainer.frag")
     TextResource demolitionVertexContainerFragmentShader();
 
-    @Source("VertexContainerDeptBuffer.vert")
-    TextResource vertexContainerDeptBufferVertexShader();
-
-    @Source("VertexContainerDeptBuffer.frag")
-    TextResource vertexContainerDeptBufferFragmentShader();
-
     @Source("Slope.vert")
     TextResource slopeVertexShader();
 

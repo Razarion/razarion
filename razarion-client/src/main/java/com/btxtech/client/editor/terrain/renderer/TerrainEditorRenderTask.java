@@ -3,7 +3,7 @@ package com.btxtech.client.editor.terrain.renderer;
 import com.btxtech.client.editor.terrain.ModifiedSlope;
 import com.btxtech.client.editor.terrain.TerrainEditorService;
 import com.btxtech.shared.datatypes.Polygon2D;
-import com.btxtech.uiservice.renderer.AbstractRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
@@ -19,7 +19,7 @@ import java.util.Map;
  * 13.01.2017.
  */
 @ApplicationScoped
-public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
+public class TerrainEditorRenderTask extends AbstractModelRenderTask<Void> {
     @Inject
     private TerrainEditorService terrainEditor;
     private boolean active;

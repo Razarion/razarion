@@ -3,8 +3,8 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.renderer.ModelRenderer;
-import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
+import com.btxtech.uiservice.renderer.RenderTask;
+import com.btxtech.uiservice.renderer.task.simple.GroundRenderTaskRunner;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -12,10 +12,10 @@ import javax.inject.Inject;
 @Dependent
 public class UiTerrainGroundTile {
     @Inject
-    private GroundRenderTask groundRenderTask;
+    private GroundRenderTaskRunner groundRenderTask;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private ModelRenderer modelRenderer;
+    private RenderTask<UiTerrainGroundTile> renderSubTask;
     private GroundConfig groundConfig;
     private Float32ArrayEmu groundPositions;
     private Object groundNorms;
@@ -26,22 +26,23 @@ public class UiTerrainGroundTile {
         this.groundNorms = groundNorms;
         this.groundConfig = groundConfig;
         try {
-            modelRenderer = groundRenderTask.createModelRenderer(this);
-            modelRenderer.setActive(active);
+            renderSubTask = groundRenderTask.createRenderTask(this);
+            renderSubTask.setActive(active);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
     }
 
     public void setActive(boolean active) {
-        if (modelRenderer != null) {
-            modelRenderer.setActive(active);
+        if (renderSubTask != null) {
+            renderSubTask.setActive(active);
         }
     }
 
     public void dispose() {
-        if (modelRenderer != null) {
-            groundRenderTask.destroy(modelRenderer);
+        if (renderSubTask != null) {
+            groundRenderTask.destroyRenderTask(renderSubTask);
+            renderSubTask = null;
         }
     }
 

@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.renderpanel;
 
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
-import com.btxtech.client.editor.renderer.MonitorRenderTask;
+import com.btxtech.client.editor.renderer.MonitorRenderTaskRunner;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -10,7 +10,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DoubleBox;
-import com.google.gwt.user.client.ui.Label;
 import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.DOMUtil;
@@ -37,7 +36,7 @@ public class RenderEngineEditorPanel extends AbstractEditor {
     @Inject
     private ProjectionTransformation normalProjectionTransformation;
     @Inject
-    private MonitorRenderTask monitorRenderTask;
+    private MonitorRenderTaskRunner monitorRenderTask;
     @Inject
     @DataField
     private CheckboxInput showMonitor;
@@ -50,9 +49,6 @@ public class RenderEngineEditorPanel extends AbstractEditor {
     @Inject
     @DataField
     private CheckboxInput showNorm;
-    @Inject
-    @DataField
-    private Label rendererCount;
     @Inject
     @DataField("updateButton")
     private Button updateButton;
@@ -106,9 +102,8 @@ public class RenderEngineEditorPanel extends AbstractEditor {
         showDeepMap.setChecked(monitorRenderTask.isShowDeep());
         // TODO wireMode.setChecked(renderService.isWire());
         // TODO showNorm.setChecked(renderService.isShowNorm());
-        rendererCount.setText(Integer.toString(renderService.getRenderQueueSize()));
         DOMUtil.removeAllElementChildren(renderTasks.getElement());
-        renderTasks.setValue(renderService.getRenderTasks().stream().map(RenderTaskModel::new).collect(Collectors.toList()));
+        renderTasks.setValue(renderService.getRenderTaskRunners().stream().map(RenderTaskModel::new).collect(Collectors.toList()));
         updateCamera();
     }
 

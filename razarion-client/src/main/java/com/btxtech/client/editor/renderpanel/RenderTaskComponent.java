@@ -1,13 +1,9 @@
 package com.btxtech.client.editor.renderpanel;
 
-import com.btxtech.client.editor.audio.AudioGalleryItem;
-import com.btxtech.uiservice.cockpit.item.BuildupItem;
-import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.CheckboxInput;
-import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.TableRow;
 import org.jboss.errai.databinding.client.api.DataBinder;

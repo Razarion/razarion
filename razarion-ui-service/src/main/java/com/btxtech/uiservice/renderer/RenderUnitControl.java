@@ -7,6 +7,7 @@ import java.util.List;
  * Created by Beat
  * 11.09.2016.
  */
+@Deprecated // TODO move to WebGlFacadeConfig
 public class RenderUnitControl {
     private static final List<RenderUnitControl> RENDER_UNIT_CONTROLS = new ArrayList<>();
     public static final RenderUnitControl TERRAIN = new RenderUnitControl();

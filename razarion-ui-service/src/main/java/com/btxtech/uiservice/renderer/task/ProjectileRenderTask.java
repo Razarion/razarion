@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.renderer.AbstractRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * 31.08.2016.
  */
 @ApplicationScoped
-public class ProjectileRenderTask extends AbstractRenderTask<BaseItemType> {
+public class ProjectileRenderTask extends AbstractModelRenderTask<BaseItemType> {
     private Logger logger = Logger.getLogger(ProjectileRenderTask.class.getName());
     @Inject
     private ProjectileUiService projectileUiService;

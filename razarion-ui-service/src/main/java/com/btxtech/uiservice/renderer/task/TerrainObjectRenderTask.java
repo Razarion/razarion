@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.Shape3DUiService;
-import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -23,7 +22,7 @@ import java.util.logging.Logger;
  * 31.08.2016.
  */
 @Singleton
-public class TerrainObjectRenderTask extends AbstractRenderTask<TerrainObjectConfig> {
+public class TerrainObjectRenderTask extends AbstractModelRenderTask {
     private Logger logger = Logger.getLogger(TerrainObjectRenderTask.class.getName());
     @Inject
     private Shape3DUiService shape3DUiService;

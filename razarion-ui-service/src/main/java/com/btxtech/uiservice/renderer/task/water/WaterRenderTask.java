@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.renderer.task.water;
 
-import com.btxtech.uiservice.renderer.AbstractRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
@@ -13,7 +13,7 @@ import javax.inject.Singleton;
  * 31.08.2016.
  */
 @Singleton
-public class WaterRenderTask extends AbstractRenderTask<UiTerrainWaterTile> {
+public class WaterRenderTask extends AbstractModelRenderTask<UiTerrainWaterTile> {
 
     public ModelRenderer createModelRenderer(UiTerrainWaterTile uiTerrainWaterTile) {
         ModelRenderer<UiTerrainWaterTile> modelRenderer = create();

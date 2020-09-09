@@ -1,7 +1,5 @@
 package com.btxtech.uiservice.renderer;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,13 +8,10 @@ import java.util.List;
  * Created by Beat
  * 31.08.2016.
  */
-public abstract class AbstractRenderTask<T> {
-    @Inject
-    private Instance<ModelRenderer<T>> instance;
+public abstract class AbstractModelRenderTask<T> extends AbstractRenderTaskRunner {
     private List<ModelRenderer<T>> modelRenderers = new ArrayList<>();
     private boolean active;
     private double interpolationFactor;
-    private String name;
     private boolean enabled = true;
 
     /**
@@ -55,16 +50,12 @@ public abstract class AbstractRenderTask<T> {
 
     @Deprecated
     protected void add(ModelRenderer modelRenderer) {
-      // Already added to modelRenderers in create
+        // Already added to modelRenderers in create
     }
 
     public void destroy(ModelRenderer modelRenderer) {
         this.modelRenderers.remove(modelRenderer);
         modelRenderer.dispose();
-    }
-
-    protected List<ModelRenderer<T>> getAll() {
-        return modelRenderers;
     }
 
     protected void clear() {
@@ -76,12 +67,6 @@ public abstract class AbstractRenderTask<T> {
         return null;
     }
 
-    protected ModelRenderer<T> createNew() {
-        ModelRenderer<T> modelRenderer =  instance.get();
-        this.modelRenderers.add(modelRenderer);
-        return modelRenderer;
-    }
-
     public void prepareRender(long timeStamp) {
         active = isActive() && enabled;
         if (active) {
@@ -91,26 +76,13 @@ public abstract class AbstractRenderTask<T> {
         }
     }
 
+    public void draw() {
+    }
+
     public void draw(RenderUnitControl renderUnitControl) {
         if (active) {
             modelRenderers.forEach(modelRenderer -> modelRenderer.draw(renderUnitControl, interpolationFactor));
         }
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
 }
