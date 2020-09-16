@@ -34,6 +34,8 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     protected WebGlFacadeConfig getWebGlFacadeConfig(VertexContainer vertexContainer) {
         return new WebGlFacadeConfig(Shaders.INSTANCE.vertexContainerVertexShader(), Shaders.INSTANCE.vertexContainerFragmentShader())
                 .enableTransformation(true)
+                .enableReceiveShadow()
+                .enableCastShadow()
                 .enableOESStandardDerivatives()
                 .enableLight()
                 .glslFragmentDefines(glslFragmentDefines(vertexContainer));

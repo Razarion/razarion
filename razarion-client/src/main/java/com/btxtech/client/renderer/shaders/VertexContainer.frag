@@ -14,6 +14,10 @@ uniform vec3 directLightColor;
 uniform vec3 ambientLightColor;
 vec3 correctedDirectLightDirection;
 
+//-$$$-INCLUDE-DEFINES
+
+//-$$$-INCLUDE-CHUNK shadow uniforms-and-code
+
 //-$$$-INCLUDE-CHUNK phong struct
 uniform PhongMaterial material;
 #ifdef  ALPHA_TO_COVERAGE
@@ -24,6 +28,7 @@ uniform float alphaToCoverage;
 
 
 void main(void) {
+    //-$$$-INCLUDE-CHUNK shadow chunk
     correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
 
     vec4 rgba = phongAlpha(material, vUv);
