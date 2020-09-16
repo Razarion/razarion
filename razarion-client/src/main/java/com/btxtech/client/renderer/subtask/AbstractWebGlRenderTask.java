@@ -89,13 +89,28 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         if (webGlFacadeConfig.isOESStandardDerivatives()) {
             webGlFacade.enableOESStandardDerivatives();
         }
-        webGlFacade.init(webGlFacadeConfig);
+        webGlFacade.init(webGlFacadeConfig, glslVertexDefines(t), glslFragmentDefines(t));
         setupTransformation();
         setupReceiveShadow();
         if (webGlFacadeConfig.isLight()) {
             lightUniforms = new LightUniforms(webGlFacade);
         }
         setup(t);
+    }
+
+    private List<String> glslVertexDefines(T t) {
+        List<String> vertexDefines = new ArrayList<>();
+        glslVertexCustomDefines(vertexDefines, t);
+        return vertexDefines;
+    }
+
+    private List<String> glslFragmentDefines(T t) {
+        List<String> fragmentDefines = new ArrayList<>();
+        if (webGlFacadeConfig.isReceiveShadow()) {
+            fragmentDefines.add("RECEIVE_SHADOW");
+        }
+        glslFragmentCustomDefines(fragmentDefines, t);
+        return fragmentDefines;
     }
 
     @Override
@@ -348,12 +363,26 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     }
 
     /**
-     * Iverride in subclasses
+     * Override in subclasses
      *
      * @return true if alpha to coverage
      */
     protected boolean isAlphaToCoverage() {
         return false;
+    }
+
+    /**
+     * Override in subclasses
+     */
+    protected void glslVertexCustomDefines(List<String> defines, T t) {
+
+    }
+
+    /**
+     * Override in subclasses
+     */
+    protected void glslFragmentCustomDefines(List<String> defines, T t) {
+
     }
 
     protected String getHelperString() {

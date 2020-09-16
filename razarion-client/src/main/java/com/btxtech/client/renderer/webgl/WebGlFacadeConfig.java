@@ -2,8 +2,6 @@ package com.btxtech.client.renderer.webgl;
 
 import com.google.gwt.resources.client.TextResource;
 
-import java.util.List;
-
 /**
  * Created by Beat
  * 25.03.2017.
@@ -18,8 +16,6 @@ public class WebGlFacadeConfig {
     private boolean castShadow;
     private boolean oESStandardDerivatives;
     private boolean light;
-    private List<String> glslVertexDefines;
-    private List<String> glslFragmentDefines;
 
     public WebGlFacadeConfig(TextResource vertexShaderCode, TextResource fragmentShaderCode) {
         this.vertexShaderCode = vertexShaderCode;
@@ -57,16 +53,6 @@ public class WebGlFacadeConfig {
         return this;
     }
 
-    public WebGlFacadeConfig glslVertexDefines(List<String> glslVertexDefines) {
-        this.glslVertexDefines = glslVertexDefines;
-        return this;
-    }
-
-    public WebGlFacadeConfig glslFragmentDefines(List<String> glslFragmentDefines) {
-        this. glslFragmentDefines = glslFragmentDefines;
-        return this;
-    }
-
     public TextResource getVertexShaderCode() {
         return vertexShaderCode;
     }
@@ -97,13 +83,5 @@ public class WebGlFacadeConfig {
 
     public boolean isLight() {
         return light;
-    }
-
-    public List<String> getGlslVertexDefines() {
-        return glslVertexDefines;
-    }
-
-    public List<String> getGlslFragmentDefines() {
-        return glslFragmentDefines;
     }
 }

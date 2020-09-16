@@ -14,7 +14,6 @@ import jsinterop.base.Js;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,8 +36,7 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
                 .enableReceiveShadow()
                 .enableCastShadow()
                 .enableOESStandardDerivatives()
-                .enableLight()
-                .glslFragmentDefines(glslFragmentDefines(vertexContainer));
+                .enableLight();
     }
 
     @Override
@@ -69,11 +67,11 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
 
     }
 
-    private List<String> glslFragmentDefines(VertexContainer vertexContainer) {
+    @Override
+    protected void glslFragmentCustomDefines(List<String> defines, VertexContainer vertexContainer) {
         if (vertexContainer.getShape3DMaterialConfig().getAlphaToCoverage() != null) {
-            return Collections.singletonList("ALPHA_TO_COVERAGE");
+            defines.add("ALPHA_TO_COVERAGE");
         }
-        return null;
     }
 
     @Override

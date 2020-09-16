@@ -12,7 +12,6 @@ import jsinterop.base.Js;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,8 +36,7 @@ public class GroundRenderTask extends AbstractWebGlRenderTask<UiTerrainGroundTil
                 .enableReceiveShadow()
                 .enableCastShadow()
                 .enableOESStandardDerivatives()
-                .enableLight()
-                .glslFragmentDefines(glslFragmentDefines(uiTerrainGroundTile));
+                .enableLight();
     }
 
     @Override
@@ -54,12 +52,10 @@ public class GroundRenderTask extends AbstractWebGlRenderTask<UiTerrainGroundTil
 //        terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
     }
 
-    private List<String> glslFragmentDefines(UiTerrainGroundTile uiTerrainGroundTile) {
-        List<String> defines = new ArrayList<>();
-        defines.add("RECEIVE_SHADOW");
+    @Override
+    protected void glslFragmentCustomDefines(List<String> defines, UiTerrainGroundTile uiTerrainGroundTile) {
         if (uiTerrainGroundTile.getGroundConfig().getBottomMaterial() != null && uiTerrainGroundTile.getGroundConfig().getSplatting() != null) {
             defines.add("RENDER_GROUND_BOTTOM_TEXTURE");
         }
-        return defines;
     }
 }

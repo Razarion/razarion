@@ -9,7 +9,6 @@ import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
 import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 
 import javax.enterprise.context.Dependent;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +26,7 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
                 .enableReceiveShadow()
                 .enableCastShadow()
                 .enableOESStandardDerivatives()
-                .enableLight()
-                .glslFragmentDefines(glslFragmentDefines(uiTerrainSlopeTile));
+                .enableLight();
     }
 
     @Override
@@ -46,9 +44,8 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
         }
     }
 
-    private List<String> glslFragmentDefines(UiTerrainSlopeTile uiTerrainSlopeTile) {
-        List<String> defines = new ArrayList<>();
-        defines.add("RECEIVE_SHADOW");
+    @Override
+    protected void glslFragmentCustomDefines(List<String> defines, UiTerrainSlopeTile uiTerrainSlopeTile) {
         if (uiTerrainSlopeTile.getGroundConfig() != null) {
             defines.add("RENDER_GROUND_TEXTURE");
             if (uiTerrainSlopeTile.getGroundConfig().getBottomMaterial() != null && uiTerrainSlopeTile.getGroundConfig().getSplatting() != null) {
@@ -58,6 +55,5 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
                 defines.add("RENDER_SPLATTING");
             }
         }
-        return defines;
     }
 }

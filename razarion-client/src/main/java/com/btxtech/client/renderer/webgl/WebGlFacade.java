@@ -27,6 +27,7 @@ import elemental2.webgl.WebGLUniformLocation;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -66,8 +67,13 @@ public class WebGlFacade {
     private WebGLTextureContainer textureContainer;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
 
+    public void init(WebGlFacadeConfig webGlFacadeConfig, List<String> glslVertexDefines, List<String> glslFragmentDefines) {
+        webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig, glslVertexDefines, glslFragmentDefines);
+    }
+
+    @Deprecated
     public void init(WebGlFacadeConfig webGlFacadeConfig) {
-        webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig);
+        webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig, null, null);
     }
 
     public VertexShaderAttribute createVertexShaderAttribute(String attributeName) {

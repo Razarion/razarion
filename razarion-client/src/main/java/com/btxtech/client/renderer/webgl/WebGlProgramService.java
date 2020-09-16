@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,9 +22,9 @@ public class WebGlProgramService {
     private GlslLibrarian glslLibrarian;
     private Map<String, WebGlProgramFacade> webGlProgramCache = new HashMap<>();
 
-    public WebGlProgramFacade getWebGlProgram(WebGlFacadeConfig webGlFacadeConfig) {
-        String vertexShaderCodee = glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode(), webGlFacadeConfig.getGlslVertexDefines());
-        String fragmentShaderCode = glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode(), webGlFacadeConfig.getGlslFragmentDefines());
+    public WebGlProgramFacade getWebGlProgram(WebGlFacadeConfig webGlFacadeConfig, List<String> glslVertexDefines, List<String> glslFragmentDefines) {
+        String vertexShaderCodee = glslLibrarian.link(webGlFacadeConfig.getVertexShaderCode(), glslVertexDefines);
+        String fragmentShaderCode = glslLibrarian.link(webGlFacadeConfig.getFragmentShaderCode(), glslFragmentDefines);
 
         String key = vertexShaderCodee + fragmentShaderCode;
         WebGlProgramFacade webGlProgram = webGlProgramCache.get(key);

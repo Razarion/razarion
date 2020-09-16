@@ -1,7 +1,6 @@
 package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.shaders.library.GlslLibrarian;
 import com.btxtech.client.utils.DomConstants;
 import com.btxtech.shared.system.alarm.AlarmService;
 import elemental2.webgl.WebGLProgram;
@@ -28,8 +27,6 @@ public class WebGlProgramFacade {
     private GameCanvas gameCanvas;
     @Inject
     private AlarmService alarmService;
-    @Inject
-    private GlslLibrarian glslLibrarian;
     private Runnable transformUnregisterHandler;
     private Runnable shadowLookupUnregisterHandler;
 
