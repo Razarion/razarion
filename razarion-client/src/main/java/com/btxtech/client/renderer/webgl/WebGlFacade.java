@@ -49,6 +49,7 @@ public class WebGlFacade {
     public static final String U_PROJECTION_MATRIX = "projectionMatrix";
     public static final String U_VIEW_NORM_MATRIX = "normalMatrix";
     public static final String U_MODEL_MATRIX = "modelMatrix";
+    public static final String U_MODEL_NORM_MATRIX = "modelMatrix???"; // ???
     public static final String U_SHADOW_MATRIX = "shadowMatrix";
     // Unifrom Editor
     public static final String U_CURSOR_TYPE = "uCursorType";

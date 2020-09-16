@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.effects.TrailService;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTaskRunner;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -22,7 +22,7 @@ import javax.inject.Inject;
  * 10.02.2017.
  */
 @ApplicationScoped
-public class TrailRenderTask extends AbstractModelRenderTask<BaseItemType> {
+public class TrailRenderTask extends AbstractModelRenderTaskRunner<BaseItemType> {
     // private Logger logger = Logger.getLogger(TrailRenderTask.class.getName());
     @Inject
     private BaseItemUiService baseItemUiService;

@@ -1,5 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -8,11 +10,23 @@ import java.util.List;
  * Created by Beat
  * 31.08.2016.
  */
-public abstract class AbstractModelRenderTask<T> extends AbstractRenderTaskRunner {
-    private List<ModelRenderer<T>> modelRenderers = new ArrayList<>();
-    private boolean active;
-    private double interpolationFactor;
+@Deprecated
+public abstract class AbstractModelRenderTaskRunner<T> extends AbstractRenderTaskRunner {
+    @Inject
+    private Instance<WebGlModelRenderTask<T>> instance;
+    private List<WebGlModelRenderTask<T>> modelRenderTasks = new ArrayList<>();
     private boolean enabled = true;
+    @Deprecated
+    private List<ModelRenderer<T>> modelRenderers = new ArrayList<>();
+
+    @Override
+    public void draw() {
+        if (!isActive() || !enabled) {
+            return;
+        }
+        double interpolationFactor = setupInterpolationFactor();
+        modelRenderTasks.forEach(tWebGlModelRenderTask -> tWebGlModelRenderTask.draw(interpolationFactor));
+    }
 
     /**
      * Override in sub classes
@@ -68,20 +82,10 @@ public abstract class AbstractModelRenderTask<T> extends AbstractRenderTaskRunne
     }
 
     public void prepareRender(long timeStamp) {
-        active = isActive() && enabled;
-        if (active) {
-            interpolationFactor = setupInterpolationFactor();
+        if (isActive() && enabled) {
+            // interpolationFactor = setupInterpolationFactor();
             preRender(timeStamp);
             modelRenderers.forEach(modelRenderer -> modelRenderer.setupModelMatrices(timeStamp));
-        }
-    }
-
-    public void draw() {
-    }
-
-    public void draw(RenderUnitControl renderUnitControl) {
-        if (active) {
-            modelRenderers.forEach(modelRenderer -> modelRenderer.draw(renderUnitControl, interpolationFactor));
         }
     }
 

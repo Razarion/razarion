@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.datatypes.InGameItemVisualization;
 import com.btxtech.uiservice.questvisualization.QuestInGamePlaceVisualization;
-import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTaskRunner;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * 05.12.2016.
  */
 @ApplicationScoped
-public class ItemVisualizationRenderTask extends AbstractModelRenderTask<InGameItemVisualization> {
+public class ItemVisualizationRenderTask extends AbstractModelRenderTaskRunner<InGameItemVisualization> {
     private Logger logger = Logger.getLogger(ItemVisualizationRenderTask.class.getName());
     @Inject
     private Shape3DUiService shape3DUiService;

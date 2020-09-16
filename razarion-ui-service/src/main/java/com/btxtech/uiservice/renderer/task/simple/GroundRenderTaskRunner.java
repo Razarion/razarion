@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.renderer.task.simple;
 
 import com.btxtech.uiservice.renderer.AbstractSimpleRenderTaskRunner;
+import com.btxtech.uiservice.renderer.WebGlRenderTask;
 import com.btxtech.uiservice.terrain.UiTerrainGroundTile;
 
 import javax.inject.Singleton;
@@ -11,10 +12,10 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class GroundRenderTaskRunner extends AbstractSimpleRenderTaskRunner<UiTerrainGroundTile> {
-    public interface RenderTask extends com.btxtech.uiservice.renderer.RenderTask<UiTerrainGroundTile> {
+    public interface RenderTask extends WebGlRenderTask<UiTerrainGroundTile> {
     }
 
-    public com.btxtech.uiservice.renderer.RenderTask createRenderTask(UiTerrainGroundTile uiTerrainGroundTile) {
+    public WebGlRenderTask<UiTerrainGroundTile> createRenderTask(UiTerrainGroundTile uiTerrainGroundTile) {
         return createRenderTask(RenderTask.class, uiTerrainGroundTile);
     }
 }

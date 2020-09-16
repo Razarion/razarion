@@ -55,7 +55,7 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         norms = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         textureCoordinateAttribute = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
-        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);
         modelNormMatrix = webGlFacade.getUniformLocation("uNMMatrix");
         buildupMatrixUniformLocation = webGlFacade.getUniformLocation("buildupMatrix");
         uLightingAmbient = webGlFacade.getUniformLocation("uLightingAmbient");

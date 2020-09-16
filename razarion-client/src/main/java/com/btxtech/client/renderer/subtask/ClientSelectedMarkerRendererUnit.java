@@ -37,7 +37,7 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
-        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);
         uRadius = webGlFacade.getUniformLocation("uRadius");
     }
 

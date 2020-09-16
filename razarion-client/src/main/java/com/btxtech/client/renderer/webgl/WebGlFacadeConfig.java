@@ -52,7 +52,7 @@ public class WebGlFacadeConfig {
         return this;
     }
 
-    public WebGlFacadeConfig enablelight() {
+    public WebGlFacadeConfig enableLight() {
         light = true;
         return this;
     }

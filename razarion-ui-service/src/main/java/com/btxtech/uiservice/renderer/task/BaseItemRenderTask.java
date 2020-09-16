@@ -11,7 +11,7 @@ import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractDemolitionVertexContainerRenderUnit;
-import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTaskRunner;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  * 31.08.2016.
  */
 @ApplicationScoped
-public class BaseItemRenderTask extends AbstractModelRenderTask<BaseItemType> {
+public class BaseItemRenderTask extends AbstractModelRenderTaskRunner<BaseItemType> {
     private Logger logger = Logger.getLogger(BaseItemRenderTask.class.getName());
     @Inject
     private BaseItemUiService baseItemUiService;

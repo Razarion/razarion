@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileFactory;
 import com.btxtech.shared.utils.GeometricUtil;
-import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTaskRunner;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderService;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * 09.12.2016.
  */
 @ApplicationScoped
-public class TerrainMarkerEditorRenderTask extends AbstractModelRenderTask<List<Vertex>> {
+public class TerrainMarkerEditorRenderTask extends AbstractModelRenderTaskRunner<List<Vertex>> {
     private Logger logger = Logger.getLogger(TerrainMarkerEditorRenderTask.class.getName());
     private static final double POSITION_MARKER_HALF_EDGE = 0.2;
     private static final double POSITION_MARKER_HALF_HEIGHT = 20;

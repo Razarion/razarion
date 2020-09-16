@@ -3,7 +3,7 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.renderer.RenderTask;
+import com.btxtech.uiservice.renderer.WebGlRenderTask;
 import com.btxtech.uiservice.renderer.task.simple.GroundRenderTaskRunner;
 
 import javax.enterprise.context.Dependent;
@@ -15,7 +15,7 @@ public class UiTerrainGroundTile {
     private GroundRenderTaskRunner groundRenderTask;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private RenderTask<UiTerrainGroundTile> renderSubTask;
+    private WebGlRenderTask<UiTerrainGroundTile> renderSubTask;
     private GroundConfig groundConfig;
     private Float32ArrayEmu groundPositions;
     private Object groundNorms;

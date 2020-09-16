@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacer;
-import com.btxtech.uiservice.renderer.AbstractModelRenderTask;
+import com.btxtech.uiservice.renderer.AbstractModelRenderTaskRunner;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * 05.09.2016.
  */
 @ApplicationScoped
-public class BaseItemPlacerRenderTask extends AbstractModelRenderTask<BaseItemPlacer> {
+public class BaseItemPlacerRenderTask extends AbstractModelRenderTaskRunner<BaseItemPlacer> {
     private Logger logger = Logger.getLogger(BaseItemPlacerRenderTask.class.getName());
     @Inject
     private Shape3DUiService shape3DUiService;

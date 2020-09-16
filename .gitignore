@@ -18,7 +18,9 @@ razarion-server/src/main/gwt-unitCache
 razarion-share/razarion-share.iml
 razarion-test/razarion-test.iml
 razarion-client/razarion-client.iml
+razarion-client/src/main/webapp/WEB-INF/classes/
 razarion-client-worker/razarion-client-worker.iml
+razarion-client-worker/src/main/webapp/WEB-INF/classes/
 razarion-client-common/razarion-client-common.iml
 
 

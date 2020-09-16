@@ -18,7 +18,9 @@ public class Alarm {
         INVALID_VERTEX_CONTAINER,
         RENDER_ENGINE_UNIFORM,
         INVALID_AUDIO_SERVICE,
-        INVALID_PROPERTY
+        INVALID_PROPERTY,
+        INVALID_TERRAIN_OBJECT,
+        INVALID_SHAPE_3D
     }
     private Type type;
     private Date date;

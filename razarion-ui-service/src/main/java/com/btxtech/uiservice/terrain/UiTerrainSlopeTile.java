@@ -4,7 +4,7 @@ import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
-import com.btxtech.uiservice.renderer.RenderTask;
+import com.btxtech.uiservice.renderer.WebGlRenderTask;
 import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
 
 import javax.enterprise.context.Dependent;
@@ -18,7 +18,7 @@ import javax.inject.Inject;
 public class UiTerrainSlopeTile {
     @Inject
     private SlopeRenderTaskRunner slopeRenderTask;
-    private RenderTask renderSubTask;
+    private WebGlRenderTask renderSubTask;
     private SlopeConfig slopeConfig;
     private GroundConfig groundConfig;
     private SlopeGeometry slopeGeometry;

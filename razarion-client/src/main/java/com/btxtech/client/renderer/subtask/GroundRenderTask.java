@@ -20,7 +20,7 @@ import java.util.List;
  * 01.05.2015.
  */
 @Dependent
-public class GroundRenderTask extends AbstractRenderTask<UiTerrainGroundTile> implements GroundRenderTaskRunner.RenderTask {
+public class GroundRenderTask extends AbstractWebGlRenderTask<UiTerrainGroundTile> implements GroundRenderTaskRunner.RenderTask {
     // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());
     @Inject
     private GameUiControl gameUiControl;
@@ -30,17 +30,16 @@ public class GroundRenderTask extends AbstractRenderTask<UiTerrainGroundTile> im
 //    private WebGLUniformLocation terrainMarker2DPoints;
 //    private WebGLUniformLocation terrainMarkerAnimation;
 
-@Override
-protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainGroundTile uiTerrainGroundTile) {
-    return new WebGlFacadeConfig(Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader())
-            .enableTransformation(true)
-            .enableReceiveShadow()
-            .enableCastShadow()
-            .enableOESStandardDerivatives()
-            .enablelight()
-            .glslFragmentDefines(glslFragmentDefines(uiTerrainGroundTile));
-}
-
+    @Override
+    protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainGroundTile uiTerrainGroundTile) {
+        return new WebGlFacadeConfig(Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader())
+                .enableTransformation(true)
+                .enableReceiveShadow()
+                .enableCastShadow()
+                .enableOESStandardDerivatives()
+                .enableLight()
+                .glslFragmentDefines(glslFragmentDefines(uiTerrainGroundTile));
+    }
 
     @Override
     public void setup(UiTerrainGroundTile uiTerrainGroundTile) {

@@ -3,12 +3,12 @@ package com.btxtech.client.renderer.subtask;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.LightUniforms;
 import com.btxtech.client.renderer.engine.TextureIdHandler;
+import com.btxtech.client.renderer.engine.UniformLocation;
 import com.btxtech.client.renderer.engine.WebGlGroundMaterial;
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.AbstractShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Float32ArrayShaderAttribute;
-import com.btxtech.client.renderer.engine.UniformLocation;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -16,13 +16,17 @@ import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;
+import com.btxtech.shared.nativejs.NativeMatrix;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.renderer.ProgressAnimation;
 import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.renderer.RenderTask;
 import com.btxtech.uiservice.renderer.ViewService;
+import com.btxtech.uiservice.renderer.WebGlRenderTask;
 import elemental2.core.Float32Array;
 import elemental2.webgl.WebGLRenderingContext;
 import elemental2.webgl.WebGLTexture;
@@ -33,9 +37,12 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class AbstractRenderTask<T> implements RenderTask<T> {
+public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
+    // private Logger logger = Logger.getLogger(AbstractWebGlRenderTask.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
     @Inject
@@ -44,11 +51,15 @@ public abstract class AbstractRenderTask<T> implements RenderTask<T> {
     private ViewService viewService;
     @Inject
     private VisualUiService visualUiService;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private WebGlFacadeConfig webGlFacadeConfig;
+    private NativeMatrix staticShapeTransformCache;
 
     private Collection<AbstractShaderAttribute> arrays = new ArrayList<>();
     private int elementCount;
     private boolean active;
+    private Function<Long, List<ModelMatrices>> modelMatricesSupplier;
     private LightUniforms lightUniforms;
     private Collection<WebGlPhongMaterial> materials = new ArrayList<>();
     private Collection<WebGlGroundMaterial> webGlGroundMaterials = new ArrayList<>();
@@ -59,10 +70,13 @@ public abstract class AbstractRenderTask<T> implements RenderTask<T> {
     private WebGLUniformLocation viewNormMatrixUniformLocation;
     private WebGLUniformLocation perspectiveMatrixUniformLocation;
     private WebGLUniformLocation receiveShadowMatrixUniformLocation;
+    private WebGLUniformLocation modelMatrixUniformLocation;
     // Shadow lookup
     private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
     private WebGLUniformLocation uShadowAlpha;
     private WebGLUniformLocation uShadowTexture;
+    private ShapeTransform shapeTransform;
+    private Collection<ProgressAnimation> progressAnimations;
 
     protected abstract WebGlFacadeConfig getWebGlFacadeConfig(T t);
 
@@ -82,16 +96,21 @@ public abstract class AbstractRenderTask<T> implements RenderTask<T> {
         setup(t);
     }
 
+    @Override
+    public void setModelMatricesSupplier(Function<Long, List<ModelMatrices>> modelMatricesSupplier) {
+        this.modelMatricesSupplier = modelMatricesSupplier;
+    }
+
     protected void setupTransformation() {
         if (webGlFacadeConfig.isTransformation()) {
+            viewMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
+            perspectiveMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
             if (webGlFacadeConfig.isNormTransformation()) {
-                viewMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
                 viewNormMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_VIEW_NORM_MATRIX);
-                perspectiveMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
-            } else {
-                viewMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
-                perspectiveMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
             }
+        }
+        if (modelMatricesSupplier != null) {
+            modelMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
         }
     }
 
@@ -155,7 +174,7 @@ public abstract class AbstractRenderTask<T> implements RenderTask<T> {
     }
 
     @Override
-    public final void draw() {
+    public final void draw(double interpolationFactor) {
         if (!active) {
             return;
         }
@@ -185,8 +204,26 @@ public abstract class AbstractRenderTask<T> implements RenderTask<T> {
 //        } else {
 //            webGlFacade.uniform4f(terrainMarker2DPoints, 0, 0, 0, 0);
 //        }
-        // Draw
-        webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES, elementCount, getHelperString());
+
+
+        if (modelMatricesSupplier != null) {
+            drawModels(interpolationFactor);
+        } else {
+            webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES, elementCount, getHelperString());
+            WebGlUtil.checkLastWebGlError("drawArrays", webGlFacade.getCtx3d());
+        }
+    }
+
+    private void drawModels(double interpolationFactor) {
+        modelMatricesSupplier.apply(System.currentTimeMillis()).forEach(modelMatrices -> {
+            ModelMatrices transformedModelMatrices = mixTransformation(modelMatrices, interpolationFactor);
+            webGlFacade.uniformMatrix4fv(modelMatrixUniformLocation, transformedModelMatrices.getModel());
+            WebGlUtil.checkLastWebGlError("uniformMatrix4fv modelMatrixUniformLocation", webGlFacade.getCtx3d());
+            webGlFacade.uniformMatrix4fv(viewNormMatrixUniformLocation, transformedModelMatrices.getNorm());
+            WebGlUtil.checkLastWebGlError("uniformMatrix4fv viewNormMatrixUniformLocation", webGlFacade.getCtx3d());
+            webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES, elementCount, getHelperString());
+            WebGlUtil.checkLastWebGlError("drawArrays", webGlFacade.getCtx3d());
+        });
     }
 
     protected void transformationUniformValues() {
@@ -196,7 +233,7 @@ public abstract class AbstractRenderTask<T> implements RenderTask<T> {
                     webGlFacade.uniformMatrix4fv(viewMatrixUniformLocation, viewService.getViewMatrix());
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", webGlFacade.getCtx3d());
                 }
-                if (viewNormMatrixUniformLocation != null) {
+                if (viewNormMatrixUniformLocation != null && modelMatricesSupplier == null) {
                     webGlFacade.uniformMatrix4fv(viewNormMatrixUniformLocation, viewService.getViewNormMatrix());
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_NORM_MATRIX", webGlFacade.getCtx3d());
                 }
@@ -226,6 +263,44 @@ public abstract class AbstractRenderTask<T> implements RenderTask<T> {
         }
     }
 
+    public ModelMatrices mixTransformation(ModelMatrices modelMatrix, double interpolationFactor) {
+        modelMatrix = modelMatrix.interpolateVelocity(interpolationFactor);
+
+        if (shapeTransform == null) {
+            return modelMatrix.calculateFromTurretAngle();
+        }
+
+        if (progressAnimations == null) {
+            if (shapeTransform.getStaticMatrix() != null) {
+                if (staticShapeTransformCache == null) {
+                    staticShapeTransformCache = nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray());
+                }
+                return modelMatrix.multiplyStaticShapeTransform(staticShapeTransformCache).calculateFromTurretAngle();
+            } else {
+                return modelMatrix.multiplyShapeTransform(shapeTransform).calculateFromTurretAngle();
+            }
+        } else {
+            ShapeTransform shapeTransformTRS = shapeTransform.copyTRS();
+            for (ProgressAnimation progressAnimation : progressAnimations) {
+                Objects.requireNonNull(progressAnimation.getAnimationTrigger(), "No animation trigger");
+                switch (progressAnimation.getAnimationTrigger()) {
+                    case ITEM_PROGRESS:
+                        progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
+                        break;
+                    case SINGLE_RUN:
+                        progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
+                        break;
+                    case CONTINUES:
+                        progressAnimation.dispatch(shapeTransformTRS, setupContinuesAnimationProgress(progressAnimation));
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown animation trigger '" + progressAnimation.getAnimationTrigger());
+                }
+            }
+            return modelMatrix.multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
+        }
+    }
+
     protected void activateReceiveShadow() {
         if (shadowWebGlTextureId == null) {
             return;
@@ -239,7 +314,6 @@ public abstract class AbstractRenderTask<T> implements RenderTask<T> {
             webGlFacade.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
         }
     }
-
 
     protected boolean canBeSkipped() {
         return renderService.getPass() == RenderService.Pass.SHADOW && !webGlFacadeConfig.isCastShadow();
@@ -255,8 +329,22 @@ public abstract class AbstractRenderTask<T> implements RenderTask<T> {
         arrays.forEach(AbstractShaderAttribute::deleteBuffer);
     }
 
+    @Override
+    public void setShapeTransform(ShapeTransform shapeTransform) {
+        this.shapeTransform = shapeTransform;
+    }
+
+    @Override
+    public void setProgressAnimations(Collection<ProgressAnimation> progressAnimations) {
+        this.progressAnimations = progressAnimations;
+    }
+
     protected String getHelperString() {
         return getClass().getName();
     }
 
+    private double setupContinuesAnimationProgress(ProgressAnimation progressAnimation) {
+        int millis = (int) (System.currentTimeMillis() % progressAnimation.getTotalTime());
+        return (double) millis / (double) progressAnimation.getTotalTime();
+    }
 }

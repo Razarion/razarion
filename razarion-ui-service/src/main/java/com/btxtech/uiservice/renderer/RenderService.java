@@ -3,6 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.simple.GroundRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
 
@@ -40,7 +41,7 @@ public abstract class RenderService {
 
         addRenderTaskRunner(GroundRenderTaskRunner.class, "Ground");
         addRenderTaskRunner(SlopeRenderTaskRunner.class, "Slope");
-// TODO        addRenderTaskRunner(TerrainObjectRenderTask.class, "Terrain Object");
+        addRenderTaskRunner(TerrainObjectRenderTaskRunner.class, "Terrain Object");
 // TODO       addRenderTaskRunner(ItemMarkerRenderTask.class, "Item Marker");
 // TODO       addRenderTaskRunner(BaseItemRenderTask.class, "Base Item");
 // TODO       addRenderTaskRunner(TrailRenderTask.class, "Trail");
@@ -71,17 +72,14 @@ public abstract class RenderService {
         try {
             perfmonService.onEntered(PerfmonEnum.RENDERER);
 
-            long timeStamp = System.currentTimeMillis();
-            renderTaskRunners.forEach(renderTaskRunner -> renderTaskRunner.prepareRender(timeStamp));
-
             pass = Pass.SHADOW;
             prepare(RenderUnitControl.NORMAL);
             prepareDepthBufferRendering();
-            renderTaskRunners.forEach(AbstractRenderTaskRunner::draw);
+            renderTaskRunners.stream().filter(AbstractRenderTaskRunner::isEnabled).forEach(AbstractRenderTaskRunner::draw);
 
             pass = Pass.MAIN;
             prepareMainRendering();
-            renderTaskRunners.forEach(AbstractRenderTaskRunner::draw);
+            renderTaskRunners.stream().filter(AbstractRenderTaskRunner::isEnabled).forEach(AbstractRenderTaskRunner::draw);
 
             pass = null;
         } catch (Throwable t) {

@@ -16,6 +16,7 @@ import java.util.function.Function;
  * D: render unit data (e.g.: VertexContainer)
  */
 @Dependent
+@Deprecated
 public class ModelRenderer<T> {
     private List<ModelMatrices> modelMatrices;
     private Function<Long, List<ModelMatrices>> modelMatricesSupplier;

@@ -31,7 +31,7 @@ public class ClientWaterNormRendererUnit extends AbstractWaterRendererUnit {
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.debugVectorVertexShader(), Shaders.INSTANCE.debugVectorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
-        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);
     }
 
     @Override

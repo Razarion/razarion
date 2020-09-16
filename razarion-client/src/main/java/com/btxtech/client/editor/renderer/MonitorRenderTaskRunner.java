@@ -2,7 +2,7 @@ package com.btxtech.client.editor.renderer;
 
 import com.btxtech.uiservice.renderer.AbstractSimpleRenderTaskRunner;
 import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.renderer.RenderTask;
+import com.btxtech.uiservice.renderer.WebGlRenderTask;
 import com.google.inject.Inject;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -13,19 +13,19 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class MonitorRenderTaskRunner extends AbstractSimpleRenderTaskRunner<Void> {
-    public interface SubTask extends RenderTask<Void> {
+    public interface RenderTask extends WebGlRenderTask<Void> {
     }
 
     @Inject
     private RenderService renderService;
     private boolean showDeep = true;
-    private RenderTask<Void> renderTask;
+    private WebGlRenderTask<Void> renderTask;
 
     public void showMonitor() {
         if(renderTask != null) {
             throw new IllegalStateException("Shadow monitor is already showing");
         }
-        renderTask = createRenderTask(MonitorRenderTaskRunner.SubTask.class, null);
+        renderTask = createRenderTask(RenderTask.class, null);
         renderService.addRenderTaskRunner(this, "Monitor");
     }
 

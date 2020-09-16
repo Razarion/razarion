@@ -39,7 +39,7 @@ public class ClientStatusBarRendererUnit extends AbstractStatusBarRendererUnit {
         visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
         bgColorUniformLocation = webGlFacade.getUniformLocation("uBgColor");
-        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);
         uProgress = webGlFacade.getUniformLocation("uProgress");
     }
 

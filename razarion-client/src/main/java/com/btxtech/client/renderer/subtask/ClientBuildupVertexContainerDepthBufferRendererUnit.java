@@ -44,7 +44,7 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
         webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.buildupVertexContainerDeptBufferVertexShader(), Shaders.INSTANCE.buildupVertexContainerDeptBufferFragmentShader()).enableShadowTransformation());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         textureCoordinate = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
-        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);
         buildupMatrixUniformLocation = webGlFacade.getUniformLocation("buildupMatrix");
         progressZUniformLocation = webGlFacade.getUniformLocation("progressZ");
     }

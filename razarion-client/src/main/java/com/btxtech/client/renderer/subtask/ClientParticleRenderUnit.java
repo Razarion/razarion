@@ -45,7 +45,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
         webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         alphaTextureCoordinates = webGlFacade.createDecimalPositionShaderAttribute("aAlphaTextureCoordinate");
-        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);
         uTextureOffsetScope = webGlFacade.getUniformLocation("uTextureOffsetScope");
         uProgress = webGlFacade.getUniformLocation("uProgress");
         uXColorRampOffset = webGlFacade.getUniformLocation("uXColorRampOffset");

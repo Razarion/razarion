@@ -17,7 +17,7 @@ import java.util.List;
  * 24.01.2016.
  */
 @Dependent
-public class SlopeRenderTask extends AbstractRenderTask<UiTerrainSlopeTile> implements SlopeRenderTaskRunner.RenderTask {
+public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile> implements SlopeRenderTaskRunner.RenderTask {
     // private static Logger logger = Logger.getLogger(ClientSlopeRendererUnit.class.getName());
 
     @Override
@@ -27,7 +27,7 @@ public class SlopeRenderTask extends AbstractRenderTask<UiTerrainSlopeTile> impl
                 .enableReceiveShadow()
                 .enableCastShadow()
                 .enableOESStandardDerivatives()
-                .enablelight()
+                .enableLight()
                 .glslFragmentDefines(glslFragmentDefines(uiTerrainSlopeTile));
     }
 
