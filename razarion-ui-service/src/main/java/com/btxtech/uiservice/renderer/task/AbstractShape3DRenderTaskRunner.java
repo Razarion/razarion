@@ -14,15 +14,15 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner<VertexContainer> {
+public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner<VertexContainer, AbstractShape3DRenderTaskRunner.RenderTask> {
 
-    public interface WebGlVertexContainerRenderTask extends WebGlRenderTask<VertexContainer> {
+    public interface RenderTask extends WebGlRenderTask<VertexContainer> {
     }
 
     protected void createShape3DRenderTasks(Shape3D shape3D, Function<Long, List<ModelMatrices>> modelMatricesSupplier) {
         for (Element3D element3D : shape3D.getElement3Ds()) {
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                WebGlRenderTask<VertexContainer> modelRenderTask = createModelRenderTask(WebGlVertexContainerRenderTask.class,
+                WebGlRenderTask<VertexContainer> modelRenderTask = createModelRenderTask(RenderTask.class,
                         vertexContainer,
                         modelMatricesSupplier,
                         setupProgressAnimation(shape3D, element3D),

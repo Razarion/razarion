@@ -21,7 +21,7 @@ import java.util.List;
  * 03.08.2016.
  */
 @Dependent
-public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexContainer> implements AbstractShape3DRenderTaskRunner.WebGlVertexContainerRenderTask {
+public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexContainer> implements AbstractShape3DRenderTaskRunner.RenderTask {
     // private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
     @Inject
     private ClientShape3DUiService shape3DUiService;

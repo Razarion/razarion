@@ -10,7 +10,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class AbstractRenderTaskRunner<T> {
+/**
+ * T Data
+ * R RenderTask
+ *
+ * @param <T>
+ */
+public abstract class AbstractRenderTaskRunner<T,  R extends WebGlRenderTask<T>> {
     @Inject
     private Instance<WebGlRenderTask<T>> instance;
     private List<WebGlRenderTask<T>> renderTasks = new ArrayList<>();
@@ -33,8 +39,8 @@ public abstract class AbstractRenderTaskRunner<T> {
         this.enabled = enabled;
     }
 
-    protected WebGlRenderTask<T> createModelRenderTask(Class<? extends WebGlRenderTask<T>> clazz, T t, Function<Long, List<ModelMatrices>> modelMatricesSupplier, Collection<ProgressAnimation> progressAnimations, ShapeTransform shapeTransform) {
-        WebGlRenderTask<T> renderTask = instance.select(clazz).get();
+    protected R createModelRenderTask(Class<R> clazz, T t, Function<Long, List<ModelMatrices>> modelMatricesSupplier, Collection<ProgressAnimation> progressAnimations, ShapeTransform shapeTransform) {
+        R renderTask = instance.select(clazz).get();
         renderTask.setProgressAnimations(progressAnimations);
         renderTask.setShapeTransform(shapeTransform);
         renderTask.setModelMatricesSupplier(modelMatricesSupplier);
@@ -43,7 +49,7 @@ public abstract class AbstractRenderTaskRunner<T> {
         return renderTask;
     }
 
-    protected WebGlRenderTask<T> createRenderTask(Class<? extends WebGlRenderTask<T>> clazz, T t) {
+    protected R createRenderTask(Class<R> clazz, T t) {
         return createModelRenderTask(clazz, t, null, null, null);
     }
 
@@ -52,9 +58,9 @@ public abstract class AbstractRenderTaskRunner<T> {
         renderTasks.forEach(renderTask -> renderTask.draw(interpolationFactor));
     }
 
-    public void destroyRenderTask(WebGlRenderTask<T> renderSubTask) {
-        renderTasks.remove(renderSubTask);
-        renderSubTask.dispose();
+    public void destroyRenderTask(R renderTask) {
+        renderTasks.remove(renderTask);
+        renderTask.dispose();
     }
 
     protected void clear() {

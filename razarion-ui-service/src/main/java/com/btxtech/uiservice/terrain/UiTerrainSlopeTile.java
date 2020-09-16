@@ -4,7 +4,6 @@ import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
-import com.btxtech.uiservice.renderer.WebGlRenderTask;
 import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
 
 import javax.enterprise.context.Dependent;
@@ -17,8 +16,8 @@ import javax.inject.Inject;
 @Dependent
 public class UiTerrainSlopeTile {
     @Inject
-    private SlopeRenderTaskRunner slopeRenderTask;
-    private WebGlRenderTask renderSubTask;
+    private SlopeRenderTaskRunner slopeRenderTaskRunner;
+    private SlopeRenderTaskRunner.RenderTask renderTask;
     private SlopeConfig slopeConfig;
     private GroundConfig groundConfig;
     private SlopeGeometry slopeGeometry;
@@ -29,12 +28,12 @@ public class UiTerrainSlopeTile {
         this.groundConfig = groundConfig;
         this.slopeGeometry = slopeGeometry;
         this.slopeSplattingConfig = slopeSplattingConfig;
-        renderSubTask = slopeRenderTask.createRenderTask(this);
-        renderSubTask.setActive(active);
+        renderTask = slopeRenderTaskRunner.createRenderTask(this);
+        renderTask.setActive(active);
     }
 
     public void setActive(boolean active) {
-        renderSubTask.setActive(active);
+        renderTask.setActive(active);
     }
 
     public SlopeConfig getSlopeConfig() {
@@ -54,9 +53,9 @@ public class UiTerrainSlopeTile {
     }
 
     public void dispose() {
-        if (renderSubTask != null) {
-            slopeRenderTask.destroyRenderTask(renderSubTask);
-            renderSubTask = null;
+        if (renderTask != null) {
+            slopeRenderTaskRunner.destroyRenderTask(renderTask);
+            renderTask = null;
         }
     }
 }

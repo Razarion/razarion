@@ -1,7 +1,5 @@
 package com.btxtech.uiservice.renderer;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -12,9 +10,6 @@ import java.util.List;
  */
 @Deprecated
 public abstract class AbstractModelRenderTaskRunner<T> extends AbstractRenderTaskRunner {
-    @Inject
-    private Instance<WebGlModelRenderTask<T>> instance;
-    private List<WebGlModelRenderTask<T>> modelRenderTasks = new ArrayList<>();
     private boolean enabled = true;
     @Deprecated
     private List<ModelRenderer<T>> modelRenderers = new ArrayList<>();
@@ -25,7 +20,6 @@ public abstract class AbstractModelRenderTaskRunner<T> extends AbstractRenderTas
             return;
         }
         double interpolationFactor = setupInterpolationFactor();
-        modelRenderTasks.forEach(tWebGlModelRenderTask -> tWebGlModelRenderTask.draw(interpolationFactor));
     }
 
     /**

@@ -6,8 +6,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.ShallowWaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.utils.SignalGenerator;
-import com.btxtech.uiservice.renderer.ModelRenderer;
-import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
+import com.btxtech.uiservice.renderer.task.simple.WaterRenderTaskRunner;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -19,12 +18,12 @@ import javax.inject.Inject;
 @Dependent
 public class UiTerrainWaterTile {
     @Inject
-    private WaterRenderTask waterRenderTask;
+    private WaterRenderTaskRunner waterRenderTaskRunner;
     @Inject
     private TerrainTypeService terrainTypeService;
     private Float32ArrayEmu positions;
     private Float32ArrayEmu uvs;
-    private ModelRenderer modelRenderer;
+    private WaterRenderTaskRunner.RenderTask renderTask;
     private WaterConfig waterConfig;
     private SlopeConfig slopeConfig;
 
@@ -33,12 +32,12 @@ public class UiTerrainWaterTile {
         this.positions = positions;
         this.uvs = uvs;
         waterConfig = terrainTypeService.getWaterConfig(slopeConfig.getWaterConfigId());
-        modelRenderer = waterRenderTask.createModelRenderer(this);
-        modelRenderer.setActive(active);
+        renderTask = waterRenderTaskRunner.createRenderTask(this);
+        renderTask.setActive(active);
     }
 
     public void setActive(boolean active) {
-        modelRenderer.setActive(active);
+        renderTask.setActive(active);
     }
 
     public Float32ArrayEmu getPositions() {
@@ -66,8 +65,8 @@ public class UiTerrainWaterTile {
     }
 
     public void dispose() {
-        if (modelRenderer != null) {
-            waterRenderTask.destroy(modelRenderer);
+        if (renderTask != null) {
+            waterRenderTaskRunner.destroyRenderTask(renderTask);
         }
     }
 }

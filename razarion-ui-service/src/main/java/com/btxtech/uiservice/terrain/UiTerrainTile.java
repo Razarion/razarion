@@ -118,22 +118,22 @@ public class UiTerrainTile {
                 }
             });
         }
-//        if (terrainTile.getTerrainWaterTiles() != null) {
-//            uiTerrainWaterTiles = new ArrayList<>();
-//            terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile -> {
-//                try {
-//                    SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainWaterTile.getSlopeConfigId());
-//                    if (terrainWaterTile.isPositionsSet()) {
-//                        createAndAddUiTerrainWaterTile(slopeConfig, terrainWaterTile.getPositions(), null);
-//                    }
-//                    if (terrainWaterTile.isShallowPositionsSet()) {
-//                        createAndAddUiTerrainWaterTile(slopeConfig, terrainWaterTile.getShallowPositions(), terrainWaterTile.getShallowUvs());
-//                    }
-//                } catch (Throwable t) {
-//                    exceptionHandler.handleException(t);
-//                }
-//            });
-//        }
+        if (terrainTile.getTerrainWaterTiles() != null) {
+            uiTerrainWaterTiles = new ArrayList<>();
+            terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile -> {
+                try {
+                    SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainWaterTile.getSlopeConfigId());
+                    if (terrainWaterTile.isPositionsSet()) {
+                        createAndAddUiTerrainWaterTile(slopeConfig, terrainWaterTile.getPositions(), null);
+                    }
+                    if (terrainWaterTile.isShallowPositionsSet()) {
+                        createAndAddUiTerrainWaterTile(slopeConfig, terrainWaterTile.getShallowPositions(), terrainWaterTile.getShallowUvs());
+                    }
+                } catch (Throwable t) {
+                    exceptionHandler.handleException(t);
+                }
+            });
+        }
         if (active) {
             MapList<Integer, ModelMatrices> terrainObjects = getTerrainObjectModelMatrices();
             if (terrainObjects != null) {

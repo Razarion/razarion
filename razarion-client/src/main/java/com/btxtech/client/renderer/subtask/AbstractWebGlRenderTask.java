@@ -192,6 +192,14 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         uniformTextures.add(webGlFacade.createWebGLTexture(uniformName, webGLTextureSupplier));
     }
 
+    protected void createWebGLTexture(String uniformName, Integer imageId) {
+        if (imageId != null) {
+            uniformTextures.add(webGlFacade.createWebGLTexture(imageId, uniformName));
+        } else {
+            uniformTextures.add(webGlFacade.createFakeWebGLTexture(uniformName));
+        }
+    }
+
     protected void setupPhongMaterial(PhongMaterialConfig material, String variableName) {
         materials.add(new WebGlPhongMaterial(webGlFacade, material, variableName));
     }

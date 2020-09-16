@@ -1,28 +1,28 @@
 package com.btxtech.client.editor.renderer;
 
-import com.btxtech.uiservice.renderer.AbstractSimpleRenderTaskRunner;
+import com.btxtech.uiservice.renderer.AbstractRenderTaskRunner;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.WebGlRenderTask;
 import com.google.inject.Inject;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 
 /**
  * Created by Beat
  * 23.11.2016.
  */
-@ApplicationScoped
-public class MonitorRenderTaskRunner extends AbstractSimpleRenderTaskRunner<Void> {
+@Singleton // Errai problems with @ApplicationScoped
+public class MonitorRenderTaskRunner extends AbstractRenderTaskRunner<Void, MonitorRenderTaskRunner.RenderTask> {
     public interface RenderTask extends WebGlRenderTask<Void> {
     }
 
     @Inject
     private RenderService renderService;
     private boolean showDeep = true;
-    private WebGlRenderTask<Void> renderTask;
+    private RenderTask renderTask;
 
     public void showMonitor() {
-        if(renderTask != null) {
+        if (renderTask != null) {
             throw new IllegalStateException("Shadow monitor is already showing");
         }
         renderTask = createRenderTask(RenderTask.class, null);
@@ -31,7 +31,7 @@ public class MonitorRenderTaskRunner extends AbstractSimpleRenderTaskRunner<Void
     }
 
     public void hideMonitor() {
-        if(renderTask == null) {
+        if (renderTask == null) {
             throw new IllegalStateException("Shadow monitor is already showing");
         }
         renderService.removeRenderTaskRunner(this);

@@ -2,7 +2,6 @@ package com.btxtech.client.editor.renderer;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.client.renderer.engine.UniformLocation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.subtask.AbstractWebGlRenderTask;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -13,19 +12,21 @@ import jsinterop.base.Js;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import static com.btxtech.client.renderer.engine.UniformLocation.Type.B;
+
 /**
  * Created by Beat
  * 11.09.2015.
  */
 @Dependent
-public class ShadowMonitorRendererUnit extends AbstractWebGlRenderTask<Void> implements MonitorRenderTaskRunner.RenderTask {
+public class MonitorRenderTask extends AbstractWebGlRenderTask<Void> implements MonitorRenderTaskRunner.RenderTask {
     private static final int SIDE_LENGTH = 256;
     @Inject
     private GameCanvas gameCanvas;
     @Inject
     private ClientRenderServiceImpl renderService;
-    @Inject
-    private MonitorRenderTaskRunner monitorRenderTask;
+     @Inject
+     private MonitorRenderTaskRunner monitorRenderTask;
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(Void aVoid) {
@@ -59,7 +60,7 @@ public class ShadowMonitorRendererUnit extends AbstractWebGlRenderTask<Void> imp
         uvs.set(new double[]{0, 1}, 10);
         setupVec2Array(WebGlFacade.A_VERTEX_UV, Js.uncheckedCast(uvs));
 
-        setupUniform("uDepthMap", UniformLocation.Type.B, () -> monitorRenderTask.isShowDeep());
+        setupUniform("uDepthMap", B, () -> monitorRenderTask.isShowDeep());
 
         createWebGLTexture("uColorSampler", () -> renderService.getColorTexture());
         createWebGLTexture("uDepthSampler", () -> renderService.getDepthTexture());
