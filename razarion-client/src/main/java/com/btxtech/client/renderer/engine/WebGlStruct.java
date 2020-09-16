@@ -2,7 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 
-public class WebGlStruct {
+public abstract class WebGlStruct implements Activator {
     private final WebGlFacade webGlFacade;
     private String variableName;
 

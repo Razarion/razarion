@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.subtask;
 
+import com.btxtech.client.renderer.engine.WebGlSlopeSplatting;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
@@ -41,6 +42,9 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
 
         if (uiTerrainSlopeTile.getGroundConfig() != null) {
             setupGroundMaterial(uiTerrainSlopeTile.getGroundConfig());
+            if (uiTerrainSlopeTile.getSlopeSplattingConfig() != null) {
+                addActivator(new WebGlSlopeSplatting(getWebGlFacade(), uiTerrainSlopeTile.getSlopeSplattingConfig(), "slopeSplatting"));
+            }
         }
     }
 

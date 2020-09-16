@@ -32,6 +32,7 @@ public class WebGlSlopeSplatting extends WebGlStruct {
         offset = webGlFacade.getUniformLocation(variableName(UNIFORM_LOCATION_OFFSET));
     }
 
+    @Override
     public void activate() {
         texture.activate();
         getWebGlFacade().uniform1f(scale, splatting.getScale());

@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.subtask;
 
+import com.btxtech.client.renderer.engine.Activator;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.LightUniforms;
 import com.btxtech.client.renderer.engine.TextureIdHandler;
@@ -66,6 +67,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     private Collection<WebGlPhongMaterial> materials = new ArrayList<>();
     private Collection<WebGlGroundMaterial> webGlGroundMaterials = new ArrayList<>();
     private Collection<UniformLocation> uniforms = new ArrayList<>();
+    private Collection<Activator> activators = new ArrayList<>();
     private Collection<WebGlUniformTexture> uniformTextures = new ArrayList<>();
     // Transformation
     private WebGLUniformLocation viewMatrixUniformLocation;
@@ -111,6 +113,10 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         }
         glslFragmentCustomDefines(fragmentDefines, t);
         return fragmentDefines;
+    }
+
+    protected WebGlFacade getWebGlFacade() {
+        return webGlFacade;
     }
 
     @Override
@@ -178,6 +184,10 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         uniforms.add(new UniformLocation<>(name, type, webGlFacade, valueSupplier));
     }
 
+    protected void addActivator(Activator activator) {
+        activators.add(activator);
+    }
+
     protected void createWebGLTexture(String uniformName, Supplier<WebGLTexture> webGLTextureSupplier) {
         uniformTextures.add(webGlFacade.createWebGLTexture(uniformName, webGLTextureSupplier));
     }
@@ -213,6 +223,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         materials.forEach(WebGlPhongMaterial::activate);
         webGlGroundMaterials.forEach(WebGlGroundMaterial::activate);
         uniformTextures.forEach(WebGlUniformTexture::activate);
+        activators.forEach(Activator::activate);
 
 //        if (inGameQuestVisualizationService.isQuestInGamePlaceVisualization()) {
 //            terrainMarkerTexture.activate();
