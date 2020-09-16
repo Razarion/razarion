@@ -26,6 +26,7 @@ public class MonitorRenderTaskRunner extends AbstractSimpleRenderTaskRunner<Void
             throw new IllegalStateException("Shadow monitor is already showing");
         }
         renderTask = createRenderTask(RenderTask.class, null);
+        renderTask.setActive(true);
         renderService.addRenderTaskRunner(this, "Monitor");
     }
 
