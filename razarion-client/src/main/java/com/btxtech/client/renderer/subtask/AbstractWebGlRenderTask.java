@@ -41,6 +41,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static elemental2.webgl.WebGLRenderingContext.SAMPLE_ALPHA_TO_COVERAGE;
+
 public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     // private Logger logger = Logger.getLogger(AbstractWebGlRenderTask.class.getName());
     @Inject
@@ -204,13 +206,19 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
 //        } else {
 //            webGlFacade.uniform4f(terrainMarker2DPoints, 0, 0, 0, 0);
 //        }
-
+        boolean enableAlphaToCoverage = isAlphaToCoverage();
+        if (enableAlphaToCoverage) {
+            webGlFacade.getCtx3d().enable(SAMPLE_ALPHA_TO_COVERAGE);
+        }
 
         if (modelMatricesSupplier != null) {
             drawModels(interpolationFactor);
         } else {
             webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES, elementCount, getHelperString());
             WebGlUtil.checkLastWebGlError("drawArrays", webGlFacade.getCtx3d());
+        }
+        if (enableAlphaToCoverage) {
+            webGlFacade.getCtx3d().disable(SAMPLE_ALPHA_TO_COVERAGE);
         }
     }
 
@@ -337,6 +345,15 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     @Override
     public void setProgressAnimations(Collection<ProgressAnimation> progressAnimations) {
         this.progressAnimations = progressAnimations;
+    }
+
+    /**
+     * Iverride in subclasses
+     *
+     * @return true if alpha to coverage
+     */
+    protected boolean isAlphaToCoverage() {
+        return false;
     }
 
     protected String getHelperString() {

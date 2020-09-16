@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.subtask;
 
+import com.btxtech.client.renderer.engine.UniformLocation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
@@ -25,9 +26,9 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     // private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
     @Inject
     private ClientShape3DUiService shape3DUiService;
+    private boolean alphaToCoverage;
     // private WebGLUniformLocation characterRepresenting;
     // private WebGLUniformLocation characterRepresentingColor;
-    // TODO private WebGLUniformLocation alphaToCoverage;
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(VertexContainer vertexContainer) {
@@ -47,28 +48,13 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
         AlarmRaiser.onNull(vertexContainer.getShape3DMaterialConfig().getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No Material in VertexContainer: " + vertexContainer.getShape3DMaterialConfig().getMaterialName(), null);
         setupPhongMaterial(vertexContainer.getShape3DMaterialConfig().getPhongMaterialConfig(), "material");
 
+        if (vertexContainer.getShape3DMaterialConfig().getAlphaToCoverage() != null) {
+            alphaToCoverage = true;
+            setupUniform("alphaToCoverage", UniformLocation.Type.F, () -> vertexContainer.getShape3DMaterialConfig().getAlphaToCoverage());
+        }
+
         // characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
         // characterRepresentingColor = webGlFacade.getUniformLocation("characterRepresentingColor");
-    }
-
-    private void internalFillBuffers(VertexContainer vertexContainer) {
-//   TODO     if (getRenderData().getShape3DMaterialConfig().getAlphaToCoverage() != null) {
-//   TODO        alphaToCoverage = webGlFacade.getUniformLocation("alphaToCoverage");
-//   TODO     }
-    }
-
-    private void prepareDraw() {
-//  TODO      if (getRenderData().getShape3DMaterialConfig().getAlphaToCoverage() != null) {
-//  TODO          webGlFacade.getCtx3d().enable(SAMPLE_ALPHA_TO_COVERAGE);
-//  TODO          webGlFacade.uniform1f(alphaToCoverage, getRenderData().getShape3DMaterialConfig().getAlphaToCoverage());
-//  TODO      }
-
-    }
-
-    private void afterDraw() {
-        //  TODO    if (getRenderData().getShape3DMaterialConfig().getAlphaToCoverage() != null) {
-        //  TODO   webGlFacade.getCtx3d().disable(SAMPLE_ALPHA_TO_COVERAGE);
-        //  TODO    }
     }
 
     private void draw(ModelMatrices modelMatrices) {
@@ -86,5 +72,10 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
             return Collections.singletonList("ALPHA_TO_COVERAGE");
         }
         return null;
+    }
+
+    @Override
+    protected boolean isAlphaToCoverage() {
+        return alphaToCoverage;
     }
 }

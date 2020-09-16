@@ -14,9 +14,9 @@ public class UniformLocation<T> {
     private WebGLUniformLocation webGLUniformLocation;
 
     public enum Type {
-        I,
-        B,
-        F
+        I, // Integer
+        B, // Boolean
+        F  // Float
     }
 
     public UniformLocation(String name, Type type, WebGlFacade webGlFacade, Supplier<T> valueSupplier) {
