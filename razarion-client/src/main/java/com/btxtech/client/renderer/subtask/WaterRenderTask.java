@@ -12,6 +12,7 @@ import javax.enterprise.context.Dependent;
 import java.util.List;
 
 import static com.btxtech.client.renderer.engine.UniformLocation.Type.F;
+import static com.btxtech.client.renderer.webgl.WebGlFacadeConfig.Blend.SOURCE_ALPHA;
 
 /**
  * Created by Beat
@@ -32,6 +33,7 @@ public class WaterRenderTask extends AbstractWebGlRenderTask<UiTerrainWaterTile>
         return new WebGlFacadeConfig(Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader())
                 .enableTransformation(true)
                 .enableOESStandardDerivatives()
+                .blend(SOURCE_ALPHA)
                 .enableLight();
     }
 

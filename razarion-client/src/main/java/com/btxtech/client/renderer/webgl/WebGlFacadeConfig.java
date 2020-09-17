@@ -6,8 +6,12 @@ import com.google.gwt.resources.client.TextResource;
  * Created by Beat
  * 25.03.2017.
  */
-// TODO better name
 public class WebGlFacadeConfig {
+    public enum Blend {
+        SOURCE_ALPHA,
+        CONST_ALPHA
+    }
+
     private TextResource vertexShaderCode;
     private TextResource fragmentShaderCode;
     private boolean transformation;
@@ -16,6 +20,11 @@ public class WebGlFacadeConfig {
     private boolean castShadow;
     private boolean oESStandardDerivatives;
     private boolean light;
+    private boolean depthTest = true;
+    private boolean writeDepthBuffer = true;
+    private Blend blend;
+    private double constAlpha;
+
 
     public WebGlFacadeConfig(TextResource vertexShaderCode, TextResource fragmentShaderCode) {
         this.vertexShaderCode = vertexShaderCode;
@@ -53,6 +62,26 @@ public class WebGlFacadeConfig {
         return this;
     }
 
+    public WebGlFacadeConfig depthTest(boolean dpDepthTest) {
+        this.depthTest = dpDepthTest;
+        return this;
+    }
+
+    public WebGlFacadeConfig writeDepthBuffer(boolean writeDepthBuffer) {
+        this.writeDepthBuffer = writeDepthBuffer;
+        return this;
+    }
+
+    public WebGlFacadeConfig blend(Blend blend) {
+        this.blend = blend;
+        return this;
+    }
+
+    public WebGlFacadeConfig constAlpha(double constAlpha) {
+        this.constAlpha = constAlpha;
+        return this;
+    }
+
     public TextResource getVertexShaderCode() {
         return vertexShaderCode;
     }
@@ -83,5 +112,21 @@ public class WebGlFacadeConfig {
 
     public boolean isLight() {
         return light;
+    }
+
+    public boolean isDepthTest() {
+        return depthTest;
+    }
+
+    public boolean isWriteDepthBuffer() {
+        return writeDepthBuffer;
+    }
+
+    public Blend getBlend() {
+        return blend;
+    }
+
+    public double getConstAlpha() {
+        return constAlpha;
     }
 }

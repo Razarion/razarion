@@ -240,20 +240,46 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
 //        } else {
 //            webGlFacade.uniform4f(terrainMarker2DPoints, 0, 0, 0, 0);
 //        }
-        boolean enableAlphaToCoverage = isAlphaToCoverage();
-        if (enableAlphaToCoverage) {
-            webGlFacade.getCtx3d().enable(SAMPLE_ALPHA_TO_COVERAGE);
-        }
-
+        configureRenderer();
         if (modelMatricesSupplier != null) {
             drawModels(interpolationFactor);
         } else {
             webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES, elementCount, getHelperString());
             WebGlUtil.checkLastWebGlError("drawArrays", webGlFacade.getCtx3d());
         }
-        if (enableAlphaToCoverage) {
+    }
+
+    private void configureRenderer() {
+        if (isAlphaToCoverage()) {
+            webGlFacade.getCtx3d().enable(SAMPLE_ALPHA_TO_COVERAGE);
+        } else {
             webGlFacade.getCtx3d().disable(SAMPLE_ALPHA_TO_COVERAGE);
         }
+        if (webGlFacadeConfig.isDepthTest()) {
+            webGlFacade.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
+        } else {
+            webGlFacade.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
+        }
+        webGlFacade.getCtx3d().depthMask(webGlFacadeConfig.isWriteDepthBuffer());
+        webGlFacade.getCtx3d().enable(WebGLRenderingContext.CULL_FACE);
+        webGlFacade.getCtx3d().cullFace(WebGLRenderingContext.BACK);
+        if (webGlFacadeConfig.getBlend() != null) {
+            webGlFacade.getCtx3d().enable(WebGLRenderingContext.BLEND);
+            switch (webGlFacadeConfig.getBlend()) {
+                case SOURCE_ALPHA:
+                    webGlFacade.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+                    break;
+                case CONST_ALPHA:
+                    webGlFacade.getCtx3d().blendColor(1f, 1f, 1f, webGlFacadeConfig.getConstAlpha());
+                    webGlFacade.getCtx3d().blendFunc(WebGLRenderingContext.CONSTANT_ALPHA, WebGLRenderingContext.ONE_MINUS_CONSTANT_ALPHA);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown Blend mode: " + webGlFacadeConfig.getBlend());
+            }
+        } else {
+            webGlFacade.getCtx3d().disable(WebGLRenderingContext.BLEND);
+        }
+
     }
 
     private void drawModels(double interpolationFactor) {
