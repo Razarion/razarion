@@ -15,7 +15,7 @@ uniform highp mat4 shadowMatrix;
 varying vec3 vNormal;
 varying vec3 vWorldVertexPosition;
 varying vec3 vViewPosition;
-varying vec4 vShadowCoord;
+varying vec4 shadowPosition;
 #ifdef  RENDER_SHALLOW_WATER
 varying vec2 vUv;
 #endif
@@ -27,7 +27,7 @@ void main(void) {
     #ifdef  RENDER_SHALLOW_WATER
     vUv = uv;
     #endif
-    vShadowCoord = shadowMatrix * vec4(position, 1.0);
+    shadowPosition = shadowMatrix * vec4(position, 1.0);
 
     gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
 }
