@@ -30,6 +30,7 @@ public class WaterRenderTask extends AbstractWebGlRenderTask<UiTerrainWaterTile>
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainWaterTile uiTerrainWaterTile) {
         return new WebGlFacadeConfig(Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader())
+                .enableTransformation(true)
                 .enableOESStandardDerivatives()
                 .enableLight();
     }
