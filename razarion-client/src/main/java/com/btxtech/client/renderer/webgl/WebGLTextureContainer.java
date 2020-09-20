@@ -77,7 +77,13 @@ public class WebGLTextureContainer {
         }
         webGLTexture = gameCanvas.getCtx3d().createTexture();
         WebGLTexture finalWebGLTexture = webGLTexture;
-        imageUiService.requestImage(imageId, imageElement -> bindTexture(Js.uncheckedCast(imageElement), finalWebGLTexture));
+        imageUiService.requestImage(imageId, imageElement -> {
+            try {
+                bindTexture(Js.uncheckedCast(imageElement), finalWebGLTexture);
+            } catch (Throwable t) {
+                throw new RuntimeException("Can not bind image: " + imageId, t);
+            }
+        });
         return webGLTexture;
     }
 
