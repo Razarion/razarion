@@ -1,1 +1,1 @@
-docker-compose exec db mariadb-dump --user="root" --password="1234" --skip-add-drop-table --skip-add-locks --skip-comments --skip-disable-keys --skip-set-charset --add-drop-database --databases razarion > maria_db_dump.sql
+docker-compose exec db mariadb-dump --user="root" --password="1234" --skip-add-drop-table --skip-add-locks --skip-comments --skip-disable-keys --skip-set-charset --add-drop-database --databases razarion > ../sql/docker_db_empty.sql
