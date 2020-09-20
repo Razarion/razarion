@@ -24,10 +24,66 @@ CREATE TABLE `AUDIO_LIBRARY` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `BASE_ITEM_BUILDER_TYPE` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `animationOriginX` double DEFAULT NULL,
+  `animationOriginY` double DEFAULT NULL,
+  `animationOriginZ` double DEFAULT NULL,
+  `buildRange` double NOT NULL,
+  `progress` double NOT NULL,
+  `animationShape3d_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKqqlnkxi7kdlnc3f4ow78kfg5c` (`animationShape3d_id`),
+  CONSTRAINT `FKqqlnkxi7kdlnc3f4ow78kfg5c` FOREIGN KEY (`animationShape3d_id`) REFERENCES `COLLADA` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD` (
+  `builder` int(11) NOT NULL,
+  `baseItemType` int(11) NOT NULL,
+  UNIQUE KEY `UK_iilyj6hka733l0r6fe21q3imu` (`baseItemType`),
+  KEY `FK28k6bigopln9kqkqspxgf45wo` (`builder`),
+  CONSTRAINT `FK28k6bigopln9kqkqspxgf45wo` FOREIGN KEY (`builder`) REFERENCES `BASE_ITEM_BUILDER_TYPE` (`id`),
+  CONSTRAINT `FKt42sflt3ub3tu41rcqgysx4h5` FOREIGN KEY (`baseItemType`) REFERENCES `BASE_ITEM_TYPE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `BASE_ITEM_CONSUMER_TYPE` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `wattage` int(11) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `BASE_ITEM_DEMOLITION_STEP_EFFECT` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `baseItemType` int(11) NOT NULL,
+  `orderColumn` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKm64k2tg9gg8iwgrckwb6i3o07` (`baseItemType`),
+  CONSTRAINT `FKm64k2tg9gg8iwgrckwb6i3o07` FOREIGN KEY (`baseItemType`) REFERENCES `BASE_ITEM_TYPE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `BASE_ITEM_DEMOLITION_STEP_EFFECT_PARTICLE` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `particleConfigId_TMP` int(11) DEFAULT NULL,
+  `positionX` double DEFAULT NULL,
+  `positionY` double DEFAULT NULL,
+  `positionZ` double DEFAULT NULL,
+  `demolitionStepEffect` int(11) NOT NULL,
+  `orderColumn` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK5y84j4v1h2w5xe21gmu4vda0k` (`demolitionStepEffect`),
+  CONSTRAINT `FK5y84j4v1h2w5xe21gmu4vda0k` FOREIGN KEY (`demolitionStepEffect`) REFERENCES `BASE_ITEM_DEMOLITION_STEP_EFFECT` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -42,10 +98,38 @@ CREATE TABLE `BASE_ITEM_FACTORY_TYPE` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD` (
+  `factory` int(11) NOT NULL,
+  `baseItemType` int(11) NOT NULL,
+  UNIQUE KEY `UK_s56cdvc3hq6y8o7r2gsrfu52c` (`baseItemType`),
+  KEY `FKtc6hh437se4nqa2g9tmmg4na5` (`factory`),
+  CONSTRAINT `FKlfyjj2uwgsatdw7ux1wds5t7x` FOREIGN KEY (`baseItemType`) REFERENCES `BASE_ITEM_TYPE` (`id`),
+  CONSTRAINT `FKtc6hh437se4nqa2g9tmmg4na5` FOREIGN KEY (`factory`) REFERENCES `BASE_ITEM_FACTORY_TYPE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `BASE_ITEM_GENERATOR_TYPE` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `wattage` int(11) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `BASE_ITEM_HARVESTER_TYPE` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `animationOriginX` double DEFAULT NULL,
+  `animationOriginY` double DEFAULT NULL,
+  `animationOriginZ` double DEFAULT NULL,
+  `harvestRange` int(11) NOT NULL,
+  `progress` double NOT NULL,
+  `animationShape3d_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKegmix24ey7e76un4erbrvfcqr` (`animationShape3d_id`),
+  CONSTRAINT `FKegmix24ey7e76un4erbrvfcqr` FOREIGN KEY (`animationShape3d_id`) REFERENCES `COLLADA` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
