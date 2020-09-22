@@ -27,7 +27,7 @@ public class ListEditor extends AbstractPropertyEditor<List> {
     private HTMLDivElement div;
     @Inject
     @DataField
-    private HTMLTableElement childTableTable;
+    private HTMLTableElement childTable;
     @Inject
     @DataField
     private HTMLButtonElement createButton;
@@ -38,12 +38,12 @@ public class ListEditor extends AbstractPropertyEditor<List> {
     }
 
     public void display() {
-        Elemental2Utils.removeAllChildren(childTableTable);
+        Elemental2Utils.removeAllChildren(childTable);
         try {
             getBranch().createListChildren(propertyModel -> {
                 ListEditorEntry listEditorEntry = entryInstance.get();
                 listEditorEntry.init(propertyModel, this);
-                childTableTable.appendChild(listEditorEntry.getElement());
+                childTable.appendChild(listEditorEntry.getElement());
             });
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

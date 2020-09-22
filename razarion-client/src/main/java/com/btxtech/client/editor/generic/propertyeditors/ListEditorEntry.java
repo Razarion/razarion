@@ -47,7 +47,7 @@ public class ListEditorEntry implements IsElement {
     }
 
     @EventHandler("deleteButton")
-    private void onCreateButtonClicked(@ForEvent("click") UIEvent e) {
+    private void onDeleteButtonClicked(@ForEvent("click") UIEvent e) {
         try {
             abstractPropertyModel.setPropertyValue(null);
             listEditor.display();
