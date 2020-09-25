@@ -187,7 +187,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiContext.getWarmGameUiContext().getGameEngineMode());
         }
         if (scenes.isEmpty()) {
-            throw new AlarmRaisedException(Alarm.Type.START_GAME_UI_CONTROL_FAILED,
+            throw new AlarmRaisedException(Alarm.Type.INVALID_GAME_UI_CONTEXT,
                     "No scenes defined",
                     coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
         }

@@ -7,10 +7,12 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.alarm.AlarmRaiser;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
-import com.btxtech.uiservice.cockpit.TopRightCockpit;
 import com.btxtech.uiservice.cockpit.ScreenCover;
+import com.btxtech.uiservice.cockpit.TopRightCockpit;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
@@ -25,6 +27,8 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Optional;
 import java.util.logging.Logger;
+
+import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_GAME_UI_CONTEXT;
 
 /**
  * Created by Beat
@@ -60,6 +64,8 @@ public class Scene implements ViewService.ViewFieldListener {
     private UserUiService userUiService;
     @Inject
     private InGameQuestVisualizationService inGameQuestVisualizationService;
+    @Inject
+    private AlarmService alarmService;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
     private boolean hasCompletionCallback;
@@ -113,6 +119,10 @@ public class Scene implements ViewService.ViewFieldListener {
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
             sceneConfig.getStartPointPlacerConfig().setBaseItemCount(1);
+            AlarmRaiser.onNull(gameUiControl.getPlanetConfig().getStartBaseItemTypeId(),
+                    INVALID_GAME_UI_CONTEXT,
+                    "No Start base item type in planet",
+                    gameUiControl.getPlanetConfig().getId());
             sceneConfig.getStartPointPlacerConfig().setBaseItemTypeId(gameUiControl.getPlanetConfig().getStartBaseItemTypeId());
             baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), false, decimalPositions -> {
                 if (decimalPositions.size() != 1) {
