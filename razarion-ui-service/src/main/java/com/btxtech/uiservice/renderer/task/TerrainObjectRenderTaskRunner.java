@@ -33,7 +33,7 @@ public class TerrainObjectRenderTaskRunner extends AbstractShape3DRenderTaskRunn
     }
 
     public void reloadEditMode() {
-        clear();
+        destroyRenderAllTasks();
         setupTerrainObject();
     }
 

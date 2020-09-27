@@ -11,7 +11,7 @@ import javax.inject.Singleton;
  * 31.08.2016.
  */
 @Singleton
-public class SlopeRenderTaskRunner extends AbstractRenderTaskRunner<UiTerrainSlopeTile, SlopeRenderTaskRunner.RenderTask> {
+public class SlopeRenderTaskRunner extends AbstractRenderTaskRunner {
     public interface RenderTask extends WebGlRenderTask<UiTerrainSlopeTile> {
     }
 

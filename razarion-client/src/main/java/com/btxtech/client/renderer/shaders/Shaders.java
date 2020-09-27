@@ -105,7 +105,7 @@ public interface Shaders extends ClientBundle {
     TextResource rgbaMvpVertexShader();
 
     @Source("Rgba.frag")
-    TextResource rgbaVpFragmentShader();
+    TextResource rgbaFragmentShader();
 
     @Source("RgbaVp.vert")
     TextResource rgbaVpVertexShader();

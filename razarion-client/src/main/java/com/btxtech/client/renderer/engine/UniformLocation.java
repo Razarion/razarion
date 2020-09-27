@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.shared.datatypes.Color;
 import elemental2.webgl.WebGLUniformLocation;
 import jsinterop.base.Js;
 
@@ -16,7 +17,8 @@ public class UniformLocation<T> {
     public enum Type {
         I, // Integer
         B, // Boolean
-        F  // Float
+        F,  // Float
+        COLOR // Color
     }
 
     public UniformLocation(String name, Type type, WebGlFacade webGlFacade, Supplier<T> valueSupplier) {
@@ -38,6 +40,9 @@ public class UniformLocation<T> {
                 return;
             case F:
                 webGlFacade.uniform1f(webGLUniformLocation, Js.uncheckedCast(valueSupplier.get()));
+                return;
+            case COLOR:
+                webGlFacade.uniform4f(webGLUniformLocation, (Color)valueSupplier.get());
                 return;
             default:
                 throw new IllegalStateException("No webGLUniformLocation.uniformXX() method found for type '" + type + " for uniform location '" + name + "'");

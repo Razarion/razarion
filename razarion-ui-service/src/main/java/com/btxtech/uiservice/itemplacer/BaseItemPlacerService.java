@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.uiservice.mouse.CursorService;
-import com.btxtech.uiservice.renderer.task.itemplacer.BaseItemPlacerRenderTask;
+import com.btxtech.uiservice.renderer.task.BaseItemPlacerRenderTaskRunner;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -22,7 +22,7 @@ public class BaseItemPlacerService {
     @Inject
     private Instance<BaseItemPlacer> instance;
     @Inject
-    private BaseItemPlacerRenderTask baseItemPlacerRenderTask;
+    private BaseItemPlacerRenderTaskRunner baseItemPlacerRenderTask;
     @Inject
     private CursorService cursorService;
     private boolean canBeCanceled;

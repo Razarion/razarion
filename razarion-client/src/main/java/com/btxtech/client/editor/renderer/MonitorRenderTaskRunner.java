@@ -12,7 +12,7 @@ import javax.inject.Singleton;
  * 23.11.2016.
  */
 @Singleton // Errai problems with @ApplicationScoped
-public class MonitorRenderTaskRunner extends AbstractRenderTaskRunner<Void, MonitorRenderTaskRunner.RenderTask> {
+public class MonitorRenderTaskRunner extends AbstractRenderTaskRunner {
     public interface RenderTask extends WebGlRenderTask<Void> {
     }
 

@@ -19,7 +19,8 @@ public class Alarm {
         INVALID_AUDIO_SERVICE,
         INVALID_PROPERTY,
         INVALID_TERRAIN_OBJECT,
-        INVALID_SHAPE_3D
+        INVALID_SHAPE_3D,
+        INVALID_BASE_ITEM
     }
     private Type type;
     private Date date;

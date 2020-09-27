@@ -10,16 +10,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * T Data
- * R RenderTask
- *
- * @param <T>
- */
-public abstract class AbstractRenderTaskRunner<T,  R extends WebGlRenderTask<T>> {
+public abstract class AbstractRenderTaskRunner {
     @Inject
-    private Instance<WebGlRenderTask<T>> instance;
-    private List<WebGlRenderTask<T>> renderTasks = new ArrayList<>();
+    private Instance<WebGlRenderTask<?>> instance;
+    private List<WebGlRenderTask<?>> renderTasks = new ArrayList<>();
     private boolean enabled = true;
     private String name;
 
@@ -39,18 +33,25 @@ public abstract class AbstractRenderTaskRunner<T,  R extends WebGlRenderTask<T>>
         this.enabled = enabled;
     }
 
-    protected R createModelRenderTask(Class<R> clazz, T t, Function<Long, List<ModelMatrices>> modelMatricesSupplier, Collection<ProgressAnimation> progressAnimations, ShapeTransform shapeTransform) {
+    /**
+     * D Data
+     * R RenderTask
+     *
+     * @param d data
+     * @param clazz render task
+     */
+    protected <R extends WebGlRenderTask<D>, D> R createModelRenderTask(Class<R> clazz, D d, Function<Long, List<ModelMatrices>> modelMatricesSupplier, Collection<ProgressAnimation> progressAnimations, ShapeTransform shapeTransform) {
         R renderTask = instance.select(clazz).get();
         renderTask.setProgressAnimations(progressAnimations);
         renderTask.setShapeTransform(shapeTransform);
         renderTask.setModelMatricesSupplier(modelMatricesSupplier);
-        renderTask.init(t);
+        renderTask.init(d);
         renderTasks.add(renderTask);
         return renderTask;
     }
 
-    protected R createRenderTask(Class<R> clazz, T t) {
-        return createModelRenderTask(clazz, t, null, null, null);
+    protected <R extends WebGlRenderTask<D>, D> R createRenderTask(Class<R> clazz, D d) {
+        return createModelRenderTask(clazz, d, null, null, null);
     }
 
     public void draw() {
@@ -58,12 +59,13 @@ public abstract class AbstractRenderTaskRunner<T,  R extends WebGlRenderTask<T>>
         renderTasks.forEach(renderTask -> renderTask.draw(interpolationFactor));
     }
 
-    public void destroyRenderTask(R renderTask) {
+    public void destroyRenderTask(WebGlRenderTask<?> renderTask) {
         renderTasks.remove(renderTask);
         renderTask.dispose();
     }
 
-    protected void clear() {
+    protected void destroyRenderAllTasks() {
+        renderTasks.forEach(WebGlRenderTask::dispose);
         renderTasks.clear();
     }
 

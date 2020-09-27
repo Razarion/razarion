@@ -33,7 +33,7 @@ public class TerrainEditorRenderTask extends AbstractModelRenderTaskRunner<Void>
     }
 
     public void activate(Polygon2D cursor, Collection<ModifiedSlope> modifiedSlopes) {
-        clear();
+        destroyRenderAllTasks();
         setupCursor(cursor);
         setupModifiedSlopes(modifiedSlopes);
         setupModifiedTerrainObject();
@@ -45,7 +45,7 @@ public class TerrainEditorRenderTask extends AbstractModelRenderTaskRunner<Void>
         cursorRenderer = null;
         slopeRenderers.clear();
         slopeDrivewayRenderers.clear();
-        clear();
+        destroyRenderAllTasks();
     }
 
     public void changeCursor(Polygon2D cursor) {

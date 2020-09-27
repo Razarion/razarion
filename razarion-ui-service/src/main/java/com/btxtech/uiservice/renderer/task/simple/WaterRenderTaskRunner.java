@@ -11,7 +11,7 @@ import javax.inject.Singleton;
  * 31.08.2016.
  */
 @Singleton
-public class WaterRenderTaskRunner extends AbstractRenderTaskRunner<UiTerrainWaterTile, WaterRenderTaskRunner.RenderTask> {
+public class WaterRenderTaskRunner extends AbstractRenderTaskRunner {
     public interface RenderTask extends WebGlRenderTask<UiTerrainWaterTile> {
     }
 

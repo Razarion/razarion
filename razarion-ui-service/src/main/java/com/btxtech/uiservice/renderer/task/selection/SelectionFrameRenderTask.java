@@ -26,19 +26,19 @@ public class SelectionFrameRenderTask extends AbstractModelRenderTaskRunner<Grou
     }
 
     public void startGroupSelection(GroupSelectionFrame groupSelectionFrame) {
-        clear();
+        destroyRenderAllTasks();
         setupRenderer(groupSelectionFrame);
         active = true;
     }
 
     public void onMove(GroupSelectionFrame groupSelectionFrame) {
-        clear();
+        destroyRenderAllTasks();
         setupRenderer(groupSelectionFrame);
     }
 
     public void stop() {
         active = false;
-        clear();
+        destroyRenderAllTasks();
     }
 
     private void setupRenderer(GroupSelectionFrame groupSelectionFrame) {

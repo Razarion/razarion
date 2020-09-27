@@ -66,7 +66,7 @@ public abstract class AbstractModelRenderTaskRunner<T> extends AbstractRenderTas
         modelRenderer.dispose();
     }
 
-    protected void clear() {
+    protected void destroyRenderAllTasks() {
         modelRenderers.clear();
     }
 

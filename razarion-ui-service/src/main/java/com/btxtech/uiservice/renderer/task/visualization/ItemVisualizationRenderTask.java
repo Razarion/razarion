@@ -63,7 +63,7 @@ public class ItemVisualizationRenderTask extends AbstractModelRenderTaskRunner<I
 
     public void deactivate() {
         active = false;
-        clear();
+        destroyRenderAllTasks();
         gameItemVisualization = null;
         inGameDirectionVisualization = null;
         questInGameOutOfViewVisualization = null;

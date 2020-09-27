@@ -85,7 +85,7 @@ public class TerrainMarkerEditorRenderTask extends AbstractModelRenderTaskRunner
 
     public void hide() {
         renderService.removeRenderTaskRunner(this);
-        clear();
+        destroyRenderAllTasks();
     }
 
 }
