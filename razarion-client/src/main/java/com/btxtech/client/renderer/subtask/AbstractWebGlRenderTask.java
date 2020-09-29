@@ -247,6 +247,8 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
             webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES, elementCount, getHelperString());
             WebGlUtil.checkLastWebGlError("drawArrays", webGlFacade.getCtx3d());
         }
+
+        arrays.forEach(AbstractShaderAttribute::deactivate);
     }
 
     private void configureRenderer() {

@@ -50,6 +50,11 @@ abstract public class AbstractShaderAttribute {
         WebGlUtil.checkLastWebGlError("enableVertexAttribArray", ctx3d);
     }
 
+    public void deactivate() {
+        ctx3d.disableVertexAttribArray(attributeLocation);
+        WebGlUtil.checkLastWebGlError("disableVertexAttribArray", ctx3d);
+    }
+
     public void deleteBuffer() {
         ctx3d.deleteBuffer(webGlBuffer);
     }
