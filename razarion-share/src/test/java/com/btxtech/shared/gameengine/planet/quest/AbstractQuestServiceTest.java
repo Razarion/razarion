@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.basic.BaseBasicTest;
@@ -15,29 +14,29 @@ import java.util.Map;
  * 23.09.2016.
  */
 public abstract class AbstractQuestServiceTest extends BaseBasicTest {
-    private Map<HumanPlayerId, QuestConfig> passedQuests = new HashMap<>();
+    private Map<Integer, QuestConfig> passedQuests = new HashMap<>();
 
     protected QuestListener createQuestListener() {
-        return passedQuests::put;
+        return (key, value) -> passedQuests.put(key, value);
     }
 
-    protected void assertQuestPassed(HumanPlayerId humanPlayerId) {
-        Assert.assertTrue("Quest not passed for '" + humanPlayerId + "'. Quest: " + passedQuests.get(humanPlayerId), passedQuests.containsKey(humanPlayerId));
+    protected void assertQuestPassed(int userId) {
+        Assert.assertTrue("Quest not passed for '" + userId + "'. Quest: " + passedQuests.get(userId), passedQuests.containsKey(userId));
     }
 
-    protected void assertQuestNotPassed(HumanPlayerId humanPlayerId) {
-        Assert.assertFalse("Unexpected quest passed for '" + humanPlayerId + "'. Quest: " + passedQuests.get(humanPlayerId), passedQuests.containsKey(humanPlayerId));
+    protected void assertQuestNotPassed(int userId) {
+        Assert.assertFalse("Unexpected quest passed for '" + userId + "'. Quest: " + passedQuests.get(userId), passedQuests.containsKey(userId));
     }
 
-    protected void assetQuestProgressCountGameLogicListener(HumanPlayerId humanPlayerId, int expectedCount, String expectedBotBasesInformation) {
-        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(humanPlayerId);
+    protected void assetQuestProgressCountGameLogicListener(int userId, int expectedCount, String expectedBotBasesInformation) {
+        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(userId);
         Assert.assertEquals(1, questProgressInfos.size());
         assetQuestProgressCount(expectedCount, expectedBotBasesInformation, questProgressInfos.get(0));
-        getTestGameLogicListener().getQuestProgresses().remove(humanPlayerId);
+        getTestGameLogicListener().getQuestProgresses().remove(userId);
     }
 
-    protected void assetQuestProgressCountDownload(HumanPlayerId humanPlayerId, int expectedCount, String expectedBotBasesInformation) {
-        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(humanPlayerId);
+    protected void assetQuestProgressCountDownload(int userId, int expectedCount, String expectedBotBasesInformation) {
+        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(userId);
         Assert.assertNotNull(questProgressInfo);
         assetQuestProgressCount(expectedCount, expectedBotBasesInformation, questProgressInfo);
     }
@@ -49,40 +48,40 @@ public abstract class AbstractQuestServiceTest extends BaseBasicTest {
         Assert.assertEquals(expectedBotBasesInformation, actual.getBotBasesInformation());
     }
 
-    protected void assetQuestProgressTypeCountGameLogicListener(HumanPlayerId humanPlayerId, String expectedBotBasesInformation, int... expected) {
-        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(humanPlayerId);
+    protected void assetQuestProgressTypeCountGameLogicListener(int userId, String expectedBotBasesInformation, int... expected) {
+        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(userId);
         Assert.assertEquals(1, questProgressInfos.size());
         assetQuestProgressTypeCount(expectedBotBasesInformation, questProgressInfos.get(0), expected);
-        getTestGameLogicListener().getQuestProgresses().remove(humanPlayerId);
+        getTestGameLogicListener().getQuestProgresses().remove(userId);
     }
 
-    protected void assetQuestProgressTypeCountDownload(HumanPlayerId humanPlayerId, String expectedBotBasesInformation, int... expected) {
-        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(humanPlayerId);
+    protected void assetQuestProgressTypeCountDownload(int userId, String expectedBotBasesInformation, int... expected) {
+        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(userId);
         Assert.assertNotNull(questProgressInfo);
         assetQuestProgressTypeCount(expectedBotBasesInformation, questProgressInfo, expected);
     }
 
-    protected void assertQuestProgressPositionDownload(HumanPlayerId humanPlayerId, Integer secondsRemaining, Integer secondsRemainingDelta, int... expected) {
-        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(humanPlayerId);
+    protected void assertQuestProgressPositionDownload(int userId, Integer secondsRemaining, Integer secondsRemainingDelta, int... expected) {
+        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(userId);
         Assert.assertNotNull(questProgressInfo);
         assertQuestProgressPosition(questProgressInfo, secondsRemaining, secondsRemainingDelta, expected);
     }
 
-    protected void assertQuestProgressPositionGameLogicListener(HumanPlayerId humanPlayerId, Integer secondsRemaining, Integer secondsRemainingDelta, int... expected) {
-        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(humanPlayerId);
+    protected void assertQuestProgressPositionGameLogicListener(int userId, Integer secondsRemaining, Integer secondsRemainingDelta, int... expected) {
+        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(userId);
         Assert.assertEquals(1, questProgressInfos.size());
         assertQuestProgressPosition(questProgressInfos.get(0), secondsRemaining, secondsRemainingDelta, expected);
-        getTestGameLogicListener().getQuestProgresses().remove(humanPlayerId);
+        getTestGameLogicListener().getQuestProgresses().remove(userId);
     }
 
-    protected void assertQuestProgressPositionGameLogicListenerFirst(HumanPlayerId humanPlayerId, Integer secondsRemaining, Integer secondsRemainingDelta, int... expected) {
-        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(humanPlayerId);
+    protected void assertQuestProgressPositionGameLogicListenerFirst(int userId, Integer secondsRemaining, Integer secondsRemainingDelta, int... expected) {
+        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(userId);
         assertQuestProgressPosition(questProgressInfos.get(0), secondsRemaining, secondsRemainingDelta, expected);
-        getTestGameLogicListener().getQuestProgresses().remove(humanPlayerId, questProgressInfos.get(0));
+        getTestGameLogicListener().getQuestProgresses().remove(userId, questProgressInfos.get(0));
     }
 
-    protected void assertQuestProgressPositionGameLogicListenerNone(HumanPlayerId humanPlayerId) {
-        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(humanPlayerId);
+    protected void assertQuestProgressPositionGameLogicListenerNone(int userId) {
+        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(userId);
         Assert.assertTrue(questProgressInfos == null || questProgressInfos.isEmpty());
     }
 

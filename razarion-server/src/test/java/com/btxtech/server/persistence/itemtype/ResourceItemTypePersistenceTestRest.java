@@ -4,6 +4,7 @@ import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * Created by Beat
  * 19.05.2017.
  */
+@Ignore
 public class ResourceItemTypePersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private ItemTypePersistence itemTypePersistence;

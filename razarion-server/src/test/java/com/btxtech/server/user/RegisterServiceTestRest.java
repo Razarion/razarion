@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.ErrorResult;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -16,6 +17,7 @@ import java.util.Date;
  * Created by Beat
  * 05.05.2017.
  */
+@Ignore
 public class RegisterServiceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private RegisterService registerService;

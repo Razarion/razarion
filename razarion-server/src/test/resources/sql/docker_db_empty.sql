@@ -7,7 +7,7 @@
 
 /*!40000 DROP DATABASE IF EXISTS `razarion`*/;
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `razarion` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `razarion` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 
 USE `razarion`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -19,7 +19,7 @@ CREATE TABLE `AUDIO_LIBRARY` (
   `size` bigint(20) NOT NULL,
   `type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -35,7 +35,7 @@ CREATE TABLE `BASE_ITEM_BUILDER_TYPE` (
   PRIMARY KEY (`id`),
   KEY `FKqqlnkxi7kdlnc3f4ow78kfg5c` (`animationShape3d_id`),
   CONSTRAINT `FKqqlnkxi7kdlnc3f4ow78kfg5c` FOREIGN KEY (`animationShape3d_id`) REFERENCES `COLLADA` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -47,7 +47,7 @@ CREATE TABLE `BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD` (
   KEY `FK28k6bigopln9kqkqspxgf45wo` (`builder`),
   CONSTRAINT `FK28k6bigopln9kqkqspxgf45wo` FOREIGN KEY (`builder`) REFERENCES `BASE_ITEM_BUILDER_TYPE` (`id`),
   CONSTRAINT `FKt42sflt3ub3tu41rcqgysx4h5` FOREIGN KEY (`baseItemType`) REFERENCES `BASE_ITEM_TYPE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -56,7 +56,7 @@ CREATE TABLE `BASE_ITEM_CONSUMER_TYPE` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `wattage` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -68,7 +68,7 @@ CREATE TABLE `BASE_ITEM_DEMOLITION_STEP_EFFECT` (
   PRIMARY KEY (`id`),
   KEY `FKm64k2tg9gg8iwgrckwb6i3o07` (`baseItemType`),
   CONSTRAINT `FKm64k2tg9gg8iwgrckwb6i3o07` FOREIGN KEY (`baseItemType`) REFERENCES `BASE_ITEM_TYPE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -84,7 +84,7 @@ CREATE TABLE `BASE_ITEM_DEMOLITION_STEP_EFFECT_PARTICLE` (
   PRIMARY KEY (`id`),
   KEY `FK5y84j4v1h2w5xe21gmu4vda0k` (`demolitionStepEffect`),
   CONSTRAINT `FK5y84j4v1h2w5xe21gmu4vda0k` FOREIGN KEY (`demolitionStepEffect`) REFERENCES `BASE_ITEM_DEMOLITION_STEP_EFFECT` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -93,7 +93,7 @@ CREATE TABLE `BASE_ITEM_FACTORY_TYPE` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `progress` double NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -105,7 +105,7 @@ CREATE TABLE `BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD` (
   KEY `FKtc6hh437se4nqa2g9tmmg4na5` (`factory`),
   CONSTRAINT `FKlfyjj2uwgsatdw7ux1wds5t7x` FOREIGN KEY (`baseItemType`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKtc6hh437se4nqa2g9tmmg4na5` FOREIGN KEY (`factory`) REFERENCES `BASE_ITEM_FACTORY_TYPE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -114,7 +114,7 @@ CREATE TABLE `BASE_ITEM_GENERATOR_TYPE` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `wattage` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -130,7 +130,7 @@ CREATE TABLE `BASE_ITEM_HARVESTER_TYPE` (
   PRIMARY KEY (`id`),
   KEY `FKegmix24ey7e76un4erbrvfcqr` (`animationShape3d_id`),
   CONSTRAINT `FKegmix24ey7e76un4erbrvfcqr` FOREIGN KEY (`animationShape3d_id`) REFERENCES `COLLADA` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -138,7 +138,7 @@ CREATE TABLE `BASE_ITEM_HARVESTER_TYPE` (
 CREATE TABLE `BASE_ITEM_HOUSE_TYPE` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -148,7 +148,7 @@ CREATE TABLE `BASE_ITEM_ITEM_CONTAINER_TYPE` (
   `itemRange` double NOT NULL,
   `maxCount` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -160,7 +160,7 @@ CREATE TABLE `BASE_ITEM_ITEM_CONTAINER_TYPE_ABLE_TO_CONTAIN` (
   KEY `FK2u6acl8c6po7hq1ejtifgrlm1` (`container`),
   CONSTRAINT `FK2u6acl8c6po7hq1ejtifgrlm1` FOREIGN KEY (`container`) REFERENCES `BASE_ITEM_ITEM_CONTAINER_TYPE` (`id`),
   CONSTRAINT `FKgmiiow8xi819knlixvlf29we5` FOREIGN KEY (`baseItemType`) REFERENCES `BASE_ITEM_TYPE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -169,7 +169,7 @@ CREATE TABLE `BASE_ITEM_SPECIAL_TYPE` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `miniTerrain` bit(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -185,7 +185,7 @@ CREATE TABLE `BASE_ITEM_TURRET_TYPE` (
   `torrentCenterY` double DEFAULT NULL,
   `torrentCenterZ` double DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -266,7 +266,7 @@ CREATE TABLE `BASE_ITEM_TYPE` (
   CONSTRAINT `FKtfr9577qfkq3ejl5gy2tbs1c0` FOREIGN KEY (`buildupTexture_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKtj1i80eadv6cr8ydynl1kc39s` FOREIGN KEY (`harvesterType_id`) REFERENCES `BASE_ITEM_HARVESTER_TYPE` (`id`),
   CONSTRAINT `FKtog0l4xkcmxs3pgybiph2v4a9` FOREIGN KEY (`specialType_id`) REFERENCES `BASE_ITEM_SPECIAL_TYPE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -287,7 +287,7 @@ CREATE TABLE `BASE_ITEM_WEAPON_TYPE` (
   KEY `FKpto1m2l3ire9y1mhptu2fve4x` (`turretType_id`),
   CONSTRAINT `FK5rxijs3f390eu6xf3wetbkk8g` FOREIGN KEY (`projectileShape3D_id`) REFERENCES `COLLADA` (`id`),
   CONSTRAINT `FKpto1m2l3ire9y1mhptu2fve4x` FOREIGN KEY (`turretType_id`) REFERENCES `BASE_ITEM_TURRET_TYPE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -299,7 +299,7 @@ CREATE TABLE `BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES` (
   KEY `FKslr6g6v2qqyxtt9dmc09ftrar` (`weapon`),
   CONSTRAINT `FK7jeslr1x745ry5ybx4agf1kte` FOREIGN KEY (`baseItemType`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKslr6g6v2qqyxtt9dmc09ftrar` FOREIGN KEY (`weapon`) REFERENCES `BASE_ITEM_WEAPON_TYPE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -320,7 +320,7 @@ CREATE TABLE `BOT_CONFIG` (
   PRIMARY KEY (`id`),
   KEY `FKpevo4xbk12x450abbpwgsdoj4` (`realm_id`),
   CONSTRAINT `FKpevo4xbk12x450abbpwgsdoj4` FOREIGN KEY (`realm_id`) REFERENCES `PLACE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -345,7 +345,7 @@ CREATE TABLE `BOT_CONFIG_BOT_ITEM` (
   CONSTRAINT `FKka3ph3evw0vd8qvpafrc8u9q3` FOREIGN KEY (`botEnragementStateConfig`) REFERENCES `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` (`id`),
   CONSTRAINT `FKo3anxwa9qjqljjau19r55097r` FOREIGN KEY (`place_id`) REFERENCES `PLACE_CONFIG` (`id`),
   CONSTRAINT `FKrmnmfvv7eqabotm7aik3kp0vo` FOREIGN KEY (`baseItemTypeEntity_id`) REFERENCES `BASE_ITEM_TYPE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -358,7 +358,7 @@ CREATE TABLE `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` (
   PRIMARY KEY (`id`),
   KEY `FK8cnda4p93imbirpidwrfoq27n` (`botConfig`),
   CONSTRAINT `FK8cnda4p93imbirpidwrfoq27n` FOREIGN KEY (`botConfig`) REFERENCES `BOT_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -367,7 +367,7 @@ CREATE TABLE `BOT_SCENE_CONFIG` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `internalName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -379,7 +379,7 @@ CREATE TABLE `BOT_SCENE_CONFIG_BOTS_TO_WATCH` (
   KEY `FKaqf9ms83ch45310assmbd7k33` (`botScene`),
   CONSTRAINT `FKaqf9ms83ch45310assmbd7k33` FOREIGN KEY (`botScene`) REFERENCES `BOT_SCENE_CONFIG` (`id`),
   CONSTRAINT `FKkf6g9dgv0g5v2w4g07bhjpp58` FOREIGN KEY (`bot`) REFERENCES `BOT_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -404,7 +404,7 @@ CREATE TABLE `BOT_SCENE_CONFLICT_CONFIG` (
   CONSTRAINT `FKeiobef7r4fmbjbxa1pghslhvm` FOREIGN KEY (`botConfig`) REFERENCES `BOT_SCENE_CONFIG` (`id`),
   CONSTRAINT `FKlma4qi8pwcrif0ckup8rxrya7` FOREIGN KEY (`targetBaseItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKsa7ypi28v52meu8c3le2nwaom` FOREIGN KEY (`botConfig_id`) REFERENCES `BOT_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -429,7 +429,7 @@ CREATE TABLE `BOX_ITEM_TYPE` (
   CONSTRAINT `FKdjertib6r3nx0t006wmbvv5w1` FOREIGN KEY (`i18nName_id`) REFERENCES `I18N_BUNDLE` (`id`),
   CONSTRAINT `FKg12jahlu2kis8r2hfswjqykfe` FOREIGN KEY (`thumbnail_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKrq0demtetxtet71d7hfcjp4lb` FOREIGN KEY (`i18nDescription_id`) REFERENCES `I18N_BUNDLE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -445,7 +445,7 @@ CREATE TABLE `BOX_ITEM_TYPE_POSSIBILITY` (
   KEY `FK94mqsdrnx85779a7i1de17db6` (`boxItemTypePossibilities_id`),
   CONSTRAINT `FK94mqsdrnx85779a7i1de17db6` FOREIGN KEY (`boxItemTypePossibilities_id`) REFERENCES `BOX_ITEM_TYPE` (`id`),
   CONSTRAINT `FKo3e4s038xiegu5lp08ts2vbda` FOREIGN KEY (`inventoryItem_id`) REFERENCES `INVENTORY_ITEM` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -459,7 +459,7 @@ CREATE TABLE `CHAT_MESSAGE` (
   PRIMARY KEY (`id`),
   KEY `FKkbs1pyjp60ex8hl7yc01j1gw5` (`user`),
   CONSTRAINT `FKkbs1pyjp60ex8hl7yc01j1gw5` FOREIGN KEY (`user`) REFERENCES `USER` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -469,7 +469,7 @@ CREATE TABLE `COLLADA` (
   `colladaString` longtext DEFAULT NULL,
   `internalName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -480,7 +480,7 @@ CREATE TABLE `COLLADA_ALPHA_TO_COVERAGE` (
   `alphaToCoverages_KEY` varchar(180) NOT NULL,
   PRIMARY KEY (`ColladaEntity_id`,`alphaToCoverages_KEY`),
   CONSTRAINT `FKixsen372t78ih6v56jf9l2qih` FOREIGN KEY (`ColladaEntity_id`) REFERENCES `COLLADA` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -491,7 +491,7 @@ CREATE TABLE `COLLADA_ANIMATIONS` (
   `animations_KEY` varchar(180) NOT NULL,
   PRIMARY KEY (`ColladaEntity_id`,`animations_KEY`),
   CONSTRAINT `FKtk7g7rbkh3n2wrl77bafo4bhd` FOREIGN KEY (`ColladaEntity_id`) REFERENCES `COLLADA` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -504,7 +504,7 @@ CREATE TABLE `COLLADA_BUMP_MAPS` (
   KEY `FKpa10crphkxa6r39h0npf574jj` (`bumpMaps_id`),
   CONSTRAINT `FKaqi53qi4k7suy37vhiuqghant` FOREIGN KEY (`ColladaEntity_id`) REFERENCES `COLLADA` (`id`),
   CONSTRAINT `FKpa10crphkxa6r39h0npf574jj` FOREIGN KEY (`bumpMaps_id`) REFERENCES `IMAGE_LIBRARY` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -515,7 +515,7 @@ CREATE TABLE `COLLADA_BUMP_MAP_DEPTS` (
   `bumpMapDepts_KEY` varchar(180) NOT NULL,
   PRIMARY KEY (`ColladaEntity_id`,`bumpMapDepts_KEY`),
   CONSTRAINT `FKftq510987a3aad2wjcb76f34w` FOREIGN KEY (`ColladaEntity_id`) REFERENCES `COLLADA` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -526,7 +526,7 @@ CREATE TABLE `COLLADA_CHARACTER_REPRESENTING` (
   `characterRepresentings_KEY` varchar(180) NOT NULL,
   PRIMARY KEY (`ColladaEntity_id`,`characterRepresentings_KEY`),
   CONSTRAINT `FK3nx9shdy3yrdpk6w8kmhdtfot` FOREIGN KEY (`ColladaEntity_id`) REFERENCES `COLLADA` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -539,7 +539,7 @@ CREATE TABLE `COLLADA_TEXTURES` (
   KEY `FKgs74sss6ut5r7iqqbds1yc91w` (`textures_id`),
   CONSTRAINT `FK6ee9gdwsx3sm1fxpo8wkvwj8y` FOREIGN KEY (`ColladaEntity_id`) REFERENCES `COLLADA` (`id`),
   CONSTRAINT `FKgs74sss6ut5r7iqqbds1yc91w` FOREIGN KEY (`textures_id`) REFERENCES `IMAGE_LIBRARY` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -551,7 +551,7 @@ CREATE TABLE `DEBUG` (
   `system` varchar(255) DEFAULT NULL,
   `timeStamp` datetime(3) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -561,7 +561,7 @@ CREATE TABLE `FB_MARKETING_CLICK_TRACKER` (
   `adId` varchar(255) DEFAULT NULL,
   `timeStamp` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -586,7 +586,7 @@ CREATE TABLE `FB_MARKETING_CURRENT_AD` (
   `title` varchar(255) DEFAULT NULL,
   `urlTagParam` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -598,7 +598,7 @@ CREATE TABLE `FB_MARKETING_CURRENT_AD_INTEREST` (
   `name` varchar(255) DEFAULT NULL,
   KEY `FKnjtju67voai2g6udj66ueo9v0` (`currentAdEntityId`),
   CONSTRAINT `FKnjtju67voai2g6udj66ueo9v0` FOREIGN KEY (`currentAdEntityId`) REFERENCES `FB_MARKETING_CURRENT_AD` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -625,7 +625,7 @@ CREATE TABLE `FB_MARKETING_HISTORY_AD` (
   `title` varchar(255) DEFAULT NULL,
   `urlTagParam` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -637,7 +637,7 @@ CREATE TABLE `FB_MARKETING_HISTORY_AD_INTEREST` (
   `name` varchar(255) DEFAULT NULL,
   KEY `FKad1jynmyqvb71p3w5ftjsbaxa` (`historyAdEntityId`),
   CONSTRAINT `FKad1jynmyqvb71p3w5ftjsbaxa` FOREIGN KEY (`historyAdEntityId`) REFERENCES `FB_MARKETING_HISTORY_AD` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -654,7 +654,7 @@ CREATE TABLE `GAME_UI_CONTEXT` (
   KEY `FKj9wevg184w0jdmabmqk8h93lg` (`planetEntity_id`),
   CONSTRAINT `FKg2h672edbiaseb0sabbdto23x` FOREIGN KEY (`minimalLevel_id`) REFERENCES `LEVEL` (`id`),
   CONSTRAINT `FKj9wevg184w0jdmabmqk8h93lg` FOREIGN KEY (`planetEntity_id`) REFERENCES `PLANET` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -690,7 +690,7 @@ CREATE TABLE `GROUND_CONFIG` (
   CONSTRAINT `FKnoefvdom880ef7ioae7tjwct8` FOREIGN KEY (`bottomTextureId`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKnrbnl1yvrst306eyg8mkpqt6i` FOREIGN KEY (`topTextureId`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKrwtceqklrjay1axmmlfj75di3` FOREIGN KEY (`bottomBumpMapId`) REFERENCES `IMAGE_LIBRARY` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -706,7 +706,7 @@ CREATE TABLE `HISTORY_BOT_SCENE_INDICATOR` (
   `stepCount` int(11) DEFAULT NULL,
   `timeStamp` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -719,7 +719,7 @@ CREATE TABLE `HISTORY_FORGOT_PASSWORDY` (
   `type` int(11) DEFAULT NULL,
   `userId` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -733,7 +733,7 @@ CREATE TABLE `HISTORY_INVENTORY` (
   `timeStamp` datetime(3) NOT NULL,
   `type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -745,7 +745,7 @@ CREATE TABLE `HISTORY_LEVEL` (
   `levelNumber` int(11) NOT NULL,
   `timeStamp` datetime(3) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -758,7 +758,7 @@ CREATE TABLE `HISTORY_QUEST` (
   `timeStamp` datetime(3) NOT NULL,
   `type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -771,7 +771,7 @@ CREATE TABLE `HISTORY_UNLOCKED` (
   `unlockEntityId` int(11) DEFAULT NULL,
   `unlockEntityName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -783,17 +783,7 @@ CREATE TABLE `HISTORY_USER` (
   `sessionId` varchar(190) DEFAULT NULL,
   `userId` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HUMAN_PLAYER_ENTITY` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sessionId` varchar(190) NOT NULL,
-  `timeStamp` datetime(3) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -801,7 +791,7 @@ CREATE TABLE `HUMAN_PLAYER_ENTITY` (
 CREATE TABLE `I18N_BUNDLE` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -812,7 +802,7 @@ CREATE TABLE `I18N_BUNDLE_STRING` (
   `locale` varchar(180) NOT NULL,
   PRIMARY KEY (`bundle`,`locale`),
   CONSTRAINT `FKpveq2u612sld12e8xax55qlgm` FOREIGN KEY (`bundle`) REFERENCES `I18N_BUNDLE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -824,7 +814,7 @@ CREATE TABLE `IMAGE_LIBRARY` (
   `size` bigint(20) NOT NULL,
   `type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -846,7 +836,7 @@ CREATE TABLE `INVENTORY_ITEM` (
   CONSTRAINT `FK70rj6a4eg5uq9s0r0i8rg10yr` FOREIGN KEY (`image_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKq1ayyaai4mk3dd8gsdcfpp1sk` FOREIGN KEY (`baseItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKr30cctgb52isr7jyu1u6wsiif` FOREIGN KEY (`i18nName_id`) REFERENCES `I18N_BUNDLE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -857,7 +847,7 @@ CREATE TABLE `LEVEL` (
   `number` int(11) NOT NULL,
   `xp2LevelUp` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -870,7 +860,7 @@ CREATE TABLE `LEVEL_LIMITATION` (
   KEY `FKiuvkgev9cw8g39baap1oyqhj4` (`baseItemTypeEntityId`),
   CONSTRAINT `FKip53iy42wu39wx0f7brf2cic2` FOREIGN KEY (`LevelEntity_id`) REFERENCES `LEVEL` (`id`),
   CONSTRAINT `FKiuvkgev9cw8g39baap1oyqhj4` FOREIGN KEY (`baseItemTypeEntityId`) REFERENCES `BASE_ITEM_TYPE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -896,7 +886,7 @@ CREATE TABLE `LEVEL_UNLOCK` (
   CONSTRAINT `FKbblsnanqjw6bv8ahra4o3epso` FOREIGN KEY (`baseItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKkduxofk4bacta0r0fbn0sluov` FOREIGN KEY (`i18nName_id`) REFERENCES `I18N_BUNDLE` (`id`),
   CONSTRAINT `FKq7py43ekb6hfgpx9jyhhk9854` FOREIGN KEY (`i18nDescription_id`) REFERENCES `I18N_BUNDLE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -907,7 +897,7 @@ CREATE TABLE `PLACE_CONFIG` (
   `y` double DEFAULT NULL,
   `radius` double DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -919,7 +909,7 @@ CREATE TABLE `PLACE_CONFIG_POSITION_POLYGON` (
   `orderColumn` int(11) NOT NULL,
   PRIMARY KEY (`OWNER_ID`,`orderColumn`),
   CONSTRAINT `FKmmbtyhe3hwrjo2djh1jnlfotc` FOREIGN KEY (`OWNER_ID`) REFERENCES `PLACE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -951,7 +941,7 @@ CREATE TABLE `PLANET` (
   KEY `FKpal29tk0xwgxthg5jpc08tcbr` (`startBaseItemType_id`),
   CONSTRAINT `FKpal29tk0xwgxthg5jpc08tcbr` FOREIGN KEY (`startBaseItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKqvdx3rd9pwbcpl3k3my1pdefw` FOREIGN KEY (`groundConfig_id`) REFERENCES `GROUND_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -964,7 +954,7 @@ CREATE TABLE `PLANET_LIMITATION` (
   KEY `FKmnjiyn3ivehnao6o5fuj4qdwc` (`baseItemTypeEntityId`),
   CONSTRAINT `FKmnjiyn3ivehnao6o5fuj4qdwc` FOREIGN KEY (`baseItemTypeEntityId`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKmv1lgmud5v7ja4eyakk2sgdi5` FOREIGN KEY (`PlanetEntity_id`) REFERENCES `PLANET` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -987,7 +977,7 @@ CREATE TABLE `PROPERTY` (
   CONSTRAINT `FK3v2abxg87erc7jc7gm22ap9ui` FOREIGN KEY (`image_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKa5a5hlgo2c1ycdku94ya9vo79` FOREIGN KEY (`shape3DId_id`) REFERENCES `COLLADA` (`id`),
   CONSTRAINT `FKgv62h5ai81d9fld7h96s4yw5k` FOREIGN KEY (`audio_id`) REFERENCES `AUDIO_LIBRARY` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1012,7 +1002,7 @@ CREATE TABLE `QUEST` (
   CONSTRAINT `FKg8ekfv29livdwri9llb7p620p` FOREIGN KEY (`conditionConfigEntity_id`) REFERENCES `QUEST_CONDITION` (`id`),
   CONSTRAINT `FKmbk4qf213aih41banidutli49` FOREIGN KEY (`title_id`) REFERENCES `I18N_BUNDLE` (`id`),
   CONSTRAINT `FKmllgre0tlj3i2od98hfmfj9ry` FOREIGN KEY (`passedMessage_id`) REFERENCES `I18N_BUNDLE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1025,7 +1015,7 @@ CREATE TABLE `QUEST_COMPARISON` (
   PRIMARY KEY (`id`),
   KEY `FKlgftwoj397x1478q83caeykv4` (`placeConfig_id`),
   CONSTRAINT `FKlgftwoj397x1478q83caeykv4` FOREIGN KEY (`placeConfig_id`) REFERENCES `PLACE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1038,7 +1028,7 @@ CREATE TABLE `QUEST_COMPARISON_BASE_ITEM` (
   KEY `FKox69d9d2u7iegll4y4bua3uhn` (`baseItemTypeEntityId`),
   CONSTRAINT `FKox69d9d2u7iegll4y4bua3uhn` FOREIGN KEY (`baseItemTypeEntityId`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKqewsitlqloonk59cl0vlbyq6o` FOREIGN KEY (`ComparisonConfigEntity_id`) REFERENCES `QUEST_COMPARISON` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1050,7 +1040,7 @@ CREATE TABLE `QUEST_COMPARISON_BOT` (
   KEY `FKk49fh7nqm3yx2jbu9088qh4pn` (`comparisonConfig`),
   CONSTRAINT `FKgsivij4a6t882dkggs8ubbgay` FOREIGN KEY (`botConfig`) REFERENCES `BOT_CONFIG` (`id`),
   CONSTRAINT `FKk49fh7nqm3yx2jbu9088qh4pn` FOREIGN KEY (`comparisonConfig`) REFERENCES `QUEST_COMPARISON` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1062,7 +1052,7 @@ CREATE TABLE `QUEST_CONDITION` (
   PRIMARY KEY (`id`),
   KEY `FKe3ke0d5alxod0vb59hbol2t5t` (`comparisonConfig_id`),
   CONSTRAINT `FKe3ke0d5alxod0vb59hbol2t5t` FOREIGN KEY (`comparisonConfig_id`) REFERENCES `QUEST_COMPARISON` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1087,7 +1077,7 @@ CREATE TABLE `RESOURCE_ITEM_TYPE` (
   CONSTRAINT `FKna2llalftwo2brjaevmocun4a` FOREIGN KEY (`i18nDescription_id`) REFERENCES `I18N_BUNDLE` (`id`),
   CONSTRAINT `FKpaxta3ofhuj6op1ris60fnssi` FOREIGN KEY (`thumbnail_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKsxtu46oir6k4rqq8em4jcxc7j` FOREIGN KEY (`shape3DId_id`) REFERENCES `COLLADA` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1142,7 +1132,7 @@ CREATE TABLE `SCENE` (
   CONSTRAINT `FKpyv03l0m8msuuohy94f40416s` FOREIGN KEY (`questConfig_id`) REFERENCES `QUEST` (`id`),
   CONSTRAINT `FKqpw9fls2x66i7v80ch6xiv7qq` FOREIGN KEY (`scrollUiQuestI18nTitle_id`) REFERENCES `I18N_BUNDLE` (`id`),
   CONSTRAINT `FKt94pq452h8y4a7b8g26y8rfk8` FOREIGN KEY (`startPointPlacerEntity_id`) REFERENCES `SCENE_START_POINT_PLACER` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1154,7 +1144,7 @@ CREATE TABLE `SCENE_BOT` (
   KEY `FKghhma6f0af1xgwvaq2dqqcm0m` (`sceneId`),
   CONSTRAINT `FK1wawn9gpryikbmh0cjsqel84c` FOREIGN KEY (`botd`) REFERENCES `BOT_CONFIG` (`id`),
   CONSTRAINT `FKghhma6f0af1xgwvaq2dqqcm0m` FOREIGN KEY (`sceneId`) REFERENCES `SCENE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1175,7 +1165,7 @@ CREATE TABLE `SCENE_BOT_ATTACK_COMMAND` (
   CONSTRAINT `FK6lfeos35sq8euepu1nqeoijqq` FOREIGN KEY (`targetSelection_id`) REFERENCES `PLACE_CONFIG` (`id`),
   CONSTRAINT `FK9q1onf1n6vq18ep096s80u0vm` FOREIGN KEY (`targetItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKrgg9j7lq38k61hkwuy73wxght` FOREIGN KEY (`botAttackCommandEntities_id`) REFERENCES `SCENE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1196,7 +1186,7 @@ CREATE TABLE `SCENE_BOT_HARVEST_COMMAND` (
   CONSTRAINT `FK52rh3hg6sc1g6xuhxqd6l0l0w` FOREIGN KEY (`harvesterItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FK9sc5qi93p4cby5b2hojcr90gh` FOREIGN KEY (`resourceItemType_id`) REFERENCES `RESOURCE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKs2dv4bd53e7r6vokmm96qh0x4` FOREIGN KEY (`resourceSelection_id`) REFERENCES `PLACE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1208,7 +1198,7 @@ CREATE TABLE `SCENE_BOT_KILL_BOT_COMMAND` (
   PRIMARY KEY (`id`),
   KEY `FKthyq8egxquxqatrt4xev5fpim` (`killBotCommandEntities_id`),
   CONSTRAINT `FKthyq8egxquxqatrt4xev5fpim` FOREIGN KEY (`killBotCommandEntities_id`) REFERENCES `SCENE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1227,7 +1217,7 @@ CREATE TABLE `SCENE_BOT_KILL_HUMAN_COMMAND` (
   CONSTRAINT `FKdyqi8q4nrjqpcu4r9oiahw264` FOREIGN KEY (`spawnPoint_id`) REFERENCES `PLACE_CONFIG` (`id`),
   CONSTRAINT `FKptfyx1wxu2fyxkg6nbj0xwec` FOREIGN KEY (`botKillHumanCommandEntities_id`) REFERENCES `SCENE` (`id`),
   CONSTRAINT `FKqdgvd8bc4gqifn5d46rmf5iy8` FOREIGN KEY (`attackerBaseItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1247,7 +1237,7 @@ CREATE TABLE `SCENE_BOT_KILL_OTHER_BOT_COMMAND` (
   CONSTRAINT `FKbb3b9ari50ovnnpvjv3mevis4` FOREIGN KEY (`botKillOtherBotCommandEntities_id`) REFERENCES `SCENE` (`id`),
   CONSTRAINT `FKckvfx8kt348yfb5d8txret8c1` FOREIGN KEY (`attackerBaseItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKsl1rsgx936c34qyovbws0otae` FOREIGN KEY (`spawnPoint_id`) REFERENCES `PLACE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1264,7 +1254,7 @@ CREATE TABLE `SCENE_BOT_MOVE_COMMAND` (
   KEY `FKo130arf1f906t656xu20lrd3l` (`botMoveCommandEntities_id`),
   CONSTRAINT `FKhh30m3n5y5yy51iiodrfjgxj5` FOREIGN KEY (`baseItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKo130arf1f906t656xu20lrd3l` FOREIGN KEY (`botMoveCommandEntities_id`) REFERENCES `SCENE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1279,7 +1269,7 @@ CREATE TABLE `SCENE_BOT_REMOVE_OWN_ITEMS_COMMAND` (
   KEY `FKhdrkr0eixuks1uoe9t9c949j3` (`botRemoveOwnItemCommandEntities_id`),
   CONSTRAINT `FKd5rbur518hugollv8v21jnj1o` FOREIGN KEY (`baseItemType2Remove_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKhdrkr0eixuks1uoe9t9c949j3` FOREIGN KEY (`botRemoveOwnItemCommandEntities_id`) REFERENCES `SCENE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1296,7 +1286,7 @@ CREATE TABLE `SCENE_BOX_ITEM_POSITION` (
   KEY `FK3yk9nif0gqotjwm5fmg4ep1ko` (`sceneId`),
   CONSTRAINT `FK1o5uesm507f5p1bu2km3ks769` FOREIGN KEY (`boxItemType_id`) REFERENCES `BOX_ITEM_TYPE` (`id`),
   CONSTRAINT `FK3yk9nif0gqotjwm5fmg4ep1ko` FOREIGN KEY (`sceneId`) REFERENCES `SCENE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1313,7 +1303,7 @@ CREATE TABLE `SCENE_RESOURCE_ITEM_POSITION` (
   KEY `FKdwjv6d2ofmaqenv5c9ahsjowh` (`sceneId`),
   CONSTRAINT `FKb59khrjqywtrlb7k5awklv5sg` FOREIGN KEY (`resourceItemType_id`) REFERENCES `RESOURCE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKdwjv6d2ofmaqenv5c9ahsjowh` FOREIGN KEY (`sceneId`) REFERENCES `SCENE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1325,7 +1315,7 @@ CREATE TABLE `SCENE_START_PLACE_ALLOWED_AREA` (
   `orderColumn` int(11) NOT NULL,
   PRIMARY KEY (`startPointPlacer`,`orderColumn`),
   CONSTRAINT `FKdjbsblqruqfirvx3582gh4hbx` FOREIGN KEY (`startPointPlacer`) REFERENCES `SCENE_START_POINT_PLACER` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1336,7 +1326,7 @@ CREATE TABLE `SCENE_START_POINT_PLACER` (
   `suggestedPositionX` double DEFAULT NULL,
   `suggestedPositionY` double DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1368,7 +1358,7 @@ CREATE TABLE `SCENE_TIP_CONFIG` (
   CONSTRAINT `FKrb1ne75jd6gn0rlx5av4cy9ga` FOREIGN KEY (`toCreatedItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKrjgv1q2d2psdp6e9pmku4lprw` FOREIGN KEY (`boxItemTypeEntity_id`) REFERENCES `BOX_ITEM_TYPE` (`id`),
   CONSTRAINT `FKsj33u8l46y25lbxi2tji7fato` FOREIGN KEY (`placeConfig_id`) REFERENCES `PLACE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1390,7 +1380,7 @@ CREATE TABLE `SERVER_BOX_REGION_CONFIG` (
   CONSTRAINT `FK4q31xi3o8ty49njgjdolpc5rj` FOREIGN KEY (`serverGameEngineId`) REFERENCES `SERVER_GAME_ENGINE_CONFIG` (`id`),
   CONSTRAINT `FK8i0nxbtvhyiksqd3m90j8sble` FOREIGN KEY (`boxItemTypeId_id`) REFERENCES `BOX_ITEM_TYPE` (`id`),
   CONSTRAINT `FKcq7owvwvc3cvnd2dy4b134ed2` FOREIGN KEY (`region_id`) REFERENCES `PLACE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1402,7 +1392,7 @@ CREATE TABLE `SERVER_GAME_ENGINE_BOT_CONFIG` (
   KEY `FKh6pao5d5ikcs0h79x6gwx8tfj` (`serverGameEngineId`),
   CONSTRAINT `FKh6pao5d5ikcs0h79x6gwx8tfj` FOREIGN KEY (`serverGameEngineId`) REFERENCES `SERVER_GAME_ENGINE_CONFIG` (`id`),
   CONSTRAINT `FKrlpv849ke6l8gyvfsm5f8ya9g` FOREIGN KEY (`botConfigId`) REFERENCES `BOT_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1414,7 +1404,7 @@ CREATE TABLE `SERVER_GAME_ENGINE_BOT_SCENE_CONFIG` (
   KEY `FK80dfty4j4too59uh1t4axhmt9` (`serverGameEngineId`),
   CONSTRAINT `FK2bm7mr807eoedkfin3pf4mamb` FOREIGN KEY (`botSceneConfigId`) REFERENCES `BOT_SCENE_CONFIG` (`id`),
   CONSTRAINT `FK80dfty4j4too59uh1t4axhmt9` FOREIGN KEY (`serverGameEngineId`) REFERENCES `SERVER_GAME_ENGINE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1426,7 +1416,7 @@ CREATE TABLE `SERVER_GAME_ENGINE_CONFIG` (
   PRIMARY KEY (`id`),
   KEY `FKcj2w622aa54egcdbyynkvtfu6` (`planetEntity_id`),
   CONSTRAINT `FKcj2w622aa54egcdbyynkvtfu6` FOREIGN KEY (`planetEntity_id`) REFERENCES `PLANET` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1441,7 +1431,7 @@ CREATE TABLE `SERVER_LEVEL_QUEST` (
   KEY `FK11joq90eyoabtv4ltmgl6sx5o` (`serverGameEngineConfig`),
   CONSTRAINT `FK11joq90eyoabtv4ltmgl6sx5o` FOREIGN KEY (`serverGameEngineConfig`) REFERENCES `SERVER_GAME_ENGINE_CONFIG` (`id`),
   CONSTRAINT `FKmrpwxnx1x6gewn5mhbf9jqux6` FOREIGN KEY (`minimalLevel_id`) REFERENCES `LEVEL` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1454,7 +1444,7 @@ CREATE TABLE `SERVER_QUEST` (
   KEY `FKe96upej3nvnc95rgppqael65c` (`quest`),
   CONSTRAINT `FKe96upej3nvnc95rgppqael65c` FOREIGN KEY (`quest`) REFERENCES `QUEST` (`id`),
   CONSTRAINT `FKg9fruou3eudvjonpkdbu0su25` FOREIGN KEY (`serverLevelQuest`) REFERENCES `SERVER_LEVEL_QUEST` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1474,7 +1464,7 @@ CREATE TABLE `SERVER_RESOURCE_REGION_CONFIG` (
   CONSTRAINT `FKm41ytluw6qxyiba2ft8k7p11d` FOREIGN KEY (`serverGameEngineId`) REFERENCES `SERVER_GAME_ENGINE_CONFIG` (`id`),
   CONSTRAINT `FKms0li4pxnifye8592vt0yksum` FOREIGN KEY (`resourceItemType_id`) REFERENCES `RESOURCE_ITEM_TYPE` (`id`),
   CONSTRAINT `FKrwr42mqa70kps709cr58h2iir` FOREIGN KEY (`region_id`) REFERENCES `PLACE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1489,7 +1479,7 @@ CREATE TABLE `SERVER_START_REGION_LEVEL_CONFIG` (
   KEY `FKnv57ds9hqity6ikfkwgighxvl` (`serverGameEngineId`),
   CONSTRAINT `FK88fp044cjqk0qx3ly7mg8fd8v` FOREIGN KEY (`minimalLevel_id`) REFERENCES `LEVEL` (`id`),
   CONSTRAINT `FKnv57ds9hqity6ikfkwgighxvl` FOREIGN KEY (`serverGameEngineId`) REFERENCES `SERVER_GAME_ENGINE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1501,7 +1491,7 @@ CREATE TABLE `SERVER_START_REGION_LEVEL_CONFIG_POLYGON` (
   `orderColumn` int(11) NOT NULL,
   PRIMARY KEY (`serverEngineLevelConfigId`,`orderColumn`),
   CONSTRAINT `FKh50214q8u337f2ch25gijaqnc` FOREIGN KEY (`serverEngineLevelConfigId`) REFERENCES `SERVER_START_REGION_LEVEL_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1557,7 +1547,7 @@ CREATE TABLE `SLOPE_CONFIG` (
   CONSTRAINT `FKkys6s1fy27hepboitgejhub89` FOREIGN KEY (`shallowWaterTextureId`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKm6v85hb3xsj0d7o7dcsyutdtu` FOREIGN KEY (`groundConfig_id`) REFERENCES `GROUND_CONFIG` (`id`),
   CONSTRAINT `FKq4ko6usrulwximbtoh9sfua6m` FOREIGN KEY (`innerSplattingTextureId`) REFERENCES `IMAGE_LIBRARY` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1567,7 +1557,7 @@ CREATE TABLE `SLOPE_DRIVEWAY` (
   `angle` double NOT NULL,
   `internalName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1582,7 +1572,7 @@ CREATE TABLE `SLOPE_SHAPE` (
   PRIMARY KEY (`id`),
   KEY `FKla78vv4yhnh8nh0hn60yj5ite` (`shape_id`),
   CONSTRAINT `FKla78vv4yhnh8nh0hn60yj5ite` FOREIGN KEY (`shape_id`) REFERENCES `SLOPE_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1595,7 +1585,7 @@ CREATE TABLE `TERRAIN_OBJECT` (
   PRIMARY KEY (`id`),
   KEY `FKd2dgp25xa48e7tpah4gc4jk00` (`colladaEntity_id`),
   CONSTRAINT `FKd2dgp25xa48e7tpah4gc4jk00` FOREIGN KEY (`colladaEntity_id`) REFERENCES `COLLADA` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1611,7 +1601,7 @@ CREATE TABLE `TERRAIN_OBJECT_POSITION` (
   KEY `FKay7f7hjllvmgww9j4e2l1tfqu` (`planet`),
   CONSTRAINT `FKay7f7hjllvmgww9j4e2l1tfqu` FOREIGN KEY (`planet`) REFERENCES `PLANET` (`id`),
   CONSTRAINT `FKr6v0ku0sca2p8a2e0oiac4g8f` FOREIGN KEY (`terrainObjectEntity_id`) REFERENCES `TERRAIN_OBJECT` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1628,7 +1618,7 @@ CREATE TABLE `TERRAIN_SLOPE_CORNER` (
   KEY `FKcge2ffcawpabcjmml8cjsgc7v` (`terrainSlopePositionId`),
   CONSTRAINT `FKcge2ffcawpabcjmml8cjsgc7v` FOREIGN KEY (`terrainSlopePositionId`) REFERENCES `TERRAIN_SLOPE_POSITION` (`id`),
   CONSTRAINT `FKn3or3udtex818ureyxe80ps47` FOREIGN KEY (`drivewayConfigEntity_id`) REFERENCES `SLOPE_DRIVEWAY` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1646,7 +1636,7 @@ CREATE TABLE `TERRAIN_SLOPE_POSITION` (
   CONSTRAINT `FK4xqtrjsn0gheqg5og8e9s5mmt` FOREIGN KEY (`slopeConfigEntity_id`) REFERENCES `SLOPE_CONFIG` (`id`),
   CONSTRAINT `FK5ptx8wbuewvwsgwc7uom195h0` FOREIGN KEY (`planet`) REFERENCES `PLANET` (`id`),
   CONSTRAINT `FKmhab0g7928t6vw57a79a17pn5` FOREIGN KEY (`parentTerrainSlopePosition`) REFERENCES `TERRAIN_SLOPE_POSITION` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1658,7 +1648,7 @@ CREATE TABLE `TRACKER_CONNECTION` (
   `timeStamp` datetime(3) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1669,9 +1659,10 @@ CREATE TABLE `TRACKER_FRONTEND_NAVIGATION` (
   `timeStamp` datetime(3) DEFAULT NULL,
   `url` varchar(190) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+INSERT INTO `TRACKER_FRONTEND_NAVIGATION` VALUES (1,'xIQLlCNFoKsBZNQy3Pe5UGhXXxwLMPHabvhohWgJ','2020-10-04 10:44:08.515','/');
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `TRACKER_GAME_UI_CONTROL` (
@@ -1684,7 +1675,7 @@ CREATE TABLE `TRACKER_GAME_UI_CONTROL` (
   PRIMARY KEY (`id`),
   KEY `IDXe1u611bhlj3y6j7lycxdvqp0p` (`sessionId`),
   KEY `IDXm23hwcquflqt4qknm1kdyi6g4` (`gameSessionUuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1698,7 +1689,7 @@ CREATE TABLE `TRACKER_PAGE` (
   `uri` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX8r3ssjnqi1ayq740sslge33bl` (`sessionId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1712,7 +1703,7 @@ CREATE TABLE `TRACKER_PERFMON` (
   `timeStamp` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDXjerhb27210brxagvh1igum3oa` (`sessionId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1728,7 +1719,7 @@ CREATE TABLE `TRACKER_PERFMON_ENTRY` (
   PRIMARY KEY (`id`),
   KEY `FK7j97gwblgwphwk5xxlo6atcvm` (`perfmonStatisticEntity`),
   CONSTRAINT `FK7j97gwblgwphwk5xxlo6atcvm` FOREIGN KEY (`perfmonStatisticEntity`) REFERENCES `TRACKER_PERFMON` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1744,7 +1735,7 @@ CREATE TABLE `TRACKER_SCENE` (
   PRIMARY KEY (`id`),
   KEY `IDX9o1helnck9k2whan5epnp63mp` (`sessionId`),
   KEY `IDX2l3oymcscbqbf34mgmmqqito5` (`gameSessionUuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1762,7 +1753,7 @@ CREATE TABLE `TRACKER_SESSION` (
   `userAgent` longtext DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDXtmu9rd272j5lofhd2c8rh6fxh` (`sessionId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1779,7 +1770,7 @@ CREATE TABLE `TRACKER_STARTUP_TASK` (
   PRIMARY KEY (`id`),
   KEY `IDXmnp841oq89d322wfkc062dlf5` (`sessionId`),
   KEY `IDXd87lfgp8dxx91d6d0mvp4xri8` (`gameSessionUuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1794,7 +1785,7 @@ CREATE TABLE `TRACKER_STARTUP_TERMINATED` (
   PRIMARY KEY (`id`),
   KEY `IDXe0iw0eq6smtw9ttdsctibxdrk` (`sessionId`),
   KEY `IDXp06cndke1flthaiq26ruywo52` (`gameSessionUuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1810,7 +1801,7 @@ CREATE TABLE `TRACKER_TERRAIN_TILE` (
   `timeStamp` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX2p1x3lnepf6trug4a2fo5f4cb` (`sessionId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1823,7 +1814,7 @@ CREATE TABLE `TRACKER_WINDOW_CLOSED` (
   `sessionId` varchar(190) DEFAULT NULL,
   `url` varchar(190) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1844,18 +1835,15 @@ CREATE TABLE `USER` (
   `verificationTimedOutDate` datetime(3) DEFAULT NULL,
   `xp` int(11) NOT NULL,
   `activeQuest_id` int(11) DEFAULT NULL,
-  `humanPlayerIdEntity_id` int(11) DEFAULT NULL,
   `level_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_g6y5gdrvhgx350bvnhhok8us2` (`name`),
   KEY `IDXoj5g1ob8tb6gn928mukpbqat1` (`facebookUserId`),
   KEY `FKtr8la4tg31fj84o5q5wepu6ai` (`activeQuest_id`),
-  KEY `FKdvrsr9xke3jgbsxgaarr9cica` (`humanPlayerIdEntity_id`),
   KEY `FKas5w8de0ic1qgeo8edbs89ffy` (`level_id`),
   CONSTRAINT `FKas5w8de0ic1qgeo8edbs89ffy` FOREIGN KEY (`level_id`) REFERENCES `LEVEL` (`id`),
-  CONSTRAINT `FKdvrsr9xke3jgbsxgaarr9cica` FOREIGN KEY (`humanPlayerIdEntity_id`) REFERENCES `HUMAN_PLAYER_ENTITY` (`id`),
   CONSTRAINT `FKtr8la4tg31fj84o5q5wepu6ai` FOREIGN KEY (`activeQuest_id`) REFERENCES `QUEST` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1867,7 +1855,7 @@ CREATE TABLE `USER_COMPLETED_QUEST` (
   KEY `FKj6dyijv15lcehlwpgf27xiv41` (`user`),
   CONSTRAINT `FKj6dyijv15lcehlwpgf27xiv41` FOREIGN KEY (`user`) REFERENCES `USER` (`id`),
   CONSTRAINT `FKtmrbiae80t1bmnx4w522p7lg2` FOREIGN KEY (`quest`) REFERENCES `QUEST` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1880,7 +1868,7 @@ CREATE TABLE `USER_FORGOT_PASSWORD` (
   PRIMARY KEY (`id`),
   KEY `FKlpmfqbev9t9xta6ye08i8om3t` (`user_id`),
   CONSTRAINT `FKlpmfqbev9t9xta6ye08i8om3t` FOREIGN KEY (`user_id`) REFERENCES `USER` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1892,7 +1880,7 @@ CREATE TABLE `USER_INVENTORY` (
   KEY `FKim3foqucksxlw5trj7rooqk4` (`user`),
   CONSTRAINT `FK5aj7t60abpgnng973addr49em` FOREIGN KEY (`inventory`) REFERENCES `INVENTORY_ITEM` (`id`),
   CONSTRAINT `FKim3foqucksxlw5trj7rooqk4` FOREIGN KEY (`user`) REFERENCES `USER` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1905,7 +1893,7 @@ CREATE TABLE `USER_LOGIN_COOKIE` (
   PRIMARY KEY (`id`),
   KEY `FK5y2bgq3t4643vc7krcd2nv07v` (`user_id`),
   CONSTRAINT `FK5y2bgq3t4643vc7krcd2nv07v` FOREIGN KEY (`user_id`) REFERENCES `USER` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1917,7 +1905,7 @@ CREATE TABLE `USER_UNLOCKED` (
   KEY `FK2nok4m7a1xrs5l5lo5jlcdajf` (`user`),
   CONSTRAINT `FK2nok4m7a1xrs5l5lo5jlcdajf` FOREIGN KEY (`user`) REFERENCES `USER` (`id`),
   CONSTRAINT `FKjxewmpw3sfpmw9pa6gfu0noj1` FOREIGN KEY (`levelUnlockEntity`) REFERENCES `LEVEL_UNLOCK` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1947,7 +1935,7 @@ CREATE TABLE `WATER_CONFIG` (
   CONSTRAINT `FKjxbl886qx1n0nyxth0uto4g0j` FOREIGN KEY (`reflection_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKk8u5re1hk96pkj5mbohe9fue7` FOREIGN KEY (`bumpMap_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKky3w6oh8qfvnu81s0ghcmlg8a` FOREIGN KEY (`distortion_id`) REFERENCES `IMAGE_LIBRARY` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

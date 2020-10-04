@@ -29,6 +29,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -41,6 +42,7 @@ import java.util.Map;
  * Created by Beat
  * on 11.02.2018.
  */
+@Ignore
 public class RestServerLevelQuestServiceRealTestBase extends IgnoreOldArquillianTest {
     private static int FULFILLED_QUEST;
     private static int BEFORE_FULFILLED_QUEST;
@@ -168,7 +170,7 @@ public class RestServerLevelQuestServiceRealTestBase extends IgnoreOldArquillian
         UserContext userContext = handleUnregisteredLogin();
 
         serverLevelQuestService.onClientLevelUpdate(sessionHolder.getPlayerSession().getHttpSessionId(), LEVEL_4_ID);
-        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getHumanPlayerId(), userContext.getName(), new DecimalPosition(1000, 1000));
+        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getUserId(), userContext.getName(), new DecimalPosition(1000, 1000));
         userService.createUnverifiedUserAndLogin("test", "test");
         waitForBaseServiceIdle();
         systemConnectionService.connectClient(sessionHolder.getPlayerSession());
@@ -196,7 +198,7 @@ public class RestServerLevelQuestServiceRealTestBase extends IgnoreOldArquillian
             FULFILLED_QUEST = serverLevelQuestEntityL5.getQuestConfigs().get(3).getId();
         });
         serverLevelQuestService.onClientLevelUpdate(sessionHolder.getPlayerSession().getHttpSessionId(), LEVEL_5_ID);
-        baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getHumanPlayerId(), userContext.getName(), new DecimalPosition(1000, 1000));
+        baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getUserId(), userContext.getName(), new DecimalPosition(1000, 1000));
         waitForBaseServiceIdle();
         TestClientSystemConnection systemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
         serverLevelQuestService.activateQuest(userContext, FULFILLED_QUEST, Locale.ENGLISH);
@@ -225,7 +227,7 @@ public class RestServerLevelQuestServiceRealTestBase extends IgnoreOldArquillian
             em.merge(serverLevelQuestEntityL5);
             FULFILLED_QUEST = serverLevelQuestEntityL5.getQuestConfigs().get(0).getId();
         });
-        baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getHumanPlayerId(), userContext.getName(), new DecimalPosition(1000, 1000));
+        baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getUserId(), userContext.getName(), new DecimalPosition(1000, 1000));
         waitForBaseServiceIdle();
         TestClientSystemConnection systemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
         serverLevelQuestService.onClientLevelUpdate(sessionHolder.getPlayerSession().getHttpSessionId(), LEVEL_4_ID);
@@ -260,7 +262,7 @@ public class RestServerLevelQuestServiceRealTestBase extends IgnoreOldArquillian
             BEFORE_FULFILLED_QUEST = serverLevelQuestEntityL4.getQuestConfigs().get(0).getId();
         });
         serverLevelQuestService.onClientLevelUpdate(sessionHolder.getPlayerSession().getHttpSessionId(), LEVEL_4_ID);
-        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getHumanPlayerId(), userContext.getName(), new DecimalPosition(1000, 1000));
+        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getUserId(), userContext.getName(), new DecimalPosition(1000, 1000));
         waitForBaseServiceIdle();
         TestClientSystemConnection systemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
         commandService.build(CollectionUtils.getFirst(playerBaseFull.getItems()).getId(), new DecimalPosition(1020, 1000), BASE_ITEM_TYPE_FACTORY_ID);

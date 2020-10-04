@@ -7,15 +7,15 @@ import java.util.Date;
  * on 12.03.2018.
  */
 public class AdditionUserInfo {
-    private HumanPlayerId humanPlayerId;
+    private int userId;
     private Date lastLoggedIn;
 
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public Date getLastLoggedIn() {

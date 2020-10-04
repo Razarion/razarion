@@ -4,7 +4,6 @@ import com.btxtech.server.persistence.tracker.ConnectionTrackingPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.ChatMessage;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.MapCollection;
@@ -56,57 +55,57 @@ public class ClientSystemConnectionService {
         connectionTrackingPersistence.onSystemConnectionClosed(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
 
-    public void onQuestProgressInfo(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+    public void onQuestProgressInfo(int userId, QuestProgressInfo questProgressInfo) {
+        PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.QUEST_PROGRESS_CHANGED, questProgressInfo);
         }
     }
 
-    public void onBotSceneConflictChanged(HumanPlayerId humanPlayerId, List<BotSceneIndicationInfo> botSceneIndicationInfos) {
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+    public void onBotSceneConflictChanged(int userId, List<BotSceneIndicationInfo> botSceneIndicationInfos) {
+        PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.BOT_SCENE_CONFLICT_INDICATOR_CHANGED, new BotSceneIndicationInfoContainer().setBotSceneIndicationInfos(botSceneIndicationInfos));
         }
     }
 
-    public void onQuestActivated(HumanPlayerId humanPlayerId, QuestConfig quest) {
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+    public void onQuestActivated(int userId, QuestConfig quest) {
+        PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.QUEST_ACTIVATED, quest);
         }
     }
 
-    public void onQuestPassed(HumanPlayerId humanPlayerId, QuestConfig quest) {
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+    public void onQuestPassed(int userId, QuestConfig quest) {
+        PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.QUEST_PASSED, quest);
         }
     }
 
-    public void onXpChanged(HumanPlayerId humanPlayerId, int xp) {
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+    public void onXpChanged(int userId, int xp) {
+        PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.XP_CHANGED, xp);
         }
     }
 
-    public void onLevelUp(HumanPlayerId humanPlayerId, UserContext newLevelId, List<LevelUnlockConfig> levelUnlockConfigs) {
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+    public void onLevelUp(int userId, UserContext newLevelId, List<LevelUnlockConfig> levelUnlockConfigs) {
+        PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.LEVEL_UPDATE_SERVER, new LevelUpPacket().setUserContext(newLevelId).setLevelUnlockConfigs(levelUnlockConfigs));
         }
     }
 
-    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+    public void onBoxPicked(int userId, BoxContent boxContent) {
+        PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.BOX_PICKED, boxContent);
         }
     }
 
-    public void onUnlockedItemLimit(HumanPlayerId humanPlayerId, Map<Integer, Integer> unlockedItemLimit) {
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+    public void onUnlockedItemLimit(int userId, Map<Integer, Integer> unlockedItemLimit) {
+        PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.UNLOCKED_ITEM_LIMIT, new UnlockedItemPacket().setUnlockedItemLimit(unlockedItemLimit));
         }

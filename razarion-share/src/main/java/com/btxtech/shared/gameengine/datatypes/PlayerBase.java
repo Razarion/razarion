@@ -13,7 +13,6 @@
 
 package com.btxtech.shared.gameengine.datatypes;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 
 /**
@@ -26,16 +25,16 @@ public class PlayerBase {
     private double resources;
     private String name;
     private Character character;
-    private HumanPlayerId humanPlayerId;
+    private Integer userId;
     private Integer botId;
     private boolean abandoned;
 
-    public PlayerBase(int baseId, String name, Character character, double resources, HumanPlayerId humanPlayerId, Integer botId) {
+    public PlayerBase(int baseId, String name, Character character, double resources, Integer userId, Integer botId) {
         this.baseId = baseId;
         this.name = name;
         this.character = character;
         this.resources = resources;
-        this.humanPlayerId = humanPlayerId;
+        this.userId = userId;
         this.botId = botId;
     }
 
@@ -47,12 +46,12 @@ public class PlayerBase {
         return name;
     }
 
-    public void updateName(String name) {
-        this.name = name;
+    public void updateUserId(Integer userId) {
+        this.userId = userId;
     }
 
-    public void updateHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
+    public void updateName(String name) {
+        this.name = name;
     }
 
     public Character getCharacter() {
@@ -67,8 +66,8 @@ public class PlayerBase {
         return !equals(playerBase) && character.isEnemy(playerBase.character);
     }
 
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
+    public Integer getUserId() {
+        return userId;
     }
 
     public Integer getBotId() {
@@ -103,7 +102,7 @@ public class PlayerBase {
         playerBaseInfo.setBaseId(baseId);
         playerBaseInfo.setCharacter(character);
         playerBaseInfo.setName(name);
-        playerBaseInfo.setHumanPlayerId(humanPlayerId);
+        playerBaseInfo.setUserId(userId);
         playerBaseInfo.setBotId(botId);
         playerBaseInfo.setResources(resources);
         return playerBaseInfo;
@@ -138,7 +137,7 @@ public class PlayerBase {
                 ", name='" + name + '\'' +
                 ", character=" + character +
                 ", abandoned=" + abandoned +
-                ", humanPlayerId=" + humanPlayerId +
+                ", userId=" + userId +
                 ", botId=" + botId +
                 '}';
     }

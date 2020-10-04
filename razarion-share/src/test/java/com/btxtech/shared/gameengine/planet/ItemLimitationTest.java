@@ -38,7 +38,7 @@ public class ItemLimitationTest extends WeldMasterBaseTest {
         // Unlock
         Map<Integer, Integer> unlockedItemLimit = new HashMap<>();
         unlockedItemLimit.put(FallbackConfig.FACTORY_ITEM_TYPE_ID, 1);
-        getBaseItemService().updateUnlockedItemLimit(userContext1.getHumanPlayerId(), unlockedItemLimit);
+        getBaseItemService().updateUnlockedItemLimit(userContext1.getUserId(), unlockedItemLimit);
         getCommandService().build(builder1, new DecimalPosition(120, 20), getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         // Verify
@@ -65,7 +65,7 @@ public class ItemLimitationTest extends WeldMasterBaseTest {
         // Unlock
         Map<Integer, Integer> unlockedItemLimit = new HashMap<>();
         unlockedItemLimit.put(FallbackConfig.BUILDER_ITEM_TYPE_ID, 1);
-        getBaseItemService().updateUnlockedItemLimit(userContext1.getHumanPlayerId(), unlockedItemLimit);
+        getBaseItemService().updateUnlockedItemLimit(userContext1.getUserId(), unlockedItemLimit);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertSyncItemCount(3, 0, 0);

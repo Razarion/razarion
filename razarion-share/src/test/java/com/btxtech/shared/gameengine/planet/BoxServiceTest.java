@@ -111,7 +111,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         permanentSalve.assertSyncItemCount(1, 0, 0);
         Assert.assertEquals(1, getTestGameLogicListener().getBoxPicked().size());
         TestGameLogicListener.BoxPickedEntry boxPickedEntry = getTestGameLogicListener().getBoxPicked().get(0);
-        Assert.assertEquals(1, (int) boxPickedEntry.getHumanPlayerId().getUserId());
+        Assert.assertEquals(1, boxPickedEntry.getUserId());
         Assert.assertEquals(10, boxPickedEntry.getBoxContent().getCrystals());
         Assert.assertEquals(2, boxPickedEntry.getBoxContent().getInventoryItems().size());
         TestHelper.assertObjects(boxPickedEntry.getBoxContent().getInventoryItems(),

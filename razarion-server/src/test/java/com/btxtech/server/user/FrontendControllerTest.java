@@ -4,21 +4,21 @@ import com.btxtech.server.ClientArquillianBaseTest;
 import com.btxtech.server.FakeEmailDto;
 import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.server.clienthelper.WebsocketTestHelper;
-import com.btxtech.shared.dto.FrontendLoginState;
-import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.rest.BackendProvider;
-import com.btxtech.shared.dto.RegisterResult;
-import com.btxtech.shared.rest.FrontendController;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.FrontendLoginState;
 import com.btxtech.shared.dto.GameUiControlInput;
+import com.btxtech.shared.dto.LoginResult;
+import com.btxtech.shared.dto.RegisterResult;
+import com.btxtech.shared.rest.FrontendController;
 import com.btxtech.shared.rest.GameUiContextController;
-import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.core.Cookie;
@@ -29,7 +29,7 @@ import java.util.List;
  * Created by Beat
  * on 07.02.2018.
  */
-@RunAsClient
+@Ignore
 public class FrontendControllerTest extends ClientArquillianBaseTest {
     @Before
     public void before() {

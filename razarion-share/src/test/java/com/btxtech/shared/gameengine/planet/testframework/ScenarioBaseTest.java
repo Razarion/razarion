@@ -117,7 +117,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
 
     protected void testScenario(Scenario scenario) {
         UserContext userContext = createLevel1UserContext();
-        PlayerBaseFull playerBase1 = getBaseItemService().createHumanBase(0, userContext.getLevelId(), Collections.emptyMap(), userContext.getHumanPlayerId(), userContext.getName());
+        PlayerBaseFull playerBase1 = getBaseItemService().createHumanBase(0, userContext.getLevelId(), Collections.emptyMap(), userContext.getUserId(), userContext.getName());
         playerBase1.setResources(Double.MAX_VALUE);
 
         scenario.setup(playerBase1, getItemTypeService(), getBaseItemService(), getPathingService());

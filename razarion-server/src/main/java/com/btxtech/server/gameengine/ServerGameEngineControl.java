@@ -10,7 +10,6 @@ import com.btxtech.server.persistence.item.ItemTrackerPersistence;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
@@ -205,7 +204,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         if (planetQuestId == null || planetQuestId.isEmpty()) {
             return;
         }
-        for (Map.Entry<HumanPlayerId, QuestConfig> entry : userService.findActiveQuests4Users(planetQuestId).entrySet()) {
+        for (Map.Entry<Integer, QuestConfig> entry : userService.findActiveQuests4Users(planetQuestId).entrySet()) {
             questService.activateCondition(entry.getKey(), entry.getValue());
         }
         questService.restore(backupPlanetInfo);
@@ -234,8 +233,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         }
     }
 
-    public void onLevelChanged(HumanPlayerId humanPlayerId, int levelId) {
-        baseItemService.updateLevel(humanPlayerId, levelId);
+    public void onLevelChanged(int userId, int levelId) {
+        baseItemService.updateLevel(userId, levelId);
     }
 
     @Override
@@ -307,25 +306,25 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
-    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
-        serverInventoryService.onBoxPicked(humanPlayerId, boxContent);
-        systemConnectionService.onBoxPicked(humanPlayerId, boxContent);
+    public void onBoxPicked(int userId, BoxContent boxContent) {
+        serverInventoryService.onBoxPicked(userId, boxContent);
+        systemConnectionService.onBoxPicked(userId, boxContent);
     }
 
     @Override
-    public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
-        systemConnectionService.onQuestProgressInfo(humanPlayerId, questProgressInfo);
+    public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
+        systemConnectionService.onQuestProgressInfo(userId, questProgressInfo);
     }
 
     @Override
-    public void onBotSceneConflictChanged(HumanPlayerId humanPlayerId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
-        systemConnectionService.onBotSceneConflictChanged(humanPlayerId, botService.getBotSceneIndicationInfos(humanPlayerId));
-        historyPersistence.onBotSceneConflictChanged(humanPlayerId, raise, newConflict, oldConflict, botSceneIndicationInfo);
+    public void onBotSceneConflictChanged(int userId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
+        systemConnectionService.onBotSceneConflictChanged(userId, botService.getBotSceneIndicationInfos(userId));
+        historyPersistence.onBotSceneConflictChanged(userId, raise, newConflict, oldConflict, botSceneIndicationInfo);
     }
 
     @Override
-    public void onBotSceneConflictsChanged(Collection<HumanPlayerId> activeHumanPlayerIds, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
-        activeHumanPlayerIds.forEach(humanPlayerId -> onBotSceneConflictChanged(humanPlayerId, raise, newConflict, oldConflict, botSceneIndicationInfo));
+    public void onBotSceneConflictsChanged(Collection<Integer> activeUserIds, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
+        activeUserIds.forEach(humanPlayerId -> onBotSceneConflictChanged(humanPlayerId, raise, newConflict, oldConflict, botSceneIndicationInfo));
     }
 
     @Override
@@ -338,7 +337,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     public void updateUserName(UserContext userContext, String name) {
-        PlayerBase playerBase = baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
+        PlayerBase playerBase = baseItemService.getPlayerBase4UserId(userContext.getUserId());
         if (playerBase != null) {
             playerBase = baseItemService.changeBaseNameChanged(playerBase.getBaseId(), name);
             clientGameConnectionService.onBaseNameChanged(playerBase);
@@ -346,37 +345,37 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     public void updateHumanPlayerId(UserContext userContext) {
-        PlayerBase playerBase = baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
+        PlayerBase playerBase = baseItemService.getPlayerBase4UserId(userContext.getUserId());
         if (playerBase != null) {
-            playerBase = baseItemService.updateHumanPlayerId(playerBase.getBaseId(), userContext.getHumanPlayerId());
+            playerBase = baseItemService.updateHumanPlayerId(playerBase.getBaseId(), userContext.getUserId());
             clientGameConnectionService.onBaseHumanPlayerIdChanged(playerBase);
         }
-        questService.updateHumanPlayerId(userContext.getHumanPlayerId());
+        questService.updateUserId(userContext.getUserId());
     }
 
     @Override
     public Integer getLevel(PlayerBaseInfo playerBaseInfo) {
-        if (playerBaseInfo.getHumanPlayerId() == null) {
+        if (playerBaseInfo.getUserId() == null) {
             throw new IllegalStateException("Can not restore base with id: " + playerBaseInfo.getBaseId() + " name: " + playerBaseInfo.getName() + " may be this is a bot");
         }
-        return userService.getUserContextTransactional(playerBaseInfo.getHumanPlayerId()).getLevelId();
+        return userService.getUserContextTransactional(playerBaseInfo.getUserId()).getLevelId();
 
     }
 
     @Override
     public Map<Integer, Integer> getUnlockedItemLimit(PlayerBaseInfo playerBaseInfo) {
-        if (playerBaseInfo.getHumanPlayerId() == null) {
+        if (playerBaseInfo.getUserId() == null) {
             throw new IllegalStateException("Can not restore base with id: " + playerBaseInfo.getBaseId() + " name: " + playerBaseInfo.getName() + " may be this is a bot");
         }
-        return userService.getUserContextTransactional(playerBaseInfo.getHumanPlayerId()).getUnlockedItemLimit();
+        return userService.getUserContextTransactional(playerBaseInfo.getUserId()).getUnlockedItemLimit();
     }
 
     @Override
     public String getName(PlayerBaseInfo playerBaseInfo) {
-        if (playerBaseInfo.getHumanPlayerId() == null) {
+        if (playerBaseInfo.getUserId() == null) {
             throw new IllegalStateException("Can not restore base with id: " + playerBaseInfo.getBaseId() + " name: " + playerBaseInfo.getName() + " may be this is a bot");
         }
-        return userService.getUserContextTransactional(playerBaseInfo.getHumanPlayerId()).getName();
+        return userService.getUserContextTransactional(playerBaseInfo.getUserId()).getName();
     }
 
     @Override

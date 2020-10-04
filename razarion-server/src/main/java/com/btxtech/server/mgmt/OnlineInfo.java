@@ -1,7 +1,5 @@
 package com.btxtech.server.mgmt;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
-
 import java.util.Date;
 
 /**
@@ -18,7 +16,7 @@ public class OnlineInfo {
     }
     private Date time;
     private Integer duration;
-    private HumanPlayerId humanPlayerId;
+    private int userId;
     private String name;
     private String sessionId;
     private Date sessionTime;
@@ -45,12 +43,12 @@ public class OnlineInfo {
         return this;
     }
 
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
+    public int getUserId() {
+        return userId;
     }
 
-    public OnlineInfo setHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
+    public OnlineInfo setUserId(int userId) {
+        this.userId = userId;
         return this;
     }
 

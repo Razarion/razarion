@@ -63,7 +63,7 @@ public class ChatPersistence {
         if (!userContext.checkName()) {
             throw new IllegalStateException("User has no name: " + userContext);
         }
-        ChatMessage chatMessage = new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName(userContext.getName()).setMessage(message);
+        ChatMessage chatMessage = new ChatMessage().setUserId(userContext.getUserId()).setUserName(userContext.getName()).setMessage(message);
         synchronized (chatMessages) {
             chatMessages.add(chatMessage);
             if (chatMessages.size() > CACHE_SIZE) {
@@ -74,7 +74,7 @@ public class ChatPersistence {
         ChatMessageEntity chatMessageEntity = new ChatMessageEntity();
         chatMessageEntity.setTimestamp(new Date());
         chatMessageEntity.setMessage(message);
-        chatMessageEntity.setUserEntity(userService.getUserEntity(userContext.getHumanPlayerId().getUserId()));
+        chatMessageEntity.setUserEntity(userService.getUserEntity(userContext.getUserId()));
         chatMessageEntity.setSessionId(playerSession.getHttpSessionId());
         entityManager.persist(chatMessageEntity);
     }

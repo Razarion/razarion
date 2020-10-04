@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
@@ -186,12 +185,12 @@ public class PlanetService implements Runnable { // Only available in worker. On
         }
     }
 
-    public InitialSlaveSyncItemInfo generateSlaveSyncItemInfo(HumanPlayerId humanPlayerId) {
+    public InitialSlaveSyncItemInfo generateSlaveSyncItemInfo(int userId) {
         InitialSlaveSyncItemInfo initialSlaveSyncItemInfo = new InitialSlaveSyncItemInfo();
         initialSlaveSyncItemInfo.setTickCount(tickCount);
         initialSlaveSyncItemInfo.setSyncBaseItemInfos(baseItemService.getSyncBaseItemInfos());
         initialSlaveSyncItemInfo.setPlayerBaseInfos(baseItemService.getPlayerBaseInfos());
-        PlayerBase playerBase = baseItemService.getPlayerBase4HumanPlayerId(humanPlayerId);
+        PlayerBase playerBase = baseItemService.getPlayerBase4UserId(userId);
         if (playerBase != null) {
             initialSlaveSyncItemInfo.setActualBaseId(playerBase.getBaseId());
         }

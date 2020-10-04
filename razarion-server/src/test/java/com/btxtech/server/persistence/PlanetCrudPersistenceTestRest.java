@@ -4,6 +4,7 @@ import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 
@@ -14,6 +15,7 @@ import java.util.Locale;
  * Created by Beat
  * 25.05.2017.
  */
+@Ignore
 public class PlanetCrudPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;

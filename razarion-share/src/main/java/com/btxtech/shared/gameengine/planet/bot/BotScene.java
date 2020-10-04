@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
@@ -35,7 +34,7 @@ public class BotScene {
     private GameLogicService gameLogicService;
     private BotSceneConfig botSceneConfig;
     private Set<Integer> botsToWatch;
-    private final HashMap<HumanPlayerId, ProvocationScale> provocationScales = new HashMap<>();
+    private final HashMap<Integer, ProvocationScale> provocationScales = new HashMap<>();
     private SimpleScheduledFuture future;
 
     public void start(BotSceneConfig botSceneConfig) {
@@ -47,7 +46,7 @@ public class BotScene {
     public void onKillBotItem(int botId, PlayerBase actor) {
         if (botsToWatch.contains(botId)) {
             synchronized (provocationScales) {
-                ProvocationScale provocationScale = provocationScales.computeIfAbsent(actor.getHumanPlayerId(), humanPlayerId -> new ProvocationScale(actor.getHumanPlayerId(), findFirstBotSceneConflict()));
+                ProvocationScale provocationScale = provocationScales.computeIfAbsent(actor.getUserId(), humanPlayerId -> new ProvocationScale(actor.getUserId(), findFirstBotSceneConflict()));
                 provocationScale.onKill();
             }
         }
@@ -61,15 +60,15 @@ public class BotScene {
         }
     }
 
-    public boolean onHumanKill(HumanPlayerId humanPlayerId, BotRunner botRunner) {
-        ProvocationScale provocationScale = provocationScales.get(humanPlayerId);
+    public boolean onHumanKill(int userId, BotRunner botRunner) {
+        ProvocationScale provocationScale = provocationScales.get(userId);
         return provocationScale != null
                 && provocationScale.getCurrentBotSceneConflict() != null
                 && provocationScale.getCurrentBotSceneConflict().onHumanKill(botRunner);
     }
 
-    public BotSceneIndicationInfo getBotSceneIndicationInfo(HumanPlayerId humanPlayerId) {
-        ProvocationScale provocationScale = provocationScales.get(humanPlayerId);
+    public BotSceneIndicationInfo getBotSceneIndicationInfo(int userId) {
+        ProvocationScale provocationScale = provocationScales.get(userId);
         if (provocationScale == null) {
             return null;
         }
@@ -83,7 +82,7 @@ public class BotScene {
 
 
     private void onTimer() {
-        Collection<HumanPlayerId> expiredHumanPlayerIdConflicts = new ArrayList<>();
+        Collection<Integer> expiredHumanPlayerIdConflicts = new ArrayList<>();
         synchronized (provocationScales) {
             provocationScales.values().forEach(provocationScale -> {
                 try {
@@ -99,11 +98,11 @@ public class BotScene {
                         BotSceneConflict currentBotSceneConflict = provocationScale.getCurrentBotSceneConflict();
                         if (currentBotSceneConflict == null) {
                             currentBotSceneConflict = conflictInstance.get();
-                            currentBotSceneConflict.setHumanPlayerId(provocationScale.getHumanPlayerId());
+                            currentBotSceneConflict.setUserId(provocationScale.getUserId());
                             provocationScale.setCurrentBotSceneConflict(currentBotSceneConflict);
                         }
                         currentBotSceneConflict.start(oldNextBotSceneConflictConfig);
-                        gameLogicService.onBotSceneConflictChanged(provocationScale.getHumanPlayerId(), true, oldNextBotSceneConflictConfig, oldBotSceneConflictConfig, getBotSceneIndicationInfo(provocationScale.getHumanPlayerId()));
+                        gameLogicService.onBotSceneConflictChanged(provocationScale.getUserId(), true, oldNextBotSceneConflictConfig, oldBotSceneConflictConfig, getBotSceneIndicationInfo(provocationScale.getUserId()));
                     } else if (provocationScale.isFallReached()) {
                         BotSceneConflictConfig oldBotSceneConflictConfig = provocationScale.getCurrentBotSceneConflictConfig();
                         BotSceneConflictConfig newCurrentBotSceneConflictConfig = findPreviousBotSceneConflict(oldBotSceneConflictConfig);
@@ -114,9 +113,9 @@ public class BotScene {
                             provocationScale.getCurrentBotSceneConflict().stop();
                             provocationScale.setCurrentBotSceneConflict(null);
                         }
-                        gameLogicService.onBotSceneConflictChanged(provocationScale.getHumanPlayerId(), false, newCurrentBotSceneConflictConfig, oldBotSceneConflictConfig, getBotSceneIndicationInfo(provocationScale.getHumanPlayerId()));
+                        gameLogicService.onBotSceneConflictChanged(provocationScale.getUserId(), false, newCurrentBotSceneConflictConfig, oldBotSceneConflictConfig, getBotSceneIndicationInfo(provocationScale.getUserId()));
                     } else if (provocationScale.isCleanupReached()) {
-                        expiredHumanPlayerIdConflicts.add(provocationScale.getHumanPlayerId());
+                        expiredHumanPlayerIdConflicts.add(provocationScale.getUserId());
                     } else if (provocationScale.getCurrentBotSceneConflict() != null) {
                         provocationScale.getCurrentBotSceneConflict().tick();
                     }
@@ -163,7 +162,7 @@ public class BotScene {
         return index;
     }
 
-    public Collection<HumanPlayerId> allActiveConflicts() {
+    public Collection<Integer> allActiveConflicts() {
         synchronized (provocationScales) {
             return new ArrayList<>(provocationScales.keySet());
         }

@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.user.PlayerSession;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -41,18 +40,18 @@ public class ConnectionTrackingPersistence {
     }
 
     @Transactional
-    public void onGameConnectionOpened(String sessionId, HumanPlayerId humanPlayerId) {
+    public void onGameConnectionOpened(String sessionId, int userId) {
         try {
-            persist(ConnectionTrackerEntity.Type.GAME_OPEN, sessionId, humanPlayerId.getPlayerId());
+            // TODO persist(ConnectionTrackerEntity.Type.GAME_OPEN, sessionId, humanPlayerId.getPlayerId());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
     }
 
     @Transactional
-    public void onGameConnectionClosed(String sessionId, HumanPlayerId humanPlayerId) {
+    public void onGameConnectionClosed(String sessionId, int userId) {
         try {
-            persist(ConnectionTrackerEntity.Type.GAME_CLOSE, sessionId, humanPlayerId.getPlayerId());
+            // TODO persist(ConnectionTrackerEntity.Type.GAME_CLOSE, sessionId, userId.getPlayerId());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -68,10 +67,7 @@ public class ConnectionTrackingPersistence {
     }
 
     private int humanPlayerId(PlayerSession playerSession) {
-        if (playerSession.getUserContext().getHumanPlayerId() == null) {
-            return -999999;
-        }
-        return playerSession.getUserContext().getHumanPlayerId().getPlayerId();
+        return -999999;
     }
 
 }

@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
 import com.btxtech.shared.datatypes.UserAccountInfo;
 import com.btxtech.shared.dto.EmailPasswordInfo;
+import com.btxtech.shared.dto.RegisterResult;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -33,7 +34,7 @@ public interface UserServiceProvider {
     @Path("createunverifieduser")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    RegisterInfo createUnverifiedUser(EmailPasswordInfo emailPasswordInfo);
+    RegisterResult createUnverifiedUser(EmailPasswordInfo emailPasswordInfo);
 
     @POST
     @Path("setname/{name}")

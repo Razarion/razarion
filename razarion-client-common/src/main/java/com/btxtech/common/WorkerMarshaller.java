@@ -2,7 +2,6 @@ package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -221,7 +220,7 @@ public class WorkerMarshaller {
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), Map.class));
-                data.add(fromJson(array[DATA_OFFSET_2].asString(), HumanPlayerId.class));
+                data.add(fromJson(array[DATA_OFFSET_2].asString(), Integer.class));
                 data.add(fromJson(array[DATA_OFFSET_3].asString(), String.class));
                 data.add(fromJson(array[DATA_OFFSET_4].asString(), DecimalPosition.class));
                 break;

@@ -4,17 +4,13 @@ package com.btxtech.shared.datatypes;
  * Created by Beat
  * on 24.01.2018.
  */
+@Deprecated
 public class RegisterInfo {
-    private HumanPlayerId humanPlayerId;
+    private boolean humanPlayerId;
     private boolean userAlreadyExits;
 
-    public HumanPlayerId getHumanPlayerId() {
+    public boolean isRegistered() {
         return humanPlayerId;
-    }
-
-    public RegisterInfo setHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
-        return this;
     }
 
     public boolean isUserAlreadyExits() {

@@ -5,6 +5,7 @@ import com.btxtech.server.RazAssertTestHelper;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -13,6 +14,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 15.05.2017.
  */
+@Ignore
 public class DbPropertiesServiceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private DbPropertiesService dbPropertiesService;

@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -37,7 +36,7 @@ public class BotSceneConflict {
     private BaseItemService baseItemService;
     @Inject
     private PathingService pathingService;
-    private HumanPlayerId humanPlayerId;
+    private int userId;
     private BotSceneConflictConfig botSceneConflictConfig;
     private BotRunner botRunner;
     private Long reRopTime;
@@ -122,7 +121,7 @@ public class BotSceneConflict {
     }
 
     private SyncBaseItem getTarget() {
-        PlayerBaseFull playerBaseFull = baseItemService.getPlayerBaseFull4HumanPlayerId(humanPlayerId);
+        PlayerBaseFull playerBaseFull = baseItemService.getPlayerBaseFull4UserId(userId);
         if (playerBaseFull == null) {
             return null;
         }
@@ -135,12 +134,12 @@ public class BotSceneConflict {
         }
     }
 
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public boolean onHumanKill(BotRunner botRunner) {

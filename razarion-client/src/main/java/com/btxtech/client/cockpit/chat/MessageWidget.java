@@ -37,7 +37,7 @@ public class MessageWidget implements TakesValue<ChatMessage>, IsElement {
     @Override
     public void setValue(ChatMessage chatMessage) {
         this.chatMessage = chatMessage;
-        if (userUiService.isRegistered() && userUiService.getUserContext().getHumanPlayerId().getUserId() == chatMessage.getUserId()) {
+        if (userUiService.isRegistered() && userUiService.getUserContext().getUserId() == chatMessage.getUserId()) {
             userEntrySpan.style.setProperty("color", Colors.OWN.toHtmlColor());
         } else {
             userEntrySpan.style.setProperty("color", Colors.FRIEND.toHtmlColor());

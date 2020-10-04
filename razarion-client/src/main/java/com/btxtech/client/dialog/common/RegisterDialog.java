@@ -4,8 +4,8 @@ import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.user.FacebookService;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
-import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.dto.EmailPasswordInfo;
+import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.rest.UserServiceProvider;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
@@ -27,6 +27,9 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.btxtech.shared.dto.RegisterResult.EMAIL_ALREADY_USED;
+import static com.btxtech.shared.dto.RegisterResult.OK;
 
 /**
  * Created by Beat
@@ -103,17 +106,17 @@ public class RegisterDialog extends Composite implements ModalDialogContent<Void
             return;
         }
         showInProgress(true);
-        caller.call((RemoteCallback<RegisterInfo>) registerInfo -> {
+        caller.call((RemoteCallback<RegisterResult>) registerResult -> {
             showInProgress(false);
-            if (registerInfo.isUserAlreadyExits()) {
+            if (registerResult == EMAIL_ALREADY_USED) {
                 emailErrorLabel.setTextContent(I18nHelper.getConstants().registrationEmail());
             } else {
-                if (registerInfo.getHumanPlayerId() != null) {
-                    userUiService.onUserRegistered(registerInfo.getHumanPlayerId(), true);
+                if (registerResult == OK) {
+                    userUiService.onUserRegistered(true);
                     modalDialogPanel.close();
                     modalDialogManager.showMessageDialog(I18nHelper.getConstants().register(), I18nHelper.getConstants().registerConfirmationEmailSent(emailField.getValue()));
                 } else {
-                    logger.log(Level.SEVERE, "RegisterDialog.emailRegisterButtonClick() wrong response");
+                    logger.log(Level.SEVERE, "RegisterDialog.emailRegisterButtonClick() wrong response: " + registerResult);
                 }
             }
         }, (message, throwable) -> {

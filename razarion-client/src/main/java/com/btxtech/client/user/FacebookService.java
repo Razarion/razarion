@@ -81,7 +81,7 @@ public class FacebookService {
                         // User has been logged in on the server
                         Window.Location.reload();
                     } else {
-                        userUiService.onUserRegistered(registerInfo.getHumanPlayerId(), false);
+                        userUiService.onUserRegistered(false);
                     }
                 },
                 (message, throwable) -> {

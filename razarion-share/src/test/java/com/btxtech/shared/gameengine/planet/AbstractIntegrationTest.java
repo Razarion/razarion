@@ -274,7 +274,7 @@ public class AbstractIntegrationTest {
     }
 
     public PlayerBase getPlayerBase(UserContext userContext) {
-        return baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
+        return baseItemService.getPlayerBase4UserId(userContext.getUserId());
     }
 
     public void assertSyncItemCount(int baseItemCount, int resourceCount, int boxCount) {

@@ -11,7 +11,6 @@ import com.btxtech.server.user.ForgotPasswordEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
@@ -50,11 +49,11 @@ public class HistoryPersistence {
     private InventoryPersistence inventoryPersistence;
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void onLevelUp(HumanPlayerId humanPlayerId, LevelEntity newLevel) {
+    public void onLevelUp(int userId, LevelEntity newLevel) {
         try {
             LevelHistoryEntity levelHistoryEntity = new LevelHistoryEntity();
             levelHistoryEntity.setTimeStamp(new Date());
-            levelHistoryEntity.setHumanPlayerIdEntityId(userService.getHumanPlayerId(humanPlayerId.getPlayerId()).getId());
+            // TODO levelHistoryEntity.setHumanPlayerIdEntityId(userService.getHumanPlayerId(userId.getPlayerId()).getId());
             levelHistoryEntity.setLevelId(newLevel.getId());
             levelHistoryEntity.setLevelNumber(newLevel.getNumber());
             entityManager.persist(levelHistoryEntity);
@@ -64,11 +63,11 @@ public class HistoryPersistence {
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void onQuest(HumanPlayerId humanPlayerId, QuestConfig questConfig, QuestHistoryEntity.Type type) {
+    public void onQuest(int userId, QuestConfig questConfig, QuestHistoryEntity.Type type) {
         try {
             QuestHistoryEntity questHistoryEntity = new QuestHistoryEntity();
             questHistoryEntity.setTimeStamp(new Date());
-            questHistoryEntity.setHumanPlayerIdEntityId(userService.getHumanPlayerId(humanPlayerId.getPlayerId()).getId());
+            // TODO questHistoryEntity.setHumanPlayerIdEntityId(userService.getHumanPlayerId(humanPlayerId.getPlayerId()).getId());
             questHistoryEntity.setQuestId(questConfig.getId());
             questHistoryEntity.setQuestInternalName(questConfig.getInternalName());
             questHistoryEntity.setType(type);
@@ -79,12 +78,12 @@ public class HistoryPersistence {
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
+    public void onBoxPicked(int userId, BoxContent boxContent) {
         try {
             Date date = new Date();
             if (boxContent.getCrystals() > 0) {
                 InventoryHistoryEntry inventoryHistoryEntry = new InventoryHistoryEntry();
-                inventoryHistoryEntry.setHumanPlayerIdEntityId(humanPlayerId.getPlayerId());
+                // TODO inventoryHistoryEntry.setHumanPlayerIdEntityId(userId.getPlayerId());
                 inventoryHistoryEntry.setTimeStamp(date);
                 inventoryHistoryEntry.setType(InventoryHistoryEntry.Type.BOX_PICKED);
                 inventoryHistoryEntry.setCrystals(boxContent.getCrystals());
@@ -93,7 +92,7 @@ public class HistoryPersistence {
             if (boxContent.getInventoryItems() != null) {
                 boxContent.getInventoryItems().forEach(inventoryItem -> {
                     InventoryHistoryEntry inventoryHistoryEntry = new InventoryHistoryEntry();
-                    inventoryHistoryEntry.setHumanPlayerIdEntityId(humanPlayerId.getPlayerId());
+                    // TODO inventoryHistoryEntry.setHumanPlayerIdEntityId(userId.getPlayerId());
                     inventoryHistoryEntry.setTimeStamp(date);
                     inventoryHistoryEntry.setType(InventoryHistoryEntry.Type.BOX_PICKED);
                     inventoryHistoryEntry.setInventoryItemId(inventoryItem.getId());
@@ -107,11 +106,11 @@ public class HistoryPersistence {
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void onInventoryItemUsed(HumanPlayerId humanPlayerId, int inventoryItemId) {
+    public void onInventoryItemUsed(int userId, int inventoryItemId) {
         try {
             Date date = new Date();
             InventoryHistoryEntry inventoryHistoryEntry = new InventoryHistoryEntry();
-            inventoryHistoryEntry.setHumanPlayerIdEntityId(humanPlayerId.getPlayerId());
+            // TODO inventoryHistoryEntry.setHumanPlayerIdEntityId(userId.getPlayerId());
             inventoryHistoryEntry.setTimeStamp(date);
             inventoryHistoryEntry.setType(InventoryHistoryEntry.Type.INVENTORY_ITEM_USED);
             InventoryItemEntity inventoryItemEntity = inventoryPersistence.readInventoryItemEntity(inventoryItemId);
@@ -124,11 +123,11 @@ public class HistoryPersistence {
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void onLevelUnlockEntityUsedViaCrystals(HumanPlayerId humanPlayerId, int levelUnlockEntityId) {
+    public void onLevelUnlockEntityUsedViaCrystals(int userId, int levelUnlockEntityId) {
         try {
             Date date = new Date();
             LevelUnlockHistoryEntry inventoryHistoryEntry = new LevelUnlockHistoryEntry();
-            inventoryHistoryEntry.setHumanPlayerIdEntityId(humanPlayerId.getPlayerId());
+            // TODO inventoryHistoryEntry.setHumanPlayerIdEntityId(userId.getPlayerId());
             inventoryHistoryEntry.setTimeStamp(date);
             LevelUnlockEntity levelUnlockEntity = entityManager.find(LevelUnlockEntity.class, levelUnlockEntityId);
             inventoryHistoryEntry.setUnlockEntityId(levelUnlockEntityId);
@@ -171,7 +170,7 @@ public class HistoryPersistence {
         try {
             ForgotPasswordHistoryEntity historyEntity = new ForgotPasswordHistoryEntity();
             historyEntity.setUserId(userEntity.getId());
-            historyEntity.setHumanPlayerId(userEntity.getHumanPlayerIdEntity().getId());
+            // TODO historyEntity.setHumanPlayerId(userEntity.getHumanPlayerIdEntity().getId());
             historyEntity.setTimeStamp(new Date());
             historyEntity.setForgotPasswordEntityId(forgotPasswordEntity.getId());
             historyEntity.setType(type);
@@ -182,11 +181,11 @@ public class HistoryPersistence {
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void onBotSceneConflictChanged(HumanPlayerId humanPlayerId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
+    public void onBotSceneConflictChanged(int userId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
         try {
             BotSceneIndicationEntity botSceneIndicationEntity = new BotSceneIndicationEntity();
             botSceneIndicationEntity.setTimeStamp(new Date());
-            botSceneIndicationEntity.setHumanPlayerIdEntityId(userService.getHumanPlayerId(humanPlayerId.getPlayerId()).getId());
+            // TODO botSceneIndicationEntity.setHumanPlayerIdEntityId(userService.getHumanPlayerId(userId.getPlayerId()).getId());
             botSceneIndicationEntity.setRaise(raise);
             botSceneIndicationEntity.setNewBotSceneConflictConfigId(newConflict != null ? newConflict.getId() : null);
             botSceneIndicationEntity.setOldBotSceneConflictConfigId(oldConflict != null ? oldConflict.getId() : null);
@@ -209,7 +208,7 @@ public class HistoryPersistence {
         for (UserHistoryEntity historyEntity : userHistoryEntities) {
             UserHistoryEntry userHistoryEntry = new UserHistoryEntry().setId(historyEntity.getUserId()).setLogin(historyEntity.getLoggedIn()).setLogout(historyEntity.getLoggedOut()).setSessionId(historyEntity.getSessionId());
             UserEntity userEntity = entityManager.find(UserEntity.class, historyEntity.getUserId());
-            userHistoryEntry.setName(userEntity.getName()).setPlayerId(userEntity.getHumanPlayerIdEntity().getId());
+            // TODO userHistoryEntry.setName(userEntity.getName()).setPlayerId(userEntity.getHumanPlayerIdEntity().getId());
             userHistoryEntries.add(userHistoryEntry);
         }
         return userHistoryEntries;
@@ -242,7 +241,7 @@ public class HistoryPersistence {
             logger.warning("More the one entry for UserHistoryEntity found for session id: " + sessionId + " userEntities: " + userEntities);
         }
         UserEntity userEntity = userEntities.get(0);
-        return new SimpleUserBackend().setName(userEntity.getName()).setHumanPlayerId(userEntity.createHumanPlayerId());
+        return new SimpleUserBackend().setName(userEntity.getName()).setUserId(userEntity.getId());
     }
 
     @Transactional

@@ -9,6 +9,7 @@ import com.btxtech.shared.dto.WarmGameUiContext;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -18,6 +19,7 @@ import java.util.Locale;
  * Created by Beat
  * 10.05.2017.
  */
+@Ignore
 public class GameUiControlConfigPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private GameUiContextCrudPersistence gameUiContextCrudPersistence;

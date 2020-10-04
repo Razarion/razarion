@@ -587,9 +587,14 @@ public class ServerTestHelper {
 
     protected void runInTransaction(Consumer<EntityManager> consumer) {
         entityTransaction.begin();
-        entityManager.joinTransaction();
-        consumer.accept(entityManager);
-        entityTransaction.commit();
+        try {
+            entityManager.joinTransaction();
+            consumer.accept(entityManager);
+            entityTransaction.commit();
+        } catch (Throwable throwable) {
+            entityTransaction.rollback();
+            throw throwable;
+        }
     }
 
 

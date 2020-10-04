@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
@@ -155,7 +154,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 resourceService.createResources((Collection<ResourceItemPosition>) controlPackage.getSingleData());
                 break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
-                createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (Map<Integer, Integer>) controlPackage.getData(1), (HumanPlayerId) controlPackage.getData(2), (String) controlPackage.getData(3), (DecimalPosition) controlPackage.getData(4));
+                createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (Map<Integer, Integer>) controlPackage.getData(1), (Integer) controlPackage.getData(2), (String) controlPackage.getData(3), (DecimalPosition) controlPackage.getData(4));
                 break;
             case USE_INVENTORY_ITEM:
                 useInventoryItem((UseInventoryItem) controlPackage.getData(0));
@@ -164,7 +163,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 boxService.dropBoxes((List<BoxItemPosition>) controlPackage.getSingleData());
                 break;
             case ACTIVATE_QUEST:
-                activateQuest(userContext.getHumanPlayerId(), (QuestConfig) controlPackage.getData(0));
+                activateQuest(userContext.getUserId(), (QuestConfig) controlPackage.getData(0));
                 break;
             case COMMAND_ATTACK:
                 commandService.attack((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
@@ -278,7 +277,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
         serverConnection.tickCountRequest();
         DecimalPosition basePosition = findScrollToBasePosition();
-        if(basePosition != null) {
+        if (basePosition != null) {
             sendToClient(GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED, basePosition);
         } else {
             // Marshaller can not handle null value
@@ -318,14 +317,14 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         return unitPosition.getO();
     }
 
-    private void createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
+    private void createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, int userId, String name, DecimalPosition position) {
         if (serverConnection != null) {
             serverConnection.createHumanBaseWithBaseItem(position);
         } else {
             if (name.equals("")) {
                 name = null;
             }
-            playerBase = baseItemService.createHumanBaseWithBaseItem(levelId, unlockedItemLimit, humanPlayerId, name, position);
+            playerBase = baseItemService.createHumanBaseWithBaseItem(levelId, unlockedItemLimit, userId, name, position);
         }
     }
 
@@ -361,9 +360,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         sendToClient(GameEngineControlPackage.Command.STOP_RESPONSE);
     }
 
-    private void activateQuest(HumanPlayerId humanPlayerId, QuestConfig questConfig) {
-        questService.activateCondition(humanPlayerId, questConfig);
-        onQuestProgressUpdate(humanPlayerId, questService.getQuestProgressInfo(humanPlayerId));
+    private void activateQuest(int userId, QuestConfig questConfig) {
+        questService.activateCondition(userId, questConfig);
+        onQuestProgressUpdate(userId, questService.getQuestProgressInfo(userId));
     }
 
     @Override
@@ -441,8 +440,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
-        if (userContext.getHumanPlayerId().equals(humanPlayerId)) {
+    public void onBoxPicked(int userId, BoxContent boxContent) {
+        if (userContext.getUserId() == userId) {
             sendToClient(GameEngineControlPackage.Command.BOX_PICKED, boxContent);
         }
     }
@@ -491,7 +490,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onBaseCreated(PlayerBaseFull playerBase) {
-        if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
+        if (playerBase.getUserId() != null && playerBase.getUserId().equals(userContext.getUserId())) {
             this.playerBase = playerBase;
         }
         sendBaseToClient(GameEngineControlPackage.Command.BASE_CREATED, playerBase);
@@ -507,7 +506,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     public void onServerBaseCreated(PlayerBaseInfo playerBaseInfo) {
         baseItemService.createBaseSlave(playerBaseInfo);
-        if (playerBaseInfo.getHumanPlayerId() != null && playerBaseInfo.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
+        if (playerBaseInfo.getUserId() != null && playerBaseInfo.getUserId().equals(userContext.getUserId())) {
             this.playerBase = baseItemService.getPlayerBase4BaseId(playerBaseInfo.getBaseId());
         }
     }
@@ -522,7 +521,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     public void onServerBaseHumanPlayerIdChanged(PlayerBaseInfo playerBaseInfo) {
-        PlayerBase playerBase = baseItemService.updateHumanPlayerId(playerBaseInfo.getBaseId(), playerBaseInfo.getHumanPlayerId());
+        PlayerBase playerBase = baseItemService.updateHumanPlayerId(playerBaseInfo.getBaseId(), playerBaseInfo.getUserId());
         sendBaseToClient(GameEngineControlPackage.Command.BASE_UPDATED, playerBase);
     }
 
@@ -531,14 +530,14 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         playerBaseDto.setBaseId(playerBase.getBaseId());
         playerBaseDto.setName(playerBase.getName());
         playerBaseDto.setCharacter(playerBase.getCharacter());
-        playerBaseDto.setHumanPlayerId(playerBase.getHumanPlayerId());
+        playerBaseDto.setUserId(playerBase.getUserId());
         playerBaseDto.setBotId(playerBase.getBotId());
         sendToClient(cmd, playerBaseDto);
     }
 
     @Override
     public void onBaseDeleted(PlayerBase playerBase, PlayerBase actorBase) {
-        if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
+        if (playerBase.getUserId() != null && playerBase.getUserId().equals(userContext.getUserId())) {
             this.playerBase = null;
         }
         sendToClient(GameEngineControlPackage.Command.BASE_DELETED, playerBase.getBaseId());
@@ -548,8 +547,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onQuestPassed(HumanPlayerId humanPlayerId, QuestConfig questConfig) {
-        if (userContext.getHumanPlayerId().equals(humanPlayerId)) {
+    public void onQuestPassed(int userId, QuestConfig questConfig) {
+        if (userContext.getUserId() == userId) {
             sendToClient(GameEngineControlPackage.Command.QUEST_PASSED);
         }
     }
@@ -561,7 +560,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onSyncBaseItemKilledMaster(SyncBaseItem target, SyncBaseItem actor) {
         killedSyncBaseItems.add(target);
-        if (actor.getBase().getHumanPlayerId() != null && actor.getBase().getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
+        if (actor.getBase().getUserId() != null && actor.getBase().getUserId().equals(userContext.getUserId())) {
             xpFromKills += target.getBaseItemType().getXpOnKilling();
         }
         if (workerTrackerHandler != null) {
@@ -688,7 +687,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     private void updateLevel(int levelId) {
         userContext.setLevelId(levelId);
-        baseItemService.updateLevel(userContext.getHumanPlayerId(), levelId);
+        baseItemService.updateLevel(userContext.getUserId(), levelId);
     }
 
     public void onPlayerBaseTracking(PlayerBaseTracking playerBaseTracking) {
@@ -702,7 +701,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
+    public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
         if (questProgressInfo != null) {
             sendToClient(GameEngineControlPackage.Command.QUEST_PROGRESS, questProgressInfo);
         }

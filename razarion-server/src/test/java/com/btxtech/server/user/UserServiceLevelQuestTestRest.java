@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 
@@ -22,6 +23,7 @@ import java.util.Locale;
  * Created by Beat
  * 05.05.2017.
  */
+@Ignore
 public class UserServiceLevelQuestTestRest extends IgnoreOldArquillianTest {
     @Inject
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;

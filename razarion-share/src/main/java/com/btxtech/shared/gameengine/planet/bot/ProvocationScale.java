@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
 
 import java.util.ArrayList;
@@ -15,11 +14,11 @@ public class ProvocationScale {
     private BotSceneConflictConfig currentBotSceneConflictConfig;
     private BotSceneConflict currentBotSceneConflict;
     private final List<Long> killTimeStamps = new ArrayList<>();
-    private HumanPlayerId humanPlayerId;
+    private int userId;
     private Long lastKillTimeStamp;
 
-    public ProvocationScale(HumanPlayerId humanPlayerId, BotSceneConflictConfig nextBotSceneConflictConfig) {
-        this.humanPlayerId = humanPlayerId;
+    public ProvocationScale(int userId, BotSceneConflictConfig nextBotSceneConflictConfig) {
+        this.userId = userId;
         this.nextBotSceneConflictConfig = nextBotSceneConflictConfig;
         reset();
     }
@@ -43,8 +42,8 @@ public class ProvocationScale {
         }
     }
 
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
+    public int getUserId() {
+        return userId;
     }
 
     public void onKill() {

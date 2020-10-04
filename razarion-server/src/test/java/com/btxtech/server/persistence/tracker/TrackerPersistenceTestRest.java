@@ -3,6 +3,7 @@ package com.btxtech.server.persistence.tracker;
 import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.util.DateUtil;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * Created by Beat on 29.05.2017.
  */
+@Ignore
 public class TrackerPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private TrackerPersistence trackerPersistence;

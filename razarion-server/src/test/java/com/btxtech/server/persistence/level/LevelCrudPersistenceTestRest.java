@@ -3,6 +3,7 @@ package com.btxtech.server.persistence.level;
 import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -14,6 +15,7 @@ import java.util.List;
  * Created by Beat
  * 05.05.2017.
  */
+@Ignore
 public class LevelCrudPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private LevelCrudPersistence levelCrudPersistence;

@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.comparator.impl.ObjectComparatorIgnore;
@@ -30,6 +31,7 @@ import java.util.List;
  * Created by Beat
  * 09.05.2017.
  */
+@Ignore
 public class RestServerGameEnginePersistenceTestBase extends IgnoreOldArquillianTest {
     @Inject
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;

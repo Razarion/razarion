@@ -14,7 +14,6 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
@@ -27,7 +26,7 @@ public class AbstractConditionProgress {
     private ConditionTrigger conditionTrigger;
     private AbstractComparison abstractComparison;
     private boolean fulfilled = false;
-    private HumanPlayerId humanPlayerId;
+    private int userId;
     private QuestConfig questConfig;
 
     public AbstractConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
@@ -39,8 +38,8 @@ public class AbstractConditionProgress {
         }
     }
 
-    public void setHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public ConditionTrigger getConditionTrigger() {
@@ -59,8 +58,8 @@ public class AbstractConditionProgress {
         fulfilled = true;
     }
 
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
+    public int getUserId() {
+        return userId;
     }
 
     public void setQuestConfig(QuestConfig questConfig) {
@@ -74,7 +73,7 @@ public class AbstractConditionProgress {
     public BackupComparisionInfo generateBackupComparisionInfo() {
         BackupComparisionInfo backupComparisionInfo = new BackupComparisionInfo();
         backupComparisionInfo.setQuestId(questConfig.getId());
-        backupComparisionInfo.setHumanPlayerId(humanPlayerId);
+        backupComparisionInfo.setUserId(userId);
         abstractComparison.fillGenericComparisonValues(backupComparisionInfo);
         return backupComparisionInfo;
     }
@@ -89,7 +88,7 @@ public class AbstractConditionProgress {
                 "conditionTrigger=" + conditionTrigger +
                 ", abstractComparison=" + abstractComparison +
                 ", fulfilled=" + fulfilled +
-                ", humanPlayerId=" + humanPlayerId +
+                ", humanPlayerId=" + userId +
                 ", questConfig=" + questConfig +
                 '}';
     }

@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
@@ -30,7 +29,7 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         InitialSlaveSyncItemInfo initialSlaveSyncItemInfo = new InitialSlaveSyncItemInfo();
         // Setup bases
         List<PlayerBaseInfo> playerBaseInfos = new ArrayList<>();
-        playerBaseInfos.add(new PlayerBaseInfo().setBaseId(99).setCharacter(Character.HUMAN).setName("Test human base 1").setResources(211).setHumanPlayerId(new HumanPlayerId().setPlayerId(105)));
+        playerBaseInfos.add(new PlayerBaseInfo().setBaseId(99).setCharacter(Character.HUMAN).setName("Test human base 1").setResources(211).setUserId(105));
         playerBaseInfos.add(new PlayerBaseInfo().setBaseId(40).setCharacter(Character.BOT).setName("Test bot base 1"));
         initialSlaveSyncItemInfo.setPlayerBaseInfos(playerBaseInfos);
         // Setup SyncBaseItemInfo
@@ -61,7 +60,7 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         Assert.assertEquals("Test human base 1", builder.getBase().getName());
         Assert.assertEquals(Character.HUMAN, builder.getBase().getCharacter());
         Assert.assertEquals(211, builder.getBase().getResources(), 0.0001);
-        Assert.assertEquals(105, builder.getBase().getHumanPlayerId().getPlayerId());
+        Assert.assertEquals(105, (int)builder.getBase().getUserId());
         Assert.assertEquals(1.0, builder.getBuildup(), 0.0001);
         Assert.assertEquals(0.34, builder.getHealth(), 0.0001);
         Assert.assertEquals(FallbackConfig.BUILDER_ITEM_TYPE_ID, builder.getBaseItemType().getId());
@@ -81,7 +80,7 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         Assert.assertEquals("Test human base 1", factory.getBase().getName());
         Assert.assertEquals(Character.HUMAN, factory.getBase().getCharacter());
         Assert.assertEquals(211, factory.getBase().getResources(), 0.0001);
-        Assert.assertEquals(105, factory.getBase().getHumanPlayerId().getPlayerId());
+        Assert.assertEquals(105, (int)factory.getBase().getUserId());
         Assert.assertEquals(1.0, factory.getBuildup(), 0.0001);
         Assert.assertEquals(0.5, factory.getHealth(), 0.0001);
         Assert.assertEquals(FallbackConfig.FACTORY_ITEM_TYPE_ID, factory.getBaseItemType().getId());

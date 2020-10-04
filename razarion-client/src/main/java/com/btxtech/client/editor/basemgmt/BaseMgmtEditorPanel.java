@@ -3,7 +3,6 @@ package com.btxtech.client.editor.basemgmt;
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.AdditionUserInfo;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.rest.ServerGameEngineControlProvider;
 import com.btxtech.shared.rest.UserServiceProvider;
@@ -150,7 +149,7 @@ public class BaseMgmtEditorPanel extends AbstractEditor {
         baseMgmtModel.setKillCallback(engineCaller.call(ignore -> {
         }, exceptionHandler.restErrorHandler("ServerGameEngineControlProvider.deleteBase() failed: "))::deleteBase);
         if (additionUserInfos != null) {
-            AdditionUserInfo additionUserInfo = find(playerBaseDto.getHumanPlayerId(), additionUserInfos);
+            AdditionUserInfo additionUserInfo = find(playerBaseDto.getUserId(), additionUserInfos);
             if (additionUserInfo != null) {
                 baseMgmtModel.setLastLoggedIn(additionUserInfo.getLastLoggedIn());
             }
@@ -158,11 +157,11 @@ public class BaseMgmtEditorPanel extends AbstractEditor {
         return baseMgmtModel;
     }
 
-    private AdditionUserInfo find(HumanPlayerId humanPlayerId, List<AdditionUserInfo> additionUserInfos) {
-        if (humanPlayerId == null) {
+    private AdditionUserInfo find(Integer userId, List<AdditionUserInfo> additionUserInfos) {
+        if (userId == null) {
             return null;
         }
-        return additionUserInfos.stream().filter(additionUserInfo -> additionUserInfo.getHumanPlayerId().equals(humanPlayerId)).findFirst().orElse(null);
+        return additionUserInfos.stream().filter(additionUserInfo -> additionUserInfo.getUserId() == userId).findFirst().orElse(null);
     }
 
 

@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -82,10 +81,10 @@ public class BotService {
 
 
     public void killAllBots() {
-        Collection<HumanPlayerId> activeHumanPlayerIds = new ArrayList<>();
+        Collection<Integer> activeUserIds = new ArrayList<>();
         synchronized (botScenes) {
             botScenes.forEach(botScene -> {
-                activeHumanPlayerIds.addAll(botScene.allActiveConflicts());
+                activeUserIds.addAll(botScene.allActiveConflicts());
                 botScene.stop();
             });
             botScenes.clear();
@@ -96,7 +95,7 @@ public class BotService {
             botRunners.clear();
         }
 
-        gameLogicService.onBotSceneConflictsChanged(activeHumanPlayerIds, false, null, null, null);
+        gameLogicService.onBotSceneConflictsChanged(activeUserIds, false, null, null, null);
     }
 
     private void killBot(int botId) {
@@ -120,7 +119,7 @@ public class BotService {
                 if (botRunner != null) {
                     synchronized (botScenes) {
                         for (BotScene botScene : botScenes) {
-                            if (botScene.onHumanKill(target.getBase().getHumanPlayerId(), botRunner)) {
+                            if (botScene.onHumanKill(target.getBase().getUserId(), botRunner)) {
                                 break;
                             }
                         }
@@ -216,9 +215,9 @@ public class BotService {
         }
     }
 
-    public List<BotSceneIndicationInfo> getBotSceneIndicationInfos(HumanPlayerId humanPlayerId) {
+    public List<BotSceneIndicationInfo> getBotSceneIndicationInfos(int userId) {
         synchronized (botScenes) {
-            return botScenes.stream().map(botScene -> botScene.getBotSceneIndicationInfo(humanPlayerId)).filter(Objects::nonNull).collect(Collectors.toList());
+            return botScenes.stream().map(botScene -> botScene.getBotSceneIndicationInfo(userId)).filter(Objects::nonNull).collect(Collectors.toList());
         }
     }
 }

@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
@@ -26,6 +27,7 @@ import java.util.List;
  * Created by Beat
  * 19.05.2017.
  */
+@Ignore
 public class BaseItemTypePersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private ItemTypePersistence itemTypePersistence;

@@ -101,7 +101,7 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
 
     private String setupName(PlayerBaseDto base) {
         if (base.getCharacter() == Character.HUMAN) {
-            if (base.getHumanPlayerId().getUserId() == null) {
+            if (base.getUserId() == null) {
                 return I18nHelper.getConstants().unregisteredUser();
             } else if (base.getName() == null || base.getName().trim().isEmpty()) {
                 return I18nHelper.getConstants().unnamedUser();

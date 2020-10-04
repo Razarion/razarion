@@ -1,21 +1,19 @@
 package com.btxtech.server.persistence.history;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
-
 /**
  * Created by Beat
  * on 11.01.2018.
  */
 public class SimpleUserBackend {
-    private HumanPlayerId humanPlayerId;
+    private int userId;
     private String name;
 
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
+    public int getUserId() {
+        return userId;
     }
 
-    public SimpleUserBackend setHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
+    public SimpleUserBackend setUserId(int userId) {
+        this.userId = userId;
         return this;
     }
 

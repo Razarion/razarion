@@ -1,11 +1,10 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
+import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -77,7 +76,7 @@ public class WeldMasterBaseTest extends AbstractIntegrationTest {
     }
 
     protected PlayerBaseFull createHumanBaseWithBaseItem(DecimalPosition position, UserContext userContext) {
-        return getBaseItemService().createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getHumanPlayerId(), userContext.getName(), position);
+        return getBaseItemService().createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getUserId(), userContext.getName(), position);
     }
 
     protected PlayerBaseFull findBotBase(int botId) {
@@ -86,16 +85,16 @@ public class WeldMasterBaseTest extends AbstractIntegrationTest {
     }
 
     public InitialSlaveSyncItemInfo getSlaveSyncItemInfo(UserContext userContext) {
-        return getPlanetService().generateSlaveSyncItemInfo(userContext.getHumanPlayerId());
+        return getPlanetService().generateSlaveSyncItemInfo(userContext.getUserId());
     }
 
-    protected UserContext createLevel1UserContext(Integer userId) {
+    protected UserContext createLevel1UserContext(int userId) {
         int humanPlayerId = nextHumanPlayerId++;
-        return new UserContext().setLevelId(FallbackConfig.LEVEL_ID_1).setUnlockedItemLimit(Collections.emptyMap()).setHumanPlayerId(new HumanPlayerId().setPlayerId(humanPlayerId).setUserId(userId)).setName("test base " + humanPlayerId);
+        return new UserContext().setLevelId(FallbackConfig.LEVEL_ID_1).setUnlockedItemLimit(Collections.emptyMap()).setUserId(userId).setName("test base " + humanPlayerId);
     }
 
     protected UserContext createLevel1UserContext() {
-        return createLevel1UserContext(null);
+        throw new UnsupportedOperationException("...TODO User always has an ID now...");
     }
 
     public SyncBaseItem fabricateAndMove(SyncBaseItem factory, int baseItemTypeId, DecimalPosition position, PlayerBaseFull playerBaseFull) {

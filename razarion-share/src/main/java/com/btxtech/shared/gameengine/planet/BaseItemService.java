@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.InventoryTypeService;
@@ -149,12 +148,12 @@ public class BaseItemService {
         throw new IllegalStateException("No human base found");
     }
 
-    public PlayerBaseFull createHumanBase(int startRazarion, int levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, String name) {
-        return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, unlockedItemLimit, humanPlayerId, null);
+    public PlayerBaseFull createHumanBase(int startRazarion, int levelId, Map<Integer, Integer> unlockedItemLimit, int userId, String name) {
+        return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, unlockedItemLimit, userId, null);
     }
 
-    private void surrenderHumanBase(HumanPlayerId humanPlayerId) {
-        PlayerBaseFull playerBase = getPlayerBaseFull4HumanPlayerId(humanPlayerId);
+    private void surrenderHumanBase(int userId) {
+        PlayerBaseFull playerBase = getPlayerBaseFull4UserId(userId);
         if (playerBase != null) {
             gameLogicService.onSurrenderBase(playerBase);
             while (!playerBase.getItems().isEmpty()) {
@@ -163,11 +162,11 @@ public class BaseItemService {
         }
     }
 
-    public PlayerBaseFull createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
-        surrenderHumanBase(humanPlayerId);
+    public PlayerBaseFull createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, int userId, String name, DecimalPosition position) {
+        surrenderHumanBase(userId);
         PlayerBaseFull playerBase = null;
         try {
-            playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, unlockedItemLimit, humanPlayerId, name);
+            playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, unlockedItemLimit, userId, name);
             spawnSyncBaseItem(itemTypeService.getBaseItemType(planetConfig.getStartBaseItemTypeId()), position, 0, playerBase, false);
         } catch (Exception e) {
             if (playerBase != null) {
@@ -180,15 +179,15 @@ public class BaseItemService {
         return playerBase;
     }
 
-    public void updateLevel(HumanPlayerId humanPlayerId, int levelId) {
-        PlayerBaseFull playerBase = getPlayerBaseFull4HumanPlayerId(humanPlayerId);
+    public void updateLevel(int userId, int levelId) {
+        PlayerBaseFull playerBase = getPlayerBaseFull4UserId(userId);
         if (playerBase != null) {
             playerBase.setLevelId(levelId);
         }
     }
 
-    public void updateUnlockedItemLimit(HumanPlayerId humanPlayerId, Map<Integer, Integer> unlockedItemLimit) {
-        PlayerBaseFull playerBase = getPlayerBaseFull4HumanPlayerId(humanPlayerId);
+    public void updateUnlockedItemLimit(int userId, Map<Integer, Integer> unlockedItemLimit) {
+        PlayerBaseFull playerBase = getPlayerBaseFull4UserId(userId);
         if (playerBase != null) {
             playerBase.setUnlockedItemLimit(unlockedItemLimit);
         }
@@ -198,14 +197,14 @@ public class BaseItemService {
         return createBaseMaster(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, 0, null, null, null, botConfig.getId());
     }
 
-    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, Integer botId) {
+    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, Integer userId, Integer botId) {
         PlayerBaseFull playerBase;
         synchronized (bases) {
             lastBaseItId++;
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("createBaseMaster: Base with Id already exits: " + lastBaseItId);
             }
-            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, unlockedItemLimit, humanPlayerId, botId);
+            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, unlockedItemLimit, userId, botId);
             bases.put(lastBaseItId, playerBase);
         }
         gameLogicService.onBaseCreated(playerBase);
@@ -217,7 +216,7 @@ public class BaseItemService {
             if (bases.containsKey(playerBaseInfo.getBaseId())) {
                 throw new IllegalStateException("createBaseSlave: Base with Id already exits: " + playerBaseInfo.getBaseId());
             }
-            PlayerBase playerBase = new PlayerBase(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getHumanPlayerId(), playerBaseInfo.getBotId());
+            PlayerBase playerBase = new PlayerBase(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getUserId(), playerBaseInfo.getBotId());
             bases.put(playerBaseInfo.getBaseId(), playerBase);
             gameLogicService.onBaseSlaveCreated(playerBase);
         }
@@ -247,13 +246,13 @@ public class BaseItemService {
     }
 
 
-    public PlayerBase updateHumanPlayerId(int baseId, HumanPlayerId humanPlayerId) {
+    public PlayerBase updateHumanPlayerId(int baseId, int userId) {
         synchronized (bases) {
             PlayerBase playerBase = bases.get(baseId);
             if (playerBase == null) {
                 throw new IllegalStateException("changeBaseNameChanged: Base with Id does not exits: " + baseId);
             }
-            playerBase.updateHumanPlayerId(humanPlayerId);
+            playerBase.updateUserId(userId);
             return playerBase;
         }
     }
@@ -513,10 +512,10 @@ public class BaseItemService {
         return playerBase.getUsedHouseSpace() + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > playerBase.getHouseSpace() + planetConfig.getHouseSpace();
     }
 
-    public PlayerBaseFull getPlayerBaseFull4HumanPlayerId(HumanPlayerId humanPlayerId) {
+    public PlayerBaseFull getPlayerBaseFull4UserId(int userId) {
         synchronized (bases) {
             for (PlayerBase playerBase : bases.values()) {
-                if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(humanPlayerId)) {
+                if (playerBase.getUserId() != null && playerBase.getUserId() == userId) {
                     return (PlayerBaseFull) playerBase;
                 }
             }
@@ -524,10 +523,10 @@ public class BaseItemService {
         return null;
     }
 
-    public PlayerBase getPlayerBase4HumanPlayerId(HumanPlayerId humanPlayerId) {
+    public PlayerBase getPlayerBase4UserId(int userId) {
         synchronized (bases) {
             for (PlayerBase playerBase : bases.values()) {
-                if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(humanPlayerId)) {
+                if (playerBase.getUserId() != null && playerBase.getUserId() == userId) {
                     return playerBase;
                 }
             }
@@ -642,22 +641,23 @@ public class BaseItemService {
     }
 
     public List<PlayerBaseInfo> getBackupPlayerBaseInfos(boolean saveUnregistered) {
-        List<PlayerBaseInfo> playerBaseInfos = new ArrayList<>();
-        for (PlayerBase playerBase : bases.values()) {
-            if (playerBase.getCharacter().isBot()) {
-                continue;
-            }
-            if (!saveUnregistered) {
-                if (playerBase.getHumanPlayerId().getUserId() == null) {
-                    continue;
-                }
-            }
-            PlayerBaseFull playerBaseFull = (PlayerBaseFull) playerBase;
-            if (playerBaseFull.getItemCount() > 0) {
-                playerBaseInfos.add(playerBaseFull.getPlayerBaseInfo());
-            }
-        }
-        return playerBaseInfos;
+        throw new UnsupportedOperationException("...saveUnregistered not supported...");
+//        List<PlayerBaseInfo> playerBaseInfos = new ArrayList<>();
+//        for (PlayerBase playerBase : bases.values()) {
+//            if (playerBase.getCharacter().isBot()) {
+//                continue;
+//            }
+//            if (!saveUnregistered) {
+//                if (playerBase.getUserId() == null) {
+//                    continue;
+//                }
+//            }
+//            PlayerBaseFull playerBaseFull = (PlayerBaseFull) playerBase;
+//            if (playerBaseFull.getItemCount() > 0) {
+//                playerBaseInfos.add(playerBaseFull.getPlayerBaseInfo());
+//            }
+//        }
+//        return playerBaseInfos;
     }
 
     public void fillBackup(BackupPlanetInfo backupPlanetInfo, boolean saveUnregistered) {
@@ -697,7 +697,8 @@ public class BaseItemService {
     }
 
     private boolean isSaveNeeded(PlayerBase playerBase, boolean saveUnregistered) {
-        return !playerBase.getCharacter().isBot() && (saveUnregistered || playerBase.getHumanPlayerId().getUserId() != null);
+        // TODO return !playerBase.getCharacter().isBot() && (saveUnregistered || playerBase.getHumanPlayerId().getUserId() != null);
+        throw new UnsupportedOperationException("...saveUnregistered not supported...");
     }
 
     public void restore(BackupPlanetInfo backupPlanetInfo, BaseRestoreProvider baseRestoreProvider) {
@@ -712,7 +713,7 @@ public class BaseItemService {
             backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
                 try {
                     lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
-                    bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), baseRestoreProvider.getName(playerBaseInfo), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), baseRestoreProvider.getLevel(playerBaseInfo), baseRestoreProvider.getUnlockedItemLimit(playerBaseInfo), playerBaseInfo.getHumanPlayerId(), null));
+                    bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), baseRestoreProvider.getName(playerBaseInfo), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), baseRestoreProvider.getLevel(playerBaseInfo), baseRestoreProvider.getUnlockedItemLimit(playerBaseInfo), playerBaseInfo.getUserId(), null));
                 } catch (Exception e) {
                     exceptionHandler.handleException("BaseItemService.restore()", e);
                 }

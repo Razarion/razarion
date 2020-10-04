@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -53,7 +52,7 @@ public interface GameLogicListener {
     default void onBoxCreated(SyncBoxItem syncBoxItem) {
     }
 
-    default void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
+    default void onBoxPicked(int userId, BoxContent boxContent) {
     }
 
     default void onSyncBoxDeleted(SyncBoxItem box) {
@@ -80,7 +79,7 @@ public interface GameLogicListener {
     default void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
     }
 
-    default void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
+    default void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
     }
 
     default void onEnergyStateChanged(PlayerBase base, int consuming, int generating) {
@@ -104,9 +103,9 @@ public interface GameLogicListener {
     default void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
     }
 
-    default void onBotSceneConflictChanged(HumanPlayerId humanPlayerId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
+    default void onBotSceneConflictChanged(int userId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
     }
 
-    default void onBotSceneConflictsChanged(Collection<HumanPlayerId> activeHumanPlayerIds, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
+    default void onBotSceneConflictsChanged(Collection<Integer> activeUserIds, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
     }
 }

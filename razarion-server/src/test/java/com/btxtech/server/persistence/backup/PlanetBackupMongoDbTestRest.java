@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -16,6 +17,7 @@ import java.util.List;
  * Created by Beat
  * on 03.09.2017.
  */
+@Ignore
 public class PlanetBackupMongoDbTestRest extends IgnoreOldArquillianTest {
     @Inject
     private PlanetBackupMongoDb planetBackupMongoDb;

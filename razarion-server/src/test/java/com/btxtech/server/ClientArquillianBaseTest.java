@@ -4,12 +4,8 @@ import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.GameUiContextController;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Ignore;
-import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -22,16 +18,10 @@ import java.util.List;
  * on 08.02.2018.
  */
 @Ignore
-@RunWith(Arquillian.class)  // Ignores tests
 public class ClientArquillianBaseTest {
     public static String HOST_PORT = "192.168.99.100:32778";
     public static String URL = "http://" + HOST_PORT + "/test";
     public static String REST_URL = URL + "/rest/";
-
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return null;
-    }
 
     protected String getRestUrl() {
         return REST_URL;

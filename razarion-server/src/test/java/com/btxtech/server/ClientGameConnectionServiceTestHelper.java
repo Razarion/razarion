@@ -17,7 +17,7 @@ public class ClientGameConnectionServiceTestHelper {
 
     public TestClientGameConnection connectClient(PlayerSession playerSession) {
         TestClientGameConnection testClientGameConnection = new TestClientGameConnection(playerSession);
-        clientGameConnectionService.onOpen(testClientGameConnection, playerSession.getUserContext().getHumanPlayerId());
+        clientGameConnectionService.onOpen(testClientGameConnection, playerSession.getUserContext().getUserId());
         return testClientGameConnection;
     }
 

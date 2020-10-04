@@ -197,7 +197,7 @@ public class RegisterService {
         userEntity.setVerifiedDone();
         entityManager.merge(userEntity);
 
-        PlayerSession playerSession = sessionService.findPlayerSession(userEntity.toUserContext().getHumanPlayerId());
+        PlayerSession playerSession = sessionService.findPlayerSession(userEntity.toUserContext().getUserId());
         if (playerSession != null) {
             playerSession.setUserContext(userEntity.toUserContext());
             clientSystemConnectionService.sendEmailVerifiedToClient(playerSession);

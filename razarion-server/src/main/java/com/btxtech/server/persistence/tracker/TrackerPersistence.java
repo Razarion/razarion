@@ -1,11 +1,9 @@
 package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.marketing.facebook.FbFacade;
-import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
+import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.history.HistoryPersistence;
-import com.btxtech.server.user.HumanPlayerIdEntity;
-import com.btxtech.server.user.HumanPlayerIdEntity_;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.CommonUrl;
@@ -305,20 +303,9 @@ public class TrackerPersistence {
         return pageTrackerEntity.getParams().substring(fromIndex + 1, toIndex).trim();
     }
 
+    @Deprecated
     private Integer readCreatedHumanPlayerId(String sessionId) {
-
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<HumanPlayerIdEntity> cq = criteriaBuilder.createQuery(HumanPlayerIdEntity.class);
-        Root<HumanPlayerIdEntity> root = cq.from(HumanPlayerIdEntity.class);
-        cq.where(criteriaBuilder.equal(root.get(HumanPlayerIdEntity_.sessionId), sessionId));
-        List<HumanPlayerIdEntity> humanPlayerIdEntities = entityManager.createQuery(cq).getResultList();
-        if (humanPlayerIdEntities.isEmpty()) {
-            return null;
-        }
-        if (humanPlayerIdEntities.size() > 1) {
-            logger.warning("More the one HumanPlayerIdEntity found for session id: " + sessionId + " HumanPlayerId: " + humanPlayerIdEntities);
-        }
-        return humanPlayerIdEntities.get(0).getId();
+        throw new UnsupportedOperationException("...No longer supported...");
     }
 
     private int getPageHits(String sessionId) {

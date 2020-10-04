@@ -1,7 +1,6 @@
 package com.btxtech.server.web;
 
 import com.btxtech.server.user.PlayerSession;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 
 import javax.inject.Singleton;
@@ -48,10 +47,10 @@ public class SessionService {
         }
     }
 
-    public PlayerSession findPlayerSession(HumanPlayerId humanPlayerId) {
+    public PlayerSession findPlayerSession(int userId) {
         synchronized (sessions) {
             for (PlayerSession playerSession : sessions.values()) {
-                if (playerSession.getUserContext() != null && playerSession.getUserContext().getHumanPlayerId() != null && playerSession.getUserContext().getHumanPlayerId().equals(humanPlayerId)) {
+                if (playerSession.getUserContext() != null && playerSession.getUserContext().getUserId() != userId) {
                     return playerSession;
                 }
             }
@@ -59,10 +58,10 @@ public class SessionService {
         return null;
     }
 
-    public void updateUserContext(HumanPlayerId humanPlayerId, UserContext userContext) {
+    public void updateUserContext(int userId, UserContext userContext) {
         synchronized (sessions) {
             for (PlayerSession playerSession : sessions.values()) {
-                if (playerSession.getUserContext() != null && playerSession.getUserContext().getHumanPlayerId() != null && playerSession.getUserContext().getHumanPlayerId().equals(humanPlayerId)) {
+                if (playerSession.getUserContext() != null && playerSession.getUserContext().getUserId() == userId) {
                     playerSession.setUserContext(userContext);
                 }
             }

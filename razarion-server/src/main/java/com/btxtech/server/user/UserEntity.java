@@ -5,7 +5,6 @@ import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 
@@ -20,7 +19,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,9 +54,6 @@ public class UserEntity {
     @Column(columnDefinition = "DATETIME(3)")
     private Date registerDate;
     private boolean admin;
-    @Deprecated
-    @OneToOne(fetch = FetchType.LAZY)
-    private HumanPlayerIdEntity humanPlayerIdEntity;
     @ManyToOne(fetch = FetchType.LAZY)
     private LevelEntity level;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -122,7 +117,6 @@ public class UserEntity {
      *
      * @param email         Should not be used for facebook email
      * @param passwordHash  passwordHash
-     * @param humanPlayerId humanPlayerId
      * @param locale        locale
      */
     public void fromEmailPasswordHash(String email, String passwordHash, Locale locale) {
@@ -151,18 +145,6 @@ public class UserEntity {
             userContext.setLevelId(level.getId());
         }
         return userContext;
-    }
-
-    public HumanPlayerId createHumanPlayerId() {
-        if (humanPlayerIdEntity != null) {
-            return new HumanPlayerId().setPlayerId(humanPlayerIdEntity.getId()).setUserId(id);
-        } else {
-            return null;
-        }
-    }
-
-    public HumanPlayerIdEntity getHumanPlayerIdEntity() {
-        return humanPlayerIdEntity;
     }
 
     public LevelEntity getLevel() {

@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.Character;
 
 /**
@@ -11,7 +10,7 @@ public class PlayerBaseDto {
     private int baseId;
     private String name;
     private Character character;
-    private HumanPlayerId humanPlayerId;
+    private Integer userId;
     private Integer botId;
 
     public int getBaseId() {
@@ -38,12 +37,12 @@ public class PlayerBaseDto {
         this.character = character;
     }
 
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Integer getBotId() {

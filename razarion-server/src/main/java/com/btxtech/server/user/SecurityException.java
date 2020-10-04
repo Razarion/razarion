@@ -14,6 +14,6 @@ public class SecurityException extends RuntimeException {
     }
 
     public SecurityException(UserContext userContext, Method method) {
-        super("User '" + userContext.getHumanPlayerId() + "' does not have admin rights to call: " + method);
+        super("User '" + userContext.getUserId() + "' does not have admin rights to call: " + method);
     }
 }

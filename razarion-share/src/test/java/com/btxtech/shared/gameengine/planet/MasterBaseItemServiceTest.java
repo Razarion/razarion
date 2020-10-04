@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -27,7 +26,7 @@ public class MasterBaseItemServiceTest extends BaseItemServiceBase {
 
         setup(planetConfig, GameEngineMode.MASTER, null, null);
 
-        PlayerBaseFull base1 = getBaseItemService().createHumanBase(1000, 1, Collections.emptyMap(), new HumanPlayerId().setPlayerId(105), "Unit test Base human");
+        PlayerBaseFull base1 = getBaseItemService().createHumanBase(1000, 1, Collections.emptyMap(), 105, "Unit test Base human");
         PlayerBaseFull base2 = getBaseItemService().createBotBase(new BotConfig().setName("Test Bot").setNpc(false));
         int builderId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(FallbackConfig.BUILDER_ITEM_TYPE_ID), new DecimalPosition(100, 200), Math.toRadians(80), base1, true).getId();
         int factoryId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID), new DecimalPosition(200, 200), Math.toRadians(100), base2, true).getId();
@@ -40,13 +39,13 @@ public class MasterBaseItemServiceTest extends BaseItemServiceBase {
         PlayerBaseInfo humanBase = getPlayerBaseInfo(base1.getBaseId(), playerBaseInfos);
         Assert.assertEquals("Unit test Base human", humanBase.getName());
         Assert.assertEquals(Character.HUMAN, humanBase.getCharacter());
-        Assert.assertEquals(105, humanBase.getHumanPlayerId().getPlayerId());
+        Assert.assertEquals(new Integer(105), humanBase.getUserId());
         Assert.assertEquals(1000, humanBase.getResources(), 0.0001);
         // Bot
         PlayerBaseInfo botBase = getPlayerBaseInfo(base2.getBaseId(), playerBaseInfos);
         Assert.assertEquals("Test Bot", botBase.getName());
         Assert.assertEquals(Character.BOT, botBase.getCharacter());
-        Assert.assertNull(botBase.getHumanPlayerId());
+        Assert.assertNull(botBase.getUserId());
 
         List<SyncBaseItemInfo> syncBaseItemInfos = getBaseItemService().getSyncBaseItemInfos();
         Assert.assertEquals(3, syncBaseItemInfos.size());

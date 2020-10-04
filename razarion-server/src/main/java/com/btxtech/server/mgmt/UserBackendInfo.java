@@ -1,7 +1,5 @@
 package com.btxtech.server.mgmt;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
-
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +8,7 @@ import java.util.List;
  * on 06.09.2017.
  */
 public class UserBackendInfo {
-    private HumanPlayerId humanPlayerId;
+    private int userId;
     private Date registerDate;
     private String facebookId;
     private String email;
@@ -24,12 +22,12 @@ public class UserBackendInfo {
     private List<GameHistoryEntry> gameHistoryEntries;
 
 
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
+    public int getUserId() {
+        return userId;
     }
 
-    public UserBackendInfo setHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
+    public UserBackendInfo setUserId(int userId) {
+        this.userId = userId;
         return this;
     }
 

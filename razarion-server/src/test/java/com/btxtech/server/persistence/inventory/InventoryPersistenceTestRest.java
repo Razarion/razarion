@@ -5,6 +5,7 @@ import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * Created by Beat
  * 20.05.2017.
  */
+@Ignore
 public class InventoryPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private InventoryPersistence inventoryPersistence;

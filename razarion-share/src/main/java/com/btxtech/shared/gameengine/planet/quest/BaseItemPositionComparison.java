@@ -13,7 +13,6 @@
 
 package com.btxtech.shared.gameengine.planet.quest;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -43,17 +42,17 @@ public class BaseItemPositionComparison extends AbstractTickComparison {
     private Map<BaseItemType, Integer> itemTypes;
     private PlaceConfig placeConfig;
     private Integer timeSeconds;
-    private HumanPlayerId humanPlayerId;
+    private int userId;
     private boolean isFulfilled;
     private boolean isItemFulfilled;
     private Integer fulfilledTickCount;
     private final Collection<SyncBaseItem> fulfilledItems = new HashSet<>();
 
-    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer timeSeconds, HumanPlayerId humanPlayerId) {
+    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer timeSeconds, int userId) {
         this.itemTypes = itemTypes;
         this.placeConfig = placeConfig;
         this.timeSeconds = timeSeconds;
-        this.humanPlayerId = humanPlayerId;
+        this.userId = userId;
     }
 
     @Override
@@ -107,7 +106,7 @@ public class BaseItemPositionComparison extends AbstractTickComparison {
     }
 
     private Collection<SyncBaseItem> setupFulfilled() {
-        PlayerBaseFull playerBase = baseItemService.getPlayerBaseFull4HumanPlayerId(humanPlayerId);
+        PlayerBaseFull playerBase = baseItemService.getPlayerBaseFull4UserId(userId);
         if (playerBase == null) {
             return Collections.emptyList();
         }

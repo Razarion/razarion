@@ -169,8 +169,8 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
         WarmGameUiContext warmGameUiContext = gameUiContextEntity.toGameWarmGameUiControlConfig(locale);
         if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
             warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
-            warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getHumanPlayerId()));
-            warmGameUiContext.setBotSceneIndicationInfos(botService.getBotSceneIndicationInfos(userContext.getHumanPlayerId()));
+            warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getUserId()));
+            warmGameUiContext.setBotSceneIndicationInfos(botService.getBotSceneIndicationInfos(userContext.getUserId()));
         }
         return warmGameUiContext;
     }

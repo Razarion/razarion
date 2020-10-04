@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 
 import java.util.HashMap;
@@ -14,7 +13,7 @@ import java.util.function.BiConsumer;
  */
 public class BackupComparisionInfo {
     private int questId;
-    private HumanPlayerId humanPlayerId;
+    private int userId;
     private Integer remainingCount;
     private Integer passedSeconds;
     private Map<String, Integer> remainingItemTypes; // MongoDb org.bson.codecs.configuration.CodecConfigurationException: Invalid Map type. Maps MUST have string keys, found class java.lang.Integer instead.
@@ -27,12 +26,12 @@ public class BackupComparisionInfo {
         this.questId = questId;
     }
 
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public void checkRemainingCount() {
@@ -94,7 +93,7 @@ public class BackupComparisionInfo {
     public String toString() {
         return "BackupComparisionInfo{" +
                 "questId=" + questId +
-                ", humanPlayerId=" + humanPlayerId +
+                ", humanPlayerId=" + userId +
                 ", remainingCount=" + remainingCount +
                 ", passedSeconds=" + passedSeconds +
                 ", remainingItemTypes=" + remainingItemTypes +

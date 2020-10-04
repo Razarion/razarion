@@ -278,7 +278,7 @@ public class BaseItemUiService {
             if (bases.put(playerBase.getBaseId(), playerBase) != null) {
                 logger.warning("Base already exists: " + playerBase);
             }
-            if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(userUiService.getUserContext().getHumanPlayerId())) {
+            if (playerBase.getUserId() != null && playerBase.getUserId().equals(userUiService.getUserContext().getUserId())) {
                 myBase = playerBase;
                 gameUiControl.onOwnBaseCreated();
             }

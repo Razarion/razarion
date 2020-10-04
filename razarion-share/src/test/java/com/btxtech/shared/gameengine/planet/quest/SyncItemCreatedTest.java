@@ -24,19 +24,19 @@ public class SyncItemCreatedTest extends AbstractQuestServiceTest {
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         // Start quest
         getQuestService().addQuestListener(createQuestListener());
-        getQuestService().activateCondition(playerBaseFull.getHumanPlayerId(), GameTestContent.createItemTypeCountCreatedQuest2());
-        assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
+        getQuestService().activateCondition(playerBaseFull.getUserId(), GameTestContent.createItemTypeCountCreatedQuest2());
+        assertQuestNotPassed(playerBaseFull.getUserId());
         // Create factory not passed
         getCommandService().build(builder.getId(), new DecimalPosition(20, 40), FallbackConfig.FACTORY_ITEM_TYPE_ID);
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.FACTORY_ITEM_TYPE_ID);
-        assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
+        assertQuestNotPassed(playerBaseFull.getUserId());
         // Create two attacker not passed
         fabricateAndMove(factory, FallbackConfig.ATTACKER_ITEM_TYPE_ID ,new DecimalPosition(20, 60), playerBaseFull);
         fabricateAndMove(factory, FallbackConfig.ATTACKER_ITEM_TYPE_ID ,new DecimalPosition(20, 80), playerBaseFull);
-        assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
+        assertQuestNotPassed(playerBaseFull.getUserId());
         // Create harvester passed
         fabricateAndMove(factory, FallbackConfig.HARVESTER_ITEM_TYPE_ID ,new DecimalPosition(20, 60), playerBaseFull);
-        assertQuestPassed(playerBaseFull.getHumanPlayerId());
+        assertQuestPassed(playerBaseFull.getUserId());
     }
 }

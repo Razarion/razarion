@@ -1,8 +1,7 @@
 {
   "userContext": {
     "userId": "$USER_ID$",
-    "registerState":"EMAIL_VERIFIED",
-    "humanPlayerId": null,
+    "registerState": "EMAIL_VERIFIED",
     "name": null,
     "admin": false,
     "levelId": null,

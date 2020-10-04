@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.user;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.datatypes.UserContext;
@@ -149,8 +148,7 @@ public class UserUiService {
         return userContext.checkName();
     }
 
-    public void onUserRegistered(HumanPlayerId humanPlayerId, boolean emailNotVerified) {
-        userContext.setHumanPlayerId(humanPlayerId);
+    public void onUserRegistered(boolean emailNotVerified) {
         if(emailNotVerified) {
             userContext.registerState(UserContext.RegisterState.EMAIL_UNVERIFIED);
         } else {

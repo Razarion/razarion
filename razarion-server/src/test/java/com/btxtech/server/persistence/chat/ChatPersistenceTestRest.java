@@ -12,6 +12,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -21,6 +22,7 @@ import java.util.Date;
  * Created by Beat
  * on 29.12.2017.
  */
+@Ignore
 public class ChatPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private UserService userService;
@@ -51,10 +53,10 @@ public class ChatPersistenceTestRest extends IgnoreOldArquillianTest {
         TestClientSystemConnection testClientSystemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
 
         chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef");
-        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(0, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(0, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getUserId()).setUserName("sdifbj").setMessage("auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef"));
 
         chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "asdf kll wssxdvbhnmhjhki   äöpoöoöpo");
-        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(1, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("asdf kll wssxdvbhnmhjhki   äöpoöoöpo"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(1, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getUserId()).setUserName("sdifbj").setMessage("asdf kll wssxdvbhnmhjhki   äöpoöoöpo"));
 
         assertCount(2, ChatMessageEntity.class);
 
@@ -159,7 +161,7 @@ public class ChatPersistenceTestRest extends IgnoreOldArquillianTest {
         // Verify
         testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(17, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity2.getId()).setUserName("name2").setMessage("asd gfrfsagh ewrfwrfew"));
         testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(18, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("asdfsdfsdaf"));
-        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(19, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("frghstehllool"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(19, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getUserId()).setUserName("sdifbj").setMessage("frghstehllool"));
 
 
         cleanTable(ChatMessageEntity.class);

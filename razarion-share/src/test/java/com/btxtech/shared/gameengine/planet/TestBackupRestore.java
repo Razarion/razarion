@@ -59,7 +59,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         testBaseRestoreProvider.addUserContext(userContext1);
         tickPlanetServiceBaseServiceActive();
         QuestConfig questCreate1 = GameTestContent.createItemCountCreatedQuest();
-        getQuestService().activateCondition(playerBaseFull1.getHumanPlayerId(), questCreate1);
+        getQuestService().activateCondition(playerBaseFull1.getUserId(), questCreate1);
         SyncBaseItem builder1 = findSyncBaseItem(playerBaseFull1, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         getCommandService().build(builder1, new DecimalPosition(40, 20), getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
@@ -80,7 +80,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         PlayerBaseFull playerBaseFull2 = createHumanBaseWithBaseItem(new DecimalPosition(20, 40), userContext2);
         tickPlanetServiceBaseServiceActive(harvester1);
         QuestConfig questCreate2 = GameTestContent.createItemTypeCountCreatedQuest();
-        getQuestService().activateCondition(playerBaseFull2.getHumanPlayerId(), questCreate2);
+        getQuestService().activateCondition(playerBaseFull2.getUserId(), questCreate2);
         SyncBaseItem builder2 = findSyncBaseItem(playerBaseFull2, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         getCommandService().build(builder2, new DecimalPosition(70, 40), getBaseItemType(FallbackConfig.CONSUMER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive(harvester1);
@@ -182,9 +182,9 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         // Restore Quests
         getQuestService().clean();
-        getQuestService().activateCondition(playerBaseFull1Restore.getHumanPlayerId(), GameTestContent.createItemCountCreatedQuest());
+        getQuestService().activateCondition(playerBaseFull1Restore.getUserId(), GameTestContent.createItemCountCreatedQuest());
         getQuestService().restore(backupPlanetInfoUnregistered);
-        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(playerBaseFull1Restore.getHumanPlayerId());
+        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(playerBaseFull1Restore.getUserId());
         Assert.assertEquals(4, (int) questProgressInfo.getCount());
     }
 
@@ -245,9 +245,9 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         // Restore Quests
         getQuestService().clean();
-        getQuestService().activateCondition(playerBaseFull1Restore.getHumanPlayerId(), GameTestContent.createItemCountCreatedQuest());
+        getQuestService().activateCondition(playerBaseFull1Restore.getUserId(), GameTestContent.createItemCountCreatedQuest());
         getQuestService().restore(backupPlanetInfoRegistered);
-        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(playerBaseFull1Restore.getHumanPlayerId());
+        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(playerBaseFull1Restore.getUserId());
         Assert.assertEquals(4, (int) questProgressInfo.getCount());
     }
 
@@ -314,7 +314,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         for (SyncBaseItem actualId : actual.getItems()) {
             Assert.assertTrue("Item not expected: " + actual, expectedIds.remove(actualId.getId()));
         }
-        if(!expectedIds.isEmpty()) {
+        if (!expectedIds.isEmpty()) {
             Assert.fail("Some items ar missing: " + expectedIds);
         }
         ReflectionAssert.assertReflectionEquals(expected.getUnlockedItemLimit(), actual.getUnlockedItemLimit());
@@ -355,11 +355,11 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
     private BackupComparisionInfo findBackupComparisionInfo(List<BackupComparisionInfo> backupComparisionInfos, PlayerBase playerBase1) {
         for (BackupComparisionInfo backupComparisionInfo : backupComparisionInfos) {
-            if (backupComparisionInfo.getHumanPlayerId().equals(playerBase1.getHumanPlayerId())) {
+            if (backupComparisionInfo.getUserId() == playerBase1.getUserId()) {
                 return backupComparisionInfo;
             }
         }
-        throw new IllegalArgumentException("No BackupComparisionInfo found for HumanPlayerId: " + playerBase1.getHumanPlayerId());
+        throw new IllegalArgumentException("No BackupComparisionInfo found for HumanPlayerId: " + playerBase1.getUserId());
     }
 
 }

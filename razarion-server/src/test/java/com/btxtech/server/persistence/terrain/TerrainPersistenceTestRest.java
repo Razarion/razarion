@@ -10,6 +10,7 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.comparator.impl.ObjectComparatorIgnore;
@@ -24,6 +25,7 @@ import java.util.List;
  * Created by Beat
  * on 28.11.2017.
  */
+@Ignore
 public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private TerrainEditorControllerImpl terrainEditorController;

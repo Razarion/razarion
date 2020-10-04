@@ -7,16 +7,13 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.QuestPersistence;
 import com.btxtech.server.persistence.history.HistoryPersistence;
-import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.ServerState;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -85,7 +82,7 @@ public class ServerMgmt {
                 if (sessionService.checkSession(clientSystemConnection.getHttpSessionId())) {
                     PlayerSession playerSession = sessionService.getSession(clientSystemConnection.getHttpSessionId());
                     if (playerSession.getUserContext() != null) {
-                        onlineInfo.setName(playerSession.getUserContext().getName()).setHumanPlayerId(playerSession.getUserContext().getHumanPlayerId());
+                        onlineInfo.setName(playerSession.getUserContext().getName()).setUserId(playerSession.getUserContext().getUserId());
                     }
                     onlineInfo.setSessionTime(playerSession.getTime());
                 } else {
@@ -112,28 +109,29 @@ public class ServerMgmt {
 
     @SecurityCheck
     public UserBackendInfo loadBackendUserInfo(int playerId) {
-        UserBackendInfo userBackendInfo = userService.findUserBackendInfo(playerId);
-        if (userBackendInfo != null) {
-            userBackendInfo.setGameHistoryEntries(historyPersistence.readUserHistory(playerId));
-            return userBackendInfo;
-        }
-        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
-        if (playerSession != null) {
-            // Anonymous user from session
-            userBackendInfo = setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
-        } else {
-            // Anonymous user session is gone
-            userBackendInfo = new UserBackendInfo();
-            userBackendInfo.setHumanPlayerId(new HumanPlayerId().setPlayerId(playerId));
-        }
-        userBackendInfo.setGameHistoryEntries(historyPersistence.readUserHistory(playerId));
-        return userBackendInfo;
+//        UserBackendInfo userBackendInfo = userService.findUserBackendInfo(playerId);
+//        if (userBackendInfo != null) {
+//            userBackendInfo.setGameHistoryEntries(historyPersistence.readUserHistory(playerId));
+//            return userBackendInfo;
+//        }
+//        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
+//        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+//        if (playerSession != null) {
+//            // Anonymous user from session
+//            userBackendInfo = setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+//        } else {
+//            // Anonymous user session is gone
+//            userBackendInfo = new UserBackendInfo();
+//            userBackendInfo.setHumanPlayerId(new HumanPlayerId().setPlayerId(playerId));
+//        }
+//        userBackendInfo.setGameHistoryEntries(historyPersistence.readUserHistory(playerId));
+//        return userBackendInfo;
+        throw new UnsupportedOperationException("...TODO...");
     }
 
-    private UserBackendInfo setupUnregisteredUserBackendInfo(HumanPlayerId humanPlayerId, PlayerSession playerSession) {
+    private UserBackendInfo setupUnregisteredUserBackendInfo(int userId, PlayerSession playerSession) {
         UserBackendInfo userBackendInfo;
-        userBackendInfo = new UserBackendInfo().setHumanPlayerId(humanPlayerId);
+        userBackendInfo = new UserBackendInfo().setUserId(userId);
         if (playerSession.getUserContext() != null) {
             userBackendInfo.setLevelNumber(levelCrudPersistence.getLevelNumber4Id(playerSession.getUserContext().getLevelId()));
             userBackendInfo.setXp(playerSession.getUserContext().getXp());
@@ -155,87 +153,50 @@ public class ServerMgmt {
 
     @SecurityCheck
     public UserBackendInfo removeCompletedQuest(int playerId, int questId) {
-        UserBackendInfo userBackendInfo = userService.removeCompletedQuest(playerId, questId);
-        if (userBackendInfo != null) {
-            return userBackendInfo;
-        }
-
-        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
-        if (playerSession == null) {
-            throw new IllegalArgumentException("Can not find registered oder unregistered user for playerId: " + playerId);
-        }
-
-        if (playerSession.getUnregisteredUser() != null) {
-            playerSession.getUnregisteredUser().removeCompletedQuestId(questId);
-        }
-        return setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+//        UserBackendInfo userBackendInfo = userService.removeCompletedQuest(playerId, questId);
+//        if (userBackendInfo != null) {
+//            return userBackendInfo;
+//        }
+//
+//        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
+//        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+//        if (playerSession == null) {
+//            throw new IllegalArgumentException("Can not find registered oder unregistered user for playerId: " + playerId);
+//        }
+//
+//        if (playerSession.getUnregisteredUser() != null) {
+//            playerSession.getUnregisteredUser().removeCompletedQuestId(questId);
+//        }
+//        return setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+        throw new UnsupportedOperationException("...TODO...");
     }
 
     @SecurityCheck
     public UserBackendInfo addCompletedQuest(int playerId, int questId) {
-        UserBackendInfo userBackendInfo = userService.addCompletedQuest(playerId, questId);
-        if (userBackendInfo != null) {
-            return userBackendInfo;
-        }
-
-        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
-        if (playerSession == null) {
-            throw new IllegalArgumentException("Can not find registered oder unregistered user for playerId: " + playerId);
-        }
-
-        if (playerSession.getUnregisteredUser() != null) {
-            playerSession.getUnregisteredUser().addCompletedQuestId(questId);
-        }
-        return setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+//        UserBackendInfo userBackendInfo = userService.addCompletedQuest(playerId, questId);
+//        if (userBackendInfo != null) {
+//            return userBackendInfo;
+//        }
+//
+//        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
+//        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+//        if (playerSession == null) {
+//            throw new IllegalArgumentException("Can not find registered oder unregistered user for playerId: " + playerId);
+//        }
+//
+//        if (playerSession.getUnregisteredUser() != null) {
+//            playerSession.getUnregisteredUser().addCompletedQuestId(questId);
+//        }
+//        return setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+        throw new UnsupportedOperationException("...TODO...");
     }
 
     @SecurityCheck
     public UserBackendInfo removeUnlockedItem(int playerId, int unlockItemId) {
-        HumanPlayerId humanPlayerId = sessionService.findPlayerSession(new HumanPlayerId().setPlayerId(playerId)).getUserContext().getHumanPlayerId();
-        serverUnlockService.removeUnlocked(humanPlayerId, unlockItemId);
-        return loadBackendUserInfo(playerId);
-    }
-
-    @SecurityCheck
-    public UserBackendInfo setLevelNumber(int playerId, int levelNumber) {
-        HumanPlayerId humanPlayerId = userService.findHumanPlayerId(playerId);
-        UserContext userContext = userService.getUserContextTransactional(humanPlayerId);
-        LevelEntity newLevel = levelCrudPersistence.getLevel4Number(levelNumber);
-        userContext.setLevelId(newLevel.getId());
-        clientSystemConnectionService.onLevelUp(humanPlayerId, userContext, serverUnlockService.gatherAvailableUnlocks(userContext, newLevel.getId()));
-        serverGameEngineControl.onLevelChanged(humanPlayerId, newLevel.getId());
-        if (humanPlayerId.getUserId() != null) {
-            userService.persistLevel(humanPlayerId.getUserId(), newLevel);
-        }
-        return loadBackendUserInfo(playerId);
-    }
-
-    @SecurityCheck
-    public UserBackendInfo setXp(int playerId, int xp) {
-        HumanPlayerId humanPlayerId = userService.findHumanPlayerId(playerId);
-        UserContext userContext = userService.getUserContextTransactional(humanPlayerId);
-        userContext.setXp(xp);
-        clientSystemConnectionService.onXpChanged(humanPlayerId, xp);
-        if (humanPlayerId.getUserId() != null) {
-            userService.persistXp(humanPlayerId.getUserId(), xp);
-        }
-        return loadBackendUserInfo(playerId);
-    }
-
-    @SecurityCheck
-    public UserBackendInfo setCrystals(int playerId, int crystals) {
-        HumanPlayerId humanPlayerId = userService.findHumanPlayerId(playerId);
-        if (humanPlayerId.getUserId() != null) {
-            userService.persistCrystals(humanPlayerId.getUserId(), crystals);
-        } else {
-            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
-            if (playerSession != null && playerSession.getUnregisteredUser() != null) {
-                playerSession.getUnregisteredUser().setCrystals(crystals);
-            }
-        }
-        return loadBackendUserInfo(playerId);
+//        HumanPlayerId humanPlayerId = sessionService.findPlayerSession(new HumanPlayerId().setPlayerId(playerId)).getUserContext().getHumanPlayerId();
+//        serverUnlockService.removeUnlocked(humanPlayerId, unlockItemId);
+//        return loadBackendUserInfo(playerId);
+        throw new UnsupportedOperationException("...TODO...");
     }
 
     @SecurityCheck

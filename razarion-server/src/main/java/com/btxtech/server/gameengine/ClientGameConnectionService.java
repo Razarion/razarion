@@ -3,7 +3,6 @@ package com.btxtech.server.gameengine;
 import com.btxtech.server.persistence.tracker.ConnectionTrackingPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -39,22 +38,22 @@ public class ClientGameConnectionService {
     private ConnectionTrackingPersistence connectionTrackingPersistence;
     @Inject
     private Instance<PlanetService> planetServiceInstance;
-    private final MapCollection<HumanPlayerId, ClientGameConnection> gameConnections = new MapCollection<>();
+    private final MapCollection<Integer, ClientGameConnection> gameConnections = new MapCollection<>();
     private ObjectMapper mapper = new ObjectMapper();
 
-    public void onOpen(ClientGameConnection clientGameConnection, HumanPlayerId humanPlayerId) {
+    public void onOpen(ClientGameConnection clientGameConnection, int userId) {
         synchronized (gameConnections) {
-            gameConnections.put(humanPlayerId, clientGameConnection);
+            gameConnections.put(userId, clientGameConnection);
         }
-        connectionTrackingPersistence.onGameConnectionOpened(clientGameConnection.getHttpSessionId(), humanPlayerId);
-        sendInitialSlaveSyncInfo(humanPlayerId);
+        connectionTrackingPersistence.onGameConnectionOpened(clientGameConnection.getHttpSessionId(), userId);
+        sendInitialSlaveSyncInfo(userId);
     }
 
     public void onClose(ClientGameConnection clientGameConnection) {
         synchronized (gameConnections) {
-            gameConnections.remove(clientGameConnection.getHumanPlayerId(), clientGameConnection);
+            gameConnections.remove(clientGameConnection.getUserId(), clientGameConnection);
         }
-        connectionTrackingPersistence.onGameConnectionClosed(clientGameConnection.getHttpSessionId(), clientGameConnection.getHumanPlayerId());
+        connectionTrackingPersistence.onGameConnectionClosed(clientGameConnection.getHttpSessionId(), clientGameConnection.getUserId());
     }
 
     public void onBaseCreated(PlayerBaseFull playerBase) {
@@ -70,7 +69,7 @@ public class ClientGameConnectionService {
     }
 
     public void onBaseHumanPlayerIdChanged(PlayerBase playerBase) {
-        sendToClients(GameConnectionPacket.BASE_HUMAN_PLAYER_ID_CHANGED, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setHumanPlayerId(playerBase.getHumanPlayerId()));
+        sendToClients(GameConnectionPacket.BASE_HUMAN_PLAYER_ID_CHANGED, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setUserId(playerBase.getUserId()));
     }
 
     public void sendSyncBaseItems(Collection<SyncBaseItemInfo> syncBaseItemInfos) {
@@ -93,7 +92,7 @@ public class ClientGameConnectionService {
     public void sendResourcesBalanceChanged(PlayerBase playerBase, int resources) {
         PlayerSession playerSession = getPlayerSessionBase(playerBase);
         if (playerSession != null) {
-            sendToClient(playerBase.getHumanPlayerId(), GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
+            sendToClient(playerBase.getUserId(), GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
         }
     }
 
@@ -137,10 +136,10 @@ public class ClientGameConnectionService {
         }
     }
 
-    private void sendToClient(HumanPlayerId humanPlayerId, GameConnectionPacket packet, Object object) {
+    private void sendToClient(int userId, GameConnectionPacket packet, Object object) {
         Collection<ClientGameConnection> clientGameConnections;
         synchronized (gameConnections) {
-            clientGameConnections = gameConnections.get(humanPlayerId);
+            clientGameConnections = gameConnections.get(userId);
             if (clientGameConnections == null) {
                 return;
             }
@@ -160,13 +159,13 @@ public class ClientGameConnectionService {
     }
 
     private PlayerSession getPlayerSessionBase(PlayerBase playerBase) {
-        return sessionService.findPlayerSession(playerBase.getHumanPlayerId());
+        return sessionService.findPlayerSession(playerBase.getUserId());
     }
 
 
-    private void sendInitialSlaveSyncInfo(HumanPlayerId humanPlayerId) {
+    private void sendInitialSlaveSyncInfo(int userId) {
         try {
-            sendToClient(humanPlayerId, GameConnectionPacket.INITIAL_SLAVE_SYNC_INFO, planetServiceInstance.get().generateSlaveSyncItemInfo(humanPlayerId));
+            sendToClient(userId, GameConnectionPacket.INITIAL_SLAVE_SYNC_INFO, planetServiceInstance.get().generateSlaveSyncItemInfo(userId));
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }

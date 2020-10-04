@@ -1,11 +1,9 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -24,7 +22,7 @@ public class TestGameLogicListener implements GameLogicListener {
     private List<SyncResourceItem> resourceCreated = new ArrayList<>();
     private List<SyncResourceItem> resourceDeleted = new ArrayList<>();
     private List<BoxPickedEntry> boxPicked = new ArrayList<>();
-    private MapList<HumanPlayerId, QuestProgressInfo> questProgresses = new MapList<>();
+    private MapList<Integer, QuestProgressInfo> questProgresses = new MapList<>();
     private TestWebSocket testWebSocket = new TestWebSocket();
 
     public void clearAll() {
@@ -54,7 +52,7 @@ public class TestGameLogicListener implements GameLogicListener {
         return boxPicked;
     }
 
-    public MapList<HumanPlayerId, QuestProgressInfo> getQuestProgresses() {
+    public MapList<Integer, QuestProgressInfo> getQuestProgresses() {
         return questProgresses;
     }
 
@@ -111,13 +109,13 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     @Override
-    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
-        boxPicked.add(new BoxPickedEntry(humanPlayerId, boxContent));
+    public void onBoxPicked(int userId, BoxContent boxContent) {
+        boxPicked.add(new BoxPickedEntry(userId, boxContent));
     }
 
     @Override
-    public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
-        questProgresses.put(humanPlayerId, questProgressInfo);
+    public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
+        questProgresses.put(userId, questProgressInfo);
     }
 
     public static class EnergyStateChangedEntry {
@@ -145,16 +143,16 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     public static class BoxPickedEntry {
-        private HumanPlayerId humanPlayerId;
+        private int userId;
         private BoxContent boxContent;
 
-        public BoxPickedEntry(HumanPlayerId humanPlayerId, BoxContent boxContent) {
-            this.humanPlayerId = humanPlayerId;
+        public BoxPickedEntry(int userId, BoxContent boxContent) {
+            this.userId = userId;
             this.boxContent = boxContent;
         }
 
-        public HumanPlayerId getHumanPlayerId() {
-            return humanPlayerId;
+        public int getUserId() {
+            return userId;
         }
 
         public BoxContent getBoxContent() {

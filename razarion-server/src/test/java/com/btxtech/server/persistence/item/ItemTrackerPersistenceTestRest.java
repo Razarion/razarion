@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -18,6 +19,7 @@ import java.util.List;
  * Created by Beat
  * on 09.01.2018.
  */
+@Ignore
 public class ItemTrackerPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private UserService userService;
@@ -42,7 +44,7 @@ public class ItemTrackerPersistenceTestRest extends IgnoreOldArquillianTest {
         UserContext userContext = userService.getUserContextFromSession(); // Simulate anonymous login
         // Create base
         clearMongoDb();
-        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getHumanPlayerId(), userContext.getName(), new DecimalPosition(1000, 1000));
+        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getUserId(), userContext.getName(), new DecimalPosition(1000, 1000));
         tickPlanetServiceBaseServiceActive();
         // Verify
         Assert.assertEquals(1, playerBaseFull.getItemCount());

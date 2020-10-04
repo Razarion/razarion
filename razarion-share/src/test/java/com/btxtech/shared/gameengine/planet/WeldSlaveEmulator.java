@@ -29,7 +29,7 @@ public class WeldSlaveEmulator extends AbstractIntegrationTest {
         testClientWebSocket = new TestClientWebSocket();
         weldMasterBaseTest.getTestGameLogicListener().getTestWebSocket().add(testClientWebSocket);
         weldMasterBaseTest.getWeldBean(TestSyncService.class).setTestWebSocket(testClientWebSocket);
-        getWeldBean(PlanetService.class).initialSlaveSyncItemInfo(weldMasterBaseTest.getPlanetService().generateSlaveSyncItemInfo(userContext.getHumanPlayerId()));
+        getWeldBean(PlanetService.class).initialSlaveSyncItemInfo(weldMasterBaseTest.getPlanetService().generateSlaveSyncItemInfo(userContext.getUserId()));
     }
 
     public void disconnectFromMaster() {

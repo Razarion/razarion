@@ -52,19 +52,13 @@ public class UserServiceProviderImpl implements UserServiceProvider {
     }
 
     @Override
-    public RegisterInfo createUnverifiedUser(EmailPasswordInfo emailPasswordInfo) {
+    public RegisterResult createUnverifiedUser(EmailPasswordInfo emailPasswordInfo) {
         try {
-            RegisterInfo registerInfo = new RegisterInfo();
             RegisterResult registerResult = userService.createUnverifiedUserAndLogin(emailPasswordInfo.getEmail(), emailPasswordInfo.getPassword());
-            if (registerResult == RegisterResult.EMAIL_ALREADY_USED) {
-                registerInfo.setUserAlreadyExits(true);
-            } else if (registerResult == RegisterResult.OK) {
-                if (emailPasswordInfo.isRememberMe()) {
-                    httpServletResponse.addCookie(FrontendControllerImpl.generateLoginServletCookie(registerService.setupLoginCookieEntry(emailPasswordInfo.getEmail())));
-                }
-                registerInfo.setHumanPlayerId(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId());
+            if (registerResult == RegisterResult.OK && emailPasswordInfo.isRememberMe()){
+                httpServletResponse.addCookie(FrontendControllerImpl.generateLoginServletCookie(registerService.setupLoginCookieEntry(emailPasswordInfo.getEmail())));
             }
-            return registerInfo;
+            return registerResult;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

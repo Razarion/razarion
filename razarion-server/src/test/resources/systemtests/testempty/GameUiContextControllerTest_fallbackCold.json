@@ -1,8 +1,7 @@
 {
   "userContext": {
     "userId": "$USER_ID$",
-    "registerState":"UNREGISTERED",
-    "humanPlayerId": null,
+    "registerState": "UNREGISTERED",
     "name": null,
     "admin": false,
     "levelId": null,

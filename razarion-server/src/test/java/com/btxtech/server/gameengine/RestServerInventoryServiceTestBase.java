@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ import java.util.Collections;
  * Created by Beat
  * on 18.09.2017.
  */
+@Ignore
 public class RestServerInventoryServiceTestBase extends IgnoreOldArquillianTest {
     @Inject
     private ServerInventoryService serverInventoryService;
@@ -58,8 +60,8 @@ public class RestServerInventoryServiceTestBase extends IgnoreOldArquillianTest 
         // Start from ServletContextMonitor.contextInitialized() not working
         serverGameEngineControl.start(null, true);
         UserContext userContext = handleFacebookUserLogin("0000001");
-        int userId = userContext.getHumanPlayerId().getUserId();
-        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, Collections.emptyMap(), sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), "Test base", new DecimalPosition(100, 100));
+        int userId = userContext.getUserId();
+        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, Collections.emptyMap(), sessionHolder.getPlayerSession().getUserContext().getUserId(), "Test base", new DecimalPosition(100, 100));
         // Verify
         InventoryInfo inventoryInfo = serverInventoryService.loadInventory(sessionHolder.getPlayerSession());
         Assert.assertEquals(0, inventoryInfo.getCrystals());
@@ -70,7 +72,7 @@ public class RestServerInventoryServiceTestBase extends IgnoreOldArquillianTest 
         BoxContent boxContent = new BoxContent();
         boxContent.addInventoryItem(inventoryTypeService.getInventoryItem(INVENTORY_ITEM_1_ID));
         boxContent.addCrystals(99);
-        serverInventoryService.onBoxPicked(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), boxContent);
+        serverInventoryService.onBoxPicked(sessionHolder.getPlayerSession().getUserContext().getUserId(), boxContent);
         assertCount(2, InventoryHistoryEntry.class);
         // Verify
         inventoryInfo = serverInventoryService.loadInventory(sessionHolder.getPlayerSession());
@@ -83,7 +85,7 @@ public class RestServerInventoryServiceTestBase extends IgnoreOldArquillianTest 
         boxContent = new BoxContent();
         boxContent.addInventoryItem(inventoryTypeService.getInventoryItem(INVENTORY_ITEM_1_ID));
         boxContent.addCrystals(11);
-        serverInventoryService.onBoxPicked(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), boxContent);
+        serverInventoryService.onBoxPicked(sessionHolder.getPlayerSession().getUserContext().getUserId(), boxContent);
         assertCount(4, InventoryHistoryEntry.class);
         // Verify
         inventoryInfo = serverInventoryService.loadInventory(sessionHolder.getPlayerSession());
@@ -136,7 +138,7 @@ public class RestServerInventoryServiceTestBase extends IgnoreOldArquillianTest 
         // Start from ServletContextMonitor.contextInitialized() not working
         serverGameEngineControl.start(null, true);
         UserContext userContext = userService.getUserContextFromSession(); // Simulate anonymous login
-        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, Collections.emptyMap(), sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), "Test base", new DecimalPosition(100, 100));
+        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, Collections.emptyMap(), sessionHolder.getPlayerSession().getUserContext().getUserId(), "Test base", new DecimalPosition(100, 100));
         // Verify
         InventoryInfo inventoryInfo = serverInventoryService.loadInventory(sessionHolder.getPlayerSession());
         Assert.assertEquals(0, inventoryInfo.getCrystals());
@@ -147,7 +149,7 @@ public class RestServerInventoryServiceTestBase extends IgnoreOldArquillianTest 
         BoxContent boxContent = new BoxContent();
         boxContent.addInventoryItem(inventoryTypeService.getInventoryItem(INVENTORY_ITEM_1_ID));
         boxContent.addCrystals(99);
-        serverInventoryService.onBoxPicked(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), boxContent);
+        serverInventoryService.onBoxPicked(sessionHolder.getPlayerSession().getUserContext().getUserId(), boxContent);
         assertCount(2, InventoryHistoryEntry.class);
         // Verify
         inventoryInfo = serverInventoryService.loadInventory(sessionHolder.getPlayerSession());
@@ -160,7 +162,7 @@ public class RestServerInventoryServiceTestBase extends IgnoreOldArquillianTest 
         boxContent = new BoxContent();
         boxContent.addInventoryItem(inventoryTypeService.getInventoryItem(INVENTORY_ITEM_1_ID));
         boxContent.addCrystals(11);
-        serverInventoryService.onBoxPicked(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), boxContent);
+        serverInventoryService.onBoxPicked(sessionHolder.getPlayerSession().getUserContext().getUserId(), boxContent);
         assertCount(4, InventoryHistoryEntry.class);
         // Verify
         inventoryInfo = serverInventoryService.loadInventory(sessionHolder.getPlayerSession());

@@ -6,8 +6,8 @@ import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
-import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
+import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
@@ -17,7 +17,6 @@ import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.AdditionUserInfo;
 import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.FbAuthResponse;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
 import com.btxtech.shared.datatypes.UserAccountInfo;
@@ -32,7 +31,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -41,8 +39,6 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -182,7 +178,7 @@ public class UserService {
     @Transactional
     public UserContext handleFacebookUserLogin(FbAuthResponse fbAuthResponse) {
         if (sessionHolder.isLoggedIn()) {
-            String loggedInFacebookUserId = getUserEntity(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getUserId()).getFacebookUserId();
+            String loggedInFacebookUserId = getUserEntity(sessionHolder.getPlayerSession().getUserContext().getUserId()).getFacebookUserId();
             if (fbAuthResponse.getUserID().equals(loggedInFacebookUserId)) {
                 return sessionHolder.getPlayerSession().getUserContext();
             } else {
@@ -203,28 +199,29 @@ public class UserService {
 
     @Transactional
     public RegisterInfo handleInGameFacebookUserLogin(FbAuthResponse fbAuthResponse) {
-        if (sessionHolder.getPlayerSession().getUserContext() == null) {
-            throw new IllegalStateException("sessionHolder.getPlayerSession().getUserContext() == null");
-        }
-        if (sessionHolder.isLoggedIn()) {
-            throw new IllegalStateException("User is already logged in: " + sessionHolder.getPlayerSession().getUserContext());
-        }
-
-        // TODO verify facebook signedRequest
-        RegisterInfo registerInfo = new RegisterInfo().setUserAlreadyExits(true);
-        UserEntity userEntity = getUserForFacebookId(fbAuthResponse.getUserID());
-        if (userEntity == null) {
-            userEntity = createFacebookUserFromUnregistered(fbAuthResponse.getUserID());
-            registerInfo.setUserAlreadyExits(false);
-        }
-        historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
-        UserContext userContext = userEntity.toUserContext();
-        loginUserContext(userContext, null);
-        if (!registerInfo.isUserAlreadyExits()) {
-            registerInfo.setHumanPlayerId(userContext.getHumanPlayerId());
-            serverGameEngine.get().updateHumanPlayerId(userContext);
-        }
-        return registerInfo;
+//   TODO     if (sessionHolder.getPlayerSession().getUserContext() == null) {
+//            throw new IllegalStateException("sessionHolder.getPlayerSession().getUserContext() == null");
+//        }
+//        if (sessionHolder.isLoggedIn()) {
+//            throw new IllegalStateException("User is already logged in: " + sessionHolder.getPlayerSession().getUserContext());
+//        }
+//
+//        // TODO verify facebook signedRequest
+//  TODO      RegisterInfo registerInfo = new RegisterInfo().setUserAlreadyExits(true);
+//        UserEntity userEntity = getUserForFacebookId(fbAuthResponse.getUserID());
+//        if (userEntity == null) {
+//            userEntity = createFacebookUserFromUnregistered(fbAuthResponse.getUserID());
+//            registerInfo.setUserAlreadyExits(false);
+//        }
+//        historyPersistence.get().onUserLoggedIn(useEntity, sessionHolder.getPlayerSession().getHttpSessionId());
+//        UserContext userContext = userEntity.toUsrerContext();
+//        loginUserContext(userContext, null);
+//        if (!registerInfo.isUserAlreadyExits()) {
+//            registerInfo.setHumanPlayerId(userContext.getUserId());
+//            serverGameEngine.get().updateHumanPlayerId(userContext);
+//        }
+//        return registerInfo;
+        throw new UnsupportedOperationException("...TODO...");
     }
 
     private UserContext loginUserContext(UserContext userContext, UnregisteredUser unregisteredUser) {
@@ -284,26 +281,6 @@ public class UserService {
             throw new IllegalStateException("More then one user for facebook id: " + facebookUseId);
         } else {
             return list.get(0);
-        }
-    }
-
-    @Transactional
-    @Deprecated
-    public HumanPlayerIdEntity createHumanPlayerId() {
-        HumanPlayerIdEntity humanPlayerIdEntity = new HumanPlayerIdEntity();
-        humanPlayerIdEntity.setTimeStamp(new Date());
-        humanPlayerIdEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
-        entityManager.persist(humanPlayerIdEntity);
-        return humanPlayerIdEntity;
-    }
-
-    @Transactional
-    public HumanPlayerId findHumanPlayerId(int playerId) {
-        UserEntity userEntity = getUserEntity4PlayerId(playerId);
-        if (userEntity != null) {
-            return userEntity.createHumanPlayerId();
-        } else {
-            return new HumanPlayerId().setPlayerId(playerId);
         }
     }
 
@@ -430,7 +407,7 @@ public class UserService {
     }
 
     @Transactional
-    public Map<HumanPlayerId, QuestConfig> findActiveQuests4Users(Collection<Integer> questIds) {
+    public Map<Integer, QuestConfig> findActiveQuests4Users(Collection<Integer> questIds) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
         Root<UserEntity> from = userQuery.from(UserEntity.class);
@@ -439,28 +416,17 @@ public class UserService {
             userQuery.where(from.join(UserEntity_.activeQuest).get(QuestConfigEntity_.id).in(questIds));
         }
 
-        return entityManager.createQuery(userQuery).getResultList().stream().collect(Collectors.toMap(UserEntity::createHumanPlayerId, user -> user.getActiveQuest().toQuestConfig(user.getLocale()), (a, b) -> b));
+        return entityManager.createQuery(userQuery).getResultList().stream().collect(Collectors.toMap(UserEntity::getId, user -> user.getActiveQuest().toQuestConfig(user.getLocale()), (a, b) -> b));
     }
 
     @Transactional
     public QuestConfig findActiveQuestConfig4CurrentUser(Locale locale) {
-        Integer userId = sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getUserId();
+        Integer userId = sessionHolder.getPlayerSession().getUserContext().getUserId();
         if (userId != null) {
             return getActiveQuest(userId, locale);
         } else {
             return sessionHolder.getPlayerSession().getUnregisteredUser().getActiveQuest();
         }
-    }
-
-    public HumanPlayerIdEntity getHumanPlayerId(Integer id) {
-        if (id == null) {
-            return null;
-        }
-        HumanPlayerIdEntity humanPlayerIdEntity = entityManager.find(HumanPlayerIdEntity.class, id);
-        if (humanPlayerIdEntity == null) {
-            throw new IllegalArgumentException("No HumanPlayerIdEntity for id: " + id);
-        }
-        return humanPlayerIdEntity;
     }
 
     public UserEntity getUserEntity(int userId) {
@@ -478,7 +444,7 @@ public class UserService {
             return null;
         }
         UserBackendInfo userBackendInfo = new UserBackendInfo().setName(userEntity.getName()).setRegisterDate(userEntity.getRegisterDate()).setFacebookId(userEntity.getFacebookUserId()).setEmail(userEntity.getEmail());
-        userBackendInfo.setHumanPlayerId(userEntity.createHumanPlayerId()).setLevelNumber(userEntity.getLevel().getNumber()).setXp(userEntity.getXp()).setCrystals(userEntity.getCrystals());
+        userBackendInfo.setUserId(userEntity.getId()).setLevelNumber(userEntity.getLevel().getNumber()).setXp(userEntity.getXp()).setCrystals(userEntity.getCrystals());
         if (userEntity.getActiveQuest() != null) {
             userBackendInfo.setActiveQuest(userEntity.getActiveQuest().toQuestBackendInfo());
         }
@@ -514,41 +480,33 @@ public class UserService {
     }
 
     private UserEntity getUserEntity4PlayerId(int playerId) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
-        Root<UserEntity> from = userQuery.from(UserEntity.class);
-        CriteriaQuery<UserEntity> userSelect = userQuery.select(from);
-        userSelect.where(criteriaBuilder.equal(from.join(UserEntity_.humanPlayerIdEntity).get(HumanPlayerIdEntity_.id), playerId));
-        List<UserEntity> list = entityManager.createQuery(userQuery).getResultList();
-        if (list == null || list.isEmpty()) {
-            return null;
-        } else if (list.size() > 1) {
-            throw new IllegalStateException("More then one user for playerId id: " + playerId);
-        }
-        return list.get(0);
+        throw new UnsupportedOperationException("...TODO...");
+//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
+//        Root<UserEntity> from = userQuery.from(UserEntity.class);
+//        CriteriaQuery<UserEntity> userSelect = userQuery.select(from);
+//        userSelect.where(criteriaBuilder.equal(from.join(UserEntity_.humanPlayerIdEntity).get(HumanPlayerIdEntity_.id), playerId));
+//        List<UserEntity> list = entityManager.createQuery(userQuery).getResultList();
+//        if (list == null || list.isEmpty()) {
+//            return null;
+//        } else if (list.size() > 1) {
+//            throw new IllegalStateException("More then one user for playerId id: " + playerId);
+//        }
+//        return list.get(0);
     }
 
-    public UserContext getUserContext(HumanPlayerId humanPlayerId) {
-        boolean registered = humanPlayerId.getUserId() != null;
-        if (registered) {
-            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
-            if (playerSession != null) {
-                return playerSession.getUserContext();
-            } else {
-                return getUserEntity(humanPlayerId.getUserId()).toUserContext();
-            }
-        } else {
-            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
-            if (playerSession == null) {
-                throw new IllegalStateException("Unregistered user is no longer online: " + humanPlayerId);
-            }
+    public UserContext getUserContext(int userId) {
+        PlayerSession playerSession = sessionService.findPlayerSession(userId);
+        if (playerSession != null) {
             return playerSession.getUserContext();
+        } else {
+            return getUserEntity(userId).toUserContext();
         }
     }
 
     @Transactional
-    public UserContext getUserContextTransactional(HumanPlayerId humanPlayerId) {
-        return getUserContext(humanPlayerId);
+    public UserContext getUserContextTransactional(int userId) {
+        return getUserContext(userId);
     }
 
     @Transactional
@@ -578,7 +536,7 @@ public class UserService {
             return new SetNameResult().setErrorResult(errorResult);
         }
         UserContext userContext = getUserContextFromSession();
-        UserEntity userEntity = entityManager.find(UserEntity.class, userContext.getHumanPlayerId().getUserId());
+        UserEntity userEntity = entityManager.find(UserEntity.class, userContext.getUserId());
         if (!userEntity.isVerified()) {
             throw new IllegalStateException("User is not verified. Id: " + userEntity.getId());
         }
@@ -642,11 +600,12 @@ public class UserService {
     @Transactional
     @SecurityCheck
     public List<NewUser> findNewUsers() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
-        Root<UserEntity> from = userQuery.from(UserEntity.class);
-        userQuery.orderBy(criteriaBuilder.desc(from.get(UserEntity_.registerDate)));
-        return entityManager.createQuery(userQuery).setMaxResults(20).getResultList().stream().map(userEntity -> new NewUser().setId(userEntity.getId()).setName(userEntity.getName()).setDate(userEntity.getRegisterDate()).setPlayerId(userEntity.getHumanPlayerIdEntity().getId()).setSessionId(entityManager.find(HumanPlayerIdEntity.class, userEntity.getHumanPlayerIdEntity().getId()).getSessionId())).collect(Collectors.toList());
+// TODO       CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+// TODO       CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
+// TODO       Root<UserEntity> from = userQuery.from(UserEntity.class);
+// TODO       userQuery.orderBy(criteriaBuilder.desc(from.get(UserEntity_.registerDate)));
+// TODO       return entityManager.createQuery(userQuery).setMaxResults(20).getResultList().stream().map(userEntity -> new NewUser().setId(userEntity.getId()).setName(userEntity.getName()).setDate(userEntity.getRegisterDate()).setPlayerId(userEntity.getHumanPlayerIdEntity().getId()).setSessionId(entityManager.find(HumanPlayerIdEntity.class, userEntity.getHumanPlayerIdEntity().getId()).getSessionId())).collect(Collectors.toList());
+        throw new UnsupportedOperationException("...TODO...");
     }
 
     @Transactional
@@ -655,7 +614,7 @@ public class UserService {
         if (!sessionHolder.isLoggedIn()) {
             throw new IllegalArgumentException("User is not logged in: " + sessionHolder.getPlayerSession().getHttpSessionId());
         }
-        UserEntity userEntity = getUserEntity(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getUserId());
+        UserEntity userEntity = getUserEntity(sessionHolder.getPlayerSession().getUserContext().getUserId());
         userAccountInfo.setEmail(userEntity.getEmail());
         return userAccountInfo;
     }
@@ -669,7 +628,7 @@ public class UserService {
         List<AdditionUserInfo> additionUserInfos = new ArrayList<>();
         entityManager.createQuery(userQuery).getResultList().forEach(userEntity -> {
             AdditionUserInfo additionUserInfo = new AdditionUserInfo();
-            additionUserInfo.setHumanPlayerId(userEntity.createHumanPlayerId());
+            additionUserInfo.setUserId(userEntity.getId());
             additionUserInfo.setLastLoggedIn(historyPersistence.get().readLastLoginDate(userEntity));
             additionUserInfos.add(additionUserInfo);
         });
@@ -679,17 +638,18 @@ public class UserService {
     @SecurityCheck
     @Transactional
     public Map<Integer, String> getAllHumanPlayerId2RegisteredUserName() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
-        Root<UserEntity> root = cq.from(UserEntity.class);
-        cq.multiselect(root.get(UserEntity_.humanPlayerIdEntity).get(HumanPlayerIdEntity_.id), root.get(UserEntity_.name));
-        Map<Integer, String> humanPlayerId2RegisteredUserName = new HashMap<>();
-        entityManager.createQuery(cq).getResultList().forEach(tuple -> {
-            String name = tuple.get(1) != null ? tuple.get(1).toString() : null;
-            if (name != null) {
-                humanPlayerId2RegisteredUserName.put((int) tuple.get(0), name);
-            }
-        });
-        return humanPlayerId2RegisteredUserName;
+// TODO       CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+// TODO       CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+// TODO       Root<UserEntity> root = cq.from(UserEntity.class);
+// TODO       cq.multiselect(root.get(UserEntity_.humanPlayerIdEntity).get(HumanPlayerIdEntity_.id), root.get(UserEntity_.name));
+// TODO       Map<Integer, String> humanPlayerId2RegisteredUserName = new HashMap<>();
+// TODO       entityManager.createQuery(cq).getResultList().forEach(tuple -> {
+// TODO           String name = tuple.get(1) != null ? tuple.get(1).toString() : null;
+// TODO           if (name != null) {
+// TODO               humanPlayerId2RegisteredUserName.put((int) tuple.get(0), name);
+// TODO           }
+// TODO       });
+// TODO       return humanPlayerId2RegisteredUserName;
+        throw new UnsupportedOperationException("...TODO...");
     }
 }

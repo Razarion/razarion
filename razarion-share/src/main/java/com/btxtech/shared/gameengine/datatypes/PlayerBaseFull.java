@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
@@ -21,8 +20,8 @@ public class PlayerBaseFull extends PlayerBase {
     private Integer levelId;
     private Map<Integer, Integer> unlockedItemLimit;
 
-    public PlayerBaseFull(int baseId, String name, Character character, double startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, Integer botId) {
-        super(baseId, name, character, startRazarion, humanPlayerId, botId);
+    public PlayerBaseFull(int baseId, String name, Character character, double startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, Integer userId, Integer botId) {
+        super(baseId, name, character, startRazarion, userId, botId);
         this.levelId = levelId;
         this.unlockedItemLimit = unlockedItemLimit;
     }

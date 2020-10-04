@@ -5,6 +5,7 @@ import com.btxtech.server.util.DateUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -14,6 +15,7 @@ import java.util.List;
  * Created by Beat
  * on 08.01.2018.
  */
+@Ignore
 public class ItemTrackerAccessTestRest extends IgnoreOldArquillianTest {
     @Inject
     private ItemTrackerAccess itemTrackerAccess;

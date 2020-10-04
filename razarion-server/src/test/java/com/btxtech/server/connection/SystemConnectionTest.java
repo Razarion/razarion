@@ -5,13 +5,13 @@ import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.server.clienthelper.WebsocketTestHelper;
 import com.btxtech.server.mgmt.OnlineInfo;
 import com.btxtech.server.rest.BackendProvider;
-import com.btxtech.shared.rest.FrontendController;
-import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.CommonUrl;
-import org.jboss.arquillian.container.test.api.RunAsClient;
+import com.btxtech.shared.dto.RegisterResult;
+import com.btxtech.shared.rest.FrontendController;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 11.02.2018.
  */
-@RunAsClient
+@Ignore
 public class SystemConnectionTest extends ClientArquillianBaseTest {
 
     @Before

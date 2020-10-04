@@ -150,7 +150,7 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.CREATE_HUMAN_BASE_WITH_BASE_ITEM,
                 userUiService.getUserContext().getLevelId(),
                 userUiService.getUserContext().getUnlockedItemLimit(),
-                userUiService.getUserContext().getHumanPlayerId(),
+                userUiService.getUserContext().getUserId(),
                 userUiService.getUserContext().getName() == null ? "" : userUiService.getUserContext().getName(), // Errai demarsheller is not able to handle top level null JSON object
                 position);
     }

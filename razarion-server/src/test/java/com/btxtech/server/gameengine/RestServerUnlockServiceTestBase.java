@@ -1,7 +1,7 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.SimpleTestEnvironment;
 import com.btxtech.server.TestClientSystemConnection;
 import com.btxtech.server.TestHelper;
@@ -14,7 +14,6 @@ import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.web.SessionService;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
@@ -23,6 +22,7 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 21.09.2017.
  */
+@Ignore
 public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
     @Inject
     private UserService userService;
@@ -58,12 +59,12 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
     private GameUiContextCrudPersistence gameUiContextCrudPersistence;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         setupPlanetDb();
     }
 
     @After
-    public void after() throws Exception {
+    public void after() {
         cleanTableNative("USER_UNLOCKED");
         cleanTable(UserEntity.class);
         cleanPlanets();
@@ -72,17 +73,17 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
 
     @Test
     public void newRegisteredUser() throws Exception {
-        HumanPlayerId humanPlayerId = handleFacebookUserLogin("0000001").getHumanPlayerId();
-        runTest(humanPlayerId, crystals -> userService.persistAddCrystals(humanPlayerId.getUserId(), crystals), this::assertRegisteredState);
+        int userId = handleFacebookUserLogin("0000001").getUserId();
+        runTest(userId, crystals -> userService.persistAddCrystals(userId, crystals), this::assertRegisteredState);
     }
 
     @Test
     public void newUnregisteredUser() throws Exception {
-        HumanPlayerId humanPlayerId = userService.getUserContextFromSession().getHumanPlayerId();
-        runTest(humanPlayerId, crystals -> sessionService.findPlayerSession(humanPlayerId).getUnregisteredUser().addCrystals(crystals), this::assertUnregisteredState);
+        int userId = userService.getUserContextFromSession().getUserId();
+        runTest(userId, crystals -> sessionService.findPlayerSession(userId).getUnregisteredUser().addCrystals(crystals), this::assertUnregisteredState);
     }
 
-    private void runTest(HumanPlayerId humanPlayerId, Consumer<Integer> crystalSetter, AssertHelper assertHelper) throws Exception {
+    private void runTest(int userId, Consumer<Integer> crystalSetter, AssertHelper assertHelper) throws Exception {
         Map<Integer, Integer> expectedItemLimit1 = new HashMap<>();
         expectedItemLimit1.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
         HashMap<Integer, Integer> expectedItemLimit2 = new HashMap<>();
@@ -94,9 +95,9 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
         expectedItemLimit3.put(BASE_ITEM_TYPE_HARVESTER_ID, 1);
 
         BaseItemService baseItemServiceMock = EasyMock.createStrictMock(BaseItemService.class);
-        baseItemServiceMock.updateUnlockedItemLimit(humanPlayerId, expectedItemLimit1);
-        baseItemServiceMock.updateUnlockedItemLimit(humanPlayerId, expectedItemLimit2);
-        baseItemServiceMock.updateUnlockedItemLimit(humanPlayerId, expectedItemLimit3);
+        baseItemServiceMock.updateUnlockedItemLimit(userId, expectedItemLimit1);
+        baseItemServiceMock.updateUnlockedItemLimit(userId, expectedItemLimit2);
+        baseItemServiceMock.updateUnlockedItemLimit(userId, expectedItemLimit3);
         EasyMock.replay(baseItemServiceMock);
 
         SimpleTestEnvironment.injectService("baseItemService", serverUnlockService, baseItemServiceMock);
@@ -104,26 +105,26 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_5_ID);
         assertAvailableUnlocks(LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1, LEVEL_UNLOCK_ID_L5_2);
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_4_ID);
-        assertHelper.assertState(humanPlayerId, 0);
+        assertHelper.assertState(userId, 0);
         assertAvailableUnlocks(LEVEL_UNLOCK_ID_L4_1);
         TestClientSystemConnection systemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
         // Unlock
-        serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L4_1);
+        serverUnlockService.unlockViaCrystals(userId, LEVEL_UNLOCK_ID_L4_1);
         // Verify
         UserContext userContext = userService.getUserContextFromSession();
         Assert.assertEquals(expectedItemLimit1, userContext.getUnlockedItemLimit());
-        assertHelper.assertState(humanPlayerId, 0, LEVEL_UNLOCK_ID_L4_1);
+        assertHelper.assertState(userId, 0, LEVEL_UNLOCK_ID_L4_1);
         assertAvailableUnlocks();
         // Try unlock same again
         try {
-            serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L4_1);
+            serverUnlockService.unlockViaCrystals(userId, LEVEL_UNLOCK_ID_L4_1);
             Assert.fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         // Try unlock wrong level again
         try {
-            serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L5_1);
+            serverUnlockService.unlockViaCrystals(userId, LEVEL_UNLOCK_ID_L5_1);
             Assert.fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -131,20 +132,20 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
         // Verify
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(expectedItemLimit1, userContext.getUnlockedItemLimit());
-        assertHelper.assertState(humanPlayerId, 0, LEVEL_UNLOCK_ID_L4_1);
+        assertHelper.assertState(userId, 0, LEVEL_UNLOCK_ID_L4_1);
         // Level up and unlock lvl 5
         crystalSetter.accept(15);
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_5_ID);
         assertAvailableUnlocks(LEVEL_UNLOCK_ID_L5_1, LEVEL_UNLOCK_ID_L5_2);
-        serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L5_1);
+        serverUnlockService.unlockViaCrystals(userId, LEVEL_UNLOCK_ID_L5_1);
         // Verify
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(expectedItemLimit2, userContext.getUnlockedItemLimit());
-        assertHelper.assertState(humanPlayerId, 5, LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1);
+        assertHelper.assertState(userId, 5, LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1);
         assertAvailableUnlocks(LEVEL_UNLOCK_ID_L5_2);
         // Unlock but not enough crystals
         try {
-            serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L5_2);
+            serverUnlockService.unlockViaCrystals(userId, LEVEL_UNLOCK_ID_L5_2);
             Assert.fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -152,15 +153,15 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
         // Verify
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(expectedItemLimit2, userContext.getUnlockedItemLimit());
-        assertHelper.assertState(humanPlayerId, 5, LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1);
+        assertHelper.assertState(userId, 5, LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1);
         assertAvailableUnlocks(LEVEL_UNLOCK_ID_L5_2);
         // Unlock
         crystalSetter.accept(17);
-        serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L5_2);
+        serverUnlockService.unlockViaCrystals(userId, LEVEL_UNLOCK_ID_L5_2);
         // Verify
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(expectedItemLimit3, userContext.getUnlockedItemLimit());
-        assertHelper.assertState(humanPlayerId, 2, LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1, LEVEL_UNLOCK_ID_L5_2);
+        assertHelper.assertState(userId, 2, LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1, LEVEL_UNLOCK_ID_L5_2);
         assertAvailableUnlocks();
 
         systemConnection.getWebsocketMessageHelper().assertMessageSentCount(3);
@@ -180,9 +181,9 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
         Assert.assertTrue(expectedCollection.isEmpty());
     }
 
-    private void assertRegisteredState(HumanPlayerId humanPlayerId, int expectedCrystals, Integer... expectedLevelUnlockEntityIds) throws Exception {
+    private void assertRegisteredState(int userId, int expectedCrystals, Integer... expectedLevelUnlockEntityIds) {
         runInTransaction(entityManager -> {
-            UserEntity userEntity = entityManager.find(UserEntity.class, humanPlayerId.getUserId());
+            UserEntity userEntity = entityManager.find(UserEntity.class, userId);
             Assert.assertEquals("Crystals", expectedCrystals, userEntity.getCrystals());
             Assert.assertEquals("LevelUnlockEntities size", expectedLevelUnlockEntityIds.length, userEntity.getLevelUnlockEntities().size());
             List<Integer> expectedLevelUnlockEntityIdList = new ArrayList<>(Arrays.asList(expectedLevelUnlockEntityIds));
@@ -193,8 +194,8 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
         });
     }
 
-    private void assertUnregisteredState(HumanPlayerId humanPlayerId, int expectedCrystals, Integer... expectedLevelUnlockEntityIds) throws Exception {
-        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+    private void assertUnregisteredState(int userId, int expectedCrystals, Integer... expectedLevelUnlockEntityIds) {
+        PlayerSession playerSession = sessionService.findPlayerSession(userId);
         Assert.assertNotNull(playerSession);
         UnregisteredUser unregisteredUser = playerSession.getUnregisteredUser();
         Assert.assertNotNull(unregisteredUser);
@@ -207,6 +208,6 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
     }
 
     private interface AssertHelper {
-        void assertState(HumanPlayerId humanPlayerId, int expectedCrystals, Integer... expectedLevelUnlockEntityIds) throws Exception;
+        void assertState(int userId, int expectedCrystals, Integer... expectedLevelUnlockEntityIds);
     }
 }

@@ -17,8 +17,6 @@ public class UserContext {
 
     private int userId;
     private RegisterState registerState;
-    @Deprecated
-    private HumanPlayerId humanPlayerId;
     private String name;
     private boolean admin;
     private Integer levelId;
@@ -29,8 +27,9 @@ public class UserContext {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public UserContext setUserId(int userId) {
         this.userId = userId;
+        return this;
     }
 
     public UserContext userId(int userId) {
@@ -48,17 +47,6 @@ public class UserContext {
 
     public UserContext registerState(RegisterState registerState) {
         setRegisterState(registerState);
-        return this;
-    }
-
-    @Deprecated
-    public HumanPlayerId getHumanPlayerId() {
-        return humanPlayerId;
-    }
-
-    @Deprecated
-    public UserContext setHumanPlayerId(HumanPlayerId humanPlayerId) {
-        this.humanPlayerId = humanPlayerId;
         return this;
     }
 
@@ -122,7 +110,7 @@ public class UserContext {
     @Override
     public String toString() {
         return "UserContext{" +
-                "humanPlayerId=" + humanPlayerId +
+                "userId='" + userId + '\'' +
                 ", name='" + name + '\'' +
                 ", admin=" + admin +
                 ", levelId=" + levelId +

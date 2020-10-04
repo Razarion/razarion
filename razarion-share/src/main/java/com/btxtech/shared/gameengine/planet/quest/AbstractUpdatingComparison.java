@@ -27,7 +27,7 @@ public abstract class AbstractUpdatingComparison implements AbstractComparison {
         }
         if (getAbstractConditionProgress() != null) {
             // Causes problem in devtool, works in web mode -> magical
-            gameLogicService.onQuestProgressUpdate(getAbstractConditionProgress().getHumanPlayerId(), generateQuestProgressInfo());
+            gameLogicService.onQuestProgressUpdate(getAbstractConditionProgress().getUserId(), generateQuestProgressInfo());
         }
         lastProgressSendTime = System.currentTimeMillis();
         hasUpdateToSend = false;

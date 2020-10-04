@@ -78,17 +78,17 @@ public class BotSceneTest extends BaseBotServiceTest {
         // First attack -> no conflict
         getCommandService().attack(humanBaseContext.getAttacker1(), findFirstBotItemHighestId(1, FallbackConfig.BUILDER_ITEM_TYPE_ID), true);
         tickAll();
-        Assert.assertTrue(getBotService().getBotSceneIndicationInfos(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()).isEmpty());
+        Assert.assertTrue(getBotService().getBotSceneIndicationInfos(humanBaseContext.getPlayerBaseFull().getUserId()).isEmpty());
         // Second attack -> conflict
         getCommandService().attack(humanBaseContext.getAttacker1(), findFirstBotItemHighestId(1, FallbackConfig.BUILDER_ITEM_TYPE_ID), true);
         tickAllOnce();
-        Assert.assertEquals(1, getBotService().getBotSceneIndicationInfos(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()).size());
+        Assert.assertEquals(1, getBotService().getBotSceneIndicationInfos(humanBaseContext.getPlayerBaseFull().getUserId()).size());
         tickAll();
         TestHelper.sleep(100);
         tickAllOnce();
 
         // showDisplay();
-        Assert.assertTrue(getBotService().getBotSceneIndicationInfos(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()).isEmpty());
+        Assert.assertTrue(getBotService().getBotSceneIndicationInfos(humanBaseContext.getPlayerBaseFull().getUserId()).isEmpty());
         Assert.fail("... BETTER ASSERT ...");
 
     }

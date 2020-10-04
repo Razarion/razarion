@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -166,8 +165,13 @@ public class GameLogicService {
     }
 
     public void onBoxPicked(SyncBoxItem box, SyncBaseItem picker, BoxContent boxContent) {
-        gameLogicListener.ifPresent(listener -> listener.onBoxPicked(picker.getBase().getHumanPlayerId(), boxContent));
-        questServiceInstance.get().onSyncBoxItemPicked(picker);
+        Integer userId = picker.getBase().getUserId();
+        if(userId == null) {
+            return;
+        }
+
+        gameLogicListener.ifPresent(listener -> listener.onBoxPicked(userId, boxContent));
+        questServiceInstance.get().onSyncBoxItemPicked(userId);
     }
 
     public void onBoxDeleted(SyncBoxItem box) {
@@ -212,8 +216,8 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemIdle(syncBaseItem));
     }
 
-    public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
-        gameLogicListener.ifPresent(listener -> listener.onQuestProgressUpdate(humanPlayerId, questProgressInfo));
+    public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
+        gameLogicListener.ifPresent(listener -> listener.onQuestProgressUpdate(userId, questProgressInfo));
     }
 
     public void onEnergyStateChanged(PlayerBase playerBase, int consuming, int generating) {
@@ -224,11 +228,11 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onResourcesBalanceChanged(playerBase, resources));
     }
 
-    public void onBotSceneConflictChanged(HumanPlayerId humanPlayerId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
-        gameLogicListener.ifPresent(listener -> listener.onBotSceneConflictChanged(humanPlayerId, raise, newConflict, oldConflict, botSceneIndicationInfo));
+    public void onBotSceneConflictChanged(int userId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
+        gameLogicListener.ifPresent(listener -> listener.onBotSceneConflictChanged(userId, raise, newConflict, oldConflict, botSceneIndicationInfo));
     }
 
-    public void onBotSceneConflictsChanged(Collection<HumanPlayerId> activeHumanPlayerIds, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
-        gameLogicListener.ifPresent(listener -> listener.onBotSceneConflictsChanged(activeHumanPlayerIds, raise, newConflict, oldConflict, botSceneIndicationInfo));
+    public void onBotSceneConflictsChanged(Collection<Integer> activeUserIds, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
+        gameLogicListener.ifPresent(listener -> listener.onBotSceneConflictsChanged(activeUserIds, raise, newConflict, oldConflict, botSceneIndicationInfo));
     }
 }
