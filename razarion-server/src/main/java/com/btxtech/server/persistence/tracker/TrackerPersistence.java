@@ -225,31 +225,31 @@ public class TrackerPersistence {
 
         Predicate predicate = null;
         if (searchConfig.getFromDate() != null) {
-            predicate = criteriaBuilder.greaterThanOrEqualTo(root.get(SessionTrackerEntity_.timeStamp), searchConfig.getFromDate());
+            // TODO predicate = criteriaBuilder.greaterThanOrEqualTo(root.get(SessionTrackerEntity_.timeStamp), searchConfig.getFromDate());
         }
         if (searchConfig.isBotFilter()) {
-            for (String userAgent : BotFilterConstants.userAgentBotStrings()) {
-                Predicate userAgentBot = criteriaBuilder.notLike(root.get(SessionTrackerEntity_.userAgent), userAgent);
-                if (predicate == null) {
-                    predicate = userAgentBot;
-                } else {
-                    predicate = criteriaBuilder.and(predicate, userAgentBot);
-                }
-            }
-            for (String remoteHost : BotFilterConstants.remoteHostBotStrings()) {
-                Predicate userAgentBot = criteriaBuilder.notLike(root.get(SessionTrackerEntity_.remoteHost), remoteHost);
-                if (predicate == null) {
-                    predicate = userAgentBot;
-                } else {
-                    predicate = criteriaBuilder.and(predicate, userAgentBot);
-                }
-            }
+//      TODO      for (String userAgent : BotFilterConstants.userAgentBotStrings()) {
+//                Predicate userAgentBot = criteriaBuilder.notLike(root.get(SessionTrackerEntity_.userAgent), userAgent);
+//                if (predicate == null) {
+//                    predicate = userAgentBot;
+//                } else {
+//                    predicate = criteriaBuilder.and(predicate, userAgentBot);
+//                }
+//            }
+//            for (String remoteHost : BotFilterConstants.remoteHostBotStrings()) {
+//                Predicate userAgentBot = criteriaBuilder.notLike(root.get(SessionTrackerEntity_.remoteHost), remoteHost);
+//                if (predicate == null) {
+//                    predicate = userAgentBot;
+//                } else {
+//                    predicate = criteriaBuilder.and(predicate, userAgentBot);
+//                }
+//            }
         }
         if (predicate != null) {
             query.where(predicate);
         }
 
-        query.orderBy(criteriaBuilder.desc(root.get(SessionTrackerEntity_.timeStamp)));
+        // TODO query.orderBy(criteriaBuilder.desc(root.get(SessionTrackerEntity_.timeStamp)));
         List<SessionTracker> sessionTrackers = new ArrayList<>();
         for (SessionTrackerEntity sessionTrackerEntity : entityManager.createQuery(userSelect).getResultList()) {
             SessionTracker sessionTracker = sessionTrackerEntity.toSessionTracker();
@@ -267,8 +267,8 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
         Root<StartupTaskEntity> root = cq.from(StartupTaskEntity.class);
-        cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
-        cq.select(criteriaBuilder.countDistinct(root.get(StartupTaskEntity_.gameSessionUuid)));
+        // TODO cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
+        // TODO cq.select(criteriaBuilder.countDistinct(root.get(StartupTaskEntity_.gameSessionUuid)));
         return entityManager.createQuery(cq).getSingleResult().intValue();
     }
 
@@ -276,7 +276,7 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
         Root<StartupTerminatedEntity> root = cq.from(StartupTerminatedEntity.class);
-        cq.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTerminatedEntity_.sessionId), sessionId), criteriaBuilder.equal(root.get(StartupTerminatedEntity_.successful), true)));
+        // TODO cq.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTerminatedEntity_.sessionId), sessionId), criteriaBuilder.equal(root.get(StartupTerminatedEntity_.successful), true)));
         cq.select(criteriaBuilder.count(root));
         return entityManager.createQuery(cq).getSingleResult().intValue();
     }
@@ -286,9 +286,9 @@ public class TrackerPersistence {
         CriteriaQuery<PageTrackerEntity> query = criteriaBuilder.createQuery(PageTrackerEntity.class);
         Root<PageTrackerEntity> root = query.from(PageTrackerEntity.class);
         CriteriaQuery<PageTrackerEntity> userSelect = query.select(root);
-        Predicate sessionPredicate = criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId);
-        Predicate fbAdRazTrackPredicate = criteriaBuilder.like(root.get(PageTrackerEntity_.params), "%" + FbFacade.URL_PARAM_TRACK_KEY + "%");
-        query.where(criteriaBuilder.and(sessionPredicate, fbAdRazTrackPredicate));
+//     TODO   Predicate sessionPredicate = criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId);
+//        Predicate fbAdRazTrackPredicate = criteriaBuilder.like(root.get(PageTrackerEntity_.params), "%" + FbFacade.URL_PARAM_TRACK_KEY + "%");
+//        query.where(criteriaBuilder.and(sessionPredicate, fbAdRazTrackPredicate));
         List<PageTrackerEntity> pageTrackerEntities = entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getResultList();
         if (pageTrackerEntities.isEmpty()) {
             return null;
@@ -312,7 +312,7 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
         Root<PageTrackerEntity> root = cq.from(PageTrackerEntity.class);
-        cq.where(criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId));
+        // TODO cq.where(criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId));
         cq.select(criteriaBuilder.count(root));
         return entityManager.createQuery(cq).getSingleResult().intValue();
     }
@@ -324,7 +324,7 @@ public class TrackerPersistence {
         CriteriaQuery<SessionTrackerEntity> query = criteriaBuilder.createQuery(SessionTrackerEntity.class);
         Root<SessionTrackerEntity> root = query.from(SessionTrackerEntity.class);
         CriteriaQuery<SessionTrackerEntity> userSelect = query.select(root);
-        query.where(criteriaBuilder.equal(root.get(SessionTrackerEntity_.sessionId), sessionId));
+        // TODO query.where(criteriaBuilder.equal(root.get(SessionTrackerEntity_.sessionId), sessionId));
         SessionTrackerEntity sessionTrackerEntity = entityManager.createQuery(userSelect).getSingleResult();
 
         SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp()).setUserAgent(sessionTrackerEntity.getUserAgent()).setReferer(sessionTrackerEntity.getReferer());
@@ -346,7 +346,7 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<PageTrackerEntity> query = criteriaBuilder.createQuery(PageTrackerEntity.class);
         Root<PageTrackerEntity> root = query.from(PageTrackerEntity.class);
-        query.where(criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId));
+        // TODO query.where(criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId));
         CriteriaQuery<PageTrackerEntity> userSelect = query.select(root);
         return entityManager.createQuery(userSelect).getResultList().stream().map(PageTrackerEntity::toPageDetail).collect(Collectors.toList());
     }
@@ -355,7 +355,7 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<FrontendNavigationEntity> query = criteriaBuilder.createQuery(FrontendNavigationEntity.class);
         Root<FrontendNavigationEntity> root = query.from(FrontendNavigationEntity.class);
-        query.where(criteriaBuilder.equal(root.get(FrontendNavigationEntity_.sessionId), sessionId));
+        // TODO query.where(criteriaBuilder.equal(root.get(FrontendNavigationEntity_.sessionId), sessionId));
         CriteriaQuery<FrontendNavigationEntity> userSelect = query.select(root);
         return entityManager.createQuery(userSelect).getResultList().stream().map(FrontendNavigationEntity::toPageDetail).collect(Collectors.toList());
     }
@@ -364,7 +364,7 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<WindowCloseTrackerEntity> query = criteriaBuilder.createQuery(WindowCloseTrackerEntity.class);
         Root<WindowCloseTrackerEntity> root = query.from(WindowCloseTrackerEntity.class);
-        query.where(criteriaBuilder.equal(root.get(WindowCloseTrackerEntity_.sessionId), sessionId));
+        // TODO query.where(criteriaBuilder.equal(root.get(WindowCloseTrackerEntity_.sessionId), sessionId));
         CriteriaQuery<WindowCloseTrackerEntity> userSelect = query.select(root);
         return entityManager.createQuery(userSelect).getResultList().stream().map(WindowCloseTrackerEntity::toPageDetail).collect(Collectors.toList());
     }
@@ -373,10 +373,10 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
         Root<StartupTaskEntity> root = cq.from(StartupTaskEntity.class);
-        cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
-        cq.multiselect(root.get(StartupTaskEntity_.gameSessionUuid), root.get(StartupTaskEntity_.startTime), root.get(StartupTaskEntity_.clientStartTime));
-        cq.groupBy(root.get(StartupTaskEntity_.gameSessionUuid));
-        cq.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
+        // TODO cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
+        // TODO cq.multiselect(root.get(StartupTaskEntity_.gameSessionUuid), root.get(StartupTaskEntity_.startTime), root.get(StartupTaskEntity_.clientStartTime));
+        // TODO cq.groupBy(root.get(StartupTaskEntity_.gameSessionUuid));
+        // TODO cq.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
         return entityManager.createQuery(cq).getResultList().stream().map(tuple -> readGameSessionDetail(sessionId, (String) tuple.get(0), (Date) tuple.get(1), (Date) tuple.get(2))).collect(Collectors.toList());
     }
 
@@ -396,8 +396,8 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<StartupTaskEntity> query = criteriaBuilder.createQuery(StartupTaskEntity.class);
         Root<StartupTaskEntity> root = query.from(StartupTaskEntity.class);
-        query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(StartupTaskEntity_.gameSessionUuid), gameSessionUuid));
-        query.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
+        // TODO query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(StartupTaskEntity_.gameSessionUuid), gameSessionUuid));
+        // TODO query.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
 
         return entityManager.createQuery(query).getResultList().stream().map(StartupTaskEntity::toStartupTaskDetail).collect(Collectors.toList());
     }
@@ -406,7 +406,7 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<StartupTerminatedEntity> query = criteriaBuilder.createQuery(StartupTerminatedEntity.class);
         Root<StartupTerminatedEntity> root = query.from(StartupTerminatedEntity.class);
-        query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTerminatedEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(StartupTerminatedEntity_.gameSessionUuid), gameSessionUuid));
+        // TODO query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTerminatedEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(StartupTerminatedEntity_.gameSessionUuid), gameSessionUuid));
 
         List<StartupTerminatedEntity> startupTerminatedEntities = entityManager.createQuery(query).getResultList();
         if (startupTerminatedEntities.isEmpty()) {
@@ -422,8 +422,8 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<SceneTrackerEntity> query = criteriaBuilder.createQuery(SceneTrackerEntity.class);
         Root<SceneTrackerEntity> root = query.from(SceneTrackerEntity.class);
-        query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(SceneTrackerEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(SceneTrackerEntity_.gameSessionUuid), gameSessionUuid));
-        query.orderBy(criteriaBuilder.asc(root.get(SceneTrackerEntity_.clientStartTime)));
+        // TODO query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(SceneTrackerEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(SceneTrackerEntity_.gameSessionUuid), gameSessionUuid));
+        // TODO query.orderBy(criteriaBuilder.asc(root.get(SceneTrackerEntity_.clientStartTime)));
 
         return entityManager.createQuery(query).getResultList().stream().map(SceneTrackerEntity::toSceneTrackerDetail).collect(Collectors.toList());
     }
@@ -432,8 +432,8 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<PerfmonStatisticEntity> query = criteriaBuilder.createQuery(PerfmonStatisticEntity.class);
         Root<PerfmonStatisticEntity> root = query.from(PerfmonStatisticEntity.class);
-        query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(PerfmonStatisticEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(PerfmonStatisticEntity_.gameSessionUuid), gameSessionUuid));
-        query.orderBy(criteriaBuilder.asc(root.get(PerfmonStatisticEntity_.clientTimeStamp)));
+        // TODO query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(PerfmonStatisticEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(PerfmonStatisticEntity_.gameSessionUuid), gameSessionUuid));
+        // TODO query.orderBy(criteriaBuilder.asc(root.get(PerfmonStatisticEntity_.clientTimeStamp)));
 
         List<PerfmonTrackerDetail> perfmonTrackerDetails = new ArrayList<>();
         entityManager.createQuery(query).getResultList().forEach(perfmonStatisticEntity -> perfmonTrackerDetails.addAll(perfmonStatisticEntity.toPerfmonTrackerDetails()));
@@ -445,8 +445,8 @@ public class TrackerPersistence {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TerrainTileStatisticEntity> query = criteriaBuilder.createQuery(TerrainTileStatisticEntity.class);
         Root<TerrainTileStatisticEntity> root = query.from(TerrainTileStatisticEntity.class);
-        query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(TerrainTileStatisticEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(TerrainTileStatisticEntity_.gameSessionUuid), gameSessionUuid));
-        query.orderBy(criteriaBuilder.asc(root.get(TerrainTileStatisticEntity_.clientTimeStamp)));
+        // TODO query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(TerrainTileStatisticEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(TerrainTileStatisticEntity_.gameSessionUuid), gameSessionUuid));
+        // TODO query.orderBy(criteriaBuilder.asc(root.get(TerrainTileStatisticEntity_.clientTimeStamp)));
         return entityManager.createQuery(query).getResultList().stream().map(TerrainTileStatisticEntity::toPerfmonTerrainTileDetail).collect(Collectors.toList());
     }
 

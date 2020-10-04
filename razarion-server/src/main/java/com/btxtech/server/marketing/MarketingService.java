@@ -9,7 +9,6 @@ import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.marketing.restdatatypes.CampaignJson;
 import com.btxtech.server.marketing.restdatatypes.ClicksPerHourJson;
 import com.btxtech.server.persistence.tracker.PageTrackerEntity;
-import com.btxtech.server.persistence.tracker.PageTrackerEntity_;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -255,7 +254,7 @@ public class MarketingService {
         CriteriaQuery<PageTrackerEntity> userQuery = criteriaBuilder.createQuery(PageTrackerEntity.class);
         Root<PageTrackerEntity> root = userQuery.from(PageTrackerEntity.class);
         CriteriaQuery<PageTrackerEntity> userSelect = userQuery.select(root);
-        userSelect.where(criteriaBuilder.like(root.get(PageTrackerEntity_.params), "%" + FbFacade.setupTagParam(campaignJson.getUrlTagParam()) + "%"));
+        // TODO userSelect.where(criteriaBuilder.like(root.get(PageTrackerEntity_.params), "%" + FbFacade.setupTagParam(campaignJson.getUrlTagParam()) + "%"));
         Map<Date, Integer> hourlyClicks = new HashMap<>();
         for (PageTrackerEntity pageTrackerEntity : entityManager.createQuery(userSelect).getResultList()) {
             Date hourDate = DateUtil.hourStart(pageTrackerEntity.getTimeStamp());

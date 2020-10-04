@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.server.persistence.tracker.I18nBundleEntity;
+import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 

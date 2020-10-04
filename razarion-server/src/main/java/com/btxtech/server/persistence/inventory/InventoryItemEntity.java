@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.inventory;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
-import com.btxtech.server.persistence.tracker.I18nBundleEntity;
+import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 
 import javax.persistence.CascadeType;

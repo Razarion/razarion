@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.bot.BotConfigEntity;
-import com.btxtech.server.persistence.tracker.I18nBundleEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.I18nStringEditor;
 

@@ -1,4 +1,4 @@
-package com.btxtech.server.persistence.tracker;
+package com.btxtech.server.persistence;
 
 import com.btxtech.shared.datatypes.I18nString;
 import org.apache.commons.lang3.StringUtils;

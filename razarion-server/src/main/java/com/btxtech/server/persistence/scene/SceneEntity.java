@@ -3,7 +3,7 @@ package com.btxtech.server.persistence.scene;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
-import com.btxtech.server.persistence.tracker.I18nBundleEntity;
+import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;

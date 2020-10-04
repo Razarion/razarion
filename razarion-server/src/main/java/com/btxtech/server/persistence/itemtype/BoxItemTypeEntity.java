@@ -3,7 +3,7 @@ package com.btxtech.server.persistence.itemtype;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
-import com.btxtech.server.persistence.tracker.I18nBundleEntity;
+import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;

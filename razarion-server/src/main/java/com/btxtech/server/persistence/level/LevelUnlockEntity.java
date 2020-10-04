@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.level;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
-import com.btxtech.server.persistence.tracker.I18nBundleEntity;
+import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 
 import javax.persistence.CascadeType;

@@ -4,7 +4,7 @@ import com.btxtech.server.persistence.AudioLibraryEntity;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
-import com.btxtech.server.persistence.tracker.I18nBundleEntity;
+import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
