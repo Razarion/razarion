@@ -11,6 +11,7 @@ services:
       - ./stage/wildfly:/tmp/stage
   db:
     image: mariadb
+    container_name: db
     restart: always
     environment:
       MYSQL_DATABASE: razarion
