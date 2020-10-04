@@ -19,8 +19,8 @@ import java.util.Date;
  * Created by Beat
  * on 18.08.2017.
  */
-@Entity
-@Table(name = "TRACKER_TERRAIN_TILE", indexes = {@Index(columnList = "sessionId")})
+// @Entity
+// @Table(name = "TRACKER_TERRAIN_TILE", indexes = {@Index(columnList = "sessionId")})
 public class TerrainTileStatisticEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

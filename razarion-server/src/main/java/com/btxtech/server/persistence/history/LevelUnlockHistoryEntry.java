@@ -12,8 +12,8 @@ import java.util.Date;
  * Created by Beat
  * on 18.09.2017.
  */
-@Entity
-@Table(name = "HISTORY_UNLOCKED")
+// @Entity
+// @Table(name = "HISTORY_UNLOCKED")
 public class LevelUnlockHistoryEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

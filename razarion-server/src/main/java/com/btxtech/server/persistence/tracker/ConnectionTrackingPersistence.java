@@ -63,7 +63,7 @@ public class ConnectionTrackingPersistence {
         connectionTrackerEntity.setType(type);
         connectionTrackerEntity.setSessionId(sessionId);
         connectionTrackerEntity.setHumanPlayerId(humanPlayerId);
-        entityManager.persist(connectionTrackerEntity);
+        // TODO entityManager.persist(connectionTrackerEntity);
     }
 
     private int humanPlayerId(PlayerSession playerSession) {

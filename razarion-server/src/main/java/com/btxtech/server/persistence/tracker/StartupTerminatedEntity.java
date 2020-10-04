@@ -27,8 +27,8 @@ import java.util.Date;
  * Date: 12.01.2010
  * Time: 22:45:47
  */
-@Entity
-@Table(name = "TRACKER_STARTUP_TERMINATED", indexes = { @Index(columnList = "sessionId"),  @Index(columnList = "gameSessionUuid") })
+// @Entity
+// @Table(name = "TRACKER_STARTUP_TERMINATED", indexes = { @Index(columnList = "sessionId"),  @Index(columnList = "gameSessionUuid") })
 public class StartupTerminatedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 27.03.2017.
  */
-@Entity
-@Table(name = "TRACKER_PERFMON", indexes = {@Index(columnList = "sessionId")})
+// @Entity
+// @Table(name = "TRACKER_PERFMON", indexes = {@Index(columnList = "sessionId")})
 public class PerfmonStatisticEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

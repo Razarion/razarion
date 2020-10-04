@@ -14,8 +14,8 @@ import java.util.Date;
  * Created by Beat
  * on 01.01.2018.
  */
-@Entity
-@Table(name = "TRACKER_CONNECTION")
+// @Entity
+// @Table(name = "TRACKER_CONNECTION")
 public class ConnectionTrackerEntity {
     public enum Type {
         SYSTEM_OPEN,

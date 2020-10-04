@@ -26,8 +26,8 @@ import java.util.Date;
  * Date: 12.01.2010
  * Time: 22:45:47
  */
-@Entity
-@Table(name = "TRACKER_WINDOW_CLOSED")
+// @Entity
+// @Table(name = "TRACKER_WINDOW_CLOSED")
 public class WindowCloseTrackerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

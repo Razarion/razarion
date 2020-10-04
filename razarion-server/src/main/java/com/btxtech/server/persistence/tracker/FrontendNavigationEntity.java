@@ -12,8 +12,8 @@ import java.util.Date;
  * Created by Beat
  * on 04.02.2018.
  */
-@Entity
-@Table(name = "TRACKER_FRONTEND_NAVIGATION")
+// @Entity
+// @Table(name = "TRACKER_FRONTEND_NAVIGATION")
 public class FrontendNavigationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

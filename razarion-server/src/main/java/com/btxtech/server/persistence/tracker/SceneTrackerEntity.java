@@ -13,8 +13,8 @@ import java.util.Date;
  * Created by Beat
  * 03.03.2017.
  */
-@Entity
-@Table(name = "TRACKER_SCENE", indexes = {@Index(columnList = "sessionId"), @Index(columnList = "gameSessionUuid")})
+// @Entity
+// @Table(name = "TRACKER_SCENE", indexes = {@Index(columnList = "sessionId"), @Index(columnList = "gameSessionUuid")})
 public class SceneTrackerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

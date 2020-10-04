@@ -1,3 +1,0 @@
-252	0.8	50	5	0.5	Grass Dirt	0.2	0.5	50	1000	0.2	50	3	0.5	100	99	101	98	97
-253	\N	\N	\N	\N	Razar Industries	\N	\N	\N	\N	0.5	8	3	0.5	\N	\N	\N	105	104
-254	\N	\N	\N	\N	Ocean Ground	\N	\N	\N	\N	1	700	30	1	\N	\N	\N	28	111

@@ -1,21 +1,19 @@
 package com.btxtech.server.persistence.history;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * Created by Beat
  * on 18.09.2017.
  */
-@Entity
-@Table(name = "HISTORY_INVENTORY")
+// @Entity
+// @Table(name = "HISTORY_INVENTORY")
 public class InventoryHistoryEntry {
     public enum Type {
         BOX_PICKED,

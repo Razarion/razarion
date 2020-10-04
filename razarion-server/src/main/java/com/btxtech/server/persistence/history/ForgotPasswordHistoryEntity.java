@@ -1,19 +1,17 @@
 package com.btxtech.server.persistence.history;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * Created by Beat
  * on 01.02.2018.
  */
-@Entity
-@Table(name = "HISTORY_FORGOT_PASSWORDY")
+// @Entity
+// @Table(name = "HISTORY_FORGOT_PASSWORDY")
 public class ForgotPasswordHistoryEntity {
     public enum Type{
         INITIATED,

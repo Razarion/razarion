@@ -15,13 +15,10 @@ package com.btxtech.server.persistence.tracker;
 
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.Lob;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -29,8 +26,8 @@ import java.util.Date;
  * Date: 12.01.2010
  * Time: 22:45:47
  */
-@Entity
-@Table(name = "TRACKER_SESSION", indexes = { @Index(columnList = "sessionId") })
+// @Entity
+// @Table(name = "TRACKER_SESSION", indexes = { @Index(columnList = "sessionId") })
 public class SessionTrackerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

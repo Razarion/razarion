@@ -86,7 +86,7 @@ public class TrackerPersistence {
             if (request.getCookies() != null) {
                 sessionTrackerEntity.setRazarionCookie(Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(CommonUrl.RAZARION_COOKIE_NAME)).map(Cookie::getValue).findFirst().orElse(null));
             }
-            entityManager.persist(sessionTrackerEntity);
+            // TODO entityManager.persist(sessionTrackerEntity);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -117,7 +117,7 @@ public class TrackerPersistence {
             }
         }
         pageTrackerEntity.setParams(params.toString());
-        entityManager.persist(pageTrackerEntity);
+        // TODO entityManager.persist(pageTrackerEntity);
     }
 
     @Transactional
@@ -130,7 +130,7 @@ public class TrackerPersistence {
         startupTaskEntity.setDuration(startupTaskJson.getDuration());
         startupTaskEntity.setTaskEnum(startupTaskJson.getTaskEnum());
         startupTaskEntity.setError(startupTaskJson.getError());
-        entityManager.persist(startupTaskEntity);
+        // TODO entityManager.persist(startupTaskEntity);
     }
 
     @Transactional
@@ -141,7 +141,7 @@ public class TrackerPersistence {
         startupTerminatedEntity.setGameSessionUuid(startupTerminatedJson.getGameSessionUuid());
         startupTerminatedEntity.setTotalTime(startupTerminatedJson.getTotalTime());
         startupTerminatedEntity.setSuccessful(startupTerminatedJson.isSuccessful());
-        entityManager.persist(startupTerminatedEntity);
+        // TODO entityManager.persist(startupTerminatedEntity);
     }
 
     @Transactional
@@ -152,7 +152,7 @@ public class TrackerPersistence {
         gameUiControlTrackerEntity.setClientStartTime(gameUiControlTrackerInfo.getStartTime());
         gameUiControlTrackerEntity.setGameSessionUuid(gameUiControlTrackerInfo.getGameSessionUuid());
         gameUiControlTrackerEntity.setDuration(gameUiControlTrackerInfo.getDuration());
-        entityManager.persist(gameUiControlTrackerEntity);
+        // TODO entityManager.persist(gameUiControlTrackerEntity);
     }
 
     @Transactional
@@ -164,7 +164,7 @@ public class TrackerPersistence {
         sceneTrackerEntity.setGameSessionUuid(sceneTrackerInfo.getGameSessionUuid());
         sceneTrackerEntity.setInternalName(sceneTrackerInfo.getInternalName());
         sceneTrackerEntity.setDuration(sceneTrackerInfo.getDuration());
-        entityManager.persist(sceneTrackerEntity);
+        // TODO entityManager.persist(sceneTrackerEntity);
     }
 
     @Transactional
@@ -172,7 +172,7 @@ public class TrackerPersistence {
         perfmonStatistics.forEach(perfmonStatistic -> {
             PerfmonStatisticEntity fromPerfmonStatistic = new PerfmonStatisticEntity();
             fromPerfmonStatistic.fromPerfmonStatistic(sessionHolder.getPlayerSession().getHttpSessionId(), new Date(), perfmonStatistic);
-            entityManager.persist(fromPerfmonStatistic);
+            // TODO entityManager.persist(fromPerfmonStatistic);
         });
     }
 
@@ -183,7 +183,7 @@ public class TrackerPersistence {
             terrainTileStatisticEntity.setTimeStamp(new Date());
             terrainTileStatisticEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
             terrainTileStatisticEntity.fromTerrainTileStatistic(terrainTileStatistic);
-            entityManager.persist(terrainTileStatisticEntity);
+            // TODO entityManager.persist(terrainTileStatisticEntity);
         }
     }
 
@@ -193,7 +193,7 @@ public class TrackerPersistence {
         frontendNavigationEntity.setSessionId(sessionId);
         frontendNavigationEntity.setTimeStamp(new Date());
         frontendNavigationEntity.setUrl(url);
-        entityManager.persist(frontendNavigationEntity);
+        // TODO entityManager.persist(frontendNavigationEntity);
     }
 
     @Transactional
@@ -204,7 +204,7 @@ public class TrackerPersistence {
         closeTrackerEntity.setUrl(url);
         closeTrackerEntity.setClientTime(clientTime);
         closeTrackerEntity.setEventString(eventString);
-        entityManager.persist(closeTrackerEntity);
+        // TODO entityManager.persist(closeTrackerEntity);
     }
 
     public void onTrackingStart(String httpSessionId, TrackingStart trackingStart) throws JsonProcessingException {

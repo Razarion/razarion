@@ -3,11 +3,9 @@ package com.btxtech.server.persistence.tracker;
 import com.btxtech.shared.system.perfmon.PerfmonStatisticEntry;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -15,8 +13,8 @@ import java.util.Date;
  * Created by Beat
  * on 25.09.2017.
  */
-@Entity
-@Table(name = "TRACKER_PERFMON_ENTRY")
+// @Entity
+// @Table(name = "TRACKER_PERFMON_ENTRY")
 public class PerfmonStatisticEntryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

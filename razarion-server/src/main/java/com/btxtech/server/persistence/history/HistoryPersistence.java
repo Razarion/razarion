@@ -56,7 +56,7 @@ public class HistoryPersistence {
             // TODO levelHistoryEntity.setHumanPlayerIdEntityId(userService.getHumanPlayerId(userId.getPlayerId()).getId());
             levelHistoryEntity.setLevelId(newLevel.getId());
             levelHistoryEntity.setLevelNumber(newLevel.getNumber());
-            entityManager.persist(levelHistoryEntity);
+            // entityManager.persist(levelHistoryEntity);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
@@ -71,7 +71,7 @@ public class HistoryPersistence {
             questHistoryEntity.setQuestId(questConfig.getId());
             questHistoryEntity.setQuestInternalName(questConfig.getInternalName());
             questHistoryEntity.setType(type);
-            entityManager.persist(questHistoryEntity);
+            // entityManager.persist(questHistoryEntity);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
@@ -87,7 +87,7 @@ public class HistoryPersistence {
                 inventoryHistoryEntry.setTimeStamp(date);
                 inventoryHistoryEntry.setType(InventoryHistoryEntry.Type.BOX_PICKED);
                 inventoryHistoryEntry.setCrystals(boxContent.getCrystals());
-                entityManager.persist(inventoryHistoryEntry);
+                // entityManager.persist(inventoryHistoryEntry);
             }
             if (boxContent.getInventoryItems() != null) {
                 boxContent.getInventoryItems().forEach(inventoryItem -> {
@@ -97,7 +97,7 @@ public class HistoryPersistence {
                     inventoryHistoryEntry.setType(InventoryHistoryEntry.Type.BOX_PICKED);
                     inventoryHistoryEntry.setInventoryItemId(inventoryItem.getId());
                     inventoryHistoryEntry.setInventoryItemName(inventoryItem.getInternalName());
-                    entityManager.persist(inventoryHistoryEntry);
+                    // entityManager.persist(inventoryHistoryEntry);
                 });
             }
         } catch (Throwable throwable) {
@@ -116,7 +116,7 @@ public class HistoryPersistence {
             InventoryItemEntity inventoryItemEntity = inventoryPersistence.readInventoryItemEntity(inventoryItemId);
             inventoryHistoryEntry.setInventoryItemId(inventoryItemId);
             inventoryHistoryEntry.setInventoryItemName(inventoryItemEntity.getInternalName());
-            entityManager.persist(inventoryHistoryEntry);
+            // entityManager.persist(inventoryHistoryEntry);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
@@ -133,7 +133,7 @@ public class HistoryPersistence {
             inventoryHistoryEntry.setUnlockEntityId(levelUnlockEntityId);
             inventoryHistoryEntry.setUnlockEntityName(levelUnlockEntity.getInternalName());
             inventoryHistoryEntry.setCrystals(levelUnlockEntity.getCrystalCost());
-            entityManager.persist(inventoryHistoryEntry);
+            // entityManager.persist(inventoryHistoryEntry);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
@@ -146,7 +146,7 @@ public class HistoryPersistence {
             userHistoryEntity.setUserId(userEntity.getId());
             userHistoryEntity.setLoggedIn(new Date());
             userHistoryEntity.setSessionId(httpSessionId);
-            entityManager.persist(userHistoryEntity);
+            // entityManager.persist(userHistoryEntity);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
@@ -159,7 +159,7 @@ public class HistoryPersistence {
             userHistoryEntity.setUserId(userId);
             userHistoryEntity.setLoggedOut(new Date());
             userHistoryEntity.setSessionId(httpSessionId);
-            entityManager.persist(userHistoryEntity);
+            // entityManager.persist(userHistoryEntity);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
@@ -174,7 +174,7 @@ public class HistoryPersistence {
             historyEntity.setTimeStamp(new Date());
             historyEntity.setForgotPasswordEntityId(forgotPasswordEntity.getId());
             historyEntity.setType(type);
-            entityManager.persist(historyEntity);
+            // entityManager.persist(historyEntity);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
@@ -194,7 +194,7 @@ public class HistoryPersistence {
                 botSceneIndicationEntity.setStep(botSceneIndicationInfo.getConflictStep());
                 botSceneIndicationEntity.setStepCount(botSceneIndicationInfo.getConflictStepCount());
             }
-            entityManager.persist(botSceneIndicationEntity);
+            // entityManager.persist(botSceneIndicationEntity);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }

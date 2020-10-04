@@ -1,19 +1,17 @@
 package com.btxtech.server.persistence.history;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * Created by Beat
  * 22.05.2017.
  */
-@Entity
-@Table(name = "HISTORY_LEVEL")
+// @Entity
+// @Table(name = "HISTORY_LEVEL")
 public class LevelHistoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,21 +1,19 @@
 package com.btxtech.server.persistence.history;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * Created by Beat
  * 22.05.2017.
  */
-@Entity
-@Table(name = "HISTORY_QUEST")
+// @Entity
+// @Table(name = "HISTORY_QUEST")
 public class QuestHistoryEntity {
     public enum Type {
         QUEST_ACTIVATED,
