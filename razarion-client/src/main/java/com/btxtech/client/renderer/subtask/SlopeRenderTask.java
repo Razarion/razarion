@@ -12,6 +12,9 @@ import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 import javax.enterprise.context.Dependent;
 import java.util.List;
 
+import static com.btxtech.client.renderer.shaders.GenericDefines.UV;
+import static com.btxtech.client.renderer.shaders.GenericDefines.WORLD_VERTEX_POSITION;
+
 /**
  * Created by Beat
  * 24.01.2016.
@@ -22,7 +25,7 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainSlopeTile uiTerrainSlopeTile) {
-        return new WebGlFacadeConfig(Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader())
+        return new WebGlFacadeConfig(Shaders.INSTANCE.genericVertexShader(), Shaders.INSTANCE.slopeFragmentShader())
                 .enableTransformation(true)
                 .enableReceiveShadow()
                 .enableCastShadow()
@@ -46,6 +49,12 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
                 addActivator(new WebGlSlopeSplatting(getWebGlFacade(), uiTerrainSlopeTile.getSlopeSplattingConfig(), "slopeSplatting"));
             }
         }
+    }
+
+    @Override
+    protected void glslVertexCustomDefines(List<String> defines, UiTerrainSlopeTile uiTerrainSlopeTile) {
+        defines.add(WORLD_VERTEX_POSITION);
+        defines.add(UV);
     }
 
     @Override
