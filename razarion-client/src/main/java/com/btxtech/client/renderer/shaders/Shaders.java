@@ -11,6 +11,12 @@ import com.google.gwt.resources.client.TextResource;
 public interface Shaders extends ClientBundle {
     Shaders INSTANCE = GWT.create(Shaders.class);
 
+    @Source("Generic.vert")
+    TextResource genericVertexShader();
+
+    @Source("Generic.frag")
+    TextResource genericFragmentShader();
+
     @Source("ViewPerspectiveWire.vert")
     TextResource viewPerspectiveWireVertexShader();
 

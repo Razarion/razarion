@@ -14,6 +14,8 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
 
+import static com.btxtech.client.renderer.shaders.GenericDefines.WORLD_VERTEX_POSITION;
+
 /**
  * Created by Beat
  * 01.05.2015.
@@ -31,7 +33,7 @@ public class GroundRenderTask extends AbstractWebGlRenderTask<UiTerrainGroundTil
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainGroundTile uiTerrainGroundTile) {
-        return new WebGlFacadeConfig(Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader())
+        return new WebGlFacadeConfig(Shaders.INSTANCE.genericVertexShader(), Shaders.INSTANCE.groundFragmentShader())
                 .enableTransformation(true)
                 .enableReceiveShadow()
                 .enableCastShadow()
@@ -50,6 +52,11 @@ public class GroundRenderTask extends AbstractWebGlRenderTask<UiTerrainGroundTil
 //        terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
 //        terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
 //        terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
+    }
+
+    @Override
+    protected void glslVertexCustomDefines(List<String> defines, UiTerrainGroundTile uiTerrainGroundTile) {
+        defines.add(WORLD_VERTEX_POSITION);
     }
 
     @Override
