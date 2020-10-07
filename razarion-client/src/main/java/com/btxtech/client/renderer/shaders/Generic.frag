@@ -1,6 +1,8 @@
 precision mediump float;
 #extension GL_OES_standard_derivatives : enable
 
+//-$$$-INCLUDE-DEFINES
+
 varying vec3 vWorldVertexPosition;
 varying vec3 vViewPosition;
 varying vec3 vNormal;
@@ -11,9 +13,6 @@ uniform vec3 directLightDirection;
 uniform vec3 directLightColor;
 uniform vec3 ambientLightColor;
 vec3 correctedDirectLightDirection;
-
-#define RECEIVE_SHADOW
-#define RENDER_GROUND_BOTTOM_TEXTURE
 
 varying vec4 shadowPosition;
 uniform float uShadowAlpha;
