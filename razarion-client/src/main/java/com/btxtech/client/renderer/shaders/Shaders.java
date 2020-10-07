@@ -29,9 +29,6 @@ public interface Shaders extends ClientBundle {
     @Source("ModelViewPerspectiveWire.frag")
     TextResource modelViewPerspectiveWireFragmentShader();
 
-    @Source("Ground.vert")
-    TextResource groundVertexShader();
-
     @Source("Ground.frag")
     TextResource groundFragmentShader();
 
