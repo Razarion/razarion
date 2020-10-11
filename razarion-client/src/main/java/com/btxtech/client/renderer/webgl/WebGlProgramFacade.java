@@ -84,7 +84,7 @@ public class WebGlProgramFacade {
         return shader;
     }
 
-    private String addLineNumbers(String code) {
+    public static String addLineNumbers(String code) {
         StringBuilder result = new StringBuilder();
         String[] lines = code.split(DomConstants.JAVASCRIPT_LINE_SEPARATOR);
         for (int i = 0; i < lines.length; i++) {

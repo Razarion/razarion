@@ -9,6 +9,7 @@ attribute vec3 objectNormal;
 #ifdef UV
 attribute vec2 uv;
 #endif
+//-$$$-INCLUDE-CHUNK attributes
 
 #ifdef MODEL_MATRIX
 uniform highp mat4 modelMatrix;
@@ -17,6 +18,7 @@ uniform highp mat4 viewMatrix;
 uniform highp mat4 projectionMatrix;
 uniform highp mat4 normalMatrix;
 uniform highp mat4 shadowMatrix;
+//-$$$-INCLUDE-CHUNK uniforms-vertex
 
 varying vec3 vNormal;
 varying vec3 vViewPosition;
@@ -27,6 +29,7 @@ varying vec4 shadowPosition;
 #ifdef WORLD_VERTEX_POSITION
 varying vec3 vWorldVertexPosition;
 #endif
+//-$$$-INCLUDE-CHUNK varyings
 
 void main(void) {
     #ifdef FIX_OBJECT_NORMAL
@@ -44,6 +47,8 @@ void main(void) {
     #ifdef WORLD_VERTEX_POSITION
     vWorldVertexPosition = position.xyz;
     #endif
+
+    //-$$$-INCLUDE-CHUNK main-code-vertex
 
     #ifdef MODEL_MATRIX
     vViewPosition = - (viewMatrix * modelMatrix * vec4(position, 1.0)).xyz;

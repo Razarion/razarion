@@ -14,7 +14,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
 
-import static com.btxtech.client.renderer.shaders.GenericDefines.WORLD_VERTEX_POSITION;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.WORLD_VERTEX_POSITION;
 
 /**
  * Created by Beat
@@ -33,7 +33,7 @@ public class GroundRenderTask extends AbstractWebGlRenderTask<UiTerrainGroundTil
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainGroundTile uiTerrainGroundTile) {
-        return new WebGlFacadeConfig(Shaders.INSTANCE.genericVertexShader(), Shaders.INSTANCE.genericFragmentShader())
+        return new WebGlFacadeConfig(Shaders.INSTANCE.groundCustom())
                 .enableTransformation(true)
                 .enableReceiveShadow()
                 .enableCastShadow()
@@ -61,6 +61,7 @@ public class GroundRenderTask extends AbstractWebGlRenderTask<UiTerrainGroundTil
 
     @Override
     protected void glslFragmentCustomDefines(List<String> defines, UiTerrainGroundTile uiTerrainGroundTile) {
+        defines.add(WORLD_VERTEX_POSITION);
         if (uiTerrainGroundTile.getGroundConfig().getBottomMaterial() != null && uiTerrainGroundTile.getGroundConfig().getSplatting() != null) {
             defines.add("RENDER_GROUND_BOTTOM_TEXTURE");
         }

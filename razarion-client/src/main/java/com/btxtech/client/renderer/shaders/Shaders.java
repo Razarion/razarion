@@ -11,11 +11,11 @@ import com.google.gwt.resources.client.TextResource;
 public interface Shaders extends ClientBundle {
     Shaders INSTANCE = GWT.create(Shaders.class);
 
-    @Source("Generic.vert")
-    TextResource genericVertexShader();
+    @Source("Skeleton.vert")
+    TextResource skeletonVertexShader();
 
-    @Source("Generic.frag")
-    TextResource genericFragmentShader();
+    @Source("Skeleton.frag")
+    TextResource skeletonFragmentShader();
 
     @Source("ViewPerspectiveWire.vert")
     TextResource viewPerspectiveWireVertexShader();
@@ -77,11 +77,11 @@ public interface Shaders extends ClientBundle {
     @Source("DemolitionVertexContainer.frag")
     TextResource demolitionVertexContainerFragmentShader();
 
-    @Source("Slope.vert")
-    TextResource slopeVertexShader();
+    @Source("GroundCustom.glsl")
+    TextResource groundCustom();
 
-    @Source("Slope.frag")
-    TextResource slopeFragmentShader();
+    @Source("SlopeCustom.glsl")
+    TextResource slopeCustom();
 
     @Source("TerrainEditor.vert")
     TextResource terrainEditorVertexShader();

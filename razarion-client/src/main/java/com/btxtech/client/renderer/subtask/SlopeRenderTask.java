@@ -12,8 +12,8 @@ import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 import javax.enterprise.context.Dependent;
 import java.util.List;
 
-import static com.btxtech.client.renderer.shaders.GenericDefines.UV;
-import static com.btxtech.client.renderer.shaders.GenericDefines.WORLD_VERTEX_POSITION;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.WORLD_VERTEX_POSITION;
 
 /**
  * Created by Beat
@@ -25,7 +25,7 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainSlopeTile uiTerrainSlopeTile) {
-        return new WebGlFacadeConfig(Shaders.INSTANCE.genericVertexShader(), Shaders.INSTANCE.slopeFragmentShader())
+        return new WebGlFacadeConfig(Shaders.INSTANCE.slopeCustom())
                 .enableTransformation(true)
                 .enableReceiveShadow()
                 .enableCastShadow()
@@ -59,6 +59,8 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
 
     @Override
     protected void glslFragmentCustomDefines(List<String> defines, UiTerrainSlopeTile uiTerrainSlopeTile) {
+        defines.add(WORLD_VERTEX_POSITION);
+        defines.add(UV);
         if (uiTerrainSlopeTile.getGroundConfig() != null) {
             defines.add("RENDER_GROUND_TEXTURE");
             if (uiTerrainSlopeTile.getGroundConfig().getBottomMaterial() != null && uiTerrainSlopeTile.getGroundConfig().getSplatting() != null) {

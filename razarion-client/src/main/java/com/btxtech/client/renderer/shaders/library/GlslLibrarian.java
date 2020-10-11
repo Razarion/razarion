@@ -1,8 +1,5 @@
 package com.btxtech.client.renderer.shaders.library;
 
-import com.google.gwt.resources.client.ClientBundleWithLookup;
-import com.google.gwt.resources.client.TextResource;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,25 +11,28 @@ public class GlslLibrarian {
     private static final String BEGIN_CHUNK_POSTFIX = " BEGIN";
     private static final String END_CHUNK_POSTFIX = " END";
     // private Logger logger = Logger.getLogger(GlslLibrarian.class.getName());
-    private ClientBundleWithLookup shaderLibrary;
+    private String customLib;
     private String lineSeparator;
 
-    public GlslLibrarian(ClientBundleWithLookup shaderLibrary, String lineSeparator) {
-        this.shaderLibrary = shaderLibrary;
+    public GlslLibrarian(String customLib, String lineSeparator) {
+        this.customLib = customLib;
         this.lineSeparator = lineSeparator;
     }
 
-    public String link(TextResource shaderCode, List<String> glslDefines) {
-        String[] lines = shaderCode.getText().split(lineSeparator);
+    public String link(String skeletonCode, List<String> glslDefines) {
+        String[] lines = skeletonCode.split(lineSeparator);
         StringBuilder result = new StringBuilder();
         Arrays.stream(lines).forEach(line -> {
             if (line.trim().startsWith(INCLUDE_CHUNK)) {
-                String shadeName = readParameter(0, line);
-                String shadeChunk = readParameter(1, line);
-                result.append(generateChunk(shadeName, shadeChunk));
+                if (customLib != null) {
+                    String chunkName = readParameter(0, line);
+                    result.append(generateChunk(chunkName));
+                    result.append(lineSeparator);
+                }
             } else if (line.trim().startsWith(INCLUDE_DEFINES)) {
                 if (glslDefines != null && !glslDefines.isEmpty()) {
                     result.append(generateDefines(glslDefines));
+                    result.append(lineSeparator);
                 }
             } else {
                 result.append(line);
@@ -51,21 +51,20 @@ public class GlslLibrarian {
         return remaining.split("\\s+");
     }
 
-    private String generateChunk(String shadeName, String shadeChunk) {
-        String shaderCode = ((TextResource) shaderLibrary.getResource(shadeName)).getText();
-        String beginMarker = CHUNK_PREFIX + shadeChunk + BEGIN_CHUNK_POSTFIX;
-        int beginIndex = shaderCode.indexOf(beginMarker);
+    private String generateChunk(String chunkName) {
+        String beginMarker = CHUNK_PREFIX + chunkName + BEGIN_CHUNK_POSTFIX;
+        int beginIndex = customLib.indexOf(beginMarker);
         if (beginIndex < 0) {
-            throw new IllegalArgumentException("BeginMarker '" + beginMarker + "' not found.");
+            return "";
         }
-        int endIndex = shaderCode.indexOf(CHUNK_PREFIX + shadeChunk + END_CHUNK_POSTFIX);
+        int endIndex = customLib.indexOf(CHUNK_PREFIX + chunkName + END_CHUNK_POSTFIX);
         if (endIndex < 0) {
-            throw new IllegalArgumentException("EndMarker '" + CHUNK_PREFIX + shadeChunk + END_CHUNK_POSTFIX + "' not found.");
+            throw new IllegalArgumentException("EndMarker '" + CHUNK_PREFIX + chunkName + END_CHUNK_POSTFIX + "' not found.");
         }
-        return shaderCode.substring(beginIndex + beginMarker.length(), endIndex);
+        return customLib.substring(beginIndex + beginMarker.length(), endIndex).trim();
     }
 
     private String generateDefines(List<String> glslDefines) {
-        return glslDefines.stream().map(d -> "#define " + d + lineSeparator).collect(Collectors.joining());
+        return glslDefines.stream().map(d -> "#define " + d + lineSeparator).collect(Collectors.joining()).trim();
     }
 }

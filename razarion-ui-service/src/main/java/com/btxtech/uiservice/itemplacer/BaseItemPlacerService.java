@@ -31,12 +31,12 @@ public class BaseItemPlacerService {
     private Collection<BaseItemPlacerListener> listeners = new ArrayList<>();
 
     public void activate(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<Collection<DecimalPosition>> executionCallback) {
-        cursorService.handleItemPlaceActivated();
-        this.canBeCanceled = canBeCanceled;
-        this.executionCallback = executionCallback;
-        baseItemPlacer = instance.get().init(baseItemPlacerConfig);
-        baseItemPlacerRenderTask.activate(baseItemPlacer);
-        new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.activatePlacer(baseItemPlacer));
+//   TODO     cursorService.handleItemPlaceActivated();
+//   TODO     this.canBeCanceled = canBeCanceled;
+//   TODO     this.executionCallback = executionCallback;
+//   TODO     baseItemPlacer = instance.get().init(baseItemPlacerConfig);
+//   TODO     baseItemPlacerRenderTask.activate(baseItemPlacer);
+//   TODO     new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.activatePlacer(baseItemPlacer));
     }
 
     public void deactivate() {

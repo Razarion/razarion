@@ -6,6 +6,11 @@ precision mediump float;
 varying vec3 vWorldVertexPosition;
 varying vec3 vViewPosition;
 varying vec3 vNormal;
+#ifdef UV
+varying vec2 vUv;
+#endif
+//-$$$-INCLUDE-CHUNK varyings
+
 uniform highp mat4 normalMatrix;
 
 // Light
@@ -30,7 +35,6 @@ float calculateShadowFactor() {
     }
 }
 
-
 struct PhongMaterial {
     sampler2D texture;
     float scale;
@@ -39,7 +43,6 @@ struct PhongMaterial {
     float shininess;
     float specularStrength;
 };
-
 
 uniform PhongMaterial topMaterial;
 #ifdef  RENDER_GROUND_BOTTOM_TEXTURE
@@ -54,6 +57,7 @@ struct Splatting {
 uniform Splatting splatting;
 #endif
 
+//-$$$-INCLUDE-CHUNK uniforms-fragment
 
 vec2 dHdxy_fwd(sampler2D bumpMap, float bumpMapDepth, float textureScale, vec2 uv) {
     vec2 uvScalled = uv / textureScale;
@@ -97,8 +101,6 @@ vec3 phong(PhongMaterial phongMaterial, vec2 uv) {
     return phongAlpha(phongMaterial, uv).rgb;
 }
 
-
-
 vec3 ground() {
     vec3 top = phong(topMaterial, vWorldVertexPosition.xy);
     #ifndef RENDER_GROUND_BOTTOM_TEXTURE
@@ -116,9 +118,9 @@ vec3 ground() {
     return mix(top, bottom, splattingFactor);
     #endif
 }
-void main(void) {
 
+void main(void) {
     shadowFactor = calculateShadowFactor();
     correctedDirectLightDirection = -(normalize((normalMatrix * vec4(directLightDirection, 1.0)).xyz));
-    gl_FragColor = vec4(ground(), 1.0);
+    //-$$$-INCLUDE-CHUNK main-code-fragment
 }
