@@ -3,7 +3,7 @@ precision mediump float;
 //-$$$-INCLUDE-DEFINES
 
 attribute vec3 position;
-#ifndef FIX_OBJECT_NORMAL
+#ifndef FIX_PERPENDICULAR_NORMAL
 attribute vec3 objectNormal;
 #endif
 #ifdef UV
@@ -31,8 +31,10 @@ varying vec3 vWorldVertexPosition;
 #endif
 //-$$$-INCLUDE-CHUNK varyings
 
+//-$$$-INCLUDE-CHUNK code-vertex
+
 void main(void) {
-    #ifdef FIX_OBJECT_NORMAL
+    #ifdef FIX_PERPENDICULAR_NORMAL
     vNormal = (normalMatrix * vec4(0.0, 0.0, 1.0, 1.0)).xyz;
     #else
     vNormal = (normalMatrix * vec4(objectNormal, 1.0)).xyz;

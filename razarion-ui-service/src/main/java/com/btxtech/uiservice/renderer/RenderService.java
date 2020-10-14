@@ -3,9 +3,9 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.simple.GroundRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
+import com.btxtech.uiservice.renderer.task.simple.WaterRenderTaskRunner;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -41,13 +41,13 @@ public abstract class RenderService {
 
         addRenderTaskRunner(GroundRenderTaskRunner.class, "Ground");
         addRenderTaskRunner(SlopeRenderTaskRunner.class, "Slope");
-        addRenderTaskRunner(TerrainObjectRenderTaskRunner.class, "Terrain Object");
+// TODO               addRenderTaskRunner(TerrainObjectRenderTaskRunner.class, "Terrain Object");
 // TODO       addRenderTaskRunner(ItemMarkerRenderTask.class, "Item Marker");
 // TODO       addRenderTaskRunner(BaseItemRenderTask.class, "Base Item");
 // TODO       addRenderTaskRunner(TrailRenderTask.class, "Trail");
 // TODO       addRenderTaskRunner(ResourceItemRenderTask.class, "Resource");
 // TODO       addRenderTaskRunner(BoxItemRenderTask.class, "Box");
-// TODO        addRenderTaskRunner(WaterRenderTaskRunner.class, "Water");
+        addRenderTaskRunner(WaterRenderTaskRunner.class, "Water");
 // TODO       addRenderTaskRunner(ProjectileRenderTask.class, "Projectile");
 // TODO        addRenderTaskRunner(BaseItemPlacerRenderTaskRunner.class, "Base Item Placer");
 // TODO       addRenderTaskRunner(SelectionFrameRenderTask.class, "Selection Frame");

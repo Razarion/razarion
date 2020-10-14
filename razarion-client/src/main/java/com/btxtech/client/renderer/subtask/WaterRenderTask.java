@@ -12,6 +12,9 @@ import javax.enterprise.context.Dependent;
 import java.util.List;
 
 import static com.btxtech.client.renderer.engine.UniformLocation.Type.F;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.FIX_PERPENDICULAR_NORMAL;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.WORLD_VERTEX_POSITION;
 import static com.btxtech.client.renderer.webgl.WebGlFacadeConfig.Blend.SOURCE_ALPHA;
 
 /**
@@ -30,7 +33,7 @@ public class WaterRenderTask extends AbstractWebGlRenderTask<UiTerrainWaterTile>
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainWaterTile uiTerrainWaterTile) {
-        return new WebGlFacadeConfig(Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader())
+        return new WebGlFacadeConfig(Shaders.INSTANCE.customWater())
                 .enableTransformation(true)
                 .enableOESStandardDerivatives()
                 .blend(SOURCE_ALPHA)
@@ -71,14 +74,19 @@ public class WaterRenderTask extends AbstractWebGlRenderTask<UiTerrainWaterTile>
 
     @Override
     protected void glslVertexCustomDefines(List<String> defines, UiTerrainWaterTile uiTerrainWaterTile) {
+        defines.add(FIX_PERPENDICULAR_NORMAL);
+        defines.add(WORLD_VERTEX_POSITION);
         if (hasShallowWater(uiTerrainWaterTile)) {
+            defines.add(UV);
             defines.add("RENDER_SHALLOW_WATER");
         }
     }
 
     @Override
     protected void glslFragmentCustomDefines(List<String> defines, UiTerrainWaterTile uiTerrainWaterTile) {
+        defines.add(WORLD_VERTEX_POSITION);
         if (hasShallowWater(uiTerrainWaterTile)) {
+            defines.add(UV);
             defines.add("RENDER_SHALLOW_WATER");
         }
     }

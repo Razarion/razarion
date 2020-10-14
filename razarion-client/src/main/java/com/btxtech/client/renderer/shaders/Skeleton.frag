@@ -57,6 +57,10 @@ struct Splatting {
 uniform Splatting splatting;
 #endif
 
+vec3 vec3ToRgb(vec3 normVec) {
+    return normVec * 0.5 + 0.5;
+}
+
 //-$$$-INCLUDE-CHUNK uniforms-fragment
 
 vec2 dHdxy_fwd(sampler2D bumpMap, float bumpMapDepth, float textureScale, vec2 uv) {
@@ -118,6 +122,8 @@ vec3 ground() {
     return mix(top, bottom, splattingFactor);
     #endif
 }
+
+//-$$$-INCLUDE-CHUNK code-fragment
 
 void main(void) {
     shadowFactor = calculateShadowFactor();
