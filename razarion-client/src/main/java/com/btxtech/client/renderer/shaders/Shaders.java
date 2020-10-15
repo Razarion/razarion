@@ -50,11 +50,8 @@ public interface Shaders extends ClientBundle {
     @Source("WaterCustom.glsl")
     TextResource customWater();
 
-    @Source("VertexContainer.vert")
-    TextResource vertexContainerVertexShader();
-
-    @Source("VertexContainer.frag")
-    TextResource vertexContainerFragmentShader();
+    @Source("VertexContainerCustom.frag")
+    TextResource vertexContainerCustomShader();
 
     @Source("BuildupVertexContainer.vert")
     TextResource buildupVertexContainerVertexShader();

@@ -2,8 +2,9 @@ precision mediump float;
 #extension GL_OES_standard_derivatives : enable
 
 //-$$$-INCLUDE-DEFINES
-
+#ifdef WORLD_VERTEX_POSITION
 varying vec3 vWorldVertexPosition;
+#endif
 varying vec3 vViewPosition;
 varying vec3 vNormal;
 #ifdef UV
@@ -105,6 +106,7 @@ vec3 phong(PhongMaterial phongMaterial, vec2 uv) {
     return phongAlpha(phongMaterial, uv).rgb;
 }
 
+    #ifdef WORLD_VERTEX_POSITION
 vec3 ground() {
     vec3 top = phong(topMaterial, vWorldVertexPosition.xy);
     #ifndef RENDER_GROUND_BOTTOM_TEXTURE
@@ -122,6 +124,7 @@ vec3 ground() {
     return mix(top, bottom, splattingFactor);
     #endif
 }
+    #endif
 
 //-$$$-INCLUDE-CHUNK code-fragment
 

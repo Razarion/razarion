@@ -1,7 +1,6 @@
 package com.btxtech.client.renderer.subtask;
 
 import com.btxtech.client.renderer.engine.UniformLocation;
-import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.shape3d.ClientShape3DUiService;
@@ -15,6 +14,11 @@ import jsinterop.base.Js;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
+
+import static com.btxtech.client.renderer.shaders.Shaders.INSTANCE;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.ALPHA_TO_COVERAGE;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.MODEL_MATRIX;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
 
 /**
  * Created by Beat
@@ -31,7 +35,7 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(VertexContainer vertexContainer) {
-        return new WebGlFacadeConfig(Shaders.INSTANCE.vertexContainerVertexShader(), Shaders.INSTANCE.vertexContainerFragmentShader())
+        return new WebGlFacadeConfig(INSTANCE.vertexContainerCustomShader())
                 .enableTransformation(true)
                 .enableReceiveShadow()
                 .enableCastShadow()
@@ -68,9 +72,16 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     }
 
     @Override
+    protected void glslVertexCustomDefines(List<String> defines, VertexContainer vertexContainer) {
+        defines.add(UV);
+        defines.add(MODEL_MATRIX);
+    }
+
+    @Override
     protected void glslFragmentCustomDefines(List<String> defines, VertexContainer vertexContainer) {
+        defines.add(UV);
         if (vertexContainer.getShape3DMaterialConfig().getAlphaToCoverage() != null) {
-            defines.add("ALPHA_TO_COVERAGE");
+            defines.add(ALPHA_TO_COVERAGE);
         }
     }
 

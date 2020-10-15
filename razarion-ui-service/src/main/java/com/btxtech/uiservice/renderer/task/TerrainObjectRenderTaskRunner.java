@@ -29,7 +29,7 @@ public class TerrainObjectRenderTaskRunner extends AbstractShape3DRenderTaskRunn
 
     @PostConstruct
     public void postConstruct() {
-        // TODO setupTerrainObject();
+        setupTerrainObject();
     }
 
     public void reloadEditMode() {
