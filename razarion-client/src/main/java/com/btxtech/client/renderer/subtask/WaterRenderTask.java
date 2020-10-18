@@ -1,6 +1,5 @@
 package com.btxtech.client.renderer.subtask;
 
-import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ShallowWaterConfig;
 import com.btxtech.uiservice.renderer.task.simple.WaterRenderTaskRunner;
@@ -12,6 +11,7 @@ import javax.enterprise.context.Dependent;
 import java.util.List;
 
 import static com.btxtech.client.renderer.engine.UniformLocation.Type.F;
+import static com.btxtech.client.renderer.shaders.Shaders.SHADERS;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.FIX_PERPENDICULAR_NORMAL;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.WORLD_VERTEX_POSITION;
@@ -33,7 +33,7 @@ public class WaterRenderTask extends AbstractWebGlRenderTask<UiTerrainWaterTile>
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainWaterTile uiTerrainWaterTile) {
-        return new WebGlFacadeConfig(Shaders.SHADERS.customWater())
+        return new WebGlFacadeConfig(SHADERS.customWater())
                 .enableTransformation(true)
                 .enableOESStandardDerivatives()
                 .blend(SOURCE_ALPHA)

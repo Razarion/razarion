@@ -2,6 +2,7 @@ precision mediump float;
 #extension GL_OES_standard_derivatives : enable
 
 //-$$$-INCLUDE-DEFINES
+
 #ifdef WORLD_VERTEX_POSITION
 varying vec3 vWorldVertexPosition;
 #endif
