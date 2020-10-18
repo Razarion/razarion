@@ -42,6 +42,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.MODEL_MATRIX;
 import static elemental2.webgl.WebGLRenderingContext.SAMPLE_ALPHA_TO_COVERAGE;
 
 public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
@@ -102,6 +103,9 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
 
     private List<String> glslVertexDefines(T t) {
         List<String> vertexDefines = new ArrayList<>();
+        if (modelMatricesSupplier != null) {
+            vertexDefines.add(MODEL_MATRIX);
+        }
         glslVertexCustomDefines(vertexDefines, t);
         return vertexDefines;
     }

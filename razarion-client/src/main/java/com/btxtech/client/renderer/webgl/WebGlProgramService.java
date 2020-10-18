@@ -24,8 +24,8 @@ public class WebGlProgramService {
     private Map<String, WebGlProgramFacade> webGlProgramCache = new HashMap<>();
 
     public WebGlProgramFacade getWebGlProgram(WebGlFacadeConfig webGlFacadeConfig, List<String> glslVertexDefines, List<String> glslFragmentDefines) {
-        String vertexSkeletonShader = Shaders.INSTANCE.skeletonVertexShader().getText();
-        String fragmentSkeletonShader = Shaders.INSTANCE.skeletonFragmentShader().getText();
+        String vertexSkeletonShader = Shaders.SHADERS.skeletonVertexShader().getText();
+        String fragmentSkeletonShader = Shaders.SHADERS.skeletonFragmentShader().getText();
         if (webGlFacadeConfig.isSkeletonShader()) {
             GlslLibrarian glslCustomLibrarian = new GlslLibrarian(webGlFacadeConfig.getSkeletonCustomLib() != null ? webGlFacadeConfig.getSkeletonCustomLib().getText() : null,
                     DomConstants.JAVASCRIPT_LINE_SEPARATOR);

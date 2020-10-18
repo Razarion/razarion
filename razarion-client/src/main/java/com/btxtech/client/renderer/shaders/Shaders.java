@@ -9,7 +9,7 @@ import com.google.gwt.resources.client.TextResource;
  * 04.04.2015.
  */
 public interface Shaders extends ClientBundle {
-    Shaders INSTANCE = GWT.create(Shaders.class);
+    Shaders SHADERS = GWT.create(Shaders.class);
 
     @Source("Skeleton.vert")
     TextResource skeletonVertexShader();
@@ -17,18 +17,22 @@ public interface Shaders extends ClientBundle {
     @Source("Skeleton.frag")
     TextResource skeletonFragmentShader();
 
-    @Source("ViewPerspectiveWire.vert")
-    TextResource viewPerspectiveWireVertexShader();
+    @Source("GroundCustom.glsl")
+    TextResource groundCustom();
 
-    @Source("ViewPerspectiveWire.frag")
-    TextResource viewPerspectiveWireFragmentShader();
+    @Source("WaterCustom.glsl")
+    TextResource customWater();
 
-    @Source("ModelViewPerspectiveWire.vert")
-    TextResource modelViewPerspectiveWireVertexShader();
+    @Source("VertexContainerCustom.frag")
+    TextResource vertexContainerCustomShader();
 
-    @Source("ModelViewPerspectiveWire.frag")
-    TextResource modelViewPerspectiveWireFragmentShader();
+    @Source("SlopeCustom.glsl")
+    TextResource slopeCustom();
 
+    @Source("RgbaMvpCustom.glsl")
+    TextResource customRgbaMvp();
+
+    // ---------------------- OLD ----------------------
     @Source("Monitor.vert")
     TextResource monitorVertexShader();
 
@@ -38,20 +42,11 @@ public interface Shaders extends ClientBundle {
     @Source("DepthBufferVP.vert")
     TextResource depthBufferVPVertexShader();
 
-    @Source("DepthBufferVP.frag")
-    TextResource depthBufferVPFragmentShader();
-
     @Source("DebugVector.vert")
     TextResource debugVectorVertexShader();
 
     @Source("DebugVector.frag")
     TextResource debugVectorFragmentShader();
-
-    @Source("WaterCustom.glsl")
-    TextResource customWater();
-
-    @Source("VertexContainerCustom.frag")
-    TextResource vertexContainerCustomShader();
 
     @Source("BuildupVertexContainer.vert")
     TextResource buildupVertexContainerVertexShader();
@@ -70,12 +65,6 @@ public interface Shaders extends ClientBundle {
 
     @Source("DemolitionVertexContainer.frag")
     TextResource demolitionVertexContainerFragmentShader();
-
-    @Source("GroundCustom.glsl")
-    TextResource groundCustom();
-
-    @Source("SlopeCustom.glsl")
-    TextResource slopeCustom();
 
     @Source("TerrainEditor.vert")
     TextResource terrainEditorVertexShader();
@@ -96,12 +85,15 @@ public interface Shaders extends ClientBundle {
     TextResource terrainObjectEditorFragmentShader();
 
     @Source("RgbaMvp.vert")
+    @Deprecated
     TextResource rgbaMvpVertexShader();
 
     @Source("Rgba.frag")
+    @Deprecated
     TextResource rgbaFragmentShader();
 
     @Source("RgbaVp.vert")
+    @Deprecated
     TextResource rgbaVpVertexShader();
 
     @Source("Particle.vert")

@@ -31,7 +31,7 @@ public class ClientInGameItemCornerRendererUnit extends AbstractInGameItemCorner
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.rgbaMvpVertexShader(), Shaders.INSTANCE.rgbaFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.rgbaMvpVertexShader(), Shaders.SHADERS.rgbaFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
         modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);

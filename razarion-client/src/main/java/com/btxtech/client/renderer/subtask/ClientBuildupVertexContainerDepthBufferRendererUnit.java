@@ -41,7 +41,7 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.buildupVertexContainerDeptBufferVertexShader(), Shaders.INSTANCE.buildupVertexContainerDeptBufferFragmentShader()).enableShadowTransformation());
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.buildupVertexContainerDeptBufferVertexShader(), Shaders.SHADERS.buildupVertexContainerDeptBufferFragmentShader()).enableShadowTransformation());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         textureCoordinate = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
         modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);

@@ -29,7 +29,7 @@ public class ClientSelectionFrameRenderUnit extends AbstractSelectionFrameRender
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.rgbaVpVertexShader(), Shaders.INSTANCE.rgbaFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.rgbaVpVertexShader(), Shaders.SHADERS.rgbaFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
     }

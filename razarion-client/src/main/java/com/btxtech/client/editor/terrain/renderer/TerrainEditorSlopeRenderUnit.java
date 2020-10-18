@@ -42,7 +42,7 @@ public class TerrainEditorSlopeRenderUnit extends AbstractRenderUnit<ModifiedSlo
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.terrainEditorVertexShader(), Shaders.INSTANCE.terrainEditorFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.terrainEditorVertexShader(), Shaders.SHADERS.terrainEditorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         uColor = webGlFacade.getUniformLocation("uColor");
     }

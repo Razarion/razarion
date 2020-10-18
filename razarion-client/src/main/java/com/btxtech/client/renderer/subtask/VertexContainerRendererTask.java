@@ -15,9 +15,8 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
 
-import static com.btxtech.client.renderer.shaders.Shaders.INSTANCE;
+import static com.btxtech.client.renderer.shaders.Shaders.SHADERS;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.ALPHA_TO_COVERAGE;
-import static com.btxtech.client.renderer.shaders.SkeletonDefines.MODEL_MATRIX;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
 
 /**
@@ -35,7 +34,7 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(VertexContainer vertexContainer) {
-        return new WebGlFacadeConfig(INSTANCE.vertexContainerCustomShader())
+        return new WebGlFacadeConfig(SHADERS.vertexContainerCustomShader())
                 .enableTransformation(true)
                 .enableReceiveShadow()
                 .enableCastShadow()
@@ -74,7 +73,6 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     @Override
     protected void glslVertexCustomDefines(List<String> defines, VertexContainer vertexContainer) {
         defines.add(UV);
-        defines.add(MODEL_MATRIX);
     }
 
     @Override

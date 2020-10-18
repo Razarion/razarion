@@ -3,6 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.uiservice.renderer.task.BaseItemPlacerRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.simple.GroundRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
@@ -50,7 +51,7 @@ public abstract class RenderService {
 // TODO       addRenderTaskRunner(BoxItemRenderTask.class, "Box");
         addRenderTaskRunner(WaterRenderTaskRunner.class, "Water");
 // TODO       addRenderTaskRunner(ProjectileRenderTask.class, "Projectile");
-// TODO        addRenderTaskRunner(BaseItemPlacerRenderTaskRunner.class, "Base Item Placer");
+        addRenderTaskRunner(BaseItemPlacerRenderTaskRunner.class, "Base Item Placer");
 // TODO       addRenderTaskRunner(SelectionFrameRenderTask.class, "Selection Frame");
 // TODO       addRenderTaskRunner(ItemVisualizationRenderTask.class, "Tip");
 // TODO       addRenderTaskRunner(ParticleRenderTask.class, "Particle");

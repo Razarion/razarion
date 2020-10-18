@@ -25,7 +25,7 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainSlopeTile uiTerrainSlopeTile) {
-        return new WebGlFacadeConfig(Shaders.INSTANCE.slopeCustom())
+        return new WebGlFacadeConfig(Shaders.SHADERS.slopeCustom())
                 .enableTransformation(true)
                 .enableReceiveShadow()
                 .enableCastShadow()

@@ -51,7 +51,7 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.buildupVertexContainerVertexShader(), Shaders.INSTANCE.buildupVertexContainerFragmentShader()).enableTransformation(true).enableReceiveShadow().enableCastShadow());
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.buildupVertexContainerVertexShader(), Shaders.SHADERS.buildupVertexContainerFragmentShader()).enableTransformation(true).enableReceiveShadow().enableCastShadow());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         norms = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         textureCoordinateAttribute = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);

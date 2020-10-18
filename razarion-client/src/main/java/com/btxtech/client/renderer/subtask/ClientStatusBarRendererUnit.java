@@ -34,7 +34,7 @@ public class ClientStatusBarRendererUnit extends AbstractStatusBarRendererUnit {
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.statusBarFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.commonVisibilityVertexShader(), Shaders.SHADERS.statusBarFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);

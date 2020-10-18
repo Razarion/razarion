@@ -42,7 +42,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.particleVertexShader(), Shaders.SHADERS.particleFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         alphaTextureCoordinates = webGlFacade.createDecimalPositionShaderAttribute("aAlphaTextureCoordinate");
         modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);

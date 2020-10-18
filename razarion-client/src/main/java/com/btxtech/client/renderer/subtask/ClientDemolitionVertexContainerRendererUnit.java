@@ -48,7 +48,7 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.demolitionVertexContainerVertexShader(), Shaders.INSTANCE.demolitionVertexContainerFragmentShader()).enableTransformation(true).enableReceiveShadow().enableCastShadow());
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.demolitionVertexContainerVertexShader(), Shaders.SHADERS.demolitionVertexContainerFragmentShader()).enableTransformation(true).enableReceiveShadow().enableCastShadow());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         norms = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         textureCoordinateAttribute = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);

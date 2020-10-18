@@ -30,7 +30,7 @@ public class MonitorRenderTask extends AbstractWebGlRenderTask<Void> implements 
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(Void aVoid) {
-        return new WebGlFacadeConfig(Shaders.INSTANCE.monitorVertexShader(), Shaders.INSTANCE.monitorFragmentShader());
+        return new WebGlFacadeConfig(Shaders.SHADERS.monitorVertexShader(), Shaders.SHADERS.monitorFragmentShader());
     }
 
     @Override

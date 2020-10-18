@@ -45,7 +45,7 @@ public class TerrainEditorCursorRenderUnit extends AbstractRenderUnit<Polygon2D>
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.INSTANCE.terrainEditorCursorVertexShader(), Shaders.INSTANCE.terrainEditorCursorFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.terrainEditorCursorVertexShader(), Shaders.SHADERS.terrainEditorCursorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
         uCursorType = webGlFacade.getUniformLocation(WebGlFacade.U_CURSOR_TYPE);
