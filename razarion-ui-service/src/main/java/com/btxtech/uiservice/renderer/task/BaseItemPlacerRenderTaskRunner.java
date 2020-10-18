@@ -31,7 +31,7 @@ public class BaseItemPlacerRenderTaskRunner extends AbstractShape3DRenderTaskRun
         if (baseItemPlacer.getBaseItemType().getShape3DId() == null) {
             alarmService.riseAlarm(INVALID_BASE_ITEM, "No shape3DId for BaseItemType", baseItemPlacer.getBaseItemType().getId());
         }
-        // createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemPlacer.getBaseItemType().getShape3DId()), timeStamp -> baseItemPlacer.provideItemModelMatrices());
+        createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemPlacer.getBaseItemType().getShape3DId()), timeStamp -> baseItemPlacer.provideItemModelMatrices());
     }
 
     public void deactivate() {
