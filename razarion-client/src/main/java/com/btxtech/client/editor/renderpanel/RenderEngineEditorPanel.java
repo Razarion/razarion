@@ -3,6 +3,7 @@ package com.btxtech.client.editor.renderpanel;
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.editor.renderer.MonitorRenderTaskRunner;
 import com.btxtech.client.guielements.CommaDoubleBox;
+import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
@@ -49,6 +50,9 @@ public class RenderEngineEditorPanel extends AbstractEditor {
     @Inject
     @DataField
     private CheckboxInput showNorm;
+    @Inject
+    @DataField
+    private CheckboxInput callGetError;
     @Inject
     @DataField("updateButton")
     private Button updateButton;
@@ -102,6 +106,7 @@ public class RenderEngineEditorPanel extends AbstractEditor {
         showDeepMap.setChecked(monitorRenderTask.isShowDeep());
         // TODO wireMode.setChecked(renderService.isWire());
         // TODO showNorm.setChecked(renderService.isShowNorm());
+        callGetError.setChecked(WebGlUtil.isCallGetError());
         DOMUtil.removeAllElementChildren(renderTasks.getElement());
         renderTasks.setValue(renderService.getRenderTaskRunners().stream().map(RenderTaskModel::new).collect(Collectors.toList()));
         updateCamera();
@@ -141,6 +146,11 @@ public class RenderEngineEditorPanel extends AbstractEditor {
     @EventHandler("showNorm")
     public void showNormChanged(ChangeEvent e) {
         // TODO renderService.setShowNorm(showNorm.getChecked());
+    }
+
+    @EventHandler("callGetError")
+    public void callGetErrorChanged(ChangeEvent e) {
+        WebGlUtil.setCallGetError(callGetError.getChecked());
     }
 
     @EventHandler("translateX")

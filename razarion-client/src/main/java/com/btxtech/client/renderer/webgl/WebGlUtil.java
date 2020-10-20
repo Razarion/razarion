@@ -12,9 +12,15 @@ import java.util.List;
  * 01.05.2015.
  */
 public class WebGlUtil {
+    private static boolean callGetError;
 
     public static void checkLastWebGlError(String operation, WebGLRenderingContext ctx3d) {
+        if(!callGetError) {
+            return;
+        }
         // TODO find faster solution here
+        // WARNING: glGetError is VERY expensive
+        // https://community.khronos.org/t/warning-glgeterror-is-very-expensive/36496
         double lastError = ctx3d.getError();
         if (lastError == WebGLRenderingContext.NO_ERROR) {
             return;
@@ -26,6 +32,14 @@ public class WebGlUtil {
             throw new WebGlException(operation, "INVALID_VALUE", lastError);
         }
         throw new WebGlException(operation, lastError);
+    }
+
+    public static boolean isCallGetError() {
+        return callGetError;
+    }
+
+    public static void setCallGetError(boolean callGetError) {
+        WebGlUtil.callGetError = callGetError;
     }
 
     public static Float32Array createArrayBufferOfFloat32Doubles(List<Double> doubleList) {
