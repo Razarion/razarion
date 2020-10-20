@@ -289,7 +289,11 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     }
 
     private void drawModels(double interpolationFactor) {
-        modelMatricesSupplier.apply(System.currentTimeMillis()).forEach(modelMatrices -> {
+        List<ModelMatrices> modelMatricesList = modelMatricesSupplier.apply(System.currentTimeMillis());
+        if (modelMatricesList == null) {
+            return;
+        }
+        modelMatricesList.forEach(modelMatrices -> {
             ModelMatrices transformedModelMatrices = mixTransformation(modelMatrices, interpolationFactor);
             webGlFacade.uniformMatrix4fv(modelMatrixUniformLocation, transformedModelMatrices.getModel());
             WebGlUtil.checkLastWebGlError("uniformMatrix4fv modelMatrixUniformLocation", webGlFacade.getCtx3d());

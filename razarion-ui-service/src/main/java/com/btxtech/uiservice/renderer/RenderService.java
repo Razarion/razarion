@@ -4,6 +4,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.renderer.task.BaseItemPlacerRenderTaskRunner;
+import com.btxtech.uiservice.renderer.task.BaseItemRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.simple.GroundRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
@@ -46,7 +47,7 @@ public abstract class RenderService {
         addRenderTaskRunner(BaseItemPlacerRenderTaskRunner.class, "Base Item Placer");
         addRenderTaskRunner(TerrainObjectRenderTaskRunner.class, "Terrain Object");
 // TODO       addRenderTaskRunner(ItemMarkerRenderTask.class, "Item Marker");
-// TODO       addRenderTaskRunner(BaseItemRenderTask.class, "Base Item");
+        addRenderTaskRunner(BaseItemRenderTaskRunner.class, "Base Item");
 // TODO       addRenderTaskRunner(TrailRenderTask.class, "Trail");
 // TODO       addRenderTaskRunner(ResourceItemRenderTask.class, "Resource");
 // TODO       addRenderTaskRunner(BoxItemRenderTask.class, "Box");

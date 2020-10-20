@@ -21,7 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpecialType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
+import com.btxtech.uiservice.renderer.task.BaseItemRenderTaskRunner;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.ValueListBox;
@@ -43,7 +43,7 @@ import java.util.Arrays;
 @Templated("BaseItemTypePropertyPanel.html#sync-base-item-property-panel")
 public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemType> {
     @Inject
-    private BaseItemRenderTask baseItemRenderTask;
+    private BaseItemRenderTaskRunner baseItemRenderTask;
     @Inject
     @AutoBound
     private DataBinder<BaseItemType> baseItemTypeDataBinder;
