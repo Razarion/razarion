@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.widgets.shape3dwidget;
 
 import com.btxtech.common.DisplayUtils;
-import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Label;
@@ -22,7 +22,7 @@ import javax.inject.Inject;
  */
 
 @Templated("Shape3DSelectionDialog.html#tableRow")
-public class Shape3DSelectionEntry implements TakesValue<Shape3D>, IsElement {
+public class Shape3DSelectionEntry implements TakesValue<Shape3DConfig>, IsElement {
     @Inject
     private Event<Shape3DSelectionEntry> eventTrigger;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -37,7 +37,7 @@ public class Shape3DSelectionEntry implements TakesValue<Shape3D>, IsElement {
     @Inject
     @DataField
     private Label internalName;
-    private Shape3D shape3D;
+    private Shape3DConfig shape3DConfig;
 
     @Override
     public HTMLElement getElement() {
@@ -45,15 +45,15 @@ public class Shape3DSelectionEntry implements TakesValue<Shape3D>, IsElement {
     }
 
     @Override
-    public void setValue(Shape3D shape3D) {
-        this.shape3D = shape3D;
-        dbId.setText(DisplayUtils.handleInteger(shape3D.getId()));
-        // TODO internalName.setText(shape3D.getInternalName());
+    public void setValue(Shape3DConfig shape3DConfig) {
+        this.shape3DConfig = shape3DConfig;
+        dbId.setText(DisplayUtils.handleInteger(shape3DConfig.getId()));
+        internalName.setText(shape3DConfig.getInternalName());
     }
 
     @Override
-    public Shape3D getValue() {
-        return shape3D;
+    public Shape3DConfig getValue() {
+        return shape3DConfig;
     }
 
     @EventHandler("tableRow")

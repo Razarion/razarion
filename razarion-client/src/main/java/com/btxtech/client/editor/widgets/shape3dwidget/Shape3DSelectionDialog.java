@@ -2,9 +2,12 @@ package com.btxtech.client.editor.widgets.shape3dwidget;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
-import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
+import com.btxtech.shared.rest.Shape3DEditorController;
 import com.google.gwt.user.client.ui.Composite;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
@@ -25,27 +28,33 @@ import java.util.List;
 @Templated("Shape3DSelectionDialog.html#shape3d-selection-dialog")
 public class Shape3DSelectionDialog extends Composite implements ModalDialogContent<Integer> {
     @Inject
-    private Shape3DUiService shape3DUiService;
+    private Caller<Shape3DEditorController> shape3DEditorControllerCaller;
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     @AutoBound
-    private DataBinder<List<Shape3D>> binder;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private DataBinder<List<Shape3DConfig>> binder;
     @Inject
     @Bound
     @DataField
     @ListContainer("tbody")
-    private ListComponent<Shape3D, Shape3DSelectionEntry> shape3Ds;
+    private ListComponent<Shape3DConfig, Shape3DSelectionEntry> shape3Ds;
     private ModalDialogPanel<Integer> modalDialogPanel;
 
     @Override
     public void init(Integer selectedId) {
         DOMUtil.removeAllElementChildren(shape3Ds.getElement()); // Remove placeholder table row from template.
-        // TODO get from server binder.setModel(shape3DUiService.getShape3Ds());
+        shape3DEditorControllerCaller.call(
+                (RemoteCallback<List<Shape3DConfig>>) shape3DConfigs -> {
+                    binder.setModel(shape3DConfigs);
+                    if (selectedId != null) {
+                        shape3Ds.selectModel(getShape3DConfig4Id(shape3DConfigs, selectedId));
+                    }
+                },
+                exceptionHandler.restErrorHandler("Shape3DEditorController.read()")
+        ).read();
         shape3Ds.setSelector(shape3DSelectionEntry -> shape3DSelectionEntry.setSelected(true));
         shape3Ds.setDeselector(shape3DSelectionEntry -> shape3DSelectionEntry.setSelected(false));
-        if (selectedId != null) {
-            shape3Ds.selectModel(shape3DUiService.getShape3D(selectedId));
-        }
     }
 
     @Override
@@ -64,5 +73,9 @@ public class Shape3DSelectionDialog extends Composite implements ModalDialogCont
     @Override
     public void onClose() {
 
+    }
+
+    private Shape3DConfig getShape3DConfig4Id(List<Shape3DConfig> shape3DConfigs, int id) {
+        return shape3DConfigs.stream().filter(shape3DConfig -> shape3DConfig.getId() == id).findFirst().orElseThrow(() -> new IllegalArgumentException("No Shape3DConfig for id: " + id));
     }
 }
