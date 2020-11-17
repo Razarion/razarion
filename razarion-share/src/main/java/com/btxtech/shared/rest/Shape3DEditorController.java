@@ -1,7 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 
 import javax.ws.rs.Path;
 

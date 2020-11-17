@@ -1,0 +1,89 @@
+{
+  "id": 76,
+  "internalName": "Scene:Scene",
+  "colladaString": null,
+  "shape3DElementConfigs": [
+    {
+      "shape3DMaterialConfigs": [
+        {
+          "materialId": "Material-material",
+          "materialName": "Material",
+          "phongMaterialConfig": {
+            "textureId": null,
+            "scale": 1.0,
+            "bumpMapId": null,
+            "bumpMapDepth": null,
+            "shininess": 50.0,
+            "specularStrength": 0.5
+          },
+          "characterRepresenting": false,
+          "alphaToCoverage": null
+        }
+      ],
+      "shape3DAnimationTriggerConfigs": [
+        {
+          "description": "CubeId_scale_X",
+          "animationTrigger": "ITEM_PROGRESS"
+        },
+        {
+          "description": "CubeId_scale_Y",
+          "animationTrigger": "ITEM_PROGRESS"
+        },
+        {
+          "description": "CubeId_scale_Z",
+          "animationTrigger": null
+        }
+      ]
+    },
+    {
+      "shape3DMaterialConfigs": [
+        {
+          "materialId": null,
+          "materialName": null,
+          "phongMaterialConfig": null,
+          "characterRepresenting": false,
+          "alphaToCoverage": null
+        }
+      ],
+      "shape3DAnimationTriggerConfigs": [
+        {
+          "description": "RotPlane_rotation_euler_X",
+          "animationTrigger": "ITEM_PROGRESS"
+        },
+        {
+          "description": "RotPlane_rotation_euler_Y",
+          "animationTrigger": "ITEM_PROGRESS"
+        },
+        {
+          "description": "RotPlane_rotation_euler_Z",
+          "animationTrigger": null
+        }
+      ]
+    },
+    {
+      "shape3DMaterialConfigs": [
+        {
+          "materialId": null,
+          "materialName": null,
+          "phongMaterialConfig": null,
+          "characterRepresenting": false,
+          "alphaToCoverage": null
+        }
+      ],
+      "shape3DAnimationTriggerConfigs": [
+        {
+          "description": "PlaneId_location_X",
+          "animationTrigger": null
+        },
+        {
+          "description": "PlaneId_location_Y",
+          "animationTrigger": "CONTINUES"
+        },
+        {
+          "description": "PlaneId_location_Z",
+          "animationTrigger": "CONTINUES"
+        }
+      ]
+    }
+  ]
+}

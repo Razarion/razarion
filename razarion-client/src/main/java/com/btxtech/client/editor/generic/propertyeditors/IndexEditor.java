@@ -30,8 +30,10 @@ public class IndexEditor extends AbstractPropertyEditor<Index> {
 
     @Override
     public void showValue() {
-        xField.value = Integer.toString(getPropertyValue().getY());
-        yField.value = Integer.toString(getPropertyValue().getY());
+        if (getPropertyValue() != null) {
+            xField.value = Integer.toString(getPropertyValue().getY());
+            yField.value = Integer.toString(getPropertyValue().getY());
+        }
     }
 
     @EventHandler("xField")

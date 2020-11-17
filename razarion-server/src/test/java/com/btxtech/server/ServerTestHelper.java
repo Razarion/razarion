@@ -6,7 +6,6 @@ import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
-import com.btxtech.server.persistence.history.UserHistoryEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
@@ -253,7 +252,6 @@ public class ServerTestHelper {
     protected void cleanUsers() {
         cleanTable(ForgotPasswordEntity.class);
         cleanTable(LoginCookieEntity.class);
-        cleanTable(UserHistoryEntity.class);
         cleanTableNative("USER_COMPLETED_QUEST");
         cleanTable(UserEntity.class);
     }

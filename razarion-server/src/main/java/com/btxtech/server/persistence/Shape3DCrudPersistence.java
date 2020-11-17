@@ -3,7 +3,7 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;
@@ -51,13 +51,21 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
             Map<String, Double> bumpMapDepts = new HashMap<>();
             Map<String, Boolean> characterRepresentings = new HashMap<>();
             Map<String, Double> alphaToCoverages = new HashMap<>();
-            if (config.getShape3DMaterialConfigs() != null) {
-                config.getShape3DMaterialConfigs().forEach(shape3DMaterialConfig -> {
-                    textures.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getTextureId()));
-                    bumpMaps.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapId()));
-                    bumpMapDepts.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapDepth());
-                    characterRepresentings.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.isCharacterRepresenting());
-                    alphaToCoverages.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getAlphaToCoverage());
+            Map<String, AnimationTrigger> animations = new HashMap<>();
+            if (config.getShape3DElementConfigs() != null) {
+                config.getShape3DElementConfigs().forEach(shape3DElementConfig -> {
+                    shape3DElementConfig.getShape3DMaterialConfigs().forEach(shape3DMaterialConfig -> {
+                        textures.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getTextureId()));
+                        bumpMaps.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapId()));
+                        bumpMapDepts.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapDepth());
+                        characterRepresentings.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.isCharacterRepresenting());
+                        alphaToCoverages.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getAlphaToCoverage());
+                    });
+                    if (shape3DElementConfig.getShape3DAnimationTriggerConfigs() != null) {
+                        shape3DElementConfig.getShape3DAnimationTriggerConfigs().forEach(shape3DAnimationTriggerConfig -> {
+                            animations.put(shape3DAnimationTriggerConfig.getDescription(), shape3DAnimationTriggerConfig.getAnimationTrigger());
+                        });
+                    }
                 });
             }
             entity.setTextures(textures);
@@ -65,13 +73,7 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
             entity.setBumpMapDepts(bumpMapDepts);
             entity.setCharacterRepresentings(characterRepresentings);
             entity.setAlphaToCoverages(alphaToCoverages);
-            if (config.getAnimations() != null) {
-                Map<String, AnimationTrigger> animations = new HashMap<>();
-                for (Map.Entry<String, AnimationTrigger> entry : config.getAnimations().entrySet()) {
-                    animations.put(entry.getKey(), entry.getValue());
-                }
-                entity.setAnimations(animations);
-            }
+            entity.setAnimations(animations);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

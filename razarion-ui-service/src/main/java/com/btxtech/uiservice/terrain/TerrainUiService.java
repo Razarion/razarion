@@ -8,7 +8,7 @@ import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;

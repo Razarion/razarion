@@ -1,0 +1,124 @@
+{
+  "id": 22,
+  "element3Ds": [
+    {
+      "id": "Wheel1",
+      "modelMatrixAnimations": null,
+      "vertexContainers": [
+        {
+          "key": "22-Wheel1-null",
+          "shape3DMaterial": {
+            "materialId": null,
+            "materialName": null,
+            "phongMaterialConfig": null,
+            "characterRepresenting": false,
+            "alphaToCoverage": null
+          },
+          "verticesCount": 57,
+          "shapeTransform": {
+            "staticMatrix": {
+              "numbers": [
+                [
+                  2.884951,
+                  0.0,
+                  0.0,
+                  -7.0
+                ],
+                [
+                  0.0,
+                  -1.26105E-7,
+                  -0.9731433,
+                  5.4
+                ],
+                [
+                  0.0,
+                  2.884951,
+                  -4.25374E-8,
+                  2.8
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "translateX": 0.0,
+            "translateY": 0.0,
+            "translateZ": 0.0,
+            "rotateX": 0.0,
+            "rotateY": 0.0,
+            "rotateZ": 0.0,
+            "scaleX": 0.0,
+            "scaleY": 0.0,
+            "scaleZ": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "Chassis1",
+      "modelMatrixAnimations": null,
+      "vertexContainers": [
+        {
+          "key": "22-Chassis1-Chassis_Material-material",
+          "shape3DMaterial": {
+            "materialId": "Chassis_Material-material",
+            "materialName": "Chassis_Material",
+            "phongMaterialConfig": {
+              "textureId": null,
+              "scale": 1.0,
+              "bumpMapId": null,
+              "bumpMapDepth": null,
+              "shininess": 50.0,
+              "specularStrength": 0.5
+            },
+            "characterRepresenting": false,
+            "alphaToCoverage": null
+          },
+          "verticesCount": 42,
+          "shapeTransform": {
+            "staticMatrix": {
+              "numbers": [
+                [
+                  9.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.5,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "translateX": 0.0,
+            "translateY": 0.0,
+            "translateZ": 0.0,
+            "rotateX": 0.0,
+            "rotateY": 0.0,
+            "rotateZ": 0.0,
+            "scaleX": 0.0,
+            "scaleY": 0.0,
+            "scaleZ": 0.0
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,5 @@
 package com.btxtech.shared.datatypes.shape;
 
-import com.btxtech.shared.utils.Shape3DUtils;
-
 import java.util.List;
 
 /**
@@ -10,6 +8,7 @@ import java.util.List;
  */
 public class Element3D {
     private String id;
+    private List<ModelMatrixAnimation> modelMatrixAnimations;
     private List<VertexContainer> vertexContainers;
 
     public String getId() {
@@ -25,9 +24,16 @@ public class Element3D {
         return vertexContainers;
     }
 
-    public Element3D setVertexContainers(List<VertexContainer> vertexContainers) {
+    public void setVertexContainers(List<VertexContainer> vertexContainers) {
         this.vertexContainers = vertexContainers;
-        return this;
+    }
+
+    public void setModelMatrixAnimations(List<ModelMatrixAnimation> modelMatrixAnimations) {
+        this.modelMatrixAnimations = modelMatrixAnimations;
+    }
+
+    public List<ModelMatrixAnimation> getModelMatrixAnimations() {
+        return modelMatrixAnimations;
     }
 
     @Override

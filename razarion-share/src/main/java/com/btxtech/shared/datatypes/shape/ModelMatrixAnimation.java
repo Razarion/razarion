@@ -12,7 +12,6 @@ public class ModelMatrixAnimation {
     }
 
     private String id;
-    private Element3D element3D;
     private TransformationModification modification;
     private Axis axis;
     private List<TimeValueSample> timeValueSamples;
@@ -24,15 +23,6 @@ public class ModelMatrixAnimation {
 
     public ModelMatrixAnimation setId(String id) {
         this.id = id;
-        return this;
-    }
-
-    public Element3D getElement3D() {
-        return element3D;
-    }
-
-    public ModelMatrixAnimation setElement3D(Element3D element3D) {
-        this.element3D = element3D;
         return this;
     }
 
@@ -93,7 +83,6 @@ public class ModelMatrixAnimation {
                 ", modification=" + modification +
                 ", axis=" + axis +
                 ", timeValueSamples=" + timeValueSamples +
-                ", element3D id=" + element3D.getId() +
                 ", animationTrigger=" + animationTrigger +
                 '}';
     }

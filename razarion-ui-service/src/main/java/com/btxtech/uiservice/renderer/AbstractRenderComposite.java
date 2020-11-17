@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.shape.Element3D;
-import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.nativejs.NativeMatrix;
@@ -12,7 +11,6 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -63,12 +61,8 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         normRenderUnit.setAbstractRenderComposite(this);
     }
 
+    @Deprecated
     public void setupAnimation(Shape3D shape3D, Element3D element3D, ShapeTransform shapeTransform) {
-        Collection<ModelMatrixAnimation> modelMatrixAnimations = shape3D.setupAnimations(element3D);
-        if (modelMatrixAnimations != null) {
-            progressAnimations = modelMatrixAnimations.stream().map(ProgressAnimation::new).collect(Collectors.toList());
-        }
-        this.shapeTransform = shapeTransform;
     }
 
     public void setupNoAnimation(ShapeTransform shapeTransform) {
@@ -97,9 +91,6 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
                 Objects.requireNonNull(progressAnimation.getAnimationTrigger(), "No animation trigger");
                 switch (progressAnimation.getAnimationTrigger()) {
                     case ITEM_PROGRESS:
-                        progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
-                        break;
-                    case SINGLE_RUN:
                         progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
                         break;
                     case CONTINUES:

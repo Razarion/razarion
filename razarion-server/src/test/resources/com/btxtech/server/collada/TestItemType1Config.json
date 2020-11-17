@@ -1,0 +1,38 @@
+{
+  "id": 22,
+  "internalName": "Scene:Scene",
+  "colladaString": null,
+  "shape3DElementConfigs": [
+    {
+      "shape3DMaterialConfigs": [
+        {
+          "materialId": null,
+          "materialName": null,
+          "phongMaterialConfig": null,
+          "characterRepresenting": false,
+          "alphaToCoverage": null
+        }
+      ],
+      "shape3DAnimationTriggerConfigs": null
+    },
+    {
+      "shape3DMaterialConfigs": [
+        {
+          "materialId": "Chassis_Material-material",
+          "materialName": "Chassis_Material",
+          "phongMaterialConfig": {
+            "textureId": null,
+            "scale": 1.0,
+            "bumpMapId": null,
+            "bumpMapDepth": null,
+            "shininess": 50.0,
+            "specularStrength": 0.5
+          },
+          "characterRepresenting": false,
+          "alphaToCoverage": null
+        }
+      ],
+      "shape3DAnimationTriggerConfigs": null
+    }
+  ]
+}

@@ -1,10 +1,8 @@
 package com.btxtech.server.collada;
 
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
-import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.TimeValueSample;
 import com.btxtech.shared.datatypes.shape.TransformationModification;
-import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.shared.utils.TimeDateUtil;
 import org.w3c.dom.Node;
 
@@ -35,7 +33,11 @@ public class Animation extends NameIdColladaXml {
         channel = new Channel(getChild(node, ELEMENT_CHANNEL)); // More than one
     }
 
-    public ModelMatrixAnimation convert(Shape3D shape3D) {
+    public String getChannelTargetId() {
+        return channel.getTargetId();
+    }
+
+    public ModelMatrixAnimation convert() {
         // Convert to two key frame linear animation
         Source input = sources.get(sampler.getInput().getSourceId());
         Source output = sources.get(sampler.getOutput().getSourceId());
@@ -49,7 +51,6 @@ public class Animation extends NameIdColladaXml {
 
         ModelMatrixAnimation modelMatrixAnimation = new ModelMatrixAnimation();
         modelMatrixAnimation.setId(getId());
-        modelMatrixAnimation.setElement3D(Shape3DUtils.getElement3D(channel.getTargetId(), shape3D));
         TransformationModification transformationModification = TransformationModification.valueOf(channel.getModification().toUpperCase());
         modelMatrixAnimation.setModification(transformationModification);
         if (transformationModification.axisNeeded()) {

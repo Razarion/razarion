@@ -1,0 +1,45 @@
+{
+  "id": "$ID$",
+  "internalName": "Shape 1",
+  "colladaString": null,
+  "shape3DElementConfigs": [
+    {
+      "shape3DMaterialConfigs": [
+        {
+          "materialId": "Material-material",
+          "materialName": "Material",
+          "phongMaterialConfig": {
+            "textureId": null,
+            "scale": 1.0,
+            "bumpMapId": null,
+            "bumpMapDepth": null,
+            "shininess": null,
+            "specularStrength": null
+          },
+          "characterRepresenting": false,
+          "alphaToCoverage": null
+        }
+      ],
+      "shape3DAnimationTriggerConfigs": null
+    },
+    {
+      "shape3DMaterialConfigs": [
+        {
+          "materialId": "Material_002-material",
+          "materialName": "Material_002",
+          "phongMaterialConfig": {
+            "textureId": null,
+            "scale": 1.0,
+            "bumpMapId": null,
+            "bumpMapDepth": null,
+            "shininess": 50.0,
+            "specularStrength": 0.2
+          },
+          "characterRepresenting": false,
+          "alphaToCoverage": null
+        }
+      ],
+      "shape3DAnimationTriggerConfigs": null
+    }
+  ]
+}

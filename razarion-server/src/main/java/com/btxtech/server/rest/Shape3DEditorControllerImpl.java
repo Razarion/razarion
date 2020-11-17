@@ -6,7 +6,7 @@ import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.shape.Shape3DComposite;
-import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;

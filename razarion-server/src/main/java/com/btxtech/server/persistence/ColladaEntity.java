@@ -3,7 +3,7 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.server.collada.ColladaConverterMapper;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
-import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -17,6 +17,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -125,26 +126,41 @@ public class ColladaEntity implements ColladaConverterMapper {
     }
 
     public void setTextures(Map<String, ImageLibraryEntity> textures) {
+        if(this.textures == null) {
+            this.textures = new HashMap<>();
+        }
         this.textures.clear();
         this.textures.putAll(textures);
     }
 
     public void setBumpMaps(Map<String, ImageLibraryEntity> bumpMaps) {
+        if(this.bumpMaps == null) {
+            this.bumpMaps = new HashMap<>();
+        }
         this.bumpMaps.clear();
         this.bumpMaps.putAll(bumpMaps);
     }
 
     public void setBumpMapDepts(Map<String, Double> bumpMapDepts) {
+        if(this.bumpMapDepts == null) {
+            this.bumpMapDepts = new HashMap<>();
+        }
         this.bumpMapDepts.clear();
         this.bumpMapDepts.putAll(bumpMapDepts);
     }
 
     public void setAlphaToCoverages(Map<String, Double> alphaToCoverages) {
+        if(this.alphaToCoverages == null) {
+            this.alphaToCoverages = new HashMap<>();
+        }
         this.alphaToCoverages.clear();
         this.alphaToCoverages.putAll(alphaToCoverages);
     }
 
     public void setCharacterRepresentings(Map<String, Boolean> characterRepresentings) {
+        if(this.characterRepresentings == null) {
+            this.characterRepresentings = new HashMap<>();
+        }
         this.characterRepresentings.clear();
         if (characterRepresentings != null) {
             this.characterRepresentings.putAll(characterRepresentings);
@@ -152,6 +168,9 @@ public class ColladaEntity implements ColladaConverterMapper {
     }
 
     public void setAnimations(Map<String, AnimationTrigger> animations) {
+        if(this.animations == null) {
+            this.animations = new HashMap<>();
+        }
         this.animations.clear();
         this.animations.putAll(animations);
     }

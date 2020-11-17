@@ -1,20 +1,20 @@
 [
   {
-    "id": 6,
-    "internalName": "Scene:Scene",
+    "id": 37,
     "element3Ds": [
       {
         "id": "Plane_029",
+        "modelMatrixAnimations": null,
         "vertexContainers": [
           {
             "key": "78-Plane_029-Material-material",
-            "shape3DMaterialConfig": {
+            "shape3DMaterial": {
               "materialId": "Material-material",
               "materialName": "Material",
               "phongMaterialConfig": {
-                "textureId": "$textureId1$",
+                "textureId": "$IMAGE_1_ID$",
                 "scale": 1.0,
-                "bumpMapId": "$bumpMapId1$",
+                "bumpMapId": "$IMAGE_2_ID$",
                 "bumpMapDepth": 0.5,
                 "shininess": null,
                 "specularStrength": null
@@ -67,16 +67,17 @@
       },
       {
         "id": "Trunk33",
+        "modelMatrixAnimations": null,
         "vertexContainers": [
           {
             "key": "78-Trunk33-Material_002-material",
-            "shape3DMaterialConfig": {
+            "shape3DMaterial": {
               "materialId": "Material_002-material",
               "materialName": "Material_002",
               "phongMaterialConfig": {
-                "textureId": "$textureId2$",
+                "textureId": "$IMAGE_2_ID$",
                 "scale": 1.0,
-                "bumpMapId": "$bumpMapId2$",
+                "bumpMapId": "$IMAGE_3_ID$",
                 "bumpMapDepth": 0.9,
                 "shininess": 50.0,
                 "specularStrength": 0.2
@@ -127,7 +128,6 @@
           }
         ]
       }
-    ],
-    "modelMatrixAnimations": null
+    ]
   }
 ]

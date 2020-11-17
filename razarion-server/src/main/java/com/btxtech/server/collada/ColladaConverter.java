@@ -4,7 +4,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -23,9 +22,7 @@ public class ColladaConverter {
             return new Shape3DBuilder();
         }
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(new InputSource(new StringReader(colladaText)));
+        Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(colladaText)));
 
         LOGGER.finest("Start Parsing");
         Shape3DBuilder shape3DBuilder = new Collada(doc).create();

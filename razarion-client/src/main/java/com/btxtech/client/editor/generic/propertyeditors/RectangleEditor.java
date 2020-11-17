@@ -36,10 +36,12 @@ public class RectangleEditor extends AbstractPropertyEditor<Rectangle> {
 
     @Override
     public void showValue() {
-        xField.value = Integer.toString(getPropertyValue().startX());
-        yField.value = Integer.toString(getPropertyValue().startY());
-        widthField.value = Integer.toString(getPropertyValue().width());
-        heightField.value = Integer.toString(getPropertyValue().height());
+        if (getPropertyValue() != null) {
+            xField.value = Integer.toString(getPropertyValue().startX());
+            yField.value = Integer.toString(getPropertyValue().startY());
+            widthField.value = Integer.toString(getPropertyValue().width());
+            heightField.value = Integer.toString(getPropertyValue().height());
+        }
     }
 
     @EventHandler("xField")

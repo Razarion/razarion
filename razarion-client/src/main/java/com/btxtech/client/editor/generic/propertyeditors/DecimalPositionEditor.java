@@ -30,8 +30,10 @@ public class DecimalPositionEditor extends AbstractPropertyEditor<DecimalPositio
 
     @Override
     public void showValue() {
-        xField.value = Double.toString(getPropertyValue().getX());
-        yField.value = Double.toString(getPropertyValue().getY());
+        if (getPropertyValue() != null) {
+            xField.value = Double.toString(getPropertyValue().getX());
+            yField.value = Double.toString(getPropertyValue().getY());
+        }
     }
 
     @EventHandler("xField")

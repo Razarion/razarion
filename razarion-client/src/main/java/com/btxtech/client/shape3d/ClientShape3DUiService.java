@@ -3,7 +3,7 @@ package com.btxtech.client.shape3d;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Shape3DUiService;

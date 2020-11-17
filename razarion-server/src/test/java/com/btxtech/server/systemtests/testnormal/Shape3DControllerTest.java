@@ -1,31 +1,54 @@
 package com.btxtech.server.systemtests.testnormal;
 
+import com.btxtech.server.JsonAssert;
 import com.btxtech.server.persistence.ColladaEntity;
+import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.server.systemtests.framework.ObjectMapperResolver;
 import com.btxtech.server.systemtests.framework.RestConnection;
-import com.btxtech.shared.datatypes.shape.Shape3DConfig;
-import com.btxtech.shared.datatypes.shape.Shape3DMaterialConfig;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
-import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.rest.GameUiContextController;
-import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.rest.Shape3DController;
 import com.btxtech.test.TestHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.List;
-
-import static com.btxtech.server.systemtests.editors.Shape3DEditorControllerTest.findMaterial;
+import java.util.Map;
 
 public class Shape3DControllerTest extends AbstractSystemTest {
+    private int shape3DId;
+
     @Before
     public void fillTables() {
         setupImages();
+        ColladaEntity colladaEntity = new ColladaEntity();
+        colladaEntity.setInternalName("Shape 1");
+        colladaEntity.setColladaString(TestHelper.resource2Text("Shape3DControllerTest.dae", getClass()));
+        Map<String, ImageLibraryEntity> textures = new HashMap<>();
+        textures.put("Material-material", getEntityManager().find(ImageLibraryEntity.class, IMAGE_1_ID));
+        textures.put("Material_002-material", getEntityManager().find(ImageLibraryEntity.class, IMAGE_2_ID));
+        colladaEntity.setTextures(textures);
+        Map<String, ImageLibraryEntity> bumpMaps = new HashMap<>();
+        bumpMaps.put("Material-material", getEntityManager().find(ImageLibraryEntity.class, IMAGE_2_ID));
+        bumpMaps.put("Material_002-material", getEntityManager().find(ImageLibraryEntity.class, IMAGE_3_ID));
+        colladaEntity.setBumpMaps(bumpMaps);
+        Map<String, Double> bumpMapDepts = new HashMap<>();
+        bumpMapDepts.put("Material-material", 0.5);
+        bumpMapDepts.put("Material_002-material", 0.9);
+        colladaEntity.setBumpMapDepts(bumpMapDepts);
+        Map<String, Double> alphaToCoverages = new HashMap<>();
+        alphaToCoverages.put("Material_002-material", 0.2);
+        colladaEntity.setAlphaToCoverages(alphaToCoverages);
+        Map<String, Boolean> characterRepresentings = new HashMap<>();
+        characterRepresentings.put("Material_002-material", true);
+        colladaEntity.setCharacterRepresentings(characterRepresentings);
+        shape3DId = persistInTransaction(colladaEntity).getId();
     }
 
     @After
@@ -42,34 +65,13 @@ public class Shape3DControllerTest extends AbstractSystemTest {
     @Test
     public void shape3DController() {
         RestConnection restConnection = new RestConnection(new ObjectMapperResolver(() -> Shape3DConfig.class));
-        restConnection.loginAdmin();
-        Shape3DEditorController editorConnection = restConnection.proxy(Shape3DEditorController.class);
-        Shape3DConfig shape3DConfig = editorConnection.create();
-        shape3DConfig.setInternalName("Shape 1");
-        shape3DConfig.setColladaString(TestHelper.resource2Text("Shape3DControllerTest.dae", getClass()));
-        editorConnection.update(shape3DConfig);
-        shape3DConfig = editorConnection.read(shape3DConfig.getId());
-        Shape3DMaterialConfig shape3DMaterialConfig = findMaterial(shape3DConfig, "Material_002-material");
-        shape3DMaterialConfig.setCharacterRepresenting(true);
-        shape3DMaterialConfig.setAlphaToCoverage(0.2);
-        PhongMaterialConfig phongMaterialConfig = shape3DMaterialConfig.getPhongMaterialConfig();
-        phongMaterialConfig.setTextureId(IMAGE_2_ID);
-        phongMaterialConfig.setBumpMapId(IMAGE_3_ID);
-        phongMaterialConfig.setBumpMapDepth(0.9);
-        phongMaterialConfig = findMaterial(shape3DConfig, "Material-material").getPhongMaterialConfig();
-        phongMaterialConfig.setTextureId(IMAGE_1_ID);
-        phongMaterialConfig.setBumpMapId(IMAGE_2_ID);
-        phongMaterialConfig.setBumpMapDepth(0.5);
-        editorConnection.update(shape3DConfig);
 
-        restConnection.logout();
-
-        String key1 = "\"" + shape3DConfig.getId() + "-Plane_029-Material-material" + "\"";
-        String key2 = "\"" + shape3DConfig.getId() + "-Trunk33-Material_002-material" + "\"";
+        String key1 = "\"" + shape3DId + "-Plane_029-Material-material" + "\"";
+        String key2 = "\"" + shape3DId + "-Trunk33-Material_002-material" + "\"";
 
         Shape3DController shape3DController = restConnection.proxy(Shape3DController.class);
         List<VertexContainerBuffer> vertexContainerBuffers = shape3DController.getVertexBuffer();
-        assertViaJson("Shape3DControllerTest_vertexContainerBuffers.json",
+        JsonAssert.assertViaJson("Shape3DControllerTest_vertexContainerBuffers.json",
                 s -> s.replace("\"78-Plane_029-Material-material\"", key1)
                         .replace("\"78-Trunk33-Material_002-material\"", key2),
                 null,
@@ -77,15 +79,15 @@ public class Shape3DControllerTest extends AbstractSystemTest {
                 vertexContainerBuffers);
         GameUiContextController gameUiContextController = restConnection.proxy(GameUiContextController.class);
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("Shape3DControllerTest_Shape3Ds.json",
-                s -> s.replace("\"$textureId1$\"", Integer.toString(IMAGE_1_ID))
-                        .replace("\"$textureId2$\"", Integer.toString(IMAGE_2_ID))
-                        .replace("\"$bumpMapId1$\"", Integer.toString(IMAGE_2_ID))
-                        .replace("\"$bumpMapId2$\"", Integer.toString(IMAGE_3_ID))
+        JsonAssert.assertViaJson("Shape3DControllerTest_Shape3Ds.json",
+                s -> s.replace("\"$IMAGE_1_ID$\"", Integer.toString(IMAGE_1_ID))
+                        .replace("\"$IMAGE_2_ID$\"", Integer.toString(IMAGE_2_ID))
+                        .replace("\"$IMAGE_3_ID$\"", Integer.toString(IMAGE_3_ID))
                         .replace("\"78-Plane_029-Material-material\"", key1)
                         .replace("\"78-Trunk33-Material_002-material\"", key2),
-                new IdSuppressor[]{new IdSuppressor("/0", "id")},
+                new JsonAssert.IdSuppressor[]{new JsonAssert.IdSuppressor("/0", "id")},
                 getClass(),
-                coldGameUiContext.getShape3Ds());
+                coldGameUiContext.getShape3Ds(),
+                false);
     }
 }

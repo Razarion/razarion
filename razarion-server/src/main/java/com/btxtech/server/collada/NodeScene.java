@@ -1,7 +1,7 @@
 package com.btxtech.server.collada;
 
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.shape.Shape3DMaterialConfig;
+import com.btxtech.shared.datatypes.shape.Shape3DMaterial;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
@@ -63,7 +63,7 @@ public class NodeScene extends NameIdColladaXml {
             VertexContainerBuffer vertexContainerBuffer = geometry.getMesh().createVertexContainerBuffer();
             VertexContainer vertexContainer = new VertexContainer();
             vertexContainer.setShapeTransform(transform);
-            Shape3DMaterialConfig shape3DMaterialConfig = new Shape3DMaterialConfig();
+            Shape3DMaterial shape3DMaterialConfig = new Shape3DMaterial();
             shape3DMaterialConfig.setMaterialId(materialId);
             shape3DMaterialConfig.setMaterialName(materialName);
             vertexContainer.setVerticesCount(vertexContainerBuffer.calculateVertexCount());
@@ -78,7 +78,7 @@ public class NodeScene extends NameIdColladaXml {
                 // vertexContainer.setDiffuse(effect.getTechnique().getDiffuse());
                 // vertexContainer.setEmission(effect.getTechnique().getEmission());
             }
-            vertexContainer.setShape3DMaterialConfig(shape3DMaterialConfig);
+            vertexContainer.setShape3DMaterial(shape3DMaterialConfig);
             element3DBuilder.addVertexContainer(vertexContainer, vertexContainerBuffer);
         }
         return element3DBuilder;

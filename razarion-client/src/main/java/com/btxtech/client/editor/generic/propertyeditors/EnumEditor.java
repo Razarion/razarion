@@ -18,19 +18,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Templated("EnumEditor.html#select")
-public class EnumEditor extends AbstractPropertyEditor<Enum> {
+public class EnumEditor extends AbstractPropertyEditor<Enum<?>> {
     // private Logger logger = Logger.getLogger(EnumEditor.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     @DataField
     private HTMLSelectElement select;
-    private List<Enum> enumOptions;
+    private List<Enum<?>> enumOptions;
 
     @Override
     public void showValue() {
         enumOptions = Arrays.stream(getAbstractPropertyModel().getPropertyClass().getEnumConstants())
-                .sorted(Comparator.comparing(Object::toString)).map(o -> (Enum) o).collect(Collectors.toList());
+                .sorted(Comparator.comparing(Object::toString)).map(o -> (Enum<?>) o).collect(Collectors.toList());
 
         enumOptions.forEach(o -> {
             HTMLOptionElement option = (HTMLOptionElement) DomGlobal.document.createElement("option");
@@ -38,7 +38,7 @@ public class EnumEditor extends AbstractPropertyEditor<Enum> {
             select.add(option);
         });
 
-        Enum value = getPropertyValue();
+        Enum<?> value = getPropertyValue();
         if (value != null) {
             select.selectedIndex = enumOptions.indexOf(value);
         } else {

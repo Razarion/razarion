@@ -1,5 +1,6 @@
 package com.btxtech.server.systemtests.framework;
 
+import com.btxtech.server.JsonAssert;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -23,9 +24,9 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
 
     public static class ConfigModifier<ConfigObject> {
         private Consumer<ConfigObject> configModifier;
-        private IdSuppressor[] idSuppressors;
+        private JsonAssert.IdSuppressor[] idSuppressors;
 
-        public ConfigModifier(Consumer<ConfigObject> configModifier, IdSuppressor[] idSuppressors) {
+        public ConfigModifier(Consumer<ConfigObject> configModifier, JsonAssert.IdSuppressor[] idSuppressors) {
             this.configModifier = configModifier;
             this.idSuppressors = idSuppressors;
         }
@@ -57,7 +58,7 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
 
     }
 
-    protected void registerUpdate(Consumer<ConfigObject> configModifier, IdSuppressor... idSuppressors) {
+    protected void registerUpdate(Consumer<ConfigObject> configModifier, JsonAssert.IdSuppressor... idSuppressors) {
         configModifiers.add(new ConfigModifier<>(configModifier, idSuppressors));
     }
 
@@ -94,7 +95,7 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
                 configModifier.configModifier.accept(holder.getO());
                 crudToBeTested.update(holder.getO());
                 ConfigObject configRead = crudToBeTested.read(config2.getId());
-                assertViaJson(holder.getO(), configRead, configModifier.idSuppressors);
+                JsonAssert.assertViaJson(holder.getO(), configRead, configModifier.idSuppressors);
                 holder.setO(configRead);
             } catch (AssertionError assertionError) {
                 throw new AssertionError("ConfigModifier indexed with " + indexHolder.getO() + " failed." + assertionError);

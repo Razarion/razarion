@@ -40,11 +40,13 @@ public class IntegerMapEditor extends AbstractPropertyEditor<Map<Integer, Intege
     public void display() {
         Elemental2Utils.removeAllChildren(childTable);
         Map<Integer, Integer> map = getPropertyValue();
-        map.forEach((key, value) -> {
-            IntegerMapEditorEntry mapEditorEntry = entryInstance.get();
-            mapEditorEntry.init(key, value, map, this);
-            childTable.appendChild(mapEditorEntry.getElement());
-        });
+        if (map != null) {
+            map.forEach((key, value) -> {
+                IntegerMapEditorEntry mapEditorEntry = entryInstance.get();
+                mapEditorEntry.init(key, value, map, this);
+                childTable.appendChild(mapEditorEntry.getElement());
+            });
+        }
     }
 
     @EventHandler("createButton")

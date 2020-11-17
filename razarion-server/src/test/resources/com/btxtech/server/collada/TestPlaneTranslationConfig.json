@@ -1,0 +1,19 @@
+{
+  "id": 99,
+  "internalName": "Scene:Scene",
+  "colladaString": null,
+  "shape3DElementConfigs": [
+    {
+      "shape3DMaterialConfigs": [
+        {
+          "materialId": null,
+          "materialName": null,
+          "phongMaterialConfig": null,
+          "characterRepresenting": false,
+          "alphaToCoverage": null
+        }
+      ],
+      "shape3DAnimationTriggerConfigs": null
+    }
+  ]
+}

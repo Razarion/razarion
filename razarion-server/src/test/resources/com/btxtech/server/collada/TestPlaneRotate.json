@@ -1,0 +1,61 @@
+{
+  "id": 105,
+  "element3Ds": [
+    {
+      "id": "Plane_Id",
+      "modelMatrixAnimations": null,
+      "vertexContainers": [
+        {
+          "key": "105-Plane_Id-null",
+          "shape3DMaterial": {
+            "materialId": null,
+            "materialName": null,
+            "phongMaterialConfig": null,
+            "characterRepresenting": false,
+            "alphaToCoverage": null
+          },
+          "verticesCount": 6,
+          "shapeTransform": {
+            "staticMatrix": {
+              "numbers": [
+                [
+                  0.7071066,
+                  0.0,
+                  0.7071069,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -0.7071069,
+                  0.0,
+                  0.7071066,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "translateX": 0.0,
+            "translateY": 0.0,
+            "translateZ": 0.0,
+            "rotateX": 0.0,
+            "rotateY": 0.0,
+            "rotateZ": 0.0,
+            "scaleX": 0.0,
+            "scaleY": 0.0,
+            "scaleZ": 0.0
+          }
+        }
+      ]
+    }
+  ]
+}

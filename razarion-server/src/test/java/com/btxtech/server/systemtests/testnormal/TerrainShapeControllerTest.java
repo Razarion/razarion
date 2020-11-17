@@ -1,5 +1,6 @@
 package com.btxtech.server.systemtests.testnormal;
 
+import com.btxtech.server.JsonAssert;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.rest.TerrainShapeController;
@@ -57,7 +58,7 @@ public class TerrainShapeControllerTest extends AbstractSystemTest {
                 "    }\n" +
                 "}";
         ObjectMapper mapper = new ObjectMapper();
-        displayDifferences(mapper.readTree(s), mapper.readTree(s), JsonPointer.compile(null));
+        JsonAssert.displayDifferences(mapper.readTree(s), mapper.readTree(s), JsonPointer.compile(null));
         fail();
     }
 
@@ -66,7 +67,7 @@ public class TerrainShapeControllerTest extends AbstractSystemTest {
         getDefaultRestConnection().loginAdmin();
         terrainShapeController.createTerrainShape(PLANET_1_ID);
         NativeTerrainShape nativeTerrainShape = terrainShapeController.getTerrainShape(PLANET_1_ID);
-        assertViaJson("/systemtests/testnormal/TerrainShapeControllerTest_getTerrainShape.json",
+        JsonAssert.assertViaJson("/systemtests/testnormal/TerrainShapeControllerTest_getTerrainShape.json",
                 s -> s.replace("\"$SLOPE_ID$\"", Integer.toString(SLOPE_LAND_CONFIG_ENTITY_1)),
                 null,
                 getClass(),

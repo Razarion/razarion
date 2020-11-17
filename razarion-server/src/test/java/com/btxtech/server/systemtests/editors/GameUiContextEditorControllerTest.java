@@ -1,5 +1,6 @@
 package com.btxtech.server.systemtests.editors;
 
+import com.btxtech.server.JsonAssert;
 import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.bot.BotItemConfigEntity;
 import com.btxtech.server.persistence.scene.BotAttackCommandEntity;
@@ -93,14 +94,14 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         // Create first scene
         SceneConfig sceneConfig1 = new SceneConfig();
         setResources(sceneConfig1);
-        registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(Collections.singletonList(sceneConfig1)), new IdSuppressor("/scenes", "id", true));
+        registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(Collections.singletonList(sceneConfig1)), new JsonAssert.IdSuppressor("/scenes", "id", true));
         registerUpdate(gameUiContextConfig -> {
         }); // Checking ids
         // Create second scene
         SceneConfig sceneConfig2 = new SceneConfig();
         setUserSpawnScene(sceneConfig2);
-        registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(Arrays.asList(sceneConfig1, sceneConfig2)), new IdSuppressor("/scenes", "id", true,
-                new IdSuppressor("/questConfig", "id")));
+        registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(Arrays.asList(sceneConfig1, sceneConfig2)), new JsonAssert.IdSuppressor("/scenes", "id", true,
+                new JsonAssert.IdSuppressor("/questConfig", "id")));
         registerUpdate(gameUiContextConfig -> {
         }); // Checking ids
         // Delete first (Index 10)
@@ -110,15 +111,15 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         // Create new
         SceneConfig sceneConfig3 = new SceneConfig();
         setScrollOverTerrain(sceneConfig3);
-        registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig3)), new IdSuppressor("/scenes", "id", true,
-                new IdSuppressor("/questConfig", "id")));
+        registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig3)), new JsonAssert.IdSuppressor("/scenes", "id", true,
+                new JsonAssert.IdSuppressor("/questConfig", "id")));
         registerUpdate(gameUiContextConfig -> {
         }); // Checking ids
         // Create Box
         SceneConfig sceneConfig4 = new SceneConfig();
         setPickBoxTask(sceneConfig4);
-        registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig4)), new IdSuppressor("/scenes", "id", true,
-                new IdSuppressor("/questConfig", "id")));
+        registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig4)), new JsonAssert.IdSuppressor("/scenes", "id", true,
+                new JsonAssert.IdSuppressor("/questConfig", "id")));
         registerUpdate(gameUiContextConfig -> {
         }); // Checking ids
         // Swap
@@ -131,61 +132,61 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         SceneConfig sceneConfig5 = new SceneConfig();
         setUserMoveScene(sceneConfig5);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig5)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id")));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id")));
         SceneConfig sceneConfig6 = new SceneConfig();
         setFindEnemyBase(sceneConfig6);
         // Index 20
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig6)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id"),
-                        new IdSuppressor("/scrollUiQuest", "id")));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id"),
+                        new JsonAssert.IdSuppressor("/scrollUiQuest", "id")));
         SceneConfig sceneConfig7 = new SceneConfig();
         setBoxSpawnTask(sceneConfig7);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig7)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id")));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id")));
         SceneConfig sceneConfig8 = new SceneConfig();
         setAttackTask(sceneConfig8);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig8)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id")));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id")));
         SceneConfig sceneConfig9 = new SceneConfig();
         setBuildFactoryTask(sceneConfig9);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig9)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id")));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id")));
         SceneConfig sceneConfig10 = new SceneConfig();
         setFactorizeHarvesterTask(sceneConfig10);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig10)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id")));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id")));
         SceneConfig sceneConfig11 = new SceneConfig();
         setHarvestTask(sceneConfig11);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig11)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id")));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id")));
         SceneConfig sceneConfig12 = new SceneConfig();
         setBuildViperTask(sceneConfig12);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig12)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id")));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id")));
         SceneConfig sceneConfig13 = new SceneConfig();
         setBuildViperTask2(sceneConfig13);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig13)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id")));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id")));
         SceneConfig sceneConfig14 = new SceneConfig();
         setKillTower(sceneConfig14);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig14)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id")));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id")));
         SceneConfig sceneConfig15 = new SceneConfig();
         setUserSpawnScene2(sceneConfig15);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig15)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id"),
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id"),
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         // Delete (index 30)
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(remove(gameUiContextConfig.getScenes(), 10)));
         // Swap
@@ -201,61 +202,61 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         SceneConfig sceneConfig16 = new SceneConfig();
         setNpcBot(sceneConfig16);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig16)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         SceneConfig sceneConfig17 = new SceneConfig();
         setEnemyBot(sceneConfig17);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig17)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         SceneConfig sceneConfig18 = new SceneConfig();
         setBotSpawnScene(sceneConfig18);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig18)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         SceneConfig sceneConfig19 = new SceneConfig();
         setBotMoveScene(sceneConfig19);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig19)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         SceneConfig sceneConfig20 = new SceneConfig();
         setNpcHarvestAttack(sceneConfig20);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig20)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         SceneConfig sceneConfig21 = new SceneConfig();
         setEnemyKillTask(sceneConfig21);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig21)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         SceneConfig sceneConfig22 = new SceneConfig();
         setNpcEscapeTask(sceneConfig22);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig22)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         SceneConfig sceneConfig23 = new SceneConfig();
         setNpcAttackTowerCommand(sceneConfig23);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(add(gameUiContextConfig.getScenes(), sceneConfig22)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         // Delete
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(remove(gameUiContextConfig.getScenes(), 0)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(remove(gameUiContextConfig.getScenes(), 0)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(remove(gameUiContextConfig.getScenes(), 0)),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(Collections.emptyList()));
         // Create multiple (index 50)
         List<SceneConfig> miscellaneous = new ArrayList<>();
         addMiscellaneous(miscellaneous);
         registerUpdate(gameUiContextConfig -> gameUiContextConfig.scenes(miscellaneous),
-                new IdSuppressor("/scenes", "id", true,
-                        new IdSuppressor("/questConfig", "id"),
-                        new IdSuppressor("/botConfigs", "id", true)));
+                new JsonAssert.IdSuppressor("/scenes", "id", true,
+                        new JsonAssert.IdSuppressor("/questConfig", "id"),
+                        new JsonAssert.IdSuppressor("/botConfigs", "id", true)));
     }
 
     @Override

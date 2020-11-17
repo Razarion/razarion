@@ -57,6 +57,6 @@ public class Shape3DReferenceFiled extends Composite {
     }
 
     private void setupNameLabel(Shape3D shape3D) {
-        nameLabel.setText(shape3D.getInternalName() + "(" + shape3D.getId() + ")");
+        // TODO nameLabel.setText(shape3D.getInternalName() + "(" + shape3D.getId() + ")");
     }
 }

@@ -365,9 +365,6 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
                     case ITEM_PROGRESS:
                         progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
                         break;
-                    case SINGLE_RUN:
-                        progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
-                        break;
                     case CONTINUES:
                         progressAnimation.dispatch(shapeTransformTRS, setupContinuesAnimationProgress(progressAnimation));
                         break;

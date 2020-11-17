@@ -1,5 +1,6 @@
 package com.btxtech.server.systemtests.testempty;
 
+import com.btxtech.server.JsonAssert;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
@@ -21,7 +22,7 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
     public void cold() {
         getDefaultRestConnection().logout();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("/systemtests/testempty/GameUiContextControllerTest_fallbackCold.json",
+        JsonAssert.assertViaJson("/systemtests/testempty/GameUiContextControllerTest_fallbackCold.json",
                 s -> s.replace("\"$USER_ID$\"", Integer.toString(coldGameUiContext.getUserContext().getUserId())),
                 null, getClass(),
                 coldGameUiContext);
@@ -31,7 +32,7 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
     public void coldUser() {
         getDefaultRestConnection().loginUser();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("/systemtests/testempty/GameUiContextControllerTest_fallbackColdUser.json",
+        JsonAssert.assertViaJson("/systemtests/testempty/GameUiContextControllerTest_fallbackColdUser.json",
                 s -> s.replace("\"$USER_ID$\"", Integer.toString(NORMAL_USER_ID)),
                 null, getClass(),
                 coldGameUiContext);
@@ -41,7 +42,7 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
     public void coldAdmin() {
         getDefaultRestConnection().loginAdmin();
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        assertViaJson("/systemtests/testempty/GameUiContextControllerTest_fallbackColdAdmin.json",
+        JsonAssert.assertViaJson("/systemtests/testempty/GameUiContextControllerTest_fallbackColdAdmin.json",
                 s -> s.replace("\"$USER_ID$\"", Integer.toString(ADMIN_USER_ID)),
                 null, getClass(),
                 coldGameUiContext);

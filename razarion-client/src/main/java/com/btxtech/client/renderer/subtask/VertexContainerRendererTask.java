@@ -48,12 +48,12 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
         setupVec3Array(WebGlFacade.A_VERTEX_NORMAL, Js.uncheckedCast(shape3DUiService.getNormFloat32Array(vertexContainer)));
         setupVec2Array(WebGlFacade.A_VERTEX_UV, Js.uncheckedCast(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer)));
 
-        AlarmRaiser.onNull(vertexContainer.getShape3DMaterialConfig().getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No Material in VertexContainer: " + vertexContainer.getShape3DMaterialConfig().getMaterialName(), null);
-        setupPhongMaterial(vertexContainer.getShape3DMaterialConfig().getPhongMaterialConfig(), "material");
+        AlarmRaiser.onNull(vertexContainer.getShape3DMaterial().getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No Material in VertexContainer: " + vertexContainer.getShape3DMaterial().getMaterialName(), null);
+        setupPhongMaterial(vertexContainer.getShape3DMaterial().getPhongMaterialConfig(), "material");
 
-        if (vertexContainer.getShape3DMaterialConfig().getAlphaToCoverage() != null) {
+        if (vertexContainer.getShape3DMaterial().getAlphaToCoverage() != null) {
             alphaToCoverage = true;
-            setupUniform("alphaToCoverage", UniformLocation.Type.F, () -> vertexContainer.getShape3DMaterialConfig().getAlphaToCoverage());
+            setupUniform("alphaToCoverage", UniformLocation.Type.F, () -> vertexContainer.getShape3DMaterial().getAlphaToCoverage());
         }
 
         // characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
@@ -78,7 +78,7 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     @Override
     protected void glslFragmentCustomDefines(List<String> defines, VertexContainer vertexContainer) {
         defines.add(UV);
-        if (vertexContainer.getShape3DMaterialConfig().getAlphaToCoverage() != null) {
+        if (vertexContainer.getShape3DMaterial().getAlphaToCoverage() != null) {
             defines.add(ALPHA_TO_COVERAGE);
         }
     }

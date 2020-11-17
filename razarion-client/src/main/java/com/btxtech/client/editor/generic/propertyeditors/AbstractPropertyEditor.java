@@ -15,9 +15,7 @@ public abstract class AbstractPropertyEditor<T> implements IsElement {
     public void init(AbstractPropertyModel abstractPropertyModel) {
         this.abstractPropertyModel = abstractPropertyModel;
         try {
-            if(abstractPropertyModel.isPropertyValueNotNull()) {
-                showValue();
-            }
+            showValue();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }

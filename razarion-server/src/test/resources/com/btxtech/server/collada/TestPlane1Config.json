@@ -1,0 +1,26 @@
+{
+  "id": 111,
+  "internalName": "Scene:Scene",
+  "colladaString": null,
+  "shape3DElementConfigs": [
+    {
+      "shape3DMaterialConfigs": [
+        {
+          "materialId": "Material-material",
+          "materialName": "Material",
+          "phongMaterialConfig": {
+            "textureId": 99,
+            "scale": 1.0,
+            "bumpMapId": 20,
+            "bumpMapDepth": 0.5,
+            "shininess": 50.0,
+            "specularStrength": 0.5
+          },
+          "characterRepresenting": true,
+          "alphaToCoverage": 0.5
+        }
+      ],
+      "shape3DAnimationTriggerConfigs": null
+    }
+  ]
+}

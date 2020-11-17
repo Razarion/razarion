@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.renderer.task;
 
 import com.btxtech.shared.datatypes.shape.Element3D;
-import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
@@ -25,19 +24,18 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
                 RenderTask modelRenderTask = createModelRenderTask(RenderTask.class,
                         vertexContainer,
                         modelMatricesSupplier,
-                        setupProgressAnimation(shape3D, element3D),
+                        setupProgressAnimation(element3D),
                         vertexContainer.getShapeTransform());
                 modelRenderTask.setActive(true);
             }
         }
     }
 
-    private Collection<ProgressAnimation> setupProgressAnimation(Shape3D shape3D, Element3D element3D) {
-        Collection<ModelMatrixAnimation> modelMatrixAnimations = shape3D.setupAnimations(element3D);
-        if (modelMatrixAnimations != null) {
-            return modelMatrixAnimations.stream().map(ProgressAnimation::new).collect(Collectors.toList());
+    private Collection<ProgressAnimation> setupProgressAnimation(Element3D element3D) {
+        if(element3D.getModelMatrixAnimations() == null) {
+            return null;
         }
-        return null;
+        return element3D.getModelMatrixAnimations().stream().map(ProgressAnimation::new).collect(Collectors.toList());
     }
 
 }

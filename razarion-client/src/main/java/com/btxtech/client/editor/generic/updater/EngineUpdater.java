@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.generic.updater;
 
-import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
