@@ -358,7 +358,10 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
                 return modelMatrix.multiplyShapeTransform(shapeTransform).calculateFromTurretAngle();
             }
         } else {
-            ShapeTransform shapeTransformTRS = shapeTransform.copyTRS();
+            ShapeTransform shapeTransformTRS = new ShapeTransform();
+            shapeTransformTRS.setScaleX(1);
+            shapeTransformTRS.setScaleY(1);
+            shapeTransformTRS.setScaleZ(1);
             for (ProgressAnimation progressAnimation : progressAnimations) {
                 Objects.requireNonNull(progressAnimation.getAnimationTrigger(), "No animation trigger");
                 switch (progressAnimation.getAnimationTrigger()) {
@@ -372,7 +375,14 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
                         throw new IllegalArgumentException("Unknown animation trigger '" + progressAnimation.getAnimationTrigger());
                 }
             }
-            return modelMatrix.multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
+            if (shapeTransform.getStaticMatrix() != null) {
+                if (staticShapeTransformCache == null) {
+                    staticShapeTransformCache = nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray());
+                }
+                return modelMatrix.multiplyStaticShapeTransform(staticShapeTransformCache).multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
+            } else {
+                return modelMatrix.multiplyShapeTransform(shapeTransform).multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
+            }
         }
     }
 

@@ -20,11 +20,12 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
 
     protected void createShape3DRenderTasks(Shape3D shape3D, Function<Long, List<ModelMatrices>> modelMatricesSupplier) {
         for (Element3D element3D : shape3D.getElement3Ds()) {
+            Collection<ProgressAnimation> progressAnimations = setupProgressAnimation(element3D);
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                 RenderTask modelRenderTask = createModelRenderTask(RenderTask.class,
                         vertexContainer,
                         modelMatricesSupplier,
-                        setupProgressAnimation(element3D),
+                        progressAnimations,
                         vertexContainer.getShapeTransform());
                 modelRenderTask.setActive(true);
             }
