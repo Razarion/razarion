@@ -4,11 +4,10 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.item.BuildupItem;
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
-import org.jboss.errai.common.client.api.IsElement;
+import elemental2.dom.HTMLButtonElement;
+import elemental2.dom.HTMLDivElement;
+import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.common.client.dom.DOMUtil;
-import org.jboss.errai.common.client.dom.Div;
-import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -27,20 +26,20 @@ import java.util.List;
 public class ClientBuildupItemPanel extends BuildupItemPanel implements IsElement {
     @Inject
     @DataField("buildup-item-panel")
-    private Div div;
+    private HTMLDivElement div;
     @Inject
     @DataField
-    private Button leftArrowButton;
+    private HTMLButtonElement leftArrowButton;
     @Inject
     @DataField
-    private Button rightArrowButton;
+    private HTMLButtonElement rightArrowButton;
     @Inject
     @DataField
     @ListContainer("tbody")
     private ListComponent<BuildupItem, ClientBuildupItem> buildItemTypePanel;
 
     @Override
-    public HTMLElement getElement() {
+    public HTMLDivElement getElement() {
         return div;
     }
 
