@@ -43,7 +43,7 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     private void setupBaseItemType(BaseItemType baseItemType) {
         spawn(baseItemType);
 //        build(baseItemType, fillBuffer);
-//        alive(baseItemType, fillBuffer);
+        alive(baseItemType);
 //        demolition(baseItemType, fillBuffer);
 //        harvest(baseItemType, fillBuffer);
 //        buildBeam(baseItemType, fillBuffer);
@@ -95,39 +95,21 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
 //            logger.warning("BaseItemRenderTask: no spawnShape3DId for BaseItemType: " + baseItemType);
 //        }
 //    }
-//
-//    private void alive(BaseItemType baseItemType, boolean fillBuffer) {
-//        if (baseItemType.getShape3DId() != null) {
-//            String turretMaterialId = null;
-//            if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
-//                turretMaterialId = baseItemType.getWeaponType().getTurretType().getShape3dMaterialId();
-//            }
-//            ModelRenderer<BaseItemType> modelRenderer = create();
-//            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideAliveModelMatrices(baseItemType));
-//            Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
-//            for (Element3D element3D : shape3D.getElement3Ds()) {
-//                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-//                    if (turretMaterialId != null && turretMaterialId.equals(vertexContainer.getShape3DMaterialConfig().getMaterialId())) {
-//                        continue;
-//                    }
-//                    CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
-//                    compositeRenderer.init(vertexContainer);
-//                    compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-//                    compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
-//                    compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-//                    compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-//                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
-//                    if (fillBuffer) {
-//                        compositeRenderer.fillBuffers();
-//                    }
-//                }
-//            }
-//            add(modelRenderer);
-//        } else {
-//            logger.warning("BaseItemRenderTask: no shape3DId for BaseItemType: " + baseItemType);
-//        }
-//    }
-//
+
+    private void alive(BaseItemType baseItemType) {
+        if (baseItemType.getShape3DId() != null) {
+            String turretMaterialId = (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null)
+                    ? baseItemType.getWeaponType().getTurretType().getShape3dMaterialId()
+                    : null;
+            createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemType.getShape3DId()),
+                    timeStamp -> baseItemUiService.provideAliveModelMatrices(baseItemType),
+                    vertexContainer -> turretMaterialId == null || !turretMaterialId.equals(vertexContainer.getShape3DMaterial().getMaterialId())
+            );
+        } else {
+            alarmService.riseAlarm(INVALID_BASE_ITEM, "No shape3DId", baseItemType.getId());
+        }
+    }
+
 //    private void demolition(BaseItemType baseItemType, boolean fillBuffer) {
 //        if (baseItemType.getShape3DId() != null) {
 //            String turretMaterialId = null;

@@ -11,6 +11,7 @@ import com.btxtech.uiservice.renderer.WebGlRenderTask;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
@@ -19,9 +20,15 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
     }
 
     protected void createShape3DRenderTasks(Shape3D shape3D, Function<Long, List<ModelMatrices>> modelMatricesSupplier) {
+        createShape3DRenderTasks(shape3D, modelMatricesSupplier, null);
+    }
+    protected void createShape3DRenderTasks(Shape3D shape3D, Function<Long, List<ModelMatrices>> modelMatricesSupplier, Predicate<VertexContainer> predicate) {
         for (Element3D element3D : shape3D.getElement3Ds()) {
             Collection<ProgressAnimation> progressAnimations = setupProgressAnimation(element3D);
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                if (predicate != null && !predicate.test(vertexContainer)) {
+                    continue;
+                }
                 RenderTask modelRenderTask = createModelRenderTask(RenderTask.class,
                         vertexContainer,
                         modelMatricesSupplier,
@@ -33,7 +40,7 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
     }
 
     private Collection<ProgressAnimation> setupProgressAnimation(Element3D element3D) {
-        if(element3D.getModelMatrixAnimations() == null) {
+        if (element3D.getModelMatrixAnimations() == null) {
             return null;
         }
         return element3D.getModelMatrixAnimations().stream().map(ProgressAnimation::new).collect(Collectors.toList());
