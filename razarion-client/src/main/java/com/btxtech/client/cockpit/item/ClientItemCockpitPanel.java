@@ -2,6 +2,7 @@ package com.btxtech.client.cockpit.item;
 
 import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.client.utils.Elemental2Utils;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitPanel;
@@ -51,8 +52,8 @@ public class ClientItemCockpitPanel implements IsElement, ItemCockpitPanel {
     @Override
     public void cleanPanels() {
         infoPanel.clear();
-        GwtUtils.removeAllChildren(buildupItemPanel);
-        GwtUtils.removeAllChildren(itemContainerPanel);
+        Elemental2Utils.removeAllChildren(buildupItemPanel);
+        Elemental2Utils.removeAllChildren(itemContainerPanel);
         itemCockpitDiv.style.zIndex = ZIndexConstants.ITEM_COCKPIT;
     }
 

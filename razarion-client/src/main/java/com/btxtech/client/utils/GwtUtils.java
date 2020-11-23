@@ -6,7 +6,6 @@ import elemental.dom.Element;
 import elemental.events.Event;
 import elemental.events.MouseEvent;
 import elemental.html.ImageElement;
-import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Node;
 
@@ -91,15 +90,7 @@ public class GwtUtils {
         return (int) Math.floor(integer);
     }
 
-    public static Index correctIndex(Index index) {
-        return new Index(correctInt(index.getX()), correctInt(index.getY()));
-    }
-
     public static Index correctIndex(int x, int y) {
         return new Index(correctInt(x), correctInt(y));
-    }
-
-    public static void removeAllChildren(HTMLDivElement buildupItemPanel) {
-        buildupItemPanel.childNodes.setLength(0);
     }
 }
