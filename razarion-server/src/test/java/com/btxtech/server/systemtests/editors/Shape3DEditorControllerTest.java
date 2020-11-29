@@ -5,9 +5,9 @@ import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.server.systemtests.framework.ObjectMapperResolver;
 import com.btxtech.server.systemtests.framework.RestConnection;
-import com.btxtech.shared.datatypes.shape.Shape3DMaterial;
+import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
-import com.btxtech.shared.datatypes.shape.config.Shape3DMaterialConfig;
+import com.btxtech.shared.datatypes.shape.config.VertexContainerMaterialConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.test.TestHelper;
@@ -66,14 +66,14 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
                 getClass(),
                 shape3DConfig2);
         // Set values directly
-        Shape3DMaterialConfig materialConfig1 = shape3DConfig2.getShape3DElementConfigs().get(0).getShape3DMaterialConfigs().get(0);
+        VertexContainerMaterialConfig materialConfig1 = shape3DConfig2.getShape3DElementConfigs().get(0).getVertexContainerMaterialConfigs().get(0);
         materialConfig1.setAlphaToCoverage(0.3);
         materialConfig1.setCharacterRepresenting(false);
         PhongMaterialConfig phongMaterialConfig1 = materialConfig1.getPhongMaterialConfig();
         phongMaterialConfig1.setTextureId(IMAGE_1_ID);
         phongMaterialConfig1.setBumpMapId(IMAGE_2_ID);
         phongMaterialConfig1.setBumpMapDepth(0.5);
-        Shape3DMaterialConfig materialConfig2 = shape3DConfig2.getShape3DElementConfigs().get(1).getShape3DMaterialConfigs().get(0);
+        VertexContainerMaterialConfig materialConfig2 = shape3DConfig2.getShape3DElementConfigs().get(1).getVertexContainerMaterialConfigs().get(0);
         materialConfig2.setAlphaToCoverage(0.1);
         materialConfig2.setCharacterRepresenting(true);
         PhongMaterialConfig phongMaterialConfig2 = materialConfig2.getPhongMaterialConfig();
@@ -98,7 +98,7 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
     }
 
     @Deprecated
-    public static Shape3DMaterial findMaterial(Shape3DConfig shape3DConfig, String materialId) {
+    public static VertexContainerMaterial findMaterial(Shape3DConfig shape3DConfig, String materialId) {
         throw new UnsupportedOperationException();
 //        return shape3DConfig.getShape3DElementConfigs()
 //                .stream()

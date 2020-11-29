@@ -54,7 +54,7 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
             Map<String, AnimationTrigger> animations = new HashMap<>();
             if (config.getShape3DElementConfigs() != null) {
                 config.getShape3DElementConfigs().forEach(shape3DElementConfig -> {
-                    shape3DElementConfig.getShape3DMaterialConfigs().forEach(shape3DMaterialConfig -> {
+                    shape3DElementConfig.getVertexContainerMaterialConfigs().forEach(shape3DMaterialConfig -> {
                         textures.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getTextureId()));
                         bumpMaps.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapId()));
                         bumpMapDepts.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapDepth());

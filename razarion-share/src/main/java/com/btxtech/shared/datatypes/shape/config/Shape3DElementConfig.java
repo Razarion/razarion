@@ -3,15 +3,15 @@ package com.btxtech.shared.datatypes.shape.config;
 import java.util.List;
 
 public class Shape3DElementConfig {
-    private List<Shape3DMaterialConfig> shape3DMaterialConfigs;
+    private List<VertexContainerMaterialConfig> vertexContainerMaterialConfigs;
     private List<Shape3DAnimationTriggerConfig> shape3DAnimationTriggerConfigs;
 
-    public List<Shape3DMaterialConfig> getShape3DMaterialConfigs() {
-        return shape3DMaterialConfigs;
+    public List<VertexContainerMaterialConfig> getVertexContainerMaterialConfigs() {
+        return vertexContainerMaterialConfigs;
     }
 
-    public void setShape3DMaterialConfigs(List<Shape3DMaterialConfig> shape3DMaterialConfigs) {
-        this.shape3DMaterialConfigs = shape3DMaterialConfigs;
+    public void setVertexContainerMaterialConfigs(List<VertexContainerMaterialConfig> vertexContainerMaterialConfigs) {
+        this.vertexContainerMaterialConfigs = vertexContainerMaterialConfigs;
     }
 
     public List<Shape3DAnimationTriggerConfig> getShape3DAnimationTriggerConfigs() {
@@ -22,8 +22,8 @@ public class Shape3DElementConfig {
         this.shape3DAnimationTriggerConfigs = shape3DAnimationTriggerConfigs;
     }
 
-    public Shape3DElementConfig shape3DMaterialConfigs(List<Shape3DMaterialConfig> shape3DVertexContainerConfig) {
-        this.shape3DMaterialConfigs = shape3DVertexContainerConfig;
+    public Shape3DElementConfig shape3DMaterialConfigs(List<VertexContainerMaterialConfig> shape3DVertexContainerConfig) {
+        this.vertexContainerMaterialConfigs = shape3DVertexContainerConfig;
         return this;
     }
 

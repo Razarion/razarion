@@ -131,6 +131,11 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
     }
 
+    public void uniformMatrix4fv(WebGLUniformLocation uniformLocation, double[] data) {
+        gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, data);
+        WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
+    }
+
     public void uniformMatrix4fv(WebGLUniformLocation uniformLocation, NativeMatrix matrix) {
         gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(matrix));
         WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());

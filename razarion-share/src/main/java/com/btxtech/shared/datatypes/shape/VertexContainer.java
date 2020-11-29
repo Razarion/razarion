@@ -6,7 +6,7 @@ package com.btxtech.shared.datatypes.shape;
  */
 public class VertexContainer {
     private String key;
-    private Shape3DMaterial shape3DMaterial;
+    private VertexContainerMaterial vertexContainerMaterial;
     private int verticesCount;
     private ShapeTransform shapeTransform;
 
@@ -34,12 +34,12 @@ public class VertexContainer {
         this.shapeTransform = shapeTransform;
     }
 
-    public Shape3DMaterial getShape3DMaterial() {
-        return shape3DMaterial;
+    public VertexContainerMaterial getVertexContainerMaterial() {
+        return vertexContainerMaterial;
     }
 
-    public void setShape3DMaterial(Shape3DMaterial shape3DMaterial) {
-        this.shape3DMaterial = shape3DMaterial;
+    public void setVertexContainerMaterial(VertexContainerMaterial vertexContainerMaterial) {
+        this.vertexContainerMaterial = vertexContainerMaterial;
     }
 
     public VertexContainer key(String key) {
@@ -57,8 +57,8 @@ public class VertexContainer {
         return this;
     }
 
-    public VertexContainer shape3DMaterial(Shape3DMaterial shape3DMaterial) {
-        setShape3DMaterial(shape3DMaterial);
+    public VertexContainer shape3DMaterial(VertexContainerMaterial shape3DMaterial) {
+        setVertexContainerMaterial(shape3DMaterial);
         return this;
     }
 }

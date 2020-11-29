@@ -107,7 +107,7 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
         webGlFacade.uniformMatrix4fv(modelNormMatrix, modelMatrices.getNorm());
         webGlFacade.uniform1f(progressZUniformLocation, progressZ);
 
-        if (modelMatrices.getColor() != null && getRenderData().getShape3DMaterial().isCharacterRepresenting()) {
+        if (modelMatrices.getColor() != null && getRenderData().getVertexContainerMaterial().isCharacterRepresenting()) {
             webGlFacade.uniform1b(characterRepresenting, true);
             webGlFacade.uniform3fNoAlpha(characterRepresentingColor, modelMatrices.getColor());
         } else {

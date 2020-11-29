@@ -20,6 +20,6 @@ public class Shape3DUtils {
     }
 
     public static String generateVertexContainerKey(int shape3DId, String element3DId, VertexContainer vertexContainer) {
-        return shape3DId + "-" + element3DId + "-" + vertexContainer.getShape3DMaterial().getMaterialId();
+        return shape3DId + "-" + element3DId + "-" + vertexContainer.getVertexContainerMaterial().getMaterialId();
     }
 }

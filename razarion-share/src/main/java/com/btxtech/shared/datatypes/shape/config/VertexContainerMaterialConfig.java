@@ -1,8 +1,8 @@
-package com.btxtech.shared.datatypes.shape;
+package com.btxtech.shared.datatypes.shape.config;
 
 import com.btxtech.shared.dto.PhongMaterialConfig;
 
-public class Shape3DMaterial {
+public class VertexContainerMaterialConfig {
     private String materialId;
     private String materialName;
     private PhongMaterialConfig phongMaterialConfig;
@@ -49,27 +49,27 @@ public class Shape3DMaterial {
         this.alphaToCoverage = alphaToCoverage;
     }
 
-    public Shape3DMaterial materialId(String materialId) {
+    public VertexContainerMaterialConfig materialId(String materialId) {
         setMaterialId(materialId);
         return this;
     }
 
-    public Shape3DMaterial materialName(String materialName) {
+    public VertexContainerMaterialConfig materialName(String materialName) {
         setMaterialName(materialName);
         return this;
     }
 
-    public Shape3DMaterial phongMaterialConfig(PhongMaterialConfig phongMaterialConfig) {
+    public VertexContainerMaterialConfig phongMaterialConfig(PhongMaterialConfig phongMaterialConfig) {
         setPhongMaterialConfig(phongMaterialConfig);
         return this;
     }
 
-    public Shape3DMaterial characterRepresenting(boolean characterRepresenting) {
+    public VertexContainerMaterialConfig characterRepresenting(boolean characterRepresenting) {
         setCharacterRepresenting(characterRepresenting);
         return this;
     }
 
-    public Shape3DMaterial alphaToCoverage(Double alphaToCoverage) {
+    public VertexContainerMaterialConfig alphaToCoverage(Double alphaToCoverage) {
         setAlphaToCoverage(alphaToCoverage);
         return this;
     }

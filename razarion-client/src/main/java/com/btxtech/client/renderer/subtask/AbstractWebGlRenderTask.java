@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -68,6 +69,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     private Collection<WebGlPhongMaterial> materials = new ArrayList<>();
     private Collection<WebGlGroundMaterial> webGlGroundMaterials = new ArrayList<>();
     private Collection<UniformLocation> uniforms = new ArrayList<>();
+    private Collection<UniformLocation> progressUniforms = new ArrayList<>();
     private Collection<Activator> activators = new ArrayList<>();
     private Collection<WebGlUniformTexture> uniformTextures = new ArrayList<>();
     // Transformation
@@ -188,6 +190,10 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         uniforms.add(new UniformLocation<>(name, type, webGlFacade, valueSupplier));
     }
 
+    protected <R> void setupProgressUniform(String name, UniformLocation.Type type, DoubleFunction<R> valueSupplier) {
+        progressUniforms.add(new UniformLocation<>(name, type, webGlFacade, valueSupplier));
+    }
+
     protected void addActivator(Activator activator) {
         activators.add(activator);
     }
@@ -294,13 +300,11 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
             return;
         }
         modelMatricesList.forEach(modelMatrices -> {
+            progressUniforms.forEach(uniformLocation -> uniformLocation.uniform(modelMatrices.getProgress()));
             ModelMatrices transformedModelMatrices = mixTransformation(modelMatrices, interpolationFactor);
             webGlFacade.uniformMatrix4fv(modelMatrixUniformLocation, transformedModelMatrices.getModel());
-            WebGlUtil.checkLastWebGlError("uniformMatrix4fv modelMatrixUniformLocation", webGlFacade.getCtx3d());
             webGlFacade.uniformMatrix4fv(viewNormMatrixUniformLocation, transformedModelMatrices.getNorm());
-            WebGlUtil.checkLastWebGlError("uniformMatrix4fv viewNormMatrixUniformLocation", webGlFacade.getCtx3d());
             webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES, elementCount, getHelperString());
-            WebGlUtil.checkLastWebGlError("drawArrays", webGlFacade.getCtx3d());
         });
     }
 

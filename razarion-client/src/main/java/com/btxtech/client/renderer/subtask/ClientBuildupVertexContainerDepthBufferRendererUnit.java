@@ -78,7 +78,7 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
     protected void draw(ModelMatrices modelMatrices, double progressZ) {
         webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
         webGlFacade.uniform1f(progressZUniformLocation, progressZ);
-        webGlFacade.uniform1b(characterRepresenting, modelMatrices.getColor() != null && getRenderData().getShape3DMaterial().isCharacterRepresenting());
+        webGlFacade.uniform1b(characterRepresenting, modelMatrices.getColor() != null && getRenderData().getVertexContainerMaterial().isCharacterRepresenting());
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

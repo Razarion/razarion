@@ -17,6 +17,7 @@ import java.util.List;
 
 import static com.btxtech.client.renderer.shaders.Shaders.SHADERS;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.ALPHA_TO_COVERAGE;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.BUILDUP_STATE;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
 
 /**
@@ -29,6 +30,7 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     @Inject
     private ClientShape3DUiService shape3DUiService;
     private boolean alphaToCoverage;
+    private AbstractShape3DRenderTaskRunner.BuildupState buildupState;
     // private WebGLUniformLocation characterRepresenting;
     // private WebGLUniformLocation characterRepresentingColor;
 
@@ -43,17 +45,28 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     }
 
     @Override
+    public void setBuildupState(AbstractShape3DRenderTaskRunner.BuildupState buildupState) {
+        this.buildupState = buildupState;
+    }
+
+    @Override
     public void setup(VertexContainer vertexContainer) {
         setupVec3PositionArray(Js.uncheckedCast(shape3DUiService.getVertexFloat32Array(vertexContainer)));
         setupVec3Array(WebGlFacade.A_VERTEX_NORMAL, Js.uncheckedCast(shape3DUiService.getNormFloat32Array(vertexContainer)));
         setupVec2Array(WebGlFacade.A_VERTEX_UV, Js.uncheckedCast(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer)));
 
-        AlarmRaiser.onNull(vertexContainer.getShape3DMaterial().getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No Material in VertexContainer: " + vertexContainer.getShape3DMaterial().getMaterialName(), null);
-        setupPhongMaterial(vertexContainer.getShape3DMaterial().getPhongMaterialConfig(), "material");
+        AlarmRaiser.onNull(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No Material in VertexContainer: " + vertexContainer.getVertexContainerMaterial().getMaterialName(), null);
+        setupPhongMaterial(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig(), "material");
 
-        if (vertexContainer.getShape3DMaterial().getAlphaToCoverage() != null) {
+        if (vertexContainer.getVertexContainerMaterial().getAlphaToCoverage() != null) {
             alphaToCoverage = true;
-            setupUniform("alphaToCoverage", UniformLocation.Type.F, () -> vertexContainer.getShape3DMaterial().getAlphaToCoverage());
+            setupUniform("alphaToCoverage", UniformLocation.Type.F, () -> vertexContainer.getVertexContainerMaterial().getAlphaToCoverage());
+        }
+
+        if(buildupState != null) {
+            setupProgressUniform("progressZ", UniformLocation.Type.F, progress -> buildupState.getMaxZ() * progress);
+            setupUniform("buildupMatrix", UniformLocation.Type.MATRIX_4, () -> buildupState.getBuildupMatrix());
+            createWebGLTexture("uBuildupTextureSampler", buildupState.getBuildupTextureId());
         }
 
         // characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
@@ -73,13 +86,19 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     @Override
     protected void glslVertexCustomDefines(List<String> defines, VertexContainer vertexContainer) {
         defines.add(UV);
+        if(buildupState != null) {
+            defines.add(BUILDUP_STATE);
+        }
     }
 
     @Override
     protected void glslFragmentCustomDefines(List<String> defines, VertexContainer vertexContainer) {
         defines.add(UV);
-        if (vertexContainer.getShape3DMaterial().getAlphaToCoverage() != null) {
+        if (vertexContainer.getVertexContainerMaterial().getAlphaToCoverage() != null) {
             defines.add(ALPHA_TO_COVERAGE);
+        }
+        if(buildupState != null) {
+            defines.add(BUILDUP_STATE);
         }
     }
 

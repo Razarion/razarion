@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.renderer.task;
 
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.Shape3DUiService;
@@ -8,6 +9,7 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.NoSuchElementException;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_BASE_ITEM;
 
@@ -18,6 +20,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_BASE_ITEM;
 @ApplicationScoped
 public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     // private Logger logger = Logger.getLogger(BaseItemRenderTaskRunner.class.getName());
+
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -42,7 +45,7 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
 
     private void setupBaseItemType(BaseItemType baseItemType) {
         spawn(baseItemType);
-//        build(baseItemType, fillBuffer);
+        build(baseItemType);
         alive(baseItemType);
 //        demolition(baseItemType, fillBuffer);
 //        harvest(baseItemType, fillBuffer);
@@ -52,49 +55,34 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
 
     private void spawn(BaseItemType baseItemType) {
         if (baseItemType.getSpawnShape3DId() != null) {
-            createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemType.getSpawnShape3DId())
-                    , timeStamp -> baseItemUiService.provideSpawningModelMatrices(baseItemType));
+            createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemType.getSpawnShape3DId()),
+                    timeStamp -> baseItemUiService.provideSpawningModelMatrices(baseItemType));
         } else {
             alarmService.riseAlarm(INVALID_BASE_ITEM, "No spawnShape3DId", baseItemType.getId());
         }
     }
 
-//    private void build(BaseItemType baseItemType, boolean fillBuffer) {
-//        if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
-//            return; // Startup Performance
-//        }
-//
-//        if (baseItemType.getShape3DId() != null) {
-//
-//            Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
-//            double maxZ = Double.MIN_VALUE;
-//
-//            for (Element3D element3D : shape3D.getElement3Ds()) {
-//                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-//                    maxZ = Math.max(maxZ, shape3DUiService.getMaxZ(vertexContainer));
-//                }
-//            }
-//
-//            ModelRenderer<BaseItemType> modelRenderer = create();
-//            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideBuildupModelMatrices(baseItemType));
-//            for (Element3D element3D : shape3D.getElement3Ds()) {
-//                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-//                    CommonRenderComposite<AbstractBuildupVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
-//                    compositeRenderer.init(vertexContainer);
-//                    compositeRenderer.setRenderUnit(AbstractBuildupVertexContainerRenderUnit.class).setMaxZ(maxZ).setBaseItemBuildupImageId(baseItemType.getBuildupTextureId());
-//                    compositeRenderer.setDepthBufferRenderUnit(AbstractBuildupVertexContainerRenderUnit.class).setMaxZ(maxZ).setBaseItemBuildupImageId(baseItemType.getBuildupTextureId());
-//                    compositeRenderer.setupNoAnimation(vertexContainer.getShapeTransform());
-//                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
-//                    if (fillBuffer) {
-//                        compositeRenderer.fillBuffers();
-//                    }
-//                }
-//            }
-//            add(modelRenderer);
-//        } else {
-//            logger.warning("BaseItemRenderTask: no spawnShape3DId for BaseItemType: " + baseItemType);
-//        }
-//    }
+    private void build(BaseItemType baseItemType) {
+        if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
+            return; // Movable are built in a factory
+        }
+
+        if (baseItemType.getShape3DId() != null) {
+            Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
+
+            double maxZ = shape3D.getElement3Ds().stream()
+                    .flatMap(element3D -> element3D.getVertexContainers().stream())
+                    .mapToDouble(vertexContainer -> shape3DUiService.getMaxZ(vertexContainer))
+                    .max().orElseThrow(NoSuchElementException::new);
+
+            createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemType.getShape3DId()),
+                    timeStamp -> baseItemUiService.provideBuildupModelMatrices(baseItemType),
+                    null,
+                    new BuildupState(maxZ, baseItemType.getBuildupTextureId()));
+        } else {
+            alarmService.riseAlarm(INVALID_BASE_ITEM, "No shape3DId", baseItemType.getId());
+        }
+    }
 
     private void alive(BaseItemType baseItemType) {
         if (baseItemType.getShape3DId() != null) {
@@ -103,8 +91,8 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
                     : null;
             createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemType.getShape3DId()),
                     timeStamp -> baseItemUiService.provideAliveModelMatrices(baseItemType),
-                    vertexContainer -> turretMaterialId == null || !turretMaterialId.equals(vertexContainer.getShape3DMaterial().getMaterialId())
-            );
+                    vertexContainer -> turretMaterialId == null || !turretMaterialId.equals(vertexContainer.getVertexContainerMaterial().getMaterialId()),
+                    null);
         } else {
             alarmService.riseAlarm(INVALID_BASE_ITEM, "No shape3DId", baseItemType.getId());
         }

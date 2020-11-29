@@ -40,8 +40,8 @@ public class TerrainObjectRenderTaskRunner extends AbstractShape3DRenderTaskRunn
     private void setupTerrainObject() {
         terrainTypeService.getTerrainObjectConfigs().forEach(terrainObjectConfig -> {
             if (terrainObjectConfig.getShape3DId() != null) {
-                createShape3DRenderTasks(shape3DUiService.getShape3D(terrainObjectConfig.getShape3DId())
-                        , timeStamp -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig.getId()));
+                createShape3DRenderTasks(shape3DUiService.getShape3D(terrainObjectConfig.getShape3DId()),
+                        timeStamp -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig.getId()));
             } else {
                 alarmService.riseAlarm(INVALID_TERRAIN_OBJECT, "No shape3DId", terrainObjectConfig.getId());
             }

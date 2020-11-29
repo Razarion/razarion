@@ -9,7 +9,7 @@ import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.datatypes.shape.config.Shape3DAnimationTriggerConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DElementConfig;
-import com.btxtech.shared.datatypes.shape.config.Shape3DMaterialConfig;
+import com.btxtech.shared.datatypes.shape.config.VertexContainerMaterialConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.utils.Shape3DUtils;
 
@@ -80,12 +80,12 @@ public class Shape3DBuilder {
                     .stream()
                     .map(element3D -> new Shape3DElementConfig()
                             .shape3DMaterialConfigs(element3D.getVertexContainers().stream()
-                                    .map(vertexContainer -> new Shape3DMaterialConfig()
-                                            .materialId(vertexContainer.getShape3DMaterial().getMaterialId())
-                                            .materialName(vertexContainer.getShape3DMaterial().getMaterialName())
-                                            .phongMaterialConfig(vertexContainer.getShape3DMaterial().getPhongMaterialConfig())
-                                            .characterRepresenting(vertexContainer.getShape3DMaterial().isCharacterRepresenting())
-                                            .alphaToCoverage(vertexContainer.getShape3DMaterial().getAlphaToCoverage()))
+                                    .map(vertexContainer -> new VertexContainerMaterialConfig()
+                                            .materialId(vertexContainer.getVertexContainerMaterial().getMaterialId())
+                                            .materialName(vertexContainer.getVertexContainerMaterial().getMaterialName())
+                                            .phongMaterialConfig(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig())
+                                            .characterRepresenting(vertexContainer.getVertexContainerMaterial().isCharacterRepresenting())
+                                            .alphaToCoverage(vertexContainer.getVertexContainerMaterial().getAlphaToCoverage()))
                                     .collect(Collectors.toList()))
                             .shape3DAnimationTriggerConfigs(setupAnimationTriggerConfigs(element3D)))
                     .collect(Collectors.toList()));
@@ -118,16 +118,16 @@ public class Shape3DBuilder {
                 continue;
             }
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                String materialId = vertexContainer.getShape3DMaterial().getMaterialId();
-                PhongMaterialConfig phongMaterialConfig = vertexContainer.getShape3DMaterial().getPhongMaterialConfig();
+                String materialId = vertexContainer.getVertexContainerMaterial().getMaterialId();
+                PhongMaterialConfig phongMaterialConfig = vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig();
                 if (materialId != null && phongMaterialConfig != null) {
                     phongMaterialConfig.setScale(1.0);
                     phongMaterialConfig.setTextureId(colladaConverterMapper.getTextureId(materialId));
                     phongMaterialConfig.setBumpMapId(colladaConverterMapper.getBumpMapId(materialId));
                     phongMaterialConfig.setBumpMapDepth(colladaConverterMapper.getBumpMapDepth(materialId));
                 }
-                vertexContainer.getShape3DMaterial().setAlphaToCoverage(colladaConverterMapper.getAlphaToCoverage(materialId));
-                vertexContainer.getShape3DMaterial().setCharacterRepresenting(colladaConverterMapper.isCharacterRepresenting(materialId));
+                vertexContainer.getVertexContainerMaterial().setAlphaToCoverage(colladaConverterMapper.getAlphaToCoverage(materialId));
+                vertexContainer.getVertexContainerMaterial().setCharacterRepresenting(colladaConverterMapper.isCharacterRepresenting(materialId));
             }
         }
     }

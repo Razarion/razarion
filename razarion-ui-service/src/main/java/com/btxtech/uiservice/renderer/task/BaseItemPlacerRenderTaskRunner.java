@@ -26,7 +26,7 @@ public class BaseItemPlacerRenderTaskRunner extends AbstractShape3DRenderTaskRun
     private AlarmService alarmService;
 
     public void activate(BaseItemPlacer baseItemPlacer) {
-        Circle circle = createModelRenderTask(BaseItemPlacerRenderTaskRunner.Circle.class, baseItemPlacer, timeStamp -> baseItemPlacer.provideItemModelMatrices(), null, null);
+        Circle circle = createModelRenderTask(BaseItemPlacerRenderTaskRunner.Circle.class, baseItemPlacer, timeStamp -> baseItemPlacer.provideItemModelMatrices(), null, null, null);
         circle.setActive(true);
         if (baseItemPlacer.getBaseItemType().getShape3DId() == null) {
             alarmService.riseAlarm(INVALID_BASE_ITEM, "No shape3DId for BaseItemType", baseItemPlacer.getBaseItemType().getId());
