@@ -48,18 +48,6 @@ public interface Shaders extends ClientBundle {
     @Source("DebugVector.frag")
     TextResource debugVectorFragmentShader();
 
-    @Source("BuildupVertexContainer.vert")
-    TextResource buildupVertexContainerVertexShader();
-
-    @Source("BuildupVertexContainer.frag")
-    TextResource buildupVertexContainerFragmentShader();
-
-    @Source("BuildupVertexContainerDepthBuffer.vert")
-    TextResource buildupVertexContainerDeptBufferVertexShader();
-
-    @Source("BuildupVertexContainerDepthBuffer.frag")
-    TextResource buildupVertexContainerDeptBufferFragmentShader();
-
     @Source("DemolitionVertexContainer.vert")
     TextResource demolitionVertexContainerVertexShader();
 
