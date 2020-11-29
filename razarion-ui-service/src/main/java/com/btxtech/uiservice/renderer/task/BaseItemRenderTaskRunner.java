@@ -2,6 +2,7 @@ package com.btxtech.uiservice.renderer.task;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -49,7 +50,7 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
         alive(baseItemType);
 //        demolition(baseItemType, fillBuffer);
 //        harvest(baseItemType, fillBuffer);
-//        buildBeam(baseItemType, fillBuffer);
+        buildBeam(baseItemType);
 //        weaponTurret(baseItemType, fillBuffer);
     }
 
@@ -161,40 +162,23 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
 //            add(modelRenderer);
 //        }
 //    }
-//
-//    private void buildBeam(BaseItemType baseItemType, boolean fillBuffer) {
-//        if (baseItemType.getBuilderType() != null) {
-//            BuilderType builderType = baseItemType.getBuilderType();
-//            if (builderType.getAnimationShape3dId() == null) {
-//                logger.warning("BaseItemRenderTask: no AnimationShape3dId for build beam in BaseItemType: " + baseItemType);
-//                return;
-//            }
-//            if (builderType.getAnimationOrigin() == null) {
-//                logger.warning("BaseItemRenderTask: no AnimationOrigin for build beam in BaseItemType: " + baseItemType);
-//                return;
-//            }
-//
-//            ModelRenderer<BaseItemType> modelRenderer = create();
-//            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideBuildAnimationModelMatrices(baseItemType));
-//            Shape3D shape3D = shape3DUiService.getShape3D(builderType.getAnimationShape3dId());
-//            for (Element3D element3D : shape3D.getElement3Ds()) {
-//                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-//                    CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
-//                    compositeRenderer.init(vertexContainer);
-//                    compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-//                    compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
-//                    compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-//                    compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-//                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
-//                    if (fillBuffer) {
-//                        compositeRenderer.fillBuffers();
-//                    }
-//                }
-//            }
-//            add(modelRenderer);
-//        }
-//    }
-//
+
+    private void buildBeam(BaseItemType baseItemType) {
+        if (baseItemType.getBuilderType() != null) {
+            BuilderType builderType = baseItemType.getBuilderType();
+            if (builderType.getAnimationShape3dId() == null) {
+                alarmService.riseAlarm(INVALID_BASE_ITEM, "no animationShape3dId in BuilderType", baseItemType.getId());
+                return;
+            }
+            if (builderType.getAnimationOrigin() == null) {
+                alarmService.riseAlarm(INVALID_BASE_ITEM, "no AnimationOrigin in BuilderType", baseItemType.getId());
+                return;
+            }
+            createShape3DRenderTasks(shape3DUiService.getShape3D(builderType.getAnimationShape3dId()),
+                    timeStamp -> baseItemUiService.provideBuildAnimationModelMatrices(baseItemType));
+        }
+    }
+
 //    private void weaponTurret(BaseItemType baseItemType, boolean fillBuffer) {
 //        if (baseItemType.getWeaponType() == null) {
 //            return;
