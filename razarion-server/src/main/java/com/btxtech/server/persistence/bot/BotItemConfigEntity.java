@@ -1,8 +1,8 @@
 package com.btxtech.server.persistence.bot;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 
 import javax.persistence.CascadeType;
@@ -48,8 +48,8 @@ public class BotItemConfigEntity {
         return botItemConfig;
     }
 
-    public void fromBotItemConfig(ItemTypePersistence itemTypePersistence, BotItemConfig botItemConfig) {
-        baseItemTypeEntity = itemTypePersistence.readBaseItemTypeEntity(botItemConfig.getBaseItemTypeId());
+    public void fromBotItemConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotItemConfig botItemConfig) {
+        baseItemTypeEntity = baseItemTypeCrudPersistence.getEntity(botItemConfig.getBaseItemTypeId());
         count = botItemConfig.getCount();
         createDirectly = botItemConfig.isCreateDirectly();
         noSpawn = botItemConfig.isNoSpawn();

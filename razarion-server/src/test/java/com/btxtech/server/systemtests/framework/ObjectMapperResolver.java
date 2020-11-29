@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 public class ObjectMapperResolver implements ContextResolver<ObjectMapper> {
     private final ObjectMapper mapper;
 
-    public ObjectMapperResolver(Supplier<Class<? extends Config>> implClassSuplier) {
+    public ObjectMapperResolver(Supplier<Class<? extends Config>> implClassSupplier) {
         mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Config.class, new StdDeserializer<Config>(Config.class) {
@@ -25,7 +25,7 @@ public class ObjectMapperResolver implements ContextResolver<ObjectMapper> {
             public Config deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
                 ObjectMapper mapper = (ObjectMapper) p.getCodec();
                 ObjectNode obj = mapper.readTree(p);
-                return mapper.treeToValue(obj, implClassSuplier.get());
+                return mapper.treeToValue(obj, implClassSupplier.get());
             }
         });
         mapper.registerModule(module);

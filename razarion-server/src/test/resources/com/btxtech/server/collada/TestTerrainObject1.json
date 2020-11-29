@@ -7,7 +7,7 @@
       "vertexContainers": [
         {
           "key": "87-Plane_029-Material-material",
-          "shape3DMaterial": {
+          "vertexContainerMaterial": {
             "materialId": "Material-material",
             "materialName": "Material",
             "phongMaterialConfig": {
@@ -70,7 +70,7 @@
       "vertexContainers": [
         {
           "key": "87-Trunk33-Material_002-material",
-          "shape3DMaterial": {
+          "vertexContainerMaterial": {
             "materialId": "Material_002-material",
             "materialName": "Material_002",
             "phongMaterialConfig": {

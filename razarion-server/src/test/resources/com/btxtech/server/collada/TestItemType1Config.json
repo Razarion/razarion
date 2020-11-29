@@ -4,7 +4,7 @@
   "colladaString": null,
   "shape3DElementConfigs": [
     {
-      "shape3DMaterialConfigs": [
+      "vertexContainerMaterialConfigs": [
         {
           "materialId": null,
           "materialName": null,
@@ -16,7 +16,7 @@
       "shape3DAnimationTriggerConfigs": null
     },
     {
-      "shape3DMaterialConfigs": [
+      "vertexContainerMaterialConfigs": [
         {
           "materialId": "Chassis_Material-material",
           "materialName": "Chassis_Material",

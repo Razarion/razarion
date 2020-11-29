@@ -6,7 +6,6 @@ import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -19,15 +18,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Created by Beat
  * 15.08.2015.
  */
+@Deprecated
 @ApplicationScoped
 public class ItemTypePersistence {
     @Inject
@@ -42,58 +40,6 @@ public class ItemTypePersistence {
     private AudioPersistence audioPersistence;
     @Inject
     private InventoryPersistence inventoryPersistence;
-
-    @Transactional
-    @SecurityCheck
-    public BaseItemType createBaseItemType() {
-        BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
-        entityManager.persist(baseItemTypeEntity);
-        return baseItemTypeEntity.toBaseItemType();
-    }
-
-    @Transactional
-    public List<BaseItemType> readBaseItemTypes() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<BaseItemTypeEntity> userQuery = criteriaBuilder.createQuery(BaseItemTypeEntity.class);
-        Root<BaseItemTypeEntity> from = userQuery.from(BaseItemTypeEntity.class);
-        CriteriaQuery<BaseItemTypeEntity> userSelect = userQuery.select(from);
-        List<BaseItemTypeEntity> itemTypeEntities = entityManager.createQuery(userSelect).getResultList();
-
-        return itemTypeEntities.stream().map(BaseItemTypeEntity::toBaseItemType).collect(Collectors.toList());
-    }
-
-    @Transactional
-    public BaseItemTypeEntity readBaseItemTypeEntity(Integer id) {
-        if (id == null) {
-            return null;
-        }
-        BaseItemTypeEntity baseItemTypeEntity = entityManager.find(BaseItemTypeEntity.class, id);
-        if (baseItemTypeEntity == null) {
-            throw new IllegalArgumentException("No BaseItemTypeEntity for id: " + id);
-        }
-        return baseItemTypeEntity;
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void updateBaseItemType(BaseItemType baseItemType) {
-        BaseItemTypeEntity baseItemTypeEntity = entityManager.find(BaseItemTypeEntity.class, baseItemType.getId());
-        baseItemTypeEntity.fromBaseItemType(baseItemType, this, shape3DPersistence);
-        baseItemTypeEntity.setShape3DId(shape3DPersistence.getEntity(baseItemType.getShape3DId()));
-        baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getEntity(baseItemType.getSpawnShape3DId()));
-        baseItemTypeEntity.setBuildupTexture(imagePersistence.getImageLibraryEntity(baseItemType.getBuildupTextureId()));
-        baseItemTypeEntity.setDemolitionImage(imagePersistence.getImageLibraryEntity(baseItemType.getDemolitionImageId()));
-        baseItemTypeEntity.setWreckageShape3D(shape3DPersistence.getEntity(baseItemType.getWreckageShape3DId()));
-        baseItemTypeEntity.setSpawnAudio(audioPersistence.getAudioLibraryEntity(baseItemType.getSpawnAudioId()));
-        baseItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(baseItemType.getThumbnail()));
-        entityManager.merge(baseItemTypeEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void deleteBaseItemType(int id) {
-        entityManager.remove(readBaseItemTypeEntity(id));
-    }
 
     @Transactional
     @SecurityCheck
@@ -201,14 +147,4 @@ public class ItemTypePersistence {
         }
         return botConfigEntity;
     }
-
-    public Map<BaseItemTypeEntity, Integer> baseItemTypeLimitation(Map<Integer, Integer> input) {
-        if(input == null) {
-            return Collections.emptyMap();
-        }
-        return input.entrySet()
-                .stream()
-                .collect(Collectors.toMap(entry -> readBaseItemTypeEntity(entry.getKey()), Map.Entry::getKey));
-    }
-
 }

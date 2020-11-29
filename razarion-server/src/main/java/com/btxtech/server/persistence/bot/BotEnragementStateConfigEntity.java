@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.bot;
 
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
@@ -41,7 +42,7 @@ public class BotEnragementStateConfigEntity {
         return new BotEnragementStateConfig().setName(name).setEnrageUpKills(enrageUpKills).setBotItems(botItems);
     }
 
-    public void fromBotEnragementStateConfig(ItemTypePersistence itemTypePersistence, BotEnragementStateConfig botEnragementStateConfig) {
+    public void fromBotEnragementStateConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotEnragementStateConfig botEnragementStateConfig) {
         name = botEnragementStateConfig.getName();
         enrageUpKills = botEnragementStateConfig.getEnrageUpKills();
         if (botItems == null) {
@@ -51,7 +52,7 @@ public class BotEnragementStateConfigEntity {
         if (botEnragementStateConfig.getBotItems() != null) {
             for (BotItemConfig botItemConfig : botEnragementStateConfig.getBotItems()) {
                 BotItemConfigEntity botItemConfigEntity = new BotItemConfigEntity();
-                botItemConfigEntity.fromBotItemConfig(itemTypePersistence, botItemConfig);
+                botItemConfigEntity.fromBotItemConfig(baseItemTypeCrudPersistence, botItemConfig);
                 botItems.add(botItemConfigEntity);
             }
         }

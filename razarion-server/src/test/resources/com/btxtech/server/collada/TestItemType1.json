@@ -7,7 +7,7 @@
       "vertexContainers": [
         {
           "key": "22-Wheel1-null",
-          "shape3DMaterial": {
+          "vertexContainerMaterial": {
             "materialId": null,
             "materialName": null,
             "phongMaterialConfig": null,
@@ -63,7 +63,7 @@
       "vertexContainers": [
         {
           "key": "22-Chassis1-Chassis_Material-material",
-          "shape3DMaterial": {
+          "vertexContainerMaterial": {
             "materialId": "Chassis_Material-material",
             "materialName": "Chassis_Material",
             "phongMaterialConfig": {

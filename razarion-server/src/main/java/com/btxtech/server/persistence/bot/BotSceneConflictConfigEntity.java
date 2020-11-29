@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.bot;
 
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
 
 import javax.persistence.CascadeType;
@@ -54,19 +54,19 @@ public class BotSceneConflictConfigEntity {
         return botSceneConflictConfig.setStopKills(stopKills).setStopMillis(stopMillis);
     }
 
-    public BotSceneConflictConfigEntity fromBotSceneConflictConfig(ItemTypePersistence itemTypePersistence, BotSceneConflictConfig botSceneConflictConfig) {
+    public BotSceneConflictConfigEntity fromBotSceneConflictConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotSceneConflictConfig botSceneConflictConfig) {
         minDistance = botSceneConflictConfig.getMinDistance();
         maxDistance = botSceneConflictConfig.getMaxDistance();
         enterKills = botSceneConflictConfig.getEnterKills();
         enterDuration = botSceneConflictConfig.getEnterDuration();
         leaveNoKillDuration = botSceneConflictConfig.getLeaveNoKillDuration();
         rePopMillis = botSceneConflictConfig.getRePopMillis();
-        targetBaseItemType = itemTypePersistence.readBaseItemTypeEntity(botSceneConflictConfig.getTargetBaseItemTypeId());
+        targetBaseItemType = baseItemTypeCrudPersistence.getEntity(botSceneConflictConfig.getTargetBaseItemTypeId());
         if (botSceneConflictConfig.getBotConfig() != null) {
             if (botConfig == null) {
                 botConfig = new BotConfigEntity();
             }
-            botConfig.fromBotConfig(itemTypePersistence, botSceneConflictConfig.getBotConfig());
+            botConfig.fromBotConfig(baseItemTypeCrudPersistence, botSceneConflictConfig.getBotConfig());
         } else {
             botConfig = null;
         }

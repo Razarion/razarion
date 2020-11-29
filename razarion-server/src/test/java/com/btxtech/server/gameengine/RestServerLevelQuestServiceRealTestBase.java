@@ -6,6 +6,7 @@ import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.SimpleTestEnvironment;
 import com.btxtech.server.TestClientSystemConnection;
 import com.btxtech.server.persistence.history.QuestHistoryEntity;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
@@ -58,6 +59,8 @@ public class RestServerLevelQuestServiceRealTestBase extends IgnoreOldArquillian
     private FakeEmailServer fakeEmailServer;
     @Inject
     private ItemTypePersistence itemTypePersistence;
+    @Inject
+    private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
     @Inject
     private ClientSystemConnectionServiceTestHelper systemConnectionService;
     @Inject
@@ -162,7 +165,7 @@ public class RestServerLevelQuestServiceRealTestBase extends IgnoreOldArquillian
             QuestConfigEntity questConfigEntity = new QuestConfigEntity();
             Map<Integer, Integer> typeCount = new HashMap<>();
             typeCount.put(BASE_ITEM_TYPE_FACTORY_ID, 1);
-            questConfigEntity.fromQuestConfig(itemTypePersistence, new QuestConfig().setInternalName("Start quest").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount))), Locale.US);
+            questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, new QuestConfig().setInternalName("Start quest").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount))), Locale.US);
             serverLevelQuestEntityL4.getQuestConfigs().add(0, questConfigEntity);
             em.merge(serverLevelQuestEntityL4);
             BEFORE_FULFILLED_QUEST = serverLevelQuestEntityL4.getQuestConfigs().get(0).getId();
@@ -192,7 +195,7 @@ public class RestServerLevelQuestServiceRealTestBase extends IgnoreOldArquillian
             QuestConfigEntity questConfigEntity = new QuestConfigEntity();
             Map<Integer, Integer> typeCount = new HashMap<>();
             typeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
-            questConfigEntity.fromQuestConfig(itemTypePersistence, new QuestConfig().setInternalName("Test Server Quest L5").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount))), Locale.US);
+            questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, new QuestConfig().setInternalName("Test Server Quest L5").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount))), Locale.US);
             serverLevelQuestEntityL5.getQuestConfigs().add(questConfigEntity);
             em.merge(serverLevelQuestEntityL5);
             FULFILLED_QUEST = serverLevelQuestEntityL5.getQuestConfigs().get(3).getId();
@@ -222,7 +225,7 @@ public class RestServerLevelQuestServiceRealTestBase extends IgnoreOldArquillian
             QuestConfigEntity questConfigEntity = new QuestConfigEntity();
             Map<Integer, Integer> typeCount = new HashMap<>();
             typeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
-            questConfigEntity.fromQuestConfig(itemTypePersistence, new QuestConfig().setInternalName("Test Server Quest L5").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount))), Locale.US);
+            questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, new QuestConfig().setInternalName("Test Server Quest L5").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount))), Locale.US);
             serverLevelQuestEntityL5.getQuestConfigs().add(0, questConfigEntity);
             em.merge(serverLevelQuestEntityL5);
             FULFILLED_QUEST = serverLevelQuestEntityL5.getQuestConfigs().get(0).getId();
@@ -250,12 +253,12 @@ public class RestServerLevelQuestServiceRealTestBase extends IgnoreOldArquillian
             QuestConfigEntity questConfigEntity = new QuestConfigEntity();
             Map<Integer, Integer> typeCount = new HashMap<>();
             typeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
-            questConfigEntity.fromQuestConfig(itemTypePersistence, new QuestConfig().setInternalName("Auto filfill quest").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount))), Locale.US);
+            questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, new QuestConfig().setInternalName("Auto filfill quest").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount))), Locale.US);
             serverLevelQuestEntityL4.getQuestConfigs().add(0, questConfigEntity);
             questConfigEntity = new QuestConfigEntity();
             typeCount = new HashMap<>();
             typeCount.put(BASE_ITEM_TYPE_FACTORY_ID, 1);
-            questConfigEntity.fromQuestConfig(itemTypePersistence, new QuestConfig().setInternalName("Start quest").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount))), Locale.US);
+            questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, new QuestConfig().setInternalName("Start quest").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount))), Locale.US);
             serverLevelQuestEntityL4.getQuestConfigs().add(0, questConfigEntity);
             em.merge(serverLevelQuestEntityL4);
             FULFILLED_QUEST = serverLevelQuestEntityL4.getQuestConfigs().get(1).getId();

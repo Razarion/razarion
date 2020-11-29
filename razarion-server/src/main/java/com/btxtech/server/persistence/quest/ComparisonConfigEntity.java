@@ -2,6 +2,7 @@ package com.btxtech.server.persistence.quest;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -64,7 +65,7 @@ public class ComparisonConfigEntity {
         return comparisonConfig;
     }
 
-    public void fromComparisonConfig(ItemTypePersistence itemTypePersistence, ComparisonConfig comparisonConfig) {
+    public void fromComparisonConfig(ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ComparisonConfig comparisonConfig) {
         count = comparisonConfig.getCount();
         time = comparisonConfig.getTimeSeconds();
         if (comparisonConfig.getPlaceConfig() != null) {
@@ -81,7 +82,7 @@ public class ComparisonConfigEntity {
             }
             typeCount.clear();
             for (Map.Entry<Integer, Integer> entry : comparisonConfig.getTypeCount().entrySet()) {
-                typeCount.put(itemTypePersistence.readBaseItemTypeEntity(entry.getKey()), entry.getValue());
+                typeCount.put(baseItemTypeCrudPersistence.getEntity(entry.getKey()), entry.getValue());
             }
         } else {
             typeCount = null;

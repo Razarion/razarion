@@ -41,7 +41,7 @@ public class ItemContainerTypeEntity {
         return itemContainerType;
     }
 
-    public void fromItemContainerType(ItemContainerType itemContainerType, ItemTypePersistence itemTypePersistence) {
+    public void fromItemContainerType(ItemContainerType itemContainerType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence) {
         maxCount = itemContainerType.getMaxCount();
         itemRange = itemContainerType.getRange();
         if (itemContainerType.getAbleToContain() != null && !itemContainerType.getAbleToContain().isEmpty()) {
@@ -49,7 +49,7 @@ public class ItemContainerTypeEntity {
                 ableToContain = new ArrayList<>();
             }
             ableToContain.clear();
-            itemContainerType.getAbleToContain().forEach(ableToBuildId -> ableToContain.add(itemTypePersistence.readBaseItemTypeEntity(ableToBuildId)));
+            itemContainerType.getAbleToContain().forEach(ableToBuildId -> ableToContain.add(baseItemTypeCrudPersistence.getEntity(ableToBuildId)));
         } else {
             ableToContain = null;
         }

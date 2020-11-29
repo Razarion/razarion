@@ -185,7 +185,7 @@ public class BaseItemTypeEntity {
         return baseItemType;
     }
 
-    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, Shape3DCrudPersistence shape3DPersistence) {
+    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence) {
         internalName = baseItemType.getInternalName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
         fixVerticalNorm = baseItemType.getPhysicalAreaConfig().getFixVerticalNorm();
@@ -210,7 +210,7 @@ public class BaseItemTypeEntity {
             if (weaponType == null) {
                 weaponType = new WeaponTypeEntity();
             }
-            weaponType.fromWeaponType(baseItemType.getWeaponType(), itemTypePersistence, shape3DPersistence);
+            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeCrudPersistence, shape3DPersistence);
         } else {
             weaponType = null;
         }
@@ -219,7 +219,7 @@ public class BaseItemTypeEntity {
             if (factoryType == null) {
                 factoryType = new FactoryTypeEntity();
             }
-            factoryType.fromFactoryTypeEntity(baseItemType.getFactoryType(), itemTypePersistence);
+            factoryType.fromFactoryTypeEntity(baseItemType.getFactoryType(), baseItemTypeCrudPersistence);
         } else {
             factoryType = null;
         }
@@ -237,7 +237,7 @@ public class BaseItemTypeEntity {
             if (builderType == null) {
                 builderType = new BuilderTypeEntity();
             }
-            builderType.fromBuilderType(baseItemType.getBuilderType(), itemTypePersistence, shape3DPersistence);
+            builderType.fromBuilderType(baseItemType.getBuilderType(), baseItemTypeCrudPersistence, shape3DPersistence);
         } else {
             builderType = null;
         }
@@ -264,7 +264,7 @@ public class BaseItemTypeEntity {
             if (itemContainerType == null) {
                 itemContainerType = new ItemContainerTypeEntity();
             }
-            itemContainerType.fromItemContainerType(baseItemType.getItemContainerType(), itemTypePersistence);
+            itemContainerType.fromItemContainerType(baseItemType.getItemContainerType(), baseItemTypeCrudPersistence);
         } else {
             itemContainerType = null;
         }

@@ -7,7 +7,7 @@
       "vertexContainers": [
         {
           "key": "111-Cube1-Material-material",
-          "shape3DMaterial": {
+          "vertexContainerMaterial": {
             "materialId": "Material-material",
             "materialName": "Material",
             "phongMaterialConfig": {

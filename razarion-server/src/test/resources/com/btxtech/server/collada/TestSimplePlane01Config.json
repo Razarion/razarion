@@ -4,7 +4,7 @@
   "colladaString": null,
   "shape3DElementConfigs": [
     {
-      "shape3DMaterialConfigs": [
+      "vertexContainerMaterialConfigs": [
         {
           "materialId": "PlaneMat-material",
           "materialName": "PlaneMat",

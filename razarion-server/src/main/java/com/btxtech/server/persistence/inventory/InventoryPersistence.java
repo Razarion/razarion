@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.inventory;
 
 import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
@@ -29,7 +29,7 @@ public class InventoryPersistence {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
-    private ItemTypePersistence itemTypePersistence;
+    private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
 
     @Transactional
     @SecurityCheck
@@ -55,7 +55,7 @@ public class InventoryPersistence {
     public void updateInventoryItem(InventoryItem inventoryItem) {
         InventoryItemEntity inventoryItemEntity = readInventoryItemEntity(inventoryItem.getId());
         inventoryItemEntity.fromInventoryItem(inventoryItem);
-        inventoryItemEntity.setBaseItemType(itemTypePersistence.readBaseItemTypeEntity(inventoryItem.getBaseItemTypeId()));
+        inventoryItemEntity.setBaseItemType(baseItemTypeCrudPersistence.getEntity(inventoryItem.getBaseItemTypeId()));
         inventoryItemEntity.setImage(imagePersistence.getImageLibraryEntity(inventoryItem.getImageId()));
         entityManager.merge(inventoryItemEntity);
     }

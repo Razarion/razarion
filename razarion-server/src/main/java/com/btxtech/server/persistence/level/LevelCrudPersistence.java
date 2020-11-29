@@ -3,8 +3,8 @@ package com.btxtech.server.persistence.level;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.system.alarm.Alarm;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class LevelCrudPersistence extends AbstractCrudPersistence<LevelConfig, LevelEntity> {
     @Inject
-    private ItemTypePersistence itemTypePersistence;
+    private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
     @Inject
     private AlarmService alarmService;
     @PersistenceContext
@@ -57,7 +57,7 @@ public class LevelCrudPersistence extends AbstractCrudPersistence<LevelConfig, L
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation = new HashMap<>();
         if (config.getItemTypeLimitation() != null) {
             for (Map.Entry<Integer, Integer> entry : config.getItemTypeLimitation().entrySet()) {
-                itemTypeLimitation.put(itemTypePersistence.readBaseItemTypeEntity(entry.getKey()), entry.getValue());
+                itemTypeLimitation.put(baseItemTypeCrudPersistence.getEntity(entry.getKey()), entry.getValue());
             }
         }
         Collection<LevelUnlockEntity> levelUnlockEntities = new ArrayList<>();

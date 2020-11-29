@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.bot;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -65,7 +65,7 @@ public class BotConfigEntity implements ObjectNameIdProvider {
         return new BotConfig().setAuxiliaryId(auxiliaryId).setId(id).setInternalName(internalName).setAutoAttack(autoAttack).setNpc(npc).setActionDelay(actionDelay).setRealm(realm).setName(name).setMinInactiveMs(minInactiveMs).setMaxInactiveMs(maxInactiveMs).setMinActiveMs(minActiveMs).setMaxActiveMs(maxActiveMs).setBotEnragementStateConfigs(botEnragementStateConfigs);
     }
 
-    public void fromBotConfig(ItemTypePersistence itemTypePersistence, BotConfig botConfig) {
+    public void fromBotConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotConfig botConfig) {
         internalName = botConfig.getInternalName();
         auxiliaryId = botConfig.getAuxiliaryId();
         npc = botConfig.isNpc();
@@ -89,7 +89,7 @@ public class BotConfigEntity implements ObjectNameIdProvider {
         if (botConfig.getBotEnragementStateConfigs() != null) {
             for (BotEnragementStateConfig botEnragementStateConfig : botConfig.getBotEnragementStateConfigs()) {
                 BotEnragementStateConfigEntity botEnragementStateConfigEntity = new BotEnragementStateConfigEntity();
-                botEnragementStateConfigEntity.fromBotEnragementStateConfig(itemTypePersistence, botEnragementStateConfig);
+                botEnragementStateConfigEntity.fromBotEnragementStateConfig(baseItemTypeCrudPersistence, botEnragementStateConfig);
                 this.botEnragementStateConfigs.add(botEnragementStateConfigEntity);
             }
         }

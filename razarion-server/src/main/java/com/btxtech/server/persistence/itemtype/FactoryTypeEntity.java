@@ -2,7 +2,6 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -44,7 +43,7 @@ public class FactoryTypeEntity {
         return factoryType;
     }
 
-    public void fromFactoryTypeEntity(FactoryType factoryType, ItemTypePersistence itemTypePersistence) {
+    public void fromFactoryTypeEntity(FactoryType factoryType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence) {
         progress = factoryType.getProgress();
         if (factoryType.getAbleToBuildIds() != null && !factoryType.getAbleToBuildIds().isEmpty()) {
             if (ableToBuilds == null) {
@@ -52,7 +51,7 @@ public class FactoryTypeEntity {
             }
             ableToBuilds.clear();
             for (Integer ableToBuildId : factoryType.getAbleToBuildIds()) {
-                ableToBuilds.add(itemTypePersistence.readBaseItemTypeEntity(ableToBuildId));
+                ableToBuilds.add(baseItemTypeCrudPersistence.getEntity(ableToBuildId));
             }
         } else {
             ableToBuilds = null;

@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
@@ -18,7 +19,9 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +33,7 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
     @Inject
     private TerrainObjectCrudPersistence terrainObjectCrudPersistence;
     @Inject
-    private ItemTypePersistence itemTypePersistence;
+    private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
     @Inject
     private GroundCrudPersistence groundCrudPersistence;
     @Inject
@@ -53,8 +56,17 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
     protected void fromConfig(PlanetConfig planetConfig, PlanetEntity planetEntity) {
         planetEntity.fromPlanetConfig(planetConfig,
                 groundCrudPersistence.getEntity(planetConfig.getGroundConfigId()),
-                itemTypePersistence.readBaseItemTypeEntity(planetConfig.getStartBaseItemTypeId()),
-                itemTypePersistence.baseItemTypeLimitation(planetConfig.getItemTypeLimitation()));
+                baseItemTypeCrudPersistence.getEntity(planetConfig.getStartBaseItemTypeId()),
+                baseItemTypeLimitation(planetConfig.getItemTypeLimitation()));
+    }
+
+    public Map<BaseItemTypeEntity, Integer> baseItemTypeLimitation(Map<Integer, Integer> input) {
+        if(input == null) {
+            return Collections.emptyMap();
+        }
+        return input.entrySet()
+                .stream()
+                .collect(Collectors.toMap(entry -> baseItemTypeCrudPersistence.getEntity(entry.getKey()), Map.Entry::getKey));
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity_;
@@ -80,6 +81,8 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    @Inject
+    private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
     @Inject
     private DbPropertiesService dbPropertiesService;
     @Inject
@@ -192,12 +195,12 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     }
 
     private void fromConfig(SceneEntity sceneEntity, SceneConfig sceneConfig, Locale locale) {
-        sceneEntity.fromSceneConfig(itemTypePersistence, sceneConfig, locale);
+        sceneEntity.fromSceneConfig(itemTypePersistence, baseItemTypeCrudPersistence, sceneConfig, locale);
         sceneEntity.clearBotConfigEntities();
         if (sceneConfig.getBotConfigs() != null) {
             for (BotConfig botConfig : sceneConfig.getBotConfigs()) {
                 BotConfigEntity botConfigEntity = new BotConfigEntity();
-                botConfigEntity.fromBotConfig(itemTypePersistence, botConfig);
+                botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, botConfig);
                 sceneEntity.addBotConfigEntity(botConfigEntity);
             }
         }
@@ -206,8 +209,8 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             for (BotAttackCommandConfig botAttackCommandConfig : sceneConfig.getBotAttackCommandConfigs()) {
                 BotAttackCommandEntity botAttackCommandEntity = new BotAttackCommandEntity();
                 botAttackCommandEntity.setBotAuxiliaryIdId(botAttackCommandConfig.getBotAuxiliaryId());
-                botAttackCommandEntity.setActorItemType(itemTypePersistence.readBaseItemTypeEntity(botAttackCommandConfig.getActorItemTypeId()));
-                botAttackCommandEntity.setTargetItemType(itemTypePersistence.readBaseItemTypeEntity(botAttackCommandConfig.getTargetItemTypeId()));
+                botAttackCommandEntity.setActorItemType(baseItemTypeCrudPersistence.getEntity(botAttackCommandConfig.getActorItemTypeId()));
+                botAttackCommandEntity.setTargetItemType(baseItemTypeCrudPersistence.getEntity(botAttackCommandConfig.getTargetItemTypeId()));
                 if (botAttackCommandConfig.getTargetSelection() != null) {
                     PlaceConfigEntity BotConfigEntity = new PlaceConfigEntity();
                     BotConfigEntity.fromPlaceConfig(botAttackCommandConfig.getTargetSelection());
@@ -221,7 +224,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             for (BotMoveCommandConfig botMoveCommandConfig : sceneConfig.getBotMoveCommandConfigs()) {
                 BotMoveCommandEntity botMoveCommandEntity = new BotMoveCommandEntity();
                 botMoveCommandEntity.setBotAuxiliaryIdId(botMoveCommandConfig.getBotAuxiliaryId());
-                botMoveCommandEntity.setBaseItemType(itemTypePersistence.readBaseItemTypeEntity(botMoveCommandConfig.getBaseItemTypeId()));
+                botMoveCommandEntity.setBaseItemType(baseItemTypeCrudPersistence.getEntity(botMoveCommandConfig.getBaseItemTypeId()));
                 botMoveCommandEntity.setTargetPosition(botMoveCommandConfig.getTargetPosition());
                 sceneEntity.addBotMoveCommandEntity(botMoveCommandEntity);
             }
@@ -231,7 +234,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             for (BotHarvestCommandConfig botHarvestCommandConfig : sceneConfig.getBotHarvestCommandConfigs()) {
                 BotHarvestCommandEntity botHarvestCommandEntity = new BotHarvestCommandEntity();
                 botHarvestCommandEntity.setBotAuxiliaryIdId(botHarvestCommandConfig.getBotAuxiliaryId());
-                botHarvestCommandEntity.setHarvesterItemType(itemTypePersistence.readBaseItemTypeEntity(botHarvestCommandConfig.getHarvesterItemTypeId()));
+                botHarvestCommandEntity.setHarvesterItemType(baseItemTypeCrudPersistence.getEntity(botHarvestCommandConfig.getHarvesterItemTypeId()));
                 botHarvestCommandEntity.setResourceItemType(itemTypePersistence.readResourceItemTypeEntity(botHarvestCommandConfig.getResourceItemTypeId()));
                 if (botHarvestCommandConfig.getResourceSelection() != null) {
                     PlaceConfigEntity placeConfigEntity = new PlaceConfigEntity();
@@ -247,7 +250,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
                 BotKillOtherBotCommandEntity botKillOtherBotCommandEntity = new BotKillOtherBotCommandEntity();
                 botKillOtherBotCommandEntity.fromBotKillOtherBotCommandConfig(botKillOtherBotCommandConfig);
                 if (botKillOtherBotCommandConfig.getAttackerBaseItemTypeId() != null) {
-                    botKillOtherBotCommandEntity.setAttackerBaseItemType(itemTypePersistence.readBaseItemTypeEntity(botKillOtherBotCommandConfig.getAttackerBaseItemTypeId()));
+                    botKillOtherBotCommandEntity.setAttackerBaseItemType(baseItemTypeCrudPersistence.getEntity(botKillOtherBotCommandConfig.getAttackerBaseItemTypeId()));
                 }
                 sceneEntity.addBotKillOtherBotCommandEntity(botKillOtherBotCommandEntity);
             }
@@ -258,7 +261,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
                 BotKillHumanCommandEntity botKillHumanCommandEntity = new BotKillHumanCommandEntity();
                 botKillHumanCommandEntity.fromBotKillHumanCommandConfig(botKillHumanCommandConfig);
                 if (botKillHumanCommandConfig.getAttackerBaseItemTypeId() != null) {
-                    botKillHumanCommandEntity.setAttackerBaseItemType(itemTypePersistence.readBaseItemTypeEntity(botKillHumanCommandConfig.getAttackerBaseItemTypeId()));
+                    botKillHumanCommandEntity.setAttackerBaseItemType(baseItemTypeCrudPersistence.getEntity(botKillHumanCommandConfig.getAttackerBaseItemTypeId()));
                 }
                 sceneEntity.addBotKillHumanCommandEntity(botKillHumanCommandEntity);
             }
@@ -268,7 +271,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             for (BotRemoveOwnItemCommandConfig botRemoveOwnItemCommandConfig : sceneConfig.getBotRemoveOwnItemCommandConfigs()) {
                 BotRemoveOwnItemCommandEntity botRemoveOwnItemCommandEntity = new BotRemoveOwnItemCommandEntity();
                 botRemoveOwnItemCommandEntity.setBotAuxiliaryIdId(botRemoveOwnItemCommandConfig.getBotAuxiliaryId());
-                botRemoveOwnItemCommandEntity.setBaseItemType2Remove(itemTypePersistence.readBaseItemTypeEntity(botRemoveOwnItemCommandConfig.getBaseItemType2RemoveId()));
+                botRemoveOwnItemCommandEntity.setBaseItemType2Remove(baseItemTypeCrudPersistence.getEntity(botRemoveOwnItemCommandConfig.getBaseItemType2RemoveId()));
                 sceneEntity.addBotRemoveOwnItemCommandEntity(botRemoveOwnItemCommandEntity);
             }
         }
@@ -303,8 +306,8 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
         if (sceneConfig.getGameTipConfig() != null) {
             GameTipConfigEntity gameTipConfigEntity = new GameTipConfigEntity();
             gameTipConfigEntity.setTip(sceneConfig.getGameTipConfig().getTip());
-            gameTipConfigEntity.setActor(itemTypePersistence.readBaseItemTypeEntity(sceneConfig.getGameTipConfig().getActor()));
-            gameTipConfigEntity.setToCreatedItemType(itemTypePersistence.readBaseItemTypeEntity(sceneConfig.getGameTipConfig().getToCreatedItemTypeId()));
+            gameTipConfigEntity.setActor(baseItemTypeCrudPersistence.getEntity(sceneConfig.getGameTipConfig().getActor()));
+            gameTipConfigEntity.setToCreatedItemType(baseItemTypeCrudPersistence.getEntity(sceneConfig.getGameTipConfig().getToCreatedItemTypeId()));
             gameTipConfigEntity.setResourceItemTypeEntity(itemTypePersistence.readResourceItemTypeEntity(sceneConfig.getGameTipConfig().getResourceItemTypeId()));
             gameTipConfigEntity.setBoxItemTypeEntity(itemTypePersistence.readBoxItemTypeEntity(sceneConfig.getGameTipConfig().getBoxItemTypeId()));
             gameTipConfigEntity.setInventoryItemEntity(inventoryPersistence.readInventoryItemEntity(sceneConfig.getGameTipConfig().getInventoryItemId()));

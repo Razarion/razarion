@@ -87,7 +87,6 @@ public class Shape3DControllerTest extends AbstractSystemTest {
                         .replace("\"78-Trunk33-Material_002-material\"", key2),
                 new JsonAssert.IdSuppressor[]{new JsonAssert.IdSuppressor("/0", "id")},
                 getClass(),
-                coldGameUiContext.getShape3Ds(),
-                false);
+                coldGameUiContext.getShape3Ds());
     }
 }

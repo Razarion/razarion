@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.scene;
 
 import com.btxtech.server.persistence.bot.BotConfigEntity;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
@@ -248,7 +249,7 @@ public class SceneEntity implements ObjectNameIdProvider {
         return sceneConfig;
     }
 
-    public void fromSceneConfig(ItemTypePersistence itemTypePersistence, SceneConfig sceneConfig, Locale locale) {
+    public void fromSceneConfig(ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, SceneConfig sceneConfig, Locale locale) {
         internalName = sceneConfig.getInternalName();
         if (sceneConfig.getIntroText() != null && !sceneConfig.getIntroText().trim().isEmpty()) {
             i18nIntroText = new I18nBundleEntity();
@@ -258,7 +259,7 @@ public class SceneEntity implements ObjectNameIdProvider {
             if (questConfig == null) {
                 questConfig = new QuestConfigEntity();
             }
-            questConfig.fromQuestConfig(itemTypePersistence, sceneConfig.getQuestConfig(), locale);
+            questConfig.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, sceneConfig.getQuestConfig(), locale);
         } else {
             questConfig = null;
         }

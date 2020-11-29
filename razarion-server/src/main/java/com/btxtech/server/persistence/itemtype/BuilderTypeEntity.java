@@ -66,7 +66,7 @@ public class BuilderTypeEntity {
         return builderType;
     }
 
-    public void fromBuilderType(BuilderType builderType, ItemTypePersistence itemTypePersistence, Shape3DCrudPersistence shape3DPersistence) {
+    public void fromBuilderType(BuilderType builderType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence) {
         buildRange = builderType.getRange();
         progress = builderType.getProgress();
         if (builderType.getAbleToBuildIds() != null && !builderType.getAbleToBuildIds().isEmpty()) {
@@ -75,7 +75,7 @@ public class BuilderTypeEntity {
             }
             ableToBuilds.clear();
             for (Integer ableToBuildId : builderType.getAbleToBuildIds()) {
-                ableToBuilds.add(itemTypePersistence.readBaseItemTypeEntity(ableToBuildId));
+                ableToBuilds.add(baseItemTypeCrudPersistence.getEntity(ableToBuildId));
             }
         } else {
             ableToBuilds = null;

@@ -14,15 +14,14 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ObjectNameIdProvider;
+import com.btxtech.shared.dto.Config;
 
 /**
  * User: beat
  * Date: 17.11.2009
  * Time: 22:50:01
  */
-public abstract class ItemType implements ObjectNameIdProvider {
+public abstract class ItemType implements Config {
     private int id;
     private String internalName;
     private I18nString i18nName;
@@ -30,10 +29,12 @@ public abstract class ItemType implements ObjectNameIdProvider {
     private Integer shape3DId;
     private Integer thumbnail;
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public String getInternalName() {
         return internalName;
     }
@@ -47,11 +48,10 @@ public abstract class ItemType implements ObjectNameIdProvider {
         return this;
     }
 
-    public ItemType setInternalName(String internalName) {
+    @Override
+    public void setInternalName(String internalName) {
         this.internalName = internalName;
-        return this;
     }
-
 
     public ItemType setI18nDescription(I18nString i18nDescription) {
         this.i18nDescription = i18nDescription;
@@ -83,11 +83,6 @@ public abstract class ItemType implements ObjectNameIdProvider {
     public ItemType setThumbnail(Integer thumbnail) {
         this.thumbnail = thumbnail;
         return this;
-    }
-
-    @Override
-    public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(id, internalName);
     }
 
     @Override

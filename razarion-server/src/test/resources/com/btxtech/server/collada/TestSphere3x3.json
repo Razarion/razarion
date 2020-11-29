@@ -1,1 +1,68 @@
-{"id":101,"element3Ds":[{"id":"Element","modelMatrixAnimations":null,"vertexContainers":[{"key":"101-Element-Material_001-material","shape3DMaterial":{"materialId":"Material_001-material","materialName":"Material_001","phongMaterialConfig":{"textureId":null,"scale":1.0,"bumpMapId":null,"bumpMapDepth":null,"shininess":50.0,"specularStrength":0.5},"characterRepresenting":false,"alphaToCoverage":null},"verticesCount":36,"shapeTransform":{"staticMatrix":{"numbers":[[1.0,0.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,0.0,1.0,0.0],[0.0,0.0,0.0,1.0]]},"translateX":0.0,"translateY":0.0,"translateZ":0.0,"rotateX":0.0,"rotateY":0.0,"rotateZ":0.0,"scaleX":0.0,"scaleY":0.0,"scaleZ":0.0}}]}]}
+{
+  "id": 101,
+  "element3Ds": [
+    {
+      "id": "Element",
+      "modelMatrixAnimations": null,
+      "vertexContainers": [
+        {
+          "key": "101-Element-Material_001-material",
+          "vertexContainerMaterial": {
+            "materialId": "Material_001-material",
+            "materialName": "Material_001",
+            "phongMaterialConfig": {
+              "textureId": null,
+              "scale": 1.0,
+              "bumpMapId": null,
+              "bumpMapDepth": null,
+              "shininess": 50.0,
+              "specularStrength": 0.5
+            },
+            "characterRepresenting": false,
+            "alphaToCoverage": null
+          },
+          "verticesCount": 36,
+          "shapeTransform": {
+            "staticMatrix": {
+              "numbers": [
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "translateX": 0.0,
+            "translateY": 0.0,
+            "translateZ": 0.0,
+            "rotateX": 0.0,
+            "rotateY": 0.0,
+            "rotateZ": 0.0,
+            "scaleX": 0.0,
+            "scaleY": 0.0,
+            "scaleZ": 0.0
+          }
+        }
+      ]
+    }
+  ]
+}

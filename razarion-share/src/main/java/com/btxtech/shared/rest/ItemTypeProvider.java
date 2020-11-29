@@ -1,7 +1,6 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 
@@ -19,27 +18,9 @@ import java.util.List;
  * Created by Beat
  * 24.08.2016.
  */
+@Deprecated
 @Path(CommonUrl.ITEM_TYPE_PROVIDER)
 public interface ItemTypeProvider {
-    @POST
-    @Path("createBaseItemType")
-    @Produces(MediaType.APPLICATION_JSON)
-    BaseItemType createBaseItemType();
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("readBaseItemTypes")
-    List<BaseItemType> readBaseItemTypes();
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("updateBaseItemType")
-    void updateBaseItemType(BaseItemType baseItemType);
-
-    @DELETE
-    @Path("deleteBaseItemType/{id}")
-    void deleteBaseItemType(@PathParam("id") int id);
-
     @POST
     @Path("createResourceItemType")
     @Produces(MediaType.APPLICATION_JSON)

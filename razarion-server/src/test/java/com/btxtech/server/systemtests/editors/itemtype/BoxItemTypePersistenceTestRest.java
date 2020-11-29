@@ -1,7 +1,8 @@
-package com.btxtech.server.persistence.itemtype;
+package com.btxtech.server.systemtests.editors.itemtype;
 
 import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import org.junit.After;

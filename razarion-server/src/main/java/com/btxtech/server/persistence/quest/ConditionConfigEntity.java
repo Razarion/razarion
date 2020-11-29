@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.quest;
 
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
@@ -34,12 +35,12 @@ public class ConditionConfigEntity {
         return new ConditionConfig().setConditionTrigger(conditionTrigger).setComparisonConfig(comparisonConfig.toComparisonConfig());
     }
 
-    public void fromConditionConfig(ItemTypePersistence itemTypePersistence, ConditionConfig conditionConfig) {
+    public void fromConditionConfig(ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ConditionConfig conditionConfig) {
         conditionTrigger = conditionConfig.getConditionTrigger();
         if(comparisonConfig == null) {
             comparisonConfig = new ComparisonConfigEntity();
         }
-        comparisonConfig.fromComparisonConfig(itemTypePersistence, conditionConfig.getComparisonConfig());
+        comparisonConfig.fromComparisonConfig(itemTypePersistence, baseItemTypeCrudPersistence, conditionConfig.getComparisonConfig());
     }
 
     @Override

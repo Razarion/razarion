@@ -66,7 +66,7 @@ public class WeaponTypeEntity {
         return weaponType;
     }
 
-    public void fromWeaponType(WeaponType weaponType, ItemTypePersistence itemTypePersistence, Shape3DCrudPersistence shape3DPersistence) {
+    public void fromWeaponType(WeaponType weaponType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence) {
         attackRange = weaponType.getRange();
         damage = weaponType.getDamage();
         detonationRadius = weaponType.getDetonationRadius();
@@ -77,7 +77,7 @@ public class WeaponTypeEntity {
             }
             disallowedItemTypes.clear();
             for (Integer disallowedId : weaponType.getDisallowedItemTypes()) {
-                disallowedItemTypes.add(itemTypePersistence.readBaseItemTypeEntity(disallowedId));
+                disallowedItemTypes.add(baseItemTypeCrudPersistence.getEntity(disallowedId));
             }
         } else {
             disallowedItemTypes = null;

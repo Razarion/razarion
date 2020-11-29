@@ -5,10 +5,11 @@ import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity_;
 import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelEntity_;
-import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.user.SecurityCheck;
@@ -58,6 +59,8 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     private EntityManager entityManager;
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
+    @Inject
+    private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
     @Inject
     private ItemTypePersistence itemTypePersistence;
     @Inject
@@ -302,7 +305,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         crud.setEntityIdProvider(QuestConfigEntity::getId).setConfigIdProvider(QuestConfig::getId);
         crud.setConfigGenerator(questConfigEntity -> questConfigEntity.toQuestConfig(locale));
         crud.setEntityFactory(QuestConfigEntity::new);
-        crud.setEntityFiller((questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(itemTypePersistence, questConfig, locale));
+        crud.setEntityFiller((questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, questConfig, locale));
         crud.setAdditionalDelete((entityManager, integer) -> entityManager.remove(entityManager.find(QuestConfigEntity.class, integer)));
         return crud;
     }
@@ -330,7 +333,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         crud.setConfigGenerator(BotConfigEntity::toBotConfig);
         crud.setEntityFactory(() -> new BotConfigEntity().setAutoAttack(true));
         crud.setEntityFiller((botConfigEntity, botConfig) -> {
-            botConfigEntity.fromBotConfig(itemTypePersistence, botConfig);
+            botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, botConfig);
         });
         return crud;
     }
@@ -344,7 +347,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         crud.setConfigGenerator(BotSceneConfigEntity::toBotSceneConfig);
         crud.setEntityFactory(BotSceneConfigEntity::new);
         crud.setEntityFiller((botSceneConfigEntity, botSceneConfig) -> {
-            botSceneConfigEntity.fromBotConfig(itemTypePersistence, entityManager, botSceneConfig);
+            botSceneConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, entityManager, botSceneConfig);
         });
         return crud;
     }

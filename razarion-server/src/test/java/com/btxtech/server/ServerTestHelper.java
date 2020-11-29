@@ -1,5 +1,6 @@
 package com.btxtech.server;
 
+import com.btxtech.server.persistence.AudioLibraryEntity;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
@@ -7,6 +8,7 @@ import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.BuilderTypeEntity;
@@ -140,6 +142,10 @@ public class ServerTestHelper {
     public static int IMAGE_1_ID;
     public static int IMAGE_2_ID;
     public static int IMAGE_3_ID;
+    // Audio
+    public static int AUDIO_1_ID;
+    public static int AUDIO_2_ID;
+    public static int AUDIO_3_ID;
     // Shape3D ColladaEntity
     public static int SHAPE_3D_1_ID;
     public static int SHAPE_3D_2_ID;
@@ -263,6 +269,13 @@ public class ServerTestHelper {
         cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(ImageLibraryEntity.class)));
     }
 
+    protected void setupAudios() {
+        AUDIO_1_ID = persistInTransaction(new AudioLibraryEntity()).getId();
+        AUDIO_2_ID = persistInTransaction(new AudioLibraryEntity()).getId();
+        AUDIO_3_ID = persistInTransaction(new AudioLibraryEntity()).getId();
+        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(AudioLibraryEntity.class)));
+    }
+
     protected void setupGroundConfig() {
         GROUND_1_ID = persistInTransaction(new GroundConfigEntity()).getId();
         GROUND_2_ID = persistInTransaction(new GroundConfigEntity()).getId();
@@ -377,9 +390,10 @@ public class ServerTestHelper {
     private int createBaseItemTypeEntity(BaseItemType baseItemType) {
         BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
         ItemTypePersistence itemTypePersistence = EasyMock.createNiceMock(ItemTypePersistence.class);
+        BaseItemTypeCrudPersistence baseItemTypeCrudPersistence = EasyMock.createNiceMock(BaseItemTypeCrudPersistence.class);
         Shape3DCrudPersistence shape3DPersistence = EasyMock.createNiceMock(Shape3DCrudPersistence.class);
-        EasyMock.replay(itemTypePersistence, shape3DPersistence);
-        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, shape3DPersistence);
+        EasyMock.replay(itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence);
+        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence);
         persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
     }

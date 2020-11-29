@@ -10,7 +10,6 @@ import com.btxtech.client.editor.client.scene.SceneConfigSidebar;
 import com.btxtech.client.editor.i18n.I18nPanel;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.inventory.InventoryItemCrudSidebar;
-import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
 import com.btxtech.client.editor.particle.ParticleCrudeSidebar;
@@ -23,6 +22,7 @@ import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
 import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditor;
+import com.btxtech.shared.rest.BaseItemTypeEditorController;
 import com.btxtech.shared.rest.DrivewayEditorController;
 import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
@@ -137,7 +137,8 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
                 new CrudControllerButton(WaterEditorController.class, "Water"),
                 new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context"),
                 new CrudControllerButton(Shape3DEditorController.class, "Shape 3D"),
-                new CrudControllerButton(TerrainObjectEditorController.class, "Terrain Object")
+                new CrudControllerButton(TerrainObjectEditorController.class, "Terrain Object"),
+                new CrudControllerButton(BaseItemTypeEditorController.class, "Base Items")
         );
     }
 
@@ -235,12 +236,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private void sceneConfigButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
         editorService.openEditor(SceneConfigSidebar.class, "???Unknown");
-    }
-
-    @EventHandler("baseItemButton")
-    private void onBaseItemButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openEditor(BaseItemTypeCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("resourceItemButton")

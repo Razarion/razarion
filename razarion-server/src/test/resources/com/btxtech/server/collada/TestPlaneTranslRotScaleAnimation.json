@@ -56,7 +56,7 @@
       "vertexContainers": [
         {
           "key": "22-Plane_Id-null",
-          "shape3DMaterial": {
+          "vertexContainerMaterial": {
             "materialId": null,
             "materialName": null,
             "phongMaterialConfig": null,

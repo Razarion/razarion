@@ -1,6 +1,7 @@
-package com.btxtech.server.persistence.itemtype;
+package com.btxtech.server.systemtests.editors.itemtype;
 
 import com.btxtech.server.IgnoreOldArquillianTest;
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import org.junit.After;
 import org.junit.Assert;
