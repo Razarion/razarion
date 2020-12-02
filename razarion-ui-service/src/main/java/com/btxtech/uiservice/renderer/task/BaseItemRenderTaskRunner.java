@@ -51,7 +51,7 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
 //        demolition(baseItemType, fillBuffer);
 //        harvest(baseItemType, fillBuffer);
         buildBeam(baseItemType);
-//        weaponTurret(baseItemType, fillBuffer);
+        weaponTurret(baseItemType);
     }
 
     private void spawn(BaseItemType baseItemType) {
@@ -87,9 +87,7 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
 
     private void alive(BaseItemType baseItemType) {
         if (baseItemType.getShape3DId() != null) {
-            String turretMaterialId = (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null)
-                    ? baseItemType.getWeaponType().getTurretType().getShape3dMaterialId()
-                    : null;
+            String turretMaterialId = getTurretMaterialId(baseItemType);
             createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemType.getShape3DId()),
                     timeStamp -> baseItemUiService.provideAliveModelMatrices(baseItemType),
                     vertexContainer -> turretMaterialId == null || !turretMaterialId.equals(vertexContainer.getVertexContainerMaterial().getMaterialId()),
@@ -179,35 +177,26 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
         }
     }
 
-//    private void weaponTurret(BaseItemType baseItemType, boolean fillBuffer) {
-//        if (baseItemType.getWeaponType() == null) {
-//            return;
-//        }
-//        if (baseItemType.getWeaponType().getTurretType() == null) {
-//            logger.warning("BaseItemRenderTask: no Turret for WeaponType in BaseItemType: " + baseItemType);
-//            return;
-//        }
-//        String shape3dMaterialId = baseItemType.getWeaponType().getTurretType().getShape3dMaterialId();
-//        if (shape3dMaterialId == null) {
-//            logger.warning("BaseItemRenderTask: no TurretMaterialId WeaponType beam in BaseItemType: " + baseItemType);
-//            return;
-//        }
-//
-//        ModelRenderer<BaseItemType> modelRenderer = create();
-//        modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideTurretModelMatrices(baseItemType));
-//        Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
-//        VertexContainer vertexContainer = Shape3DUtils.getVertexContainer4MaterialId(shape3D, shape3dMaterialId);
-//        CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
-//        compositeRenderer.init(vertexContainer);
-//        compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-//        compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
-//        compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-//        compositeRenderer.setupAnimation(shape3D, Shape3DUtils.getElement4MaterialId(shape3D, shape3dMaterialId), vertexContainer.getShapeTransform());
-//        modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
-//        if (fillBuffer) {
-//            compositeRenderer.fillBuffers();
-//        }
-//
-//        add(modelRenderer);
-//    }
+    private void weaponTurret(BaseItemType baseItemType) {
+        if (baseItemType.getWeaponType() == null) {
+            return;
+        }
+        if (baseItemType.getWeaponType().getTurretType() == null) {
+            alarmService.riseAlarm(INVALID_BASE_ITEM, "no turretType in WeaponType", baseItemType.getId());
+            return;
+        }
+
+        String turretMaterialId = getTurretMaterialId(baseItemType);
+        createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemType.getShape3DId()),
+                timeStamp -> baseItemUiService.provideTurretModelMatrices(baseItemType),
+                vertexContainer -> turretMaterialId == null || turretMaterialId.equals(vertexContainer.getVertexContainerMaterial().getMaterialId()),
+                null);
+    }
+
+
+    private String getTurretMaterialId(BaseItemType baseItemType) {
+        return (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null)
+                ? baseItemType.getWeaponType().getTurretType().getShape3dMaterialId()
+                : null;
+    }
 }
