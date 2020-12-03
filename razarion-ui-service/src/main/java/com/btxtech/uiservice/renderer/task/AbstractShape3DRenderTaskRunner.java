@@ -32,15 +32,12 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
                 if (predicate != null && !predicate.test(vertexContainer)) {
                     continue;
                 }
-                if (progressState != null) {
-                    progressState.setupAdditional(vertexContainer);
-                }
                 RenderTask modelRenderTask = createModelRenderTask(RenderTask.class,
                         vertexContainer,
                         modelMatricesSupplier,
                         progressAnimations,
                         vertexContainer.getShapeTransform(),
-                        (mrt) -> mrt.setProgressState(progressState));
+                        (mrt) -> mrt.setProgressState(progressState != null ? progressState.fork(vertexContainer) : null));
                 modelRenderTask.setActive(true);
             }
         }

@@ -15,8 +15,8 @@ public abstract class ProgressState {
 
     public abstract double calculateProgress(double progress);
 
-    public void setupAdditional(VertexContainer vertexContainer ) {
-
+    public ProgressState fork(VertexContainer vertexContainer) {
+        return this;
     }
 }
 
