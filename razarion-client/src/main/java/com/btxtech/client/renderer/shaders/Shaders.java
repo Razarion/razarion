@@ -48,12 +48,6 @@ public interface Shaders extends ClientBundle {
     @Source("DebugVector.frag")
     TextResource debugVectorFragmentShader();
 
-    @Source("DemolitionVertexContainer.vert")
-    TextResource demolitionVertexContainerVertexShader();
-
-    @Source("DemolitionVertexContainer.frag")
-    TextResource demolitionVertexContainerFragmentShader();
-
     @Source("TerrainEditor.vert")
     TextResource terrainEditorVertexShader();
 

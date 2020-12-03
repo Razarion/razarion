@@ -9,6 +9,9 @@ import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.task.AbstractShape3DRenderTaskRunner;
+import com.btxtech.uiservice.renderer.task.progress.BuildupState;
+import com.btxtech.uiservice.renderer.task.progress.DemolitionState;
+import com.btxtech.uiservice.renderer.task.progress.ProgressState;
 import jsinterop.base.Js;
 
 import javax.enterprise.context.Dependent;
@@ -18,6 +21,7 @@ import java.util.List;
 import static com.btxtech.client.renderer.shaders.Shaders.SHADERS;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.ALPHA_TO_COVERAGE;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.BUILDUP_STATE;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.HEALTH_STATE;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
 
 /**
@@ -30,7 +34,7 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     @Inject
     private ClientShape3DUiService shape3DUiService;
     private boolean alphaToCoverage;
-    private AbstractShape3DRenderTaskRunner.BuildupState buildupState;
+    private ProgressState progressState;
     // private WebGLUniformLocation characterRepresenting;
     // private WebGLUniformLocation characterRepresentingColor;
 
@@ -45,8 +49,8 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     }
 
     @Override
-    public void setBuildupState(AbstractShape3DRenderTaskRunner.BuildupState buildupState) {
-        this.buildupState = buildupState;
+    public void setProgressState(ProgressState progressState) {
+        this.progressState = progressState;
     }
 
     @Override
@@ -63,14 +67,24 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
             setupUniform("alphaToCoverage", UniformLocation.Type.F, () -> vertexContainer.getVertexContainerMaterial().getAlphaToCoverage());
         }
 
-        if(buildupState != null) {
-            setupProgressUniform("progressZ", UniformLocation.Type.F, progress -> buildupState.getMaxZ() * progress);
-            setupUniform("buildupMatrix", UniformLocation.Type.MATRIX_4, () -> buildupState.getBuildupMatrix());
-            createWebGLTexture("uBuildupTextureSampler", buildupState.getBuildupTextureId());
+        if(progressState != null) {
+            if(progressState instanceof BuildupState) {
+                setupProgressUniforms("progressZ", "uBuildupTextureSampler");
+                setupUniform("buildupMatrix", UniformLocation.Type.MATRIX_4, () -> ((BuildupState)progressState).getBuildupMatrix());
+            } else if(progressState instanceof DemolitionState) {
+                setupProgressUniforms("uHealth", "uDemolitionSampler");
+            } else {
+                throw new IllegalArgumentException("Unknown progressState: " + progressState);
+            }
         }
 
         // characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
         // characterRepresentingColor = webGlFacade.getUniformLocation("characterRepresentingColor");
+    }
+
+    private void setupProgressUniforms(String progressUniformName, String textureSampleName) {
+        setupProgressUniform(progressUniformName, UniformLocation.Type.F, progress -> progressState.calculateProgress(progress));
+        createWebGLTexture(textureSampleName, progressState.getBuildupTextureId());
     }
 
     private void draw(ModelMatrices modelMatrices) {
@@ -86,7 +100,7 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     @Override
     protected void glslVertexCustomDefines(List<String> defines, VertexContainer vertexContainer) {
         defines.add(UV);
-        if(buildupState != null) {
+        if(progressState != null) {
             defines.add(BUILDUP_STATE);
         }
     }
@@ -97,9 +111,12 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
         if (vertexContainer.getVertexContainerMaterial().getAlphaToCoverage() != null) {
             defines.add(ALPHA_TO_COVERAGE);
         }
-        if(buildupState != null) {
+        if(progressState instanceof BuildupState) {
             defines.add(BUILDUP_STATE);
+        } else if(progressState instanceof DemolitionState) {
+            defines.add(HEALTH_STATE);
         }
+
     }
 
     @Override

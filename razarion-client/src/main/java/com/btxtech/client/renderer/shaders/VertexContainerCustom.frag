@@ -29,6 +29,11 @@ uniform float alphaToCoverage;
 uniform float progressZ;
 uniform sampler2D uBuildupTextureSampler;
 #endif
+#ifdef HEALTH_STATE
+uniform sampler2D uDemolitionSampler;
+uniform float uHealth;
+const float DELTA_HEALTH = 0.75;
+#endif
 //-$$$-CHUNK uniforms-fragment END
 
 //-$$$-CHUNK main-code-fragment BEGIN
@@ -40,6 +45,15 @@ uniform sampler2D uBuildupTextureSampler;
     #endif
 
     vec4 rgba = phongAlpha(material, vUv);
+
+    #ifdef HEALTH_STATE
+    vec4 cuttingColor = texture2D(uDemolitionSampler, vUv);
+    float healthFactor = uHealth * (DELTA_HEALTH -1.0) + 1.0 - DELTA_HEALTH;
+    float demoltionTextureFactor = cuttingColor.r * -2.0 + 1.0;
+    float burned = clamp(healthFactor + demoltionTextureFactor, 0.0, 1.0);
+    rgba = clamp(rgba - burned, 0.0, 1.0);
+    #endif
+
     float sharpenAlpha = 1.0;
     #ifdef ALPHA_TO_COVERAGE
     sharpenAlpha = (rgba.a - alphaToCoverage) / max(fwidth(rgba.a), 0.0001) + 0.5;

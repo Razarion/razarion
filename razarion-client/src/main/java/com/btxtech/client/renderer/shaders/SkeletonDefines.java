@@ -7,5 +7,6 @@ public abstract class SkeletonDefines {
     public static final String FIX_PERPENDICULAR_NORMAL = "FIX_PERPENDICULAR_NORMAL";
     public static final String WORLD_VERTEX_POSITION = "WORLD_VERTEX_POSITION";
     public static final String BUILDUP_STATE = "BUILDUP_STATE";
+    public static final String HEALTH_STATE = "HEALTH_STATE";
 
 }
