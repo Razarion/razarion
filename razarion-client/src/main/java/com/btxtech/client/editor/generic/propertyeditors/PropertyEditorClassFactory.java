@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class PropertyEditorClassFactory {
         GENERIC_TYPES.put(DecimalPosition.class, DecimalPositionEditor.class);
         GENERIC_TYPES.put(Index.class, IndexEditor.class);
         GENERIC_TYPES.put(Vertex.class, VertexEditor.class);
+        GENERIC_TYPES.put(PlaceConfig.class, PlaceConfigEditor.class);
     }
 
     public static Class<? extends AbstractPropertyEditor> get(Class type) {
