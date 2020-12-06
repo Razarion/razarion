@@ -7,13 +7,11 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.rest.ResourceItemTypeEditorController;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 
 /**
  * Created by Beat
  * 19.05.2017.
  */
-@Ignore
 public class ResourceItemTypePersistenceTestRest extends AbstractCrudTest<ResourceItemTypeEditorController, ResourceItemType> {
 
     public ResourceItemTypePersistenceTestRest() {
