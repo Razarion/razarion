@@ -3,6 +3,7 @@ package com.btxtech.uiservice.renderer.task;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -51,10 +52,9 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
         } else {
             alarmService.riseAlarm(INVALID_BASE_ITEM, "No shape3DId", baseItemType.getId());
         }
-
-        // harvest(baseItemType);
         spawn(baseItemType);
         buildBeam(baseItemType);
+        harvest(baseItemType);
     }
 
     private void spawn(BaseItemType baseItemType) {
@@ -99,38 +99,22 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
                 new DemolitionState(baseItemType.getDemolitionImageId()));
     }
 
-//    private void harvest(BaseItemType baseItemType, boolean fillBuffer) {
-//        if (baseItemType.getHarvesterType() != null) {
-//            HarvesterType harvesterType = baseItemType.getHarvesterType();
-//            if (harvesterType.getAnimationShape3dId() == null) {
-//                logger.warning("BaseItemRenderTask: no AnimationShape3dId for harvester BaseItemType: " + baseItemType);
-//                return;
-//            }
-//            if (harvesterType.getAnimationOrigin() == null) {
-//                logger.warning("BaseItemRenderTask: no AnimationOrigin for harvester BaseItemType: " + baseItemType);
-//                return;
-//            }
-//
-//            ModelRenderer<BaseItemType> modelRenderer = create();
-//            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideHarvestAnimationModelMatrices(baseItemType));
-//            Shape3D shape3D = shape3DUiService.getShape3D(harvesterType.getAnimationShape3dId());
-//            for (Element3D element3D : shape3D.getElement3Ds()) {
-//                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-//                    CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
-//                    compositeRenderer.init(vertexContainer);
-//                    compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-//                    compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
-//                    compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-//                    compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-//                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
-//                    if (fillBuffer) {
-//                        compositeRenderer.fillBuffers();
-//                    }
-//                }
-//            }
-//            add(modelRenderer);
-//        }
-//    }
+    private void harvest(BaseItemType baseItemType) {
+        if (baseItemType.getHarvesterType() != null) {
+            HarvesterType harvesterType = baseItemType.getHarvesterType();
+            if (harvesterType.getAnimationShape3dId() == null) {
+                alarmService.riseAlarm(INVALID_BASE_ITEM, "No animationShape3dId in HarvesterType", baseItemType.getId());
+                return;
+            }
+            if (harvesterType.getAnimationOrigin() == null) {
+                alarmService.riseAlarm(INVALID_BASE_ITEM, "No animationOrigin in HarvesterType", baseItemType.getId());
+                return;
+            }
+
+            createShape3DRenderTasks(shape3DUiService.getShape3D(harvesterType.getAnimationShape3dId()),
+                    timeStamp -> baseItemUiService.provideHarvestAnimationModelMatrices(baseItemType));
+        }
+    }
 
     private void buildBeam(BaseItemType baseItemType) {
         if (baseItemType.getBuilderType() != null) {
