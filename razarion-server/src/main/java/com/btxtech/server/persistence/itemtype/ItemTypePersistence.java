@@ -7,7 +7,6 @@ import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -40,54 +39,6 @@ public class ItemTypePersistence {
     private AudioPersistence audioPersistence;
     @Inject
     private InventoryPersistence inventoryPersistence;
-
-    @Transactional
-    @SecurityCheck
-    public ResourceItemType createResourceItemType() {
-        ResourceItemTypeEntity resourceItemTypeEntity = new ResourceItemTypeEntity();
-        entityManager.persist(resourceItemTypeEntity);
-        return resourceItemTypeEntity.toResourceItemType();
-    }
-
-    @Transactional
-    public ResourceItemTypeEntity readResourceItemTypeEntity(Integer id) {
-        if (id == null) {
-            return null;
-        }
-        ResourceItemTypeEntity resourceItemTypeEntity = entityManager.find(ResourceItemTypeEntity.class, id);
-        if (resourceItemTypeEntity == null) {
-            throw new IllegalArgumentException("No ResourceItemTypeEntity for id: " + id);
-        }
-        return resourceItemTypeEntity;
-
-    }
-
-    @Transactional
-    public List<ResourceItemType> readResourceItemTypes() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ResourceItemTypeEntity> userQuery = criteriaBuilder.createQuery(ResourceItemTypeEntity.class);
-        Root<ResourceItemTypeEntity> from = userQuery.from(ResourceItemTypeEntity.class);
-        CriteriaQuery<ResourceItemTypeEntity> userSelect = userQuery.select(from);
-        List<ResourceItemTypeEntity> itemTypeEntities = entityManager.createQuery(userSelect).getResultList();
-
-        return itemTypeEntities.stream().map(ResourceItemTypeEntity::toResourceItemType).collect(Collectors.toList());
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void updateResourceItemType(ResourceItemType resourceItemType) {
-        ResourceItemTypeEntity resourceItemTypeEntity = entityManager.find(ResourceItemTypeEntity.class, resourceItemType.getId());
-        resourceItemTypeEntity.fromResourceItemType(resourceItemType);
-        resourceItemTypeEntity.setShape3DId(shape3DPersistence.getEntity(resourceItemType.getShape3DId()));
-        resourceItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(resourceItemType.getThumbnail()));
-        entityManager.merge(resourceItemTypeEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void deleteResourceItemType(int id) {
-        entityManager.remove(entityManager.find(ResourceItemTypeEntity.class, id));
-    }
 
     @Transactional
     @SecurityCheck

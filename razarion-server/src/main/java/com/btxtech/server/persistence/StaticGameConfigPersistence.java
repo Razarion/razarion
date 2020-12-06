@@ -3,6 +3,7 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
@@ -28,6 +29,8 @@ public class StaticGameConfigPersistence {
     @Inject
     private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
     @Inject
+    private ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence;
+    @Inject
     private ItemTypePersistence itemTypePersistence;
     @Inject
     private LevelCrudPersistence levelCrudPersistence;
@@ -42,7 +45,7 @@ public class StaticGameConfigPersistence {
         staticGameConfig.setTerrainObjectConfigs(terrainObjectCrudPersistence.read());
         staticGameConfig.setWaterConfigs(waterCrudPersistence.read());
         staticGameConfig.setBaseItemTypes(baseItemTypeCrudPersistence.read());
-        staticGameConfig.setResourceItemTypes(itemTypePersistence.readResourceItemTypes());
+        staticGameConfig.setResourceItemTypes(resourceItemTypeCrudPersistence.read());
         staticGameConfig.setBoxItemTypes(itemTypePersistence.readBoxItemTypes());
         staticGameConfig.setLevelConfigs(levelCrudPersistence.read());
         staticGameConfig.setInventoryItems(inventoryPersistence.readInventoryItems());

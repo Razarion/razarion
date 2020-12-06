@@ -6,6 +6,7 @@ import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.scene.BotAttackCommandEntity;
@@ -83,6 +84,8 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     @Inject
     private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
+    @Inject
+    private ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence;
     @Inject
     private DbPropertiesService dbPropertiesService;
     @Inject
@@ -235,7 +238,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
                 BotHarvestCommandEntity botHarvestCommandEntity = new BotHarvestCommandEntity();
                 botHarvestCommandEntity.setBotAuxiliaryIdId(botHarvestCommandConfig.getBotAuxiliaryId());
                 botHarvestCommandEntity.setHarvesterItemType(baseItemTypeCrudPersistence.getEntity(botHarvestCommandConfig.getHarvesterItemTypeId()));
-                botHarvestCommandEntity.setResourceItemType(itemTypePersistence.readResourceItemTypeEntity(botHarvestCommandConfig.getResourceItemTypeId()));
+                botHarvestCommandEntity.setResourceItemType(resourceItemTypeCrudPersistence.getEntity(botHarvestCommandConfig.getResourceItemTypeId()));
                 if (botHarvestCommandConfig.getResourceSelection() != null) {
                     PlaceConfigEntity placeConfigEntity = new PlaceConfigEntity();
                     placeConfigEntity.fromPlaceConfig(botHarvestCommandConfig.getResourceSelection());
@@ -287,7 +290,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
         if (sceneConfig.getResourceItemTypePositions() != null) {
             for (ResourceItemPosition resourceItemPosition : sceneConfig.getResourceItemTypePositions()) {
                 ResourceItemPositionEntity resourceItemPositionEntity = new ResourceItemPositionEntity();
-                resourceItemPositionEntity.setResourceItemType(itemTypePersistence.readResourceItemTypeEntity(resourceItemPosition.getResourceItemTypeId()));
+                resourceItemPositionEntity.setResourceItemType(resourceItemTypeCrudPersistence.getEntity(resourceItemPosition.getResourceItemTypeId()));
                 resourceItemPositionEntity.setPosition(resourceItemPosition.getPosition());
                 resourceItemPositionEntity.setRotationZ(resourceItemPosition.getRotationZ());
                 sceneEntity.addResourceItemPositionEntity(resourceItemPositionEntity);
@@ -308,7 +311,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             gameTipConfigEntity.setTip(sceneConfig.getGameTipConfig().getTip());
             gameTipConfigEntity.setActor(baseItemTypeCrudPersistence.getEntity(sceneConfig.getGameTipConfig().getActor()));
             gameTipConfigEntity.setToCreatedItemType(baseItemTypeCrudPersistence.getEntity(sceneConfig.getGameTipConfig().getToCreatedItemTypeId()));
-            gameTipConfigEntity.setResourceItemTypeEntity(itemTypePersistence.readResourceItemTypeEntity(sceneConfig.getGameTipConfig().getResourceItemTypeId()));
+            gameTipConfigEntity.setResourceItemTypeEntity(resourceItemTypeCrudPersistence.getEntity(sceneConfig.getGameTipConfig().getResourceItemTypeId()));
             gameTipConfigEntity.setBoxItemTypeEntity(itemTypePersistence.readBoxItemTypeEntity(sceneConfig.getGameTipConfig().getBoxItemTypeId()));
             gameTipConfigEntity.setInventoryItemEntity(inventoryPersistence.readInventoryItemEntity(sceneConfig.getGameTipConfig().getInventoryItemId()));
             gameTipConfigEntity.setTerrainPositionHint(sceneConfig.getGameTipConfig().getTerrainPositionHint());

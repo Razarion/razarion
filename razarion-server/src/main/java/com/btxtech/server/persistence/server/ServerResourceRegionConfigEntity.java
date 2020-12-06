@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
@@ -49,11 +49,11 @@ public class ServerResourceRegionConfigEntity implements ObjectNameIdProvider {
         return resourceRegionConfig;
     }
 
-    public void fromResourceRegionConfig(ItemTypePersistence itemTypePersistence, ResourceRegionConfig resourceRegionConfig) {
+    public void fromResourceRegionConfig(ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence, ResourceRegionConfig resourceRegionConfig) {
         internalName = resourceRegionConfig.getInternalName();
         count = resourceRegionConfig.getCount();
         minDistanceToItems = resourceRegionConfig.getMinDistanceToItems();
-        resourceItemType = itemTypePersistence.readResourceItemTypeEntity(resourceRegionConfig.getResourceItemTypeId());
+        resourceItemType = resourceItemTypeCrudPersistence.getEntity(resourceRegionConfig.getResourceItemTypeId());
         if(region != null && resourceRegionConfig.getRegion() != null) {
             region.fromPlaceConfig(resourceRegionConfig.getRegion());
         } else if(region != null && resourceRegionConfig.getRegion() == null) {

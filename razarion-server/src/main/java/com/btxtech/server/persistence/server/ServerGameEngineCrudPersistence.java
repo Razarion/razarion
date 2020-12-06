@@ -7,6 +7,7 @@ import com.btxtech.server.persistence.bot.BotConfigEntity_;
 import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelEntity_;
@@ -61,6 +62,8 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     private PlanetCrudPersistence planetCrudPersistence;
     @Inject
     private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
+    @Inject
+    private ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence;
     @Inject
     private ItemTypePersistence itemTypePersistence;
     @Inject
@@ -196,7 +199,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     @SecurityCheck
     public void updateResourceRegionConfigs(List<ResourceRegionConfig> resourceRegionConfigs) {
         ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
-        serverGameEngineConfigEntity.setResourceRegionConfigs(itemTypePersistence, resourceRegionConfigs);
+        serverGameEngineConfigEntity.setResourceRegionConfigs(resourceItemTypeCrudPersistence, resourceRegionConfigs);
         entityManager.merge(serverGameEngineConfigEntity);
     }
 
@@ -319,7 +322,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         crud.setConfigGenerator(ServerResourceRegionConfigEntity::toResourceRegionConfig);
         crud.setEntityFactory(ServerResourceRegionConfigEntity::new);
         crud.setEntityFiller((serverResourceRegionConfigEntity, resourceRegionConfig) -> {
-            serverResourceRegionConfigEntity.fromResourceRegionConfig(itemTypePersistence, resourceRegionConfig);
+            serverResourceRegionConfigEntity.fromResourceRegionConfig(resourceItemTypeCrudPersistence, resourceRegionConfig);
         });
         return crud;
     }

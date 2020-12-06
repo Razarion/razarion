@@ -22,46 +22,6 @@ public class ItemTypeProviderImpl implements ItemTypeProvider {
     private ItemTypePersistence itemTypePersistence;
 
     @Override
-    public ResourceItemType createResourceItemType() {
-        try {
-            return itemTypePersistence.createResourceItemType();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
-    public List<ResourceItemType> readResourceItemTypes() {
-        try {
-            return itemTypePersistence.readResourceItemTypes();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
-    public void updateResourceItemType(ResourceItemType resourceItemType) {
-        try {
-            itemTypePersistence.updateResourceItemType(resourceItemType);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
-    public void deleteResourceItemType(int id) {
-        try {
-            itemTypePersistence.deleteResourceItemType(id);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
     public BoxItemType createBoxItemType() {
         try {
             return itemTypePersistence.createBoxItemType();

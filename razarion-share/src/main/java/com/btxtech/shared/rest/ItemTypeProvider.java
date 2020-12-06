@@ -2,7 +2,6 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -21,25 +20,6 @@ import java.util.List;
 @Deprecated
 @Path(CommonUrl.ITEM_TYPE_PROVIDER)
 public interface ItemTypeProvider {
-    @POST
-    @Path("createResourceItemType")
-    @Produces(MediaType.APPLICATION_JSON)
-    ResourceItemType createResourceItemType();
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("readResourceItemTypes")
-    List<ResourceItemType> readResourceItemTypes();
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("updateResourceItemType")
-    void updateResourceItemType(ResourceItemType resourceItemType);
-
-    @DELETE
-    @Path("deleteResourceItemType/{id}")
-    void deleteResourceItemType(@PathParam("id") int id);
-
     @POST
     @Path("createBoxItemType")
     @Produces(MediaType.APPLICATION_JSON)

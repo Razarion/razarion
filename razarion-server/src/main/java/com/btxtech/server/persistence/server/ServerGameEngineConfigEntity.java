@@ -4,7 +4,7 @@ import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.BoxRegionConfig;
@@ -134,11 +134,11 @@ public class ServerGameEngineConfigEntity {
         this.planetEntity = planetEntity;
     }
 
-    public void setResourceRegionConfigs(ItemTypePersistence itemTypePersistence, List<ResourceRegionConfig> resourceRegionConfigs) {
+    public void setResourceRegionConfigs(ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence, List<ResourceRegionConfig> resourceRegionConfigs) {
         this.resourceRegionConfigs.clear();
         for (ResourceRegionConfig resourceRegionConfig : resourceRegionConfigs) {
             ServerResourceRegionConfigEntity serverResourceRegionConfigEntity = new ServerResourceRegionConfigEntity();
-            serverResourceRegionConfigEntity.fromResourceRegionConfig(itemTypePersistence, resourceRegionConfig);
+            serverResourceRegionConfigEntity.fromResourceRegionConfig(resourceItemTypeCrudPersistence, resourceRegionConfig);
             this.resourceRegionConfigs.add(serverResourceRegionConfigEntity);
         }
     }

@@ -11,7 +11,6 @@ import com.btxtech.client.editor.i18n.I18nPanel;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.inventory.InventoryItemCrudSidebar;
 import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
-import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
 import com.btxtech.client.editor.particle.ParticleCrudeSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
 import com.btxtech.client.editor.renderpanel.RenderEngineEditorPanel;
@@ -28,6 +27,7 @@ import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
+import com.btxtech.shared.rest.ResourceItemTypeEditorController;
 import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainObjectEditorController;
@@ -102,12 +102,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button sceneConfigButton;
     @Inject
     @DataField
-    private Button baseItemButton;
-    @Inject
-    @DataField
-    private Button resourceItemButton;
-    @Inject
-    @DataField
     private Button boxItemButton;
     @Inject
     @DataField
@@ -138,7 +132,8 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
                 new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context"),
                 new CrudControllerButton(Shape3DEditorController.class, "Shape 3D"),
                 new CrudControllerButton(TerrainObjectEditorController.class, "Terrain Object"),
-                new CrudControllerButton(BaseItemTypeEditorController.class, "Base Items")
+                new CrudControllerButton(BaseItemTypeEditorController.class, "Base Items"),
+                new CrudControllerButton(ResourceItemTypeEditorController.class, "Resource Items")
         );
     }
 
@@ -236,12 +231,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private void sceneConfigButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
         editorService.openEditor(SceneConfigSidebar.class, "???Unknown");
-    }
-
-    @EventHandler("resourceItemButton")
-    private void onResourceItemButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openEditor(ResourceItemTypeCrudSidebar.class, "???Unknown");
     }
 
     @EventHandler("boxItemButton")
