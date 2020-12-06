@@ -20,7 +20,8 @@ public class Alarm {
         INVALID_PROPERTY,
         INVALID_TERRAIN_OBJECT,
         INVALID_SHAPE_3D,
-        INVALID_BASE_ITEM
+        INVALID_BASE_ITEM,
+        INVALID_RESOURCE_ITEM
     }
     private Type type;
     private Date date;

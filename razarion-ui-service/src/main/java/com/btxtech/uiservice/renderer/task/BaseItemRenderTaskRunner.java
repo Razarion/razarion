@@ -36,11 +36,6 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
         baseItemUiService.getBaseItemTypes().forEach(this::setupBaseItemType);
     }
 
-    public void onBaseItemTypeChanged(BaseItemType baseItemType) {
-        // TODO removeAll(baseItemType);
-        setupBaseItemType(baseItemType);
-    }
-
     @Override
     protected double setupInterpolationFactor() {
         return baseItemUiService.setupInterpolationFactor();
