@@ -12,6 +12,7 @@ import com.btxtech.client.renderer.engine.shaderattribute.AbstractShaderAttribut
 import com.btxtech.client.renderer.engine.shaderattribute.Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -39,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -69,7 +69,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     private Collection<WebGlPhongMaterial> materials = new ArrayList<>();
     private Collection<WebGlGroundMaterial> webGlGroundMaterials = new ArrayList<>();
     private Collection<UniformLocation> uniforms = new ArrayList<>();
-    private Collection<UniformLocation> progressUniforms = new ArrayList<>();
+    private Collection<UniformLocation> modelMatrixUniforms = new ArrayList<>();
     private Collection<Activator> activators = new ArrayList<>();
     private Collection<WebGlUniformTexture> uniformTextures = new ArrayList<>();
     // Transformation
@@ -164,6 +164,18 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         arrays.add(array);
     }
 
+    protected void setupVec3VertexArray(String name, List<Vertex> vertexes) {
+        VertexShaderAttribute array = webGlFacade.createVertexShaderAttribute(name);
+        array.fillBuffer(vertexes);
+        arrays.add(array);
+    }
+
+    protected void setupVec3DoubleArray(String name, List<Double> vertexes) {
+        VertexShaderAttribute array = webGlFacade.createVertexShaderAttribute(name);
+        array.fillDoubleBuffer(vertexes);
+        arrays.add(array);
+    }
+
     public void setupVec2Array(String name, Float32ArrayEmu float32ArrayEmu) {
         Vec2Float32ArrayShaderAttribute array = webGlFacade.createVec2Float32ArrayShaderAttribute(name);
         array.fillFloat32Array(Js.uncheckedCast(float32ArrayEmu));
@@ -173,6 +185,12 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     public void setupVec1Array(String name, Float32ArrayEmu float32ArrayEmu) {
         Float32ArrayShaderAttribute array = webGlFacade.createFloat32ArrayShaderAttribute(name);
         array.fillFloat32Array(Js.uncheckedCast(float32ArrayEmu));
+        arrays.add(array);
+    }
+
+    public void setupVec1Array(String name, List<Double> doubles) {
+        Float32ArrayShaderAttribute array = webGlFacade.createFloat32ArrayShaderAttribute(name);
+        array.fillDoubleBuffer(doubles);
         arrays.add(array);
     }
 
@@ -186,12 +204,17 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         elementCount = (int) (float32Array.length / Vertex.getComponentsPerVertex());
     }
 
+    protected void setupVec3VertexPositionArray(List<Vertex> vertexes) {
+        setupVec3VertexArray(WebGlFacade.A_VERTEX_POSITION, vertexes);
+        elementCount = vertexes.size();
+    }
+
     protected <R> void setupUniform(String name, UniformLocation.Type type, Supplier<R> valueSupplier) {
         uniforms.add(new UniformLocation<>(name, type, webGlFacade, valueSupplier));
     }
 
-    protected <R> void setupProgressUniform(String name, UniformLocation.Type type, DoubleFunction<R> valueSupplier) {
-        progressUniforms.add(new UniformLocation<>(name, type, webGlFacade, valueSupplier));
+    protected <R> void setupModelMatrixUniform(String name, UniformLocation.Type type, Function<ModelMatrices, R> modelMatricesSupplier) {
+        modelMatrixUniforms.add(new UniformLocation<>(name, type, webGlFacade, modelMatricesSupplier));
     }
 
     protected void addActivator(Activator activator) {
@@ -300,7 +323,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
             return;
         }
         modelMatricesList.forEach(modelMatrices -> {
-            progressUniforms.forEach(uniformLocation -> uniformLocation.uniform(modelMatrices.getProgress()));
+            modelMatrixUniforms.forEach(uniformLocation -> uniformLocation.uniform(modelMatrices));
             ModelMatrices transformedModelMatrices = mixTransformation(modelMatrices, interpolationFactor);
             webGlFacade.uniformMatrix4fv(modelMatrixUniformLocation, transformedModelMatrices.getModel());
             webGlFacade.uniformMatrix4fv(viewNormMatrixUniformLocation, transformedModelMatrices.getNorm());

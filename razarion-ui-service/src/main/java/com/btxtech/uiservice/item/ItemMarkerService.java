@@ -108,11 +108,7 @@ public class ItemMarkerService {
         selectedConstructingModelMatrices.clear();
     }
 
-    public boolean hasMarkedItems() {
-        return !allMarkerModelMatrices.isEmpty() || !allStatusBarModelMatrices.isEmpty();
-    }
-
-    public List<ModelMatrices> provideSelectedModelMatrices() {
+    public List<ModelMatrices> provideMarkerModelMatrices() {
         return allMarkerModelMatrices;
     }
 

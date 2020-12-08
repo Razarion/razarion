@@ -2,10 +2,11 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Color;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import elemental2.webgl.WebGLUniformLocation;
 import jsinterop.base.Js;
 
-import java.util.function.DoubleFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class UniformLocation<T> {
@@ -13,7 +14,7 @@ public class UniformLocation<T> {
     private final Type type;
     private WebGlFacade webGlFacade;
     private Supplier<T> valueSupplier;
-    private DoubleFunction<T> progressValueSupplier;
+    private Function<ModelMatrices, T> modelMatricesSupplier;
     private WebGLUniformLocation webGLUniformLocation;
 
     public enum Type {
@@ -29,9 +30,9 @@ public class UniformLocation<T> {
         this.valueSupplier = valueSupplier;
     }
 
-    public UniformLocation(String name, Type type, WebGlFacade webGlFacade, DoubleFunction<T> progressValueSupplier) {
+    public UniformLocation(String name, Type type, WebGlFacade webGlFacade, Function<ModelMatrices, T> modelMatricesSupplier) {
         this(name, type, webGlFacade);
-        this.progressValueSupplier = progressValueSupplier;
+        this.modelMatricesSupplier = modelMatricesSupplier;
     }
 
     private UniformLocation(String name, Type type, WebGlFacade webGlFacade) {
@@ -41,15 +42,15 @@ public class UniformLocation<T> {
         webGLUniformLocation = webGlFacade.getUniformLocationAlarm(name);
     }
 
-    public void uniform(double progress) {
-        uniform(progressValueSupplier.apply(progress));
+    public void uniform(ModelMatrices modelMatrices) {
+        uniform(modelMatricesSupplier.apply(modelMatrices));
     }
 
     public void uniform() {
         uniform(valueSupplier.get());
     }
 
-    public void uniform(T t) {
+    private void uniform(T t) {
         switch (type) {
             case I:
                 webGlFacade.uniform1i(webGLUniformLocation, Js.uncheckedCast(t));

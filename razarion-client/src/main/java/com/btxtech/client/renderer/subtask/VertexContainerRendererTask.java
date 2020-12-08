@@ -83,7 +83,7 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     }
 
     private void setupProgressUniforms(String progressUniformName, String textureSampleName) {
-        setupProgressUniform(progressUniformName, UniformLocation.Type.F, progress -> progressState.calculateProgress(progress));
+        setupModelMatrixUniform(progressUniformName, UniformLocation.Type.F, modelMatrices -> progressState.calculateProgress(modelMatrices.getProgress()));
         createWebGLTexture(textureSampleName, progressState.getBuildupTextureId());
     }
 

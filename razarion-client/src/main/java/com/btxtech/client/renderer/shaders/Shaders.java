@@ -23,7 +23,7 @@ public interface Shaders extends ClientBundle {
     @Source("WaterCustom.glsl")
     TextResource customWater();
 
-    @Source("VertexContainerCustom.frag")
+    @Source("VertexContainerCustom.glsl")
     TextResource vertexContainerCustomShader();
 
     @Source("SlopeCustom.glsl")
@@ -31,6 +31,12 @@ public interface Shaders extends ClientBundle {
 
     @Source("RgbaMvpCustom.glsl")
     TextResource customRgbaMvp();
+
+    @Source("ItemMarkerCustom.glsl")
+    TextResource itemMarkerCustom();
+
+    @Source("StatusBarCustom.glsl")
+    TextResource statusBarCustom();
 
     // ---------------------- OLD ----------------------
     @Source("Monitor.vert")
@@ -86,13 +92,4 @@ public interface Shaders extends ClientBundle {
 
     @Source("ParticleDeptBuffer.frag")
     TextResource particleDeptBufferFragmentShader();
-
-    @Source("CommonVisibility.vert")
-    TextResource commonVisibilityVertexShader();
-
-    @Source("ItemMarker.frag")
-    TextResource itemMarkerFragmentShader();
-
-    @Source("StatusBar.frag")
-    TextResource statusBarFragmentShader();
 }
