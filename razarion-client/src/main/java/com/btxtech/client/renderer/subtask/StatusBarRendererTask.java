@@ -16,7 +16,7 @@ import static com.btxtech.client.renderer.webgl.WebGlFacade.U_COLOR;
  * 23.01.2017.
  */
 @Dependent
-public class StatusBarRendererTask extends AbstractWebGlRenderTask<StatusBarGeometry> implements StatusBarRenderTaskRunner.StatusBarRenderTask {
+public class StatusBarRendererTask extends AbstractWebGlRenderTask<StatusBarGeometry> implements StatusBarRenderTaskRunner.RenderTask {
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(StatusBarGeometry statusBarGeometry) {
         return new WebGlFacadeConfig(Shaders.SHADERS.statusBarCustom())

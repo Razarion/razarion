@@ -15,7 +15,7 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class StatusBarRenderTaskRunner extends AbstractRenderTaskRunner {
-    public interface StatusBarRenderTask extends WebGlRenderTask<StatusBarGeometry> {
+    public interface RenderTask extends WebGlRenderTask<StatusBarGeometry> {
     }
 
     @Inject
@@ -34,7 +34,7 @@ public class StatusBarRenderTaskRunner extends AbstractRenderTaskRunner {
     }
 
     private void setupStatusBar() {
-        WebGlRenderTask<StatusBarGeometry> statusBarRenderTask = createModelRenderTask(StatusBarRenderTask.class,
+        WebGlRenderTask<StatusBarGeometry> statusBarRenderTask = createModelRenderTask(RenderTask.class,
                 new StatusBarGeometry(),
                 timeStamp -> itemMarkerService.provideStatusBarModelMatrices(),
                 null,

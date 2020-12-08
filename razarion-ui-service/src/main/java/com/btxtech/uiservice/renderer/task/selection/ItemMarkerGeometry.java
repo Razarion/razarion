@@ -7,12 +7,12 @@ import com.btxtech.shared.datatypes.Vertex;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarkerGeometry {
+public class ItemMarkerGeometry {
     private static final int SEGMENT_COUNT = 20;
     private List<Vertex> vertexes;
     private List<Double> visibilities;
 
-    public MarkerGeometry() {
+    public ItemMarkerGeometry() {
         Circle2D circle2D = new Circle2D(new DecimalPosition(0, 0), 1.0);
         vertexes = circle2D.triangulation(SEGMENT_COUNT, 0);
 

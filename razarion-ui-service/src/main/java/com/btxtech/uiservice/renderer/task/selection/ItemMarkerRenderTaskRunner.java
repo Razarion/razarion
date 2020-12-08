@@ -15,7 +15,7 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class ItemMarkerRenderTaskRunner extends AbstractRenderTaskRunner {
-    public interface MarkerRenderTask extends WebGlRenderTask<MarkerGeometry> {
+    public interface RenderTask extends WebGlRenderTask<ItemMarkerGeometry> {
     }
 
     @Inject
@@ -34,8 +34,8 @@ public class ItemMarkerRenderTaskRunner extends AbstractRenderTaskRunner {
     }
 
     private void setupItemMarker() {
-        WebGlRenderTask<MarkerGeometry> markerRenderTask = createModelRenderTask(MarkerRenderTask.class,
-                new MarkerGeometry(),
+        WebGlRenderTask<ItemMarkerGeometry> markerRenderTask = createModelRenderTask(RenderTask.class,
+                new ItemMarkerGeometry(),
                 timeStamp -> itemMarkerService.provideMarkerModelMatrices(),
                 null,
                 null,
