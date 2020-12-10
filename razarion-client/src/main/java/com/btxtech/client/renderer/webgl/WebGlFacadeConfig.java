@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.webgl;
 
 import com.google.gwt.resources.client.TextResource;
+import elemental2.webgl.WebGLRenderingContext;
 
 /**
  * Created by Beat
@@ -26,6 +27,7 @@ public class WebGlFacadeConfig {
     private boolean writeDepthBuffer = true;
     private Blend blend;
     private double constAlpha;
+    private double drawMode = WebGLRenderingContext.TRIANGLES;
 
 
     @Deprecated
@@ -90,6 +92,11 @@ public class WebGlFacadeConfig {
         return this;
     }
 
+    public WebGlFacadeConfig drawMode(double drawMode) {
+        this.drawMode = drawMode;
+        return this;
+    }
+
     public TextResource getVertexShaderCode() {
         return vertexShaderCode;
     }
@@ -144,5 +151,9 @@ public class WebGlFacadeConfig {
 
     public double getConstAlpha() {
         return constAlpha;
+    }
+
+    public double getDrawMode() {
+        return drawMode;
     }
 }

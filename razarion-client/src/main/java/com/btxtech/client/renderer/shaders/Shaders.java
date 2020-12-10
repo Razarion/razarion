@@ -29,8 +29,8 @@ public interface Shaders extends ClientBundle {
     @Source("SlopeCustom.glsl")
     TextResource slopeCustom();
 
-    @Source("RgbaMvpCustom.glsl")
-    TextResource customRgbaMvp();
+    @Source("RgbaCustom.glsl")
+    TextResource customRgba();
 
     @Source("ItemMarkerCustom.glsl")
     TextResource itemMarkerCustom();

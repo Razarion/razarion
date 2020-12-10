@@ -32,7 +32,7 @@ public class MonitorRenderTaskRunner extends AbstractRenderTaskRunner {
 
     public void hideMonitor() {
         if (renderTask == null) {
-            throw new IllegalStateException("Shadow monitor is already showing");
+            throw new IllegalStateException("Shadow monitor is not showing");
         }
         renderService.removeRenderTaskRunner(this);
         destroyRenderTask(renderTask);

@@ -277,7 +277,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         if (modelMatricesSupplier != null) {
             drawModels(interpolationFactor);
         } else {
-            webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES, elementCount, getHelperString());
+            webGlFacade.drawArrays(webGlFacadeConfig.getDrawMode(), elementCount, getHelperString());
             WebGlUtil.checkLastWebGlError("drawArrays", webGlFacade.getCtx3d());
         }
 
@@ -327,7 +327,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
             ModelMatrices transformedModelMatrices = mixTransformation(modelMatrices, interpolationFactor);
             webGlFacade.uniformMatrix4fv(modelMatrixUniformLocation, transformedModelMatrices.getModel());
             webGlFacade.uniformMatrix4fv(viewNormMatrixUniformLocation, transformedModelMatrices.getNorm());
-            webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES, elementCount, getHelperString());
+            webGlFacade.drawArrays(webGlFacadeConfig.getDrawMode(), elementCount, getHelperString());
         });
     }
 

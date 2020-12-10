@@ -69,4 +69,22 @@ public class GroupSelectionFrame {
         corners.add(end);
         corners.add(new Vertex(start.getX(), end.getY(), end.getZ()));
     }
+
+    public List<Vertex> generateVertices() {
+        List<Vertex> vertices = new ArrayList<>();
+        // Line 1
+        vertices.add(corners.get(0));
+        vertices.add(corners.get(1));
+        // Line 2
+        vertices.add(corners.get(1));
+        vertices.add(corners.get(2));
+        // Line 3
+        vertices.add(corners.get(2));
+        vertices.add(corners.get(3));
+        // Line 4
+        vertices.add(corners.get(3));
+        vertices.add(corners.get(0));
+        return vertices;
+    }
+
 }

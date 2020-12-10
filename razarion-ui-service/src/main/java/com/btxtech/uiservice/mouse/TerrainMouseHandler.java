@@ -26,7 +26,7 @@ import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
+import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTaskRunner;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
@@ -65,7 +65,7 @@ public class TerrainMouseHandler {
     @Inject
     private CockpitMode cockpitMode;
     @Inject
-    private SelectionFrameRenderTask renderTask;
+    private SelectionFrameRenderTaskRunner selectionFrameRenderTaskRunner;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -105,7 +105,7 @@ public class TerrainMouseHandler {
             if (primaryButtonDown) {
                 if (groupSelectionFrame != null) {
                     groupSelectionFrame.onMove(terrainPosition);
-                    renderTask.onMove(groupSelectionFrame);
+                    selectionFrameRenderTaskRunner.onMove(groupSelectionFrame);
                 }
             } else {
                 SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
@@ -162,7 +162,7 @@ public class TerrainMouseHandler {
             }
 
             groupSelectionFrame = new GroupSelectionFrame(terrainPosition);
-            renderTask.startGroupSelection(groupSelectionFrame);
+            selectionFrameRenderTaskRunner.startGroupSelection(groupSelectionFrame);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -202,7 +202,7 @@ public class TerrainMouseHandler {
 
             boolean onlySelectionFrame = false;
             if (groupSelectionFrame != null) {
-                renderTask.stop();
+                selectionFrameRenderTaskRunner.stop();
                 groupSelectionFrame.onMove(terrainPosition);
                 if (groupSelectionFrame.getRectangle2D() != null) {
                     onlySelectionFrame = true;

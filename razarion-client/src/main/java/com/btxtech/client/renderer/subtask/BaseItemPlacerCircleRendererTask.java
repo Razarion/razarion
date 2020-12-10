@@ -25,7 +25,7 @@ public class BaseItemPlacerCircleRendererTask extends AbstractWebGlRenderTask<Ba
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(BaseItemPlacer baseItemPlacer) {
-        return new WebGlFacadeConfig(Shaders.SHADERS.customRgbaMvp())
+        return new WebGlFacadeConfig(Shaders.SHADERS.customRgba())
                 .enableTransformation(false)
                 .blend(WebGlFacadeConfig.Blend.SOURCE_ALPHA)
                 .depthTest(false)

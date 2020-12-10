@@ -8,6 +8,7 @@ import com.btxtech.uiservice.renderer.task.BaseItemRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.selection.ItemMarkerRenderTaskRunner;
+import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.selection.StatusBarRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.simple.GroundRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
@@ -57,7 +58,7 @@ public abstract class RenderService {
         addRenderTaskRunner(WaterRenderTaskRunner.class, "Water");
         addRenderTaskRunner(StatusBarRenderTaskRunner.class, "Status Bar");
 // TODO       addRenderTaskRunner(ProjectileRenderTask.class, "Projectile");
-// TODO       addRenderTaskRunner(SelectionFrameRenderTask.class, "Selection Frame");
+        addRenderTaskRunner(SelectionFrameRenderTaskRunner.class, "Selection Frame");
 // TODO       addRenderTaskRunner(ItemVisualizationRenderTask.class, "Tip");
 // TODO       addRenderTaskRunner(ParticleRenderTask.class, "Particle");
     }

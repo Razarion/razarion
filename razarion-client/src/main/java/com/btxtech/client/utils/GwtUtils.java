@@ -39,7 +39,7 @@ public class GwtUtils {
     }
 
     public static boolean isButtonDown(elemental2.dom.MouseEvent event, int button) {
-        return ((int)event.button & button) == button;
+        return ((int)event.buttons & button) == button;
     }
 
     public static void preventContextMenu(Widget widget) {
