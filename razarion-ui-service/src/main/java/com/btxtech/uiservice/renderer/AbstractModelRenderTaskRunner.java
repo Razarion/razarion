@@ -14,7 +14,7 @@ public abstract class AbstractModelRenderTaskRunner<T> extends AbstractRenderTas
     @Deprecated
     private List<ModelRenderer<T>> modelRenderers = new ArrayList<>();
 
-    @Override
+    // @Override
     public void draw() {
         if (!isActive() || !enabled) {
             return;

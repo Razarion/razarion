@@ -80,15 +80,16 @@ public abstract class RenderService {
     public void render() {
         try {
             perfmonService.onEntered(PerfmonEnum.RENDERER);
+            long timeStamp = System.currentTimeMillis();
 
             pass = Pass.SHADOW;
             prepare(RenderUnitControl.NORMAL);
             prepareDepthBufferRendering();
-            renderTaskRunners.stream().filter(AbstractRenderTaskRunner::isEnabled).forEach(AbstractRenderTaskRunner::draw);
+            renderTaskRunners.stream().filter(AbstractRenderTaskRunner::isEnabled).forEach(runner -> runner.draw(timeStamp));
 
             pass = Pass.MAIN;
             prepareMainRendering();
-            renderTaskRunners.stream().filter(AbstractRenderTaskRunner::isEnabled).forEach(AbstractRenderTaskRunner::draw);
+            renderTaskRunners.stream().filter(AbstractRenderTaskRunner::isEnabled).forEach(runner -> runner.draw(timeStamp));
 
             pass = null;
         } catch (Throwable t) {

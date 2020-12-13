@@ -14,6 +14,8 @@ import java.util.function.Function;
 public abstract class AbstractRenderTaskRunner {
     @Inject
     private Instance<WebGlRenderTask<?>> instance;
+    @Inject
+    private RenderService renderService;
     private List<WebGlRenderTask<?>> renderTasks = new ArrayList<>();
     private boolean enabled = true;
     private String name;
@@ -38,7 +40,7 @@ public abstract class AbstractRenderTaskRunner {
      * D Data
      * R RenderTask
      *
-     * @param d data
+     * @param d     data
      * @param clazz render task
      */
     protected <R extends WebGlRenderTask<D>, D> R createModelRenderTask(Class<R> clazz, D d, Function<Long, List<ModelMatrices>> modelMatricesSupplier, Collection<ProgressAnimation> progressAnimations, ShapeTransform shapeTransform, Consumer<R> preInit) {
@@ -46,7 +48,7 @@ public abstract class AbstractRenderTaskRunner {
         renderTask.setProgressAnimations(progressAnimations);
         renderTask.setShapeTransform(shapeTransform);
         renderTask.setModelMatricesSupplier(modelMatricesSupplier);
-        if(preInit != null) {
+        if (preInit != null) {
             preInit.accept(renderTask);
         }
         renderTask.init(d);
@@ -58,8 +60,11 @@ public abstract class AbstractRenderTaskRunner {
         return createModelRenderTask(clazz, d, null, null, null, null);
     }
 
-    public void draw() {
+    public void draw(long timeStamp) {
         double interpolationFactor = setupInterpolationFactor();
+        if (renderService.getPass() == RenderService.Pass.SHADOW) {
+            preRender(timeStamp);
+        }
         renderTasks.forEach(renderTask -> renderTask.draw(interpolationFactor));
     }
 
@@ -76,5 +81,9 @@ public abstract class AbstractRenderTaskRunner {
     // Override in subclasses
     protected double setupInterpolationFactor() {
         return 0;
+    }
+
+    // Override in subclasses
+    protected void preRender(long timeStamp) {
     }
 }

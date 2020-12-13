@@ -35,6 +35,11 @@ public class ProjectileRenderTaskRunner extends AbstractShape3DRenderTaskRunner 
                 .forEach(this::setupBaseItemType);
     }
 
+    @Override
+    protected void preRender(long timeStamp) {
+        projectileUiService.preRender(timeStamp);
+    }
+
     private void setupBaseItemType(BaseItemType baseItemType) {
         if (baseItemType.getWeaponType().getProjectileShape3DId() != null) {
             createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemType.getWeaponType().getProjectileShape3DId()),
