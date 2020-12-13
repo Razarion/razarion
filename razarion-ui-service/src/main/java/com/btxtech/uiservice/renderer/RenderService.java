@@ -5,6 +5,7 @@ import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.renderer.task.BaseItemPlacerRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTaskRunner;
+import com.btxtech.uiservice.renderer.task.ProjectileRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.selection.ItemMarkerRenderTaskRunner;
@@ -57,7 +58,7 @@ public abstract class RenderService {
 // TODO       addRenderTaskRunner(BoxItemRenderTask.class, "Box");
         addRenderTaskRunner(WaterRenderTaskRunner.class, "Water");
         addRenderTaskRunner(StatusBarRenderTaskRunner.class, "Status Bar");
-// TODO       addRenderTaskRunner(ProjectileRenderTask.class, "Projectile");
+        addRenderTaskRunner(ProjectileRenderTaskRunner.class, "Projectile");
         addRenderTaskRunner(SelectionFrameRenderTaskRunner.class, "Selection Frame");
 // TODO       addRenderTaskRunner(ItemVisualizationRenderTask.class, "Tip");
 // TODO       addRenderTaskRunner(ParticleRenderTask.class, "Particle");
