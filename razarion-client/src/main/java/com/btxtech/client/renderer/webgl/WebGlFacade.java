@@ -67,13 +67,13 @@ public class WebGlFacade {
     private WebGLTextureContainer textureContainer;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
 
-    public void init(WebGlFacadeConfig webGlFacadeConfig, List<String> glslVertexDefines, List<String> glslFragmentDefines) {
-        webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig, glslVertexDefines, glslFragmentDefines);
+    public void init(WebGlFacadeConfig webGlFacadeConfig, List<String> glslVertexDefines, List<String> glslFragmentDefines, boolean oESStandardDerivatives) {
+        webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig, glslVertexDefines, glslFragmentDefines, oESStandardDerivatives);
     }
 
     @Deprecated
     public void init(WebGlFacadeConfig webGlFacadeConfig) {
-        webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig, null, null);
+        webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig, null, null, false);
     }
 
     public VertexShaderAttribute createVertexShaderAttribute(String attributeName) {

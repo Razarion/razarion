@@ -1,5 +1,5 @@
 precision mediump float;
-#extension GL_OES_standard_derivatives : enable
+//-$$$-INCLUDE-EXTENSIONS
 
 //-$$$-INCLUDE-DEFINES
 

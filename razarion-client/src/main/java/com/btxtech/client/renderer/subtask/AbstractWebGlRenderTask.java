@@ -9,6 +9,7 @@ import com.btxtech.client.renderer.engine.WebGlGroundMaterial;
 import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.AbstractShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.DecimalPositionShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
@@ -16,6 +17,7 @@ import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
@@ -94,7 +96,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         if (webGlFacadeConfig.isOESStandardDerivatives()) {
             webGlFacade.enableOESStandardDerivatives();
         }
-        webGlFacade.init(webGlFacadeConfig, glslVertexDefines(t), glslFragmentDefines(t));
+        webGlFacade.init(webGlFacadeConfig, glslVertexDefines(t), glslFragmentDefines(t), webGlFacadeConfig.isOESStandardDerivatives());
         setupTransformation();
         setupReceiveShadow();
         if (webGlFacadeConfig.isLight()) {
@@ -179,6 +181,12 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     public void setupVec2Array(String name, Float32ArrayEmu float32ArrayEmu) {
         Vec2Float32ArrayShaderAttribute array = webGlFacade.createVec2Float32ArrayShaderAttribute(name);
         array.fillFloat32Array(Js.uncheckedCast(float32ArrayEmu));
+        arrays.add(array);
+    }
+
+    public void setupDecimalPositionArray(String name, List<DecimalPosition> decimalPositions) {
+        DecimalPositionShaderAttribute array = webGlFacade.createDecimalPositionShaderAttribute(name);
+        array.fillBuffer(decimalPositions);
         arrays.add(array);
     }
 
@@ -295,7 +303,10 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         } else {
             webGlFacade.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
         }
-        webGlFacade.getCtx3d().depthMask(webGlFacadeConfig.isWriteDepthBuffer());
+        if (renderService.getPass() != RenderService.Pass.SHADOW) {
+            // WebGl behaves strange if during depth buffer render depth mask is set to false
+            webGlFacade.getCtx3d().depthMask(webGlFacadeConfig.isWriteDepthBuffer());
+        }
         webGlFacade.getCtx3d().enable(WebGLRenderingContext.CULL_FACE);
         webGlFacade.getCtx3d().cullFace(WebGLRenderingContext.BACK);
         if (webGlFacadeConfig.getBlend() != null) {

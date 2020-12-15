@@ -38,6 +38,9 @@ public interface Shaders extends ClientBundle {
     @Source("StatusBarCustom.glsl")
     TextResource statusBarCustom();
 
+    @Source("ParticleCustom.glsl")
+    TextResource particleCustom();
+
     // ---------------------- OLD ----------------------
     @Source("Monitor.vert")
     TextResource monitorVertexShader();
@@ -83,13 +86,4 @@ public interface Shaders extends ClientBundle {
     @Source("RgbaVp.vert")
     @Deprecated
     TextResource rgbaVpVertexShader();
-
-    @Source("Particle.vert")
-    TextResource particleVertexShader();
-
-    @Source("Particle.frag")
-    TextResource particleFragmentShader();
-
-    @Source("ParticleDeptBuffer.frag")
-    TextResource particleDeptBufferFragmentShader();
 }

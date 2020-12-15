@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 public class GlslLibrarian {
     private static final String INCLUDE_CHUNK = "//-$$$-INCLUDE-CHUNK ";
+    private static final String INCLUDE_EXTENSIONS = "//-$$$-INCLUDE-EXTENSIONS";
     private static final String INCLUDE_DEFINES = "//-$$$-INCLUDE-DEFINES";
     private static final String CHUNK_PREFIX = "//-$$$-CHUNK ";
     private static final String BEGIN_CHUNK_POSTFIX = " BEGIN";
@@ -19,7 +20,7 @@ public class GlslLibrarian {
         this.lineSeparator = lineSeparator;
     }
 
-    public String link(String skeletonCode, List<String> glslDefines) {
+    public String link(String skeletonCode, List<String> glslDefines, boolean oESStandardDerivatives) {
         String[] lines = skeletonCode.split(lineSeparator);
         StringBuilder result = new StringBuilder();
         Arrays.stream(lines).forEach(line -> {
@@ -27,6 +28,11 @@ public class GlslLibrarian {
                 if (customLib != null) {
                     String chunkName = readParameter(0, line);
                     result.append(generateChunk(chunkName));
+                    result.append(lineSeparator);
+                }
+            } else if (line.trim().startsWith(INCLUDE_EXTENSIONS)) {
+                if (oESStandardDerivatives) {
+                    result.append("#extension GL_OES_standard_derivatives : enable");
                     result.append(lineSeparator);
                 }
             } else if (line.trim().startsWith(INCLUDE_DEFINES)) {

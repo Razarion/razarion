@@ -8,6 +8,7 @@ import com.btxtech.uiservice.renderer.task.BaseItemRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTaskRunner;
+import com.btxtech.uiservice.renderer.task.ParticleRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.selection.ItemMarkerRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.selection.StatusBarRenderTaskRunner;
@@ -61,7 +62,7 @@ public abstract class RenderService {
         addRenderTaskRunner(ProjectileRenderTaskRunner.class, "Projectile");
         addRenderTaskRunner(SelectionFrameRenderTaskRunner.class, "Selection Frame");
 // TODO       addRenderTaskRunner(ItemVisualizationRenderTask.class, "Tip");
-// TODO       addRenderTaskRunner(ParticleRenderTask.class, "Particle");
+        addRenderTaskRunner(ParticleRenderTaskRunner.class, "Particle");
     }
 
     private void addRenderTaskRunner(Class<? extends AbstractRenderTaskRunner> clazz, String name) {

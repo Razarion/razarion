@@ -21,7 +21,7 @@ public class WebGlFacadeConfig {
     private boolean normTransformation;
     private boolean receiveShadow;
     private boolean castShadow;
-    private boolean oESStandardDerivatives;
+    private boolean oESStandardDerivatives = true; // Code in Skeleton.frag uses dFdx & dFdy. Always enable GL_OES_standard_derivatives
     private boolean light;
     private boolean depthTest = true;
     private boolean writeDepthBuffer = true;

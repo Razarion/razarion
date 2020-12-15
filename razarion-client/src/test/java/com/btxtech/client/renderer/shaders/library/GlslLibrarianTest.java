@@ -16,21 +16,21 @@ public class GlslLibrarianTest {
     @Test
     public void linkSkeletonNoCustom() {
         GlslLibrarian glslLibrarian = new GlslLibrarian(null, System.lineSeparator());
-        String actual = glslLibrarian.link(resource2Text("TestSkeleton.vert", GlslLibrarianTest.class), null);
+        String actual = glslLibrarian.link(resource2Text("TestSkeleton.vert", GlslLibrarianTest.class), null, false);
         Assert.assertEquals(resource2Text("ResultNoCustom.vert", GlslLibrarianTest.class).trim(), actual.trim());
     }
 
     @Test
     public void linkSkeletonCustom() {
         GlslLibrarian glslLibrarian = new GlslLibrarian(resource2Text("Custom.glsl", GlslLibrarianTest.class), System.lineSeparator());
-        String actual = glslLibrarian.link(resource2Text("TestSkeleton.vert", GlslLibrarianTest.class), null);
+        String actual = glslLibrarian.link(resource2Text("TestSkeleton.vert", GlslLibrarianTest.class), null, false);
         Assert.assertEquals(resource2Text("ResultCustom.vert", GlslLibrarianTest.class).trim(), actual.trim());
     }
 
     @Test
     public void linkSkeletonCustomDefines() {
         GlslLibrarian glslLibrarian = new GlslLibrarian(resource2Text("Custom.glsl", GlslLibrarianTest.class), System.lineSeparator());
-        String actual = glslLibrarian.link(resource2Text("TestSkeleton.vert", GlslLibrarianTest.class), Arrays.asList("RENDER_BOTTOM_1", "RENDER_BOTTOM_2"));
+        String actual = glslLibrarian.link(resource2Text("TestSkeleton.vert", GlslLibrarianTest.class), Arrays.asList("RENDER_BOTTOM_1", "RENDER_BOTTOM_2"), true);
         Assert.assertEquals(resource2Text("ResultCustomDefines.vert", GlslLibrarianTest.class).trim(), actual.trim());
     }
 

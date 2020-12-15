@@ -1,3 +1,4 @@
+#extension GL_OES_standard_derivatives : enable
 #define RENDER_BOTTOM_1
 #define RENDER_BOTTOM_2
 

@@ -1,3 +1,4 @@
+//-$$$-INCLUDE-EXTENSIONS
 //-$$$-INCLUDE-DEFINES
 
 attribute vec3 position;

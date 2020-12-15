@@ -23,14 +23,14 @@ public class WebGlProgramService {
     private Instance<WebGlProgramFacade> webGlProgramInstance;
     private Map<String, WebGlProgramFacade> webGlProgramCache = new HashMap<>();
 
-    public WebGlProgramFacade getWebGlProgram(WebGlFacadeConfig webGlFacadeConfig, List<String> glslVertexDefines, List<String> glslFragmentDefines) {
+    public WebGlProgramFacade getWebGlProgram(WebGlFacadeConfig webGlFacadeConfig, List<String> glslVertexDefines, List<String> glslFragmentDefines, boolean oESStandardDerivatives) {
         String vertexSkeletonShader = Shaders.SHADERS.skeletonVertexShader().getText();
         String fragmentSkeletonShader = Shaders.SHADERS.skeletonFragmentShader().getText();
         if (webGlFacadeConfig.isSkeletonShader()) {
             GlslLibrarian glslCustomLibrarian = new GlslLibrarian(webGlFacadeConfig.getSkeletonCustomLib() != null ? webGlFacadeConfig.getSkeletonCustomLib().getText() : null,
                     DomConstants.JAVASCRIPT_LINE_SEPARATOR);
-            vertexSkeletonShader = glslCustomLibrarian.link(vertexSkeletonShader, glslVertexDefines);
-            fragmentSkeletonShader = glslCustomLibrarian.link(fragmentSkeletonShader, glslFragmentDefines);
+            vertexSkeletonShader = glslCustomLibrarian.link(vertexSkeletonShader, glslVertexDefines, oESStandardDerivatives);
+            fragmentSkeletonShader = glslCustomLibrarian.link(fragmentSkeletonShader, glslFragmentDefines, oESStandardDerivatives);
         }
         String key = vertexSkeletonShader + fragmentSkeletonShader;
         WebGlProgramFacade webGlProgram = webGlProgramCache.get(key);
