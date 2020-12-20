@@ -55,7 +55,7 @@ public class TerrainObjectPosition {
         return this;
     }
 
-    public Vertex get_Scale() {
+    public Vertex getScale() {
         return scale;
     }
 

@@ -40,6 +40,5 @@ public class ItemMarkerRenderTaskRunner extends AbstractRenderTaskRunner {
                 null,
                 null,
                 null);
-        markerRenderTask.setActive(true);
     }
 }

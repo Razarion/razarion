@@ -83,11 +83,10 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
             throw new IllegalArgumentException("No planet for id: " + planetId);
         }
 
-        List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
-        for (TerrainObjectPositionEntity terrainObjectPositionEntity : planetEntity.getTerrainObjectPositionEntities()) {
-            terrainObjectPositions.add(terrainObjectPositionEntity.toTerrainObjectPosition());
-        }
-        return terrainObjectPositions;
+        return planetEntity.getTerrainObjectPositionEntities()
+                .stream()
+                .map(TerrainObjectPositionEntity::toTerrainObjectPosition)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -96,10 +95,7 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
         List<TerrainObjectPositionEntity> terrainObjectPositionEntities = new ArrayList<>();
         for (TerrainObjectPosition terrainObjectPosition : createdTerrainObjects) {
             TerrainObjectPositionEntity terrainObjectPositionEntity = new TerrainObjectPositionEntity();
-            terrainObjectPositionEntity.setTerrainObjectEntity(terrainObjectCrudPersistence.getEntity(terrainObjectPosition.getTerrainObjectId()));
-            terrainObjectPositionEntity.setPosition(terrainObjectPosition.getPosition());
-            // TODO terrainObjectPositionEntity.setScale(terrainObjectPosition.get_Scale());
-            // TODO terrainObjectPositionEntity.setRotationZ(terrainObjectPosition.getRotationZ());
+            terrainObjectPositionEntity.fromTerrainObjectPosition(terrainObjectPosition, terrainObjectCrudPersistence);
             terrainObjectPositionEntities.add(terrainObjectPositionEntity);
         }
 
@@ -114,10 +110,7 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
         PlanetEntity planetEntity = getEntity(planetId);
         for (TerrainObjectPosition terrainObjectPosition : updatedTerrainObjects) {
             TerrainObjectPositionEntity terrainObjectPositionEntity = getTerrainObjectPositionEntity(planetEntity, terrainObjectPosition.getId());
-            terrainObjectPositionEntity.setTerrainObjectEntity(terrainObjectCrudPersistence.getEntity(terrainObjectPosition.getTerrainObjectId()));
-            terrainObjectPositionEntity.setPosition(terrainObjectPosition.getPosition());
-            // TODO terrainObjectPositionEntity.setScale(terrainObjectPosition.getScale());
-            // TODO terrainObjectPositionEntity.setRotationZ(terrainObjectPosition.getRotationZ());
+            terrainObjectPositionEntity.fromTerrainObjectPosition(terrainObjectPosition, terrainObjectCrudPersistence);
         }
         entityManager.merge(planetEntity);
     }

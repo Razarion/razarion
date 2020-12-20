@@ -66,7 +66,7 @@ public class TerrainShapeSetup {
             tileObjects.put(objectPosition.getTerrainObjectId(), objectPosition);
             // Game engine
             TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectId());
-            Circle2D terrainObjectCircle = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius() * calculateScale(objectPosition.get_Scale()));
+            Circle2D terrainObjectCircle = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius() * calculateScale(objectPosition.getScale()));
             ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(terrainObjectCircle);
             for (Index nodeIndex : GeometricUtil.rasterizeCircle(obstacleTerrainObject.getCircle(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
                 TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
@@ -732,11 +732,11 @@ public class TerrainShapeSetup {
                     NativeTerrainShapeObjectPosition nativeTerrainShapeObjectPosition = new NativeTerrainShapeObjectPosition();
                     nativeTerrainShapeObjectPosition.x = terrainObjectPosition.getPosition().getX();
                     nativeTerrainShapeObjectPosition.y = terrainObjectPosition.getPosition().getY();
-                    if (terrainObjectPosition.get_Scale() != null) {
+                    if (terrainObjectPosition.getScale() != null) {
                         nativeTerrainShapeObjectPosition.scale = new NativeVertex();
-                        nativeTerrainShapeObjectPosition.scale.x = terrainObjectPosition.get_Scale().getX();
-                        nativeTerrainShapeObjectPosition.scale.y = terrainObjectPosition.get_Scale().getY();
-                        nativeTerrainShapeObjectPosition.scale.z = terrainObjectPosition.get_Scale().getZ();
+                        nativeTerrainShapeObjectPosition.scale.x = terrainObjectPosition.getScale().getX();
+                        nativeTerrainShapeObjectPosition.scale.y = terrainObjectPosition.getScale().getY();
+                        nativeTerrainShapeObjectPosition.scale.z = terrainObjectPosition.getScale().getZ();
                     }
                     if (terrainObjectPosition.getRotation() != null) {
                         nativeTerrainShapeObjectPosition.rotation = new NativeVertex();

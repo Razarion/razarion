@@ -40,6 +40,5 @@ public class StatusBarRenderTaskRunner extends AbstractRenderTaskRunner {
                 null,
                 null,
                 null);
-        statusBarRenderTask.setActive(true);
     }
 }

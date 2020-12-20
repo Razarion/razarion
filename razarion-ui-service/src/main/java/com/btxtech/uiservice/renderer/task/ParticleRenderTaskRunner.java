@@ -51,6 +51,5 @@ public class ParticleRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
                 null,
                 null,
                 null);
-        particleRenderTask.setActive(true);
     }
 }

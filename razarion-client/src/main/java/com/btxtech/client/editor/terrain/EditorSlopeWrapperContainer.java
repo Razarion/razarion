@@ -17,30 +17,30 @@ import java.util.logging.Logger;
  * Created by Beat
  * on 27.11.2017.
  */
-public class ModifiedSlopeContainer {
-    private static final Logger logger = Logger.getLogger(ModifiedSlopeContainer.class.getName());
-    private MapCollection<Index, ModifiedSlope> innerTiles = new MapCollection<>();
-    private MapCollection<Index, ModifiedSlope> piercedTiles = new MapCollection<>();
-    private Collection<ModifiedSlope> polygon2Ds = new ArrayList<>();
+public class EditorSlopeWrapperContainer {
+    private static final Logger logger = Logger.getLogger(EditorSlopeWrapperContainer.class.getName());
+    private MapCollection<Index, EditorSlopeWrapper> innerTiles = new MapCollection<>();
+    private MapCollection<Index, EditorSlopeWrapper> piercedTiles = new MapCollection<>();
+    private Collection<EditorSlopeWrapper> polygon2Ds = new ArrayList<>();
     private List<Integer> deletedSlopeIds = new ArrayList<>();
     private int rasterSize;
 
-    public ModifiedSlopeContainer(int rasterSize) {
+    public EditorSlopeWrapperContainer(int rasterSize) {
         this.rasterSize = rasterSize;
     }
 
-    public void setPolygons(Collection<ModifiedSlope> polygonProviders) {
+    public void setPolygons(Collection<EditorSlopeWrapper> polygonProviders) {
         innerTiles.clear();
         piercedTiles.clear();
         polygon2Ds.clear();
         polygonProviders.forEach(this::add);
     }
 
-    public Collection<ModifiedSlope> getPolygons() {
+    public Collection<EditorSlopeWrapper> getPolygons() {
         return polygon2Ds;
     }
 
-    public void add(ModifiedSlope modifiedSlope) {
+    public void add(EditorSlopeWrapper modifiedSlope) {
         try {
             Polygon2DRasterizer polygon2DRasterizer = Polygon2DRasterizer.create(modifiedSlope.getPolygon(), rasterSize);
             polygon2DRasterizer.getInnerTiles().forEach(index -> innerTiles.put(index, modifiedSlope));
@@ -51,14 +51,14 @@ public class ModifiedSlopeContainer {
         }
     }
 
-    public void remove(ModifiedSlope modifiedSlope) {
+    public void remove(EditorSlopeWrapper modifiedSlope) {
         removeInternal(modifiedSlope);
         if (!modifiedSlope.isCreated()) {
             deletedSlopeIds.add(modifiedSlope.getOriginalId());
         }
     }
 
-    private void removeInternal(ModifiedSlope modifiedSlope) {
+    private void removeInternal(EditorSlopeWrapper modifiedSlope) {
         Collection<Index> indexToRemove = new ArrayList<>();
         addTiles(innerTiles, modifiedSlope, indexToRemove);
         addTiles(piercedTiles, modifiedSlope, indexToRemove);
@@ -67,7 +67,7 @@ public class ModifiedSlopeContainer {
         polygon2Ds.remove(modifiedSlope);
     }
 
-    private void addTiles(MapCollection<Index, ModifiedSlope> indices, ModifiedSlope modifiedSlope, Collection<Index> indexToRemove) {
+    private void addTiles(MapCollection<Index, EditorSlopeWrapper> indices, EditorSlopeWrapper modifiedSlope, Collection<Index> indexToRemove) {
         indices.iterate((index, storedModifiedSlope) -> {
             if (storedModifiedSlope.equals(modifiedSlope)) {
                 indexToRemove.add(index);
@@ -76,7 +76,7 @@ public class ModifiedSlopeContainer {
         });
     }
 
-    public void update(ModifiedSlope modifiedSlope) {
+    public void update(EditorSlopeWrapper modifiedSlope) {
         removeInternal(modifiedSlope);
         add(modifiedSlope);
     }
@@ -87,14 +87,14 @@ public class ModifiedSlopeContainer {
         return tmp;
     }
 
-    public ModifiedSlope getPolygonAt(DecimalPosition position) {
-        Collection<ModifiedSlope> inner = innerTiles.get(position.divide(rasterSize).toIndexFloor());
+    public EditorSlopeWrapper getPolygonAt(DecimalPosition position) {
+        Collection<EditorSlopeWrapper> inner = innerTiles.get(position.divide(rasterSize).toIndexFloor());
         if (inner != null && !inner.isEmpty()) {
             if (inner.size() == 1) {
                 return CollectionUtils.getFirst(inner);
             } else {
                 // 1 find parent
-                for (ModifiedSlope modifiedSlope : inner) {
+                for (EditorSlopeWrapper modifiedSlope : inner) {
                     if (!modifiedSlope.isParent()) {
                         return modifiedSlope;
                     }
@@ -105,9 +105,9 @@ public class ModifiedSlopeContainer {
         return null;
     }
 
-    public ModifiedSlope getPolygonAt(Polygon2D area) {
+    public EditorSlopeWrapper getPolygonAt(Polygon2D area) {
         for (DecimalPosition position : area.getCorners()) {
-            Collection<ModifiedSlope> pierced = piercedTiles.get(position.divide(rasterSize).toIndexFloor());
+            Collection<EditorSlopeWrapper> pierced = piercedTiles.get(position.divide(rasterSize).toIndexFloor());
             if (pierced != null && !pierced.isEmpty()) {
                 if (pierced.size() == 1) {
 //                    if (CollectionUtils.getFirst(pierced).getPolygon().isInside(position)) {

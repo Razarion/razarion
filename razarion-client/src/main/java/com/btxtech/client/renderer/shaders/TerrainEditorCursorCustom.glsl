@@ -1,8 +1,9 @@
-precision mediump float;
-
+//-$$$-CHUNK uniforms-fragment BEGIN
 uniform int uCursorType;
+//-$$$-CHUNK uniforms-fragment END
 
-void main(void) {
+
+//-$$$-CHUNK main-code-fragment BEGIN
     if(uCursorType == 0) {
         // CREATE
         gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
@@ -15,4 +16,4 @@ void main(void) {
      } else {
          gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
    }
-}
+//-$$$-CHUNK main-code-fragment END

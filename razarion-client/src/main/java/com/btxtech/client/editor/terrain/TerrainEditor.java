@@ -47,7 +47,7 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
-    private TerrainEditorService terrainEditor;
+    private TerrainEditorService terrainEditorService;
     @Inject
     private Caller<SlopeEditorController> slopeEditorController;
     @Inject
@@ -133,25 +133,25 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
 
     @PostConstruct
     public void init() {
-        terrainEditor.activate();
-        id.setTextContent(Integer.toString(terrainEditor.getPlanetConfig().getId()));
-        terrainSize.setTextContent(DisplayUtils.handleDecimalPosition(terrainEditor.getPlanetConfig().getSize()));
-        slopeRadio.setChecked(terrainEditor.getCreationMode());
-        terrainObjectRadio.setChecked(!terrainEditor.getCreationMode());
-        cursorRadius.setValue(terrainEditor.getCursorRadius());
-        slopeInverted.setChecked(terrainEditor.isInvertedSlope());
-        cursorCorners.setValue(terrainEditor.getCursorCorners());
-        terrainObjectRandomZRotation.setValue(terrainEditor.getTerrainObjectRandomZRotation());
-        terrainObjectRandomScale.setValue(terrainEditor.getTerrainObjectRandomScale());
-        slopeSelection.addValueChangeHandler(event -> terrainEditor.setSlope4New(slopeSelection.getValue()));
+        terrainEditorService.activate();
+        id.setTextContent(Integer.toString(terrainEditorService.getPlanetConfig().getId()));
+        terrainSize.setTextContent(DisplayUtils.handleDecimalPosition(terrainEditorService.getPlanetConfig().getSize()));
+        slopeRadio.setChecked(terrainEditorService.getCreationMode());
+        terrainObjectRadio.setChecked(!terrainEditorService.getCreationMode());
+        cursorRadius.setValue(terrainEditorService.getCursorRadius());
+        slopeInverted.setChecked(terrainEditorService.isInvertedSlope());
+        cursorCorners.setValue(terrainEditorService.getCursorCorners());
+        terrainObjectRandomZRotation.setValue(terrainEditorService.getTerrainObjectRandomZRotation());
+        terrainObjectRandomScale.setValue(terrainEditorService.getTerrainObjectRandomScale());
+        slopeSelection.addValueChangeHandler(event -> terrainEditorService.setSlope4New(slopeSelection.getValue()));
         slopeEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
             ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
             slopeSelection.setAcceptableValues(objectNameIds);
             slopeSelection.setValue(objectNameId);
-            terrainEditor.setSlope4New(objectNameId);
+            terrainEditorService.setSlope4New(objectNameId);
         }, exceptionHandler.restErrorHandler("SlopeEditorController.getObjectNameIds() failed: ")).getObjectNameIds();
-        drivewayMode.setChecked(terrainEditor.isDrivewayMode());
-        drivewaySelection.addValueChangeHandler(event -> terrainEditor.setDriveway4New(drivewaySelection.getValue()));
+        drivewayMode.setChecked(terrainEditorService.isDrivewayMode());
+        drivewaySelection.addValueChangeHandler(event -> terrainEditorService.setDriveway4New(drivewaySelection.getValue()));
         drivewayEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
             if (objectNameIds == null || objectNameIds.isEmpty()) {
                 return;
@@ -159,9 +159,9 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
             ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
             drivewaySelection.setAcceptableValues(objectNameIds);
             drivewaySelection.setValue(objectNameId);
-            terrainEditor.setDriveway4New(objectNameId);
+            terrainEditorService.setDriveway4New(objectNameId);
         }, exceptionHandler.restErrorHandler("DrivewayEditorController.getObjectNameIds failed: ")).getObjectNameIds();
-        terrainObjectSelection.addValueChangeHandler(event -> terrainEditor.setTerrainObject4New(terrainObjectSelection.getValue()));
+        terrainObjectSelection.addValueChangeHandler(event -> terrainEditorService.setTerrainObject4New(terrainObjectSelection.getValue()));
         terrainObjectEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
             if (objectNameIds == null || objectNameIds.isEmpty()) {
                 return;
@@ -169,57 +169,57 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
             ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
             terrainObjectSelection.setAcceptableValues(objectNameIds);
             terrainObjectSelection.setValue(objectNameId);
-            terrainEditor.setTerrainObject4New(objectNameId);
+            terrainEditorService.setTerrainObject4New(objectNameId);
         }, exceptionHandler.restErrorHandler("getObjectNameIds failed: ")).getObjectNameIds();
-        terrainEditor.setTerrainPositionListener(vertex -> terrainPositionLabel.setTextContent(DisplayUtils.formatVertex(vertex)));
+        terrainEditorService.setTerrainPositionListener(vertex -> terrainPositionLabel.setTextContent(DisplayUtils.formatVertex(vertex)));
         viewService.addViewFieldListeners(this);
         radarPanel.show();
     }
 
     @EventHandler("slopeRadio")
     private void slopeRadioClick(ClickEvent event) {
-        terrainEditor.setSlopeMode(true);
+        terrainEditorService.setSlopeMode(true);
     }
 
     @EventHandler("terrainObjectRadio")
     private void terrainObjectRadioClick(ClickEvent event) {
-        terrainEditor.setSlopeMode(false);
+        terrainEditorService.setSlopeMode(false);
     }
 
     @EventHandler("drivewayMode")
     public void drivewayModeChanged(ChangeEvent e) {
-        terrainEditor.setDrivewayModeChanged(drivewayMode.getChecked());
+        terrainEditorService.setDrivewayModeChanged(drivewayMode.getChecked());
     }
 
     @Override
     public void onClose() {
         viewService.removeViewFieldListeners(this);
-        terrainEditor.deactivate();
+        terrainEditorService.deactivate();
     }
 
     @EventHandler("cursorRadius")
     public void cursorRadiusChanged(ChangeEvent e) {
-        terrainEditor.setCursorRadius(cursorRadius.getValue());
+        terrainEditorService.setCursorRadius(cursorRadius.getValue());
     }
 
     @EventHandler("cursorCorners")
     public void cursorCornersChanged(ChangeEvent e) {
-        terrainEditor.setCursorCorners(cursorCorners.getValue());
+        terrainEditorService.setCursorCorners(cursorCorners.getValue());
     }
 
     @EventHandler("slopeInverted")
     public void slopeInvertedCheckboxChanged(ChangeEvent e) {
-        terrainEditor.setInvertedSlope(slopeInverted.getChecked());
+        terrainEditorService.setInvertedSlope(slopeInverted.getChecked());
     }
 
     @EventHandler("terrainObjectRandomZRotation")
     public void terrainObjectRandomZRotationChanged(ChangeEvent e) {
-        terrainEditor.setTerrainObjectRandomZRotation(terrainObjectRandomZRotation.getValue());
+        terrainEditorService.setTerrainObjectRandomZRotation(terrainObjectRandomZRotation.getValue());
     }
 
     @EventHandler("terrainObjectRandomScale")
     public void terrainObjectRandomScaleChanged(ChangeEvent e) {
-        terrainEditor.setTerrainObjectRandomScale(terrainObjectRandomScale.getValue());
+        terrainEditorService.setTerrainObjectRandomScale(terrainObjectRandomScale.getValue());
     }
 
     @EventHandler("topViewButton")
@@ -231,12 +231,12 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
 
     @EventHandler("restartPlanetButton")
     private void restartPlanetButtonClick(ClickEvent event) {
-        terrainEditor.restartPlanetButton();
+        terrainEditorService.restartPlanetButton();
     }
 
     @Override
     protected void onConfigureDialog() {
-        registerSaveButton(terrainEditor::save);
+        registerSaveButton(terrainEditorService::save);
         enableSaveButton(true);
     }
 

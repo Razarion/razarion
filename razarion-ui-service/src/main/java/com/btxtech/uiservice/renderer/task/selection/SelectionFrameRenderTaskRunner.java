@@ -25,7 +25,6 @@ public class SelectionFrameRenderTaskRunner extends AbstractRenderTaskRunner {
             throw new IllegalStateException("SelectionFrameRenderTaskRunner is already showing");
         }
         renderTask = createRenderTask(RenderTask.class, groupSelectionFrame);
-        renderTask.setActive(true);
     }
 
     public void onMove(GroupSelectionFrame groupSelectionFrame) {

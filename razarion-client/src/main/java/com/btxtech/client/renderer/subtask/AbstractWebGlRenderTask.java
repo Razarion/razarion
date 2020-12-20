@@ -65,7 +65,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
 
     private Collection<AbstractShaderAttribute> arrays = new ArrayList<>();
     private int elementCount;
-    private boolean active;
+    private boolean active = true;
     private Function<Long, List<ModelMatrices>> modelMatricesSupplier;
     private LightUniforms lightUniforms;
     private Collection<WebGlPhongMaterial> materials = new ArrayList<>();

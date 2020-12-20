@@ -1,8 +1,13 @@
 package com.btxtech.server.persistence.object;
 
+import com.btxtech.server.persistence.TerrainObjectCrudPersistence;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,6 +33,20 @@ public class TerrainObjectPositionEntity {
     private TerrainObjectEntity terrainObjectEntity;
     @Embedded
     private DecimalPosition position;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "x", column = @Column(name = "scaleX")),
+            @AttributeOverride(name = "y", column = @Column(name = "scaleY")),
+            @AttributeOverride(name = "z", column = @Column(name = "scaleZ")),
+    })
+    private Vertex scale;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "x", column = @Column(name = "rotationX")),
+            @AttributeOverride(name = "y", column = @Column(name = "rotationY")),
+            @AttributeOverride(name = "z", column = @Column(name = "rotationZ")),
+    })
+    private Vertex rotation;
 
     public Integer getId() {
         return id;
@@ -38,15 +57,16 @@ public class TerrainObjectPositionEntity {
         objectPosition.setId(id);
         objectPosition.setTerrainObjectId(terrainObjectEntity.getId());
         objectPosition.setPosition(position);
+        objectPosition.setScale(scale);
+        objectPosition.setRotation(rotation);
         return objectPosition;
     }
 
-    public void setTerrainObjectEntity(TerrainObjectEntity terrainObjectEntity) {
-        this.terrainObjectEntity = terrainObjectEntity;
-    }
-
-    public void setPosition(DecimalPosition position) {
-        this.position = position;
+    public void fromTerrainObjectPosition(TerrainObjectPosition terrainObjectPosition, TerrainObjectCrudPersistence terrainObjectCrudPersistence) {
+        terrainObjectEntity = terrainObjectCrudPersistence.getEntity(terrainObjectPosition.getTerrainObjectId());
+        position = terrainObjectPosition.getPosition();
+        scale = terrainObjectPosition.getScale();
+        rotation = terrainObjectPosition.getRotation();
     }
 
     @Override

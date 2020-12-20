@@ -10,6 +10,7 @@ import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.utils.MathHelper;
+
 /**
  * Created by Beat
  * 15.05.2016.
@@ -259,9 +260,9 @@ public class ModelMatrices {
         return new ModelMatrices(newMatrix);
     }
 
-    public static ModelMatrices create4Editor(double x, double y, double z, double scale, NativeMatrixFactory nativeMatrixFactory) {
+    public static ModelMatrices create4Editor(double x, double y, double z, Vertex scale, NativeMatrixFactory nativeMatrixFactory) {
         NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(x, y, z);
-        newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(scale, scale, scale));
+        newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(scale.getX(), scale.getY(), scale.getZ()));
         return new ModelMatrices(newMatrix);
     }
 

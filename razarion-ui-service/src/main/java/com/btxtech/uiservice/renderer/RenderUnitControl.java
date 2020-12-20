@@ -13,7 +13,6 @@ public class RenderUnitControl {
     public static final RenderUnitControl ITEMS = new RenderUnitControl();
     public static final RenderUnitControl NORMAL = new RenderUnitControl();
     public static final RenderUnitControl SEMI_TRANSPARENT = new RenderUnitControl().blend(Blend.SOURCE_ALPHA);
-    public static final RenderUnitControl SELECTION_FRAME = new RenderUnitControl().depthTest(false).writeDepthBuffer(false);
     public static final RenderUnitControl START_POINT_CIRCLE = new RenderUnitControl().blend(Blend.SOURCE_ALPHA).depthTest(false).writeDepthBuffer(false);
     public static final RenderUnitControl START_POINT_ITEM = new RenderUnitControl().blend(Blend.CONST_ALPHA).constAlpha(0.5);
     public static final RenderUnitControl TERRAIN_ITEM_VISUALIZATION_IMAGE = new RenderUnitControl().depthTest(false).writeDepthBuffer(false);

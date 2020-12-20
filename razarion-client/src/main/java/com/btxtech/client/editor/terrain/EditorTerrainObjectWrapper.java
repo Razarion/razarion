@@ -3,6 +3,7 @@ package com.btxtech.client.editor.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectPosition;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
@@ -10,37 +11,37 @@ import com.btxtech.shared.nativejs.NativeMatrixFactory;
  * Created by Beat
  * 15.01.2017.
  */
-public class ModifiedTerrainObject {
+public class EditorTerrainObjectWrapper {
     private static final double OVERLAPS_SAFETY_DISTANCE = 1;
     private int terrainObjectId;
     private Integer originalId;
     private DecimalPosition position;
     private double radius;
-    private double scale;
-    private double rotationZ;
+    private Vertex scale;
+    private Vertex rotation;
     private ModelMatrices modelMatrices;
     private boolean deleted;
     private boolean dirty;
 
-    public ModifiedTerrainObject(TerrainObjectPosition terrainObjectPosition, double radius) {
+    public EditorTerrainObjectWrapper(TerrainObjectPosition terrainObjectPosition, double radius) {
         this.position = terrainObjectPosition.getPosition();
         terrainObjectId = terrainObjectPosition.getTerrainObjectId();
         originalId = terrainObjectPosition.getId();
-        // TODO scale = terrainObjectPosition.getScale();
-        // TODO rotationZ = terrainObjectPosition.getRotationZ();
+        scale = terrainObjectPosition.getScale();
+        rotation = terrainObjectPosition.getRotation();
         this.radius = radius;
     }
 
-    public ModifiedTerrainObject(int terrainObjectId, DecimalPosition position, double scale, double rotationZ, double radius) {
+    public EditorTerrainObjectWrapper(int terrainObjectId, DecimalPosition position, double scale, double rotationZ, double radius) {
         this.terrainObjectId = terrainObjectId;
         this.position = position;
-        this.rotationZ = rotationZ;
+        this.rotation = new Vertex(0, 0, rotationZ);
         this.radius = radius;
-        this.scale = scale;
+        this.scale = new Vertex(scale, scale, scale);
     }
 
     public boolean overlaps(Vertex terrainPosition) {
-        return !deleted && position.getDistance(terrainPosition.toXY().toIndex()) < radius * scale + OVERLAPS_SAFETY_DISTANCE;
+        return !deleted && position.getDistance(terrainPosition.toXY().toIndex()) < MathHelper.getPythagorasC(scale.getX(), scale.getY()) * radius + OVERLAPS_SAFETY_DISTANCE;
     }
 
     public void setHover(boolean hover) {
@@ -53,12 +54,12 @@ public class ModifiedTerrainObject {
 
     public void setNewPosition(Vertex newPosition, NativeMatrixFactory nativeMatrixFactory) {
         position = newPosition.toXY();
-        modelMatrices = ModelMatrices.create4Editor(position.getX(), position.getY(), 0, radius * scale, nativeMatrixFactory);
+        modelMatrices = ModelMatrices.create4Editor(position.getX(), position.getY(), 0, scale.multiply(radius), nativeMatrixFactory);
         dirty = true;
     }
 
     public ModelMatrices createModelMatrices(NativeMatrixFactory nativeMatrixFactory) {
-        modelMatrices = ModelMatrices.create4Editor(position.getX(), position.getY(), 0, radius * scale, nativeMatrixFactory);
+        modelMatrices = ModelMatrices.create4Editor(position.getX(), position.getY(), 0, scale.multiply(radius), nativeMatrixFactory);
         return modelMatrices;
     }
 
@@ -83,10 +84,10 @@ public class ModifiedTerrainObject {
     }
 
     public TerrainObjectPosition createTerrainObjectPositionNoId() {
-        return new TerrainObjectPosition().setPosition(position).setTerrainObjectId(terrainObjectId); // TODO .setScale(scale).setRotationZ(rotationZ);
+        return new TerrainObjectPosition().setPosition(position).setTerrainObjectId(terrainObjectId).setScale(scale).setRotation(rotation);
     }
 
     public TerrainObjectPosition createTerrainObjectPosition() {
-        return new TerrainObjectPosition().setId(originalId).setPosition(position).setTerrainObjectId(terrainObjectId);// TODO .setScale(scale).setRotationZ(rotationZ);
+        return new TerrainObjectPosition().setId(originalId).setPosition(position).setTerrainObjectId(terrainObjectId).setScale(scale).setRotation(rotation);
     }
 }

@@ -41,6 +41,15 @@ public interface Shaders extends ClientBundle {
     @Source("ParticleCustom.glsl")
     TextResource particleCustom();
 
+    @Source("TerrainEditorCursorCustom.glsl")
+    TextResource terrainEditorCursorCustom();
+
+    @Source("TerrainObjectEditorCustom.glsl")
+    TextResource terrainObjectEditorCustom();
+
+    @Source("TerrainEditorSlopeCustom.glsl")
+    TextResource terrainEditorSlopeCustom();
+
     // ---------------------- OLD ----------------------
     @Source("Monitor.vert")
     TextResource monitorVertexShader();
@@ -56,24 +65,6 @@ public interface Shaders extends ClientBundle {
 
     @Source("DebugVector.frag")
     TextResource debugVectorFragmentShader();
-
-    @Source("TerrainEditor.vert")
-    TextResource terrainEditorVertexShader();
-
-    @Source("TerrainEditor.frag")
-    TextResource terrainEditorFragmentShader();
-
-    @Source("TerrainEditorCursor.vert")
-    TextResource terrainEditorCursorVertexShader();
-
-    @Source("TerrainEditorCursor.frag")
-    TextResource terrainEditorCursorFragmentShader();
-
-    @Source("TerrainObjectEditor.vert")
-    TextResource terrainObjectEditorVertexShader();
-
-    @Source("TerrainObjectEditor.frag")
-    TextResource terrainObjectEditorFragmentShader();
 
     @Source("RgbaMvp.vert")
     @Deprecated

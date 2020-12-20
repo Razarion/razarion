@@ -52,8 +52,6 @@ public class WebGlFacade {
     public static final String U_MODEL_MATRIX = "modelMatrix";
     public static final String U_MODEL_NORM_MATRIX = "modelMatrix???"; // ???
     public static final String U_SHADOW_MATRIX = "shadowMatrix";
-    // Unifrom Editor
-    public static final String U_CURSOR_TYPE = "uCursorType";
 
     // private Logger logger = Logger.getLogger(AbstractWebGlUnitRenderer.class.getName());
     private WebGlProgramFacade webGlProgram;

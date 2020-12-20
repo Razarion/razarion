@@ -38,7 +38,6 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
                         progressAnimations,
                         vertexContainer.getShapeTransform(),
                         (mrt) -> mrt.setProgressState(progressState != null ? progressState.fork(vertexContainer) : null));
-                modelRenderTask.setActive(true);
             }
         }
     }
