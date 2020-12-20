@@ -95,7 +95,7 @@ public abstract class JsonAssert {
             }
         } else if (expectedNode instanceof ValueNode) {
             ValueNode valueNodeExpected = (ValueNode) expectedNode;
-            ValueNode actualNodeExpected = (ValueNode) actualNode.at(jsonPointer);
+            JsonNode actualNodeExpected = actualNode.at(jsonPointer);
             if (!valueNodeExpected.equals(actualNodeExpected)) {
                 System.out.println(jsonPointer + " expected: " + valueNodeExpected + " actual: " + actualNodeExpected);
             }

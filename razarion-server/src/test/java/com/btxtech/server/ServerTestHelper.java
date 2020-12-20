@@ -7,6 +7,7 @@ import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.server.persistence.TerrainObjectCrudPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
@@ -25,6 +26,8 @@ import com.btxtech.server.persistence.itemtype.TurretTypeEntity;
 import com.btxtech.server.persistence.itemtype.WeaponTypeEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
+import com.btxtech.server.persistence.object.TerrainObjectEntity;
+import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
 import com.btxtech.server.persistence.quest.ConditionConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
@@ -55,6 +58,8 @@ import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
+import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -158,6 +163,10 @@ public class ServerTestHelper {
     // Water
     public static int WATER_1_ID;
     public static int WATER_2_ID;
+    // Terrain Object
+    public static int TERRAIN_OBJECT_1_ID;
+    public static int TERRAIN_OBJECT_2_ID;
+    public static int TERRAIN_OBJECT_3_ID;
     // Item types
     public static int BASE_ITEM_TYPE_BULLDOZER_ID;
     public static int BASE_ITEM_TYPE_HARVESTER_ID;
@@ -315,6 +324,19 @@ public class ServerTestHelper {
         WATER_1_ID = persistInTransaction(new WaterConfigEntity()).getId();
         WATER_2_ID = persistInTransaction(new WaterConfigEntity()).getId();
         cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(WaterConfigEntity.class)));
+    }
+
+    protected void setupTerrainObjectConfig() {
+        TERRAIN_OBJECT_1_ID = persistInTransaction(createTerrainObjectEntity(new TerrainObjectConfig().radius(1.0).shape3DId(SHAPE_3D_1_ID))).getId();
+        TERRAIN_OBJECT_2_ID = persistInTransaction(createTerrainObjectEntity(new TerrainObjectConfig().radius(2.0).shape3DId(SHAPE_3D_2_ID))).getId();
+        TERRAIN_OBJECT_3_ID = persistInTransaction(createTerrainObjectEntity(new TerrainObjectConfig().radius(2.5).shape3DId(SHAPE_3D_3_ID))).getId();
+        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(TerrainObjectEntity.class)));
+    }
+
+    private TerrainObjectEntity createTerrainObjectEntity(TerrainObjectConfig terrainObjectConfig) {
+        TerrainObjectEntity terrainObjectEntity = new TerrainObjectEntity();
+        terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, entityManager.find(ColladaEntity.class, terrainObjectConfig.getShape3DId()));
+        return terrainObjectEntity;
     }
 
     protected void setupShape3dConfig() {
@@ -496,12 +518,14 @@ public class ServerTestHelper {
         setupGroundConfig();
         setupSlopeConfig();
         setupDrivewayConfig();
+        setupTerrainObjectConfig();
 
         runInTransaction(entityManager -> {
             PlanetEntity planetEntity = new PlanetEntity();
             planetEntity.fromPlanetConfig(new PlanetConfig().size(new DecimalPosition(960, 960))
                     , entityManager.find(GroundConfigEntity.class, GROUND_1_ID), null, Collections.emptyMap());
             planetEntity.getTerrainSlopePositionEntities().add(createLandSlope());
+            planetEntity.getTerrainObjectPositionEntities().addAll(createTerrainObjectPositions());
             entityManager.persist(planetEntity);
             PLANET_1_ID = planetEntity.getId();
 
@@ -514,6 +538,7 @@ public class ServerTestHelper {
         cleanupAfterTests.add(Arrays.asList(
                 new CleanupAfterTest().entity(TerrainSlopeCornerEntity.class),
                 new CleanupAfterTest().entity(TerrainSlopePositionEntity.class),
+                new CleanupAfterTest().entity(TerrainObjectPositionEntity.class),
                 new CleanupAfterTest().tableName("PLANET_LIMITATION"),
                 new CleanupAfterTest().entity(PlanetEntity.class)));
 
@@ -557,6 +582,44 @@ public class ServerTestHelper {
                 new TerrainSlopeCornerEntity().position(new DecimalPosition(400, 200)).drivewayConfigEntity(entityManager.find(DrivewayConfigEntity.class, DRIVEWAY_CONFIG_ENTITY_1)),
                 new TerrainSlopeCornerEntity().position(new DecimalPosition(50, 200))));
         return terrainSlopePositionLand;
+    }
+
+    private List<TerrainObjectPositionEntity> createTerrainObjectPositions() {
+        List<TerrainObjectPositionEntity> terrainObjectPositionEntities = new ArrayList<>();
+        TerrainObjectPositionEntity top1 = new TerrainObjectPositionEntity();
+        top1.fromTerrainObjectPosition(new TerrainObjectPosition()
+                        .terrainObjectId(TERRAIN_OBJECT_1_ID)
+                        .position(new DecimalPosition(25, 25))
+                        .scale(new Vertex(0.5, 1, 1.25))
+                        .rotation(new Vertex(1.1, 1.2, 1.3))
+                , terrainObjectCrudPersistence());
+        terrainObjectPositionEntities.add(top1);
+        TerrainObjectPositionEntity top2 = new TerrainObjectPositionEntity();
+        top2.fromTerrainObjectPosition(new TerrainObjectPosition()
+                        .terrainObjectId(TERRAIN_OBJECT_2_ID)
+                        .position(new DecimalPosition(450, 25))
+                        .scale(new Vertex(0.6, 1.1, 1.3))
+                        .rotation(new Vertex(1.2, 1.3, 1.4))
+                , terrainObjectCrudPersistence());
+        terrainObjectPositionEntities.add(top2);
+        TerrainObjectPositionEntity top3 = new TerrainObjectPositionEntity();
+        top3.fromTerrainObjectPosition(new TerrainObjectPosition()
+                        .terrainObjectId(TERRAIN_OBJECT_3_ID)
+                        .position(new DecimalPosition(300, 250))
+                        .scale(new Vertex(0.8, 0.6, 0.7))
+                        .rotation(new Vertex(0.9, 0.8, 0.7))
+                , terrainObjectCrudPersistence());
+        terrainObjectPositionEntities.add(top3);
+        return terrainObjectPositionEntities;
+    }
+
+    private TerrainObjectCrudPersistence terrainObjectCrudPersistence() {
+        return new TerrainObjectCrudPersistence() {
+            @Override
+            public TerrainObjectEntity getEntity(Integer id) {
+                return entityManager.find(TerrainObjectEntity.class, id);
+            }
+        };
     }
 
     protected void setupDb() {

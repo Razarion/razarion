@@ -19,9 +19,8 @@ public class TerrainObjectPosition {
         return id;
     }
 
-    public TerrainObjectPosition setId(int id) {
+    public void setId(int id) {
         this.id = id;
-        return this;
     }
 
     public boolean hasId() {
@@ -32,44 +31,69 @@ public class TerrainObjectPosition {
         return terrainObjectId;
     }
 
-    public TerrainObjectPosition setTerrainObjectId(int terrainObjectId) {
+    public void setTerrainObjectId(int terrainObjectId) {
         this.terrainObjectId = terrainObjectId;
-        return this;
     }
 
     public DecimalPosition getPosition() {
         return position;
     }
 
-    public TerrainObjectPosition setPosition(DecimalPosition position) {
+    public void setPosition(DecimalPosition position) {
         this.position = position;
-        return this;
     }
 
     public Vertex getRotation() {
         return rotation;
     }
 
-    public TerrainObjectPosition setRotation(Vertex rotation) {
+    public void setRotation(Vertex rotation) {
         this.rotation = rotation;
-        return this;
     }
 
     public Vertex getScale() {
         return scale;
     }
 
-    public TerrainObjectPosition setScale(Vertex scale) {
+    public void setScale(Vertex scale) {
         this.scale = scale;
-        return this;
     }
 
     public Vertex getOffset() {
         return offset;
     }
 
-    public TerrainObjectPosition setOffset(Vertex offset) {
+    public void setOffset(Vertex offset) {
         this.offset = offset;
+    }
+
+    public TerrainObjectPosition id(int id) {
+        setId(id);
+        return this;
+    }
+
+    public TerrainObjectPosition terrainObjectId(int terrainObjectId) {
+        setTerrainObjectId(terrainObjectId);
+        return this;
+    }
+
+    public TerrainObjectPosition position(DecimalPosition position) {
+        setPosition(position);
+        return this;
+    }
+
+    public TerrainObjectPosition scale(Vertex scale) {
+        setScale(scale);
+        return this;
+    }
+
+    public TerrainObjectPosition rotation(Vertex rotation) {
+        setRotation(rotation);
+        return this;
+    }
+
+    public TerrainObjectPosition offset(Vertex offset) {
+        setOffset(offset);
         return this;
     }
 }

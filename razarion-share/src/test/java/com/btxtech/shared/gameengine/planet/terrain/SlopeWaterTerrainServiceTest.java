@@ -283,13 +283,13 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testTerrainObjectWater() {
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
-                new TerrainObjectPosition().setTerrainObjectId(1).setPosition(new DecimalPosition(10, 10)),
-                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(21, 32)),
-                new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(135, 130)),
-                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(44, 27.5)),
-                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(72, 88)),
-                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(20, 60)),
-                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(92, 64))
+                new TerrainObjectPosition().terrainObjectId(1).position(new DecimalPosition(10, 10)),
+                new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(21, 32)),
+                new TerrainObjectPosition().terrainObjectId(3).position(new DecimalPosition(135, 130)),
+                new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(44, 27.5)),
+                new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(72, 88)),
+                new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(20, 60)),
+                new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(92, 64))
         );
 
         List<SlopeConfig> slopeConfigs = new ArrayList<>();

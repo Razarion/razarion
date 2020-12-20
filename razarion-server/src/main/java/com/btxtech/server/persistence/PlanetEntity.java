@@ -152,6 +152,9 @@ public class PlanetEntity {
     }
 
     public List<TerrainObjectPositionEntity> getTerrainObjectPositionEntities() {
+        if (terrainObjectPositionEntities == null) {
+            terrainObjectPositionEntities = new ArrayList<>();
+        }
         return terrainObjectPositionEntities;
     }
 

@@ -574,7 +574,92 @@
             null,
             null,
             null,
-            null,
+            {
+              "fullDrivewayHeights": null,
+              "innerGroundHeight": 0.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "fullWaterLevel": null,
+              "obstacles": [
+                {
+                  "x1": null,
+                  "y1": null,
+                  "x2": null,
+                  "y2": null,
+                  "pDx": null,
+                  "pDy": null,
+                  "p1C": null,
+                  "p1Dx": null,
+                  "p1Dy": null,
+                  "p2C": null,
+                  "p2Dx": null,
+                  "p2Dy": null,
+                  "xC": 25.0,
+                  "yC": 25.0,
+                  "r": 1.0
+                }
+              ],
+              "nativeTerrainShapeSubNodes": [
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": 4,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                }
+              ],
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": -1,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
             null,
             null,
             null,
@@ -15057,7 +15142,28 @@
             }
           ]
         ],
-        "nativeTerrainShapeObjectLists": null
+        "nativeTerrainShapeObjectLists": [
+          {
+            "terrainObjectId": "$TERRAIN_OBJECT_1_ID$",
+            "positions": [
+              {
+                "x": 25.0,
+                "y": 25.0,
+                "scale": {
+                  "x": 0.5,
+                  "y": 1.0,
+                  "z": 1.25
+                },
+                "rotation": {
+                  "x": 1.1,
+                  "y": 1.2,
+                  "z": 1.3
+                },
+                "offset": null
+              }
+            ]
+          }
+        ]
       },
       {
         "fullWaterLevel": null,
@@ -47068,7 +47174,217 @@
             null,
             null,
             null,
-            null,
+            {
+              "fullDrivewayHeights": null,
+              "innerGroundHeight": 0.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "fullWaterLevel": null,
+              "obstacles": [
+                {
+                  "x1": null,
+                  "y1": null,
+                  "x2": null,
+                  "y2": null,
+                  "pDx": null,
+                  "pDy": null,
+                  "p1C": null,
+                  "p1Dx": null,
+                  "p1Dy": null,
+                  "p2C": null,
+                  "p2Dx": null,
+                  "p2Dy": null,
+                  "xC": 300.0,
+                  "yC": 250.0,
+                  "r": 2.0
+                }
+              ],
+              "nativeTerrainShapeSubNodes": [
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                }
+              ],
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": -1,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
             null,
             null,
             null,
@@ -48061,7 +48377,28 @@
             null
           ]
         ],
-        "nativeTerrainShapeObjectLists": null
+        "nativeTerrainShapeObjectLists": [
+          {
+            "terrainObjectId": "$TERRAIN_OBJECT_3_ID$",
+            "positions": [
+              {
+                "x": 300.0,
+                "y": 250.0,
+                "scale": {
+                  "x": 0.8,
+                  "y": 0.6,
+                  "z": 0.7
+                },
+                "rotation": {
+                  "x": 0.9,
+                  "y": 0.8,
+                  "z": 0.7
+                },
+                "offset": null
+              }
+            ]
+          }
+        ]
       },
       null,
       null,
@@ -59700,7 +60037,42 @@
             null,
             null,
             null,
-            null,
+            {
+              "fullDrivewayHeights": null,
+              "innerGroundHeight": 0.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "fullWaterLevel": null,
+              "obstacles": [
+                {
+                  "x1": null,
+                  "y1": null,
+                  "x2": null,
+                  "y2": null,
+                  "pDx": null,
+                  "pDy": null,
+                  "p1C": null,
+                  "p1Dx": null,
+                  "p1Dy": null,
+                  "p2C": null,
+                  "p2Dx": null,
+                  "p2Dy": null,
+                  "xC": 450.0,
+                  "yC": 25.0,
+                  "r": 2.2
+                }
+              ],
+              "nativeTerrainShapeSubNodes": null,
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": 0,
+              "fullGameEngineDriveway": false,
+              "fullRenderEngineDriveway": null
+            },
             null,
             {
               "fullDrivewayHeights": null,
@@ -60449,8 +60821,278 @@
           [
             null,
             null,
-            null,
-            null,
+            {
+              "fullDrivewayHeights": null,
+              "innerGroundHeight": 0.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "fullWaterLevel": null,
+              "obstacles": [
+                {
+                  "x1": null,
+                  "y1": null,
+                  "x2": null,
+                  "y2": null,
+                  "pDx": null,
+                  "pDy": null,
+                  "p1C": null,
+                  "p1Dx": null,
+                  "p1Dy": null,
+                  "p2C": null,
+                  "p2Dx": null,
+                  "p2Dy": null,
+                  "xC": 450.0,
+                  "yC": 25.0,
+                  "r": 2.2
+                }
+              ],
+              "nativeTerrainShapeSubNodes": [
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                }
+              ],
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": -1,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
+              "innerGroundHeight": 0.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "fullWaterLevel": null,
+              "obstacles": [
+                {
+                  "x1": null,
+                  "y1": null,
+                  "x2": null,
+                  "y2": null,
+                  "pDx": null,
+                  "pDy": null,
+                  "p1C": null,
+                  "p1Dx": null,
+                  "p1Dy": null,
+                  "p2C": null,
+                  "p2Dx": null,
+                  "p2Dy": null,
+                  "xC": 450.0,
+                  "yC": 25.0,
+                  "r": 2.2
+                }
+              ],
+              "nativeTerrainShapeSubNodes": [
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": 4,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 4,
+                      "height": 0.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": 0,
+                  "height": 0.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                }
+              ],
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": -1,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
             null,
             {
               "fullDrivewayHeights": null,
@@ -65894,7 +66536,28 @@
             null
           ]
         ],
-        "nativeTerrainShapeObjectLists": null
+        "nativeTerrainShapeObjectLists": [
+          {
+            "terrainObjectId": "$TERRAIN_OBJECT_2_ID$",
+            "positions": [
+              {
+                "x": 450.0,
+                "y": 25.0,
+                "scale": {
+                  "x": 0.6,
+                  "y": 1.1,
+                  "z": 1.3
+                },
+                "rotation": {
+                  "x": 1.2,
+                  "y": 1.3,
+                  "z": 1.4
+                },
+                "offset": null
+              }
+            ]
+          }
+        ]
       },
       {
         "fullWaterLevel": null,

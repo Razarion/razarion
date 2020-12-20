@@ -84,10 +84,10 @@ public class EditorTerrainObjectWrapper {
     }
 
     public TerrainObjectPosition createTerrainObjectPositionNoId() {
-        return new TerrainObjectPosition().setPosition(position).setTerrainObjectId(terrainObjectId).setScale(scale).setRotation(rotation);
+        return new TerrainObjectPosition().position(position).terrainObjectId(terrainObjectId).scale(scale).rotation(rotation);
     }
 
     public TerrainObjectPosition createTerrainObjectPosition() {
-        return new TerrainObjectPosition().setId(originalId).setPosition(position).setTerrainObjectId(terrainObjectId).setScale(scale).setRotation(rotation);
+        return new TerrainObjectPosition().id(originalId).position(position).terrainObjectId(terrainObjectId).scale(scale).rotation(rotation);
     }
 }
