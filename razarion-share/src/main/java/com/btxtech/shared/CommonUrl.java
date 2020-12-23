@@ -71,6 +71,9 @@ public class CommonUrl {
     // Cookies
     public static final String LOGIN_COOKIE_NAME = "LoginToken";
     public static final String RAZARION_COOKIE_NAME = "RazarionToken";
+    // OpenApi schema types
+    public static final String IMAGE_ID_TYPE = "imageId";
+
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache

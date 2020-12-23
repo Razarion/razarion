@@ -41,6 +41,11 @@ public class Leaf extends AbstractPropertyModel {
     }
 
     @Override
+    protected String getPropertyName() {
+        return propertyName;
+    }
+
+    @Override
     public void setPropertyValue(Object value) {
         if (propertyName != null) {
             branch.getHasProperties().set(propertyName, value);
@@ -58,5 +63,9 @@ public class Leaf extends AbstractPropertyModel {
     @Override
     public boolean isPropertyNullable() {
         return false;
+    }
+
+    public Branch getBranch() {
+        return branch;
     }
 }

@@ -19,7 +19,7 @@ public class Branch extends AbstractPropertyModel {
     @Inject
     private Instance<Branch> branchInstance;
     @Inject
-    private ListTypeArgumentProvider listTypeArgumentProvider;
+    private GenericPropertyInfoProvider genericPropertyInfoProvider;
     private Branch parent;
     private HasProperties hasProperties;
     private String propertyName;
@@ -42,6 +42,11 @@ public class Branch extends AbstractPropertyModel {
         } else {
             throw new IllegalStateException();
         }
+    }
+
+    @Override
+    protected String getPropertyName() {
+        return propertyName;
     }
 
     @Override
@@ -152,7 +157,7 @@ public class Branch extends AbstractPropertyModel {
             clazz = ((WrappedPortable)parent.hasProperties).unwrap().getClass();
         }
 
-        Object listElement = listTypeArgumentProvider.provide(clazz, propertyName);
+        Object listElement = genericPropertyInfoProvider.provideListElementType(clazz, propertyName);
         BindableListWrapper bindableListWrapper = (BindableListWrapper) BindableProxyFactory.getBindableProxy(getPropertyValue());
         bindableListWrapper.add(listElement);
     }

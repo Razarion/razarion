@@ -7,6 +7,7 @@ import com.btxtech.client.editor.EditorMenuButtonSection.CrudControllerButton;
 import com.btxtech.client.editor.audio.AudioGalleryDialog;
 import com.btxtech.client.editor.basemgmt.BaseMgmtEditorPanel;
 import com.btxtech.client.editor.client.scene.SceneConfigSidebar;
+import com.btxtech.client.editor.generic.model.GenericPropertyInfoProvider;
 import com.btxtech.client.editor.i18n.I18nPanel;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.inventory.InventoryItemCrudSidebar;
@@ -52,6 +53,8 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private EditorService editorService;
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
+    @Inject
+    private GenericPropertyInfoProvider genericPropertyInfoProvider;
     @Inject
     @DataField
     private EditorMenuButtonSection globalConfig;
@@ -122,6 +125,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @Override
     public void init(Void aVoid) {
+        genericPropertyInfoProvider.load();
         globalConfig.showSection(() -> modalDialogPanel.close(),
                 new CrudControllerButton(LevelEditorController.class, "Levels"),
                 new CrudControllerButton(PlanetEditorController.class, "Planets"),
