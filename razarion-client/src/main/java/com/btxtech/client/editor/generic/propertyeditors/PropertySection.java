@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.generic.propertyeditors;
 
+import com.btxtech.client.editor.generic.model.Branch;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLTableElement;
@@ -10,7 +11,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 @Templated("PropertySection.html#propertySection")
-public class PropertySection  extends AbstractPropertyEditor {
+public class PropertySection extends AbstractPropertyEditor {
     @Inject
     @DataField
     private HTMLDivElement propertySection;
@@ -19,13 +20,21 @@ public class PropertySection  extends AbstractPropertyEditor {
     private HTMLTableElement propertyTable;
     @Inject
     private Instance<PropertySectionRow> propertyRowInstance;
+    @Inject
+    private Instance<CollapsiblePropertySectionRow> collapsiblePropertyRowInstance;
 
     @Override
     protected void showValue() {
         getBranch().createBindableChildren(childPropertyModel -> {
-            PropertySectionRow propertyRow = propertyRowInstance.get();
-            propertyRow.init(childPropertyModel);
-            propertyTable.appendChild(propertyRow.getElement());
+            if (childPropertyModel instanceof Branch) {
+                CollapsiblePropertySectionRow propertyRow = collapsiblePropertyRowInstance.get();
+                propertyRow.init(childPropertyModel);
+                propertyTable.appendChild(propertyRow.getElement());
+            } else {
+                PropertySectionRow propertyRow = propertyRowInstance.get();
+                propertyRow.init(childPropertyModel);
+                propertyTable.appendChild(propertyRow.getElement());
+            }
         });
     }
 

@@ -114,7 +114,7 @@ a:active {
 .main-page {
     position: absolute;
     color: #d8d0d0;
-    background-color: black;
+    background-color: #1f2d40;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -941,6 +941,28 @@ a:active {
 
 .editor-table-even-odd:nth-child(odd) {
     background: rgba(84, 63, 245, 0.24)
+}
+
+.editor-property-table {
+    border-collapse: collapse;
+}
+
+.editor-property-table-collapse-header {
+    background: rgba(5, 2, 12, 0.24);
+    width: 100%;
+}
+
+.editor-property-table-delete-td {
+    background: rgba(5, 2, 12, 0.24);
+}
+
+tr {
+    border: 1px solid #17212f;
+}
+
+input {
+    background-color: #304562;
+    border: 1px solid #335b92
 }
 
 /** --- Gallery table --- */

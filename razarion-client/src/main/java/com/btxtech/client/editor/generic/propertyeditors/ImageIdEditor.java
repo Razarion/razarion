@@ -1,8 +1,8 @@
 package com.btxtech.client.editor.generic.propertyeditors;
 
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
+import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
-import elemental2.dom.HTMLTableElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -13,7 +13,7 @@ public class ImageIdEditor extends AbstractPropertyEditor<Integer> {
     // private Logger logger = Logger.getLogger(ImageEditor.class.getName());
     @Inject
     @DataField
-    private HTMLTableElement imageIdPanel;
+    private HTMLDivElement imageIdPanel;
     @Inject
     @DataField
     private ImageItemWidget imageItemWidget;

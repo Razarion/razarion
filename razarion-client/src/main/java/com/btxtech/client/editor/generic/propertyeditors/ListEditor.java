@@ -2,13 +2,10 @@ package com.btxtech.client.editor.generic.propertyeditors;
 
 import com.btxtech.client.utils.Elemental2Utils;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLTableElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.enterprise.inject.Instance;
@@ -28,9 +25,6 @@ public class ListEditor extends AbstractPropertyEditor<List> {
     @Inject
     @DataField
     private HTMLTableElement childTable;
-    @Inject
-    @DataField
-    private HTMLButtonElement createButton;
 
     @Override
     public void showValue() {
@@ -50,8 +44,7 @@ public class ListEditor extends AbstractPropertyEditor<List> {
         }
     }
 
-    @EventHandler("createButton")
-    private void onCreateButtonClicked(ClickEvent e) {
+    public void createChildElement() {
         try {
             getBranch().createListElement();
             display();
