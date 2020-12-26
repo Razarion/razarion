@@ -1,11 +1,8 @@
 package com.btxtech.client.utils;
 
-import elemental.client.Browser;
-import elemental.events.Event;
-import elemental.html.ButtonElement;
-import elemental.html.File;
-import elemental.html.FileList;
-import elemental.html.FileReader;
+import elemental2.dom.File;
+import elemental2.dom.FileList;
+import elemental2.dom.FileReader;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -22,14 +19,15 @@ public class ControlUtils {
     public static void readFirstAsDataURL(FileList fileList, BiConsumer<String, File> dataUrlConsumer) {
         try {
             File file = fileList.item(0);
-            FileReader fileReader = Browser.getWindow().newFileReader();
-            fileReader.setOnload(evt1 -> {
+            FileReader fileReader = new FileReader();
+            fileReader.onload = progressEvent -> {
                 try {
-                    dataUrlConsumer.accept((String) fileReader.getResult(), file);
+                    dataUrlConsumer.accept(fileReader.result.asString(), file);
                 } catch (Throwable t) {
                     LOGGER.log(Level.SEVERE, "Reading file failed", t);
                 }
-            });
+                return null;
+            };
             fileReader.readAsDataURL(file);
         } catch (Throwable t) {
             LOGGER.log(Level.SEVERE, "Start reading file failed", t);
@@ -42,22 +40,15 @@ public class ControlUtils {
     }
 
     public static void readFileText(File file, Consumer<String> textConsumer) {
-        FileReader fileReader = Browser.getWindow().newFileReader();
-        fileReader.setOnload(evt1 -> {
+        FileReader fileReader = new FileReader();
+        fileReader.onload = progressEvent -> {
             try {
-                textConsumer.accept((String) fileReader.getResult());
+                textConsumer.accept(fileReader.result.asString());
             } catch (Throwable t) {
                 LOGGER.log(Level.SEVERE, "Reading file failed", t);
             }
-        });
+            return null;
+        };
         fileReader.readAsText(file);
     }
-
-    public static ButtonElement createButton(String text, Runnable runnable) {
-        ButtonElement button = Browser.getDocument().createButtonElement();
-        button.setInnerHTML(text);
-        button.addEventListener(Event.CLICK, evt -> runnable.run(), false);
-        return button;
-    }
-
 }

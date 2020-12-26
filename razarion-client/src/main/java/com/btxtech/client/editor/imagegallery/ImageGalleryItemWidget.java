@@ -64,7 +64,7 @@ public class ImageGalleryItemWidget implements TakesValue<ImageGalleryItem>, IsE
         this.imageGalleryItem = imageGalleryItem;
         imageUiService.requestImage(imageGalleryItem.getId(), this);
         uploadButton.init("Upload", fileList -> ControlUtils.readFirstAsDataURL(fileList, (dataUrl, file) -> {
-            imageUiService.overrideImage(imageGalleryItem.getId(), dataUrl, (int) file.getSize(), file.getType());
+            imageUiService.overrideImage(imageGalleryItem.getId(), dataUrl, (int) file.size, file.type);
         }));
     }
 

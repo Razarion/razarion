@@ -1,13 +1,12 @@
 package com.btxtech.client.editor.widgets;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
-import elemental.html.FileList;
-import elemental.html.InputElement;
-import org.jboss.errai.common.client.api.IsElement;
-import org.jboss.errai.common.client.dom.Button;
-import org.jboss.errai.common.client.dom.HTMLElement;
-import org.jboss.errai.common.client.dom.Input;
-import org.jboss.errai.common.client.dom.Span;
+import elemental2.dom.FileList;
+import elemental2.dom.HTMLButtonElement;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import elemental2.dom.HTMLInputElement;
+import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -24,18 +23,18 @@ public class FileButton implements IsElement {
     // private Logger logger = Logger.getLogger(FileButton.class.getName());
     @Inject
     @DataField
-    private Button fileButton;
+    private HTMLButtonElement fileButton;
     @Inject
     @DataField
-    private Input fileButtonInput;
+    private HTMLInputElement fileButtonInput;
     @Inject
     @DataField
-    private Span fileButtonSpan;
+    private HTMLDivElement fileButtonDiv;
     private Consumer<FileList> fileCallback;
 
     public void init(String text, Consumer<FileList> fileCallback) {
         this.fileCallback = fileCallback;
-        fileButtonSpan.setInnerHTML(text);
+        fileButtonDiv.textContent = text;
     }
 
     @Override
@@ -45,11 +44,10 @@ public class FileButton implements IsElement {
 
     @EventHandler("fileButtonInput")
     public void fileButtonInputChanged(ChangeEvent e) {
-        InputElement fileSelector = (InputElement) e.getNativeEvent().getEventTarget();
-        if (fileSelector.getSize() > 0) {
-            fileCallback.accept(fileSelector.getFiles());
+        if (fileButtonInput.files.length > 0) {
+            fileCallback.accept(fileButtonInput.files);
         }
-        fileButtonInput.setValue(null); // Prevent caching
+        fileButtonInput.value = null; // Prevent caching
     }
 
 }

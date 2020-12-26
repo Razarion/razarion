@@ -1,8 +1,11 @@
 package com.btxtech.shared.datatypes.shape.config;
 
 import com.btxtech.shared.dto.Config;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
+
+import static com.btxtech.shared.CommonUrl.COLLADA_STRING_TYPE;
 
 /**
  * Created by Beat
@@ -11,6 +14,7 @@ import java.util.List;
 public class Shape3DConfig implements Config {
     private int id;
     private String internalName;
+    @Schema(type = COLLADA_STRING_TYPE, accessMode = Schema.AccessMode.WRITE_ONLY)
     private String colladaString;
     private List<Shape3DElementConfig> shape3DElementConfigs;
 
