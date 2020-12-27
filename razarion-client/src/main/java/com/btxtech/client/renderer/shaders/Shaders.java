@@ -57,15 +57,6 @@ public interface Shaders extends ClientBundle {
     @Source("Monitor.frag")
     TextResource monitorFragmentShader();
 
-    @Source("DepthBufferVP.vert")
-    TextResource depthBufferVPVertexShader();
-
-    @Source("DebugVector.vert")
-    TextResource debugVectorVertexShader();
-
-    @Source("DebugVector.frag")
-    TextResource debugVectorFragmentShader();
-
     @Source("RgbaMvp.vert")
     @Deprecated
     TextResource rgbaMvpVertexShader();
