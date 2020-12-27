@@ -20,9 +20,7 @@ public class ImageIdEditor extends AbstractPropertyEditor<Integer> {
 
     @Override
     public void showValue() {
-        if (getPropertyValue() != null) {
-            imageItemWidget.setImageId(getPropertyValue(), this::setPropertyValue);
-        }
+        imageItemWidget.setImageId(getPropertyValue(), this::setPropertyValue);
     }
 
     @Override

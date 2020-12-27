@@ -44,10 +44,13 @@ public class FileButton implements IsElement {
 
     @EventHandler("fileButtonInput")
     public void fileButtonInputChanged(ChangeEvent e) {
-        if (fileButtonInput.files.length > 0) {
-            fileCallback.accept(fileButtonInput.files);
+        try {
+            if (fileButtonInput.files.length > 0) {
+                fileCallback.accept(fileButtonInput.files);
+            }
+        } finally {
+            fileButtonInput.value = null; // Prevent caching
         }
-        fileButtonInput.value = null; // Prevent caching
     }
 
 }
