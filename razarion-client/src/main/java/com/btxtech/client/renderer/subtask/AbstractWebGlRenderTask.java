@@ -80,6 +80,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     private WebGLUniformLocation perspectiveMatrixUniformLocation;
     private WebGLUniformLocation receiveShadowMatrixUniformLocation;
     private WebGLUniformLocation modelMatrixUniformLocation;
+    private WebGLUniformLocation modelNormMatrixUniformLocation;
     // Shadow lookup
     private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
     private WebGLUniformLocation uShadowAlpha;
@@ -116,6 +117,9 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
 
     private List<String> glslFragmentDefines(T t) {
         List<String> fragmentDefines = new ArrayList<>();
+        if (modelMatricesSupplier != null) {
+            fragmentDefines.add(MODEL_MATRIX);
+        }
         if (webGlFacadeConfig.isReceiveShadow()) {
             fragmentDefines.add("RECEIVE_SHADOW");
         }
@@ -142,6 +146,9 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         }
         if (modelMatricesSupplier != null) {
             modelMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+            if (webGlFacadeConfig.isNormTransformation()) {
+                modelNormMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);
+            }
         }
     }
 
@@ -337,7 +344,9 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
             modelMatrixUniforms.forEach(uniformLocation -> uniformLocation.uniform(modelMatrices));
             ModelMatrices transformedModelMatrices = mixTransformation(modelMatrices, interpolationFactor);
             webGlFacade.uniformMatrix4fv(modelMatrixUniformLocation, transformedModelMatrices.getModel());
-            webGlFacade.uniformMatrix4fv(viewNormMatrixUniformLocation, transformedModelMatrices.getNorm());
+            if(modelNormMatrixUniformLocation != null) {
+                webGlFacade.uniformMatrix4fv(modelNormMatrixUniformLocation, transformedModelMatrices.getNorm());
+            }
             webGlFacade.drawArrays(webGlFacadeConfig.getDrawMode(), elementCount, getHelperString());
         });
     }
@@ -349,7 +358,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
                     webGlFacade.uniformMatrix4fv(viewMatrixUniformLocation, viewService.getViewMatrix());
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", webGlFacade.getCtx3d());
                 }
-                if (viewNormMatrixUniformLocation != null && modelMatricesSupplier == null) {
+                if (viewNormMatrixUniformLocation != null) {
                     webGlFacade.uniformMatrix4fv(viewNormMatrixUniformLocation, viewService.getViewNormMatrix());
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_NORM_MATRIX", webGlFacade.getCtx3d());
                 }

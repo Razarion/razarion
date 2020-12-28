@@ -47,10 +47,10 @@ public class WebGlFacade {
     public static final String U_COLOR = "uColor";
     // Uniform model matrix
     public static final String U_VIEW_MATRIX = "viewMatrix";
+    public static final String U_VIEW_NORM_MATRIX = "viewNormMatrix";
     public static final String U_PROJECTION_MATRIX = "projectionMatrix";
-    public static final String U_VIEW_NORM_MATRIX = "normalMatrix";
     public static final String U_MODEL_MATRIX = "modelMatrix";
-    public static final String U_MODEL_NORM_MATRIX = "modelMatrix???"; // ???
+    public static final String U_MODEL_NORM_MATRIX = "modelNormMatrix";
     public static final String U_SHADOW_MATRIX = "shadowMatrix";
 
     // private Logger logger = Logger.getLogger(AbstractWebGlUnitRenderer.class.getName());

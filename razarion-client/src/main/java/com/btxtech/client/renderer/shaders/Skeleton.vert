@@ -13,10 +13,11 @@ attribute vec2 uv;
 
 #ifdef MODEL_MATRIX
 uniform highp mat4 modelMatrix;
+uniform highp mat4 modelNormMatrix;
 #endif
 uniform highp mat4 viewMatrix;
 uniform highp mat4 projectionMatrix;
-uniform highp mat4 normalMatrix;
+uniform highp mat4 viewNormMatrix;
 uniform highp mat4 shadowMatrix;
 //-$$$-INCLUDE-CHUNK uniforms-vertex
 
@@ -34,10 +35,11 @@ varying vec3 vWorldVertexPosition;
 //-$$$-INCLUDE-CHUNK code-vertex
 
 void main(void) {
+    vec4 norm;
     #ifdef FIX_PERPENDICULAR_NORMAL
-    vNormal = (normalMatrix * vec4(0.0, 0.0, 1.0, 1.0)).xyz;
+    norm = vec4(0.0, 0.0, 1.0, 1.0);
     #else
-    vNormal = (normalMatrix * vec4(objectNormal, 1.0)).xyz;
+    norm = vec4(objectNormal, 1.0);
     #endif
 
     #ifdef UV
@@ -53,9 +55,11 @@ void main(void) {
     //-$$$-INCLUDE-CHUNK main-code-vertex
 
     #ifdef MODEL_MATRIX
+    vNormal = (viewNormMatrix * modelNormMatrix * norm).xyz;
     vViewPosition = - (viewMatrix * modelMatrix * vec4(position, 1.0)).xyz;
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
     #else
+    vNormal = (viewNormMatrix * norm).xyz;
     vViewPosition = - (viewMatrix * vec4(position, 1.0)).xyz;
     gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
     #endif
