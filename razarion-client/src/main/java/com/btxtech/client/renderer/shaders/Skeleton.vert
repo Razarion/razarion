@@ -46,7 +46,11 @@ void main(void) {
     vUv = uv;
     #endif
 
+    #ifdef MODEL_MATRIX
+    shadowPosition = shadowMatrix * modelMatrix * vec4(position, 1.0);
+    #else
     shadowPosition = shadowMatrix * vec4(position, 1.0);
+    #endif
 
     #ifdef WORLD_VERTEX_POSITION
     vWorldVertexPosition = position.xyz;
