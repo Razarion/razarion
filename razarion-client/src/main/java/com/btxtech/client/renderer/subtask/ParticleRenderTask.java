@@ -25,7 +25,6 @@ public class ParticleRenderTask extends AbstractWebGlRenderTask<ParticleShapeCon
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(ParticleShapeConfig particleShapeConfig) {
         return new WebGlFacadeConfig(Shaders.SHADERS.particleCustom())
-                .enableTransformation(false)
                 .enableCastShadow()
                 .blend(SOURCE_ALPHA)
                 .writeDepthBuffer(false);

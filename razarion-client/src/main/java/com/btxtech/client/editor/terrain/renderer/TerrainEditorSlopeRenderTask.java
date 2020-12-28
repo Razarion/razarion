@@ -27,7 +27,6 @@ public class TerrainEditorSlopeRenderTask extends AbstractWebGlRenderTask<Editor
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(EditorSlopeWrapper modifiedSlope) {
         return new WebGlFacadeConfig(Shaders.SHADERS.terrainEditorSlopeCustom())
-                .enableTransformation(false)
                 .depthTest(false)
                 .writeDepthBuffer(false)
                 .drawMode(WebGLRenderingContext.LINE_LOOP);

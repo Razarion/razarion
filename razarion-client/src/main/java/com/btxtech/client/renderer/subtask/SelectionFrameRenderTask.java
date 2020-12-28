@@ -21,7 +21,6 @@ public class SelectionFrameRenderTask extends AbstractWebGlRenderTask<GroupSelec
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(GroupSelectionFrame groupSelectionFrame) {
         return new WebGlFacadeConfig(Shaders.SHADERS.customRgba())
-                .enableTransformation(false)
                 .blend(WebGlFacadeConfig.Blend.SOURCE_ALPHA)
                 .depthTest(false)
                 .writeDepthBuffer(false)

@@ -28,7 +28,6 @@ public class TerrainEditorTerrainObjectRendererTask extends AbstractWebGlRenderT
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(Void ignore) {
         return new WebGlFacadeConfig(Shaders.SHADERS.terrainObjectEditorCustom())
-                .enableTransformation(false)
                 .blend(WebGlFacadeConfig.Blend.SOURCE_ALPHA)
                 .depthTest(false)
                 .writeDepthBuffer(false)

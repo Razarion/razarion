@@ -20,7 +20,6 @@ public class StatusBarRendererTask extends AbstractWebGlRenderTask<StatusBarGeom
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(StatusBarGeometry statusBarGeometry) {
         return new WebGlFacadeConfig(Shaders.SHADERS.statusBarCustom())
-                .enableTransformation(false)
                 .blend(WebGlFacadeConfig.Blend.SOURCE_ALPHA)
                 .depthTest(false)
                 .writeDepthBuffer(false);

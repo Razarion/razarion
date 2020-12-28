@@ -137,12 +137,10 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     }
 
     protected void setupTransformation() {
-        if (webGlFacadeConfig.isTransformation()) {
-            viewMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
-            perspectiveMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
-            if (webGlFacadeConfig.isNormTransformation()) {
-                viewNormMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_VIEW_NORM_MATRIX);
-            }
+        viewMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
+        perspectiveMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_PROJECTION_MATRIX);
+        if (webGlFacadeConfig.isNormTransformation()) {
+            viewNormMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_VIEW_NORM_MATRIX);
         }
         if (modelMatricesSupplier != null) {
             modelMatrixUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
@@ -344,7 +342,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
             modelMatrixUniforms.forEach(uniformLocation -> uniformLocation.uniform(modelMatrices));
             ModelMatrices transformedModelMatrices = mixTransformation(modelMatrices, interpolationFactor);
             webGlFacade.uniformMatrix4fv(modelMatrixUniformLocation, transformedModelMatrices.getModel());
-            if(modelNormMatrixUniformLocation != null) {
+            if (modelNormMatrixUniformLocation != null) {
                 webGlFacade.uniformMatrix4fv(modelNormMatrixUniformLocation, transformedModelMatrices.getNorm());
             }
             webGlFacade.drawArrays(webGlFacadeConfig.getDrawMode(), elementCount, getHelperString());
@@ -354,34 +352,24 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     protected void transformationUniformValues() {
         switch (renderService.getPass()) {
             case MAIN:
-                if (viewMatrixUniformLocation != null) {
-                    webGlFacade.uniformMatrix4fv(viewMatrixUniformLocation, viewService.getViewMatrix());
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", webGlFacade.getCtx3d());
-                }
+                webGlFacade.uniformMatrix4fv(viewMatrixUniformLocation, getViewMatrix());
+                WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", webGlFacade.getCtx3d());
                 if (viewNormMatrixUniformLocation != null) {
                     webGlFacade.uniformMatrix4fv(viewNormMatrixUniformLocation, viewService.getViewNormMatrix());
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_NORM_MATRIX", webGlFacade.getCtx3d());
                 }
-                if (perspectiveMatrixUniformLocation != null) {
-                    // Perspective
-                    webGlFacade.uniformMatrix4fv(perspectiveMatrixUniformLocation, viewService.getPerspectiveMatrix());
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", webGlFacade.getCtx3d());
-                }
+                webGlFacade.uniformMatrix4fv(perspectiveMatrixUniformLocation, getPerspectiveMatrix());
+                WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", webGlFacade.getCtx3d());
                 if (receiveShadowMatrixUniformLocation != null) {
                     webGlFacade.uniformMatrix4fv(receiveShadowMatrixUniformLocation, viewService.getShadowLookupMatrix());
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv uShadowMatrix", webGlFacade.getCtx3d());
                 }
                 break;
             case SHADOW:
-                if (viewMatrixUniformLocation != null) {
-                    webGlFacade.uniformMatrix4fv(viewMatrixUniformLocation, viewService.getViewShadowMatrix());
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", webGlFacade.getCtx3d());
-                }
-                if (perspectiveMatrixUniformLocation != null) {
-                    // Perspective
-                    webGlFacade.uniformMatrix4fv(perspectiveMatrixUniformLocation, viewService.getPerspectiveShadowMatrix());
-                    WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", webGlFacade.getCtx3d());
-                }
+                webGlFacade.uniformMatrix4fv(viewMatrixUniformLocation, viewService.getViewShadowMatrix());
+                WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", webGlFacade.getCtx3d());
+                webGlFacade.uniformMatrix4fv(perspectiveMatrixUniformLocation, viewService.getPerspectiveShadowMatrix());
+                WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", webGlFacade.getCtx3d());
                 break;
             default:
                 throw new IllegalStateException("Dont know how to setup transformation uniforms for render pass: " + renderService.getPass());
@@ -467,6 +455,24 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     @Override
     public void setProgressAnimations(Collection<ProgressAnimation> progressAnimations) {
         this.progressAnimations = progressAnimations;
+    }
+
+    /**
+     * Override in subclasses
+     *
+     * @return view matrix
+     */
+    protected NativeMatrix getViewMatrix() {
+        return viewService.getViewMatrix();
+    }
+
+    /**
+     * Override in subclasses
+     *
+     * @return perspective matrix
+     */
+    protected NativeMatrix getPerspectiveMatrix() {
+        return viewService.getPerspectiveMatrix();
     }
 
     /**

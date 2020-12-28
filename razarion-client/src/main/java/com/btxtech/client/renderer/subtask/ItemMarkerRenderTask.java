@@ -20,7 +20,6 @@ public class ItemMarkerRenderTask extends AbstractWebGlRenderTask<ItemMarkerGeom
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(ItemMarkerGeometry itemMarkerGeometry) {
         return new WebGlFacadeConfig(Shaders.SHADERS.itemMarkerCustom())
-                .enableTransformation(false)
                 .blend(WebGlFacadeConfig.Blend.SOURCE_ALPHA)
                 .depthTest(false)
                 .writeDepthBuffer(false);

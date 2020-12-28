@@ -17,7 +17,6 @@ public class WebGlFacadeConfig {
     private TextResource fragmentShaderCode;
     private boolean skeletonShader;
     private TextResource skeletonCustomLib;
-    private boolean transformation;
     private boolean normTransformation;
     private boolean receiveShadow;
     private boolean castShadow;
@@ -41,9 +40,8 @@ public class WebGlFacadeConfig {
         this.skeletonCustomLib = skeletonCustomLib;
     }
 
-    public WebGlFacadeConfig enableTransformation(boolean normTransformation) {
-        transformation = true;
-        this.normTransformation = normTransformation;
+    public WebGlFacadeConfig enableNormTransformation() {
+        normTransformation = true;
         return this;
     }
 
@@ -111,10 +109,6 @@ public class WebGlFacadeConfig {
 
     public TextResource getSkeletonCustomLib() {
         return skeletonCustomLib;
-    }
-
-    public boolean isTransformation() {
-        return transformation;
     }
 
     public boolean isNormTransformation() {

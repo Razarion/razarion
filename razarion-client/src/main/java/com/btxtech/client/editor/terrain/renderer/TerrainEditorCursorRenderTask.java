@@ -27,7 +27,6 @@ public class TerrainEditorCursorRenderTask extends AbstractWebGlRenderTask<Polyg
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(Polygon2D polygon2D) {
         return new WebGlFacadeConfig(Shaders.SHADERS.terrainEditorCursorCustom())
-                .enableTransformation(false)
                 .blend(WebGlFacadeConfig.Blend.SOURCE_ALPHA)
                 .depthTest(false)
                 .writeDepthBuffer(false)

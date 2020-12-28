@@ -34,7 +34,7 @@ public class GroundRenderTask extends AbstractWebGlRenderTask<UiTerrainGroundTil
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(UiTerrainGroundTile uiTerrainGroundTile) {
         return new WebGlFacadeConfig(Shaders.SHADERS.groundCustom())
-                .enableTransformation(true)
+                .enableNormTransformation()
                 .enableReceiveShadow()
                 .enableCastShadow()
                 .enableOESStandardDerivatives()

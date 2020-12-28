@@ -50,12 +50,10 @@ public interface Shaders extends ClientBundle {
     @Source("TerrainEditorSlopeCustom.glsl")
     TextResource terrainEditorSlopeCustom();
 
-    // ---------------------- OLD ----------------------
-    @Source("Monitor.vert")
-    TextResource monitorVertexShader();
+    @Source("MonitorCustom.glsl")
+    TextResource monitorCustom();
 
-    @Source("Monitor.frag")
-    TextResource monitorFragmentShader();
+    // ---------------------- OLD ----------------------
 
     @Source("RgbaMvp.vert")
     @Deprecated

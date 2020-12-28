@@ -41,7 +41,7 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(VertexContainer vertexContainer) {
         return new WebGlFacadeConfig(SHADERS.vertexContainerCustomShader())
-                .enableTransformation(true)
+                .enableNormTransformation()
                 .enableReceiveShadow()
                 .enableCastShadow()
                 .enableOESStandardDerivatives()

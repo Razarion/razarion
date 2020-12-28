@@ -30,7 +30,7 @@ public class TerrainMarkerEditorRendererUnit extends AbstractRenderUnit<List<Ver
 
     @Override
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.rgbaVpVertexShader(), Shaders.SHADERS.rgbaFragmentShader()).enableTransformation(false));
+        webGlFacade.init(new WebGlFacadeConfig(Shaders.SHADERS.rgbaVpVertexShader(), Shaders.SHADERS.rgbaFragmentShader()));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
     }
