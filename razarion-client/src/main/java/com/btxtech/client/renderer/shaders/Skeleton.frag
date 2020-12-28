@@ -14,9 +14,6 @@ varying vec2 vUv;
 //-$$$-INCLUDE-CHUNK varyings
 
 uniform highp mat4 viewNormMatrix;
-#ifdef MODEL_MATRIX
-uniform highp mat4 modelNormMatrix;
-#endif
 
 // Light
 uniform vec3 directLightDirection;
@@ -134,11 +131,7 @@ vec3 ground() {
 
 void main(void) {
     shadowFactor = calculateShadowFactor();
-    #ifdef MODEL_MATRIX
-    correctedDirectLightDirection = -(normalize((viewNormMatrix * modelNormMatrix * vec4(directLightDirection, 1.0)).xyz));
-    #else
     correctedDirectLightDirection = -(normalize((viewNormMatrix * vec4(directLightDirection, 1.0)).xyz));
-    #endif
 
     //-$$$-INCLUDE-CHUNK main-code-fragment
 }
