@@ -150,8 +150,8 @@ public class ModelMatrices {
         }
     }
 
-    public ModelMatrices multiplyStaticShapeTransform(NativeMatrix staticShapeTransform) {
-        ModelMatrices modelMatrices = new ModelMatrices(matrix.multiply(staticShapeTransform));
+    public ModelMatrices multiplyStaticShapeTransform(NativeMatrix nativeMatrix) {
+        ModelMatrices modelMatrices = new ModelMatrices(matrix.multiply(nativeMatrix));
 
         modelMatrices.progress = progress;
         modelMatrices.interpolatableVelocity = interpolatableVelocity;

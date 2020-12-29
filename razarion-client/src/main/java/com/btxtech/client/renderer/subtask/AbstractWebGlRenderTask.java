@@ -411,8 +411,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
                 }
             }
             if (shapeTransform.getStaticMatrix() != null) {
-                // Why must the static matrix from shapeTransform be ignored?
-                return modelMatrix.multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
+                return modelMatrix.multiplyStaticShapeTransform(nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray())).multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
             } else {
                 return modelMatrix.multiplyShapeTransform(shapeTransform).multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
             }

@@ -32,7 +32,7 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
                 if (predicate != null && !predicate.test(vertexContainer)) {
                     continue;
                 }
-                RenderTask modelRenderTask = createModelRenderTask(RenderTask.class,
+                createModelRenderTask(RenderTask.class,
                         vertexContainer,
                         modelMatricesSupplier,
                         progressAnimations,
