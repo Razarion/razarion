@@ -35,11 +35,13 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     private ClientShape3DUiService shape3DUiService;
     private boolean alphaToCoverage;
     private ProgressState progressState;
+    private VertexContainer vertexContainer;
     // private WebGLUniformLocation characterRepresenting;
     // private WebGLUniformLocation characterRepresentingColor;
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(VertexContainer vertexContainer) {
+        this.vertexContainer = vertexContainer;
         return new WebGlFacadeConfig(SHADERS.vertexContainerCustomShader())
                 .enableNormTransformation()
                 .enableReceiveShadow()
@@ -122,5 +124,10 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     @Override
     protected boolean isAlphaToCoverage() {
         return alphaToCoverage;
+    }
+
+    @Override
+    protected String getHelperString() {
+        return super.getHelperString() + " " + vertexContainer.getKey();
     }
 }

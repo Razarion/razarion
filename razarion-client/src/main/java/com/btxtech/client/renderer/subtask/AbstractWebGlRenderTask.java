@@ -398,7 +398,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
             shapeTransformTRS.setScaleY(1);
             shapeTransformTRS.setScaleZ(1);
             for (ProgressAnimation progressAnimation : progressAnimations) {
-                Objects.requireNonNull(progressAnimation.getAnimationTrigger(), "No animation trigger");
+                Objects.requireNonNull(progressAnimation.getAnimationTrigger(), "No animation trigger: " + getHelperString());
                 switch (progressAnimation.getAnimationTrigger()) {
                     case ITEM_PROGRESS:
                         progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
