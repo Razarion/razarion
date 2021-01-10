@@ -167,7 +167,7 @@ public class ParticleService {
         while (!waitingEmitters.isEmpty() && waitingEmitters.get(0).getStartTimeStamp() < timestamp) {
             activeEmitters.add(waitingEmitters.remove(0));
         }
-        activeEmitters.removeIf(particle -> !particle.tick(timestamp, factor));
+        activeEmitters.removeIf(emitter -> !emitter.tick(timestamp, factor));
 
         // Handle particles
         particles.removeIf(particle -> !particle.tick(timestamp, factor, camera.getMatrix(), nativeMatrixFactory));
