@@ -6,6 +6,7 @@ uniform float uWidthInPixels;
 
 
 //-$$$-CHUNK main-code-vertex BEGIN
+// TODO performance: calculate the distance in normalized device coordinates (NDC) this way is slow
 vec4 vectorX1  = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
 vec4 vectorX2  = projectionMatrix * viewMatrix * modelMatrix * vec4(position.x + uEdgeLength, position.y, position.z, 1.0);
 gl_PointSize = (uWidthInPixels / 2.0) * (abs(vectorX1.x - vectorX2.x) / vectorX1.w);
