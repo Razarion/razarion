@@ -308,7 +308,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         } else {
             webGlFacade.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
         }
-        if (renderService.getPass() != RenderService.Pass.SHADOW) {
+        if (getRenderPass() != RenderService.Pass.SHADOW) {
             // WebGl behaves strange if during depth buffer render depth mask is set to false
             webGlFacade.getCtx3d().depthMask(webGlFacadeConfig.isWriteDepthBuffer());
         }
@@ -350,7 +350,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     }
 
     protected void transformationUniformValues() {
-        switch (renderService.getPass()) {
+        switch (getRenderPass()) {
             case MAIN:
                 webGlFacade.uniformMatrix4fv(viewMatrixUniformLocation, getViewMatrix());
                 WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", webGlFacade.getCtx3d());
@@ -372,7 +372,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
                 WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PROJECTION_MATRIX", webGlFacade.getCtx3d());
                 break;
             default:
-                throw new IllegalStateException("Dont know how to setup transformation uniforms for render pass: " + renderService.getPass());
+                throw new IllegalStateException("Dont know how to setup transformation uniforms for render pass: " + getRenderPass());
         }
     }
 
@@ -425,7 +425,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         webGlFacade.uniform1f(uShadowAlpha, (float) visualUiService.getPlanetVisualConfig().getShadowAlpha());
         webGlFacade.uniform1i(uShadowTexture, shadowWebGlTextureId.getUniformValue());
         webGlFacade.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
-        if (renderService.getPass() == RenderService.Pass.SHADOW) {
+        if (getRenderPass() == RenderService.Pass.SHADOW) {
             webGlFacade.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
         } else {
             webGlFacade.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
@@ -433,7 +433,7 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
     }
 
     protected boolean canBeSkipped() {
-        return renderService.getPass() == RenderService.Pass.SHADOW && !webGlFacadeConfig.isCastShadow();
+        return getRenderPass() == RenderService.Pass.SHADOW && !webGlFacadeConfig.isCastShadow();
     }
 
     @Override
@@ -499,6 +499,11 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
 
     protected String getHelperString() {
         return getClass().getName();
+    }
+
+
+    protected final RenderService.Pass getRenderPass() {
+        return renderService.getPass();
     }
 
     private double setupContinuesAnimationProgress(ProgressAnimation progressAnimation) {

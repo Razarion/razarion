@@ -60,7 +60,7 @@ public class Particle implements Comparable<Particle> {
 
     @Override
     public int compareTo(Particle o) {
-        return Double.compare(cameraDistance, o.cameraDistance);
+        return Double.compare(o.cameraDistance, cameraDistance);
     }
 
     private double setupScale(double progress) {

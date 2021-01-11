@@ -44,7 +44,7 @@ public class ParticleService {
     @PostConstruct
     public void DELETE_ME() {
         // Particles
-        particleShapeConfig = new ParticleShapeConfig().setId(1).setInternalName("Fire Particle").setEdgeLength(3).setAlphaOffsetImageId(56).setColorRampImageId(57).setColorRampXOffsets(new double[]{4.0 / 128.0, 12.0 / 128.0, 20.0 / 128.0}).setTextureOffsetScope(0.1);
+        particleShapeConfig = new ParticleShapeConfig().setId(1).setInternalName("Fire Particle").setEdgeLength(3).setShadowAlphaCutOff(0.38).setAlphaOffsetImageId(56).setColorRampImageId(57).setColorRampXOffsets(new double[]{4.0 / 128.0, 12.0 / 128.0, 20.0 / 128.0}).setTextureOffsetScope(0.1);
 
         //-------------------------------------------------------------------------
         // Fire
