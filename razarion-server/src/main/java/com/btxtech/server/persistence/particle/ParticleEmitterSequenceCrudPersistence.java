@@ -11,6 +11,8 @@ import javax.inject.Singleton;
 public class ParticleEmitterSequenceCrudPersistence extends AbstractCrudPersistence<ParticleEmitterSequenceConfig, ParticleEmitterSequenceEntity> {
     @Inject
     private AudioPersistence audioPersistence;
+    @Inject
+    private ParticleShapeCrudPersistence particleShapeCrudPersistence;
 
     public ParticleEmitterSequenceCrudPersistence() {
         super(ParticleEmitterSequenceEntity.class, ParticleEmitterSequenceEntity_.id, ParticleEmitterSequenceEntity_.internalName);
@@ -23,6 +25,6 @@ public class ParticleEmitterSequenceCrudPersistence extends AbstractCrudPersiste
 
     @Override
     protected void fromConfig(ParticleEmitterSequenceConfig config, ParticleEmitterSequenceEntity entity) {
-        entity.fromConfig(config, audioPersistence);
+        entity.fromConfig(config, audioPersistence, particleShapeCrudPersistence);
     }
 }

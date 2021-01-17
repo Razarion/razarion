@@ -52,10 +52,10 @@ public class ParticleEmitterSequenceEntity {
                 .audioIds(toIds(audios));
     }
 
-    public void fromConfig(ParticleEmitterSequenceConfig config, AudioPersistence audioPersistence) {
+    public void fromConfig(ParticleEmitterSequenceConfig config, AudioPersistence audioPersistence, ParticleShapeCrudPersistence particleShapeCrudPersistence) {
         internalName = config.getInternalName();
-        dependent = PersistenceUtil.fromConfig(dependent, config.getDependent(), DependentParticleEmitterEntity::new, DependentParticleEmitterEntity::fromConfig);
-        autonomous = PersistenceUtil.fromConfig(autonomous, config.getAutonomous(), AutonomousParticleEmitterEntity::new, AutonomousParticleEmitterEntity::fromConfig);
+        dependent = PersistenceUtil.fromConfig(dependent, config.getDependent(), DependentParticleEmitterEntity::new, (dependentParticleEmitterEntity, config1) -> dependentParticleEmitterEntity.fromConfig(config1, particleShapeCrudPersistence));
+        autonomous = PersistenceUtil.fromConfig(autonomous, config.getAutonomous(), AutonomousParticleEmitterEntity::new, (dependentParticleEmitterEntity, config1) -> dependentParticleEmitterEntity.fromConfig(config1, particleShapeCrudPersistence));
         audios = audioPersistence.toAudioLibraryEntities(config.getAudioIds());
     }
 

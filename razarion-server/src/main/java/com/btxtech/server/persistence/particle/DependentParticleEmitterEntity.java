@@ -15,7 +15,7 @@ public class DependentParticleEmitterEntity extends ParticleEmitter {
         return dependentParticleEmitterConfig;
     }
 
-    public void fromConfig(DependentParticleEmitterConfig config) {
-        super.fromConfig(config);
+    public void fromConfig(DependentParticleEmitterConfig config, ParticleShapeCrudPersistence particleShapeCrudPersistence) {
+        super.fromConfig(config, particleShapeCrudPersistence);
     }
 }

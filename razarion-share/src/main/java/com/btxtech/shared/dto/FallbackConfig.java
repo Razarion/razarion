@@ -62,11 +62,11 @@ public final class FallbackConfig {
 
     public static ColdGameUiContext coldGameUiControlConfig(UserContext userContextFromSession) {
         ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
-        coldGameUiContext.setUserContext(userContextFromSession);
-        coldGameUiContext.setShape3Ds(new ArrayList<>());
-        coldGameUiContext.setStaticGameConfig(setupStaticGameConfig());
-        coldGameUiContext.setWarmGameUiContext(warmGameUiControlConfig());
-        coldGameUiContext.setAudioConfig(new AudioConfig());
+        coldGameUiContext.userContext(userContextFromSession);
+        coldGameUiContext.shape3Ds(new ArrayList<>());
+        coldGameUiContext.staticGameConfig(setupStaticGameConfig());
+        coldGameUiContext.warmGameUiContext(warmGameUiControlConfig());
+        coldGameUiContext.audioConfig(new AudioConfig());
         return coldGameUiContext;
     }
 

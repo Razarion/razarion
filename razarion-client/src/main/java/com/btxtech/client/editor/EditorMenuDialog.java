@@ -27,6 +27,8 @@ import com.btxtech.shared.rest.DrivewayEditorController;
 import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
+import com.btxtech.shared.rest.ParticleEmitterSequenceEditorController;
+import com.btxtech.shared.rest.ParticleShapeEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
 import com.btxtech.shared.rest.ResourceItemTypeEditorController;
 import com.btxtech.shared.rest.Shape3DEditorController;
@@ -137,7 +139,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
                 new CrudControllerButton(Shape3DEditorController.class, "Shape 3D"),
                 new CrudControllerButton(TerrainObjectEditorController.class, "Terrain Object"),
                 new CrudControllerButton(BaseItemTypeEditorController.class, "Base Items"),
-                new CrudControllerButton(ResourceItemTypeEditorController.class, "Resource Items")
+                new CrudControllerButton(ResourceItemTypeEditorController.class, "Resource Items"),
+                new CrudControllerButton(ParticleShapeEditorController.class, "Particle Shapes"),
+                new CrudControllerButton(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequences")
         );
     }
 

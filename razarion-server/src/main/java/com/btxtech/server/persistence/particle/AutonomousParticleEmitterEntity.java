@@ -32,8 +32,8 @@ public class AutonomousParticleEmitterEntity extends ParticleEmitter {
         return autonomousParticleEmitterConfig;
     }
 
-    public void fromConfig(AutonomousParticleEmitterConfig config) {
-        super.fromConfig(config);
+    public void fromConfig(AutonomousParticleEmitterConfig config, ParticleShapeCrudPersistence particleShapeCrudPersistence) {
+        super.fromConfig(config, particleShapeCrudPersistence);
         startTime = config.getStartTime();
         timeToLive = config.getTimeToLive();
         velocity = config.getVelocity();

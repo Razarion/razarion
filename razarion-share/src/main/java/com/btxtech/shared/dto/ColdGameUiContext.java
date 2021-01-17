@@ -1,6 +1,8 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.particle.ParticleEmitterSequenceConfig;
+import com.btxtech.shared.datatypes.particle.ParticleShapeConfig;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
@@ -18,80 +20,140 @@ public class ColdGameUiContext {
     private List<LevelUnlockConfig> levelUnlockConfigs;
     private StaticGameConfig staticGameConfig;
     private List<Shape3D> shape3Ds;
+    private List<ParticleShapeConfig> particleShapeConfigs;
+    private List<ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs;
     private AudioConfig audioConfig;
     private GameTipVisualConfig gameTipVisualConfig;
     private InGameQuestVisualConfig inGameQuestVisualConfig;
     private WarmGameUiContext warmGameUiContext;
 
-    public StaticGameConfig getStaticGameConfig() {
-        return staticGameConfig;
-    }
-
-    public ColdGameUiContext setStaticGameConfig(StaticGameConfig staticGameConfig) {
-        this.staticGameConfig = staticGameConfig;
-        return this;
-    }
-
-    public List<Shape3D> getShape3Ds() {
-        return shape3Ds;
-    }
-
-    public ColdGameUiContext setShape3Ds(List<Shape3D> shape3Ds) {
-        this.shape3Ds = shape3Ds;
-        return this;
-    }
-
-    public AudioConfig getAudioConfig() {
-        return audioConfig;
-    }
-
-    public ColdGameUiContext setAudioConfig(AudioConfig audioConfig) {
-        this.audioConfig = audioConfig;
-        return this;
-    }
-
     public UserContext getUserContext() {
         return userContext;
     }
 
-    public ColdGameUiContext setUserContext(UserContext userContext) {
+    public void setUserContext(UserContext userContext) {
         this.userContext = userContext;
-        return this;
     }
 
     public List<LevelUnlockConfig> getLevelUnlockConfigs() {
         return levelUnlockConfigs;
     }
 
-    public ColdGameUiContext setLevelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
+    public void setLevelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
         this.levelUnlockConfigs = levelUnlockConfigs;
-        return this;
+    }
+
+    public StaticGameConfig getStaticGameConfig() {
+        return staticGameConfig;
+    }
+
+    public void setStaticGameConfig(StaticGameConfig staticGameConfig) {
+        this.staticGameConfig = staticGameConfig;
+    }
+
+    public List<Shape3D> getShape3Ds() {
+        return shape3Ds;
+    }
+
+    public void setShape3Ds(List<Shape3D> shape3Ds) {
+        this.shape3Ds = shape3Ds;
+    }
+
+    public List<ParticleShapeConfig> getParticleShapeConfigs() {
+        return particleShapeConfigs;
+    }
+
+    public void setParticleShapeConfigs(List<ParticleShapeConfig> particleShapeConfigs) {
+        this.particleShapeConfigs = particleShapeConfigs;
+    }
+
+    public List<ParticleEmitterSequenceConfig> getParticleEmitterSequenceConfigs() {
+        return particleEmitterSequenceConfigs;
+    }
+
+    public void setParticleEmitterSequenceConfigs(List<ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs) {
+        this.particleEmitterSequenceConfigs = particleEmitterSequenceConfigs;
+    }
+
+    public AudioConfig getAudioConfig() {
+        return audioConfig;
+    }
+
+    public void setAudioConfig(AudioConfig audioConfig) {
+        this.audioConfig = audioConfig;
     }
 
     public GameTipVisualConfig getGameTipVisualConfig() {
         return gameTipVisualConfig;
     }
 
-    public ColdGameUiContext setGameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
+    public void setGameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
         this.gameTipVisualConfig = gameTipVisualConfig;
-        return this;
     }
 
     public InGameQuestVisualConfig getInGameQuestVisualConfig() {
         return inGameQuestVisualConfig;
     }
 
-    public ColdGameUiContext setInGameQuestVisualConfig(InGameQuestVisualConfig inGameQuestVisualConfig) {
+    public void setInGameQuestVisualConfig(InGameQuestVisualConfig inGameQuestVisualConfig) {
         this.inGameQuestVisualConfig = inGameQuestVisualConfig;
-        return this;
     }
 
     public WarmGameUiContext getWarmGameUiContext() {
         return warmGameUiContext;
     }
 
-    public ColdGameUiContext setWarmGameUiContext(WarmGameUiContext warmGameUiContext) {
+    public void setWarmGameUiContext(WarmGameUiContext warmGameUiContext) {
         this.warmGameUiContext = warmGameUiContext;
+    }
+
+    public ColdGameUiContext userContext(UserContext userContext) {
+        setUserContext(userContext);
+        return this;
+    }
+
+    public ColdGameUiContext levelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
+        setLevelUnlockConfigs(levelUnlockConfigs);
+        return this;
+    }
+
+    public ColdGameUiContext staticGameConfig(StaticGameConfig staticGameConfig) {
+        setStaticGameConfig(staticGameConfig);
+        return this;
+    }
+
+    public ColdGameUiContext shape3Ds(List<Shape3D> shape3Ds) {
+        setShape3Ds(shape3Ds);
+        return this;
+    }
+
+    public ColdGameUiContext particleShapeConfigs(List<ParticleShapeConfig> particleShapeConfigs) {
+        setParticleShapeConfigs(particleShapeConfigs);
+        return this;
+    }
+
+    public ColdGameUiContext particleEmitterSequenceConfigs(List<ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs) {
+        setParticleEmitterSequenceConfigs(particleEmitterSequenceConfigs);
+        return this;
+    }
+
+    public ColdGameUiContext audioConfig(AudioConfig audioConfig) {
+        setAudioConfig(audioConfig);
+        return this;
+    }
+
+    public ColdGameUiContext gameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
+        setGameTipVisualConfig(gameTipVisualConfig);
+        return this;
+    }
+
+    public ColdGameUiContext inGameQuestVisualConfig(InGameQuestVisualConfig inGameQuestVisualConfig) {
+        setInGameQuestVisualConfig(inGameQuestVisualConfig);
+        return this;
+    }
+
+    public ColdGameUiContext warmGameUiContext(WarmGameUiContext warmGameUiContext) {
+        setWarmGameUiContext(warmGameUiContext);
         return this;
     }
 }

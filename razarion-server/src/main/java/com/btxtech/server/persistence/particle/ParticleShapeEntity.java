@@ -17,7 +17,7 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import java.util.List;
 
-import static com.btxtech.server.persistence.PersistenceUtil.extractArray;
+import static com.btxtech.server.persistence.PersistenceUtil.extractList;
 import static com.btxtech.server.persistence.PersistenceUtil.toList;
 
 @Entity
@@ -53,7 +53,7 @@ public class ParticleShapeEntity {
                 .shadowAlphaCutOff(shadowAlphaCutOff)
                 .colorRampImageId(ImagePersistence.idOrNull(colorRampImage))
                 .alphaOffsetImageId(ImagePersistence.idOrNull(alphaOffsetImage))
-                .colorRampXOffsets(extractArray(colorRampXOffsets))
+                .colorRampXOffsets(extractList(colorRampXOffsets))
                 .textureOffsetScope(textureOffsetScope);
     }
 

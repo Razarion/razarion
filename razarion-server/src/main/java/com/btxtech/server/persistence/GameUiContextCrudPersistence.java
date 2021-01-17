@@ -9,6 +9,8 @@ import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity_;
+import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
+import com.btxtech.server.persistence.particle.ParticleShapeCrudPersistence;
 import com.btxtech.server.persistence.scene.BotAttackCommandEntity;
 import com.btxtech.server.persistence.scene.BotHarvestCommandEntity;
 import com.btxtech.server.persistence.scene.BotKillBotCommandEntity;
@@ -74,6 +76,10 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     private EntityManager entityManager;
     @Inject
     private Shape3DCrudPersistence shape3DPersistence;
+    @Inject
+    private ParticleShapeCrudPersistence particleShapeCrudPersistence;
+    @Inject
+    private ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence;
     @Inject
     private StaticGameConfigPersistence staticGameConfigPersistence;
     @Inject
@@ -142,23 +148,25 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     @Transactional
     public ColdGameUiContext loadCold(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
         ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
-        coldGameUiContext.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
-        coldGameUiContext.setUserContext(userContext);
+        coldGameUiContext.staticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
+        coldGameUiContext.userContext(userContext);
         if (userContext.getLevelId() == null) {
             alarmService.riseAlarm(Alarm.Type.USER_HAS_NO_LEVEL, userContext.getUserId());
             userContext.setLevelId(levelCrudPersistence.getStarterLevelId());
         }
         if (userContext.getLevelId() != null) {
-            coldGameUiContext.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext, userContext.getLevelId()));
+            coldGameUiContext.levelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext, userContext.getLevelId()));
         }
-        coldGameUiContext.setShape3Ds(shape3DPersistence.getShape3Ds());
-        coldGameUiContext.setAudioConfig(setupAudioConfig());
-        coldGameUiContext.setGameTipVisualConfig(setupGameTipVisualConfig());
-        coldGameUiContext.setInGameQuestVisualConfig(setupInGameQuestVisualConfig());
+        coldGameUiContext.shape3Ds(shape3DPersistence.getShape3Ds());
+        coldGameUiContext.setParticleShapeConfigs(particleShapeCrudPersistence.read());
+        coldGameUiContext.setParticleEmitterSequenceConfigs(particleEmitterSequenceCrudPersistence.read());
+        coldGameUiContext.audioConfig(setupAudioConfig());
+        coldGameUiContext.gameTipVisualConfig(setupGameTipVisualConfig());
+        coldGameUiContext.inGameQuestVisualConfig(setupInGameQuestVisualConfig());
         if (gameUiControlInput.checkPlayback()) {
-            coldGameUiContext.setWarmGameUiContext(trackerPersistence.setupWarmGameUiControlConfig(gameUiControlInput));
+            coldGameUiContext.warmGameUiContext(trackerPersistence.setupWarmGameUiControlConfig(gameUiControlInput));
         } else {
-            coldGameUiContext.setWarmGameUiContext(loadWarm(locale, userContext));
+            coldGameUiContext.warmGameUiContext(loadWarm(locale, userContext));
         }
         return coldGameUiContext;
     }

@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class GameUiContextControllerTest extends AbstractSystemTest {
@@ -39,6 +40,9 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
                         hasProperty("levelId", equalTo(LEVEL_1_ID))
                 )),
                 staticGameConfigMatcher(),
+                shape3DMatcher(),
+                particleShapeMatcher(),
+                particleEmitterSequenceMatcher(),
                 hasProperty("warmGameUiContext", warmGameUiContextMatcher())
         ));
     }
@@ -56,6 +60,9 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
                         hasProperty("levelId", equalTo(LEVEL_1_ID))
                 )),
                 staticGameConfigMatcher(),
+                shape3DMatcher(),
+                particleShapeMatcher(),
+                particleEmitterSequenceMatcher(),
                 hasProperty("warmGameUiContext", warmGameUiContextMatcher())
         ));
     }
@@ -73,6 +80,9 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
                         hasProperty("levelId", equalTo(LEVEL_1_ID))
                 )),
                 staticGameConfigMatcher(),
+                shape3DMatcher(),
+                particleShapeMatcher(),
+                particleEmitterSequenceMatcher(),
                 hasProperty("warmGameUiContext", warmGameUiContextMatcher())
         ));
     }
@@ -90,6 +100,18 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
                 hasProperty("groundConfigs", notNullValue()),
                 hasProperty("levelConfigs", notNullValue())
         ));
+    }
+
+    private Matcher<ColdGameUiContext> shape3DMatcher() {
+        return hasProperty("shape3Ds", hasSize(0));
+    }
+
+    private Matcher<ColdGameUiContext> particleShapeMatcher() {
+        return hasProperty("particleShapeConfigs", hasSize(3));
+    }
+
+    private Matcher<ColdGameUiContext> particleEmitterSequenceMatcher() {
+        return hasProperty("particleEmitterSequenceConfigs", hasSize(3));
     }
 
     private Matcher<WarmGameUiContext> warmGameUiContextMatcher() {

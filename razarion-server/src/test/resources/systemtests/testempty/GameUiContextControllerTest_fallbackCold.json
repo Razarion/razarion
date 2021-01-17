@@ -22,6 +22,8 @@
     "drivewayConfigs": []
   },
   "shape3Ds": [],
+  "particleShapeConfigs": [],
+  "particleEmitterSequenceConfigs": [],
   "audioConfig": {
     "dialogOpened": null,
     "dialogClosed": null,

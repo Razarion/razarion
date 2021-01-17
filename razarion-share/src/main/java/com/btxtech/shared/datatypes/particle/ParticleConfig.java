@@ -8,7 +8,7 @@ import com.btxtech.shared.datatypes.Vertex;
  */
 public class ParticleConfig {
     // private Logger logger = Logger.getLogger(ParticleConfig.class.getName());
-    private int particleShapeConfigId;
+    private Integer particleShapeConfigId;
     private int particleXColorRampOffsetIndex;
     private Double particleGrowTo;
     private Double particleGrowFrom;
@@ -18,11 +18,11 @@ public class ParticleConfig {
     private Vertex velocityRandomPart;
     private Vertex acceleration;
 
-    public int getParticleShapeConfigId() {
+    public Integer getParticleShapeConfigId() {
         return particleShapeConfigId;
     }
 
-    public void setParticleShapeConfigId(int particleShapeConfigId) {
+    public void setParticleShapeConfigId(Integer particleShapeConfigId) {
         this.particleShapeConfigId = particleShapeConfigId;
     }
 
@@ -90,7 +90,7 @@ public class ParticleConfig {
         this.acceleration = acceleration;
     }
 
-    public ParticleConfig particleShapeConfigId(int particleShapeConfigId) {
+    public ParticleConfig particleShapeConfigId(Integer particleShapeConfigId) {
         setParticleShapeConfigId(particleShapeConfigId);
         return this;
     }

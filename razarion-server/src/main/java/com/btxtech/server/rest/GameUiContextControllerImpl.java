@@ -35,7 +35,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
             return gameUiContextCrudPersistence.loadCold(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
-            return new ColdGameUiContext().setUserContext(userContext);
+            return new ColdGameUiContext().userContext(userContext);
         }
     }
 

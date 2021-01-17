@@ -25,7 +25,7 @@ public class WeldUiBaseTest {
         Weld weld = new Weld();
         weldContainer = weld.initialize();
 
-        weldContainer.getBeanManager().fireEvent(new GameUiControlInitEvent(new ColdGameUiContext().setWarmGameUiContext(new WarmGameUiContext().setPlanetVisualConfig(planetVisualConfig))));
+        weldContainer.getBeanManager().fireEvent(new GameUiControlInitEvent(new ColdGameUiContext().warmGameUiContext(new WarmGameUiContext().setPlanetVisualConfig(planetVisualConfig))));
 
         // getWeldBean(Event.class).fire(new WeldUiBaseTest());
     }

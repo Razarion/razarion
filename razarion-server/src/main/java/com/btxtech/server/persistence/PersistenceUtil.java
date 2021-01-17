@@ -17,8 +17,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.btxtech.shared.utils.CollectionUtils.toArray;
-
 /**
  * Created by Beat
  * 21.10.2016.
@@ -71,22 +69,20 @@ public interface PersistenceUtil {
         return Collections.emptyMap();
     }
 
-    static double[] extractArray(List<Double> list) {
-        if(list == null) {
-            return new double[]{};
+    static List<Double> extractList(List<Double> list) {
+        if (list == null) {
+            return Collections.emptyList();
         }
-        return toArray(list);
+        return new ArrayList<>(list);
     }
 
-    static List<Double> toList(List<Double> output, double[] input) {
-        if(output == null) {
+    static List<Double> toList(List<Double> output, List<Double> input) {
+        if (output == null) {
             output = new ArrayList<>();
         }
         output.clear();
-        if(input != null) {
-            for (Double aDouble : input) {
-                output.add(aDouble);
-            }
+        if (input != null) {
+            output.addAll(input);
         }
         return output;
     }

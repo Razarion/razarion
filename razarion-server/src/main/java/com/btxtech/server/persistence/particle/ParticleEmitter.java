@@ -7,9 +7,12 @@ import com.btxtech.shared.datatypes.particle.ParticleEmitterConfig;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
@@ -26,6 +29,9 @@ public abstract class ParticleEmitter {
     private Double particleGrowFrom;
     private int particleTimeToLive;
     private Integer particleTimeToLiveRandomPart;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ParticleShapeEntity particleShape;
     @AttributeOverrides({
             @AttributeOverride(name = "x", column = @Column(name = "particleVelocityX")),
             @AttributeOverride(name = "y", column = @Column(name = "particleVelocityY")),
@@ -53,6 +59,7 @@ public abstract class ParticleEmitter {
                 .emittingCount(emittingCount)
                 .generationRandomDistance(generationRandomDistance)
                 .particleConfig(new ParticleConfig()
+                        .particleShapeConfigId(particleShape != null ? particleShape.getId() : null)
                         .particleXColorRampOffsetIndex(particleXColorRampOffsetIndex)
                         .particleGrowTo(particleGrowTo)
                         .particleGrowFrom(particleGrowFrom)
@@ -63,13 +70,14 @@ public abstract class ParticleEmitter {
                         .acceleration(particleAcceleration));
     }
 
-    protected void fromConfig(ParticleEmitterConfig config) {
+    protected void fromConfig(ParticleEmitterConfig config, ParticleShapeCrudPersistence particleShapeCrudPersistence) {
         id = config.getId();
         internalName = config.getInternalName();
         emittingDelay = config.getEmittingDelay();
         emittingCount = config.getEmittingCount();
         generationRandomDistance = config.getGenerationRandomDistance();
         if (config.getParticleConfig() != null) {
+            particleShape = particleShapeCrudPersistence.getEntity(config.getParticleConfig().getParticleShapeConfigId());
             particleXColorRampOffsetIndex = config.getParticleConfig().getParticleXColorRampOffsetIndex();
             particleGrowTo = config.getParticleConfig().getParticleGrowTo();
             particleGrowFrom = config.getParticleConfig().getParticleGrowFrom();

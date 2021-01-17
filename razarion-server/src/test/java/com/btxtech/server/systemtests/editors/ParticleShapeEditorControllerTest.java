@@ -7,6 +7,8 @@ import com.btxtech.shared.rest.ParticleShapeEditorController;
 import org.junit.After;
 import org.junit.Before;
 
+import java.util.Arrays;
+
 public class ParticleShapeEditorControllerTest extends AbstractCrudTest<ParticleShapeEditorController, ParticleShapeConfig> {
 
     public ParticleShapeEditorControllerTest() {
@@ -26,9 +28,9 @@ public class ParticleShapeEditorControllerTest extends AbstractCrudTest<Particle
 
     @Override
     protected void setupUpdate() {
-        registerUpdate(particleShapeConfig -> particleShapeConfig.edgeLength(1.5).textureOffsetScope(0.25).colorRampXOffsets(new double[]{0.25, 0.5, 0.75}).shadowAlphaCutOff(0.75));
+        registerUpdate(particleShapeConfig -> particleShapeConfig.edgeLength(1.5).textureOffsetScope(0.25).colorRampXOffsets(Arrays.asList(0.25, 0.5, 0.75)).shadowAlphaCutOff(0.75));
         registerUpdate(particleShapeConfig -> particleShapeConfig.colorRampImageId(IMAGE_1_ID).setAlphaOffsetImageId(IMAGE_2_ID));
-        registerUpdate(particleShapeConfig -> particleShapeConfig.edgeLength(2.5).textureOffsetScope(0.35).colorRampXOffsets(new double[]{0.75}).shadowAlphaCutOff(0.1));
+        registerUpdate(particleShapeConfig -> particleShapeConfig.edgeLength(2.5).textureOffsetScope(0.35).colorRampXOffsets(Arrays.asList(0.75, 0.3)).shadowAlphaCutOff(0.1));
         registerUpdate(particleShapeConfig -> particleShapeConfig.colorRampImageId(IMAGE_2_ID).setAlphaOffsetImageId(IMAGE_3_ID));
     }
 

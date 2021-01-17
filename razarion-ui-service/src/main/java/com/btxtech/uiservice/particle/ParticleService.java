@@ -7,11 +7,13 @@ import com.btxtech.shared.datatypes.particle.ParticleConfig;
 import com.btxtech.shared.datatypes.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.shared.datatypes.particle.ParticleShapeConfig;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.Camera;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -39,18 +41,23 @@ public class ParticleService {
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
     private Map<Integer, ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs = new HashMap<>();
-    private ParticleShapeConfig particleShapeConfig;
+    private List<ParticleShapeConfig> particleShapeConfigs = new ArrayList<>();
     private List<Particle> particles = new ArrayList<>();
     private List<AutonomousParticleEmitter> waitingEmitters = new ArrayList<>();
     private Collection<ParticleEmitter> activeEmitters = new ArrayList<>();
     private long lastTimeStamp;
     private List<ModelMatrices> modelMatrices = new ArrayList<>();
 
+    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
+        particleShapeConfigs.clear();
+        particleShapeConfigs.addAll(gameUiControlInitEvent.getColdGameUiContext().getParticleShapeConfigs());
+        particleEmitterSequenceConfigs.clear();
+        gameUiControlInitEvent.getColdGameUiContext().getParticleEmitterSequenceConfigs()
+                .forEach(particleEmitterSequenceConfig -> particleEmitterSequenceConfigs.put(particleEmitterSequenceConfig.getId(), particleEmitterSequenceConfig));
+    }
+
     @PostConstruct
     public void DELETE_ME() {
-        // Particles
-        particleShapeConfig = new ParticleShapeConfig().id(1).internalName("Fire Particle").edgeLength(3).shadowAlphaCutOff(0.38).alphaOffsetImageId(56).colorRampImageId(57).colorRampXOffsets(new double[]{4.0 / 128.0, 12.0 / 128.0, 20.0 / 128.0}).textureOffsetScope(0.1);
-
         //-------------------------------------------------------------------------
         // Fire
         ParticleEmitterSequenceConfig fire = new ParticleEmitterSequenceConfig().id(1).internalName("Fire");
@@ -181,8 +188,8 @@ public class ParticleService {
         modelMatrices = particles.stream().map(Particle::getModelMatrices).collect(Collectors.toList());
     }
 
-    public List<ModelMatrices> provideModelMatrices() {
-        return modelMatrices;
+    public List<ModelMatrices> provideModelMatrices(int id) {
+        return modelMatrices;  // TODO add Particle Id
     }
 
     public void addParticles(Particle particle) {
@@ -197,12 +204,13 @@ public class ParticleService {
         return particleEmitterSequenceConfig;
     }
 
+    @Deprecated
     public Collection<ParticleEmitterSequenceConfig> getParticleEmitterSequenceConfigs() {
         return particleEmitterSequenceConfigs.values();
     }
 
-    public ParticleShapeConfig getParticleShapeConfig() {
-        return particleShapeConfig;
+    public List<ParticleShapeConfig> getParticleShapeConfigs() {
+        return particleShapeConfigs;
     }
 
     public void removeParticleEmitter(ParticleEmitter particleEmitter) {

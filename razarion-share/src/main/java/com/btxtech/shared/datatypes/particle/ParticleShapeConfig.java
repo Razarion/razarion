@@ -1,6 +1,11 @@
 package com.btxtech.shared.datatypes.particle;
 
 import com.btxtech.shared.dto.Config;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.List;
+
+import static com.btxtech.shared.CommonUrl.IMAGE_ID_TYPE;
 
 /**
  * Created by Beat
@@ -11,9 +16,11 @@ public class ParticleShapeConfig implements Config {
     private String internalName;
     private double edgeLength;
     private double shadowAlphaCutOff;
+    @Schema(type = IMAGE_ID_TYPE)
     private Integer colorRampImageId;
+    @Schema(type = IMAGE_ID_TYPE)
     private Integer alphaOffsetImageId; // rad canal = alpha, greed canal = offset
-    private double[] colorRampXOffsets; // 0..1 for x part of the color-ramp lookup
+    private List<Double> colorRampXOffsets; // 0..1 for x part of the color-ramp lookup
     private double textureOffsetScope; // 0 .. 0.5 for scoping the offset change to the color-ramp from the green part of the alphaOffsetImage
 
     @Override
@@ -63,11 +70,11 @@ public class ParticleShapeConfig implements Config {
         this.alphaOffsetImageId = alphaOffsetImageId;
     }
 
-    public double[] getColorRampXOffsets() {
+    public List<Double> getColorRampXOffsets() {
         return colorRampXOffsets;
     }
 
-    public void setColorRampXOffsets(double[] colorRampXOffsets) {
+    public void setColorRampXOffsets(List<Double> colorRampXOffsets) {
         this.colorRampXOffsets = colorRampXOffsets;
     }
 
@@ -109,7 +116,7 @@ public class ParticleShapeConfig implements Config {
         return this;
     }
 
-    public ParticleShapeConfig colorRampXOffsets(double[] colorRampXOffsets) {
+    public ParticleShapeConfig colorRampXOffsets(List<Double> colorRampXOffsets) {
         setColorRampXOffsets(colorRampXOffsets);
         return this;
     }
@@ -120,7 +127,7 @@ public class ParticleShapeConfig implements Config {
     }
 
     public double lookupColorRampXOffset4Index(int index) {
-        return colorRampXOffsets[index];
+        return colorRampXOffsets.get(index);
     }
 
     @Override

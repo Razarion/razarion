@@ -18,7 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class JsonAssert {
-    private static final String TEST_RESOURCE_FOLDER = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\test\\resources\\com\\btxtech\\server\\systemtests\\testnormal";
+    private static final String TEST_RESOURCE_FOLDER = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\test\\resources";
 
     private JsonAssert() {
 

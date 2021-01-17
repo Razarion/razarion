@@ -28,7 +28,7 @@ public class ParticleRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
 
     @PostConstruct
     public void postConstruct() {
-        setupParticleConfig(particleService.getParticleShapeConfig());
+        particleService.getParticleShapeConfigs().forEach(this::setupParticleConfig);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ParticleRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
 
         createModelRenderTask(RenderTask.class,
                 particleShapeConfig,
-                timeStamp -> particleService.provideModelMatrices(),
+                timeStamp -> particleService.provideModelMatrices(particleShapeConfig.getId()),
                 null,
                 null,
                 null);
