@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.effects;
 
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionParticleConfig;
@@ -8,7 +9,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.uiservice.audio.AudioService;
-import com.btxtech.uiservice.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.renderer.ViewService;
 

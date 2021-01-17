@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 
 import com.btxtech.shared.dto.Config;
-import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
@@ -59,11 +58,6 @@ public class SlopeConfig implements Config {
 
     public void setMaterial(PhongMaterialConfig material) {
         this.material = material;
-    }
-
-    @Override
-    public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(id, internalName);
     }
 
     public double getOuterLineGameEngine() {

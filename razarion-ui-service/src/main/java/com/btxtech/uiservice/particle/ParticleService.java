@@ -1,8 +1,13 @@
 package com.btxtech.uiservice.particle;
 
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.shared.datatypes.particle.AutonomousParticleEmitterConfig;
+import com.btxtech.shared.datatypes.particle.DependentParticleEmitterConfig;
+import com.btxtech.shared.datatypes.particle.ParticleConfig;
+import com.btxtech.shared.datatypes.particle.ParticleEmitterSequenceConfig;
+import com.btxtech.shared.datatypes.particle.ParticleShapeConfig;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.Camera;
 
 import javax.annotation.PostConstruct;
@@ -44,83 +49,83 @@ public class ParticleService {
     @PostConstruct
     public void DELETE_ME() {
         // Particles
-        particleShapeConfig = new ParticleShapeConfig().setId(1).setInternalName("Fire Particle").setEdgeLength(3).setShadowAlphaCutOff(0.38).setAlphaOffsetImageId(56).setColorRampImageId(57).setColorRampXOffsets(new double[]{4.0 / 128.0, 12.0 / 128.0, 20.0 / 128.0}).setTextureOffsetScope(0.1);
+        particleShapeConfig = new ParticleShapeConfig().id(1).internalName("Fire Particle").edgeLength(3).shadowAlphaCutOff(0.38).alphaOffsetImageId(56).colorRampImageId(57).colorRampXOffsets(new double[]{4.0 / 128.0, 12.0 / 128.0, 20.0 / 128.0}).textureOffsetScope(0.1);
 
         //-------------------------------------------------------------------------
         // Fire
-        ParticleEmitterSequenceConfig fire = new ParticleEmitterSequenceConfig().setId(1).setInternalName("Fire");
+        ParticleEmitterSequenceConfig fire = new ParticleEmitterSequenceConfig().id(1).internalName("Fire");
         DependentParticleEmitterConfig dependentParticleEmitterConfig = new DependentParticleEmitterConfig();
-        dependentParticleEmitterConfig.setEmittingCount(5).setEmittingDelay(100).setGenerationRandomDistance(3);
-        dependentParticleEmitterConfig.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(1500).setParticleGrowFrom(1.0).setParticleGrowTo(1.5).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(3, 3, 0)).setAcceleration(new Vertex(-1, -1, 2)));
+        dependentParticleEmitterConfig.emittingCount(5).emittingDelay(100).generationRandomDistance(3);
+        dependentParticleEmitterConfig.particleConfig(new ParticleConfig().particleShapeConfigId(1).particleXColorRampOffsetIndex(0).timeToLive(1500).particleGrowFrom(1.0).particleGrowTo(1.5).velocity(new Vertex(0, 0, 10)).velocityRandomPart(new Vertex(3, 3, 0)).acceleration(new Vertex(-1, -1, 2)));
         List<DependentParticleEmitterConfig> dependentParticleEmitterConfigs = new ArrayList<>();
         dependentParticleEmitterConfigs.add(dependentParticleEmitterConfig);
-        fire.setDependent(dependentParticleEmitterConfigs);
+        fire.dependent(dependentParticleEmitterConfigs);
         particleEmitterSequenceConfigs.put(fire.getId(), fire);
         //-------------------------------------------------------------------------
         // Smoke
-        ParticleEmitterSequenceConfig smoke = new ParticleEmitterSequenceConfig().setId(5).setInternalName("Smoke");
+        ParticleEmitterSequenceConfig smoke = new ParticleEmitterSequenceConfig().id(5).internalName("Smoke");
         dependentParticleEmitterConfig = new DependentParticleEmitterConfig();
-        dependentParticleEmitterConfig.setEmittingCount(5).setEmittingDelay(100).setGenerationRandomDistance(3);
-        dependentParticleEmitterConfig.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(1).setTimeToLive(1000).setParticleGrowFrom(1.0).setParticleGrowTo(1.5).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(3, 3, 0)).setAcceleration(new Vertex(-1, -1, 2)));
+        dependentParticleEmitterConfig.emittingCount(5).emittingDelay(100).generationRandomDistance(3);
+        dependentParticleEmitterConfig.particleConfig(new ParticleConfig().particleShapeConfigId(1).particleXColorRampOffsetIndex(1).timeToLive(1000).particleGrowFrom(1.0).particleGrowTo(1.5).velocity(new Vertex(0, 0, 10)).velocityRandomPart(new Vertex(3, 3, 0)).acceleration(new Vertex(-1, -1, 2)));
         dependentParticleEmitterConfigs = new ArrayList<>();
         dependentParticleEmitterConfigs.add(dependentParticleEmitterConfig);
-        smoke.setDependent(dependentParticleEmitterConfigs);
+        smoke.dependent(dependentParticleEmitterConfigs);
         particleEmitterSequenceConfigs.put(smoke.getId(), smoke);
         //-------------------------------------------------------------------------
         // Explosion
-        ParticleEmitterSequenceConfig explosion = new ParticleEmitterSequenceConfig().setId(2).setInternalName("Explosion");
+        ParticleEmitterSequenceConfig explosion = new ParticleEmitterSequenceConfig().id(2).internalName("Explosion");
         List<AutonomousParticleEmitterConfig> autonomousParticleEmitterConfigs = new ArrayList<>();
-        explosion.setAutonomous(autonomousParticleEmitterConfigs);
-        explosion.setAudioIds(Collections.singletonList(18));
+        explosion.autonomous(autonomousParticleEmitterConfigs);
+        explosion.audioIds(Collections.singletonList(18));
         particleEmitterSequenceConfigs.put(explosion.getId(), explosion);
         // Splitter
         AutonomousParticleEmitterConfig splitter1 = new AutonomousParticleEmitterConfig();
-        splitter1.setStartTime(0).setTimeToLive(1000).setVelocity(new Vertex(10, -7, 20)).setInternalName("Splitter 1");
-        splitter1.setEmittingCount(5).setEmittingDelay(100).setGenerationRandomDistance(0);
-        splitter1.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(1500).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)));
+        splitter1.startTime(0).timeToLive(1000).velocity(new Vertex(10, -7, 20)).internalName("Splitter 1");
+        splitter1.emittingCount(5).emittingDelay(100).generationRandomDistance(0);
+        splitter1.particleConfig(new ParticleConfig().particleShapeConfigId(1).particleXColorRampOffsetIndex(0).timeToLive(1500).velocity(new Vertex(0, 0, 10)).velocityRandomPart(new Vertex(2, 2, 0)));
         autonomousParticleEmitterConfigs.add(splitter1);
         AutonomousParticleEmitterConfig splitter2 = new AutonomousParticleEmitterConfig();
-        splitter2.setStartTime(100).setTimeToLive(1000).setVelocity(new Vertex(-10, -10, 25)).setInternalName("Splitter 2");
-        splitter2.setEmittingCount(5).setEmittingDelay(100).setGenerationRandomDistance(0);
-        splitter2.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(1000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)));
+        splitter2.startTime(100).timeToLive(1000).velocity(new Vertex(-10, -10, 25)).internalName("Splitter 2");
+        splitter2.emittingCount(5).emittingDelay(100).generationRandomDistance(0);
+        splitter2.particleConfig(new ParticleConfig().particleShapeConfigId(1).particleXColorRampOffsetIndex(0).timeToLive(1000).velocity(new Vertex(0, 0, 10)).velocityRandomPart(new Vertex(2, 2, 0)));
         autonomousParticleEmitterConfigs.add(splitter2);
         // Smoke
         AutonomousParticleEmitterConfig smokeExplosion = new AutonomousParticleEmitterConfig();
-        smokeExplosion.setStartTime(0).setTimeToLive(2000).setInternalName("Smoke");
-        smokeExplosion.setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3);
-        smokeExplosion.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(1).setTimeToLive(4000).setVelocity(new Vertex(0, 0, 8)).setVelocityRandomPart(new Vertex(1, 1, 0)));
+        smokeExplosion.startTime(0).timeToLive(2000).internalName("Smoke");
+        smokeExplosion.emittingCount(10).emittingDelay(100).generationRandomDistance(3);
+        smokeExplosion.particleConfig(new ParticleConfig().particleShapeConfigId(1).particleXColorRampOffsetIndex(1).timeToLive(4000).velocity(new Vertex(0, 0, 8)).velocityRandomPart(new Vertex(1, 1, 0)));
         autonomousParticleEmitterConfigs.add(smokeExplosion);
         // Main Puff
         AutonomousParticleEmitterConfig mainPuff = new AutonomousParticleEmitterConfig();
-        mainPuff.setStartTime(0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 5)).setInternalName("Main Puff");
-        mainPuff.setEmittingCount(20).setEmittingDelay(100).setGenerationRandomDistance(5);
-        mainPuff.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(2).setParticleGrowFrom(1.0).setParticleGrowTo(2.0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)).setAcceleration(new Vertex(0, 0, -3)));
+        mainPuff.startTime(0).timeToLive(2000).velocity(new Vertex(0, 0, 5)).internalName("Main Puff");
+        mainPuff.emittingCount(20).emittingDelay(100).generationRandomDistance(5);
+        mainPuff.particleConfig(new ParticleConfig().particleShapeConfigId(1).particleXColorRampOffsetIndex(2).particleGrowFrom(1.0).particleGrowTo(2.0).timeToLive(2000).velocity(new Vertex(0, 0, 10)).velocityRandomPart(new Vertex(2, 2, 0)).acceleration(new Vertex(0, 0, -3)));
         autonomousParticleEmitterConfigs.add(mainPuff);
         //-------------------------------------------------------------------------
         // Detonation
-        ParticleEmitterSequenceConfig detonation = new ParticleEmitterSequenceConfig().setId(3).setInternalName("Detonation");
-        detonation.setAudioIds(Arrays.asList(19, 20));
+        ParticleEmitterSequenceConfig detonation = new ParticleEmitterSequenceConfig().id(3).internalName("Detonation");
+        detonation.audioIds(Arrays.asList(19, 20));
         autonomousParticleEmitterConfigs = new ArrayList<>();
-        detonation.setAutonomous(autonomousParticleEmitterConfigs);
+        detonation.autonomous(autonomousParticleEmitterConfigs);
         particleEmitterSequenceConfigs.put(detonation.getId(), detonation);
         // Splitter
         AutonomousParticleEmitterConfig detonationSplitter1 = new AutonomousParticleEmitterConfig();
-        detonationSplitter1.setStartTime(0).setTimeToLive(200).setVelocity(new Vertex(0, 0, 20)).setInternalName("Detonation Splitter 1");
-        detonationSplitter1.setEmittingCount(3).setEmittingDelay(100).setGenerationRandomDistance(0);
-        detonationSplitter1.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(2000).setParticleGrowFrom(1.0).setParticleGrowTo(2.0));
+        detonationSplitter1.startTime(0).timeToLive(200).velocity(new Vertex(0, 0, 20)).internalName("Detonation Splitter 1");
+        detonationSplitter1.emittingCount(3).emittingDelay(100).generationRandomDistance(0);
+        detonationSplitter1.particleConfig(new ParticleConfig().particleShapeConfigId(1).particleXColorRampOffsetIndex(0).timeToLive(2000).particleGrowFrom(1.0).particleGrowTo(2.0));
         autonomousParticleEmitterConfigs.add(detonationSplitter1);
         //-------------------------------------------------------------------------
         // Muzzle flash
-        ParticleEmitterSequenceConfig muzzleFlash = new ParticleEmitterSequenceConfig().setId(4).setInternalName("Muzzle Flash");
-        muzzleFlash.setAudioIds(Arrays.asList(10, 11));
+        ParticleEmitterSequenceConfig muzzleFlash = new ParticleEmitterSequenceConfig().id(4).internalName("Muzzle Flash");
+        muzzleFlash.audioIds(Arrays.asList(10, 11));
         autonomousParticleEmitterConfigs = new ArrayList<>();
-        muzzleFlash.setAutonomous(autonomousParticleEmitterConfigs);
+        muzzleFlash.autonomous(autonomousParticleEmitterConfigs);
         particleEmitterSequenceConfigs.put(muzzleFlash.getId(), muzzleFlash);
         // Splitter
         AutonomousParticleEmitterConfig muzzleFlashSplitter = new AutonomousParticleEmitterConfig();
-        muzzleFlashSplitter.setStartTime(0).setTimeToLive(200).setDirectionSpeed(20.0).setInternalName("Muzzle Flash Splitter 1");
-        muzzleFlashSplitter.setEmittingCount(1).setEmittingDelay(40).setGenerationRandomDistance(0);
-        muzzleFlashSplitter.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(1000).setParticleGrowFrom(0.5).setParticleGrowTo(2.0));
+        muzzleFlashSplitter.startTime(0).timeToLive(200).directionSpeed(20.0).internalName("Muzzle Flash Splitter 1");
+        muzzleFlashSplitter.emittingCount(1).emittingDelay(40).generationRandomDistance(0);
+        muzzleFlashSplitter.particleConfig(new ParticleConfig().particleShapeConfigId(1).particleXColorRampOffsetIndex(0).timeToLive(1000).particleGrowFrom(0.5).particleGrowTo(2.0));
         autonomousParticleEmitterConfigs.add(muzzleFlashSplitter);
     }
 

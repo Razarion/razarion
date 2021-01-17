@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.particle;
 
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.particle.ParticleEmitterConfig;
 
 import javax.inject.Inject;
 

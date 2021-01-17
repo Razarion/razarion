@@ -5,8 +5,8 @@ import com.btxtech.client.renderer.engine.UniformLocation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.particle.ParticleShapeConfig;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.particle.ParticleShapeConfig;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.task.ParticleRenderTaskRunner;
 import elemental2.webgl.WebGLRenderingContext;
@@ -44,7 +44,7 @@ public class ParticleRenderTask extends AbstractWebGlRenderTask<ParticleShapeCon
         setupUniform("uShadowAlphaCutOff", UniformLocation.Type.F, () -> getRenderPass() == RenderService.Pass.SHADOW ? particleShapeConfig.getShadowAlphaCutOff() : 0.0);
         setupUniform("uTextureOffsetScope", UniformLocation.Type.F, particleShapeConfig::getTextureOffsetScope);
         setupUniform("uWidthInPixels", UniformLocation.Type.F, gameCanvas::getWidth);
-        setupModelMatrixUniform("uXColorRampOffset", UniformLocation.Type.F, (modelMatrices) -> particleShapeConfig.getColorRampXOffset(modelMatrices.getParticleXColorRampOffsetIndex()));
+        setupModelMatrixUniform("uXColorRampOffset", UniformLocation.Type.F, (modelMatrices) -> particleShapeConfig.lookupColorRampXOffset4Index(modelMatrices.getParticleXColorRampOffsetIndex()));
 
         createWebGLTexture("uAlphaOffsetSampler", particleShapeConfig.getAlphaOffsetImageId());
         createWebGLTexture("uColorRampSampler", particleShapeConfig.getColorRampImageId());

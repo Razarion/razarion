@@ -13,7 +13,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -94,8 +96,7 @@ public class AudioPersistence {
         }
     }
 
-    @Transactional
-    public List<AudioLibraryEntity> getAudioLibraryEntities(List<Integer> audioIds) {
+    public List<AudioLibraryEntity> toAudioLibraryEntities(List<Integer> audioIds) {
         List<AudioLibraryEntity> audioLibraryEntities = new ArrayList<>();
         if (audioIds != null) {
             for (Integer audioId : audioIds) {
@@ -104,4 +105,21 @@ public class AudioPersistence {
         }
         return audioLibraryEntities;
     }
+
+    public static Integer idOrNull(AudioLibraryEntity audioLibraryEntity) {
+        if (audioLibraryEntity != null) {
+            return audioLibraryEntity.getId();
+        } else {
+            return null;
+        }
+    }
+
+    public static List<Integer> toIds(List<AudioLibraryEntity> audioLibraryEntities) {
+        if (audioLibraryEntities != null) {
+            return audioLibraryEntities.stream().map(AudioPersistence::idOrNull).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
 }

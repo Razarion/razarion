@@ -2,9 +2,10 @@ package com.btxtech.uiservice.particle;
 
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.particle.ParticleConfig;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 /**
  * Created by Beat
@@ -45,7 +46,7 @@ public class Particle implements Comparable<Particle> {
             }
         }
         if (modelMatrices == null) {
-            modelMatrices = ModelMatrices.create4Particle(position, setupScale(progress), progress, particleConfig.getParticleXColorRampOffsetIndex(),nativeMatrixFactory);
+            modelMatrices = ModelMatrices.create4Particle(position, setupScale(progress), progress, particleConfig.getParticleXColorRampOffsetIndex(), nativeMatrixFactory);
         } else {
             modelMatrices.updateProgress(progress);
             modelMatrices.updatePositionScale(position, setupScale(progress), progress);

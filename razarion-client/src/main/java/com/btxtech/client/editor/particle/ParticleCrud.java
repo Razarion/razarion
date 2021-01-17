@@ -1,8 +1,8 @@
 package com.btxtech.client.editor.particle;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.shared.datatypes.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.uiservice.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.uiservice.particle.ParticleService;
 
 import javax.enterprise.context.ApplicationScoped;

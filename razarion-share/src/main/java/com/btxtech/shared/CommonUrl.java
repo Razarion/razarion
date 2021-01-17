@@ -50,6 +50,8 @@ public class CommonUrl {
     public static final String RESOURCE_ITEM_TYPE_EDITOR_PATH = "editor/resource_item_type";
     public static final String GENERIC_PROPERTY_EDITOR_PATH = "editor/generic-property";
     public static final String GAME_UI_CONTEXT_EDITOR_PATH = "editor/game-ui-context";
+    public static final String PARTICLE_EMITTER_SEQUENCE_EDITOR_PATH = "editor/particle-emitter-sequence-editor";
+    public static final String PARTICLE_SHAPE_EDITOR_PATH = "editor/particle-shape-editor";
     public static final String SHAPE_3D_CONTROLLER = G_ZIPPED + "/" + "shape3d-controller";
     public static final String TERRAIN_SHAPE_CONTROLLER = G_ZIPPED + "/" + "terrainshape";
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";

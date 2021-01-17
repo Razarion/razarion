@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.Config;
-import com.btxtech.shared.dto.ObjectNameId;
 
 import java.util.Map;
 
@@ -33,11 +32,6 @@ public class PlanetConfig implements Config {
     @Override
     public void setInternalName(String internalName) {
         this.internalName = internalName;
-    }
-
-    @Override
-    public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(id, internalName);
     }
 
     public DecimalPosition getSize() {

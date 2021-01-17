@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.particle;
 
 import com.btxtech.client.guielements.VertexBox;
-import com.btxtech.uiservice.particle.DependentParticleEmitterConfig;
+import com.btxtech.shared.datatypes.particle.DependentParticleEmitterConfig;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.common.client.api.IsElement;

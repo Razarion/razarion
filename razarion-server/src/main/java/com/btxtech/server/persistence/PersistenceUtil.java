@@ -17,19 +17,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.btxtech.shared.utils.CollectionUtils.toArray;
+
 /**
  * Created by Beat
  * 21.10.2016.
  */
 public interface PersistenceUtil {
-    static Integer getImageIdSafe(ImageLibraryEntity imageLibraryEntity) {
-        if (imageLibraryEntity != null) {
-            return imageLibraryEntity.getId();
-        } else {
-            return null;
-        }
-    }
-
     static <T> List<T> readAllEntities(EntityManager entityManager, Class<T> theClass, SingularAttribute<T, Date> orderByAttribute) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> userQuery = criteriaBuilder.createQuery(theClass);
@@ -76,4 +70,48 @@ public interface PersistenceUtil {
         }
         return Collections.emptyMap();
     }
+
+    static double[] extractArray(List<Double> list) {
+        if(list == null) {
+            return new double[]{};
+        }
+        return toArray(list);
+    }
+
+    static List<Double> toList(List<Double> output, double[] input) {
+        if(output == null) {
+            output = new ArrayList<>();
+        }
+        output.clear();
+        if(input != null) {
+            for (Double aDouble : input) {
+                output.add(aDouble);
+            }
+        }
+        return output;
+    }
+
+    static <C, E> List<C> toConfigList(List<E> entities, Function<E, C> configProvider) {
+        if (entities == null) {
+            return Collections.emptyList();
+        }
+        return entities.stream().map(configProvider).collect(Collectors.toList());
+    }
+
+    static <C, E> List<E> fromConfig(List<E> outputEntities, List<C> inputConfigs, Supplier<E> entityCreator, BiConsumer<E, C> entityFiller) {
+        if (outputEntities == null) {
+            outputEntities = new ArrayList<>();
+        }
+        outputEntities.clear();
+        if (inputConfigs != null) {
+            for (C config : inputConfigs) {
+                E entity = entityCreator.get();
+                entityFiller.accept(entity, config);
+                outputEntities.add(entity);
+            }
+        }
+        return outputEntities;
+    }
+
+
 }

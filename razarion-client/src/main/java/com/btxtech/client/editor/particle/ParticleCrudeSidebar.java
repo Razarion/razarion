@@ -2,7 +2,7 @@ package com.btxtech.client.editor.particle;
 
 import com.btxtech.client.editor.framework.AbstractCrudeParentSidebar;
 import com.btxtech.client.editor.framework.CrudEditor;
-import com.btxtech.uiservice.particle.ParticleEmitterSequenceConfig;
+import com.btxtech.shared.datatypes.particle.ParticleEmitterSequenceConfig;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.enterprise.inject.Instance;
