@@ -5,7 +5,6 @@ import com.btxtech.shared.dto.editor.GenericPropertyInfo;
 import com.btxtech.shared.dto.editor.OpenApi3Schema;
 import com.btxtech.shared.rest.GenericPropertyEditorController;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.databinding.client.BindableProxy;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
 
 import javax.inject.Inject;
@@ -27,7 +26,7 @@ public class GenericPropertyInfoProvider {
                 exceptionHandler.restErrorHandler("GenericPropertyEditorController.getListTypeArguments()")).getGenericPropertyInfo();
     }
 
-    public BindableProxy provideListElementType(Class type, String listPropertyName) {
+    public Object provideListElement(Class type, String listPropertyName) {
         if (listElementTypes == null) {
             throw new IllegalArgumentException("No listElementTypes received");
         }
@@ -40,6 +39,15 @@ public class GenericPropertyInfoProvider {
         if (typeArgument == null) {
             throw new IllegalArgumentException("No type argument found for list property '" + listPropertyName + "'  in '" + type + "'");
         }
+
+        if (Double.class.getName().equals(typeArgument)) {
+            return (double) 0;
+        } else if (Integer.class.getName().equals(typeArgument)) {
+            return 0;
+        } else if (String.class.getName().equals(typeArgument)) {
+            return "";
+        }
+
         return BindableProxyFactory.getBindableProxy(typeArgument);
     }
 

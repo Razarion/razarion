@@ -157,7 +157,7 @@ public class Branch extends AbstractPropertyModel {
             clazz = ((WrappedPortable)parent.hasProperties).unwrap().getClass();
         }
 
-        Object listElement = genericPropertyInfoProvider.provideListElementType(clazz, propertyName);
+        Object listElement = genericPropertyInfoProvider.provideListElement(clazz, propertyName);
         BindableListWrapper bindableListWrapper = (BindableListWrapper) BindableProxyFactory.getBindableProxy(getPropertyValue());
         bindableListWrapper.add(listElement);
     }
