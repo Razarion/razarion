@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.itemtype;
 
+import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionParticleConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 
@@ -42,15 +43,15 @@ public class DemolitionStepEffectEntity {
         return demolitionStepEffect;
     }
 
-    public void fromDemolitionStepEffect(DemolitionStepEffect demolitionStepEffect) {
+    public void fromDemolitionStepEffect(DemolitionStepEffect demolitionStepEffect, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence) {
         if (demolitionStepEffect.getDemolitionParticleConfigs() != null) {
-            if(demolitionParticleConfigs == null) {
+            if (demolitionParticleConfigs == null) {
                 demolitionParticleConfigs = new ArrayList<>();
             }
             demolitionParticleConfigs.clear();
             for (DemolitionParticleConfig demolitionParticleConfig : demolitionStepEffect.getDemolitionParticleConfigs()) {
                 DemolitionStepEffectParticleEntity demolitionStepEffectParticleEntity = new DemolitionStepEffectParticleEntity();
-                demolitionStepEffectParticleEntity.fromDemolitionParticleConfig(demolitionParticleConfig);
+                demolitionStepEffectParticleEntity.fromDemolitionParticleConfig(demolitionParticleConfig, particleEmitterSequenceCrudPersistence);
                 demolitionParticleConfigs.add(demolitionStepEffectParticleEntity);
             }
         } else {

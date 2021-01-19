@@ -37,44 +37,129 @@ public class WeaponType {
         return range;
     }
 
-    public WeaponType setRange(double range) {
+    public void setRange(double range) {
         this.range = range;
-        return this;
     }
 
     public int getDamage() {
         return damage;
     }
 
-    public WeaponType setDamage(int damage) {
+    public void setDamage(int damage) {
         this.damage = damage;
-        return this;
     }
 
     public double getDetonationRadius() {
         return detonationRadius;
     }
 
-    public WeaponType setDetonationRadius(double detonationRadius) {
+    public void setDetonationRadius(double detonationRadius) {
         this.detonationRadius = detonationRadius;
-        return this;
     }
 
     public double getReloadTime() {
         return reloadTime;
     }
 
-    public WeaponType setReloadTime(double reloadTime) {
+    public void setReloadTime(double reloadTime) {
         this.reloadTime = reloadTime;
-        return this;
     }
 
     public List<Integer> getDisallowedItemTypes() {
         return disallowedItemTypes;
     }
 
-    public WeaponType setDisallowedItemTypes(List<Integer> disallowedItemTypes) {
+    public void setDisallowedItemTypes(List<Integer> disallowedItemTypes) {
         this.disallowedItemTypes = disallowedItemTypes;
+    }
+
+    public Double getProjectileSpeed() {
+        return projectileSpeed;
+    }
+
+    public void setProjectileSpeed(Double projectileSpeed) {
+        this.projectileSpeed = projectileSpeed;
+    }
+
+    public Integer getProjectileShape3DId() {
+        return projectileShape3DId;
+    }
+
+    public void setProjectileShape3DId(Integer projectileShape3DId) {
+        this.projectileShape3DId = projectileShape3DId;
+    }
+
+    public Integer getMuzzleFlashParticleConfigId() {
+        return muzzleFlashParticleConfigId;
+    }
+
+    public void setMuzzleFlashParticleConfigId(Integer muzzleFlashParticleConfigId) {
+        this.muzzleFlashParticleConfigId = muzzleFlashParticleConfigId;
+    }
+
+    public Integer getDetonationParticleConfigId() {
+        return detonationParticleConfigId;
+    }
+
+    public void setDetonationParticleConfigId(Integer detonationParticleConfigId) {
+        this.detonationParticleConfigId = detonationParticleConfigId;
+    }
+
+    public TurretType getTurretType() {
+        return turretType;
+    }
+
+    public void setTurretType(TurretType turretType) {
+        this.turretType = turretType;
+    }
+
+    public WeaponType range(double range) {
+        setRange(range);
+        return this;
+    }
+
+    public WeaponType damage(int damage) {
+        setDamage(damage);
+        return this;
+    }
+
+    public WeaponType detonationRadius(double detonationRadius) {
+        setDetonationRadius(detonationRadius);
+        return this;
+    }
+
+    public WeaponType reloadTime(double reloadTime) {
+        setReloadTime(reloadTime);
+        return this;
+    }
+
+    public WeaponType disallowedItemTypes(List<Integer> disallowedItemTypes) {
+        setDisallowedItemTypes(disallowedItemTypes);
+        return this;
+    }
+
+    public WeaponType projectileSpeed(Double projectileSpeed) {
+        setProjectileSpeed(projectileSpeed);
+        return this;
+    }
+
+    public WeaponType projectileShape3DId(Integer projectileShape3DId) {
+        setProjectileShape3DId(projectileShape3DId);
+        return this;
+    }
+
+    public WeaponType muzzleFlashParticleConfigId(Integer muzzleFlashParticleConfigId) {
+        setMuzzleFlashParticleConfigId(muzzleFlashParticleConfigId);
+        return this;
+    }
+
+    public WeaponType detonationParticleConfigId(Integer detonationParticleConfigId) {
+        setDetonationParticleConfigId(detonationParticleConfigId);
+        return this;
+    }
+
+    public WeaponType turretType(TurretType turretType) {
+        setTurretType(turretType);
         return this;
     }
 
@@ -82,48 +167,4 @@ public class WeaponType {
         return disallowedItemTypes != null && disallowedItemTypes.contains(itemTypeId);
     }
 
-    public Double getProjectileSpeed() {
-        return projectileSpeed;
-    }
-
-    public WeaponType setProjectileSpeed(Double projectileSpeed) {
-        this.projectileSpeed = projectileSpeed;
-        return this;
-    }
-
-    public Integer getProjectileShape3DId() {
-        return projectileShape3DId;
-    }
-
-    public WeaponType setProjectileShape3DId(Integer projectileShape3DId) {
-        this.projectileShape3DId = projectileShape3DId;
-        return this;
-    }
-
-    public Integer getMuzzleFlashParticleConfigId() {
-        return muzzleFlashParticleConfigId;
-    }
-
-    public WeaponType setMuzzleFlashParticleConfigId(Integer muzzleFlashParticleConfigId) {
-        this.muzzleFlashParticleConfigId = muzzleFlashParticleConfigId;
-        return this;
-    }
-
-    public Integer getDetonationParticleConfigId() {
-        return detonationParticleConfigId;
-    }
-
-    public WeaponType setDetonationParticleConfigId(Integer detonationParticleConfigId) {
-        this.detonationParticleConfigId = detonationParticleConfigId;
-        return this;
-    }
-
-    public TurretType getTurretType() {
-        return turretType;
-    }
-
-    public WeaponType setTurretType(TurretType turretType) {
-        this.turretType = turretType;
-        return this;
-    }
 }

@@ -28,6 +28,7 @@ import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
+import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
 import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
 import com.btxtech.server.persistence.particle.ParticleShapeEntity;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
@@ -375,13 +376,13 @@ public class ServerTestHelper {
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setInternalName("Attacker");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
-        attacker.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1).setTurretType(new TurretType().setTurretCenter(new Vertex(1, 0, 0)).setMuzzlePosition(new Vertex(1, 0, 1)).setAngleVelocity(Math.toRadians(120))));
+        attacker.setWeaponType(new WeaponType().projectileSpeed(17.0).range(20).reloadTime(0.3).damage(1).turretType(new TurretType().setTurretCenter(new Vertex(1, 0, 0)).setMuzzlePosition(new Vertex(1, 0, 1)).setAngleVelocity(Math.toRadians(120))));
         BASE_ITEM_TYPE_ATTACKER_ID = createBaseItemTypeEntity(attacker);
 
         BaseItemType tower = new BaseItemType();
         tower.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Tower");
         tower.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setRadius(3));
-        tower.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1).setTurretType(new TurretType().setTurretCenter(new Vertex(2, 0, 0)).setMuzzlePosition(new Vertex(2, 0, 1)).setAngleVelocity(Math.toRadians(60))));
+        tower.setWeaponType(new WeaponType().projectileSpeed(17.0).range(20).reloadTime(0.3).damage(1).turretType(new TurretType().setTurretCenter(new Vertex(2, 0, 0)).setMuzzlePosition(new Vertex(2, 0, 1)).setAngleVelocity(Math.toRadians(60))));
         BASE_ITEM_TYPE_TOWER_ID = createBaseItemTypeEntity(tower);
 
         InventoryItem inventoryItem = new InventoryItem();
@@ -422,8 +423,9 @@ public class ServerTestHelper {
         ItemTypePersistence itemTypePersistence = EasyMock.createNiceMock(ItemTypePersistence.class);
         BaseItemTypeCrudPersistence baseItemTypeCrudPersistence = EasyMock.createNiceMock(BaseItemTypeCrudPersistence.class);
         Shape3DCrudPersistence shape3DPersistence = EasyMock.createNiceMock(Shape3DCrudPersistence.class);
-        EasyMock.replay(itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence);
-        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence);
+        ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence = EasyMock.createNiceMock(ParticleEmitterSequenceCrudPersistence.class);
+        EasyMock.replay(itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleEmitterSequenceCrudPersistence);
+        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleEmitterSequenceCrudPersistence);
         persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
     }

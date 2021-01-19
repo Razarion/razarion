@@ -15,7 +15,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -67,9 +66,9 @@ public class WeaponTypePanel extends Composite implements TakesValue<WeaponType>
     @Override
     public void setValue(WeaponType weaponType) {
         dataBinder.setModel(weaponType);
-        disallowedItemTypes.init(weaponType.getDisallowedItemTypes(), weaponType::setDisallowedItemTypes);
-        turretType.init(weaponType.getTurretType(), weaponType::setTurretType, TurretType::new, TurretTypePanel.class);
-        projectileShape3DId.init(weaponType.getProjectileShape3DId(), weaponType::setProjectileShape3DId);
+        disallowedItemTypes.init(weaponType.getDisallowedItemTypes(), weaponType::disallowedItemTypes);
+        turretType.init(weaponType.getTurretType(), weaponType::turretType, TurretType::new, TurretTypePanel.class);
+        projectileShape3DId.init(weaponType.getProjectileShape3DId(), weaponType::projectileShape3DId);
     }
 
     @Override

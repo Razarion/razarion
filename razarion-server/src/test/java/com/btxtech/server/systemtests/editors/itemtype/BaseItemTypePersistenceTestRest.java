@@ -36,6 +36,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         setupAudios();
         setupImages();
         setupShape3dConfig();
+        setupParticleEmitterSequences();
     }
 
     @Test
@@ -196,7 +197,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
             builderType.setAbleToBuildIds(Arrays.asList(ableToBuild));
         }
         builder.setBuilderType(builderType);
-        builder.setBoxPickupRange(2).setExplosionParticleConfigId(2).setBuildup(30);
+        builder.setBoxPickupRange(2).setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setBuildup(30);
         builder.setPrice(100).setWreckageShape3DId(SHAPE_3D_1_ID);
     }
 
@@ -206,7 +207,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         harvester.setI18nDescription(i18nHelper("Collects resources"));
         harvester.getPhysicalAreaConfig().setRadius(3).setAcceleration(5.0).setSpeed(15.0).setAngularVelocity(Math.toRadians(60));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(3).setAnimationShape3dId(SHAPE_3D_3_ID).setAnimationOrigin(new Vertex(2.5, 0, 1.25)));
-        harvester.setBoxPickupRange(2).setExplosionParticleConfigId(2).setBuildup(20);
+        harvester.setBoxPickupRange(2).setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setBuildup(20);
         harvester.setPrice(100).setWreckageShape3DId(SHAPE_3D_2_ID);
     }
 
@@ -215,8 +216,8 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         attacker.setI18nName(i18nHelper("Attacker"));
         attacker.setI18nDescription(i18nHelper("Attacks other units"));
         attacker.getPhysicalAreaConfig().setRadius(2).setAcceleration(5.0).setSpeed(17.0).setAngularVelocity(Math.toRadians(60));
-        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(SHAPE_3D_1_ID).setMuzzleFlashParticleConfigId(4).setDetonationParticleConfigId(3).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
-        attacker.setBoxPickupRange(2).setExplosionParticleConfigId(2).setBuildup(15);
+        attacker.setWeaponType(new WeaponType().range(10).damage(1).reloadTime(3).detonationRadius(1).projectileSpeed(17.0).projectileShape3DId(SHAPE_3D_1_ID).muzzleFlashParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).detonationParticleConfigId(PARTICLE_EMITTER_SEQUENCE_3_ID).turretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
+        attacker.setBoxPickupRange(2).setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setBuildup(15);
         attacker.setPrice(100).setWreckageShape3DId(SHAPE_3D_3_ID);
     }
 
@@ -225,23 +226,23 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         tower.setI18nName(i18nHelper("Tower"));
         tower.setI18nDescription(i18nHelper("Defense tower"));
         tower.getPhysicalAreaConfig().setRadius(4).setFixVerticalNorm(true);
-        tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(SHAPE_3D_2_ID).setMuzzleFlashParticleConfigId(4).setDetonationParticleConfigId(3).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
-        tower.setExplosionParticleConfigId(2).setWreckageShape3DId(SHAPE_3D_1_ID).setBuildup(45);
+        tower.setWeaponType(new WeaponType().range(20).damage(1).reloadTime(3).detonationRadius(1).projectileSpeed(40.0).projectileShape3DId(SHAPE_3D_2_ID).muzzleFlashParticleConfigId(PARTICLE_EMITTER_SEQUENCE_2_ID).detonationParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).turretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
+        tower.setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setWreckageShape3DId(SHAPE_3D_1_ID).setBuildup(45);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
         List<DemolitionParticleConfig> demolitionShape3Ds1 = new ArrayList<>();
-        demolitionShape3Ds1.add(new DemolitionParticleConfig().setParticleConfigId(1).setPosition(new Vertex(0, 0, 3)));
+        demolitionShape3Ds1.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).position(new Vertex(0, 0, 3)));
         demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionShape3Ds1));
         // Demolition 2
         List<DemolitionParticleConfig> demolitionParticleConfig2s = new ArrayList<>();
-        demolitionParticleConfig2s.add(new DemolitionParticleConfig().setParticleConfigId(1).setPosition(new Vertex(2, 2, 2)));
-        demolitionParticleConfig2s.add(new DemolitionParticleConfig().setParticleConfigId(1).setPosition(new Vertex(-2, -2, 2)));
+        demolitionParticleConfig2s.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).position(new Vertex(2, 2, 2)));
+        demolitionParticleConfig2s.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).position(new Vertex(-2, -2, 2)));
         demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionParticleConfig2s));
         // Demolition 3
         List<DemolitionParticleConfig> demolitionShape3D3s = new ArrayList<>();
-        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleConfigId(1).setPosition(new Vertex(3, 0, 1)));
-        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleConfigId(1).setPosition(new Vertex(0, 3, 1)));
-        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleConfigId(1).setPosition(new Vertex(3, 3, 1)));
+        demolitionShape3D3s.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).position(new Vertex(3, 0, 1)));
+        demolitionShape3D3s.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).position(new Vertex(0, 3, 1)));
+        demolitionShape3D3s.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).position(new Vertex(3, 3, 1)));
         demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionShape3D3s));
         tower.setDemolitionStepEffects(demolitionStepEffects);
     }
@@ -250,7 +251,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         factory.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_2_ID).setBuildupTextureId(IMAGE_2_ID).setDemolitionImageId(IMAGE_1_ID).setThumbnail(IMAGE_1_ID).setShape3DId(SHAPE_3D_2_ID);
         factory.setI18nName(i18nHelper("Factory"));
         factory.setI18nDescription(i18nHelper("Creates units"));
-        factory.setExplosionParticleConfigId(2).setBuildup(30);
+        factory.setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_2_ID).setBuildup(30);
         factory.getPhysicalAreaConfig().setRadius(6).setFixVerticalNorm(true);
         FactoryType factoryType = new FactoryType().setProgress(1.0).setAbleToBuildIds(Arrays.asList(ableToBuild));
         if (ableToBuild.length > 0) {
@@ -261,17 +262,17 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
         List<DemolitionParticleConfig> demolitionShape3Ds1 = new ArrayList<>();
-        demolitionShape3Ds1.add(new DemolitionParticleConfig().setParticleConfigId(5).setPosition(new Vertex(-2.1, 2.0, 3.4)));
+        demolitionShape3Ds1.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_3_ID).position(new Vertex(-2.1, 2.0, 3.4)));
         demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionShape3Ds1));
         // Demolition 2
         List<DemolitionParticleConfig> demolitionParticleConfig2s = new ArrayList<>();
-        demolitionParticleConfig2s.add(new DemolitionParticleConfig().setParticleConfigId(1).setPosition(new Vertex(-2.1, 2.0, 3.4)));
-        demolitionParticleConfig2s.add(new DemolitionParticleConfig().setParticleConfigId(5).setPosition(new Vertex(3, 0.47, 3)));
+        demolitionParticleConfig2s.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).position(new Vertex(-2.1, 2.0, 3.4)));
+        demolitionParticleConfig2s.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_3_ID).position(new Vertex(3, 0.47, 3)));
         demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionParticleConfig2s));
         // Demolition 3
         List<DemolitionParticleConfig> demolitionShape3D3s = new ArrayList<>();
-        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleConfigId(1).setPosition(new Vertex(-2.1, 2.0, 3.4)));
-        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleConfigId(1).setPosition(new Vertex(3, 0.47, 3)));
+        demolitionShape3D3s.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).position(new Vertex(-2.1, 2.0, 3.4)));
+        demolitionShape3D3s.add(new DemolitionParticleConfig().particleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).position(new Vertex(3, 0.47, 3)));
         demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionShape3D3s));
         factory.setDemolitionStepEffects(demolitionStepEffects);
     }
@@ -280,9 +281,9 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         transporter.setHealth(19).setSpawnDurationMillis(2000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_3_ID).setThumbnail(IMAGE_2_ID).setShape3DId(SHAPE_3D_2_ID);
         transporter.setI18nName(i18nHelper("Transporter"));
         transporter.setI18nDescription(i18nHelper("Transports units"));
-        transporter.setExplosionParticleConfigId(5).setBuildup(35);
+        transporter.setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setBuildup(35);
         transporter.getPhysicalAreaConfig().setRadius(4).setAcceleration(2.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(40));
-        transporter.setBoxPickupRange(4).setExplosionParticleConfigId(7).setBuildup(25);
+        transporter.setBoxPickupRange(4).setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_2_ID).setBuildup(25);
         transporter.setPrice(200).setWreckageShape3DId(SHAPE_3D_3_ID);
         // Container
         ItemContainerType itemContainerType = new ItemContainerType().setMaxCount(4).setRange(11.5);

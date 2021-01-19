@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
 import javax.inject.Inject;
@@ -23,6 +24,8 @@ public class BaseItemTypeCrudPersistence extends AbstractCrudPersistence<BaseIte
     private ImagePersistence imagePersistence;
     @Inject
     private AudioPersistence audioPersistence;
+    @Inject
+    private ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence;
 
     public BaseItemTypeCrudPersistence() {
         super(BaseItemTypeEntity.class, BaseItemTypeEntity_.id, BaseItemTypeEntity_.internalName);
@@ -35,7 +38,7 @@ public class BaseItemTypeCrudPersistence extends AbstractCrudPersistence<BaseIte
 
     @Override
     protected void fromConfig(BaseItemType baseItemType, BaseItemTypeEntity baseItemTypeEntity) {
-        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, this, shape3DPersistence);
+        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, this, shape3DPersistence, particleEmitterSequenceCrudPersistence);
         baseItemTypeEntity.setShape3DId(shape3DPersistence.getEntity(baseItemType.getShape3DId()));
         baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getEntity(baseItemType.getSpawnShape3DId()));
         baseItemTypeEntity.setBuildupTexture(imagePersistence.getImageLibraryEntity(baseItemType.getBuildupTextureId()));

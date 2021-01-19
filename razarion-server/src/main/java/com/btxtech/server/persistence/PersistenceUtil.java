@@ -22,6 +22,13 @@ import java.util.stream.Collectors;
  * 21.10.2016.
  */
 public interface PersistenceUtil {
+    static <E> Integer extractId(E e, Function<E, Integer> idSupplier) {
+        if (e != null) {
+            return idSupplier.apply(e);
+        }
+        return null;
+    }
+
     static <T> List<T> readAllEntities(EntityManager entityManager, Class<T> theClass, SingularAttribute<T, Date> orderByAttribute) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> userQuery = criteriaBuilder.createQuery(theClass);

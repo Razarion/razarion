@@ -2,6 +2,8 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
+import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 
 import javax.persistence.CascadeType;
@@ -18,6 +20,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -42,31 +46,39 @@ public class WeaponTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity projectileShape3D;
-    private Integer muzzleFlashParticleConfigId_TMP;
-    private Integer detonationParticleConfigId_TMP;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ParticleEmitterSequenceEntity muzzleFlashParticle;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ParticleEmitterSequenceEntity detonationParticle;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private TurretTypeEntity turretType;
 
     public WeaponType toWeaponType() {
-        WeaponType weaponType = new WeaponType().setRange(attackRange).setDamage(damage).setDetonationRadius(detonationRadius).setReloadTime(reloadTime);
-        weaponType.setProjectileSpeed(projectileSpeed).setMuzzleFlashParticleConfigId(muzzleFlashParticleConfigId_TMP).setDetonationParticleConfigId(detonationParticleConfigId_TMP);
+        WeaponType weaponType = new WeaponType()
+                .range(attackRange)
+                .damage(damage)
+                .detonationRadius(detonationRadius)
+                .reloadTime(reloadTime)
+                .projectileSpeed(projectileSpeed)
+                .muzzleFlashParticleConfigId(extractId(muzzleFlashParticle, ParticleEmitterSequenceEntity::getId))
+                .detonationParticleConfigId(extractId(detonationParticle, ParticleEmitterSequenceEntity::getId))
+                .projectileShape3DId(extractId(projectileShape3D, ColladaEntity::getId));
         if (disallowedItemTypes != null && !disallowedItemTypes.isEmpty()) {
             List<Integer> disallowedIds = new ArrayList<>();
             for (BaseItemTypeEntity baseItemTypeEntity : disallowedItemTypes) {
                 disallowedIds.add(baseItemTypeEntity.getId());
             }
-            weaponType.setDisallowedItemTypes(disallowedIds);
-        }
-        if (projectileShape3D != null) {
-            weaponType.setProjectileShape3DId(projectileShape3D.getId());
+            weaponType.disallowedItemTypes(disallowedIds);
         }
         if (turretType != null) {
-            weaponType.setTurretType(turretType.toTurretType());
+            weaponType.turretType(turretType.toTurretType());
         }
         return weaponType;
     }
 
-    public void fromWeaponType(WeaponType weaponType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence) {
+    public void fromWeaponType(WeaponType weaponType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence) {
         attackRange = weaponType.getRange();
         damage = weaponType.getDamage();
         detonationRadius = weaponType.getDetonationRadius();
@@ -84,10 +96,10 @@ public class WeaponTypeEntity {
         }
         projectileSpeed = weaponType.getProjectileSpeed();
         projectileShape3D = shape3DPersistence.getEntity(weaponType.getProjectileShape3DId());
-        muzzleFlashParticleConfigId_TMP = weaponType.getMuzzleFlashParticleConfigId();
-        detonationParticleConfigId_TMP = weaponType.getDetonationParticleConfigId();
-        if(weaponType.getTurretType() != null) {
-            if(turretType == null) {
+        muzzleFlashParticle = particleEmitterSequenceCrudPersistence.getEntity(weaponType.getMuzzleFlashParticleConfigId());
+        detonationParticle = particleEmitterSequenceCrudPersistence.getEntity(weaponType.getDetonationParticleConfigId());
+        if (weaponType.getTurretType() != null) {
+            if (turretType == null) {
                 turretType = new TurretTypeEntity();
             }
             turretType.fromTurretType(weaponType.getTurretType());

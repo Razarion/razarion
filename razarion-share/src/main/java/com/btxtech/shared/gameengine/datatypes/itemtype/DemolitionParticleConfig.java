@@ -14,17 +14,25 @@ public class DemolitionParticleConfig {
         return particleConfigId;
     }
 
-    public DemolitionParticleConfig setParticleConfigId(Integer particleConfigId) {
+    public void setParticleConfigId(Integer particleConfigId) {
         this.particleConfigId = particleConfigId;
-        return this;
     }
 
     public Vertex getPosition() {
         return position;
     }
 
-    public DemolitionParticleConfig setPosition(Vertex position) {
+    public void setPosition(Vertex position) {
         this.position = position;
+    }
+
+    public DemolitionParticleConfig particleConfigId(Integer particleConfigId) {
+        setParticleConfigId(particleConfigId);
+        return this;
+    }
+
+    public DemolitionParticleConfig position(Vertex position) {
+        setPosition(position);
         return this;
     }
 }

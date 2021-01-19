@@ -2,9 +2,11 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.AudioLibraryEntity;
 import com.btxtech.server.persistence.ColladaEntity;
+import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
-import com.btxtech.server.persistence.I18nBundleEntity;
+import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
+import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
@@ -72,7 +74,9 @@ public class BaseItemTypeEntity {
     private double dropBoxPossibility;
     private double boxPickupRange;
     private Integer unlockCrystals;
-    private Integer explosionParticleConfigId_TMP;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ParticleEmitterSequenceEntity explosionParticle;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity buildupTexture;
@@ -172,8 +176,8 @@ public class BaseItemTypeEntity {
         if (specialType != null) {
             baseItemType.setSpecialType(specialType.toSpecialType());
         }
-        if (explosionParticleConfigId_TMP != null) {
-            baseItemType.setExplosionParticleConfigId(explosionParticleConfigId_TMP);
+        if (explosionParticle != null) {
+            baseItemType.setExplosionParticleConfigId(explosionParticle.getId());
         }
         if (demolitionStepEffectEntities != null && !demolitionStepEffectEntities.isEmpty()) {
             List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
@@ -185,7 +189,7 @@ public class BaseItemTypeEntity {
         return baseItemType;
     }
 
-    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence) {
+    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence) {
         internalName = baseItemType.getInternalName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
         fixVerticalNorm = baseItemType.getPhysicalAreaConfig().getFixVerticalNorm();
@@ -204,13 +208,13 @@ public class BaseItemTypeEntity {
         dropBoxPossibility = baseItemType.getDropBoxPossibility();
         boxPickupRange = baseItemType.getBoxPickupRange();
         unlockCrystals = baseItemType.getUnlockCrystals();
-        explosionParticleConfigId_TMP = baseItemType.getExplosionParticleConfigId();
+        explosionParticle = particleEmitterSequenceCrudPersistence.getEntity(baseItemType.getExplosionParticleConfigId());
 
         if (baseItemType.getWeaponType() != null) {
             if (weaponType == null) {
                 weaponType = new WeaponTypeEntity();
             }
-            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeCrudPersistence, shape3DPersistence);
+            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeCrudPersistence, shape3DPersistence, particleEmitterSequenceCrudPersistence);
         } else {
             weaponType = null;
         }
@@ -292,7 +296,7 @@ public class BaseItemTypeEntity {
         if (baseItemType.getDemolitionStepEffects() != null) {
             for (DemolitionStepEffect demolitionStepEffect : baseItemType.getDemolitionStepEffects()) {
                 DemolitionStepEffectEntity demolitionStepEffectEntity = new DemolitionStepEffectEntity();
-                demolitionStepEffectEntity.fromDemolitionStepEffect(demolitionStepEffect);
+                demolitionStepEffectEntity.fromDemolitionStepEffect(demolitionStepEffect, particleEmitterSequenceCrudPersistence);
                 demolitionStepEffectEntities.add(demolitionStepEffectEntity);
             }
         }
