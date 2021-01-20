@@ -3,6 +3,7 @@ package com.btxtech.uiservice.renderer.task;
 import com.btxtech.shared.datatypes.particle.ParticleShapeConfig;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.particle.ParticleService;
+import com.btxtech.uiservice.renderer.AbstractRenderTaskRunner;
 import com.btxtech.uiservice.renderer.WebGlRenderTask;
 
 import javax.annotation.PostConstruct;
@@ -16,7 +17,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_PARTICLE_SHAPE_
  * 01.02.2017.
  */
 @ApplicationScoped
-public class ParticleRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
+public class ParticleRenderTaskRunner extends AbstractRenderTaskRunner {
     public interface RenderTask extends WebGlRenderTask<ParticleShapeConfig> {
     }
 
@@ -29,6 +30,11 @@ public class ParticleRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     @PostConstruct
     public void postConstruct() {
         particleService.getParticleShapeConfigs().forEach(this::setupParticleConfig);
+    }
+
+    public void editorReload() {
+        destroyRenderAllTasks();
+        postConstruct();
     }
 
     @Override

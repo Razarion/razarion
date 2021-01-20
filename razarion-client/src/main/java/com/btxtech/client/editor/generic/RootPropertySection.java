@@ -1,27 +1,34 @@
 package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
+import com.btxtech.client.editor.generic.custom.CustomWidget;
 import com.btxtech.client.editor.generic.model.Branch;
 import com.btxtech.client.editor.generic.propertyeditors.PropertySection;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
+import elemental2.dom.HTMLDivElement;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.databinding.client.PropertyType;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-// TODO Rename to GenericPropertyBook -> RootPropertySection
-// TODO Rename to PropertyPage -> PropertySection
-@Templated("RootPropertySection.html#rootPropertySection")
+@Templated("RootPropertySection.html#panel")
 public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvider> {
     // private Logger logger = Logger.getLogger(GenericPropertyBook.class.getName());
+    @Inject
+    private Branch branch;
+    @Inject
+    private Instance<CustomWidget<?>> customWidgetInstance;
     @Inject
     @DataField
     private PropertySection rootPropertySection;
     @Inject
-    private Branch branch;
+    @DataField
+    private HTMLDivElement customWidgetDiv;
+    private Class<? extends CustomWidget> customWidgetClass;
 
     @Override
     public void init(ObjectNameIdProvider rootPropertyValue) {
@@ -32,10 +39,21 @@ public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvi
                 null);
 
         rootPropertySection.init(branch);
+        if (customWidgetClass != null) {
+            CustomWidget customWidget = customWidgetInstance.get();
+            customWidget.setRootPropertyValue(rootPropertyValue);
+            customWidgetDiv.appendChild(customWidget.getElement());
+        } else {
+            customWidgetDiv.style.display = "none";
+        }
     }
 
     @Override
     public ObjectNameIdProvider getConfigObject() {
         return (ObjectNameIdProvider) branch.getPropertyValue();
+    }
+
+    public void setCustomWidgetClass(Class<? extends CustomWidget> customWidgetClass) {
+        this.customWidgetClass = customWidgetClass;
     }
 }

@@ -2,6 +2,7 @@ package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.editor.framework.AbstractCrudeParentSidebar;
 import com.btxtech.client.editor.framework.CrudEditor;
+import com.btxtech.client.editor.generic.custom.CustomWidget;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.rest.CrudController;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -15,8 +16,10 @@ public class GenericCrudEditor extends AbstractCrudeParentSidebar<ObjectNameIdPr
     private GenericCrudControllerEditor genericCrudControllerEditor;
     @Inject
     private Instance<RootPropertySection> genericPropertyPanelInstance;
+    private Class<? extends CustomWidget> customWidgetClass;
 
-    public void setCrudControllerClass(Class<? extends CrudController> crudControllerClass) {
+    public void setCrudControllerClass(Class<? extends CrudController> crudControllerClass, Class<? extends CustomWidget> customWidgetClass) {
+        this.customWidgetClass = customWidgetClass;
         genericCrudControllerEditor.init(crudControllerClass);
     }
 
@@ -27,6 +30,8 @@ public class GenericCrudEditor extends AbstractCrudeParentSidebar<ObjectNameIdPr
 
     @Override
     protected RootPropertySection createPropertyPanel() {
-        return genericPropertyPanelInstance.get();
+        RootPropertySection rootPropertySection = genericPropertyPanelInstance.get();
+        rootPropertySection.setCustomWidgetClass(customWidgetClass);
+        return rootPropertySection;
     }
 }

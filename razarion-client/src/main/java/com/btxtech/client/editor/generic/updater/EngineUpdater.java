@@ -1,10 +1,14 @@
 package com.btxtech.client.editor.generic.updater;
 
+import com.btxtech.shared.datatypes.particle.ParticleEmitterSequenceConfig;
+import com.btxtech.shared.datatypes.particle.ParticleShapeConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.renderer.ViewService;
+import com.btxtech.uiservice.renderer.task.ParticleRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTaskRunner;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
@@ -19,6 +23,10 @@ public class EngineUpdater {
     private TerrainUiService terrainUiService;
     @Inject
     private ViewService viewService;
+    @Inject
+    private ParticleService particleService;
+    @Inject
+    private ParticleRenderTaskRunner particleRenderTaskRunner;
     @Inject
     private TerrainObjectRenderTaskRunner terrainObjectRenderTaskRunner;
 
@@ -36,6 +44,11 @@ public class EngineUpdater {
             terrainUiService.enableEditMode((Shape3DConfig)config);
             terrainObjectRenderTaskRunner.reloadEditMode();
             viewService.onViewChanged();
+        } else if (config instanceof ParticleEmitterSequenceConfig) {
+            particleService.editorUpdate((ParticleEmitterSequenceConfig) config);
+        } else if (config instanceof ParticleShapeConfig) {
+            particleService.editorUpdate((ParticleShapeConfig) config);
+            particleRenderTaskRunner.editorReload();
         } else {
             logger.warning("EngineUpdater can not connect editor to render engine: " + config.getClass());
         }

@@ -2,6 +2,7 @@ package com.btxtech.client.editor.editorpanel;
 
 import com.btxtech.client.MainPanelService;
 import com.btxtech.client.editor.generic.GenericCrudEditor;
+import com.btxtech.client.editor.generic.custom.CustomWidget;
 import com.btxtech.shared.rest.CrudController;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -67,9 +68,9 @@ public class EditorPanel implements IsElement {
         content.setWidget(abstractEditor);
     }
 
-    public void setGenericCrud(Class<? extends CrudController> crudControllerClass, String title) {
+    public void setGenericCrud(Class<? extends CrudController> crudControllerClass, String title, Class<? extends CustomWidget> customWidgetClass) {
         setContent(GenericCrudEditor.class, title);
-        ((GenericCrudEditor)abstractEditor).setCrudControllerClass(crudControllerClass);
+        ((GenericCrudEditor) abstractEditor).setCrudControllerClass(crudControllerClass, customWidgetClass);
     }
 
     public AbstractEditor getContent() {

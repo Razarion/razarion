@@ -121,17 +121,21 @@ public class ParticleService {
         return particleEmitterSequenceConfig;
     }
 
-    @Deprecated
-    public Collection<ParticleEmitterSequenceConfig> getParticleEmitterSequenceConfigs() {
-        return particleEmitterSequenceConfigs.values();
-    }
-
     public List<ParticleShapeConfig> getParticleShapeConfigs() {
         return particleShapeConfigs;
     }
 
     public void removeParticleEmitter(ParticleEmitter particleEmitter) {
         activeEmitters.remove(particleEmitter);
+    }
+
+    public void editorUpdate(ParticleEmitterSequenceConfig particleEmitterSequenceConfig) {
+        particleEmitterSequenceConfigs.put(particleEmitterSequenceConfig.getId(), particleEmitterSequenceConfig);
+    }
+
+    public void editorUpdate(ParticleShapeConfig particleShapeConfig) {
+        particleShapeConfigs.removeIf(config -> particleShapeConfig.getId() == config.getId());
+        particleShapeConfigs.add(particleShapeConfig);
     }
 
     public void clear() {

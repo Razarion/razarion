@@ -7,12 +7,12 @@ import com.btxtech.client.editor.EditorMenuButtonSection.CrudControllerButton;
 import com.btxtech.client.editor.audio.AudioGalleryDialog;
 import com.btxtech.client.editor.basemgmt.BaseMgmtEditorPanel;
 import com.btxtech.client.editor.client.scene.SceneConfigSidebar;
+import com.btxtech.client.editor.generic.custom.ParticleCustomWidget;
 import com.btxtech.client.editor.generic.model.GenericPropertyInfoProvider;
 import com.btxtech.client.editor.i18n.I18nPanel;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.inventory.InventoryItemCrudSidebar;
 import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
-import com.btxtech.client.editor.particle.ParticleCrudeSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
 import com.btxtech.client.editor.renderpanel.RenderEngineEditorPanel;
 import com.btxtech.client.editor.server.bot.BotSidebar;
@@ -116,9 +116,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button audioButton;
     @Inject
     @DataField
-    private Button particleButton;
-    @Inject
-    @DataField
     private Button inventoryItemButton;
     @Inject
     @DataField
@@ -129,19 +126,19 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     public void init(Void aVoid) {
         genericPropertyInfoProvider.load();
         globalConfig.showSection(() -> modalDialogPanel.close(),
-                new CrudControllerButton(LevelEditorController.class, "Levels"),
-                new CrudControllerButton(PlanetEditorController.class, "Planets"),
-                new CrudControllerButton(GroundEditorController.class, "Grounds"),
-                new CrudControllerButton(SlopeEditorController.class, "Slope"),
-                new CrudControllerButton(DrivewayEditorController.class, "Driveway"),
-                new CrudControllerButton(WaterEditorController.class, "Water"),
-                new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context"),
-                new CrudControllerButton(Shape3DEditorController.class, "Shape 3D"),
-                new CrudControllerButton(TerrainObjectEditorController.class, "Terrain Object"),
-                new CrudControllerButton(BaseItemTypeEditorController.class, "Base Items"),
-                new CrudControllerButton(ResourceItemTypeEditorController.class, "Resource Items"),
-                new CrudControllerButton(ParticleShapeEditorController.class, "Particle Shapes"),
-                new CrudControllerButton(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequences")
+                new CrudControllerButton(LevelEditorController.class, "Levels", null),
+                new CrudControllerButton(PlanetEditorController.class, "Planets", null),
+                new CrudControllerButton(GroundEditorController.class, "Grounds", null),
+                new CrudControllerButton(SlopeEditorController.class, "Slope", null),
+                new CrudControllerButton(DrivewayEditorController.class, "Driveway", null),
+                new CrudControllerButton(WaterEditorController.class, "Water", null),
+                new CrudControllerButton(GameUiContextEditorController.class, "Game Ui Context", null),
+                new CrudControllerButton(Shape3DEditorController.class, "Shape 3D", null),
+                new CrudControllerButton(TerrainObjectEditorController.class, "Terrain Object", null),
+                new CrudControllerButton(BaseItemTypeEditorController.class, "Base Items", null),
+                new CrudControllerButton(ResourceItemTypeEditorController.class, "Resource Items", null),
+                new CrudControllerButton(ParticleShapeEditorController.class, "Particle Shapes", null),
+                new CrudControllerButton(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequences", ParticleCustomWidget.class)
         );
     }
 
@@ -257,12 +254,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private void onAudioButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
         modalDialogManager.show("Audio Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, AudioGalleryDialog.class, null, null, null, DialogButton.Button.CLOSE);
-    }
-
-    @EventHandler("particleButton")
-    private void particleButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openEditor(ParticleCrudeSidebar.class, "???Unknown");
     }
 
     @EventHandler("i18nPanelButton")

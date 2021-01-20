@@ -1,5 +1,6 @@
 package com.btxtech.client.editor;
 
+import com.btxtech.client.editor.generic.custom.CustomWidget;
 import com.btxtech.client.utils.DomConstants;
 import com.btxtech.client.utils.Elemental2Utils;
 import com.btxtech.shared.rest.CrudController;
@@ -32,9 +33,11 @@ public class EditorMenuButtonSection implements IsElement {
     public static class CrudControllerButton {
         private Class<? extends CrudController> crudControllerClass;
         private String title;
+        private Class<? extends CustomWidget> customWidgetClass;
 
-        public CrudControllerButton(Class<? extends CrudController> crudControllerClass, String title) {
+        public CrudControllerButton(Class<? extends CrudController> crudControllerClass, String title, Class<? extends CustomWidget> customWidgetClass) {
             this.crudControllerClass = crudControllerClass;
+            this.customWidgetClass = customWidgetClass;
             this.title = title;
         }
     }
@@ -67,7 +70,7 @@ public class EditorMenuButtonSection implements IsElement {
             editorMenuButton.init(crudControllerButton.title, evt -> {
                 try {
                     beforeOpen.run();
-                    editorService.openGenericCrudEditor(crudControllerButton.crudControllerClass, crudControllerButton.title);
+                    editorService.openGenericCrudEditor(crudControllerButton.crudControllerClass, crudControllerButton.title, crudControllerButton.customWidgetClass);
                 } catch (Throwable throwable) {
                     exceptionHandler.handleException(throwable);
                 }

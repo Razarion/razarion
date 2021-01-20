@@ -6,6 +6,7 @@ import com.btxtech.client.editor.AlarmServiceView.ClientAlarmView;
 import com.btxtech.client.editor.AlarmServiceView.ServerAlarmView;
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.editor.editorpanel.EditorPanel;
+import com.btxtech.client.editor.generic.custom.CustomWidget;
 import com.btxtech.shared.rest.CrudController;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.DialogButton;
@@ -75,10 +76,10 @@ public class EditorService {
         }
     }
 
-    public void openGenericCrudEditor(Class<? extends CrudController> crudControllerClass, String title) {
+    public void openGenericCrudEditor(Class<? extends CrudController> crudControllerClass, String title, Class<? extends CustomWidget> customWidgetClass) {
         try {
             EditorPanel editorPanel = editorPanelInstance.get();
-            editorPanel.setGenericCrud(crudControllerClass, title);
+            editorPanel.setGenericCrud(crudControllerClass, title, customWidgetClass);
             mainPanelService.addEditorPanel(editorPanel);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
