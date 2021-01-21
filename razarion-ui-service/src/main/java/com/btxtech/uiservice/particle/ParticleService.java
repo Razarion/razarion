@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.particle;
 
+import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.particle.AutonomousParticleEmitterConfig;
 import com.btxtech.shared.datatypes.particle.DependentParticleEmitterConfig;
@@ -21,7 +22,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -43,7 +43,7 @@ public class ParticleService {
     private List<AutonomousParticleEmitter> waitingEmitters = new ArrayList<>();
     private Collection<ParticleEmitter> activeEmitters = new ArrayList<>();
     private long lastTimeStamp;
-    private List<ModelMatrices> modelMatrices = new ArrayList<>();
+    private MapList<Integer, ModelMatrices> modelMatrices = new MapList<>();
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
         particleShapeConfigs.clear();
@@ -102,11 +102,11 @@ public class ParticleService {
         particles.removeIf(particle -> !particle.tick(timestamp, factor, camera.getMatrix(), nativeMatrixFactory));
         Collections.sort(particles);
 
-        modelMatrices = particles.stream().map(Particle::getModelMatrices).collect(Collectors.toList());
+        particles.forEach(particle -> modelMatrices.put(particle.getParticleShapeConfigId(), particle.getModelMatrices()));
     }
 
     public List<ModelMatrices> provideModelMatrices(int id) {
-        return modelMatrices;  // TODO add Particle Id
+        return modelMatrices.get(id);
     }
 
     public void addParticles(Particle particle) {

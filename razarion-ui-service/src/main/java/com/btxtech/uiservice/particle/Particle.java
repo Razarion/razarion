@@ -64,6 +64,10 @@ public class Particle implements Comparable<Particle> {
         return Double.compare(o.cameraDistance, cameraDistance);
     }
 
+    public Integer getParticleShapeConfigId() {
+        return particleConfig.getParticleShapeConfigId();
+    }
+
     private double setupScale(double progress) {
         if (particleConfig.getParticleGrowFrom() != null && particleConfig.getParticleGrowTo() != null) {
             double scale = progress * (particleConfig.getParticleGrowTo() - particleConfig.getParticleGrowFrom()) + particleConfig.getParticleGrowFrom();
