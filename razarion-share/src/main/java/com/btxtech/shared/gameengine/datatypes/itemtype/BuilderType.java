@@ -28,31 +28,78 @@ public class BuilderType {
     private List<Integer> ableToBuildIds;
     private Vertex animationOrigin;
     private Integer animationShape3dId;
+    private Integer animationParticleId;
 
     public double getRange() {
         return range;
     }
 
-    public BuilderType setRange(double range) {
+    public void setRange(double range) {
         this.range = range;
-        return this;
     }
 
     public double getProgress() {
         return progress;
     }
 
-    public BuilderType setProgress(double progress) {
+    public void setProgress(double progress) {
         this.progress = progress;
-        return this;
     }
 
     public List<Integer> getAbleToBuildIds() {
         return ableToBuildIds;
     }
 
-    public BuilderType setAbleToBuildIds(List<Integer> ableToBuildIds) {
+    public void setAbleToBuildIds(List<Integer> ableToBuildIds) {
         this.ableToBuildIds = ableToBuildIds;
+    }
+
+    public Vertex getAnimationOrigin() {
+        return animationOrigin;
+    }
+
+    public void setAnimationOrigin(Vertex animationOrigin) {
+        this.animationOrigin = animationOrigin;
+    }
+
+    public Integer getAnimationShape3dId() {
+        return animationShape3dId;
+    }
+
+    public void setAnimationShape3dId(Integer animationShape3dId) {
+        this.animationShape3dId = animationShape3dId;
+    }
+
+    public Integer getAnimationParticleId() {
+        return animationParticleId;
+    }
+
+    public void setAnimationParticleId(Integer animationParticleId) {
+        this.animationParticleId = animationParticleId;
+    }
+
+    public BuilderType range(double range) {
+        setRange(range);
+        return this;
+    }
+
+    public BuilderType progress(double progress) {
+        setProgress(progress);
+        return this;
+    }
+
+    public BuilderType ableToBuildIds(List<Integer> ableToBuildIds) {
+        setAbleToBuildIds(ableToBuildIds);
+        return this;
+    }
+
+    public BuilderType animationOrigin(Vertex animationOrigin) {
+        setAnimationOrigin(animationOrigin);
+        return this;
+    }
+
+    public BuilderType animationShape3dId(Integer animationShape3dId) {
+        setAnimationShape3dId(animationShape3dId);
         return this;
     }
 
@@ -60,21 +107,8 @@ public class BuilderType {
         return ableToBuildIds.contains(itemTypeId);
     }
 
-    public Vertex getAnimationOrigin() {
-        return animationOrigin;
-    }
-
-    public BuilderType setAnimationOrigin(Vertex animationOrigin) {
-        this.animationOrigin = animationOrigin;
-        return this;
-    }
-
-    public Integer getAnimationShape3dId() {
-        return animationShape3dId;
-    }
-
-    public BuilderType setAnimationShape3dId(Integer animationShape3dId) {
-        this.animationShape3dId = animationShape3dId;
+    public BuilderType animationParticleId(Integer animationParticleId) {
+        setAnimationParticleId(animationParticleId);
         return this;
     }
 }

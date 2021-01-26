@@ -14,17 +14,28 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 public class Particle implements Comparable<Particle> {
     private ParticleConfig particleConfig;
     private Vertex velocity;
+    private Vertex acceleration;
     private Vertex position;
     private long startTime;
     private ModelMatrices modelMatrices;
     private double cameraDistance;
     private int timeToLive;
 
-    public Particle(long startTime, Vertex startPosition, ParticleConfig particleConfig) {
+    public Particle(long startTime, Vertex startPosition, Vertex direction, ParticleConfig particleConfig) {
         this.startTime = startTime;
         this.position = startPosition;
         this.particleConfig = particleConfig;
-        velocity = MathHelper.random(particleConfig.getVelocity(), particleConfig.getVelocityRandomPart());
+        if (direction != null) {
+            if (particleConfig.getDirectedVelocity() != null) {
+                velocity = direction.normalize(MathHelper.random(particleConfig.getDirectedVelocity(), particleConfig.getDirectedVelocityRandomPart()));
+                if (particleConfig.getAcceleration() != null) {
+                    acceleration = direction.normalize(particleConfig.getDirectedAcceleration());
+                }
+            }
+        } else {
+            velocity = MathHelper.random(particleConfig.getVelocity(), particleConfig.getVelocityRandomPart());
+            acceleration = particleConfig.getAcceleration();
+        }
         timeToLive = MathHelper.random(particleConfig.getTimeToLive(), particleConfig.getTimeToLiveRandomPart());
     }
 
@@ -41,8 +52,8 @@ public class Particle implements Comparable<Particle> {
         // velocity = velocity.multiply(0.9);
         if (velocity != null) {
             position = position.add(velocity.multiply(factor));
-            if (particleConfig.getAcceleration() != null) {
-                velocity = velocity.add(particleConfig.getAcceleration().multiply(factor));
+            if (acceleration != null) {
+                velocity = velocity.add(acceleration.multiply(factor));
             }
         }
         if (modelMatrices == null) {

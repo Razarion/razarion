@@ -46,8 +46,8 @@ public class BuilderTypePanel extends Composite implements TakesValue<BuilderTyp
     @Override
     public void setValue(BuilderType builderType) {
         dataBinder.setModel(builderType);
-        ableToBuildIds.init(builderType.getAbleToBuildIds(), builderType::setAbleToBuildIds);
-        animationShape3dId.init(builderType.getAnimationShape3dId(), builderType::setAnimationShape3dId);
+        ableToBuildIds.init(builderType.getAbleToBuildIds(), builderType::ableToBuildIds);
+        animationShape3dId.init(builderType.getAnimationShape3dId(), builderType::animationShape3dId);
     }
 
     @Override

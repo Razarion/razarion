@@ -46,7 +46,12 @@ public class ParticleEmitterSequenceEditorControllerTest extends AbstractCrudTes
                 new AutonomousParticleEmitterConfig().internalName("AutonomousParticleEmitterConfig").particleConfig(
                         new ParticleConfig()))), new JsonAssert.IdSuppressor("/autonomous/0", "id"));
         registerUpdate(particleEmitterSequenceConfig -> particleEmitterSequenceConfig.getDependent().get(0).emittingCount(100));
-        registerUpdate(particleEmitterSequenceConfig -> particleEmitterSequenceConfig.getDependent().get(0).getParticleConfig().particleGrowTo(1.0).particleGrowFrom(2.0).particleShapeConfigId(PARTICLE_SHAPE_1_ID));
+        registerUpdate(particleEmitterSequenceConfig -> particleEmitterSequenceConfig.getDependent().get(0).getParticleConfig()
+                .particleGrowTo(1.0).particleGrowFrom(2.0).particleShapeConfigId(PARTICLE_SHAPE_1_ID)
+                .velocity(new Vertex(1, 2, 3)).acceleration(new Vertex(5, 6, 7)).velocityRandomPart(new Vertex(8, 2, 9)));
+        registerUpdate(particleEmitterSequenceConfig -> particleEmitterSequenceConfig.getDependent().get(0).getParticleConfig()
+                .particleShapeConfigId(PARTICLE_SHAPE_1_ID)
+                .velocity(null).acceleration(null).velocityRandomPart(new Vertex(8, 2, 9)).directedVelocity(11.0).directedAcceleration(12.0).directedVelocityRandomPart(34.0));
         registerUpdate(particleEmitterSequenceConfig -> particleEmitterSequenceConfig.getAutonomous().get(0).timeToLive(112).startTime(1200).setVelocity(new Vertex(1, 2, 3)));
         registerUpdate(particleEmitterSequenceConfig -> particleEmitterSequenceConfig.getAutonomous().add(
                 new AutonomousParticleEmitterConfig().internalName("AutonomousParticleEmitterConfig").particleConfig(

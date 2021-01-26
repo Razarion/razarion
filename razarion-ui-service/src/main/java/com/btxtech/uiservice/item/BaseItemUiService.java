@@ -36,10 +36,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toVertex;
 
 /**
  * Created by Beat
@@ -87,6 +90,7 @@ public class BaseItemUiService {
     private MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
+    private Set<Integer> buildups = new HashSet<>();
     private long lastUpdateTimeStamp;
     private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
 
@@ -153,6 +157,8 @@ public class BaseItemUiService {
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
+        Set<Integer> leftoverBuildups = buildups;
+        buildups = new HashSet<>();
         int tmpItemCount = 0;
         int usedHouseSpace = 0;
         boolean radar = false;
@@ -243,7 +249,13 @@ public class BaseItemUiService {
                     NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getBuilderType().getAnimationOrigin()), 1.0);
                     NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.buildingPosition, origin);
                     builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
+                    if(baseItemType.getBuilderType().getAnimationParticleId() != null) {
+                        buildups.add(nativeSyncBaseItemTickInfo.id);
+                        leftoverBuildups.remove(nativeSyncBaseItemTickInfo.id);
+                        effectVisualizationService.updateBuildupParticle(nativeSyncBaseItemTickInfo, toVertex(origin), baseItemType, direction);
+                    }
                 }
+                effectVisualizationService.removeBuildupParticle(leftoverBuildups);
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }

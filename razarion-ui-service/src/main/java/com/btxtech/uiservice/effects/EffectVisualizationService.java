@@ -8,7 +8,9 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionParticleConfig
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.uiservice.audio.AudioService;
+import com.btxtech.uiservice.particle.ParticleEmitterSequenceHandler;
 import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.renderer.ViewService;
 
@@ -17,7 +19,10 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
+
+import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toVertex;
 
 /**
  * Created by Beat
@@ -37,6 +42,7 @@ public class EffectVisualizationService {
     @Inject
     private TrailService trailService;
     private Map<Integer, DemolitionBaseItemEntry> demolitionBaseItemEntries = new HashMap<>();
+    private Map<Integer, ParticleEmitterSequenceHandler> buildupBaseItemEntries = new HashMap<>();
 
     public void onProjectileFired(BaseItemType baseItemType, Vertex muzzlePosition, Vertex target) {
         Integer muzzleFlashParticleEmitterSequenceConfigId = baseItemType.getWeaponType().getMuzzleFlashParticleConfigId();
@@ -113,7 +119,7 @@ public class EffectVisualizationService {
             return;
         }
 
-        demolitionBaseItemEntry.disposePartices();
+        demolitionBaseItemEntry.disposeParticles();
         DemolitionStepEffect demolitionStepEffect = baseItemType.getDemolitionStepEffect(step);
 
         for (DemolitionParticleConfig demolitionParticleConfig : demolitionStepEffect.getDemolitionParticleConfigs()) {
@@ -124,10 +130,30 @@ public class EffectVisualizationService {
         demolitionBaseItemEntry.setDemolitionStep(step);
     }
 
+    public void updateBuildupParticle(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, Vertex muzzlePosition, BaseItemType baseItemType, NativeVertexDto direction) {
+        ParticleEmitterSequenceHandler particleEmitterSequenceHandler = buildupBaseItemEntries.get(nativeSyncBaseItemTickInfo.id);
+        if (particleEmitterSequenceHandler != null) {
+            return;
+        }
+        ParticleEmitterSequenceConfig particleEmitterSequenceConfig = particleService.getParticleEmitterSequenceConfig(baseItemType.getBuilderType().getAnimationParticleId());
+        buildupBaseItemEntries.put(
+                nativeSyncBaseItemTickInfo.id,
+                particleService.start(System.currentTimeMillis(), muzzlePosition, toVertex(direction), particleEmitterSequenceConfig));
+    }
+
     private void removeBuildingDemolitionEffect(int syncBaseItemId) {
         DemolitionBaseItemEntry demolitionBaseItemEntry = demolitionBaseItemEntries.remove(syncBaseItemId);
         if (demolitionBaseItemEntry != null) {
-            demolitionBaseItemEntry.disposePartices();
+            demolitionBaseItemEntry.disposeParticles();
         }
+    }
+
+    public void removeBuildupParticle(Set<Integer> baseItemIds) {
+        baseItemIds.forEach(baseItemId -> {
+            ParticleEmitterSequenceHandler particleEmitterSequenceHandler = buildupBaseItemEntries.remove(baseItemId);
+            if (particleEmitterSequenceHandler != null) {
+                particleEmitterSequenceHandler.dispose();
+            }
+        });
     }
 }

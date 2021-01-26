@@ -192,9 +192,9 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         builder.setI18nName(i18nHelper("Builder"));
         builder.setI18nDescription(i18nHelper("Builds buildings"));
         builder.getPhysicalAreaConfig().setRadius(3).setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60));
-        BuilderType builderType = new BuilderType().setProgress(1).setRange(10).setAnimationShape3dId(SHAPE_3D_2_ID).setAnimationOrigin(new Vertex(1.63196, 0, 3.04829));
+        BuilderType builderType = new BuilderType().progress(1).range(10).animationShape3dId(SHAPE_3D_2_ID).animationParticleId(PARTICLE_EMITTER_SEQUENCE_1_ID).animationOrigin(new Vertex(1.63196, 0, 3.04829));
         if (ableToBuild.length > 0) {
-            builderType.setAbleToBuildIds(Arrays.asList(ableToBuild));
+            builderType.ableToBuildIds(Arrays.asList(ableToBuild));
         }
         builder.setBuilderType(builderType);
         builder.setBoxPickupRange(2).setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setBuildup(30);

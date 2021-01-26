@@ -15,9 +15,9 @@ public class AutonomousParticleEmitter extends ParticleEmitter {
     private AutonomousParticleEmitterConfig particleEmitterConfig;
     private Vertex direction;
 
-    public void init(long timestamp, Vertex position, Vertex direction, AutonomousParticleEmitterConfig autonomousParticleEmitterConfig) {
+    public void init(long timestamp, Vertex position, Vertex particleDirection, Vertex direction, AutonomousParticleEmitterConfig autonomousParticleEmitterConfig) {
         this.direction = direction;
-        super.init(position, autonomousParticleEmitterConfig);
+        super.init(position, particleDirection, autonomousParticleEmitterConfig);
         this.particleEmitterConfig = autonomousParticleEmitterConfig;
         startTimeStamp = timestamp + autonomousParticleEmitterConfig.getStartTime();
     }

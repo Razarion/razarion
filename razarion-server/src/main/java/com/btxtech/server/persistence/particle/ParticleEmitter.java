@@ -50,6 +50,9 @@ public abstract class ParticleEmitter {
             @AttributeOverride(name = "z", column = @Column(name = "particleAccelerationZ")),
     })
     private Vertex particleAcceleration;
+    private Double particleDirectedVelocity;
+    private Double particleDirectedVelocityRandomPart;
+    private Double particleDirectedAcceleration;
 
 
     protected void fill(ParticleEmitterConfig config) {
@@ -67,7 +70,10 @@ public abstract class ParticleEmitter {
                         .timeToLiveRandomPart(particleTimeToLiveRandomPart)
                         .velocity(particleVelocity)
                         .velocityRandomPart(particleVelocityRandomPart)
-                        .acceleration(particleAcceleration));
+                        .acceleration(particleAcceleration)
+                        .directedVelocity(particleDirectedVelocity)
+                        .directedVelocityRandomPart(particleDirectedVelocityRandomPart)
+                        .directedAcceleration(particleDirectedAcceleration));
     }
 
     protected void fromConfig(ParticleEmitterConfig config, ParticleShapeCrudPersistence particleShapeCrudPersistence) {
@@ -86,6 +92,9 @@ public abstract class ParticleEmitter {
             particleVelocity = config.getParticleConfig().getVelocity();
             particleVelocityRandomPart = config.getParticleConfig().getVelocityRandomPart();
             particleAcceleration = config.getParticleConfig().getAcceleration();
+            particleDirectedVelocity = config.getParticleConfig().getDirectedVelocity();
+            particleDirectedVelocityRandomPart = config.getParticleConfig().getDirectedVelocityRandomPart();
+            particleDirectedAcceleration = config.getParticleConfig().getDirectedAcceleration();
         }
     }
 

@@ -60,7 +60,7 @@ public class ParticleService {
         ParticleEmitterSequenceHandler handler = null;
         if (dependentParticleEmitterConfig.getDependent() != null) {
             handler = new ParticleEmitterSequenceHandler(this);
-            start(position, dependentParticleEmitterConfig.getDependent(), handler);
+            start(position, direction, dependentParticleEmitterConfig.getDependent(), handler);
         }
         return handler;
     }
@@ -68,16 +68,16 @@ public class ParticleService {
     private void start(long timestamp, Vertex position, Vertex direction, List<AutonomousParticleEmitterConfig> autonomousParticleEmitterConfigs) {
         for (AutonomousParticleEmitterConfig autonomousParticleEmitterConfig : autonomousParticleEmitterConfigs) {
             AutonomousParticleEmitter autonomousParticleEmitter = autonomousParticleEmitterInstance.get();
-            autonomousParticleEmitter.init(timestamp, position, direction, autonomousParticleEmitterConfig);
+            autonomousParticleEmitter.init(timestamp, position, null, direction, autonomousParticleEmitterConfig);
             waitingEmitters.add(autonomousParticleEmitter);
         }
         waitingEmitters.sort(Comparator.comparingLong(AutonomousParticleEmitter::getStartTimeStamp));
     }
 
-    private void start(Vertex position, List<DependentParticleEmitterConfig> dependentParticleEmitterConfigs, ParticleEmitterSequenceHandler handler) {
+    private void start(Vertex position, Vertex particleDirection, List<DependentParticleEmitterConfig> dependentParticleEmitterConfigs, ParticleEmitterSequenceHandler handler) {
         for (DependentParticleEmitterConfig dependentParticleEmitterConfig : dependentParticleEmitterConfigs) {
             DependentParticleEmitter dependentParticleEmitter = dependentParticleEmitterInstance.get();
-            dependentParticleEmitter.init(position, dependentParticleEmitterConfig);
+            dependentParticleEmitter.init(position, particleDirection, dependentParticleEmitterConfig);
             activeEmitters.add(dependentParticleEmitter);
             handler.addDependentParticleEmitter(dependentParticleEmitter);
         }

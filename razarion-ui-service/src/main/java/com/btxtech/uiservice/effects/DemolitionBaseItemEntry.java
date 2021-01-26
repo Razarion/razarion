@@ -25,7 +25,7 @@ public class DemolitionBaseItemEntry {
         this.demolitionStep = demolitionStep;
     }
 
-    public void disposePartices() {
+    public void disposeParticles() {
         for (ParticleEmitterSequenceHandler particleEmitterSequenceHandler : particleEmitterSequenceHandlers) {
             particleEmitterSequenceHandler.dispose();
         }

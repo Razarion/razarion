@@ -2,6 +2,8 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
+import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 
@@ -20,6 +22,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -47,26 +51,29 @@ public class BuilderTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity animationShape3d;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ParticleEmitterSequenceEntity animationParticle;
 
     public BuilderType toBuilderType() {
-        BuilderType builderType = new BuilderType().setRange(buildRange).setProgress(progress);
+        BuilderType builderType = new BuilderType()
+                .range(buildRange)
+                .progress(progress)
+                .animationOrigin(animationOrigin)
+                .animationShape3dId(extractId(animationShape3d, ColladaEntity::getId))
+                .animationParticleId(extractId(animationParticle, ParticleEmitterSequenceEntity::getId));
+
         if (ableToBuilds != null && !ableToBuilds.isEmpty()) {
             List<Integer> ableToBuildIds = new ArrayList<>();
             for (BaseItemTypeEntity ableToBuild : ableToBuilds) {
                 ableToBuildIds.add(ableToBuild.getId());
             }
-            builderType.setAbleToBuildIds(ableToBuildIds);
-        }
-        if (animationOrigin != null) {
-            builderType.setAnimationOrigin(animationOrigin);
-        }
-        if (animationShape3d != null) {
-            builderType.setAnimationShape3dId(animationShape3d.getId());
+            builderType.ableToBuildIds(ableToBuildIds);
         }
         return builderType;
     }
 
-    public void fromBuilderType(BuilderType builderType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence) {
+    public void fromBuilderType(BuilderType builderType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence) {
         buildRange = builderType.getRange();
         progress = builderType.getProgress();
         if (builderType.getAbleToBuildIds() != null && !builderType.getAbleToBuildIds().isEmpty()) {
@@ -82,6 +89,7 @@ public class BuilderTypeEntity {
         }
         animationOrigin = builderType.getAnimationOrigin();
         animationShape3d = shape3DPersistence.getEntity(builderType.getAnimationShape3dId());
+        animationParticle = particleEmitterSequenceCrudPersistence.getEntity(builderType.getAnimationParticleId());
     }
 
     @Override

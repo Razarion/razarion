@@ -241,7 +241,7 @@ public class BaseItemTypeEntity {
             if (builderType == null) {
                 builderType = new BuilderTypeEntity();
             }
-            builderType.fromBuilderType(baseItemType.getBuilderType(), baseItemTypeCrudPersistence, shape3DPersistence);
+            builderType.fromBuilderType(baseItemType.getBuilderType(), baseItemTypeCrudPersistence, shape3DPersistence, particleEmitterSequenceCrudPersistence);
         } else {
             builderType = null;
         }

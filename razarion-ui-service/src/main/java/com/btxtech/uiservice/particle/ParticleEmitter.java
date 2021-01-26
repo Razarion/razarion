@@ -14,14 +14,16 @@ public abstract class ParticleEmitter {
     private ParticleService particleService;
     private long lastGenerationTime;
     private Vertex position;
+    private Vertex particleDirection;
     private ParticleEmitterConfig particleEmitterConfig;
 
     protected abstract boolean isRunning(long timestamp);
 
     protected abstract Vertex updatePosition(double factor, Vertex position);
 
-    public void init(Vertex position, ParticleEmitterConfig particleEmitterConfig) {
+    public void init(Vertex position, Vertex particleDirection, ParticleEmitterConfig particleEmitterConfig) {
         this.position = position;
+        this.particleDirection = particleDirection;
         this.particleEmitterConfig = particleEmitterConfig;
     }
 
@@ -42,7 +44,10 @@ public abstract class ParticleEmitter {
             for (int i = 0; i < particleEmitterConfig.getEmittingCount(); i++) {
                 double xRand = (Math.random() - 0.5) * particleEmitterConfig.getGenerationRandomDistance();
                 double yRand = (Math.random() - 0.5) * particleEmitterConfig.getGenerationRandomDistance();
-                particleService.addParticles(new Particle(timestamp, new Vertex(position.getX() + xRand, position.getY() + yRand, position.getZ()), particleEmitterConfig.getParticleConfig()));
+                particleService.addParticles(new Particle(timestamp,
+                        new Vertex(position.getX() + xRand, position.getY() + yRand, position.getZ()), particleDirection,
+                        particleEmitterConfig.getParticleConfig()
+                ));
             }
             lastGenerationTime = timestamp;
         }

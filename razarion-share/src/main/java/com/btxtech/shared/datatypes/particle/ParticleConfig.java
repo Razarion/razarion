@@ -17,6 +17,9 @@ public class ParticleConfig {
     private Vertex velocity;
     private Vertex velocityRandomPart;
     private Vertex acceleration;
+    private Double directedVelocity;
+    private Double directedVelocityRandomPart;
+    private Double directedAcceleration;
 
     public Integer getParticleShapeConfigId() {
         return particleShapeConfigId;
@@ -90,6 +93,30 @@ public class ParticleConfig {
         this.acceleration = acceleration;
     }
 
+    public Double getDirectedVelocity() {
+        return directedVelocity;
+    }
+
+    public void setDirectedVelocity(Double directedVelocity) {
+        this.directedVelocity = directedVelocity;
+    }
+
+    public Double getDirectedVelocityRandomPart() {
+        return directedVelocityRandomPart;
+    }
+
+    public void setDirectedVelocityRandomPart(Double directedVelocityRandomPart) {
+        this.directedVelocityRandomPart = directedVelocityRandomPart;
+    }
+
+    public Double getDirectedAcceleration() {
+        return directedAcceleration;
+    }
+
+    public void setDirectedAcceleration(Double directedAcceleration) {
+        this.directedAcceleration = directedAcceleration;
+    }
+
     public ParticleConfig particleShapeConfigId(Integer particleShapeConfigId) {
         setParticleShapeConfigId(particleShapeConfigId);
         return this;
@@ -132,6 +159,21 @@ public class ParticleConfig {
 
     public ParticleConfig acceleration(Vertex acceleration) {
         setAcceleration(acceleration);
+        return this;
+    }
+
+    public ParticleConfig directedVelocity(Double directedVelocity) {
+        setDirectedVelocity(directedVelocity);
+        return this;
+    }
+
+    public ParticleConfig directedVelocityRandomPart(Double directedVelocityRandomPart) {
+        setDirectedVelocityRandomPart(directedVelocityRandomPart);
+        return this;
+    }
+
+    public ParticleConfig directedAcceleration(Double directedAcceleration) {
+        setDirectedAcceleration(directedAcceleration);
         return this;
     }
 }

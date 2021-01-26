@@ -364,7 +364,7 @@ public class ServerTestHelper {
         BaseItemType builder = new BaseItemType();
         builder.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setInternalName("Builder");
         builder.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(2.78).setSpeed(17.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
-        builder.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuildIds(Collections.singletonList(BASE_ITEM_TYPE_FACTORY_ID)));
+        builder.setBuilderType(new BuilderType().progress(1).range(3).ableToBuildIds(Collections.singletonList(BASE_ITEM_TYPE_FACTORY_ID)));
         BASE_ITEM_TYPE_BULLDOZER_ID = createBaseItemTypeEntity(builder);
 
         BaseItemType harvester = new BaseItemType();
