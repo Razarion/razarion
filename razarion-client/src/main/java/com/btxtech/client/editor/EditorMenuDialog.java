@@ -187,7 +187,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("terrainButton")
     private void onTerrainButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
-        editorService.openEditor(TerrainEditor.class, "???Unknown");
+        editorService.openEditor(TerrainEditor.class, "Terrain Editor");
     }
 
     @EventHandler("resourceRegionButton")

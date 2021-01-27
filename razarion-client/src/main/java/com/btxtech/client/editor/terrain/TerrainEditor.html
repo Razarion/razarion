@@ -1,136 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://java.sun.com/jsf/core">
 <head>
     <meta charset="UTF-8">
     <title></title>
 </head>
 <body>
 
-<table id="terrainEditor" style="border-spacing: 0; border-collapse: separate; margin: 5px">
-    <tr>
-        <td colspan="2">Slopes<br><span style="color: #ffffff; font-size: 80%;background-color: red;">Save before drawing a child</span></td>
-    </tr>
-    <tr>
-        <td colspan="2">Shift & Delete & Click removes whole slope</td>
-    </tr>
-    <tr>
-        <td>Active</td>
-        <td><input id="slopeRadio" type="radio" name="createNew" value="slope">(press insert)</td>
-    </tr>
-    <tr>
-        <td>Cursor Radius</td>
-        <td><input id="cursorRadius" type="number" min="1" step="1"></td>
-    </tr>
-    <tr>
-        <td>Cursor Corners</td>
-        <td><input id="cursorCorners" type="number" min="3" step="1"></td>
-    </tr>
-    <tr>
-        <td>New Slope</td>
-        <td><select id="slopeSelection" style="text-align: center"></select></td>
-    </tr>
-    <tr>
-        <td>Inverted</td>
-        <td>
-            <input type="checkbox" id="slopeInverted">
-        </td>
-    </tr>
-    <tr>
-        <td>Driveway Mode</td>
-        <td><input id="drivewayMode" type="checkbox">Draw Driveways</td>
-    </tr>
-    <tr>
-        <td>New Driveway</td>
-        <td><select id="drivewaySelection" style="text-align: center"></select></td>
-    </tr>
-    <tr>
-        <td colspan="2">Terrain Objects</td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <hr>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">Terrain Objects</td>
-    </tr>
-    <tr>
-        <td>Active</td>
-        <td><input id="terrainObjectRadio" type="radio" name="createNew" value="terrainObject"></td>
-    </tr>
-    <tr>
-        <td>New Terrain Object</td>
-        <td><select id="terrainObjectSelection" style="text-align: center"></select></td>
-    </tr>
-    <tr>
-        <td>Random Z Rotation [0&#176...180&#176]</td>
-        <td><input id="terrainObjectRandomZRotation" type="range" max="180" min="0" step="1"></td>
-    </tr>
-    <tr>
-        <td>Random Scale [1...5]</td>
-        <td><input id="terrainObjectRandomScale" type="range" max="5" min="1" step="0.01"></td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <hr>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <div id="radarPanel"></div>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <hr>
-        </td>
-    </tr>
+<table data-field="terrainEditor" style="border-spacing: 0; border-collapse: separate; margin: 5px">
     <tr>
         <td>Planet Id</td>
         <td>
-            <span id="id"></span>
+            <div data-field="id"></div>
         </td>
     </tr>
     <tr>
         <td>Size</td>
         <td>
-            <span id="terrainSize"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>Camera</td>
-        <td>
-            <button id="topViewButton">Top View</button>
-        </td>
-    </tr>
-    <tr>
-        <td>View field center</td>
-        <td>
-            <div id="viewFiledCenter"></div>
-        </td>
-    </tr>
-    <tr>
-        <td>View field top</td>
-        <td>
-            <span id="viewFiledTop"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>View field bottom</td>
-        <td>
-            <span id="viewFiledBottom"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>View field height</td>
-        <td>
-            <span id="viewFiledHeight"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>Terrain Position</td>
-        <td>
-            <span id="terrainPositionLabel"></span>(press Space)
+            <div data-field="terrainSize"></div>
         </td>
     </tr>
     <tr>
@@ -140,13 +26,81 @@
     </tr>
     <tr>
         <td colspan="2">
-            <button id="showMiniMapButton">Generate mini map</button>
+            <table>
+                <tr>
+                    <td>
+                        <div data-field="radarPanel"></div>
+                    </td>
+                    <td>
+                        <button data-field="topViewButton">Top View</button>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>View&nbsp;field&nbsp;center</td>
+        <td>
+            <div data-field="viewFiledCenter"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>View&nbsp;field&nbsp;top</td>
+        <td>
+            <div data-field="viewFiledTop"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>View&nbsp;field&nbsp;bottom</td>
+        <td>
+            <div data-field="viewFiledBottom"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>View&nbsp;field&nbsp;height</td>
+        <td>
+            <div data-field="viewFiledHeight"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>Terrain Position</td>
+        <td>
+            <div data-field="terrainPositionLabel">(press Space)</div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <hr>
+        </td>
+    </tr>
+
+    <tr style="color: #ffffff; background-color: #5b5b73;">
+        <td>
+            <input data-field="slopeRadio" type="radio" name="createNew" value="slope">Slope
+        </td>
+        <td>
+            <input data-field="terrainObjectRadio" type="radio" name="createNew" value="terrainObject">TerrainObject
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div data-field="controlPanel"></div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <button data-field="showMiniMapButton">Generate mini map</button>
             (Save before)
         </td>
     </tr>
     <tr>
         <td rowspan="2">
-            <button id="restartPlanetButton">Restart planet</button>
+            <button data-field="restartPlanetButton">Restart planet</button>
         </td>
     </tr>
 </table>

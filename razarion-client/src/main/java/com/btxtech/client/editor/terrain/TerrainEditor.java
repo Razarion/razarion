@@ -4,14 +4,10 @@ import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.guielements.DecimalPositionBox;
+import com.btxtech.client.utils.Elemental2Utils;
 import com.btxtech.common.DisplayUtils;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.rest.DrivewayEditorController;
-import com.btxtech.shared.rest.SlopeEditorController;
-import com.btxtech.shared.rest.TerrainObjectEditorController;
-import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -21,12 +17,8 @@ import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DoubleBox;
-import com.google.gwt.user.client.ui.IntegerBox;
-import com.google.gwt.user.client.ui.ValueListBox;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.common.client.dom.CheckboxInput;
+import elemental2.dom.HTMLDivElement;
+import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.common.client.dom.RadioInput;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -34,8 +26,8 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * Created by Beat
@@ -49,12 +41,6 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @Inject
     private TerrainEditorService terrainEditorService;
     @Inject
-    private Caller<SlopeEditorController> slopeEditorController;
-    @Inject
-    private Caller<DrivewayEditorController> drivewayEditorController;
-    @Inject
-    private Caller<TerrainObjectEditorController> terrainObjectEditorController;
-    @Inject
     private Camera camera;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
@@ -65,6 +51,8 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
+    private Instance<IsElement> elementInstance;
+    @Inject
     @DataField
     private Span id;
     @Inject
@@ -72,7 +60,10 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     private Span terrainSize;
     @Inject
     @DataField
-    private Span terrainPositionLabel;
+    private RadarPanel radarPanel;
+    @Inject
+    @DataField
+    private HTMLDivElement terrainPositionLabel;
     @Inject
     @DataField
     private DecimalPositionBox viewFiledCenter;
@@ -96,37 +87,10 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     private RadioInput terrainObjectRadio;
     @Inject
     @DataField
-    private DoubleBox cursorRadius;
-    @Inject
-    @DataField
-    private IntegerBox cursorCorners;
-    @Inject
-    @DataField
-    private ValueListBox<ObjectNameId> slopeSelection;
-    @Inject
-    @DataField
-    private CheckboxInput slopeInverted;
-    @Inject
-    @DataField
-    private CheckboxInput drivewayMode;
-    @Inject
-    @DataField
-    private ValueListBox<ObjectNameId> drivewaySelection;
-    @Inject
-    @DataField
-    private ValueListBox<ObjectNameId> terrainObjectSelection;
-    @Inject
-    @DataField
-    private DoubleBox terrainObjectRandomZRotation;
-    @Inject
-    @DataField
-    private DoubleBox terrainObjectRandomScale;
+    private HTMLDivElement controlPanel;
     @Inject
     @DataField
     private Button showMiniMapButton;
-    @Inject
-    @DataField
-    private RadarPanel radarPanel;
     @Inject
     @DataField
     private Button restartPlanetButton;
@@ -136,90 +100,30 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
         terrainEditorService.activate();
         id.setTextContent(Integer.toString(terrainEditorService.getPlanetConfig().getId()));
         terrainSize.setTextContent(DisplayUtils.handleDecimalPosition(terrainEditorService.getPlanetConfig().getSize()));
-        slopeRadio.setChecked(terrainEditorService.getCreationMode());
-        terrainObjectRadio.setChecked(!terrainEditorService.getCreationMode());
-        cursorRadius.setValue(terrainEditorService.getCursorRadius());
-        slopeInverted.setChecked(terrainEditorService.isInvertedSlope());
-        cursorCorners.setValue(terrainEditorService.getCursorCorners());
-        terrainObjectRandomZRotation.setValue(terrainEditorService.getTerrainObjectRandomZRotation());
-        terrainObjectRandomScale.setValue(terrainEditorService.getTerrainObjectRandomScale());
-        slopeSelection.addValueChangeHandler(event -> terrainEditorService.setSlope4New(slopeSelection.getValue()));
-        slopeEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
-            ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
-            slopeSelection.setAcceptableValues(objectNameIds);
-            slopeSelection.setValue(objectNameId);
-            terrainEditorService.setSlope4New(objectNameId);
-        }, exceptionHandler.restErrorHandler("SlopeEditorController.getObjectNameIds() failed: ")).getObjectNameIds();
-        drivewayMode.setChecked(terrainEditorService.isDrivewayMode());
-        drivewaySelection.addValueChangeHandler(event -> terrainEditorService.setDriveway4New(drivewaySelection.getValue()));
-        drivewayEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
-            if (objectNameIds == null || objectNameIds.isEmpty()) {
-                return;
-            }
-            ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
-            drivewaySelection.setAcceptableValues(objectNameIds);
-            drivewaySelection.setValue(objectNameId);
-            terrainEditorService.setDriveway4New(objectNameId);
-        }, exceptionHandler.restErrorHandler("DrivewayEditorController.getObjectNameIds failed: ")).getObjectNameIds();
-        terrainObjectSelection.addValueChangeHandler(event -> terrainEditorService.setTerrainObject4New(terrainObjectSelection.getValue()));
-        terrainObjectEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
-            if (objectNameIds == null || objectNameIds.isEmpty()) {
-                return;
-            }
-            ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
-            terrainObjectSelection.setAcceptableValues(objectNameIds);
-            terrainObjectSelection.setValue(objectNameId);
-            terrainEditorService.setTerrainObject4New(objectNameId);
-        }, exceptionHandler.restErrorHandler("getObjectNameIds failed: ")).getObjectNameIds();
-        terrainEditorService.setTerrainPositionListener(vertex -> terrainPositionLabel.setTextContent(DisplayUtils.formatVertex(vertex)));
+
+        slopeRadio.setChecked(terrainEditorService.getSlopeMode());
+        terrainObjectRadio.setChecked(!terrainEditorService.getSlopeMode());
+        setSlopeMode(terrainEditorService.getSlopeMode());
+
+        terrainEditorService.setTerrainPositionListener(vertex -> terrainPositionLabel.textContent = DisplayUtils.formatVertex(vertex));
         viewService.addViewFieldListeners(this);
         radarPanel.show();
     }
 
     @EventHandler("slopeRadio")
     private void slopeRadioClick(ClickEvent event) {
-        terrainEditorService.setSlopeMode(true);
+        setSlopeMode(true);
     }
 
     @EventHandler("terrainObjectRadio")
     private void terrainObjectRadioClick(ClickEvent event) {
-        terrainEditorService.setSlopeMode(false);
-    }
-
-    @EventHandler("drivewayMode")
-    public void drivewayModeChanged(ChangeEvent e) {
-        terrainEditorService.setDrivewayModeChanged(drivewayMode.getChecked());
+        setSlopeMode(false);
     }
 
     @Override
     public void onClose() {
         viewService.removeViewFieldListeners(this);
         terrainEditorService.deactivate();
-    }
-
-    @EventHandler("cursorRadius")
-    public void cursorRadiusChanged(ChangeEvent e) {
-        terrainEditorService.setCursorRadius(cursorRadius.getValue());
-    }
-
-    @EventHandler("cursorCorners")
-    public void cursorCornersChanged(ChangeEvent e) {
-        terrainEditorService.setCursorCorners(cursorCorners.getValue());
-    }
-
-    @EventHandler("slopeInverted")
-    public void slopeInvertedCheckboxChanged(ChangeEvent e) {
-        terrainEditorService.setInvertedSlope(slopeInverted.getChecked());
-    }
-
-    @EventHandler("terrainObjectRandomZRotation")
-    public void terrainObjectRandomZRotationChanged(ChangeEvent e) {
-        terrainEditorService.setTerrainObjectRandomZRotation(terrainObjectRandomZRotation.getValue());
-    }
-
-    @EventHandler("terrainObjectRandomScale")
-    public void terrainObjectRandomScaleChanged(ChangeEvent e) {
-        terrainEditorService.setTerrainObjectRandomScale(terrainObjectRandomScale.getValue());
     }
 
     @EventHandler("topViewButton")
@@ -256,5 +160,17 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @EventHandler("showMiniMapButton")
     private void showMiniMapButtonClicked(ClickEvent event) {
         modalDialogManager.show("Mini map generator", ClientModalDialogManagerImpl.Type.STACK_ABLE, MiniMapDialog.class, null, null, null, DialogButton.Button.CLOSE);
+    }
+
+    private void setSlopeMode(boolean slopeMode) {
+        IsElement controlPanel;
+        if (slopeMode) {
+            controlPanel = elementInstance.select(SlopeControlPanel.class).get();
+        } else {
+            controlPanel = elementInstance.select(TerrainObjectControlPanel.class).get();
+        }
+        Elemental2Utils.removeAllChildren(this.controlPanel);
+        this.controlPanel.appendChild(controlPanel.getElement());
+        terrainEditorService.setSlopeMode(slopeMode);
     }
 }

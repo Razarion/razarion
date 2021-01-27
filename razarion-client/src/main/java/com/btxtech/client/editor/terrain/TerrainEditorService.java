@@ -492,7 +492,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         hoverTerrainObject = null;
     }
 
-    public boolean getCreationMode() {
+    public boolean getSlopeMode() {
         return this.slopeMode;
     }
 
