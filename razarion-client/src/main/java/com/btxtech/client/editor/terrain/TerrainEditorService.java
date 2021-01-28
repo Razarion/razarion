@@ -288,7 +288,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
                             terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius()))
                     .collect(Collectors.toList());
             terrainObjectModelMatrices = setupModelMatrices();
-            terrainEditorRenderTask.activate(cursor, editorSlopeWrapperContainer.getPolygons());
+            terrainEditorRenderTask.activate(cursor, editorSlopeWrapperContainer.getPolygons(), slopeMode);
             if (saveDialog != null) {
                 saveDialog.close();
                 saveDialog = null;
@@ -490,6 +490,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         hoverSlope = null;
         modifyingTerrainObject = null;
         hoverTerrainObject = null;
+        terrainEditorRenderTask.setSlopeMode(slopeMode);
     }
 
     public boolean getSlopeMode() {

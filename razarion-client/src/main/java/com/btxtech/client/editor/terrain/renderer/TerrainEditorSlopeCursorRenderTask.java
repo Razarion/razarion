@@ -20,7 +20,7 @@ import java.util.List;
  * 04.05.2016.
  */
 @Dependent
-public class TerrainEditorCursorRenderTask extends AbstractWebGlRenderTask<Polygon2D> {
+public class TerrainEditorSlopeCursorRenderTask extends AbstractWebGlRenderTask<Polygon2D> {
     @Inject
     private TerrainEditorService terrainEditor;
 

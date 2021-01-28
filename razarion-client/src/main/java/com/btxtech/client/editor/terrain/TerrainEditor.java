@@ -6,7 +6,6 @@ import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.client.utils.Elemental2Utils;
 import com.btxtech.common.DisplayUtils;
-import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.renderer.Camera;
@@ -20,7 +19,6 @@ import com.google.gwt.user.client.ui.Button;
 import elemental2.dom.HTMLDivElement;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.common.client.dom.RadioInput;
-import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -37,8 +35,6 @@ import javax.inject.Inject;
 public class TerrainEditor extends AbstractEditor implements ViewService.ViewFieldListener {
     // private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
     @Inject
-    private ClientExceptionHandlerImpl exceptionHandler;
-    @Inject
     private TerrainEditorService terrainEditorService;
     @Inject
     private Camera camera;
@@ -54,10 +50,10 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     private Instance<IsElement> elementInstance;
     @Inject
     @DataField
-    private Span id;
+    private HTMLDivElement id;
     @Inject
     @DataField
-    private Span terrainSize;
+    private HTMLDivElement terrainSize;
     @Inject
     @DataField
     private RadarPanel radarPanel;
@@ -69,13 +65,13 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     private DecimalPositionBox viewFiledCenter;
     @Inject
     @DataField
-    private Span viewFiledTop;
+    private HTMLDivElement viewFiledTop;
     @Inject
     @DataField
-    private Span viewFiledBottom;
+    private HTMLDivElement viewFiledBottom;
     @Inject
     @DataField
-    private Span viewFiledHeight;
+    private HTMLDivElement viewFiledHeight;
     @Inject
     @DataField
     private Button topViewButton;
@@ -98,8 +94,8 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @PostConstruct
     public void init() {
         terrainEditorService.activate();
-        id.setTextContent(Integer.toString(terrainEditorService.getPlanetConfig().getId()));
-        terrainSize.setTextContent(DisplayUtils.handleDecimalPosition(terrainEditorService.getPlanetConfig().getSize()));
+        id.textContent = Integer.toString(terrainEditorService.getPlanetConfig().getId());
+        terrainSize.textContent = DisplayUtils.handleDecimalPosition(terrainEditorService.getPlanetConfig().getSize());
 
         slopeRadio.setChecked(terrainEditorService.getSlopeMode());
         terrainObjectRadio.setChecked(!terrainEditorService.getSlopeMode());
@@ -147,9 +143,9 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @Override
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         viewFiledCenter.setValue(viewField.calculateCenter());
-        viewFiledTop.setTextContent(DisplayUtils.handleDouble2(viewField.getTopLeft().getDistance(viewField.getTopRight())));
-        viewFiledBottom.setTextContent(DisplayUtils.handleDouble2(viewField.getBottomLeft().getDistance(viewField.getBottomRight())));
-        viewFiledHeight.setTextContent(DisplayUtils.handleDouble2(viewField.getBottomLeft().getDistance(viewField.getTopLeft())));
+        viewFiledTop.textContent = DisplayUtils.handleDouble2(viewField.getTopLeft().getDistance(viewField.getTopRight()));
+        viewFiledBottom.textContent = DisplayUtils.handleDouble2(viewField.getBottomLeft().getDistance(viewField.getBottomRight()));
+        viewFiledHeight.textContent = DisplayUtils.handleDouble2(viewField.getBottomLeft().getDistance(viewField.getTopLeft()));
     }
 
     @EventHandler("viewFiledCenter")

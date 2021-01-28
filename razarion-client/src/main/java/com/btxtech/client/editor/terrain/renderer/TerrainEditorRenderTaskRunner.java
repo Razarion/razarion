@@ -24,26 +24,36 @@ public class TerrainEditorRenderTaskRunner extends AbstractRenderTaskRunner {
     private TerrainEditorService terrainEditor;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
-    private TerrainEditorCursorRenderTask cursorRendererTask;
+    private TerrainEditorSlopeCursorRenderTask slopeCursorRendererTask;
     private Map<EditorSlopeWrapper, TerrainEditorSlopeRenderTask> slopeRenderers = new HashMap<>();
     private Map<EditorSlopeWrapper, TerrainEditorSlopeDrivewayRenderTask> slopeDrivewayRenderers = new HashMap<>();
+    private TerrainEditorTerrainObjectRendererTask terrainObjectRenderer;
 
-    public void activate(Polygon2D cursor, Collection<EditorSlopeWrapper> modifiedSlopes) {
+    public void activate(Polygon2D cursor, Collection<EditorSlopeWrapper> modifiedSlopes, boolean slopeMode) {
         destroyRenderAllTasks();
-        setupCursor(cursor);
+        setupSlopeCursor(cursor);
         setupModifiedSlopes(modifiedSlopes);
         setupModifiedTerrainObject();
+        setSlopeMode(slopeMode);
     }
 
     public void deactivate() {
-        cursorRendererTask = null;
+        slopeCursorRendererTask = null;
         slopeRenderers.clear();
         slopeDrivewayRenderers.clear();
+        terrainObjectRenderer = null;
         destroyRenderAllTasks();
     }
 
+    public void setSlopeMode(boolean slopeMode) {
+        slopeCursorRendererTask.setActive(slopeMode);
+        slopeRenderers.values().forEach(render -> render.setActive(slopeMode));
+        slopeDrivewayRenderers.values().forEach(render -> render.setActive(slopeMode));
+        terrainObjectRenderer.setActive(!slopeMode);
+    }
+
     public void changeCursor(Polygon2D cursor) {
-        cursorRendererTask.changeBuffers(cursor);
+        slopeCursorRendererTask.changeBuffers(cursor);
     }
 
     public void updateSlope(EditorSlopeWrapper modifiedSlope) {
@@ -61,8 +71,8 @@ public class TerrainEditorRenderTaskRunner extends AbstractRenderTaskRunner {
         destroyRenderTask(slopeDrivewayRenderers.remove(modifiedSlope));
     }
 
-    private void setupCursor(Polygon2D cursor) {
-        cursorRendererTask = createModelRenderTask(TerrainEditorCursorRenderTask.class,
+    private void setupSlopeCursor(Polygon2D cursor) {
+        slopeCursorRendererTask = createModelRenderTask(TerrainEditorSlopeCursorRenderTask.class,
                 cursor,
                 timeStamp -> Collections.singletonList(new ModelMatrices(nativeMatrixFactory.createFromColumnMajorArray(terrainEditor.getCursorModelMatrix().toWebGlArray()))),
                 null,
@@ -88,7 +98,7 @@ public class TerrainEditorRenderTaskRunner extends AbstractRenderTaskRunner {
     }
 
     private void setupModifiedTerrainObject() {
-        createModelRenderTask(TerrainEditorTerrainObjectRendererTask.class,
+        terrainObjectRenderer = createModelRenderTask(TerrainEditorTerrainObjectRendererTask.class,
                 null,
                 timeStamp -> terrainEditor.provideTerrainObjectModelMatrices(),
                 null,
