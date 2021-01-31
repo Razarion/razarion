@@ -19,38 +19,11 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         // Run test
         setupTerrainTypeService(null, null, null, null, null, null, null);
 
-        TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
-
         // showDisplay();
 
-        // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGeneration1.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGeneration1.json");
-        assertTerrainTile.assertEquals(terrainTile);
-
-        // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(160, 160),"testGroundShapeHNT1.json" );
-        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testGroundShapeHNT1.json");
-
-        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testGroundShapeGeneration1.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testGroundShapeGeneration1.json", getTerrainShape());
-    }
-
-    @Test
-    public void testGroundTileGeneration2() {
-        // Run test
-        setupTerrainTypeService(null, null, null, null, null, null, null);
-
-        TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
-        // showDisplay();
-
-        // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGeneration2.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGeneration2.json");
-        assertTerrainTile.assertEquals(terrainTile);
-
-        // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(160, 160),"testGroundShapeHNT2.json" );
-        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testGroundShapeHNT2.json");
-
-        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testGroundShapeGeneration2.json");
-        AssertTerrainShape.assertTerrainShape(getClass(), "testGroundShapeGeneration2.json", getTerrainShape());
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testGroundShapeHNT1.json");
+        AssertTerrainTile.assertTerrainTile(getClass(), "testGroundTileGeneration1.json", generateTerrainTiles(new Index(0, 0)));
     }
 
     @Test
