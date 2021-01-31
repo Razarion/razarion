@@ -122,16 +122,9 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         // showDisplay();
 
-        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
-        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testWidthSlopeTile1.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testWidthSlopeTile1.json");
-        assertTerrainTile.assertEquals(terrainTiles);
-
-        //AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), "testWidthSlopeShapeHNT1.json");
-        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), getClass(), "testWidthSlopeShapeHNT1.json");
-
-        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testWidthSlopeShape1.json");
-        AssertTerrainShape.assertTerrainShape(getClass(), "testWidthSlopeShape1.json", getTerrainShape());
+        AssertTerrainShape.assertTerrainShape(getClass(), "testWidthSlopeShape1.json", getTerrainShape(), true);
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), getClass(), "testWidthSlopeShapeHNT1.json", true);
+        AssertTerrainTile.assertTerrainTile(getClass(), "testWidthSlopeTile1.json", generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)), true);
     }
 
     @Test
