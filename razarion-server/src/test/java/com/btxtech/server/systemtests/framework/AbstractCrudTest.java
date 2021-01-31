@@ -1,6 +1,6 @@
 package com.btxtech.server.systemtests.framework;
 
-import com.btxtech.server.JsonAssert;
+import com.btxtech.test.JsonAssert;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;

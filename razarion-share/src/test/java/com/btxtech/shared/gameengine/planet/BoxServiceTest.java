@@ -35,7 +35,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         setupMasterEnvironment();
         WeldSlaveEmulator permanentSalve = new WeldSlaveEmulator();
         UserContext userContext = createLevel1UserContext();
-        permanentSalve.connectToMater(userContext, this);
+        permanentSalve.connectToMaster(userContext, this);
         assertSyncItemCount(permanentSalve, 0);
         // Start box service
         BoxService boxService = getBoxService();
@@ -97,7 +97,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         // Start base
         UserContext userContext = createLevel1UserContext(1);
         WeldSlaveEmulator permanentSalve = new WeldSlaveEmulator();
-        permanentSalve.connectToMater(userContext, this);
+        permanentSalve.connectToMaster(userContext, this);
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(10, 20), userContext);
         tickPlanetServiceBaseServiceActive();
         permanentSalve.assertSyncItemCount(1, 0, 1);
@@ -168,7 +168,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         permanentSalve.assertSyncItemCount(0, 0, boxCount);
         WeldSlaveEmulator tmpSalve = new WeldSlaveEmulator();
         UserContext tmpUserContext = createLevel1UserContext();
-        tmpSalve.connectToMater(tmpUserContext, this);
+        tmpSalve.connectToMaster(tmpUserContext, this);
         tmpSalve.assertSyncItemCount(0, 0, boxCount);
         tmpSalve.disconnectFromMaster();
     }

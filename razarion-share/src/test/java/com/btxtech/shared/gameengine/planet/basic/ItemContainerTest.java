@@ -30,7 +30,7 @@ public class ItemContainerTest extends BaseBasicTest {
 
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
-        permSlave.connectToMater(createLevel1UserContext(), this);
+        permSlave.connectToMaster(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
@@ -92,7 +92,7 @@ public class ItemContainerTest extends BaseBasicTest {
 
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
-        permSlave.connectToMater(createLevel1UserContext(), this);
+        permSlave.connectToMaster(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
@@ -123,7 +123,7 @@ public class ItemContainerTest extends BaseBasicTest {
 
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
-        permSlave.connectToMater(createLevel1UserContext(), this);
+        permSlave.connectToMaster(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
@@ -163,7 +163,7 @@ public class ItemContainerTest extends BaseBasicTest {
 
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
-        permSlave.connectToMater(createLevel1UserContext(), this);
+        permSlave.connectToMaster(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
@@ -205,7 +205,7 @@ public class ItemContainerTest extends BaseBasicTest {
 
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
-        permSlave.connectToMater(createLevel1UserContext(), this);
+        permSlave.connectToMaster(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
@@ -322,7 +322,7 @@ public class ItemContainerTest extends BaseBasicTest {
     private void assertNewSlave(SyncBaseItem masterTransporter, double maxContainingRadius, SyncBaseItem... masterContainedIns) {
         UserContext tmpUserContext = createLevel1UserContext();
         WeldSlaveEmulator tmpSalve = new WeldSlaveEmulator();
-        tmpSalve.connectToMater(tmpUserContext, this);
+        tmpSalve.connectToMaster(tmpUserContext, this);
         assertSlave(tmpSalve, masterTransporter, maxContainingRadius, masterContainedIns);
     }
 

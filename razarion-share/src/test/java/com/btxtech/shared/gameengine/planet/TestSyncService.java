@@ -19,6 +19,8 @@ public class TestSyncService extends SyncService {
 
     @Override
     protected void sendSyncBaseItems(List<SyncBaseItemInfo> infos) {
-        testWebSocket.sendSyncBaseItems(infos);
+        if (testWebSocket != null) {
+            testWebSocket.sendSyncBaseItems(infos);
+        }
     }
 }

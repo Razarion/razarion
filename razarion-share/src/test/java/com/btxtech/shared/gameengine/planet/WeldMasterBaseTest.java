@@ -24,7 +24,6 @@ import java.util.List;
  * on 21.08.2017.
  */
 public class WeldMasterBaseTest extends AbstractIntegrationTest {
-    private int nextHumanPlayerId = 1;
 
     protected void setupMasterEnvironment() {
         setupMasterEnvironment(FallbackConfig.setupStaticGameConfig(), null);
@@ -89,12 +88,11 @@ public class WeldMasterBaseTest extends AbstractIntegrationTest {
     }
 
     protected UserContext createLevel1UserContext(int userId) {
-        int humanPlayerId = nextHumanPlayerId++;
-        return new UserContext().setLevelId(FallbackConfig.LEVEL_ID_1).setUnlockedItemLimit(Collections.emptyMap()).setUserId(userId).setName("test base " + humanPlayerId);
+        return new UserContext().setLevelId(FallbackConfig.LEVEL_ID_1).setUnlockedItemLimit(Collections.emptyMap()).setUserId(userId).setName("test user id:" + userId);
     }
 
     protected UserContext createLevel1UserContext() {
-        throw new UnsupportedOperationException("...TODO User always has an ID now...");
+        return createLevel1UserContext(1);
     }
 
     public SyncBaseItem fabricateAndMove(SyncBaseItem factory, int baseItemTypeId, DecimalPosition position, PlayerBaseFull playerBaseFull) {

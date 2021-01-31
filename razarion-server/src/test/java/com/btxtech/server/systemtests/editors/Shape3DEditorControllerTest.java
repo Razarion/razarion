@@ -1,6 +1,5 @@
 package com.btxtech.server.systemtests.editors;
 
-import com.btxtech.server.JsonAssert;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.server.systemtests.framework.ObjectMapperResolver;
@@ -10,7 +9,8 @@ import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.config.VertexContainerMaterialConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.rest.Shape3DEditorController;
-import com.btxtech.test.TestHelper;
+import com.btxtech.test.JsonAssert;
+import com.btxtech.test.shared.SharedTestHelper;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -57,7 +57,7 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
 
         // Update via collada file
         shape3DConfig1.setInternalName("Shape 1");
-        shape3DConfig1.setColladaString(TestHelper.resource2Text("Shape3dCrud_1.dae", getClass()));
+        shape3DConfig1.setColladaString(SharedTestHelper.resource2Text("Shape3dCrud_1.dae", getClass()));
         underTest.update(shape3DConfig1);
         Shape3DConfig shape3DConfig2 = underTest.read(shape3DConfig1.getId());
         JsonAssert.assertViaJson("Shape3dCrudConfig_1_2.json",

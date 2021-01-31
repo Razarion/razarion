@@ -124,7 +124,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         scenario.createSyncItems();
 
         slave = new WeldSlaveEmulator();
-        slave.connectToMater(createLevel1UserContext(), this);
+        slave.connectToMaster(createLevel1UserContext(), this);
 
         ScenarioTicks actualTicks = runScenario();
         scenario.setSaveCallback(() -> scenario.save(SAVE_DIRECTORY, actualTicks));

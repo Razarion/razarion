@@ -1,6 +1,6 @@
 package com.btxtech.server.systemtests.testempty;
 
-import com.btxtech.server.JsonAssert;
+import com.btxtech.test.JsonAssert;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;

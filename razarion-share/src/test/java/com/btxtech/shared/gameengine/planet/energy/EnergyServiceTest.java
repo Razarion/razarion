@@ -120,7 +120,7 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         tickPlanetServiceBaseServiceActive();
         // Connect permanent slave and verify slave
         WeldSlaveEmulator permanentSalve = new WeldSlaveEmulator();
-        permanentSalve.connectToMater(userContext, this);
+        permanentSalve.connectToMaster(userContext, this);
         assertConnectedSlave(0, 0, permanentSalve, userContext);
         Assert.assertTrue(permanentSalve.getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         assertNewConnectedSlave(0, 0, userContext);
@@ -222,7 +222,7 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
 
     private void assertNewConnectedSlave(int consumingExpected, int generatingExpected, UserContext userContext) {
         WeldSlaveEmulator slaveNew = new WeldSlaveEmulator();
-        slaveNew.connectToMater(userContext, this);
+        slaveNew.connectToMaster(userContext, this);
         slaveNew.tickPlanetService();
         assertEnergy(consumingExpected, generatingExpected, slaveNew.getEnergyService(), slaveNew.getPlayerBase(userContext));
         slaveNew.disconnectFromMaster();

@@ -1,6 +1,5 @@
 package com.btxtech.server.systemtests.testnormal;
 
-import com.btxtech.server.JsonAssert;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
@@ -12,7 +11,8 @@ import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.GameUiContextController;
 import com.btxtech.shared.rest.Shape3DController;
-import com.btxtech.test.TestHelper;
+import com.btxtech.test.JsonAssert;
+import com.btxtech.test.shared.SharedTestHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class Shape3DControllerTest extends AbstractSystemTest {
         setupImages();
         ColladaEntity colladaEntity = new ColladaEntity();
         colladaEntity.setInternalName("Shape 1");
-        colladaEntity.setColladaString(TestHelper.resource2Text("Shape3DControllerTest.dae", getClass()));
+        colladaEntity.setColladaString(SharedTestHelper.resource2Text("Shape3DControllerTest.dae", getClass()));
         Map<String, ImageLibraryEntity> textures = new HashMap<>();
         textures.put("Material-material", getEntityManager().find(ImageLibraryEntity.class, IMAGE_1_ID));
         textures.put("Material_002-material", getEntityManager().find(ImageLibraryEntity.class, IMAGE_2_ID));

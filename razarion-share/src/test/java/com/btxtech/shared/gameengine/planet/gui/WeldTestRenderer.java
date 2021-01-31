@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -393,10 +394,10 @@ public class WeldTestRenderer {
                 gc.setLineWidth(LINE_WIDTH);
                 gc.setStroke(Color.BLUE);
                 terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile -> {
-                    if(terrainWaterTile.getPositions() != null) {
+                    if (terrainWaterTile.getPositions() != null) {
                         drawTriangles(terrainWaterTile.getPositions());
                     }
-                    if(terrainWaterTile.getShallowPositions() != null) {
+                    if (terrainWaterTile.getShallowPositions() != null) {
                         drawTriangles(terrainWaterTile.getShallowPositions());
                     }
                 });
@@ -404,7 +405,7 @@ public class WeldTestRenderer {
         }
         if (weldTestController.renderTerrainTileGround()) {
             gc.setLineWidth(LINE_WIDTH);
-            if(terrainTile.getGroundPositions() != null) {
+            if (terrainTile.getGroundPositions() != null) {
                 terrainTile.getGroundPositions().values().forEach(this::drawTriangles);
             }
         }
@@ -784,10 +785,10 @@ public class WeldTestRenderer {
             displayObstacles(terrainShapeNode);
         }
         if (weldTestController.renderGroundSlopeConnections()) {
-            // TODO displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
+            displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
         }
         if (weldTestController.renderShapeWater()) {
-            // TODO displayShapeWater(terrainShapeNode.getWaterSegments());
+            displayShapeWater(terrainShapeNode.getWaterSegments());
         }
         if (weldTestController.renderShapeTerrainType() && terrainShapeNode.getTerrainType() != null) {
             gc.setFill(color4TerrainType(terrainShapeNode.getTerrainType()));
@@ -800,22 +801,26 @@ public class WeldTestRenderer {
         displaySubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
     }
 
-    private void displayGroundSlopeConnections(List<List<Vertex>> groundSlopeConnections) {
-        if (groundSlopeConnections == null) {
+    private void displayGroundSlopeConnections(Map<Integer, List<List<Vertex>>> groundSlopeConnectionList) {
+        if (groundSlopeConnectionList == null) {
             return;
         }
-        for (List<Vertex> groundSlopeConnection : groundSlopeConnections) {
-            strokeVertexPolygon(groundSlopeConnection, LINE_WIDTH, Color.GREEN, true);
-        }
+        groundSlopeConnectionList.forEach((groundId, groundSlopeConnections) -> {
+            for (List<Vertex> groundSlopeConnection : groundSlopeConnections) {
+                strokeVertexPolygon(groundSlopeConnection, LINE_WIDTH, Color.GREEN, true);
+            }
+        });
     }
 
-    private void displayShapeWater(List<List<Vertex>> waterSegments) {
-        if (waterSegments == null) {
+    private void displayShapeWater(Map<Integer, List<List<Vertex>>> waterSegmentList) {
+        if (waterSegmentList == null) {
             return;
         }
-        for (List<Vertex> waterSegment : waterSegments) {
-            strokeVertexPolygon(waterSegment, LINE_WIDTH, Color.BLUE, true);
-        }
+        waterSegmentList.forEach((groundId, waterSegments) -> {
+            for (List<Vertex> waterSegment : waterSegments) {
+                strokeVertexPolygon(waterSegment, LINE_WIDTH, Color.BLUE, true);
+            }
+        });
     }
 
     private void displayObstacles(TerrainShapeNode terrainShapeNode) {

@@ -69,5 +69,6 @@
         <module>razarion-server</module>
         <module>razarion-share</module>
         <module>razarion-test</module>
+        <module>razarion-test-share</module>
     </modules>
 </project>

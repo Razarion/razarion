@@ -2,10 +2,10 @@ package com.btxtech.shared.gameengine.planet.terrain.asserthelper;
 
 import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.mocks.TestFloat32Array;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.test.JsonAssert;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -43,9 +43,19 @@ import static com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer.TYPE_I
  */
 public class AssertTerrainTile {
     public static final String SAVE_DIRECTORY = TestHelper.SAVE_DIRECTORY + "terrain";
-    // public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion2\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
     private Collection<TerrainTile> expected;
 
+
+    public static void assertTerrainTile(Class theClass, String resourceName, List<TerrainTile> actualTiles) {
+        assertTerrainTile(theClass, resourceName, actualTiles, false);
+    }
+
+    public static void assertTerrainTile(Class theClass, String resourceName, List<TerrainTile> actualTiles, boolean save) {
+        JsonAssert.TEST_RESOURCE_FOLDER = AssertTerrainTile.SAVE_DIRECTORY;
+        JsonAssert.assertViaJson(resourceName, null, null, theClass, actualTiles, createObjectMapper(),save);
+    }
+
+    @Deprecated
     public AssertTerrainTile(Class theClass, String resourceName) {
         InputStream inputStream = theClass.getResourceAsStream(resourceName);
         if (inputStream == null) {
@@ -73,6 +83,7 @@ public class AssertTerrainTile {
         // groundPositions.setVertices(groundPositions.getVertices().subList(0, 2400));
     }
 
+    @Deprecated
     public void assertEquals(Collection<TerrainTile> actual) {
         Assert.assertEquals("TerrainTile count does not match", expected.size(), actual.size());
 
@@ -91,6 +102,7 @@ public class AssertTerrainTile {
         }
     }
 
+    @Deprecated
     public void assertEquals(TerrainTile actual) {
         if (expected.size() != 1) {
             Assert.fail("Expected size does not match one single TerrainTile. Expected size: " + expected.size());
@@ -117,6 +129,7 @@ public class AssertTerrainTile {
         }
     }
 
+    @Deprecated
     public void displayDifferences(JsonNode expectedNode, JsonNode actualNode, JsonPointer jsonPointer) {
         if (expectedNode instanceof ObjectNode) {
             ObjectNode objectNode = (ObjectNode) expectedNode;
@@ -143,6 +156,7 @@ public class AssertTerrainTile {
     }
 
 
+    @Deprecated
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName, String directoryName) {
         try {
             createObjectMapper().writeValue(new File(directoryName, fileName), terrainTiles);
@@ -151,28 +165,16 @@ public class AssertTerrainTile {
         }
     }
 
+    @Deprecated
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName) {
         saveTerrainTiles(terrainTiles, fileName, SAVE_DIRECTORY);
     }
 
+    @Deprecated
     public static void saveTerrainTile(TerrainTile terrainTile, String fileName) {
         saveTerrainTiles(Collections.singletonList(terrainTile), fileName);
     }
 
-    public static void assertNormTangentTerrainTile(double[] norms, double[] tangents) {
-        for (int i = 0; i < norms.length; i++) {
-            Vertex norm = TestHelper.createVertex(norms, i / 3);
-            Vertex tangent = TestHelper.createVertex(tangents, i / 3);
-            Assert.assertTrue("dot too big at: " + i + " dot:" + norm.dot(tangent), Math.abs(norm.dot(tangent)) < 0.00001);
-        }
-    }
-
-    private static void assertTerrainType(String message, int expected, int actual) {
-        if ((expected == 0 || expected == -1) && (actual == 0 || actual == -1)) {
-            return;
-        }
-        Assert.assertEquals(message, expected, actual);
-    }
 
     private static ObjectMapper createObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -205,7 +207,7 @@ public class AssertTerrainTile {
 
             @Override
             public Object deserializeKey(String key, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-                if("null".equals(key)) {
+                if ("null".equals(key)) {
                     return null;
                 }
                 return super.deserializeKey(key, ctxt);

@@ -52,6 +52,7 @@ public class TerrainShapeNode {
     }
 
     public TerrainShapeNode(NativeTerrainShapeNode nativeTerrainShapeNode) {
+        gameEngineHeight = nativeTerrainShapeNode.gameEngineHeight;
         drivewayHeights = nativeTerrainShapeNode.fullDrivewayHeights;
         innerGroundHeight = nativeTerrainShapeNode.innerGroundHeight;
         fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
@@ -352,6 +353,7 @@ public class TerrainShapeNode {
 
     public NativeTerrainShapeNode toNativeTerrainShapeNode() {
         NativeTerrainShapeNode nativeTerrainShapeNode = new NativeTerrainShapeNode();
+        nativeTerrainShapeNode.gameEngineHeight = gameEngineHeight;
         nativeTerrainShapeNode.fullDrivewayHeights = drivewayHeights;
         nativeTerrainShapeNode.innerGroundHeight = innerGroundHeight;
         nativeTerrainShapeNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);

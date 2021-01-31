@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
-import com.btxtech.test.TestHelper;
+import com.btxtech.test.shared.SharedTestHelper;
 import com.btxtech.uiservice.WeldUiBaseTest;
 import com.btxtech.uiservice.gui.AbstractUiTestGuiRenderer;
 import com.btxtech.uiservice.gui.UiTestGuiDisplay;
@@ -47,7 +47,7 @@ public class ProjectionTransformationTest extends WeldUiBaseTest {
         Assert.assertEquals(Arrays.asList(new DecimalPosition(910.5701290873301, 710.0505063388334), new DecimalPosition(1489.42987091267, 710.0505063388334), new DecimalPosition(1489.42987091267, 1289.9494936611666), new DecimalPosition(910.5701290873301, 1289.9494936611666)), getProjectionTransformation().calculateViewField(20).toList());
         Assert.assertEquals(Arrays.asList(new DecimalPosition(901.4737617157891, 700.9378079666253), new DecimalPosition(1498.5262382842109, 700.9378079666253), new DecimalPosition(1498.5262382842109, 1299.0621920333747), new DecimalPosition(901.4737617157891, 1299.0621920333747)), getProjectionTransformation().calculateViewField(-2).toList());
 
-        TestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -12.2545, -8204.5636}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+        SharedTestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -12.2545, -8204.5636}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class ProjectionTransformationTest extends WeldUiBaseTest {
 
         Matrix4 actual = getProjectionTransformation().getMatrix();
 
-        TestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -2.3962, -2036.4613}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+        SharedTestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -2.3962, -2036.4613}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class ProjectionTransformationTest extends WeldUiBaseTest {
         getProjectionTransformation().setAspectRatio(0.9982078853046595);
         Matrix4 actual = getProjectionTransformation().getMatrix();
 
-        TestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0004, -1832.4801}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+        SharedTestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0004, -1832.4801}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ProjectionTransformationTest extends WeldUiBaseTest {
         getProjectionTransformation().setAspectRatio(0.9982078853046595);
         Matrix4 actual = getProjectionTransformation().getMatrix();
 
-        TestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+        SharedTestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class ProjectionTransformationTest extends WeldUiBaseTest {
         getProjectionTransformation().setAspectRatio(0.9982078853046595);
         Matrix4 actual = getProjectionTransformation().getMatrix();
 
-        TestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+        SharedTestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
     @Test

@@ -18,7 +18,7 @@ public class WeldSlaveEmulator extends AbstractIntegrationTest {
     private TestClientWebSocket testClientWebSocket;
     private WeldMasterBaseTest weldMasterBaseTest;
 
-    public void connectToMater(UserContext userContext, WeldMasterBaseTest weldMasterBaseTest) {
+    public void connectToMaster(UserContext userContext, WeldMasterBaseTest weldMasterBaseTest) {
         this.weldMasterBaseTest = weldMasterBaseTest;
         setupEnvironment(weldMasterBaseTest.getStaticGameConfig(), weldMasterBaseTest.getPlanetConfig());
         getTestNativeTerrainShapeAccess().setNativeTerrainShapeAccess(weldMasterBaseTest.getTerrainService().getTerrainShape().toNativeTerrainShape());

@@ -19,7 +19,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,7 +61,7 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
         return masterPlanetConfig;
     }
 
-    protected Collection<TerrainTile> generateTerrainTiles(Index... indices) {
+    protected List<TerrainTile> generateTerrainTiles(Index... indices) {
         return Arrays.stream(indices).map(index -> getTerrainService().generateTerrainTile(index)).collect(Collectors.toList());
     }
 }
