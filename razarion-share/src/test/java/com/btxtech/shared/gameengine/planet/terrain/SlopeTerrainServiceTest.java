@@ -85,16 +85,9 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         // showDisplay();
 
-        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0));
-        AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSmallSlope.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSmallSlope.json");
-        assertTerrainTile.assertEquals(terrainTiles);
-
-        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), "testSlopeShapeHNT1.json");
-        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testSmallSlopeHNT1.json");
-
-        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSmallSlope.json");
-        AssertTerrainShape.assertTerrainShape(getClass(), "testSmallSlope.json", getTerrainShape());
+        AssertTerrainShape.assertTerrainShape(getClass(), "testSmallSlopeShape.json", getTerrainShape());
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testSmallSlopeHNT.json");
+        AssertTerrainTile.assertTerrainTile(getClass(), "testSmallSlopeTile.json", generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)));
     }
 
     @Test
