@@ -9,6 +9,8 @@ import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainSh
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import org.junit.Test;
 
+import java.util.Collections;
+
 /**
  * Created by Beat
  * 29.03.2017.
@@ -16,7 +18,6 @@ import org.junit.Test;
 public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testGroundTileGeneration1() {
-        // Run test
         setupTerrainTypeService(null, null, null, null, null, null, null);
 
         // showDisplay();
@@ -36,14 +37,9 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(8, 16));
         // showDisplay();
 
-        // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGenerationOffset.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGenerationOffset.json");
-        assertTerrainTile.assertEquals(terrainTile);
-
-        // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(960,1920), new DecimalPosition(1080, 2040),"testGroundShapeOffsetHNT1.json" );
-        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(960, 1920), new DecimalPosition(1080, 2040), getClass(), "testGroundShapeOffsetHNT1.json");
-
-        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testGroundShapeGenerationOffset.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testGroundShapeGenerationOffset.json", getTerrainShape());
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testGroundShapeOffsetHNT1.json");
+        AssertTerrainTile.assertTerrainTile(getClass(), "testGroundTileGenerationOffset.json", Collections.singletonList(terrainTile));
+
     }
 }
