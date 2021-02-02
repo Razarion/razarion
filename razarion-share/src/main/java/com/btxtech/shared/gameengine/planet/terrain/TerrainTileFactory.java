@@ -83,7 +83,7 @@ public class TerrainTileFactory {
                     if (terrainShapeNode.isFullRenderEngineDriveway()) {
                         addDrivewayGroundRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainShapeNode.getRenderGroundId(), terrainTileBuilder);
                     } else {
-                        if (!terrainShapeNode.isRenderHideGround()) {
+                        if (!terrainShapeNode.isRenderHideGround() && !terrainShapeNode.istDrivewayBreakingLine()) {
                             addGroundRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getInnerGroundHeight(), terrainShapeNode.getRenderGroundId(), terrainTileBuilder);
                         }
                     }
