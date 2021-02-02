@@ -90,20 +90,21 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
 
     @Test
     public void testSlope2DrivewaysShape1() {
-        setup(null, GameTestHelper.createTerrainSlopeCorner(30, 40, null), GameTestHelper.createTerrainSlopeCorner(160, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(160, 60, 1), GameTestHelper.createTerrainSlopeCorner(160, 90, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(160, 120, null), GameTestHelper.createTerrainSlopeCorner(110, 120, 1), GameTestHelper.createTerrainSlopeCorner(70, 120, 1), GameTestHelper.createTerrainSlopeCorner(30, 120, null));
+        setup(null,
+                GameTestHelper.createTerrainSlopeCorner(30, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(160, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(160, 60, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(160, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(160, 120, null),
+                GameTestHelper.createTerrainSlopeCorner(110, 120, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(70, 120, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(30, 120, null));
+
         // showDisplay();
-        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
-        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSlope2DrivewaysTile1.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSlope2DrivewaysTile1.json");
-        assertTerrainTile.assertEquals(terrainTiles);
 
-        //AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), "testSlope2DrivewaysShape1HNT1.json");
-        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), getClass(), "testSlope2DrivewaysShape1HNT1.json");
-
-        //AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSlope2DrivewaysShape1.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testSlope2DrivewaysShape1.json", getTerrainShape());
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), getClass(), "testSlope2DrivewaysShape1HNT1.json");
+        AssertTerrainTile.assertTerrainTile(getClass(), "testSlope2DrivewaysTile1.json", generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)));
     }
 
     @Test
