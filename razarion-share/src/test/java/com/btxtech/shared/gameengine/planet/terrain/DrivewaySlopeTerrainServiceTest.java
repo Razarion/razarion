@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -119,22 +118,19 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(92, 64)),
                 new TerrainObjectPosition().terrainObjectId(3).position(new DecimalPosition(47, 117))
         );
-        setup(terrainObjectPositions, GameTestHelper.createTerrainSlopeCorner(30, 40, null), GameTestHelper.createTerrainSlopeCorner(80, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(80, 60, 1), GameTestHelper.createTerrainSlopeCorner(80, 90, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(80, 110, null), GameTestHelper.createTerrainSlopeCorner(30, 110, null));
+        setup(terrainObjectPositions,
+                GameTestHelper.createTerrainSlopeCorner(30, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(80, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(80, 60, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(80, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(80, 110, null),
+                GameTestHelper.createTerrainSlopeCorner(30, 110, null));
+
         // showDisplay();
 
-        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
-        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSlopeTerrainObjectTile1.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSlopeTerrainObjectTile1.json");
-        assertTerrainTile.assertEquals(terrainTiles);
-
-        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), "testSlopeTerrainObjectShape1HNT1.json");
-        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), getClass(), "testSlopeTerrainObjectShape1HNT1.json");
-
-        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSlopeTerrainObjectShape.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testSlopeTerrainObjectShape.json", getTerrainShape());
-
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), getClass(), "testSlopeTerrainObjectShape1HNT1.json");
+        AssertTerrainTile.assertTerrainTile(getClass(), "testSlopeTerrainObjectTile1.json", generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)));
     }
 
     private void setup(List<TerrainObjectPosition> terrainObjectPositions, TerrainSlopeCorner... slopePolygon) {
