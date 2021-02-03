@@ -11302,8 +11302,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -11542,8 +11542,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -11827,8 +11827,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -12090,8 +12090,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -12375,8 +12375,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -12638,8 +12638,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -12918,8 +12918,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -13203,8 +13203,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -13466,8 +13466,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -13751,8 +13751,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -14521,8 +14521,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -14579,8 +14579,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -17001,8 +17001,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -18074,8 +18074,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -19137,8 +19137,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -20244,8 +20244,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -21317,8 +21317,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -22390,8 +22390,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -23463,8 +23463,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -35895,8 +35895,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -36175,8 +36175,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -36460,8 +36460,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -36723,8 +36723,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -37008,8 +37008,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -37271,8 +37271,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -37551,8 +37551,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -37836,8 +37836,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -38099,8 +38099,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -38384,8 +38384,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -38647,8 +38647,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -38919,8 +38919,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -41519,8 +41519,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -42646,8 +42646,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -43842,8 +43842,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -44989,8 +44989,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -46192,8 +46192,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -47388,8 +47388,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -48540,8 +48540,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -49736,8 +49736,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -51811,8 +51811,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -52918,8 +52918,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -52976,8 +52976,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -54719,8 +54719,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -54887,8 +54887,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -55172,8 +55172,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -55435,8 +55435,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -55720,8 +55720,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -58198,8 +58198,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -59291,8 +59291,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -60374,8 +60374,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -61511,8 +61511,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -62604,8 +62604,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -63697,8 +63697,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -64790,8 +64790,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -64848,8 +64848,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -66073,8 +66073,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -66136,8 +66136,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -66194,8 +66194,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -66247,8 +66247,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -66305,8 +66305,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -74142,8 +74142,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -76083,8 +76083,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -78651,8 +78651,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -79032,8 +79032,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -79295,8 +79295,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -79580,8 +79580,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -79843,8 +79843,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -80073,8 +80073,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -80965,8 +80965,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -82206,8 +82206,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -83403,8 +83403,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -84656,8 +84656,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -85897,8 +85897,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -87094,8 +87094,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -88606,8 +88606,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -89413,8 +89413,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -89466,8 +89466,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -89524,8 +89524,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -89577,8 +89577,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -89635,8 +89635,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -89688,8 +89688,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {
@@ -89741,8 +89741,8 @@
               "innerGroundHeight": 20.0,
               "groundSlopeConnections": [
                 {
-                  "groundConfigId": 0,
-                  "defaultGround": true,
+                  "groundConfigId": 10,
+                  "defaultGround": false,
                   "polygons": [
                     [
                       {

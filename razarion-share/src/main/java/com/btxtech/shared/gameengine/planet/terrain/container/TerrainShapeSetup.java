@@ -104,7 +104,7 @@ public class TerrainShapeSetup {
         long time = System.currentTimeMillis();
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             try {
-                processSlope(setupSlope(terrainSlopePosition, 0), dirtyTerrainShapeNodes);
+                processSlope(setupSlope(terrainSlopePosition, 0), null, dirtyTerrainShapeNodes);
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Can not handle slope with id: " + terrainSlopePosition.getId(), e);
             }
@@ -135,7 +135,7 @@ public class TerrainShapeSetup {
         parentSlope.setChildren(children);
     }
 
-    private void processSlope(Slope slope, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes) {
+    private void processSlope(Slope slope, Slope parent, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes) {
         prepareVerticalSegments(slope);
         List<DecimalPosition> tmpInnerGameEnginePolygon = new ArrayList<>(slope.getInnerGameEnginePolygon().getCorners());
         Collections.reverse(tmpInnerGameEnginePolygon);
@@ -226,7 +226,9 @@ public class TerrainShapeSetup {
                 List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
                 for (List<DecimalPosition> outerPiercing : outerPiercings) {
                     Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                    terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight(), false, null, 0), null);
+                    terrainShapeNode.addGroundSlopeConnections(
+                            setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight(), false, null, 0),
+                            parent != null ? parent.getSlopeConfig().getGroundConfigId() : null);
                 }
             }
             for (Index nodeIndex : outerRasterizer.getInnerTiles()) {
@@ -288,7 +290,7 @@ public class TerrainShapeSetup {
         }
         if (slope.getChildren() != null) {
             for (Slope childSlope : slope.getChildren()) {
-                processSlope(childSlope, dirtyTerrainShapeNodes);
+                processSlope(childSlope, slope, dirtyTerrainShapeNodes);
             }
         }
     }
