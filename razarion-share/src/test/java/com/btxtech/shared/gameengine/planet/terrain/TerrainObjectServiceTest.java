@@ -2,11 +2,12 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
@@ -15,7 +16,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -30,12 +30,11 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
         slopeConfigLand.setHorizontalSpace(5);
-        SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 5, 1),},
-                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
-                {GameTestHelper.createSlopeNode(7, 20, 0.7),},
-        };
-        slopeConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
+        slopeConfigLand.setSlopeShapes(Arrays.asList(
+                new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7)));
+
         slopeConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(5);
         slopeConfigs.add(slopeConfigLand);
 
@@ -43,52 +42,35 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition();
         terrainSlopePosition.setId(1);
         terrainSlopePosition.setSlopeConfigId(1);
-        terrainSlopePosition.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(120, 120, null), GameTestHelper.createTerrainSlopeCorner(260, 120, null), GameTestHelper.createTerrainSlopeCorner(260, 250, null), GameTestHelper.createTerrainSlopeCorner(120, 250, null)));
+        terrainSlopePosition.setPolygon(Arrays.asList(
+                GameTestHelper.createTerrainSlopeCorner(120, 120, null),
+                GameTestHelper.createTerrainSlopeCorner(260, 120, null),
+                GameTestHelper.createTerrainSlopeCorner(260, 250, null),
+                GameTestHelper.createTerrainSlopeCorner(120, 250, null)));
         terrainSlopePositions.add(terrainSlopePosition);
-
-        double[][] heights = new double[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0}
-        };
-        double[][] splattings = new double[][]{
-                {0.7, 0.8, 0.1},
-                {0.4, 0.9, 0.6},
-                {0.5, 0.2, 0.3}
-        };
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
         terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1));
         terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5));
         terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10));
 
-        List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
-  /* TODO      terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(1).setPosition(new DecimalPosition(50, 40)).setScale(10).setRotationZ(0));
-        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(1).setPosition(new DecimalPosition(100, 80)).setScale(10).setRotationZ(0));
-        terrainObjectPositions.add(new TerrainObjectPosition().setId(2).setTerrainObjectId(1).setPosition(new DecimalPosition(150, 120)).setScale(1).setRotationZ(0));
-        terrainObjectPositions.add(new TerrainObjectPosition().setId(2).setTerrainObjectId(2).setPosition(new DecimalPosition(200, 160)).setScale(1).setRotationZ(0));
-        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(250, 200)).setScale(0.2).setRotationZ(0));
-        terrainObjectPositions.add(new TerrainObjectPosition().setId(2).setTerrainObjectId(3).setPosition(new DecimalPosition(300, 240)).setScale(0.5).setRotationZ(0));
-        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(50, 280)).setScale(1).setRotationZ(Math.toRadians(90)));
-        terrainObjectPositions.add(new TerrainObjectPosition().setId(2).setTerrainObjectId(3).setPosition(new DecimalPosition(100, 40)).setScale(2).setRotationZ(0));*/
+        List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
+                new TerrainObjectPosition().id(1).terrainObjectId(1).position(new DecimalPosition(50, 40)).scale(new Vertex(10, 10, 10)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(1).terrainObjectId(1).position(new DecimalPosition(100, 80)).scale(new Vertex(10, 10, 10)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(2).terrainObjectId(1).position(new DecimalPosition(150, 120)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(2).terrainObjectId(2).position(new DecimalPosition(200, 160)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(1).terrainObjectId(3).position(new DecimalPosition(250, 200)).scale(new Vertex(0.2, 0.2, 0.2)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(2).terrainObjectId(3).position(new DecimalPosition(300, 240)).scale(new Vertex(0.5, 0.5, 0.5)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(1).terrainObjectId(3).position(new DecimalPosition(50, 280)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
+                new TerrainObjectPosition().id(2).terrainObjectId(3).position(new DecimalPosition(100, 40)).scale(new Vertex(2, 2, 2)).rotation(new Vertex(0, 0, 0)));
 
 
         setupTerrainTypeService(slopeConfigs, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);
 
         // showDisplay();
 
-        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
-        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testTerrainObjectTileGeneration4Tiles1.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainObjectTileGeneration4Tiles1.json");
-        assertTerrainTile.assertEquals(terrainTiles);
-
-        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), "testTerrainObjectTileGeneration4TilesHNT1.json");
-        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), getClass(), "testTerrainObjectTileGeneration4TilesHNT1.json");
-
-        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testTerrainObjectTileGeneration4TilesShape1.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testTerrainObjectTileGeneration4TilesShape1.json", getTerrainShape());
-
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testTerrainObjectTileGeneration4TilesHNT1.json");
+        AssertTerrainTile.assertTerrainTile(getClass(), "testTerrainObjectTileGeneration4Tiles1.json", generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)));
     }
 }
