@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.gui.userobject.TestCaseGenerator;
 import com.btxtech.shared.gameengine.planet.pathing.AStarBaseTest;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import javafx.scene.paint.Color;
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,6 +15,13 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
 
 /**
  * Created by Beat
@@ -157,12 +163,33 @@ public class PathingAccessTest extends AStarBaseTest {
     public void getObstacles() {
         Collection<Obstacle> obstacles = getTerrainService().getPathingAccess().getObstacles(new DecimalPosition(180, 60), 8);
         List<Obstacle> obstacleList = new ArrayList<>(obstacles);
-        Assert.assertEquals(3, obstacleList.size());
-        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(174.780725808768, 58.0), new DecimalPosition(179.68693548636554, 58.0), null, null)));
-        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(169.87451613117048, 58.0), new DecimalPosition(174.780725808768, 58.0), null, null)));
-        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(179.68693548636554, 51.0), new DecimalPosition(179.68693548636554, 58.0), null, null)));
-        Assert.assertEquals(0, obstacleList.size());
-
+        assertThat(obstacleList, hasSize(3));
+        assertThat(obstacleList, containsInAnyOrder(
+                allOf(
+                        hasProperty("point1", equalTo(new DecimalPosition(179.68693548636554, 58.0))),
+                        hasProperty("point2", equalTo(new DecimalPosition(174.780725808768, 58.0))),
+                        hasProperty("previousDirection", equalTo(new DecimalPosition(0.0, 1.0))),
+                        hasProperty("point1Convex", equalTo(true)),
+                        hasProperty("point1Direction", equalTo(new DecimalPosition(-1.0, 0.0))),
+                        hasProperty("point2Convex", equalTo(true)),
+                        hasProperty("point2Direction", equalTo(new DecimalPosition(-1.0, 0.0)))),
+                allOf(
+                        hasProperty("point1", equalTo(new DecimalPosition(179.68693548636554, 51.0))),
+                        hasProperty("point2", equalTo(new DecimalPosition(179.68693548636554, 58.0))),
+                        hasProperty("previousDirection", equalTo(new DecimalPosition(1.0, 0.0))),
+                        hasProperty("point1Convex", equalTo(true)),
+                        hasProperty("point1Direction", equalTo(new DecimalPosition(0.0, 1.0))),
+                        hasProperty("point2Convex", equalTo(true)),
+                        hasProperty("point2Direction", equalTo(new DecimalPosition(-1.0, 0.0)))),
+                allOf(
+                        hasProperty("point1", equalTo(new DecimalPosition(174.780725808768, 58.0))),
+                        hasProperty("point2", equalTo(new DecimalPosition(169.87451613117048, 58.0))),
+                        hasProperty("previousDirection", equalTo(new DecimalPosition(-1.0, 0.0))),
+                        hasProperty("point1Convex", equalTo(true)),
+                        hasProperty("point1Direction", equalTo(new DecimalPosition(-1.0, 0.0))),
+                        hasProperty("point2Convex", equalTo(true)),
+                        hasProperty("point2Direction", equalTo(new DecimalPosition(-1.0, 0.0))))
+        ));
 //        PositionMarker positionMarker = new PositionMarker().addCircleColor(new Circle2D(new DecimalPosition(180, 60), 8), new Color(1,0,0, 0.3));
 //        System.out.println("Size: " + obstacles.size());
 //        obstacles.forEach(obstacle -> {

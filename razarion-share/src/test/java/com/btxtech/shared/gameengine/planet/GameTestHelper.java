@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeObstacle;
 import com.btxtech.shared.utils.CollectionUtils;
 import org.easymock.EasyMock;
 
@@ -57,23 +56,6 @@ public interface GameTestHelper {
             obstacleSlopes.add(new ObstacleSlope(point1, point2, previous, next));
         }
         return obstacleSlopes;
-    }
-
-    static ObstacleSlope createObstacleSlope(DecimalPosition point1, DecimalPosition point2, DecimalPosition previousDirection, boolean point1Convex, DecimalPosition point1Direction, boolean point2Convex, DecimalPosition point2Direction) {
-        NativeObstacle nativeObstacle = new NativeObstacle();
-        nativeObstacle.x1 = point1.getX();
-        nativeObstacle.y1 = point1.getY();
-        nativeObstacle.x2 = point2.getX();
-        nativeObstacle.y2 = point2.getY();
-        nativeObstacle.pDx = previousDirection.getX();
-        nativeObstacle.pDy = previousDirection.getY();
-        nativeObstacle.p1C = point1Convex;
-        nativeObstacle.p1Dx = point1Direction.getX();
-        nativeObstacle.p1Dy = point1Direction.getY();
-        nativeObstacle.p2C = point2Convex;
-        nativeObstacle.p2Dx = point2Direction.getX();
-        nativeObstacle.p2Dy = point2Direction.getY();
-        return new ObstacleSlope(nativeObstacle);
     }
 
     static TerrainSlopeCorner createTerrainSlopeCorner(double x, double y, Integer slopeDrivewayId) {

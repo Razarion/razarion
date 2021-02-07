@@ -276,12 +276,14 @@ public class TestHelper {
         }
     }
 
+    @Deprecated // Use generateSimpleDecimalPositionList
     public static void printDecimalPositions(List<DecimalPosition> indexList) {
         System.out.println("-----------------------------------------------------------");
         System.out.println("List<DecimalPosition> positions = Arrays.asList(" + decimalPositionsToString(indexList) + ");");
         System.out.println("-----------------------------------------------------------");
     }
 
+    @Deprecated // Use generateSimpleDecimalPositionList
     public static String decimalPositionsToString(List<DecimalPosition> indexList) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < indexList.size(); i++) {
