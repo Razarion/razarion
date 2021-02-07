@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.dto.SlopeNode;
+import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -30,26 +30,23 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
         slopeConfigLand.setHorizontalSpace(5);
-        SlopeNode[][] slopeNodeLand = new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 5, 0),},
-                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
-                {GameTestHelper.createSlopeNode(7, 15, 1),},
-                {GameTestHelper.createSlopeNode(9, 20, 0.7),},
-                {GameTestHelper.createSlopeNode(11, 25, 0),},
-        };
-        slopeConfigLand.setSlopeNodes(toColumnRow(slopeNodeLand));
+        slopeConfigLand.setSlopeShapes(Arrays.asList(
+                new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(0),
+                new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(7, 15)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(9, 20)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(11, 25)).slopeFactor(0)
+        ));
         slopeConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(9);
         // Water slope config
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
         slopeConfigWater.setHorizontalSpace(5);
-        SlopeNode[][] slopeNodeWater = new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 0, 1),},
-                {GameTestHelper.createSlopeNode(4, -1, 0.7),},
-                {GameTestHelper.createSlopeNode(8, -1.5, 0.7),},
-                {GameTestHelper.createSlopeNode(12, -2, 0.7),},
-        };
-        slopeConfigWater.setSlopeNodes(toColumnRow(slopeNodeWater));
+        slopeConfigWater.setSlopeShapes(Arrays.asList(
+                new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(4, -1)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(8, -1.5)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(12, -2)).slopeFactor(0.7)));
         slopeConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(6).setInnerLineGameEngine(10);
 
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
@@ -84,19 +81,6 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
                 GameTestHelper.createTerrainSlopeCorner(231, 256, null), GameTestHelper.createTerrainSlopeCorner(151, 257, null), // driveway
                 GameTestHelper.createTerrainSlopeCorner(239, 359, null), GameTestHelper.createTerrainSlopeCorner(49, 360, null)));
         terrainSlopePositions.add(terrainSlopePositionWater);
-
-        double[][] heights = new double[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 10, 0, 0},
-                {0, 0, 0, 0}
-        };
-        double[][] splattings = new double[][]{
-                {0.7, 0.8, 0.9},
-                {0.4, 0.5, 0.6},
-                {0.1, 0.2, 0.3}
-        };
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
         terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1));

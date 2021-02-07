@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.PhongMaterialConfig;
-import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
 
 import java.util.List;
@@ -110,11 +109,6 @@ public class SlopeConfig implements Config {
 
     public void setWaterConfigId(Integer waterConfigId) {
         this.waterConfigId = waterConfigId;
-    }
-
-    @Deprecated
-    public SlopeConfig setSlopeNodes(SlopeNode[][] slopeNodes) {
-        throw new UnsupportedOperationException("...Deprecated...");
     }
 
     public boolean isInterpolateNorm() {

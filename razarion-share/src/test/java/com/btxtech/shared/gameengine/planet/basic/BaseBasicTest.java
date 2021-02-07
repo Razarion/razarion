@@ -4,12 +4,12 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.dto.SlopeNode;
+import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -36,23 +36,21 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
         slopeConfigLand.setHorizontalSpace(5);
-        slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 5, 1),},
-                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
-                {GameTestHelper.createSlopeNode(7, 20, 0.7),},
-        }));
+        slopeConfigLand.setSlopeShapes(Arrays.asList(
+                new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7)));
         slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
         slopeConfigs.add(slopeConfigLand);
 
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
         slopeConfigWater.setHorizontalSpace(6);
-        slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(5, 0.5, 0.5),},
-                {GameTestHelper.createSlopeNode(10, -0.1, 1),},
-                {GameTestHelper.createSlopeNode(15, -0.8, 1),},
-                {GameTestHelper.createSlopeNode(20, -2, 1),}
-        }));
+        slopeConfigWater.setSlopeShapes(Arrays.asList(
+                new SlopeShape().position(new DecimalPosition(5, 0.5)).slopeFactor(0.5),
+                new SlopeShape().position(new DecimalPosition(10, -0.1)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(15, -0.8)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(20, -2)).slopeFactor(1)));
         slopeConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
         slopeConfigs.add(slopeConfigWater);
 

@@ -59,7 +59,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.RegisterResult;
-import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -749,18 +748,6 @@ public class ServerTestHelper {
     protected void setupPlanetFastTickGameEngine() throws Exception {
         PlanetService.TICK_TIME_MILLI_SECONDS = 1;
         setupPlanetWithSlopes();
-    }
-
-    protected SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {
-        int xCount = rowColumn[0].length;
-        int yCount = rowColumn.length;
-        SlopeNode[][] columnRow = new SlopeNode[xCount][yCount];
-        for (int x = 0; x < xCount; x++) {
-            for (int y = 0; y < yCount; y++) {
-                columnRow[x][y] = rowColumn[y][x];
-            }
-        }
-        return columnRow;
     }
 
     protected void cleanPlanets() {

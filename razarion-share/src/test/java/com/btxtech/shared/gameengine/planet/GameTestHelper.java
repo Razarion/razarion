@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
@@ -75,10 +74,6 @@ public interface GameTestHelper {
         nativeObstacle.p2Dx = point2Direction.getX();
         nativeObstacle.p2Dy = point2Direction.getY();
         return new ObstacleSlope(nativeObstacle);
-    }
-
-    static SlopeNode createSlopeNode(double x, double z, double slopeFactor) {
-        throw new UnsupportedOperationException("...TODO...");
     }
 
     static TerrainSlopeCorner createTerrainSlopeCorner(double x, double y, Integer slopeDrivewayId) {
