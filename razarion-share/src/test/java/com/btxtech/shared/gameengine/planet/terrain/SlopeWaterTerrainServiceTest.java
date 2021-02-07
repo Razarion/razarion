@@ -53,7 +53,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         setupTerrainTypeService(slopeConfigs, waterConfigs, null, null, terrainSlopePositions, null, null);
 
-        showDisplay();
+        // showDisplay();
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testWaterTile1.json");
