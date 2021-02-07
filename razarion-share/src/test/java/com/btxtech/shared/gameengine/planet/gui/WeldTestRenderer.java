@@ -357,9 +357,14 @@ public class WeldTestRenderer {
         for (double x = from.getX(); x < from.getX() + length; x++) {
             for (double y = from.getY(); y < from.getY() + length; y++) {
                 DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
-                // Z
-                double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
-                gc.setFill(color4Z(z));
+                try {
+                    double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
+                    // Z
+                    gc.setFill(color4Z(z));
+                } catch (Exception e) {
+                    gc.setFill(Color.RED);
+                    e.printStackTrace();
+                }
                 gc.fillRect(x, y, 0.5, 0.5);
                 // Norm
                 Vertex norm = terrainService.getSurfaceAccess().getInterpolatedNorm(samplePosition);
