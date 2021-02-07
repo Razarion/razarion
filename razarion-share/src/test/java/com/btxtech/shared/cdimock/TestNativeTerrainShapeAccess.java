@@ -4,7 +4,7 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -32,12 +32,12 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
-        TerrainShape terrainShape;
+        TerrainShapeManager terrainShape;
         if (terrainSlopePositions != null && terrainObjectPositions != null) {
-            terrainShape = new TerrainShape(planetConfig, terrainTypeService, alarmService, terrainSlopePositions, terrainObjectPositions);
+            terrainShape = new TerrainShapeManager(planetConfig, terrainTypeService, alarmService, terrainSlopePositions, terrainObjectPositions);
             loadedCallback.accept(terrainShape.toNativeTerrainShape());
         } else if (nativeTerrainShapeAccess != null) {
-            terrainShape = new TerrainShape();
+            terrainShape = new TerrainShapeManager();
             terrainShape.lazyInit(planetConfig, terrainTypeService, nativeTerrainShapeAccess, () -> {
                 loadedCallback.accept(terrainShape.toNativeTerrainShape());
             }, failCallback);

@@ -31,24 +31,24 @@ import java.util.logging.Logger;
  * Created by Beat
  * on 17.06.2017.
  */
-public class TerrainShape {
-    private static Logger logger = Logger.getLogger(TerrainShape.class.getName());
+public class TerrainShapeManager {
+    private static Logger logger = Logger.getLogger(TerrainShapeManager.class.getName());
     private TerrainShapeTile[][] terrainShapeTiles;
     private SurfaceAccess surfaceAccess;
     private PathingAccess pathingAccess;
     private DecimalPosition planetSize;
     private int tileXCount;
     private int tileYCount;
-    public TerrainShape() {
+    public TerrainShapeManager() {
     }
 
-    public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, AlarmService alarmService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+    public TerrainShapeManager(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, AlarmService alarmService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         long time = System.currentTimeMillis();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         setupDimension(planetConfig);
         terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
-        TerrainShapeSetup terrainShapeSetup = new TerrainShapeSetup(this, terrainTypeService, alarmService);
+        TerrainShapeManagerSetup terrainShapeSetup = new TerrainShapeManagerSetup(this, terrainTypeService, alarmService);
         terrainShapeSetup.processSlopes(terrainSlopePositions);
         terrainShapeSetup.processTerrainObject(terrainObjectPositions);
         terrainShapeSetup.finish();

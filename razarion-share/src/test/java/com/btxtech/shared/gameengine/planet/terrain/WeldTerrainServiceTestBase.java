@@ -15,7 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,8 +54,8 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
         }
     }
 
-    protected TerrainShape getTerrainShape() {
-        return (TerrainShape) SimpleTestEnvironment.readField("terrainShape", getTerrainService());
+    protected TerrainShapeManager getTerrainShape() {
+        return (TerrainShapeManager) SimpleTestEnvironment.readField("terrainShape", getTerrainService());
     }
 
     protected MasterPlanetConfig setupMasterPlanetConfig() {

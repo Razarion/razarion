@@ -16,9 +16,10 @@ public class NativeTerrainShapeNode {
     public boolean renderGround; // Integer is not working here because Integer.intValue() is not defined
     public int renderGroundId; // Integer is not working here because Integer.intValue() is not defined
     public boolean renderHideGround;
+    public Double renderFullWaterLevel;
     public boolean renderInnerWaterSlope; // Integer is not working here because Integer.intValue() is not defined
     public int renderInnerWaterSlopeId; // Integer is not working here because Integer.intValue() is not defined
-    public Double fullWaterLevel;
+    public Double gameEngineFullWaterLevel;
     public NativeObstacle[] obstacles;
     public NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes; // bl, br, tr, tl
     public Boolean drivewayBreakingLine;

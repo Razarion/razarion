@@ -17,7 +17,7 @@ import java.util.List;
 public class ObstacleFactory {
     private static final double MIN_DELTA = 0.1;
 
-    public static void addObstacles(TerrainShape terrainShape, Slope slope) {
+    public static void addObstacles(TerrainShapeManager terrainShape, Slope slope) {
         for (List<DecimalPosition> polygon : slope.getObstacleFactoryContext().getPolygons()) {
             List<DecimalPosition> filteredPolygon = DecimalPosition.removeSimilarPointsFast(polygon, MIN_DELTA);
             // dumpPolygonForRvo(filteredPolygon);
@@ -31,7 +31,7 @@ public class ObstacleFactory {
         }
     }
 
-    private static void addObstacleSlope(TerrainShape terrainShape, ObstacleSlope obstacleSlope) {
+    private static void addObstacleSlope(TerrainShapeManager terrainShape, ObstacleSlope obstacleSlope) {
         for (Index nodeIndex : GeometricUtil.rasterizeLine(obstacleSlope.createLine(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
             TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
             terrainShapeNode.addObstacle(obstacleSlope);

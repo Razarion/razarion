@@ -11,7 +11,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
@@ -55,7 +55,7 @@ public class TerrainTileFactory {
     private NativeMatrixFactory nativeMatrixFactory;
 
 
-    public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShape terrainShape) {
+    public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShapeManager terrainShape) {
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
         TerrainTileBuilder terrainTileBuilder = terrainTileBuilderInstance.get();
         terrainTileBuilder.init(terrainTileIndex, terrainShapeTile, terrainShape.getPlayGround());
@@ -272,8 +272,8 @@ public class TerrainTileFactory {
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode == null && terrainShapeTile.getRenderFullWaterLevel() != null) {
                 terrainTileBuilder.getTerrainWaterTileBuilder().insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getRenderFullWaterLevel(), terrainShapeTile.getRenderFullWaterSlopeId());
-            } else if (terrainShapeNode != null && terrainShapeNode.isFullWater()) {
-                terrainTileBuilder.getTerrainWaterTileBuilder().insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel(), terrainShapeNode.getRenderInnerWaterSlopeId());
+            } else if (terrainShapeNode != null && terrainShapeNode.getRenderFullWaterLevel() != null) {
+                terrainTileBuilder.getTerrainWaterTileBuilder().insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getRenderFullWaterLevel(), terrainShapeNode.getRenderInnerWaterSlopeId());
             } else if (terrainShapeNode != null && terrainShapeNode.getWaterSegments() != null) {
                 terrainShapeNode.getWaterSegments().forEach(
                         (slopeId, segments) -> segments.forEach(

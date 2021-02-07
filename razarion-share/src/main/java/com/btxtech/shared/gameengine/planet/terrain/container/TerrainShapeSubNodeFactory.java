@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * on 05.10.2017.
  */
 public class TerrainShapeSubNodeFactory {
-    private static Logger logger = Logger.getLogger(TerrainShape.class.getName());
+    private static Logger logger = Logger.getLogger(TerrainShapeManager.class.getName());
 
     public void fillSlopeTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, Rectangle2D terrainRect, Polygon2D terrainTypeRegion, TerrainType innerTerrainType, Double innerHeight, DrivewayContext drivewayContext) {
         for (int y = 0; y < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; y += TerrainUtil.MIN_SUB_NODE_LENGTH) {

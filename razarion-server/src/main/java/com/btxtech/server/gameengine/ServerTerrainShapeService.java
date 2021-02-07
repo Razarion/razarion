@@ -5,7 +5,7 @@ import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -52,7 +52,7 @@ public class ServerTerrainShapeService {
     }
 
     private void createTerrainShape(PlanetConfig planetConfig) {
-        TerrainShape terrainShape = new TerrainShape(planetConfig,
+        TerrainShapeManager terrainShape = new TerrainShapeManager(planetConfig,
                 terrainTypeService,
                 alarmService,
                 planetCrudPersistence.getTerrainSlopePositions(planetConfig.getId()),

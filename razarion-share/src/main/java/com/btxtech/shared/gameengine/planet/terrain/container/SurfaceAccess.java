@@ -15,9 +15,9 @@ import java.util.logging.Logger;
  */
 public class SurfaceAccess {
     final private static Logger LOGGER = Logger.getLogger(SurfaceAccess.class.getName());
-    private TerrainShape terrainShape;
+    private TerrainShapeManager terrainShape;
 
-    public SurfaceAccess(TerrainShape terrainShape) {
+    public SurfaceAccess(TerrainShapeManager terrainShape) {
         this.terrainShape = terrainShape;
     }
 
@@ -60,7 +60,7 @@ public class SurfaceAccess {
                             return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getGameEngineHeight();
                         }
                     case WATER:
-                        return terrainShapeNode.getFullWaterLevel();
+                        return terrainShapeNode.getGameEngineFullWaterLevel();
                     case LAND_COAST:
                         return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getGameEngineHeight();
                     case WATER_COAST:

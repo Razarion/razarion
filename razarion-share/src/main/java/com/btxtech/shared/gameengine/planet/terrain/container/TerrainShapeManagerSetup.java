@@ -43,15 +43,15 @@ import java.util.logging.Logger;
  * Created by Beat
  * on 22.06.2017.
  */
-public class TerrainShapeSetup {
-    private Logger logger = Logger.getLogger(TerrainShapeSetup.class.getName());
-    private TerrainShape terrainShape;
+public class TerrainShapeManagerSetup {
+    private Logger logger = Logger.getLogger(TerrainShapeManagerSetup.class.getName());
+    private TerrainShapeManager terrainShape;
     private TerrainTypeService terrainTypeService;
     private AlarmService alarmService;
     private TerrainShapeSubNodeFactory terrainShapeSubNodeFactory;
     private Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes = new HashMap<>();
 
-    public TerrainShapeSetup(TerrainShape terrainShape, TerrainTypeService terrainTypeService, AlarmService alarmService) {
+    public TerrainShapeManagerSetup(TerrainShapeManager terrainShape, TerrainTypeService terrainTypeService, AlarmService alarmService) {
         this.terrainShape = terrainShape;
         this.terrainTypeService = terrainTypeService;
         this.alarmService = alarmService;
@@ -179,7 +179,7 @@ public class TerrainShapeSetup {
                     terrainShapeNode.setRenderGroundId(slope.getSlopeConfig().getGroundConfigId());
                     terrainShapeNode.setInnerGroundHeight(slope.getInnerGroundHeight());
                     terrainShapeNode.setRenderInnerWaterSlopeId(slope.getSlopeConfig().getId());
-                    terrainShapeNode.setFullWaterLevel(slope.getOuterGroundHeight() + waterLevel);
+                    terrainShapeNode.setRenderFullWaterLevel(slope.getOuterGroundHeight() + waterLevel);
                 }
                 // Setup slope inner seabed connection (render engine)
                 for (Index nodeIndex : innerRasterizer.getPiercedTiles()) {
@@ -212,7 +212,7 @@ public class TerrainShapeSetup {
                 }
                 for (Index nodeIndex : innerRasterizer.getInnerTiles()) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                    terrainShapeNode.setFullWaterLevel(null);
+                    terrainShapeNode.setFullRenderEngineDriveway(false);
                     terrainShapeNode.setInnerGroundHeight(slope.getInnerGroundHeight());
                 }
             }
@@ -327,6 +327,7 @@ public class TerrainShapeSetup {
                 if (!terrainShapeNode.hasSubNodes()) {
                     terrainShapeNode.setTerrainType(innerTerrainType);
                     terrainShapeNode.setGameEngineHeight(innerHeight);
+                    terrainShapeNode.setGameEngineFullWaterLevel(innerHeight);
                 }
             }
             for (Index nodeIndex : polygon2DRasterizer.getPiercedTiles()) {

@@ -19,9 +19,9 @@ import java.util.Set;
  * on 19.06.2017.
  */
 public class PathingAccess {
-    private TerrainShape terrainShape;
+    private TerrainShapeManager terrainShape;
 
-    public PathingAccess(TerrainShape terrainShape) {
+    public PathingAccess(TerrainShapeManager terrainShape) {
         this.terrainShape = terrainShape;
     }
 
@@ -140,7 +140,7 @@ public class PathingAccess {
         return terrainShape.getTerrainShapeNode(nodeIndex);
     }
 
-    public TerrainShape getTerrainShape() {
+    public TerrainShapeManager getTerrainShape() {
         return terrainShape;
     }
 

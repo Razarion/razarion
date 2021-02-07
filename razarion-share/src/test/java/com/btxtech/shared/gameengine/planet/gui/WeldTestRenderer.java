@@ -35,7 +35,7 @@ import com.btxtech.shared.gameengine.planet.terrain.asserthelper.DiffTriangleEle
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
@@ -99,7 +99,7 @@ public class WeldTestRenderer {
     private double scale;
     private DecimalPosition shift = new DecimalPosition(0, 0);
     private DecimalPosition lastShiftPosition;
-    private TerrainShape actual;
+    private TerrainShapeManager actual;
     private TerrainShapeTile[][] terrainShapeTiles;
     private UserDataRenderer userDataRenderer;
     private UserDataRenderer moveUserDataRenderer;
@@ -273,9 +273,9 @@ public class WeldTestRenderer {
         if (userObjects != null && userObjects.length > 0) {
             userDataRenderer = new UserDataRenderer(this, userObjects);
         }
-        actual = (TerrainShape) SimpleTestEnvironment.readField("terrainShape", terrainService);
+        actual = (TerrainShapeManager) SimpleTestEnvironment.readField("terrainShape", terrainService);
         try {
-            Field field = TerrainShape.class.getDeclaredField("terrainShapeTiles");
+            Field field = TerrainShapeManager.class.getDeclaredField("terrainShapeTiles");
             field.setAccessible(true);
             terrainShapeTiles = (TerrainShapeTile[][]) field.get(actual);
             field.setAccessible(false);

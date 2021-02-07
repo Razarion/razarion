@@ -34,18 +34,19 @@ public class TerrainShapeNode {
     private TerrainType terrainType;
     private Collection<Obstacle> obstacles;
     private Double gameEngineHeight;
+    private Double gameEngineFullWaterLevel;
     private Boolean fullGameEngineDriveway;
     // Render engine
     private Map<Integer, List<List<Vertex>>> groundSlopeConnections;
     private Integer renderGroundId;
     private boolean renderHideGround;
     private Boolean fullRenderEngineDriveway;
+    private Double renderFullWaterLevel;
     private Integer renderInnerWaterSlopeId;
     private Map<Integer, List<List<Vertex>>> waterSegments;
     // Game and render engine
     private double[] drivewayHeights; // bl, br, tr, tl
     private double innerGroundHeight;
-    private Double fullWaterLevel;
     private Boolean drivewayBreakingLine;
 
     public TerrainShapeNode() {
@@ -55,7 +56,7 @@ public class TerrainShapeNode {
         gameEngineHeight = nativeTerrainShapeNode.gameEngineHeight;
         drivewayHeights = nativeTerrainShapeNode.fullDrivewayHeights;
         innerGroundHeight = nativeTerrainShapeNode.innerGroundHeight;
-        fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
+        gameEngineFullWaterLevel = nativeTerrainShapeNode.gameEngineFullWaterLevel;
         drivewayBreakingLine = nativeTerrainShapeNode.drivewayBreakingLine;
         fullGameEngineDriveway = nativeTerrainShapeNode.fullGameEngineDriveway;
         fullRenderEngineDriveway = nativeTerrainShapeNode.fullRenderEngineDriveway;
@@ -77,6 +78,7 @@ public class TerrainShapeNode {
             renderGroundId = nativeTerrainShapeNode.renderGroundId;
         }
         renderHideGround = nativeTerrainShapeNode.renderHideGround;
+        renderFullWaterLevel = nativeTerrainShapeNode.renderFullWaterLevel;
         if(nativeTerrainShapeNode.renderInnerWaterSlope) {
             renderInnerWaterSlopeId = nativeTerrainShapeNode.renderInnerWaterSlopeId;
         }
@@ -134,8 +136,12 @@ public class TerrainShapeNode {
         obstacles.add(obstacle);
     }
 
-    public void setFullWaterLevel(Double fullWaterLevel) {
-        this.fullWaterLevel = fullWaterLevel;
+    public void setGameEngineFullWaterLevel(Double gameEngineFullWaterLevel) {
+        this.gameEngineFullWaterLevel = gameEngineFullWaterLevel;
+    }
+
+    public void setRenderFullWaterLevel(Double renderFullWaterLevel) {
+        this.renderFullWaterLevel = renderFullWaterLevel;
     }
 
     public void setDrivewayHeights(double[] drivewayHeights) {
@@ -226,12 +232,12 @@ public class TerrainShapeNode {
         this.terrainType = terrainType;
     }
 
-    public boolean isFullWater() {
-        return fullWaterLevel != null;
+    public Double getRenderFullWaterLevel() {
+        return renderFullWaterLevel;
     }
 
-    public Double getFullWaterLevel() {
-        return fullWaterLevel;
+    public Double getGameEngineFullWaterLevel() {
+        return gameEngineFullWaterLevel;
     }
 
     public boolean hasSubNodes() {
@@ -364,6 +370,7 @@ public class TerrainShapeNode {
             nativeTerrainShapeNode.renderGroundId = renderGroundId;
         }
         nativeTerrainShapeNode.renderHideGround = renderHideGround;
+        nativeTerrainShapeNode.renderFullWaterLevel = renderFullWaterLevel;
         if (renderInnerWaterSlopeId != null) {
             nativeTerrainShapeNode.renderInnerWaterSlope = true;
             nativeTerrainShapeNode.renderInnerWaterSlopeId = renderInnerWaterSlopeId;
@@ -392,7 +399,7 @@ public class TerrainShapeNode {
                 return nativeWaterSegment;
             }).toArray(value -> new NativeWaterSegment[waterSegments.size()]);
         }
-        nativeTerrainShapeNode.fullWaterLevel = fullWaterLevel;
+        nativeTerrainShapeNode.gameEngineFullWaterLevel = gameEngineFullWaterLevel;
         if (obstacles != null) {
             nativeTerrainShapeNode.obstacles = obstacles.stream().map(Obstacle::toNativeObstacle).toArray(NativeObstacle[]::new);
         }
