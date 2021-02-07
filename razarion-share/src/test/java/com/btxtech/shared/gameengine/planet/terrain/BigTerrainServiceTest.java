@@ -3,8 +3,8 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ import java.util.List;
  * on 11.11.2017.
  */
 public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
-    private void setup(int slopeConfigId, TerrainSlopeCorner... slopePolygon) {
+    private void setup(int slopeConfigId) {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
 
         SlopeConfig slopeConfigLand = new SlopeConfig();
@@ -36,7 +37,7 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
         slopeConfigs.add(slopeConfigLand);
 
         SlopeConfig slopeConfigWater = new SlopeConfig();
-        slopeConfigWater.id(2).setWaterConfigId(FallbackConfig.WATER_CONFIG_ID);
+        slopeConfigWater.id(2).setWaterConfigId(1);
         slopeConfigWater.setHorizontalSpace(5);
         slopeConfigWater.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
@@ -47,27 +48,29 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
         slopeConfigWater.setOuterLineGameEngine(4).setCoastDelimiterLineGameEngine(7).setInnerLineGameEngine(11);
         slopeConfigs.add(slopeConfigWater);
 
+        List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig().id(1).waterLevel(-0.2).groundLevel(-2));
+
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
         terrainSlopePositionLand.setSlopeConfigId(slopeConfigId);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(slopePolygon));
+        terrainSlopePositionLand.setPolygon(Arrays.asList(
+                GameTestHelper.createTerrainSlopeCorner(100, 4000, null),
+                GameTestHelper.createTerrainSlopeCorner(4000, 100, null),
+                GameTestHelper.createTerrainSlopeCorner(4800, 800, null),
+                GameTestHelper.createTerrainSlopeCorner(800, 4800, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(5000, 5000));
 
-        setupTerrainTypeService(slopeConfigs, null, null, planetConfig, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, waterConfigs, null, planetConfig, terrainSlopePositions, null, null);
     }
 
 
     @Test
     public void testBigSkewAreaSlope() {
-        setup(1,
-                GameTestHelper.createTerrainSlopeCorner(100, 4000, null),
-                GameTestHelper.createTerrainSlopeCorner(4000, 100, null),
-                GameTestHelper.createTerrainSlopeCorner(4800, 800, null),
-                GameTestHelper.createTerrainSlopeCorner(800, 4800, null));
+        setup(1);
 
         // showDisplay();
 
@@ -81,12 +84,16 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testBigSkewWaterAreaSlope() {
-        setup(2,
-                GameTestHelper.createTerrainSlopeCorner(100, 4000, null),
-                GameTestHelper.createTerrainSlopeCorner(4000, 100, null),
-                GameTestHelper.createTerrainSlopeCorner(4800, 800, null),
-                GameTestHelper.createTerrainSlopeCorner(800, 4800, null));
+        setup(2);
 
         // showDisplay();
+
+        Assert.assertEquals(0.0,
+                getTerrainService().getSurfaceAccess().getInterpolatedZ(new DecimalPosition(1000, 2000)),
+                0);
+        Assert.assertEquals(-0.2,
+                getTerrainService().getSurfaceAccess().getInterpolatedZ(new DecimalPosition(4000, 1000)),
+                0);
+
     }
 }
