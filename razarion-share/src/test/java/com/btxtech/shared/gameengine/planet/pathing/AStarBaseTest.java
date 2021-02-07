@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
@@ -17,6 +18,7 @@ import org.junit.Before;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,7 +42,7 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         slopeConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(9);
         // Water slope config
         SlopeConfig slopeConfigWater = new SlopeConfig();
-        slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
+        slopeConfigWater.id(2).waterConfigId(1);
         slopeConfigWater.setHorizontalSpace(5);
         slopeConfigWater.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
@@ -48,6 +50,8 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
                 new SlopeShape().position(new DecimalPosition(8, -1.5)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(12, -2)).slopeFactor(0.7)));
         slopeConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(6).setInnerLineGameEngine(10);
+
+        List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig().id(1).waterLevel(-0.2).groundLevel(-2));
 
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         slopeConfigs.add(slopeConfigLand);
@@ -102,7 +106,7 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         terrainObjectPositions.add((new TerrainObjectPosition().terrainObjectId(3).position(new DecimalPosition(212, 325))));
         terrainObjectPositions.add((new TerrainObjectPosition().terrainObjectId(3).position(new DecimalPosition(223, 290))));
 
-        setupTerrainTypeService(slopeConfigs, null, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeConfigs, waterConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
     }
 
     protected SimplePath setupPath(double actorRadius, TerrainType actorTerrainType, DecimalPosition actorPosition, double range, double targetRadius, TerrainType targetTerrainType, DecimalPosition targetPosition) {
