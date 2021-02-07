@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,44 +28,40 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testWater1() {
         // WaterConfig
-        List<WaterConfig> waterConfigs = new ArrayList<>();
-        waterConfigs.add(new WaterConfig().id(22).waterLevel(-0.2).groundLevel(-2));
+        List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig().id(22).waterLevel(-0.2).groundLevel(-2));
         // SlopeConfig
-        List<SlopeConfig> slopeConfigs = new ArrayList<>();
-        SlopeConfig slopeConfigWater = new SlopeConfig();
-        slopeConfigWater.id(10).waterConfigId(22);
-        slopeConfigWater.setHorizontalSpace(6);
-        slopeConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
-        slopeConfigWater.setSlopeShapes(Arrays.asList(
-                new SlopeShape().slopeFactor(0),
-                new SlopeShape().position(new DecimalPosition(2, 0.5)).slopeFactor(0.5),
-                new SlopeShape().position(new DecimalPosition(4, -0.1)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(6, -0.8)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(9, 10)).slopeFactor(0)
-        ));
-        slopeConfigs.add(slopeConfigWater);
+        List<SlopeConfig> slopeConfigs = Collections.singletonList(
+                new SlopeConfig()
+                        .id(10)
+                        .waterConfigId(22)
+                        .horizontalSpace(6)
+                        .outerLineGameEngine(3)
+                        .coastDelimiterLineGameEngine(5)
+                        .innerLineGameEngine(7)
+                        .slopeShapes(Arrays.asList(
+                                new SlopeShape().slopeFactor(0),
+                                new SlopeShape().position(new DecimalPosition(2, 0.5)).slopeFactor(0.5),
+                                new SlopeShape().position(new DecimalPosition(4, -0.1)).slopeFactor(1),
+                                new SlopeShape().position(new DecimalPosition(6, -0.8)).slopeFactor(1),
+                                new SlopeShape().position(new DecimalPosition(9, 10)).slopeFactor(0))));
 
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.id(1);
-        terrainSlopePositionLand.slopeConfigId(10);
-        terrainSlopePositionLand.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
-        terrainSlopePositions.add(terrainSlopePositionLand);
+        List<TerrainSlopePosition> terrainSlopePositions = Collections.singletonList(
+                new TerrainSlopePosition()
+                        .id(1)
+                        .slopeConfigId(10)
+                        .polygon(Arrays.asList(
+                                GameTestHelper.createTerrainSlopeCorner(50, 40, null),
+                                GameTestHelper.createTerrainSlopeCorner(100, 40, null),
+                                GameTestHelper.createTerrainSlopeCorner(100, 110, null),
+                                GameTestHelper.createTerrainSlopeCorner(50, 110, null))));
 
         setupTerrainTypeService(slopeConfigs, waterConfigs, null, null, terrainSlopePositions, null, null);
 
         // showDisplay();
 
-        TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
-        // AssertTerrainTile.saveTerrainTile(terrainTile, "testWaterTile1.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testWaterTile1.json");
-        assertTerrainTile.assertEquals(terrainTile);
-
-        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), "testWaterShapeHNT1.json");
-        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testWaterShapeHNT1.json");
-
-        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testWaterShape1.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testWaterShape1.json", getTerrainShape());
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), getClass(), "testWaterShapeHNT1.json");
+        AssertTerrainTile.assertTerrainTile(getClass(), "testWaterTile1.json", generateTerrainTiles(new Index(0, 0)));
     }
 
     @Test
