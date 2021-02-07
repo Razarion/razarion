@@ -29,6 +29,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.weld.environment.se.Weld;
@@ -55,6 +56,7 @@ public class AbstractIntegrationTest {
     private PlanetConfig planetConfig;
     private StaticGameConfig staticGameConfig;
     private PlanetService planetService;
+    private AlarmService alarmService;
 
     protected void setupEnvironment(StaticGameConfig staticGameConfig, PlanetConfig planetConfig) {
         this.staticGameConfig = staticGameConfig;
@@ -66,6 +68,7 @@ public class AbstractIntegrationTest {
         // Init static game
         baseItemService = getWeldBean(BaseItemService.class);
         planetService = getWeldBean(PlanetService.class);
+        alarmService = getWeldBean(AlarmService.class);
         testGameLogicListener = new TestGameLogicListener();
         getWeldBean(GameLogicService.class).setGameLogicListener(testGameLogicListener);
         fireStaticGameConfig(staticGameConfig);
@@ -273,6 +276,10 @@ public class AbstractIntegrationTest {
         return planetService;
     }
 
+    public AlarmService getAlarmService() {
+        return alarmService;
+    }
+
     public PlayerBase getPlayerBase(UserContext userContext) {
         return baseItemService.getPlayerBase4UserId(userContext.getUserId());
     }
@@ -334,8 +341,8 @@ public class AbstractIntegrationTest {
         // Export StaticGameConfig
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);;
-            objectMapper.writeValue(new File(directorname, "static-game-config.json"),  getStaticGameConfig());
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            objectMapper.writeValue(new File(directorname, "static-game-config.json"), getStaticGameConfig());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -54,6 +54,7 @@ public class ServerTerrainShapeService {
     private void createTerrainShape(PlanetConfig planetConfig) {
         TerrainShape terrainShape = new TerrainShape(planetConfig,
                 terrainTypeService,
+                alarmService,
                 planetCrudPersistence.getTerrainSlopePositions(planetConfig.getId()),
                 planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()));
         terrainShapes.put(planetConfig.getId(), terrainShape.toNativeTerrainShape());

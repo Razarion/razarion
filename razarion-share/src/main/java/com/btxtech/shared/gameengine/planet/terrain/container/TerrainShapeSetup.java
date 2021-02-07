@@ -10,12 +10,12 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Polygon2DRasterizer;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
@@ -24,6 +24,8 @@ import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeVertex;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Driveway;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 
@@ -45,12 +47,14 @@ public class TerrainShapeSetup {
     private Logger logger = Logger.getLogger(TerrainShapeSetup.class.getName());
     private TerrainShape terrainShape;
     private TerrainTypeService terrainTypeService;
+    private AlarmService alarmService;
     private TerrainShapeSubNodeFactory terrainShapeSubNodeFactory;
     private Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes = new HashMap<>();
 
-    public TerrainShapeSetup(TerrainShape terrainShape, TerrainTypeService terrainTypeService) {
+    public TerrainShapeSetup(TerrainShape terrainShape, TerrainTypeService terrainTypeService, AlarmService alarmService) {
         this.terrainShape = terrainShape;
         this.terrainTypeService = terrainTypeService;
+        this.alarmService = alarmService;
         terrainShapeSubNodeFactory = new TerrainShapeSubNodeFactory();
     }
 
@@ -106,6 +110,7 @@ public class TerrainShapeSetup {
             try {
                 processSlope(setupSlope(terrainSlopePosition, 0), null, dirtyTerrainShapeNodes);
             } catch (Exception e) {
+                alarmService.riseAlarm(Alarm.Type.TERRAIN_SHAPE_FAILED_SLOPE_POSITION, terrainSlopePosition.getId());
                 logger.log(Level.WARNING, "Can not handle slope with id: " + terrainSlopePosition.getId(), e);
             }
         }

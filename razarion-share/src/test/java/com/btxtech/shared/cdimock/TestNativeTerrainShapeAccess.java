@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
+import com.btxtech.shared.system.alarm.AlarmService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,6 +23,8 @@ import java.util.function.Consumer;
 public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     @Inject
     private TerrainTypeService terrainTypeService;
+    @Inject
+    private AlarmService alarmService;
     private PlanetConfig planetConfig;
     private List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
     private List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
@@ -31,7 +34,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
         TerrainShape terrainShape;
         if (terrainSlopePositions != null && terrainObjectPositions != null) {
-            terrainShape = new TerrainShape(planetConfig, terrainTypeService, terrainSlopePositions, terrainObjectPositions);
+            terrainShape = new TerrainShape(planetConfig, terrainTypeService, alarmService, terrainSlopePositions, terrainObjectPositions);
             loadedCallback.accept(terrainShape.toNativeTerrainShape());
         } else if (nativeTerrainShapeAccess != null) {
             terrainShape = new TerrainShape();

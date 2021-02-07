@@ -50,4 +50,7 @@ public class AlarmService {
         listeners.forEach(alarmServiceListener -> alarmServiceListener.alarmRaised(alarm));
     }
 
+    public boolean hasAlarms() {
+        return !alarms.isEmpty();
+    }
 }

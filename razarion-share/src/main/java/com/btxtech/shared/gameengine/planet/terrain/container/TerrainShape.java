@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrain
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeTile;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.ExceptionUtil;
 import com.btxtech.shared.utils.GeometricUtil;
 
@@ -38,17 +39,16 @@ public class TerrainShape {
     private DecimalPosition planetSize;
     private int tileXCount;
     private int tileYCount;
-
     public TerrainShape() {
     }
 
-    public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+    public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, AlarmService alarmService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         long time = System.currentTimeMillis();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         setupDimension(planetConfig);
         terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
-        TerrainShapeSetup terrainShapeSetup = new TerrainShapeSetup(this, terrainTypeService);
+        TerrainShapeSetup terrainShapeSetup = new TerrainShapeSetup(this, terrainTypeService, alarmService);
         terrainShapeSetup.processSlopes(terrainSlopePositions);
         terrainShapeSetup.processTerrainObject(terrainObjectPositions);
         terrainShapeSetup.finish();

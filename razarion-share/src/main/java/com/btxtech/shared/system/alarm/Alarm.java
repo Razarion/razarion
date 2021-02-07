@@ -22,7 +22,8 @@ public class Alarm {
         INVALID_SHAPE_3D,
         INVALID_BASE_ITEM,
         INVALID_RESOURCE_ITEM,
-        INVALID_PARTICLE_SHAPE_CONFIG
+        INVALID_PARTICLE_SHAPE_CONFIG,
+        TERRAIN_SHAPE_FAILED_SLOPE_POSITION
     }
     private Type type;
     private Date date;

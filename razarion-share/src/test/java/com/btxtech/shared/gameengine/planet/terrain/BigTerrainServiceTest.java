@@ -2,12 +2,13 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.dto.SlopeNode;
+import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -25,26 +26,24 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
         slopeConfigLand.setHorizontalSpace(5);
-        slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 0, 1),},
-                {GameTestHelper.createSlopeNode(4, 8, 0.7),},
-                {GameTestHelper.createSlopeNode(7, 12, 0.7),},
-                {GameTestHelper.createSlopeNode(10, 20, 0.7),},
-                {GameTestHelper.createSlopeNode(11, 20, 0.7),},
-        }));
+        slopeConfigLand.setSlopeShapes(Arrays.asList(
+                new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(4, 8)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(7, 12)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(10, 20)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(11, 20)).slopeFactor(0.7)));
         slopeConfigLand.setOuterLineGameEngine(3).setInnerLineGameEngine(7);
         slopeConfigs.add(slopeConfigLand);
 
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(2).setWaterConfigId(FallbackConfig.WATER_CONFIG_ID);
         slopeConfigWater.setHorizontalSpace(5);
-        slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 0, 1),},
-                {GameTestHelper.createSlopeNode(4, 0, 0.7),},
-                {GameTestHelper.createSlopeNode(8, -1, 0.7),},
-                {GameTestHelper.createSlopeNode(10, -1.5, 0.7),},
-                {GameTestHelper.createSlopeNode(12, -2, 0.7),},
-        }));
+        slopeConfigWater.setSlopeShapes(Arrays.asList(
+                new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(4, 0)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(8, -1)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(10, -1.5)).slopeFactor(0.7),
+                new SlopeShape().position(new DecimalPosition(12, -2)).slopeFactor(0.7)));
         slopeConfigWater.setOuterLineGameEngine(4).setCoastDelimiterLineGameEngine(7).setInnerLineGameEngine(11);
         slopeConfigs.add(slopeConfigWater);
 
@@ -55,21 +54,8 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainSlopePositionLand.setPolygon(Arrays.asList(slopePolygon));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
-        double[][] heights = new double[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0}
-        };
-        double[][] splattings = new double[][]{
-                {0.7, 0.8, 0.9},
-                {0.4, 0.5, 0.6},
-                {0.1, 0.2, 0.3}
-        };
-
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
-        planetConfig.setSize(new DecimalPosition(5120, 512));
+        planetConfig.setSize(new DecimalPosition(5000, 5000));
 
         setupTerrainTypeService(slopeConfigs, null, null, planetConfig, terrainSlopePositions, null, null);
     }
@@ -77,14 +63,29 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testBigSkewAreaSlope() {
-        setup(1, GameTestHelper.createTerrainSlopeCorner(100, 4000, null), GameTestHelper.createTerrainSlopeCorner(4000, 100, null), GameTestHelper.createTerrainSlopeCorner(4800, 800, null), GameTestHelper.createTerrainSlopeCorner(800, 4800, null));
+        setup(1,
+                GameTestHelper.createTerrainSlopeCorner(100, 4000, null),
+                GameTestHelper.createTerrainSlopeCorner(4000, 100, null),
+                GameTestHelper.createTerrainSlopeCorner(4800, 800, null),
+                GameTestHelper.createTerrainSlopeCorner(800, 4800, null));
 
         // showDisplay();
+
+        Assert.assertEquals(0.0,
+                getTerrainService().getSurfaceAccess().getInterpolatedZ(new DecimalPosition(1000, 2000)),
+                0);
+        Assert.assertEquals(20.0,
+                getTerrainService().getSurfaceAccess().getInterpolatedZ(new DecimalPosition(4000, 1000)),
+                0);
     }
 
     @Test
     public void testBigSkewWaterAreaSlope() {
-        setup(2, GameTestHelper.createTerrainSlopeCorner(100, 4000, null), GameTestHelper.createTerrainSlopeCorner(4000, 100, null), GameTestHelper.createTerrainSlopeCorner(4800, 800, null), GameTestHelper.createTerrainSlopeCorner(800, 4800, null));
+        setup(2,
+                GameTestHelper.createTerrainSlopeCorner(100, 4000, null),
+                GameTestHelper.createTerrainSlopeCorner(4000, 100, null),
+                GameTestHelper.createTerrainSlopeCorner(4800, 800, null),
+                GameTestHelper.createTerrainSlopeCorner(800, 4800, null));
 
         // showDisplay();
     }

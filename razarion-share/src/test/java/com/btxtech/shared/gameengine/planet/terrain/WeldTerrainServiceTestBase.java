@@ -32,7 +32,7 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
 
     protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs, List<WaterConfig> waterConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundConfig groundConfig) {
         StaticGameConfig staticGameConfig = FallbackConfig.setupStaticGameConfig();
-        if(groundConfig == null) {
+        if (groundConfig == null) {
             groundConfig = new GroundConfig();
         }
         staticGameConfig.setGroundConfigs(Collections.singletonList(groundConfig));
@@ -49,6 +49,9 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
         getTestNativeTerrainShapeAccess().setTerrainSlopeAndObjectPositions(terrainSlopePositions, terrainObjectPositions);
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
+        if (getAlarmService().hasAlarms()) {
+            throw new RuntimeException("Setup Terrain failed. Check AlarmService and Log");
+        }
     }
 
     protected TerrainShape getTerrainShape() {
