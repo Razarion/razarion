@@ -726,15 +726,15 @@ public class ServerTestHelper {
 
         // Land slope
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.setSlopeConfigId(SLOPE_LAND_CONFIG_ENTITY_1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(new TerrainSlopeCorner().setPosition(new DecimalPosition(50, 40)), new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 40)),
+        terrainSlopePositionLand.slopeConfigId(SLOPE_LAND_CONFIG_ENTITY_1);
+        terrainSlopePositionLand.polygon(Arrays.asList(new TerrainSlopeCorner().setPosition(new DecimalPosition(50, 40)), new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 40)),
                 new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 60)), new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 90)),
                 new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 110)), new TerrainSlopeCorner().setPosition(new DecimalPosition(50, 110))));
         terrainSlopePositions.add(terrainSlopePositionLand);
         // Water slope
         TerrainSlopePosition terrainSlopePositionWater = new TerrainSlopePosition();
-        terrainSlopePositionWater.setSlopeConfigId(SLOPE_WATER_CONFIG_ENTITY_2);
-        terrainSlopePositionWater.setPolygon(Arrays.asList(new TerrainSlopeCorner().setPosition(new DecimalPosition(64, 200)), new TerrainSlopeCorner().setPosition(new DecimalPosition(231, 200)),
+        terrainSlopePositionWater.slopeConfigId(SLOPE_WATER_CONFIG_ENTITY_2);
+        terrainSlopePositionWater.polygon(Arrays.asList(new TerrainSlopeCorner().setPosition(new DecimalPosition(64, 200)), new TerrainSlopeCorner().setPosition(new DecimalPosition(231, 200)),
                 new TerrainSlopeCorner().setPosition(new DecimalPosition(231, 256)), new TerrainSlopeCorner().setPosition(new DecimalPosition(151, 257)),
                 new TerrainSlopeCorner().setPosition(new DecimalPosition(239, 359)), new TerrainSlopeCorner().setPosition(new DecimalPosition(49, 360))));
         terrainSlopePositions.add(terrainSlopePositionWater);

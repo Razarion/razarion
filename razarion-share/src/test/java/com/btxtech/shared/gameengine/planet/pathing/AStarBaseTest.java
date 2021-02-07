@@ -60,17 +60,17 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         // Land slope 1
         TerrainSlopePosition terrainSlopePositionLand1 = new TerrainSlopePosition();
-        terrainSlopePositionLand1.setId(1);
-        terrainSlopePositionLand1.setSlopeConfigId(1);
-        terrainSlopePositionLand1.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
+        terrainSlopePositionLand1.id(1);
+        terrainSlopePositionLand1.slopeConfigId(1);
+        terrainSlopePositionLand1.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
                 GameTestHelper.createTerrainSlopeCorner(100, 60, 1), GameTestHelper.createTerrainSlopeCorner(100, 90, 1), // driveway
                 GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
         terrainSlopePositions.add(terrainSlopePositionLand1);
         // Land slope 2
         TerrainSlopePosition terrainSlopePositionLand2 = new TerrainSlopePosition();
-        terrainSlopePositionLand2.setId(2);
-        terrainSlopePositionLand2.setSlopeConfigId(1);
-        terrainSlopePositionLand2.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(165.39227716727615, 409.86546092796124, null),
+        terrainSlopePositionLand2.id(2);
+        terrainSlopePositionLand2.slopeConfigId(1);
+        terrainSlopePositionLand2.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(165.39227716727615, 409.86546092796124, null),
                 GameTestHelper.createTerrainSlopeCorner(178.39227716727615, 431.36546092796124, 1),
                 GameTestHelper.createTerrainSlopeCorner(200.39227716727615, 467.36546092796124, 1),
                 GameTestHelper.createTerrainSlopeCorner(218.89227716727615, 498.86546092796124, null),
@@ -79,9 +79,9 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         terrainSlopePositions.add(terrainSlopePositionLand2);
         // Water slope
         TerrainSlopePosition terrainSlopePositionWater = new TerrainSlopePosition();
-        terrainSlopePositionWater.setId(3);
-        terrainSlopePositionWater.setSlopeConfigId(2);
-        terrainSlopePositionWater.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(64, 200, null), GameTestHelper.createTerrainSlopeCorner(231, 200, null),
+        terrainSlopePositionWater.id(3);
+        terrainSlopePositionWater.slopeConfigId(2);
+        terrainSlopePositionWater.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(64, 200, null), GameTestHelper.createTerrainSlopeCorner(231, 200, null),
                 GameTestHelper.createTerrainSlopeCorner(231, 256, null), GameTestHelper.createTerrainSlopeCorner(151, 257, null), // driveway
                 GameTestHelper.createTerrainSlopeCorner(239, 359, null), GameTestHelper.createTerrainSlopeCorner(49, 360, null)));
         terrainSlopePositions.add(terrainSlopePositionWater);

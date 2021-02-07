@@ -40,9 +40,9 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigId(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(
+        terrainSlopePositionLand.id(1);
+        terrainSlopePositionLand.slopeConfigId(1);
+        terrainSlopePositionLand.polygon(Arrays.asList(
                 GameTestHelper.createTerrainSlopeCorner(50, 40, null),
                 GameTestHelper.createTerrainSlopeCorner(100, 40, null),
                 GameTestHelper.createTerrainSlopeCorner(100, 110, null),
@@ -75,9 +75,9 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigId(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
+        terrainSlopePositionLand.id(1);
+        terrainSlopePositionLand.slopeConfigId(1);
+        terrainSlopePositionLand.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         setupTerrainTypeService(slopeConfigs, null, null, null, terrainSlopePositions, null, null);
@@ -111,9 +111,9 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigId(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(200, 40, null), GameTestHelper.createTerrainSlopeCorner(200, 210, null), GameTestHelper.createTerrainSlopeCorner(50, 210, null)));
+        terrainSlopePositionLand.id(1);
+        terrainSlopePositionLand.slopeConfigId(1);
+        terrainSlopePositionLand.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(200, 40, null), GameTestHelper.createTerrainSlopeCorner(200, 210, null), GameTestHelper.createTerrainSlopeCorner(50, 210, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
@@ -144,9 +144,9 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition();
-        terrainSlopePosition.setId(1);
-        terrainSlopePosition.setSlopeConfigId(1);
-        terrainSlopePosition.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(120, 120, null), GameTestHelper.createTerrainSlopeCorner(260, 120, null), GameTestHelper.createTerrainSlopeCorner(260, 250, null), GameTestHelper.createTerrainSlopeCorner(120, 250, null)));
+        terrainSlopePosition.id(1);
+        terrainSlopePosition.slopeConfigId(1);
+        terrainSlopePosition.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(120, 120, null), GameTestHelper.createTerrainSlopeCorner(260, 120, null), GameTestHelper.createTerrainSlopeCorner(260, 250, null), GameTestHelper.createTerrainSlopeCorner(120, 250, null)));
         terrainSlopePositions.add(terrainSlopePosition);
 
         setupTerrainTypeService(slopeConfigs, null, null, null, terrainSlopePositions, null, null);

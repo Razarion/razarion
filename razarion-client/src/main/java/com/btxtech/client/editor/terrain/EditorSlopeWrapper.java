@@ -54,11 +54,11 @@ public class EditorSlopeWrapper {
     }
 
     public TerrainSlopePosition createTerrainSlopePositionNoId() {
-        return new TerrainSlopePosition().setSlopeConfigId(slopeId).setInverted(inverted).setEditorParentId(editorParentId).setPolygon(polygon.getCorners().stream().map(this::createTerrainSlopeCorner).collect(Collectors.toList()));
+        return new TerrainSlopePosition().slopeConfigId(slopeId).inverted(inverted).editorParentId(editorParentId).polygon(polygon.getCorners().stream().map(this::createTerrainSlopeCorner).collect(Collectors.toList()));
     }
 
     public TerrainSlopePosition createTerrainSlopePosition() {
-        return new TerrainSlopePosition().setId(originalId).setSlopeConfigId(slopeId).setInverted(inverted).setPolygon(polygon.getCorners().stream().map(this::createTerrainSlopeCorner).collect(Collectors.toList()));
+        return new TerrainSlopePosition().id(originalId).slopeConfigId(slopeId).inverted(inverted).polygon(polygon.getCorners().stream().map(this::createTerrainSlopeCorner).collect(Collectors.toList()));
     }
 
     private TerrainSlopeCorner createTerrainSlopeCorner(DecimalPosition position) {

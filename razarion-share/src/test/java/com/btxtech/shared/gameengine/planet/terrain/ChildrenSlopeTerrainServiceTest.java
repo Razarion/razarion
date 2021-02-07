@@ -27,16 +27,16 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         List<TerrainSlopePosition> children = new ArrayList<>();
 
         TerrainSlopePosition child = new TerrainSlopePosition();
-        child.setId(2);
-        child.setSlopeConfigId(SLOPE_CONFIG_ID_1);
-        child.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(100, 90, null), GameTestHelper.createTerrainSlopeCorner(170, 90, null), GameTestHelper.createTerrainSlopeCorner(170, 140, null), GameTestHelper.createTerrainSlopeCorner(100, 140, null)));
+        child.id(2);
+        child.slopeConfigId(SLOPE_CONFIG_ID_1);
+        child.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(100, 90, null), GameTestHelper.createTerrainSlopeCorner(170, 90, null), GameTestHelper.createTerrainSlopeCorner(170, 140, null), GameTestHelper.createTerrainSlopeCorner(100, 140, null)));
         children.add(child);
 
         TerrainSlopePosition parent = new TerrainSlopePosition();
-        parent.setId(1);
-        parent.setSlopeConfigId(SLOPE_CONFIG_ID_1);
-        parent.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(220, 40, null), GameTestHelper.createTerrainSlopeCorner(220, 200, null), GameTestHelper.createTerrainSlopeCorner(50, 200, null)));
-        parent.setChildren(children);
+        parent.id(1);
+        parent.slopeConfigId(SLOPE_CONFIG_ID_1);
+        parent.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(220, 40, null), GameTestHelper.createTerrainSlopeCorner(220, 200, null), GameTestHelper.createTerrainSlopeCorner(50, 200, null)));
+        parent.children(children);
 
         setup(parent);
         // showDisplay();
@@ -51,18 +51,18 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         List<TerrainSlopePosition> children = new ArrayList<>();
 
         TerrainSlopePosition child = new TerrainSlopePosition();
-        child.setId(2);
-        child.setSlopeConfigId(SLOPE_CONFIG_ID_1);
-        child.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(100, 90, null), GameTestHelper.createTerrainSlopeCorner(170, 90, null),
+        child.id(2);
+        child.slopeConfigId(SLOPE_CONFIG_ID_1);
+        child.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(100, 90, null), GameTestHelper.createTerrainSlopeCorner(170, 90, null),
                 GameTestHelper.createTerrainSlopeCorner(170, 130, DRIVEWAY_ID_1), GameTestHelper.createTerrainSlopeCorner(170, 200, DRIVEWAY_ID_1),
                 GameTestHelper.createTerrainSlopeCorner(170, 240, null), GameTestHelper.createTerrainSlopeCorner(100, 240, null)));
         children.add(child);
 
         TerrainSlopePosition parent = new TerrainSlopePosition();
-        parent.setId(1);
-        parent.setSlopeConfigId(SLOPE_CONFIG_ID_1);
-        parent.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(320, 40, null), GameTestHelper.createTerrainSlopeCorner(320, 300, null), GameTestHelper.createTerrainSlopeCorner(50, 300, null)));
-        parent.setChildren(children);
+        parent.id(1);
+        parent.slopeConfigId(SLOPE_CONFIG_ID_1);
+        parent.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(320, 40, null), GameTestHelper.createTerrainSlopeCorner(320, 300, null), GameTestHelper.createTerrainSlopeCorner(50, 300, null)));
+        parent.children(children);
 
         setup(parent);
         // showDisplay();

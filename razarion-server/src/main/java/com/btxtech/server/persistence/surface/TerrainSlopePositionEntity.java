@@ -45,11 +45,11 @@ public class TerrainSlopePositionEntity {
     }
 
     public TerrainSlopePosition toTerrainSlopePosition() {
-        TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition().setId(id).setSlopeConfigId(slopeConfigEntity.getId()).setInverted(inverted);
+        TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition().id(id).slopeConfigId(slopeConfigEntity.getId()).inverted(inverted);
         if (children != null && !children.isEmpty()) {
-            terrainSlopePosition.setChildren(children.stream().map(TerrainSlopePositionEntity::toTerrainSlopePosition).collect(Collectors.toList()));
+            terrainSlopePosition.children(children.stream().map(TerrainSlopePositionEntity::toTerrainSlopePosition).collect(Collectors.toList()));
         }
-        return terrainSlopePosition.setPolygon(polygon.stream().map(TerrainSlopeCornerEntity::toTerrainSlopeCorner).collect(Collectors.toList()));
+        return terrainSlopePosition.polygon(polygon.stream().map(TerrainSlopeCornerEntity::toTerrainSlopeCorner).collect(Collectors.toList()));
     }
 
     public void setSlopeConfigEntity(SlopeConfigEntity slopeConfigEntity) {

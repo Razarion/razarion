@@ -62,11 +62,11 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
     private List<TerrainSlopePosition> setupSlope(int slopeConfigId, boolean inverted, List<TerrainSlopePosition> children, TerrainSlopeCorner... slopePolygon) {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition();
-        terrainSlopePosition.setId(slopeConfigId);
-        terrainSlopePosition.setSlopeConfigId(slopeConfigId);
-        terrainSlopePosition.setPolygon(Arrays.asList(slopePolygon));
-        terrainSlopePosition.setChildren(children);
-        terrainSlopePosition.setInverted(inverted);
+        terrainSlopePosition.id(slopeConfigId);
+        terrainSlopePosition.slopeConfigId(slopeConfigId);
+        terrainSlopePosition.polygon(Arrays.asList(slopePolygon));
+        terrainSlopePosition.children(children);
+        terrainSlopePosition.inverted(inverted);
         terrainSlopePositions.add(terrainSlopePosition);
         return terrainSlopePositions;
     }

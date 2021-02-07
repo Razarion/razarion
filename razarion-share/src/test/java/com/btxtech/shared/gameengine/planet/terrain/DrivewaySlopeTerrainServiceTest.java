@@ -149,9 +149,9 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigId(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(slopePolygon));
+        terrainSlopePositionLand.id(1);
+        terrainSlopePositionLand.slopeConfigId(1);
+        terrainSlopePositionLand.polygon(Arrays.asList(slopePolygon));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();

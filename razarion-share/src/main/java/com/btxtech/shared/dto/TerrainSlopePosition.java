@@ -1,6 +1,7 @@
 package com.btxtech.shared.dto;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Beat
@@ -18,53 +19,73 @@ public class TerrainSlopePosition {
         return id;
     }
 
-    public TerrainSlopePosition setId(int id) {
-        this.id = id;
-        return this;
-    }
-
     public int getSlopeConfigId() {
         return slopeConfigId;
     }
 
-    public TerrainSlopePosition setSlopeConfigId(int slopeConfigId) {
+    public void setSlopeConfigId(int slopeConfigId) {
         this.slopeConfigId = slopeConfigId;
-        return this;
     }
 
     public boolean isInverted() {
         return inverted;
     }
 
-    public TerrainSlopePosition setInverted(boolean inverted) {
+    public void setInverted(boolean inverted) {
         this.inverted = inverted;
-        return this;
     }
 
     public List<TerrainSlopeCorner> getPolygon() {
         return polygon;
     }
 
-    public TerrainSlopePosition setPolygon(List<TerrainSlopeCorner> polygon) {
+    public void setPolygon(List<TerrainSlopeCorner> polygon) {
         this.polygon = polygon;
-        return this;
     }
 
     public List<TerrainSlopePosition> getChildren() {
         return children;
     }
 
-    public TerrainSlopePosition setChildren(List<TerrainSlopePosition> children) {
+    public void setChildren(List<TerrainSlopePosition> children) {
         this.children = children;
-        return this;
     }
 
     public Integer getEditorParentId() {
         return editorParentId;
     }
 
-    public TerrainSlopePosition setEditorParentId(Integer editorParentId) {
+    public void setEditorParentId(Integer editorParentId) {
         this.editorParentId = editorParentId;
+    }
+
+    public TerrainSlopePosition id(Integer id) {
+        this.id = id;
+        return this;
+    }
+
+    public TerrainSlopePosition slopeConfigId(int slopeConfigId) {
+        setSlopeConfigId(slopeConfigId);
+        return this;
+    }
+
+    public TerrainSlopePosition inverted(boolean inverted) {
+        setInverted(inverted);
+        return this;
+    }
+
+    public TerrainSlopePosition polygon(List<TerrainSlopeCorner> polygon) {
+        setPolygon(polygon);
+        return this;
+    }
+
+    public TerrainSlopePosition children(List<TerrainSlopePosition> children) {
+        setChildren(children);
+        return this;
+    }
+
+    public TerrainSlopePosition editorParentId(Integer editorParentId) {
+        setEditorParentId(editorParentId);
         return this;
     }
 
@@ -79,11 +100,12 @@ public class TerrainSlopePosition {
 
         TerrainSlopePosition that = (TerrainSlopePosition) o;
 
-        return id != null ? id.equals(that.id) : that.id == null;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
 }

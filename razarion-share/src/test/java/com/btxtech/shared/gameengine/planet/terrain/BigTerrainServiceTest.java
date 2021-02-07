@@ -52,9 +52,9 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigId(slopeConfigId);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(
+        terrainSlopePositionLand.id(1);
+        terrainSlopePositionLand.slopeConfigId(slopeConfigId);
+        terrainSlopePositionLand.polygon(Arrays.asList(
                 GameTestHelper.createTerrainSlopeCorner(100, 4000, null),
                 GameTestHelper.createTerrainSlopeCorner(4000, 100, null),
                 GameTestHelper.createTerrainSlopeCorner(4800, 800, null),
