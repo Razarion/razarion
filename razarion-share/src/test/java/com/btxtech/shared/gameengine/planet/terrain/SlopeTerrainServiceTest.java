@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,29 +26,24 @@ import java.util.List;
 public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testSlope() {
-        List<SlopeConfig> slopeConfigs = new ArrayList<>();
-        SlopeConfig slopeConfigLand = new SlopeConfig();
-        slopeConfigLand.id(1);
-        slopeConfigLand.setHorizontalSpace(5);
-        slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
-        List<SlopeShape> slopeShapes = new ArrayList<>();
-        slopeShapes.add(new SlopeShape().slopeFactor(1));
-        slopeShapes.add(new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1));
-        slopeShapes.add(new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7));
-        slopeShapes.add(new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7));
-        slopeConfigLand.setSlopeShapes(slopeShapes);
-        slopeConfigs.add(slopeConfigLand);
+        List<SlopeConfig> slopeConfigs = Collections.singletonList(new SlopeConfig()
+                .id(1)
+                .horizontalSpace(5)
+                .outerLineGameEngine(1)
+                .innerLineGameEngine(6)
+                .slopeShapes(Arrays.asList(new SlopeShape().slopeFactor(1),
+                        new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
+                        new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
+                        new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7))));
 
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.id(1);
-        terrainSlopePositionLand.slopeConfigId(1);
-        terrainSlopePositionLand.polygon(Arrays.asList(
-                GameTestHelper.createTerrainSlopeCorner(50, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(100, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(100, 110, null),
-                GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
-        terrainSlopePositions.add(terrainSlopePositionLand);
+        List<TerrainSlopePosition> terrainSlopePositions = Collections.singletonList(new TerrainSlopePosition()
+                .id(1)
+                .slopeConfigId(1)
+                .polygon(Arrays.asList(
+                        GameTestHelper.createTerrainSlopeCorner(50, 40, null),
+                        GameTestHelper.createTerrainSlopeCorner(100, 40, null),
+                        GameTestHelper.createTerrainSlopeCorner(100, 110, null),
+                        GameTestHelper.createTerrainSlopeCorner(50, 110, null))));
 
         setupTerrainTypeService(slopeConfigs, null, null, null, terrainSlopePositions, null, null);
 
