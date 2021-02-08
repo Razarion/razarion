@@ -65,7 +65,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 new TerrainObjectPosition().id(2).terrainObjectId(3).position(new DecimalPosition(100, 40)).scale(new Vertex(2, 2, 2)).rotation(new Vertex(0, 0, 0)));
 
 
-        setupTerrainTypeService(slopeConfigs, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);
 
         // showDisplay();
 

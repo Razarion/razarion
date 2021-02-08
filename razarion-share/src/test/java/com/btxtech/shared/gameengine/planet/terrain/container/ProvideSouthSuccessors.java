@@ -60,7 +60,7 @@ public class ProvideSouthSuccessors extends WeldTerrainServiceTestBase {
                 new TerrainObjectPosition().terrainObjectId(3).position(new DecimalPosition(70, 82))
         );
 
-        setupTerrainTypeService(slopeConfigs, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);
     }
 
     @Test

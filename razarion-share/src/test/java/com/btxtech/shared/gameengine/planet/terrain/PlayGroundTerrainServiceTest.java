@@ -93,7 +93,7 @@ public class PlayGroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(320, 320));
 
-        setupTerrainTypeService(slopeConfigs, waterConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, waterConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions, null, null);
     }
 
 }
