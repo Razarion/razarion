@@ -120,10 +120,6 @@ public class Polygon2D {
         return isLineCrossing(other.getLines());
     }
 
-    public boolean touches(Polygon2D other) {
-        return isLineCrossing(other) || other.isOneCornerInside(getCorners());
-    }
-
     public boolean isLineCrossing(Collection<Line> otherLines) {
         for (Line line : lines) {
             for (Line otherLine : otherLines) {

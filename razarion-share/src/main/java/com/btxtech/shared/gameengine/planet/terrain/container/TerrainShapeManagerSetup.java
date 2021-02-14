@@ -146,8 +146,8 @@ public class TerrainShapeManagerSetup {
         Collections.reverse(tmpInnerGameEnginePolygon);
         ObstacleFactory.addObstacles(terrainShape, slope);
         SlopeContext slopeContext = new SlopeContext(slope);
-        SlopeGroundConnectorFactory.prepareContextGroundSlopeConnection(slope.getInnerRenderEnginePolygon().getCorners(), false, slopeContext);
-        SlopeGroundConnectorFactory.prepareContextGroundSlopeConnection(slope.getOuterRenderEnginePolygon().getCorners(), true, slopeContext);
+        SlopeGroundConnectionContextHelper.prepareContextGroundSlopeConnection(slope.getInnerRenderEnginePolygon().getCorners(), false, slopeContext);
+        SlopeGroundConnectionContextHelper.prepareContextGroundSlopeConnection(slope.getOuterRenderEnginePolygon().getCorners(), true, slopeContext);
         if (slope.hasWater()) {
             double waterLevel = terrainTypeService.getWaterConfig(slope.getSlopeConfig().getWaterConfigId()).getWaterLevel();
             // Setup TerrainType (game engine)
@@ -161,10 +161,8 @@ public class TerrainShapeManagerSetup {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     terrainShapeNode.setRenderHideGround(true);
                     List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
-                    for (List<DecimalPosition> outerPiercing : outerPiercings) {
-                        Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight(), false, null, 0), null);
-                    }
+                    Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                    terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, outerPiercings, slope.getOuterGroundHeight(), false, null, 0), null);
                 }
                 // Setup inner water
                 for (Index nodeIndex : outerRasterizer.getInnerTiles()) {
@@ -186,11 +184,9 @@ public class TerrainShapeManagerSetup {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     terrainShapeNode.setRenderHideGround(true);
                     List<List<DecimalPosition>> innerPiercings = slopeContext.getInnerPiercings(nodeIndex);
-                    for (List<DecimalPosition> innerPiercing : innerPiercings) {
-                        Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                        terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getOuterGroundHeight() + waterLevel, false, null, 0), slope.getSlopeConfig().getId());
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
-                    }
+                    Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                    terrainShapeNode.addWaterSegments(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, innerPiercings, slope.getOuterGroundHeight() + waterLevel, false, null, 0), slope.getSlopeConfig().getId());
+                    terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, innerPiercings, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
                 }
 
             } else {
@@ -203,11 +199,9 @@ public class TerrainShapeManagerSetup {
                     List<List<DecimalPosition>> innerPiercings = slopeContext.getInnerPiercings(nodeIndex);
                     if (innerPiercings != null) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                        for (List<DecimalPosition> innerPiercing : innerPiercings) {
-                            Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getOuterGroundHeight() + waterLevel, true, null, 0), slope.getSlopeConfig().getId());
-                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
-                        }
+                        Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                        terrainShapeNode.addWaterSegments(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, innerPiercings, slope.getOuterGroundHeight() + waterLevel, true, null, 0), slope.getSlopeConfig().getId());
+                        terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, innerPiercings, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
                     }
                 }
                 for (Index nodeIndex : innerRasterizer.getInnerTiles()) {
@@ -229,12 +223,10 @@ public class TerrainShapeManagerSetup {
                 terrainShapeNode.setRenderHideGround(true);
                 // Outer slope ground connection
                 List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
-                for (List<DecimalPosition> outerPiercing : outerPiercings) {
                     Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
                     terrainShapeNode.addGroundSlopeConnections(
-                            setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight(), false, null, 0),
+                            SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, outerPiercings, slope.getOuterGroundHeight(), false, null, 0),
                             parent != null ? parent.getSlopeConfig().getGroundConfigId() : null);
-                }
             }
             for (Index nodeIndex : outerRasterizer.getInnerTiles()) {
                 TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
@@ -254,8 +246,8 @@ public class TerrainShapeManagerSetup {
                     List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
                     if (breakingGroundPiercing != null) {
                         terrainShapeNode.setDrivewayBreakingLine(true);
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getGroundConfigId());
+                        terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, Collections.singletonList(breakingGroundPiercing), slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
+                        terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, Collections.singletonList(fractalDriveway.setupPiercingLine(terrainRect, false)), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getGroundConfigId());
                     }
                     terrainShapeNode.setInnerGroundHeight(slope.getOuterGroundHeight()); // TODO replace with innerGroundHeight?
                 }
@@ -278,18 +270,14 @@ public class TerrainShapeManagerSetup {
                     // Inner slope ground connection regarding driveway break line
                     List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
                     if (breakingGroundPiercing != null) {
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getGroundConfigId());
+                        terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, Collections.singletonList(breakingGroundPiercing), slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
+                        terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, Collections.singletonList(fractalDriveway.setupPiercingLine(terrainRect, false)), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getGroundConfigId());
                     } else {
-                        for (List<DecimalPosition> innerPiercing : innerPiercings) {
-                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getGroundConfigId());
-                        }
+                        terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, innerPiercings, slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getGroundConfigId());
                     }
                 } else {
                     // Inner slope ground connection
-                    for (List<DecimalPosition> innerPiercing : innerPiercings) {
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
-                    }
+                    terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, innerPiercings, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
                 }
             }
         }
@@ -469,263 +457,6 @@ public class TerrainShapeManagerSetup {
         throw new IllegalStateException("TerrainShapeSetup.findFractionalSlope() end not found");
     }
 
-    private List<Vertex> setupSlopeGroundConnection(Rectangle2D absoluteRect, List<DecimalPosition> piercingLine, double groundHeight, boolean water, Driveway driveway, double drivewayBaseHeight) {
-        if (water) {
-            piercingLine = new ArrayList<>(piercingLine);
-            Collections.reverse(piercingLine);
-        }
-        List<Vertex> polygon = new ArrayList<>();
-
-        RectanglePiercing startRectanglePiercing;
-        RectanglePiercing endRectanglePiercing;
-        if (piercingLine.size() == 2) {
-            // This is a left out node
-            Line crossLine = new Line(piercingLine.get(0), piercingLine.get(1));
-            Collection<DecimalPosition> crossPoints = absoluteRect.getCrossPointsLine(crossLine);
-            if (crossPoints.size() == 1) {
-                // Goes exactly through the corner -> return. This is may wrong
-                return null;
-            } else if (crossPoints.size() != 2) {
-                throw new IllegalStateException("Exactly two cross points expected: " + crossPoints.size());
-            }
-            DecimalPosition start = DecimalPosition.getNearestPoint(piercingLine.get(0), crossPoints);
-            startRectanglePiercing = getRectanglePiercing(absoluteRect, start);
-            DecimalPosition end = DecimalPosition.getFurthestPoint(piercingLine.get(0), crossPoints);
-            endRectanglePiercing = getRectanglePiercing(absoluteRect, end);
-        } else {
-            Line startLine = new Line(piercingLine.get(0), piercingLine.get(1));
-            startRectanglePiercing = getRectanglePiercing(absoluteRect, startLine, piercingLine.get(0));
-
-            Line endLine = new Line(piercingLine.get(piercingLine.size() - 2), piercingLine.get(piercingLine.size() - 1));
-            endRectanglePiercing = getRectanglePiercing(absoluteRect, endLine, piercingLine.get(piercingLine.size() - 1));
-        }
-
-        addOnlyXyUnique(polygon, toVertexSlope(startRectanglePiercing.getCross(), driveway, drivewayBaseHeight, groundHeight));
-        Side side = startRectanglePiercing.getSide();
-        if (startRectanglePiercing.getSide() == endRectanglePiercing.getSide()) {
-            if (!startRectanglePiercing.getSide().isBefore(startRectanglePiercing.getCross(), endRectanglePiercing.getCross())) {
-                addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), driveway, drivewayBaseHeight, groundHeight, water));
-                side = side.getSuccessor();
-            }
-        }
-
-        while (side != endRectanglePiercing.side) {
-            addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), driveway, drivewayBaseHeight, groundHeight, water));
-            side = side.getSuccessor();
-        }
-        addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross(), driveway, drivewayBaseHeight, groundHeight));
-
-        for (int i = piercingLine.size() - 2; i > 0; i--) {
-            addOnlyXyUnique(polygon, toVertexSlope(piercingLine.get(i), driveway, drivewayBaseHeight, groundHeight));
-        }
-
-        if (polygon.size() < 3) {
-            return null;
-        }
-        return polygon;
-    }
-
-    private void addOnlyXyUnique(List<Vertex> list, Vertex vertex) {
-        if (list.isEmpty()) {
-            list.add(vertex);
-            return;
-        }
-        DecimalPosition decimalPosition = vertex.toXY();
-        for (Vertex existing : list) {
-            if (existing.toXY().equals(decimalPosition)) {
-                return;
-            }
-        }
-        list.add(vertex);
-    }
-
-    private Vertex toVertexGround(DecimalPosition position, Driveway driveway, double drivewayBaseHeight, double groundHeight, boolean water) {
-        if (water) {
-            return new Vertex(position, groundHeight);
-        } else {
-            double height;
-            if (driveway != null) {
-                height = driveway.getInterpolateDrivewayHeight(position) + drivewayBaseHeight;
-            } else {
-                height = groundHeight;
-            }
-            return new Vertex(position, height);
-        }
-    }
-
-    private Vertex toVertexSlope(DecimalPosition position, Driveway driveway, double drivewayBaseHeight, double groundHeight) {
-        double height;
-        if (driveway != null) {
-            height = driveway.getInterpolateDrivewayHeight(position) + drivewayBaseHeight;
-        } else {
-            height = groundHeight;
-        }
-        return new Vertex(position, height);
-    }
-
-
-    private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, DecimalPosition crossPoint) {
-        if (rectangle.lineW().isPointInLineInclusive(crossPoint)) {
-            return new RectanglePiercing(crossPoint, Side.WEST);
-        }
-        if (rectangle.lineS().isPointInLineInclusive(crossPoint)) {
-            return new RectanglePiercing(crossPoint, Side.SOUTH);
-        }
-        if (rectangle.lineE().isPointInLineInclusive(crossPoint)) {
-            return new RectanglePiercing(crossPoint, Side.EAST);
-        }
-        if (rectangle.lineN().isPointInLineInclusive(crossPoint)) {
-            return new RectanglePiercing(crossPoint, Side.NORTH);
-        }
-        throw new IllegalArgumentException("getRectanglePiercing should not happen 2");
-    }
-
-    private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, Line line, DecimalPosition reference) {
-        int crossPoints = rectangle.getCrossPointsLine(line).size();
-        if (crossPoints == 0) {
-            throw new IllegalArgumentException("getRectanglePiercing should not happen 1");
-        }
-        boolean ambiguous = crossPoints > 1;
-
-        double minDistance = Double.MAX_VALUE;
-        DecimalPosition bestFitCrossPoint = null;
-        Side bestFitSide = null;
-        DecimalPosition crossPoint = rectangle.lineW().getCrossInclusive(line);
-        if (crossPoint != null) {
-            if (ambiguous) {
-                double distance = crossPoint.getDistance(reference);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    bestFitCrossPoint = crossPoint;
-                    bestFitSide = Side.WEST;
-                }
-            } else {
-                return new RectanglePiercing(crossPoint, Side.WEST);
-            }
-        }
-        crossPoint = rectangle.lineS().getCrossInclusive(line);
-        if (crossPoint != null) {
-            if (ambiguous) {
-                double distance = crossPoint.getDistance(reference);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    bestFitCrossPoint = crossPoint;
-                    bestFitSide = Side.SOUTH;
-                }
-            } else {
-                return new RectanglePiercing(crossPoint, Side.SOUTH);
-            }
-        }
-        crossPoint = rectangle.lineE().getCrossInclusive(line);
-        if (crossPoint != null) {
-            if (ambiguous) {
-                double distance = crossPoint.getDistance(reference);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    bestFitCrossPoint = crossPoint;
-                    bestFitSide = Side.EAST;
-                }
-            } else {
-                return new RectanglePiercing(crossPoint, Side.EAST);
-            }
-        }
-        crossPoint = rectangle.lineN().getCrossInclusive(line);
-        if (crossPoint != null) {
-            if (ambiguous) {
-                double distance = crossPoint.getDistance(reference);
-                if (distance < minDistance) {
-                    bestFitCrossPoint = crossPoint;
-                    bestFitSide = Side.NORTH;
-                }
-            } else {
-                return new RectanglePiercing(crossPoint, Side.NORTH);
-            }
-        }
-        if (ambiguous) {
-            return new RectanglePiercing(bestFitCrossPoint, bestFitSide);
-        } else {
-            throw new IllegalArgumentException("getRectanglePiercing should not happen 2");
-        }
-    }
-
-    public static class RectanglePiercing {
-
-        private DecimalPosition cross;
-        private Side side;
-
-        public RectanglePiercing(DecimalPosition cross, Side side) {
-            this.cross = cross;
-            this.side = side;
-        }
-
-        public DecimalPosition getCross() {
-            return cross;
-        }
-
-        public Side getSide() {
-            return side;
-        }
-    }
-
-
-    public enum Side {
-        NORTH {
-            @Override
-            boolean isBefore(DecimalPosition position1, DecimalPosition position2) {
-                return position1.getX() > position2.getX();
-            }
-        },
-        WEST {
-            @Override
-            boolean isBefore(DecimalPosition position1, DecimalPosition position2) {
-                return position1.getY() > position2.getY();
-            }
-        },
-        SOUTH {
-            @Override
-            boolean isBefore(DecimalPosition position1, DecimalPosition position2) {
-                return position1.getX() < position2.getX();
-            }
-        },
-        EAST {
-            @Override
-            boolean isBefore(DecimalPosition position1, DecimalPosition position2) {
-                return position1.getY() < position2.getY();
-            }
-        };
-
-        Side getSuccessor() {
-            switch (this) {
-                case NORTH:
-                    return WEST;
-                case WEST:
-                    return SOUTH;
-                case SOUTH:
-                    return EAST;
-                case EAST:
-                    return NORTH;
-                default:
-                    throw new IllegalArgumentException("Side don't know how to handle: " + this);
-            }
-        }
-
-        abstract boolean isBefore(DecimalPosition position1, DecimalPosition position2);
-    }
-
-    public DecimalPosition getSuccessorCorner(Rectangle2D rectangle, Side side) {
-        switch (side) {
-            case NORTH:
-                return rectangle.cornerTopLeft();
-            case WEST:
-                return rectangle.cornerBottomLeft();
-            case SOUTH:
-                return rectangle.cornerBottomRight();
-            case EAST:
-                return rectangle.cornerTopRight();
-            default:
-                throw new IllegalArgumentException("getCorner: don't know how to handle side: " + side);
-        }
-    }
 
     private void fillInRenderTerrainObject(Map<Index, MapList<Integer, TerrainObjectPosition>> renderTerrainObjects) {
         renderTerrainObjects.forEach((tileIndex, terrainObjectGroup) -> {

@@ -74,6 +74,40 @@ public class TestHelper {
         assertVertex(message, expected, actual);
     }
 
+    public static void assertVertices(List<Vertex> expected, List<Vertex> actual) {
+        if (expected == null && actual == null) {
+            return;
+        } else if (expected != null && actual == null) {
+            Assert.fail("Expected is: " + expected + ". Actual is null");
+        } else if (expected == null) {
+            Assert.fail("Expected is null. Actual: " + actual);
+        }
+        Assert.assertEquals("Size is not same", expected.size(), actual.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertVertex("At position: " + i + ".", expected.get(i), actual.get(i));
+        }
+    }
+
+    public static void assertPolygonsIgnoreOrder(List<List<Vertex>> expecteds, List<List<Vertex>> actuals) {
+        for (int i = 0; i < expecteds.size(); i++) {
+            assertVerticesIgnoreOrder(expecteds.get(i), actuals.get(i));
+        }
+    }
+
+    public static void assertVerticesIgnoreOrder(List<Vertex> expected, List<Vertex> actual) {
+        List<Vertex> actualCopy = new ArrayList<>(actual);
+        for (int i = 0; i < actual.size(); i++) {
+            try {
+                assertVertices(expected, actualCopy);
+                return;
+            } catch (AssertionError assertionError) {
+                // Ignore
+            }
+            actualCopy.add(actualCopy.remove(0));
+        }
+        Assert.fail();
+    }
+
     public static void assertVertex(String message, Vertex expected, Vertex actual) {
         Assert.assertEquals(message, expected.getX(), actual.getX(), 0.001);
         Assert.assertEquals(message, expected.getY(), actual.getY(), 0.001);

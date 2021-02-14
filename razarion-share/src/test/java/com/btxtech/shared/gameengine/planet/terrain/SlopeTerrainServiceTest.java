@@ -56,25 +56,26 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testSmallSlope() {
-        List<SlopeConfig> slopeConfigs = new ArrayList<>();
-        SlopeConfig slopeConfigLand = new SlopeConfig();
-        slopeConfigLand.id(1);
-        slopeConfigLand.setHorizontalSpace(5);
-        slopeConfigLand.setOuterLineGameEngine(0.1).setInnerLineGameEngine(0.2);
-        List<SlopeShape> slopeShapes = new ArrayList<>();
-        slopeShapes.add(new SlopeShape().slopeFactor(1));
-        slopeShapes.add(new SlopeShape().position(new DecimalPosition(0.1, 5)).slopeFactor(1));
-        slopeShapes.add(new SlopeShape().position(new DecimalPosition(0.2, 10)).slopeFactor(0.7));
-        slopeShapes.add(new SlopeShape().position(new DecimalPosition(0.3, 20)).slopeFactor(0.7));
-        slopeConfigLand.setSlopeShapes(slopeShapes);
-        slopeConfigs.add(slopeConfigLand);
+        List<SlopeConfig> slopeConfigs = Collections.singletonList(new SlopeConfig()
+                .id(1)
+                .horizontalSpace(5)
+                .outerLineGameEngine(0.1)
+                .innerLineGameEngine(0.2)
+                .slopeShapes(Arrays.asList(
+                        new SlopeShape().slopeFactor(1),
+                        new SlopeShape().position(new DecimalPosition(0.1, 5)).slopeFactor(1),
+                        new SlopeShape().position(new DecimalPosition(0.2, 10)).slopeFactor(0.7),
+                        new SlopeShape().position(new DecimalPosition(0.3, 20)).slopeFactor(0.7))));
 
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.id(1);
-        terrainSlopePositionLand.slopeConfigId(1);
-        terrainSlopePositionLand.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
-        terrainSlopePositions.add(terrainSlopePositionLand);
+        List<TerrainSlopePosition> terrainSlopePositions = Collections.singletonList(new TerrainSlopePosition()
+                .id(1)
+                .slopeConfigId(1)
+                .polygon(Arrays.asList(
+                        GameTestHelper.createTerrainSlopeCorner(50, 40, null),
+                        GameTestHelper.createTerrainSlopeCorner(100, 40, null),
+                        GameTestHelper.createTerrainSlopeCorner(100, 110, null),
+                        GameTestHelper.createTerrainSlopeCorner(76, 130, null),
+                        GameTestHelper.createTerrainSlopeCorner(50, 110, null))));
 
         setupTerrainTypeService(slopeConfigs, null, null, null, null, terrainSlopePositions, null, null);
 
@@ -82,7 +83,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         AssertTerrainShape.assertTerrainShape(getClass(), "testSmallSlopeShape.json", getTerrainShape());
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testSmallSlopeHNT.json");
-        AssertTerrainTile.assertTerrainTile(getClass(), "testSmallSlopeTile.json", generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)));
+        AssertTerrainTile.assertTerrainTile(getClass(), "testSmallSlopeTile.json", generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)), true);
     }
 
     @Test

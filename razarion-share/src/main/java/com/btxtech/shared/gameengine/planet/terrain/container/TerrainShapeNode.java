@@ -156,24 +156,24 @@ public class TerrainShapeNode {
         this.gameEngineHeight = gameEngineHeight;
     }
 
-    public void addGroundSlopeConnections(List<Vertex> groundSlopeConnection, Integer groundId) {
-        if (groundSlopeConnection == null) {
+    public void addGroundSlopeConnections(List<List<Vertex>> groundSlopeConnections, Integer groundId) {
+        if (groundSlopeConnections == null || groundSlopeConnections.isEmpty()) {
             return;
         }
-        if (groundSlopeConnections == null) {
-            groundSlopeConnections = new HashMap<>();
+        if (this.groundSlopeConnections == null) {
+            this.groundSlopeConnections = new HashMap<>();
         }
-        groundSlopeConnections.computeIfAbsent(groundId, integer -> new ArrayList<>()).add(groundSlopeConnection);
+        this.groundSlopeConnections.computeIfAbsent(groundId, integer -> new ArrayList<>()).addAll(groundSlopeConnections);
     }
 
-    public void addWaterSegments(List<Vertex> waterSegment, int slopeId) {
-        if (waterSegment == null) {
+    public void addWaterSegments(List<List<Vertex>> waterSegments, int slopeId) {
+        if (waterSegments == null || waterSegments.isEmpty()) {
             return;
         }
-        if (waterSegments == null) {
-            waterSegments = new HashMap<>();
+        if (this.waterSegments == null) {
+            this.waterSegments = new HashMap<>();
         }
-        waterSegments.computeIfAbsent(slopeId, integer -> new ArrayList<>()).add(waterSegment);
+        this.waterSegments.computeIfAbsent(slopeId, integer -> new ArrayList<>()).addAll(waterSegments);
     }
 
     public void setRenderGroundId(Integer renderGroundId) {

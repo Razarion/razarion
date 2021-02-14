@@ -54,6 +54,8 @@ public class RestClientHelper {
         System.out.println("List<SlopeConfig> slopeConfigs = Collections.singletonList(new SlopeConfig()");
         System.out.println("         .id(" + slopeConfig.getId() + ")");
         System.out.println("         .horizontalSpace(" + slopeConfig.getHorizontalSpace() + ")");
+        System.out.println("         .groundConfigId(" + slopeConfig.getGroundConfigId() + ")");
+        System.out.println("         .waterConfigId(" + slopeConfig.getWaterConfigId() + ")");
         System.out.println("         .outerLineGameEngine(" + slopeConfig.getOuterLineGameEngine() + ")");
         System.out.println("         .innerLineGameEngine(" + slopeConfig.getInnerLineGameEngine() + ")");
         System.out.println("         .slopeShapes(Arrays.asList(");

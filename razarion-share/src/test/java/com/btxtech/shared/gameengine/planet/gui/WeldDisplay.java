@@ -32,10 +32,10 @@ public class WeldDisplay extends Application {
         Parent root = loader.load();
         stage.setTitle("Test Weld Display");
         stage.setScene(new Scene(root));
-//        stage.setX(-1279);
-//        stage.setY(182);
-        stage.setWidth(1277);
-        stage.setHeight(1016);
+        stage.setX(0);
+        stage.setY(0);
+        stage.setWidth(1600);
+        stage.setHeight(1400);
         stage.show();
         stage.setOnCloseRequest(we -> System.out.println("Stage is closing. Windows position: " + stage.getX() + ":" + stage.getY() + " " + stage.getWidth() + ":" + stage.getHeight()));
     }

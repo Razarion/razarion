@@ -63,7 +63,7 @@ public abstract class JsonAssert {
                 mapper = new ObjectMapper();
             }
             if (createExpectedFile) {
-                mapper.writeValue(new File(TEST_RESOURCE_FOLDER, expectedResource), actual);
+                mapper.writerWithDefaultPrettyPrinter().writeValue(new File(TEST_RESOURCE_FOLDER, expectedResource), actual);
             }
 //            System.out.println("-----------------------------------");
 //            System.out.println(mapper.writeValueAsString(actual));

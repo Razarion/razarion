@@ -14,10 +14,10 @@
                 "yI": 45.0,
                 "xO": 49.7,
                 "yO": 45.0,
-                "index": 51,
+                "index": 55,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 235.84852813742384,
-                "uvYTermination": 240.84852813742384
+                "uvY": 249.91499385684762,
+                "uvYTermination": 254.91499385684762
               },
               {
                 "xI": 50.0,
@@ -292,111 +292,151 @@
               {
                 "xI": 100.0,
                 "yI": 110.0,
-                "xO": 100.0,
-                "yO": 110.3,
+                "xO": 100.19205531989934,
+                "yO": 110.23046638387922,
                 "index": 27,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 120.63639610306788,
+                "uvY": 120.55151068758684,
                 "uvYTermination": null
               },
               {
-                "xI": 95.0,
-                "yI": 110.0,
-                "xO": 95.0,
-                "yO": 110.3,
+                "xI": 96.0,
+                "yI": 113.33333333333333,
+                "xO": 96.19205531989934,
+                "yO": 113.56379971721255,
                 "index": 28,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 125.63639610306788,
+                "uvY": 125.75834380485794,
                 "uvYTermination": null
               },
               {
-                "xI": 90.0,
-                "yI": 110.0,
-                "xO": 90.0,
-                "yO": 110.3,
+                "xI": 92.0,
+                "yI": 116.66666666666667,
+                "xO": 92.19205531989934,
+                "yO": 116.89713305054589,
                 "index": 29,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 130.63639610306788,
+                "uvY": 130.96517692212905,
                 "uvYTermination": null
               },
               {
-                "xI": 85.0,
-                "yI": 110.0,
-                "xO": 85.0,
-                "yO": 110.3,
+                "xI": 88.0,
+                "yI": 120.0,
+                "xO": 88.19205531989934,
+                "yO": 120.23046638387922,
                 "index": 30,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 135.63639610306788,
+                "uvY": 136.17201003940016,
+                "uvYTermination": null
+              },
+              {
+                "xI": 84.0,
+                "yI": 123.33333333333333,
+                "xO": 84.19205531989934,
+                "yO": 123.56379971721255,
+                "index": 31,
+                "drivewayHeightFactor": 1.0,
+                "uvY": 141.37884315667128,
                 "uvYTermination": null
               },
               {
                 "xI": 80.0,
-                "yI": 110.0,
-                "xO": 80.0,
-                "yO": 110.3,
-                "index": 31,
-                "drivewayHeightFactor": 1.0,
-                "uvY": 140.63639610306788,
-                "uvYTermination": null
-              },
-              {
-                "xI": 75.0,
-                "yI": 110.0,
-                "xO": 75.0,
-                "yO": 110.3,
+                "yI": 126.66666666666667,
+                "xO": 80.19205531989934,
+                "yO": 126.89713305054589,
                 "index": 32,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 145.63639610306788,
+                "uvY": 146.5856762739424,
                 "uvYTermination": null
               },
               {
-                "xI": 70.0,
-                "yI": 110.0,
-                "xO": 70.0,
-                "yO": 110.3,
+                "xI": 76.0,
+                "yI": 130.0,
+                "xO": 76.19205531989934,
+                "yO": 130.23046638387922,
                 "index": 33,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 150.63639610306788,
+                "uvY": 151.7925093912135,
                 "uvYTermination": null
               },
               {
-                "xI": 65.0,
-                "yI": 110.0,
-                "xO": 65.0,
-                "yO": 110.3,
+                "xI": 76.0,
+                "yI": 130.0,
+                "xO": 75.8170867717451,
+                "yO": 130.23778719673138,
                 "index": 34,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 155.63639610306788,
+                "uvY": 151.980029394417,
                 "uvYTermination": null
               },
               {
-                "xI": 60.0,
-                "yI": 110.0,
-                "xO": 60.0,
-                "yO": 110.3,
+                "xI": 72.28571428571429,
+                "yI": 127.14285714285714,
+                "xO": 72.10280105745939,
+                "yO": 127.38064433958851,
                 "index": 35,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 160.63639610306788,
+                "uvY": 156.6660920992332,
                 "uvYTermination": null
               },
               {
-                "xI": 55.0,
-                "yI": 110.0,
-                "xO": 55.0,
-                "yO": 110.3,
+                "xI": 68.57142857142857,
+                "yI": 124.28571428571429,
+                "xO": 68.38851534317367,
+                "yO": 124.52350148244567,
                 "index": 36,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 165.63639610306788,
+                "uvY": 161.3521548040494,
+                "uvYTermination": null
+              },
+              {
+                "xI": 64.85714285714286,
+                "yI": 121.42857142857143,
+                "xO": 64.67422962888796,
+                "yO": 121.6663586253028,
+                "index": 37,
+                "drivewayHeightFactor": 1.0,
+                "uvY": 166.0382175088656,
+                "uvYTermination": null
+              },
+              {
+                "xI": 61.14285714285714,
+                "yI": 118.57142857142857,
+                "xO": 60.959943914602235,
+                "yO": 118.80921576815994,
+                "index": 38,
+                "drivewayHeightFactor": 1.0,
+                "uvY": 170.72428021368182,
+                "uvYTermination": null
+              },
+              {
+                "xI": 57.42857142857143,
+                "yI": 115.71428571428571,
+                "xO": 57.24565820031652,
+                "yO": 115.9520729110171,
+                "index": 39,
+                "drivewayHeightFactor": 1.0,
+                "uvY": 175.41034291849803,
+                "uvYTermination": null
+              },
+              {
+                "xI": 53.714285714285715,
+                "yI": 112.85714285714286,
+                "xO": 53.53137248603081,
+                "yO": 113.09493005387424,
+                "index": 40,
+                "drivewayHeightFactor": 1.0,
+                "uvY": 180.09640562331424,
                 "uvYTermination": null
               },
               {
                 "xI": 50.0,
                 "yI": 110.0,
-                "xO": 50.0,
-                "yO": 110.3,
-                "index": 37,
+                "xO": 49.81708677174509,
+                "yO": 110.23778719673138,
+                "index": 41,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 170.63639610306788,
+                "uvY": 184.78246832813045,
                 "uvYTermination": null
               },
               {
@@ -404,9 +444,9 @@
                 "yI": 110.0,
                 "xO": 49.7,
                 "yO": 110.0,
-                "index": 38,
+                "index": 42,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 170.84852813742384,
+                "uvY": 184.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -414,9 +454,9 @@
                 "yI": 105.0,
                 "xO": 49.7,
                 "yO": 105.0,
-                "index": 39,
+                "index": 43,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 175.84852813742384,
+                "uvY": 189.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -424,9 +464,9 @@
                 "yI": 100.0,
                 "xO": 49.7,
                 "yO": 100.0,
-                "index": 40,
+                "index": 44,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 180.84852813742384,
+                "uvY": 194.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -434,9 +474,9 @@
                 "yI": 95.0,
                 "xO": 49.7,
                 "yO": 95.0,
-                "index": 41,
+                "index": 45,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 185.84852813742384,
+                "uvY": 199.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -444,9 +484,9 @@
                 "yI": 90.0,
                 "xO": 49.7,
                 "yO": 90.0,
-                "index": 42,
+                "index": 46,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 190.84852813742384,
+                "uvY": 204.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -454,9 +494,9 @@
                 "yI": 85.0,
                 "xO": 49.7,
                 "yO": 85.0,
-                "index": 43,
+                "index": 47,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 195.84852813742384,
+                "uvY": 209.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -464,9 +504,9 @@
                 "yI": 80.0,
                 "xO": 49.7,
                 "yO": 80.0,
-                "index": 44,
+                "index": 48,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 200.84852813742384,
+                "uvY": 214.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -474,9 +514,9 @@
                 "yI": 75.0,
                 "xO": 49.7,
                 "yO": 75.0,
-                "index": 45,
+                "index": 49,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 205.84852813742384,
+                "uvY": 219.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -484,9 +524,9 @@
                 "yI": 70.0,
                 "xO": 49.7,
                 "yO": 70.0,
-                "index": 46,
+                "index": 50,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 210.84852813742384,
+                "uvY": 224.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -494,9 +534,9 @@
                 "yI": 65.0,
                 "xO": 49.7,
                 "yO": 65.0,
-                "index": 47,
+                "index": 51,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 215.84852813742384,
+                "uvY": 229.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -504,9 +544,9 @@
                 "yI": 60.0,
                 "xO": 49.7,
                 "yO": 60.0,
-                "index": 48,
+                "index": 52,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 220.84852813742384,
+                "uvY": 234.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -514,9 +554,9 @@
                 "yI": 55.0,
                 "xO": 49.7,
                 "yO": 55.0,
-                "index": 49,
+                "index": 53,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 225.84852813742384,
+                "uvY": 239.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -524,9 +564,9 @@
                 "yI": 50.0,
                 "xO": 49.7,
                 "yO": 50.0,
-                "index": 50,
+                "index": 54,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 230.84852813742384,
+                "uvY": 244.91499385684762,
                 "uvYTermination": null
               },
               {
@@ -534,10 +574,10 @@
                 "yI": 45.0,
                 "xO": 49.7,
                 "yO": 45.0,
-                "index": 51,
+                "index": 55,
                 "drivewayHeightFactor": 1.0,
-                "uvY": 235.84852813742384,
-                "uvYTermination": 240.84852813742384
+                "uvY": 249.91499385684762,
+                "uvYTermination": 254.91499385684762
               },
               {
                 "xI": 50.0,
@@ -2768,8 +2808,8 @@
                   "p1Dx": 0.0,
                   "p1Dy": 1.0,
                   "p2C": false,
-                  "p2Dx": 0.01960407493444449,
-                  "p2Dy": 0.9998078216567247,
+                  "p2Dx": 0.007683747894756343,
+                  "p2Dy": 0.9999704795734172,
                   "xC": null,
                   "yC": null,
                   "r": null
@@ -2867,12 +2907,7 @@
                   "polygons": [
                     [
                       {
-                        "x": 56.0,
-                        "y": 110.3,
-                        "z": 0.0
-                      },
-                      {
-                        "x": 56.0,
+                        "x": 52.107963415994305,
                         "y": 112.0,
                         "z": 0.0
                       },
@@ -2902,13 +2937,8 @@
                         "z": 0.0
                       },
                       {
-                        "x": 50.0,
-                        "y": 110.3,
-                        "z": 0.0
-                      },
-                      {
-                        "x": 55.0,
-                        "y": 110.3,
+                        "x": 49.81708677174509,
+                        "y": 110.23778719673138,
                         "z": 0.0
                       }
                     ],
@@ -2925,12 +2955,12 @@
                       },
                       {
                         "x": 56.0,
-                        "y": 110.0,
+                        "y": 112.0,
                         "z": 20.0
                       },
                       {
-                        "x": 55.0,
-                        "y": 110.0,
+                        "x": 52.599999999999994,
+                        "y": 112.0,
                         "z": 20.0
                       },
                       {
@@ -2957,49 +2987,32 @@
               "gameEngineFullWaterLevel": null,
               "obstacles": [
                 {
-                  "x1": 60.0,
-                  "y1": 110.2,
-                  "x2": 55.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
+                  "x1": 53.59234356211578,
+                  "y1": 113.01566765496378,
+                  "x2": 49.87805784783006,
+                  "y2": 110.15852479782092,
+                  "pDx": -0.7926239891045992,
+                  "pDy": -0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": -0.7926239891046003,
+                  "p1Dy": -0.6097107608496921,
                   "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": -0.4417517623905133,
+                  "p2Dy": -0.8971373252879825,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 55.0,
-                  "y1": 110.2,
-                  "x2": 50.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -0.7071067811865349,
-                  "p2Dy": -0.7071067811865601,
-                  "xC": null,
-                  "yC": null,
-                  "r": null
-                },
-                {
-                  "x1": 50.0,
-                  "y1": 110.2,
+                  "x1": 49.87805784783006,
+                  "y1": 110.15852479782092,
                   "x2": 49.800000000000004,
                   "y2": 110.0,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
+                  "pDx": -0.7926239891046003,
+                  "pDy": -0.6097107608496921,
                   "p1C": true,
-                  "p1Dx": -0.7071067811865349,
-                  "p1Dy": -0.7071067811865601,
+                  "p1Dx": -0.4417517623905133,
+                  "p1Dy": -0.8971373252879825,
                   "p2C": true,
                   "p2Dx": 0.0,
                   "p2Dy": -1.0,
@@ -3012,8 +3025,8 @@
                   "y1": 110.0,
                   "x2": 49.800000000000004,
                   "y2": 105.0,
-                  "pDx": -0.7071067811865349,
-                  "pDy": -0.7071067811865601,
+                  "pDx": -0.4417517623905133,
+                  "pDy": -0.8971373252879825,
                   "p1C": true,
                   "p1Dx": 0.0,
                   "p1Dy": -1.0,
@@ -3052,8 +3065,8 @@
                   "p1Dx": 0.0,
                   "p1Dy": 1.0,
                   "p2C": false,
-                  "p2Dx": 0.01960407493444449,
-                  "p2Dy": 0.9998078216567247,
+                  "p2Dx": 0.007683747894756343,
+                  "p2Dy": 0.9999704795734172,
                   "xC": null,
                   "yC": null,
                   "r": null
@@ -3061,50 +3074,33 @@
                 {
                   "x1": 49.900000000000006,
                   "y1": 105.0,
-                  "x2": 50.0,
-                  "y2": 110.1,
+                  "x2": 49.93902892391503,
+                  "y2": 110.07926239891046,
                   "pDx": 0.0,
                   "pDy": 1.0,
                   "p1C": false,
-                  "p1Dx": 0.01960407493444449,
-                  "p1Dy": 0.9998078216567247,
+                  "p1Dx": 0.007683747894756343,
+                  "p1Dy": 0.9999704795734172,
                   "p2C": false,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": 0.7926239891045997,
+                  "p2Dy": 0.6097107608496928,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 50.0,
-                  "y1": 110.1,
-                  "x2": 55.0,
-                  "y2": 110.1,
-                  "pDx": 0.01960407493444449,
-                  "pDy": 0.9998078216567247,
+                  "x1": 49.93902892391503,
+                  "y1": 110.07926239891046,
+                  "x2": 53.65331463820075,
+                  "y2": 112.93640525605332,
+                  "pDx": 0.007683747894756343,
+                  "pDy": 0.9999704795734172,
                   "p1C": false,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
+                  "p1Dx": 0.7926239891045997,
+                  "p1Dy": 0.6097107608496928,
                   "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
-                  "xC": null,
-                  "yC": null,
-                  "r": null
-                },
-                {
-                  "x1": 55.0,
-                  "y1": 110.1,
-                  "x2": 60.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": 0.7926239891045992,
+                  "p2Dy": 0.6097107608496936,
                   "xC": null,
                   "yC": null,
                   "r": null
@@ -3149,13 +3145,257 @@
                   "drivewayHeights": null
                 },
                 {
+                  "terrainTypeOrdinal": 0,
+                  "height": 20.0,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
                   "terrainTypeOrdinal": -1,
                   "height": null,
                   "nativeTerrainShapeSubNodes": [
                     {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
                       "terrainTypeOrdinal": 0,
                       "height": 20.0,
                       "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                }
+              ],
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": -1,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
+              "gameEngineHeight": null,
+              "innerGroundHeight": 0.0,
+              "groundSlopeConnections": [
+                {
+                  "groundConfigId": 0,
+                  "defaultGround": true,
+                  "polygons": [
+                    [
+                      {
+                        "x": 56.0,
+                        "y": 114.99387429538899,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 56.0,
+                        "y": 120.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 48.0,
+                        "y": 120.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 48.0,
+                        "y": 112.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 52.107963415994305,
+                        "y": 112.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 53.53137248603081,
+                        "y": 113.09493005387424,
+                        "z": 0.0
+                      }
+                    ],
+                    [
+                      {
+                        "x": 52.599999999999994,
+                        "y": 112.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 56.0,
+                        "y": 112.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 56.0,
+                        "y": 114.61538461538463,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 53.71428571428572,
+                        "y": 112.85714285714286,
+                        "z": 20.0
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": true,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": null,
+              "obstacles": [
+                {
+                  "x1": 57.30662927640149,
+                  "y1": 115.87281051210664,
+                  "x2": 53.59234356211578,
+                  "y2": 113.01566765496378,
+                  "pDx": -0.7926239891046013,
+                  "pDy": -0.609710760849691,
+                  "p1C": true,
+                  "p1Dx": -0.7926239891045992,
+                  "p1Dy": -0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": -0.7926239891046003,
+                  "p2Dy": -0.6097107608496921,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 53.59234356211578,
+                  "y1": 113.01566765496378,
+                  "x2": 49.87805784783006,
+                  "y2": 110.15852479782092,
+                  "pDx": -0.7926239891045992,
+                  "pDy": -0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": -0.7926239891046003,
+                  "p1Dy": -0.6097107608496921,
+                  "p2C": true,
+                  "p2Dx": -0.4417517623905133,
+                  "p2Dy": -0.8971373252879825,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 49.93902892391503,
+                  "y1": 110.07926239891046,
+                  "x2": 53.65331463820075,
+                  "y2": 112.93640525605332,
+                  "pDx": 0.007683747894756343,
+                  "pDy": 0.9999704795734172,
+                  "p1C": false,
+                  "p1Dx": 0.7926239891045997,
+                  "p1Dy": 0.6097107608496928,
+                  "p2C": true,
+                  "p2Dx": 0.7926239891045992,
+                  "p2Dy": 0.6097107608496936,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 53.65331463820075,
+                  "y1": 112.93640525605332,
+                  "x2": 57.367600352486456,
+                  "y2": 115.79354811319618,
+                  "pDx": 0.7926239891045997,
+                  "pDy": 0.6097107608496928,
+                  "p1C": true,
+                  "p1Dx": 0.7926239891045992,
+                  "p1Dy": 0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": 0.7926239891046013,
+                  "p2Dy": 0.609710760849691,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                }
+              ],
+              "nativeTerrainShapeSubNodes": [
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     },
                     {
@@ -3182,32 +3422,13 @@
                 {
                   "terrainTypeOrdinal": -1,
                   "height": null,
-                  "nativeTerrainShapeSubNodes": [
-                    {
-                      "terrainTypeOrdinal": -1,
-                      "height": null,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    },
-                    {
-                      "terrainTypeOrdinal": 0,
-                      "height": 20.0,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    },
-                    {
-                      "terrainTypeOrdinal": -1,
-                      "height": null,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    },
-                    {
-                      "terrainTypeOrdinal": -1,
-                      "height": null,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    }
-                  ],
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": null,
                   "drivewayHeights": null
                 }
               ],
@@ -3216,7 +3437,6 @@
               "fullGameEngineDriveway": null,
               "fullRenderEngineDriveway": null
             },
-            null,
             null,
             null,
             null,
@@ -3547,6 +3767,26 @@
             },
             {
               "fullDrivewayHeights": null,
+              "gameEngineHeight": 20.0,
+              "innerGroundHeight": 20.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": 20.0,
+              "obstacles": null,
+              "nativeTerrainShapeSubNodes": null,
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": 0,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
               "gameEngineHeight": null,
               "innerGroundHeight": 0.0,
               "groundSlopeConnections": [
@@ -3556,55 +3796,65 @@
                   "polygons": [
                     [
                       {
-                        "x": 64.0,
-                        "y": 110.3,
-                        "z": 0.0
-                      },
-                      {
-                        "x": 64.0,
-                        "y": 112.0,
+                        "x": 62.50796341599431,
+                        "y": 120.0,
                         "z": 0.0
                       },
                       {
                         "x": 56.0,
-                        "y": 112.0,
+                        "y": 120.0,
                         "z": 0.0
                       },
                       {
                         "x": 56.0,
-                        "y": 110.3,
+                        "y": 114.99387429538899,
                         "z": 0.0
                       },
                       {
-                        "x": 60.0,
-                        "y": 110.3,
+                        "x": 57.24565820031652,
+                        "y": 115.9520729110171,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 60.959943914602235,
+                        "y": 118.80921576815994,
                         "z": 0.0
                       }
                     ],
                     [
                       {
                         "x": 56.0,
-                        "y": 110.0,
+                        "y": 114.61538461538463,
                         "z": 20.0
                       },
                       {
                         "x": 56.0,
-                        "y": 104.0,
+                        "y": 112.0,
                         "z": 20.0
                       },
                       {
                         "x": 64.0,
-                        "y": 104.0,
+                        "y": 112.0,
                         "z": 20.0
                       },
                       {
                         "x": 64.0,
-                        "y": 110.0,
+                        "y": 120.0,
                         "z": 20.0
                       },
                       {
-                        "x": 60.0,
-                        "y": 110.0,
+                        "x": 63.00000000000001,
+                        "y": 120.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 61.142857142857146,
+                        "y": 118.57142857142857,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 57.42857142857142,
+                        "y": 115.71428571428572,
                         "z": 20.0
                       }
                     ]
@@ -3621,69 +3871,103 @@
               "gameEngineFullWaterLevel": null,
               "obstacles": [
                 {
-                  "x1": 65.0,
-                  "y1": 110.2,
-                  "x2": 60.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "x1": 64.73520070497293,
+                  "y1": 121.58709622639235,
+                  "x2": 61.0209149906872,
+                  "y2": 118.72995336924949,
+                  "pDx": -0.7926239891045992,
+                  "pDy": -0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": -0.7926239891046003,
+                  "p1Dy": -0.6097107608496921,
+                  "p2C": false,
+                  "p2Dx": -0.7926239891046013,
+                  "p2Dy": -0.609710760849691,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 60.0,
-                  "y1": 110.2,
-                  "x2": 55.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
+                  "x1": 61.0209149906872,
+                  "y1": 118.72995336924949,
+                  "x2": 57.30662927640149,
+                  "y2": 115.87281051210664,
+                  "pDx": -0.7926239891046003,
+                  "pDy": -0.6097107608496921,
+                  "p1C": false,
+                  "p1Dx": -0.7926239891046013,
+                  "p1Dy": -0.609710760849691,
                   "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": -0.7926239891045992,
+                  "p2Dy": -0.6097107608496936,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 55.0,
-                  "y1": 110.1,
-                  "x2": 60.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
+                  "x1": 57.30662927640149,
+                  "y1": 115.87281051210664,
+                  "x2": 53.59234356211578,
+                  "y2": 113.01566765496378,
+                  "pDx": -0.7926239891046013,
+                  "pDy": -0.609710760849691,
                   "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "p1Dx": -0.7926239891045992,
+                  "p1Dy": -0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": -0.7926239891046003,
+                  "p2Dy": -0.6097107608496921,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 60.0,
-                  "y1": 110.1,
-                  "x2": 65.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
+                  "x1": 53.65331463820075,
+                  "y1": 112.93640525605332,
+                  "x2": 57.367600352486456,
+                  "y2": 115.79354811319618,
+                  "pDx": 0.7926239891045997,
+                  "pDy": 0.6097107608496928,
                   "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
+                  "p1Dx": 0.7926239891045992,
+                  "p1Dy": 0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": 0.7926239891046013,
+                  "p2Dy": 0.609710760849691,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 57.367600352486456,
+                  "y1": 115.79354811319618,
+                  "x2": 61.08188606677217,
+                  "y2": 118.65069097033903,
+                  "pDx": 0.7926239891045992,
+                  "pDy": 0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": 0.7926239891046013,
+                  "p1Dy": 0.609710760849691,
                   "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": 0.7926239891046003,
+                  "p2Dy": 0.6097107608496921,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 61.08188606677217,
+                  "y1": 118.65069097033903,
+                  "x2": 64.7961717810579,
+                  "y2": 121.50783382748189,
+                  "pDx": 0.7926239891046013,
+                  "pDy": 0.609710760849691,
+                  "p1C": true,
+                  "p1Dx": 0.7926239891046003,
+                  "p1Dy": 0.6097107608496921,
+                  "p2C": true,
+                  "p2Dx": 0.7926239891045992,
+                  "p2Dy": 0.6097107608496936,
                   "xC": null,
                   "yC": null,
                   "r": null
@@ -3691,9 +3975,59 @@
               ],
               "nativeTerrainShapeSubNodes": [
                 {
-                  "terrainTypeOrdinal": 0,
-                  "height": 20.0,
-                  "nativeTerrainShapeSubNodes": null,
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 20.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 20.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 20.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    }
+                  ],
                   "drivewayHeights": null
                 },
                 {
@@ -3719,15 +4053,40 @@
                       "drivewayHeights": null
                     },
                     {
-                      "terrainTypeOrdinal": -1,
-                      "height": null,
+                      "terrainTypeOrdinal": 0,
+                      "height": 20.0,
                       "nativeTerrainShapeSubNodes": null,
                       "drivewayHeights": null
                     },
                     {
                       "terrainTypeOrdinal": -1,
                       "height": null,
-                      "nativeTerrainShapeSubNodes": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     }
                   ],
@@ -3738,15 +4097,40 @@
                   "height": null,
                   "nativeTerrainShapeSubNodes": [
                     {
-                      "terrainTypeOrdinal": 0,
-                      "height": 20.0,
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
                       "nativeTerrainShapeSubNodes": null,
                       "drivewayHeights": null
                     },
                     {
-                      "terrainTypeOrdinal": 0,
-                      "height": 20.0,
-                      "nativeTerrainShapeSubNodes": null,
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     },
                     {
@@ -3770,8 +4154,187 @@
               "fullGameEngineDriveway": null,
               "fullRenderEngineDriveway": null
             },
-            null,
-            null,
+            {
+              "fullDrivewayHeights": null,
+              "gameEngineHeight": null,
+              "innerGroundHeight": 0.0,
+              "groundSlopeConnections": [
+                {
+                  "groundConfigId": 0,
+                  "defaultGround": true,
+                  "polygons": [
+                    [
+                      {
+                        "x": 64.0,
+                        "y": 121.14772044923515,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 64.0,
+                        "y": 128.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 56.0,
+                        "y": 128.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 56.0,
+                        "y": 120.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 62.50796341599431,
+                        "y": 120.0,
+                        "z": 0.0
+                      }
+                    ],
+                    [
+                      {
+                        "x": 63.00000000000001,
+                        "y": 120.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 64.0,
+                        "y": 120.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 64.0,
+                        "y": 120.76923076923077,
+                        "z": 20.0
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": true,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": null,
+              "obstacles": [
+                {
+                  "x1": 64.73520070497293,
+                  "y1": 121.58709622639235,
+                  "x2": 61.0209149906872,
+                  "y2": 118.72995336924949,
+                  "pDx": -0.7926239891045992,
+                  "pDy": -0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": -0.7926239891046003,
+                  "p1Dy": -0.6097107608496921,
+                  "p2C": false,
+                  "p2Dx": -0.7926239891046013,
+                  "p2Dy": -0.609710760849691,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 61.08188606677217,
+                  "y1": 118.65069097033903,
+                  "x2": 64.7961717810579,
+                  "y2": 121.50783382748189,
+                  "pDx": 0.7926239891046013,
+                  "pDy": 0.609710760849691,
+                  "p1C": true,
+                  "p1Dx": 0.7926239891046003,
+                  "p1Dy": 0.6097107608496921,
+                  "p2C": true,
+                  "p2Dx": 0.7926239891045992,
+                  "p2Dy": 0.6097107608496936,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                }
+              ],
+              "nativeTerrainShapeSubNodes": [
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                }
+              ],
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": -1,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
             null,
             null,
             null,
@@ -4145,6 +4708,46 @@
             },
             {
               "fullDrivewayHeights": null,
+              "gameEngineHeight": 20.0,
+              "innerGroundHeight": 20.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": 20.0,
+              "obstacles": null,
+              "nativeTerrainShapeSubNodes": null,
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": 0,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
+              "gameEngineHeight": 20.0,
+              "innerGroundHeight": 20.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": 20.0,
+              "obstacles": null,
+              "nativeTerrainShapeSubNodes": null,
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": 0,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
               "gameEngineHeight": null,
               "innerGroundHeight": 0.0,
               "groundSlopeConnections": [
@@ -4155,64 +4758,64 @@
                     [
                       {
                         "x": 72.0,
-                        "y": 110.3,
+                        "y": 127.30156660308128,
                         "z": 0.0
                       },
                       {
                         "x": 72.0,
-                        "y": 112.0,
+                        "y": 128.0,
                         "z": 0.0
                       },
                       {
                         "x": 64.0,
-                        "y": 112.0,
+                        "y": 128.0,
                         "z": 0.0
                       },
                       {
                         "x": 64.0,
-                        "y": 110.3,
+                        "y": 121.14772044923515,
                         "z": 0.0
                       },
                       {
-                        "x": 65.0,
-                        "y": 110.3,
+                        "x": 64.67422962888796,
+                        "y": 121.6663586253028,
                         "z": 0.0
                       },
                       {
-                        "x": 70.0,
-                        "y": 110.3,
+                        "x": 68.38851534317367,
+                        "y": 124.52350148244567,
                         "z": 0.0
                       }
                     ],
                     [
                       {
                         "x": 64.0,
-                        "y": 110.0,
+                        "y": 120.76923076923077,
                         "z": 20.0
                       },
                       {
                         "x": 64.0,
-                        "y": 104.0,
+                        "y": 120.0,
                         "z": 20.0
                       },
                       {
                         "x": 72.0,
-                        "y": 104.0,
+                        "y": 120.0,
                         "z": 20.0
                       },
                       {
                         "x": 72.0,
-                        "y": 110.0,
+                        "y": 126.9230769230769,
                         "z": 20.0
                       },
                       {
-                        "x": 70.0,
-                        "y": 110.0,
+                        "x": 68.57142857142857,
+                        "y": 124.28571428571429,
                         "z": 20.0
                       },
                       {
-                        "x": 65.0,
-                        "y": 110.0,
+                        "x": 64.85714285714286,
+                        "y": 121.42857142857143,
                         "z": 20.0
                       }
                     ]
@@ -4229,103 +4832,120 @@
               "gameEngineFullWaterLevel": null,
               "obstacles": [
                 {
-                  "x1": 75.0,
-                  "y1": 110.2,
-                  "x2": 70.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
+                  "x1": 75.87805784783006,
+                  "y1": 130.15852479782092,
+                  "x2": 72.16377213354436,
+                  "y2": 127.30138194067806,
+                  "pDx": -0.9998094649864671,
+                  "pDy": 0.019520085129796628,
                   "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p1Dx": -0.7926239891045992,
+                  "p1Dy": -0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": -0.7926239891046016,
+                  "p2Dy": -0.6097107608496901,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 70.0,
-                  "y1": 110.2,
-                  "x2": 65.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
+                  "x1": 72.16377213354436,
+                  "y1": 127.30138194067806,
+                  "x2": 68.44948641925863,
+                  "y2": 124.44423908353521,
+                  "pDx": -0.7926239891045992,
+                  "pDy": -0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": -0.7926239891046016,
+                  "p1Dy": -0.6097107608496901,
                   "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": -0.7926239891045992,
+                  "p2Dy": -0.6097107608496936,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 65.0,
-                  "y1": 110.2,
-                  "x2": 60.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
+                  "x1": 68.44948641925863,
+                  "y1": 124.44423908353521,
+                  "x2": 64.73520070497293,
+                  "y2": 121.58709622639235,
+                  "pDx": -0.7926239891046016,
+                  "pDy": -0.6097107608496901,
                   "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p1Dx": -0.7926239891045992,
+                  "p1Dy": -0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": -0.7926239891046003,
+                  "p2Dy": -0.6097107608496921,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 60.0,
-                  "y1": 110.1,
-                  "x2": 65.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "x1": 64.73520070497293,
+                  "y1": 121.58709622639235,
+                  "x2": 61.0209149906872,
+                  "y2": 118.72995336924949,
+                  "pDx": -0.7926239891045992,
+                  "pDy": -0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": -0.7926239891046003,
+                  "p1Dy": -0.6097107608496921,
+                  "p2C": false,
+                  "p2Dx": -0.7926239891046013,
+                  "p2Dy": -0.609710760849691,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 65.0,
-                  "y1": 110.1,
-                  "x2": 70.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
+                  "x1": 61.08188606677217,
+                  "y1": 118.65069097033903,
+                  "x2": 64.7961717810579,
+                  "y2": 121.50783382748189,
+                  "pDx": 0.7926239891046013,
+                  "pDy": 0.609710760849691,
                   "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
+                  "p1Dx": 0.7926239891046003,
+                  "p1Dy": 0.6097107608496921,
                   "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": 0.7926239891045992,
+                  "p2Dy": 0.6097107608496936,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 70.0,
-                  "y1": 110.1,
-                  "x2": 75.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
+                  "x1": 64.7961717810579,
+                  "y1": 121.50783382748189,
+                  "x2": 68.5104574953436,
+                  "y2": 124.36497668462475,
+                  "pDx": 0.7926239891046003,
+                  "pDy": 0.6097107608496921,
                   "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
+                  "p1Dx": 0.7926239891045992,
+                  "p1Dy": 0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": 0.7926239891046016,
+                  "p2Dy": 0.6097107608496901,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 68.5104574953436,
+                  "y1": 124.36497668462475,
+                  "x2": 72.22474320962932,
+                  "y2": 127.2221195417676,
+                  "pDx": 0.7926239891045992,
+                  "pDy": 0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": 0.7926239891046016,
+                  "p1Dy": 0.6097107608496901,
                   "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": 0.7926239891045992,
+                  "p2Dy": 0.6097107608496936,
                   "xC": null,
                   "yC": null,
                   "r": null
@@ -4333,9 +4953,84 @@
               ],
               "nativeTerrainShapeSubNodes": [
                 {
-                  "terrainTypeOrdinal": 0,
-                  "height": 20.0,
-                  "nativeTerrainShapeSubNodes": null,
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 20.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    }
+                  ],
                   "drivewayHeights": null
                 },
                 {
@@ -4349,9 +5044,34 @@
                   "height": null,
                   "nativeTerrainShapeSubNodes": [
                     {
-                      "terrainTypeOrdinal": 0,
-                      "height": 20.0,
-                      "nativeTerrainShapeSubNodes": null,
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     },
                     {
@@ -4363,7 +5083,32 @@
                     {
                       "terrainTypeOrdinal": -1,
                       "height": null,
-                      "nativeTerrainShapeSubNodes": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     },
                     {
@@ -4378,32 +5123,7 @@
                 {
                   "terrainTypeOrdinal": -1,
                   "height": null,
-                  "nativeTerrainShapeSubNodes": [
-                    {
-                      "terrainTypeOrdinal": 0,
-                      "height": 20.0,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    },
-                    {
-                      "terrainTypeOrdinal": 0,
-                      "height": 20.0,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    },
-                    {
-                      "terrainTypeOrdinal": -1,
-                      "height": null,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    },
-                    {
-                      "terrainTypeOrdinal": -1,
-                      "height": null,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    }
-                  ],
+                  "nativeTerrainShapeSubNodes": null,
                   "drivewayHeights": null
                 }
               ],
@@ -4412,8 +5132,6 @@
               "fullGameEngineDriveway": null,
               "fullRenderEngineDriveway": null
             },
-            null,
-            null,
             null,
             null,
             null,
@@ -4743,6 +5461,46 @@
             },
             {
               "fullDrivewayHeights": null,
+              "gameEngineHeight": 20.0,
+              "innerGroundHeight": 20.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": 20.0,
+              "obstacles": null,
+              "nativeTerrainShapeSubNodes": null,
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": 0,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
+              "gameEngineHeight": 20.0,
+              "innerGroundHeight": 20.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": 20.0,
+              "obstacles": null,
+              "nativeTerrainShapeSubNodes": null,
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": 0,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
               "gameEngineHeight": null,
               "innerGroundHeight": 0.0,
               "groundSlopeConnections": [
@@ -4753,54 +5511,76 @@
                     [
                       {
                         "x": 80.0,
-                        "y": 110.3,
+                        "y": 127.05717915046199,
                         "z": 0.0
                       },
                       {
                         "x": 80.0,
-                        "y": 112.0,
+                        "y": 128.0,
                         "z": 0.0
                       },
                       {
-                        "x": 72.0,
-                        "y": 112.0,
-                        "z": 0.0
-                      },
-                      {
-                        "x": 72.0,
-                        "y": 110.3,
-                        "z": 0.0
-                      },
-                      {
-                        "x": 75.0,
-                        "y": 110.3,
+                        "x": 78.86861498055438,
+                        "y": 128.0,
                         "z": 0.0
                       }
                     ],
                     [
                       {
+                        "x": 72.90796341599433,
+                        "y": 128.0,
+                        "z": 0.0
+                      },
+                      {
                         "x": 72.0,
-                        "y": 110.0,
+                        "y": 128.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 72.0,
+                        "y": 127.30156660308128,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 72.10280105745939,
+                        "y": 127.38064433958851,
+                        "z": 0.0
+                      }
+                    ],
+                    [
+                      {
+                        "x": 80.0,
+                        "y": 126.66666666666669,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 78.40000000000002,
+                        "y": 128.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 73.40000000000002,
+                        "y": 128.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 72.28571428571429,
+                        "y": 127.14285714285714,
                         "z": 20.0
                       },
                       {
                         "x": 72.0,
-                        "y": 104.0,
+                        "y": 126.9230769230769,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 72.0,
+                        "y": 120.0,
                         "z": 20.0
                       },
                       {
                         "x": 80.0,
-                        "y": 104.0,
-                        "z": 20.0
-                      },
-                      {
-                        "x": 80.0,
-                        "y": 110.0,
-                        "z": 20.0
-                      },
-                      {
-                        "x": 75.0,
-                        "y": 110.0,
+                        "y": 120.0,
                         "z": 20.0
                       }
                     ]
@@ -4817,69 +5597,103 @@
               "gameEngineFullWaterLevel": null,
               "obstacles": [
                 {
-                  "x1": 80.0,
-                  "y1": 110.2,
-                  "x2": 75.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
+                  "x1": 80.12803687993289,
+                  "y1": 126.82031092258615,
+                  "x2": 76.12803687993289,
+                  "y2": 130.1536442559195,
+                  "pDx": -0.768221279597375,
+                  "pDy": 0.6401843996644809,
                   "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
+                  "p1Dx": -0.768221279597375,
+                  "p1Dy": 0.6401843996644809,
                   "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": -0.9998094649864671,
+                  "p2Dy": 0.019520085129796628,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 75.0,
-                  "y1": 110.2,
-                  "x2": 70.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
+                  "x1": 75.87805784783006,
+                  "y1": 130.15852479782092,
+                  "x2": 72.16377213354436,
+                  "y2": 127.30138194067806,
+                  "pDx": -0.9998094649864671,
+                  "pDy": 0.019520085129796628,
                   "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p1Dx": -0.7926239891045992,
+                  "p1Dy": -0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": -0.7926239891046016,
+                  "p2Dy": -0.6097107608496901,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 70.0,
-                  "y1": 110.1,
-                  "x2": 75.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
+                  "x1": 72.16377213354436,
+                  "y1": 127.30138194067806,
+                  "x2": 68.44948641925863,
+                  "y2": 124.44423908353521,
+                  "pDx": -0.7926239891045992,
+                  "pDy": -0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": -0.7926239891046016,
+                  "p1Dy": -0.6097107608496901,
                   "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": -0.7926239891045992,
+                  "p2Dy": -0.6097107608496936,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 75.0,
-                  "y1": 110.1,
-                  "x2": 80.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
+                  "x1": 68.5104574953436,
+                  "y1": 124.36497668462475,
+                  "x2": 72.22474320962932,
+                  "y2": 127.2221195417676,
+                  "pDx": 0.7926239891045992,
+                  "pDy": 0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": 0.7926239891046016,
+                  "p1Dy": 0.6097107608496901,
                   "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": 0.7926239891045992,
+                  "p2Dy": 0.6097107608496936,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 72.22474320962932,
+                  "y1": 127.2221195417676,
+                  "x2": 75.93902892391503,
+                  "y2": 130.07926239891046,
+                  "pDx": 0.7926239891046016,
+                  "pDy": 0.6097107608496901,
+                  "p1C": true,
+                  "p1Dx": 0.7926239891045992,
+                  "p1Dy": 0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": 0.9998094649864648,
+                  "p2Dy": -0.01952008512991026,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 76.06401843996645,
+                  "y1": 130.07682212795973,
+                  "x2": 80.06401843996645,
+                  "y2": 126.74348879462642,
+                  "pDx": 0.9998094649864648,
+                  "pDy": -0.01952008512991026,
+                  "p1C": false,
+                  "p1Dx": 0.7682212795973776,
+                  "p1Dy": -0.6401843996644777,
+                  "p2C": false,
+                  "p2Dx": 0.768221279597375,
+                  "p2Dy": -0.6401843996644809,
                   "xC": null,
                   "yC": null,
                   "r": null
@@ -4917,12 +5731,37 @@
                     {
                       "terrainTypeOrdinal": -1,
                       "height": null,
-                      "nativeTerrainShapeSubNodes": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     },
                     {
-                      "terrainTypeOrdinal": -1,
-                      "height": null,
+                      "terrainTypeOrdinal": 0,
+                      "height": 20.0,
                       "nativeTerrainShapeSubNodes": null,
                       "drivewayHeights": null
                     }
@@ -4946,6 +5785,277 @@
                       "drivewayHeights": null
                     },
                     {
+                      "terrainTypeOrdinal": 0,
+                      "height": 20.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                }
+              ],
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": -1,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
+              "gameEngineHeight": null,
+              "innerGroundHeight": 0.0,
+              "groundSlopeConnections": [
+                {
+                  "groundConfigId": 0,
+                  "defaultGround": true,
+                  "polygons": [
+                    [
+                      {
+                        "x": 78.86861498055438,
+                        "y": 128.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 80.0,
+                        "y": 128.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 80.0,
+                        "y": 136.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 72.0,
+                        "y": 136.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 72.0,
+                        "y": 128.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 72.90796341599433,
+                        "y": 128.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 75.8170867717451,
+                        "y": 130.23778719673138,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 76.19205531989934,
+                        "y": 130.23046638387922,
+                        "z": 0.0
+                      }
+                    ],
+                    [
+                      {
+                        "x": 73.40000000000002,
+                        "y": 128.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 78.40000000000002,
+                        "y": 128.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 76.0,
+                        "y": 130.0,
+                        "z": 20.0
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": true,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": null,
+              "obstacles": [
+                {
+                  "x1": 80.12803687993289,
+                  "y1": 126.82031092258615,
+                  "x2": 76.12803687993289,
+                  "y2": 130.1536442559195,
+                  "pDx": -0.768221279597375,
+                  "pDy": 0.6401843996644809,
+                  "p1C": true,
+                  "p1Dx": -0.768221279597375,
+                  "p1Dy": 0.6401843996644809,
+                  "p2C": true,
+                  "p2Dx": -0.9998094649864671,
+                  "p2Dy": 0.019520085129796628,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 76.12803687993289,
+                  "y1": 130.1536442559195,
+                  "x2": 75.87805784783006,
+                  "y2": 130.15852479782092,
+                  "pDx": -0.768221279597375,
+                  "pDy": 0.6401843996644809,
+                  "p1C": true,
+                  "p1Dx": -0.9998094649864671,
+                  "p1Dy": 0.019520085129796628,
+                  "p2C": true,
+                  "p2Dx": -0.7926239891045992,
+                  "p2Dy": -0.6097107608496936,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 75.87805784783006,
+                  "y1": 130.15852479782092,
+                  "x2": 72.16377213354436,
+                  "y2": 127.30138194067806,
+                  "pDx": -0.9998094649864671,
+                  "pDy": 0.019520085129796628,
+                  "p1C": true,
+                  "p1Dx": -0.7926239891045992,
+                  "p1Dy": -0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": -0.7926239891046016,
+                  "p2Dy": -0.6097107608496901,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 72.22474320962932,
+                  "y1": 127.2221195417676,
+                  "x2": 75.93902892391503,
+                  "y2": 130.07926239891046,
+                  "pDx": 0.7926239891046016,
+                  "pDy": 0.6097107608496901,
+                  "p1C": true,
+                  "p1Dx": 0.7926239891045992,
+                  "p1Dy": 0.6097107608496936,
+                  "p2C": false,
+                  "p2Dx": 0.9998094649864648,
+                  "p2Dy": -0.01952008512991026,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 75.93902892391503,
+                  "y1": 130.07926239891046,
+                  "x2": 76.06401843996645,
+                  "y2": 130.07682212795973,
+                  "pDx": 0.7926239891045992,
+                  "pDy": 0.6097107608496936,
+                  "p1C": false,
+                  "p1Dx": 0.9998094649864648,
+                  "p1Dy": -0.01952008512991026,
+                  "p2C": false,
+                  "p2Dx": 0.7682212795973776,
+                  "p2Dy": -0.6401843996644777,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 76.06401843996645,
+                  "y1": 130.07682212795973,
+                  "x2": 80.06401843996645,
+                  "y2": 126.74348879462642,
+                  "pDx": 0.9998094649864648,
+                  "pDy": -0.01952008512991026,
+                  "p1C": false,
+                  "p1Dx": 0.7682212795973776,
+                  "p1Dy": -0.6401843996644777,
+                  "p2C": false,
+                  "p2Dx": 0.768221279597375,
+                  "p2Dy": -0.6401843996644809,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                }
+              ],
+              "nativeTerrainShapeSubNodes": [
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
                       "terrainTypeOrdinal": -1,
                       "height": null,
                       "nativeTerrainShapeSubNodes": null,
@@ -4959,6 +6069,74 @@
                     }
                   ],
                   "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
                 }
               ],
               "drivewayBreakingLine": null,
@@ -4966,9 +6144,6 @@
               "fullGameEngineDriveway": null,
               "fullRenderEngineDriveway": null
             },
-            null,
-            null,
-            null,
             null,
             null,
             null
@@ -5331,6 +6506,46 @@
             },
             {
               "fullDrivewayHeights": null,
+              "gameEngineHeight": 20.0,
+              "innerGroundHeight": 20.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": 20.0,
+              "obstacles": null,
+              "nativeTerrainShapeSubNodes": null,
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": 0,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
+              "gameEngineHeight": 20.0,
+              "innerGroundHeight": 20.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": 20.0,
+              "obstacles": null,
+              "nativeTerrainShapeSubNodes": null,
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": 0,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
               "gameEngineHeight": null,
               "innerGroundHeight": 0.0,
               "groundSlopeConnections": [
@@ -5341,54 +6556,59 @@
                     [
                       {
                         "x": 88.0,
-                        "y": 110.3,
+                        "y": 120.39051248379533,
                         "z": 0.0
                       },
                       {
                         "x": 88.0,
-                        "y": 112.0,
+                        "y": 128.0,
                         "z": 0.0
                       },
                       {
                         "x": 80.0,
-                        "y": 112.0,
+                        "y": 128.0,
                         "z": 0.0
                       },
                       {
                         "x": 80.0,
-                        "y": 110.3,
+                        "y": 127.05717915046199,
                         "z": 0.0
                       },
                       {
-                        "x": 85.0,
-                        "y": 110.3,
+                        "x": 80.19205531989934,
+                        "y": 126.89713305054589,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 84.19205531989934,
+                        "y": 123.56379971721255,
                         "z": 0.0
                       }
                     ],
                     [
                       {
                         "x": 80.0,
-                        "y": 110.0,
+                        "y": 126.66666666666669,
                         "z": 20.0
                       },
                       {
                         "x": 80.0,
-                        "y": 104.0,
+                        "y": 120.0,
                         "z": 20.0
                       },
                       {
                         "x": 88.0,
-                        "y": 104.0,
+                        "y": 120.0,
                         "z": 20.0
                       },
                       {
-                        "x": 88.0,
-                        "y": 110.0,
+                        "x": 84.0,
+                        "y": 123.33333333333333,
                         "z": 20.0
                       },
                       {
-                        "x": 85.0,
-                        "y": 110.0,
+                        "x": 80.0,
+                        "y": 126.66666666666667,
                         "z": 20.0
                       }
                     ]
@@ -5405,103 +6625,120 @@
               "gameEngineFullWaterLevel": null,
               "obstacles": [
                 {
-                  "x1": 90.0,
-                  "y1": 110.2,
-                  "x2": 85.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
+                  "x1": 92.12803687993289,
+                  "y1": 116.82031092258615,
+                  "x2": 88.12803687993289,
+                  "y2": 120.15364425591947,
+                  "pDx": -0.768221279597375,
+                  "pDy": 0.6401843996644809,
                   "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p1Dx": -0.7682212795973763,
+                  "p1Dy": 0.6401843996644794,
+                  "p2C": false,
+                  "p2Dx": -0.7682212795973763,
+                  "p2Dy": 0.6401843996644794,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 85.0,
-                  "y1": 110.2,
-                  "x2": 80.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "x1": 88.12803687993289,
+                  "y1": 120.15364425591947,
+                  "x2": 84.12803687993289,
+                  "y2": 123.4869775892528,
+                  "pDx": -0.7682212795973763,
+                  "pDy": 0.6401843996644794,
+                  "p1C": false,
+                  "p1Dx": -0.7682212795973763,
+                  "p1Dy": 0.6401843996644794,
+                  "p2C": false,
+                  "p2Dx": -0.768221279597375,
+                  "p2Dy": 0.6401843996644809,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 80.0,
-                  "y1": 110.2,
-                  "x2": 75.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
+                  "x1": 84.12803687993289,
+                  "y1": 123.4869775892528,
+                  "x2": 80.12803687993289,
+                  "y2": 126.82031092258615,
+                  "pDx": -0.7682212795973763,
+                  "pDy": 0.6401843996644794,
+                  "p1C": false,
+                  "p1Dx": -0.768221279597375,
+                  "p1Dy": 0.6401843996644809,
                   "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": -0.768221279597375,
+                  "p2Dy": 0.6401843996644809,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 75.0,
-                  "y1": 110.1,
-                  "x2": 80.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
+                  "x1": 80.12803687993289,
+                  "y1": 126.82031092258615,
+                  "x2": 76.12803687993289,
+                  "y2": 130.1536442559195,
+                  "pDx": -0.768221279597375,
+                  "pDy": 0.6401843996644809,
                   "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
+                  "p1Dx": -0.768221279597375,
+                  "p1Dy": 0.6401843996644809,
                   "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": -0.9998094649864671,
+                  "p2Dy": 0.019520085129796628,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 80.0,
-                  "y1": 110.1,
-                  "x2": 85.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "x1": 76.06401843996645,
+                  "y1": 130.07682212795973,
+                  "x2": 80.06401843996645,
+                  "y2": 126.74348879462642,
+                  "pDx": 0.9998094649864648,
+                  "pDy": -0.01952008512991026,
+                  "p1C": false,
+                  "p1Dx": 0.7682212795973776,
+                  "p1Dy": -0.6401843996644777,
+                  "p2C": false,
+                  "p2Dx": 0.768221279597375,
+                  "p2Dy": -0.6401843996644809,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 85.0,
-                  "y1": 110.1,
-                  "x2": 90.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
+                  "x1": 80.06401843996645,
+                  "y1": 126.74348879462642,
+                  "x2": 84.06401843996645,
+                  "y2": 123.41015546129307,
+                  "pDx": 0.7682212795973776,
+                  "pDy": -0.6401843996644777,
+                  "p1C": false,
+                  "p1Dx": 0.768221279597375,
+                  "p1Dy": -0.6401843996644809,
                   "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": 0.7682212795973763,
+                  "p2Dy": -0.6401843996644794,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 84.06401843996645,
+                  "y1": 123.41015546129307,
+                  "x2": 88.06401843996645,
+                  "y2": 120.07682212795974,
+                  "pDx": 0.768221279597375,
+                  "pDy": -0.6401843996644809,
+                  "p1C": true,
+                  "p1Dx": 0.7682212795973763,
+                  "p1Dy": -0.6401843996644794,
+                  "p2C": true,
+                  "p2Dx": 0.7682212795973763,
+                  "p2Dy": -0.6401843996644794,
                   "xC": null,
                   "yC": null,
                   "r": null
@@ -5515,8 +6752,89 @@
                   "drivewayHeights": null
                 },
                 {
-                  "terrainTypeOrdinal": 0,
-                  "height": 20.0,
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 20.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
                   "nativeTerrainShapeSubNodes": null,
                   "drivewayHeights": null
                 },
@@ -5531,9 +6849,34 @@
                       "drivewayHeights": null
                     },
                     {
-                      "terrainTypeOrdinal": 0,
-                      "height": 20.0,
-                      "nativeTerrainShapeSubNodes": null,
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     },
                     {
@@ -5545,38 +6888,32 @@
                     {
                       "terrainTypeOrdinal": -1,
                       "height": null,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    }
-                  ],
-                  "drivewayHeights": null
-                },
-                {
-                  "terrainTypeOrdinal": -1,
-                  "height": null,
-                  "nativeTerrainShapeSubNodes": [
-                    {
-                      "terrainTypeOrdinal": 0,
-                      "height": 20.0,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    },
-                    {
-                      "terrainTypeOrdinal": 0,
-                      "height": 20.0,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    },
-                    {
-                      "terrainTypeOrdinal": -1,
-                      "height": null,
-                      "nativeTerrainShapeSubNodes": null,
-                      "drivewayHeights": null
-                    },
-                    {
-                      "terrainTypeOrdinal": -1,
-                      "height": null,
-                      "nativeTerrainShapeSubNodes": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     }
                   ],
@@ -5588,8 +6925,6 @@
               "fullGameEngineDriveway": null,
               "fullRenderEngineDriveway": null
             },
-            null,
-            null,
             null,
             null,
             null,
@@ -5963,6 +7298,26 @@
             },
             {
               "fullDrivewayHeights": null,
+              "gameEngineHeight": 20.0,
+              "innerGroundHeight": 20.0,
+              "groundSlopeConnections": null,
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": false,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": 20.0,
+              "obstacles": null,
+              "nativeTerrainShapeSubNodes": null,
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": 0,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
+            {
+              "fullDrivewayHeights": null,
               "gameEngineHeight": null,
               "innerGroundHeight": 0.0,
               "groundSlopeConnections": [
@@ -5973,64 +7328,54 @@
                     [
                       {
                         "x": 96.0,
-                        "y": 110.3,
+                        "y": 113.72384581712868,
                         "z": 0.0
                       },
                       {
                         "x": 96.0,
-                        "y": 112.0,
+                        "y": 120.0,
                         "z": 0.0
                       },
                       {
-                        "x": 88.0,
-                        "y": 112.0,
+                        "x": 88.4686149805544,
+                        "y": 120.0,
                         "z": 0.0
                       },
                       {
-                        "x": 88.0,
-                        "y": 110.3,
-                        "z": 0.0
-                      },
-                      {
-                        "x": 90.0,
-                        "y": 110.3,
-                        "z": 0.0
-                      },
-                      {
-                        "x": 95.0,
-                        "y": 110.3,
+                        "x": 92.19205531989934,
+                        "y": 116.89713305054589,
                         "z": 0.0
                       }
                     ],
                     [
                       {
                         "x": 88.0,
-                        "y": 110.0,
+                        "y": 120.0,
                         "z": 20.0
                       },
                       {
                         "x": 88.0,
-                        "y": 104.0,
+                        "y": 112.0,
                         "z": 20.0
                       },
                       {
                         "x": 96.0,
-                        "y": 104.0,
+                        "y": 112.0,
                         "z": 20.0
                       },
                       {
                         "x": 96.0,
-                        "y": 110.0,
+                        "y": 113.33333333333331,
                         "z": 20.0
                       },
                       {
-                        "x": 95.0,
-                        "y": 110.0,
+                        "x": 96.0,
+                        "y": 113.33333333333333,
                         "z": 20.0
                       },
                       {
-                        "x": 90.0,
-                        "y": 110.0,
+                        "x": 92.0,
+                        "y": 116.66666666666667,
                         "z": 20.0
                       }
                     ]
@@ -6047,103 +7392,103 @@
               "gameEngineFullWaterLevel": null,
               "obstacles": [
                 {
-                  "x1": 100.0,
-                  "y1": 110.2,
-                  "x2": 95.0,
-                  "y2": 110.2,
-                  "pDx": -0.7071067811865475,
-                  "pDy": 0.7071067811865475,
+                  "x1": 100.12803687993289,
+                  "y1": 110.15364425591947,
+                  "x2": 96.12803687993289,
+                  "y2": 113.4869775892528,
+                  "pDx": -0.4241553962497565,
+                  "pDy": 0.9055894212236647,
                   "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
-                  "xC": null,
-                  "yC": null,
-                  "r": null
-                },
-                {
-                  "x1": 95.0,
-                  "y1": 110.2,
-                  "x2": 90.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
-                  "xC": null,
-                  "yC": null,
-                  "r": null
-                },
-                {
-                  "x1": 90.0,
-                  "y1": 110.2,
-                  "x2": 85.0,
-                  "y2": 110.2,
-                  "pDx": -1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
-                  "xC": null,
-                  "yC": null,
-                  "r": null
-                },
-                {
-                  "x1": 85.0,
-                  "y1": 110.1,
-                  "x2": 90.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": 1.0,
-                  "p2Dy": 0.0,
-                  "xC": null,
-                  "yC": null,
-                  "r": null
-                },
-                {
-                  "x1": 90.0,
-                  "y1": 110.1,
-                  "x2": 95.0,
-                  "y2": 110.1,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
-                  "p1C": true,
-                  "p1Dx": 1.0,
-                  "p1Dy": 0.0,
+                  "p1Dx": -0.7682212795973763,
+                  "p1Dy": 0.6401843996644794,
                   "p2C": false,
-                  "p2Dx": 0.9998078216567247,
-                  "p2Dy": -0.01960407493444449,
+                  "p2Dx": -0.768221279597375,
+                  "p2Dy": 0.6401843996644809,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 95.0,
-                  "y1": 110.1,
-                  "x2": 100.1,
-                  "y2": 110.0,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
+                  "x1": 96.12803687993289,
+                  "y1": 113.4869775892528,
+                  "x2": 92.12803687993289,
+                  "y2": 116.82031092258615,
+                  "pDx": -0.7682212795973763,
+                  "pDy": 0.6401843996644794,
                   "p1C": false,
-                  "p1Dx": 0.9998078216567247,
-                  "p1Dy": -0.01960407493444449,
+                  "p1Dx": -0.768221279597375,
+                  "p1Dy": 0.6401843996644809,
+                  "p2C": true,
+                  "p2Dx": -0.7682212795973763,
+                  "p2Dy": 0.6401843996644794,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 92.12803687993289,
+                  "y1": 116.82031092258615,
+                  "x2": 88.12803687993289,
+                  "y2": 120.15364425591947,
+                  "pDx": -0.768221279597375,
+                  "pDy": 0.6401843996644809,
+                  "p1C": true,
+                  "p1Dx": -0.7682212795973763,
+                  "p1Dy": 0.6401843996644794,
                   "p2C": false,
-                  "p2Dx": 0.0,
-                  "p2Dy": -1.0,
+                  "p2Dx": -0.7682212795973763,
+                  "p2Dy": 0.6401843996644794,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 84.06401843996645,
+                  "y1": 123.41015546129307,
+                  "x2": 88.06401843996645,
+                  "y2": 120.07682212795974,
+                  "pDx": 0.768221279597375,
+                  "pDy": -0.6401843996644809,
+                  "p1C": true,
+                  "p1Dx": 0.7682212795973763,
+                  "p1Dy": -0.6401843996644794,
+                  "p2C": true,
+                  "p2Dx": 0.7682212795973763,
+                  "p2Dy": -0.6401843996644794,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 88.06401843996645,
+                  "y1": 120.07682212795974,
+                  "x2": 92.06401843996645,
+                  "y2": 116.74348879462642,
+                  "pDx": 0.7682212795973763,
+                  "pDy": -0.6401843996644794,
+                  "p1C": true,
+                  "p1Dx": 0.7682212795973763,
+                  "p1Dy": -0.6401843996644794,
+                  "p2C": false,
+                  "p2Dx": 0.768221279597375,
+                  "p2Dy": -0.6401843996644809,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 92.06401843996645,
+                  "y1": 116.74348879462642,
+                  "x2": 96.06401843996645,
+                  "y2": 113.41015546129307,
+                  "pDx": 0.7682212795973763,
+                  "pDy": -0.6401843996644794,
+                  "p1C": false,
+                  "p1Dx": 0.768221279597375,
+                  "p1Dy": -0.6401843996644809,
+                  "p2C": false,
+                  "p2Dx": 0.7638439281360776,
+                  "p2Dy": -0.6454010020519386,
                   "xC": null,
                   "yC": null,
                   "r": null
@@ -6157,12 +7502,6 @@
                   "drivewayHeights": null
                 },
                 {
-                  "terrainTypeOrdinal": 0,
-                  "height": 20.0,
-                  "nativeTerrainShapeSubNodes": null,
-                  "drivewayHeights": null
-                },
-                {
                   "terrainTypeOrdinal": -1,
                   "height": null,
                   "nativeTerrainShapeSubNodes": [
@@ -6175,6 +7514,87 @@
                     {
                       "terrainTypeOrdinal": 0,
                       "height": 20.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": 0,
+                      "height": 20.0,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
                       "nativeTerrainShapeSubNodes": null,
                       "drivewayHeights": null
                     },
@@ -6204,9 +7624,34 @@
                       "drivewayHeights": null
                     },
                     {
-                      "terrainTypeOrdinal": 0,
-                      "height": 20.0,
-                      "nativeTerrainShapeSubNodes": null,
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     },
                     {
@@ -6218,7 +7663,32 @@
                     {
                       "terrainTypeOrdinal": -1,
                       "height": null,
-                      "nativeTerrainShapeSubNodes": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     }
                   ],
@@ -6230,8 +7700,139 @@
               "fullGameEngineDriveway": null,
               "fullRenderEngineDriveway": null
             },
-            null,
-            null,
+            {
+              "fullDrivewayHeights": null,
+              "gameEngineHeight": null,
+              "innerGroundHeight": 0.0,
+              "groundSlopeConnections": [
+                {
+                  "groundConfigId": 0,
+                  "defaultGround": true,
+                  "polygons": [
+                    [
+                      {
+                        "x": 88.4686149805544,
+                        "y": 120.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 96.0,
+                        "y": 120.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 96.0,
+                        "y": 128.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 88.0,
+                        "y": 128.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 88.0,
+                        "y": 120.39051248379533,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 88.19205531989934,
+                        "y": 120.23046638387922,
+                        "z": 0.0
+                      }
+                    ],
+                    [
+                      {
+                        "x": 88.0,
+                        "y": 120.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 96.0,
+                        "y": 120.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 96.0,
+                        "y": 128.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 88.0,
+                        "y": 128.0,
+                        "z": 20.0
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": true,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": null,
+              "obstacles": [
+                {
+                  "x1": 92.12803687993289,
+                  "y1": 116.82031092258615,
+                  "x2": 88.12803687993289,
+                  "y2": 120.15364425591947,
+                  "pDx": -0.768221279597375,
+                  "pDy": 0.6401843996644809,
+                  "p1C": true,
+                  "p1Dx": -0.7682212795973763,
+                  "p1Dy": 0.6401843996644794,
+                  "p2C": false,
+                  "p2Dx": -0.7682212795973763,
+                  "p2Dy": 0.6401843996644794,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 88.12803687993289,
+                  "y1": 120.15364425591947,
+                  "x2": 84.12803687993289,
+                  "y2": 123.4869775892528,
+                  "pDx": -0.7682212795973763,
+                  "pDy": 0.6401843996644794,
+                  "p1C": false,
+                  "p1Dx": -0.7682212795973763,
+                  "p1Dy": 0.6401843996644794,
+                  "p2C": false,
+                  "p2Dx": -0.768221279597375,
+                  "p2Dy": 0.6401843996644809,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 88.06401843996645,
+                  "y1": 120.07682212795974,
+                  "x2": 92.06401843996645,
+                  "y2": 116.74348879462642,
+                  "pDx": 0.7682212795973763,
+                  "pDy": -0.6401843996644794,
+                  "p1C": true,
+                  "p1Dx": 0.7682212795973763,
+                  "p1Dy": -0.6401843996644794,
+                  "p2C": false,
+                  "p2Dx": 0.768221279597375,
+                  "p2Dy": -0.6401843996644809,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                }
+              ],
+              "nativeTerrainShapeSubNodes": null,
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": -1,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
             null,
             null,
             null,
@@ -7979,18 +9580,13 @@
                         "z": 0.0
                       },
                       {
-                        "x": 96.0,
+                        "x": 98.06861498055441,
                         "y": 112.0,
                         "z": 0.0
                       },
                       {
-                        "x": 96.0,
-                        "y": 110.3,
-                        "z": 0.0
-                      },
-                      {
-                        "x": 100.0,
-                        "y": 110.3,
+                        "x": 100.19205531989934,
+                        "y": 110.23046638387922,
                         "z": 0.0
                       },
                       {
@@ -8006,8 +9602,13 @@
                     ],
                     [
                       {
+                        "x": 97.59999999999998,
+                        "y": 112.0,
+                        "z": 20.0
+                      },
+                      {
                         "x": 96.0,
-                        "y": 110.0,
+                        "y": 112.0,
                         "z": 20.0
                       },
                       {
@@ -8071,8 +9672,8 @@
                   "p1Dx": 0.0,
                   "p1Dy": 1.0,
                   "p2C": true,
-                  "p2Dx": -0.7071067811865475,
-                  "p2Dy": 0.7071067811865475,
+                  "p2Dx": -0.4241553962497565,
+                  "p2Dy": 0.9055894212236647,
                   "xC": null,
                   "yC": null,
                   "r": null
@@ -8080,47 +9681,47 @@
                 {
                   "x1": 100.2,
                   "y1": 110.0,
-                  "x2": 100.0,
-                  "y2": 110.2,
+                  "x2": 100.12803687993289,
+                  "y2": 110.15364425591947,
                   "pDx": 0.0,
                   "pDy": 1.0,
                   "p1C": true,
-                  "p1Dx": -0.7071067811865475,
-                  "p1Dy": 0.7071067811865475,
+                  "p1Dx": -0.4241553962497565,
+                  "p1Dy": 0.9055894212236647,
                   "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p2Dx": -0.7682212795973763,
+                  "p2Dy": 0.6401843996644794,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 100.0,
-                  "y1": 110.2,
-                  "x2": 95.0,
-                  "y2": 110.2,
-                  "pDx": -0.7071067811865475,
-                  "pDy": 0.7071067811865475,
+                  "x1": 100.12803687993289,
+                  "y1": 110.15364425591947,
+                  "x2": 96.12803687993289,
+                  "y2": 113.4869775892528,
+                  "pDx": -0.4241553962497565,
+                  "pDy": 0.9055894212236647,
                   "p1C": true,
-                  "p1Dx": -1.0,
-                  "p1Dy": 0.0,
-                  "p2C": true,
-                  "p2Dx": -1.0,
-                  "p2Dy": 0.0,
+                  "p1Dx": -0.7682212795973763,
+                  "p1Dy": 0.6401843996644794,
+                  "p2C": false,
+                  "p2Dx": -0.768221279597375,
+                  "p2Dy": 0.6401843996644809,
                   "xC": null,
                   "yC": null,
                   "r": null
                 },
                 {
-                  "x1": 95.0,
-                  "y1": 110.1,
+                  "x1": 96.06401843996645,
+                  "y1": 113.41015546129307,
                   "x2": 100.1,
                   "y2": 110.0,
-                  "pDx": 1.0,
-                  "pDy": 0.0,
+                  "pDx": 0.768221279597375,
+                  "pDy": -0.6401843996644809,
                   "p1C": false,
-                  "p1Dx": 0.9998078216567247,
-                  "p1Dy": -0.01960407493444449,
+                  "p1Dx": 0.7638439281360776,
+                  "p1Dy": -0.6454010020519386,
                   "p2C": false,
                   "p2Dx": 0.0,
                   "p2Dy": -1.0,
@@ -8133,8 +9734,8 @@
                   "y1": 110.0,
                   "x2": 100.1,
                   "y2": 105.0,
-                  "pDx": 0.9998078216567247,
-                  "pDy": -0.01960407493444449,
+                  "pDx": 0.7638439281360776,
+                  "pDy": -0.6454010020519386,
                   "p1C": false,
                   "p1Dx": 0.0,
                   "p1Dy": -1.0,
@@ -8201,12 +9802,37 @@
                     {
                       "terrainTypeOrdinal": -1,
                       "height": null,
-                      "nativeTerrainShapeSubNodes": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": 4,
+                          "height": 0.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
                       "drivewayHeights": null
                     },
                     {
-                      "terrainTypeOrdinal": -1,
-                      "height": null,
+                      "terrainTypeOrdinal": 0,
+                      "height": 20.0,
                       "nativeTerrainShapeSubNodes": null,
                       "drivewayHeights": null
                     }
@@ -8219,7 +9845,231 @@
               "fullGameEngineDriveway": null,
               "fullRenderEngineDriveway": null
             },
-            null,
+            {
+              "fullDrivewayHeights": null,
+              "gameEngineHeight": null,
+              "innerGroundHeight": 0.0,
+              "groundSlopeConnections": [
+                {
+                  "groundConfigId": 0,
+                  "defaultGround": true,
+                  "polygons": [
+                    [
+                      {
+                        "x": 98.06861498055441,
+                        "y": 112.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 104.0,
+                        "y": 112.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 104.0,
+                        "y": 120.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 96.0,
+                        "y": 120.0,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 96.0,
+                        "y": 113.72384581712868,
+                        "z": 0.0
+                      },
+                      {
+                        "x": 96.19205531989934,
+                        "y": 113.56379971721255,
+                        "z": 0.0
+                      }
+                    ],
+                    [
+                      {
+                        "x": 96.0,
+                        "y": 113.33333333333331,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 96.0,
+                        "y": 112.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 97.59999999999998,
+                        "y": 112.0,
+                        "z": 20.0
+                      },
+                      {
+                        "x": 96.0,
+                        "y": 113.33333333333333,
+                        "z": 20.0
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "waterSegments": null,
+              "renderGround": false,
+              "renderGroundId": 0,
+              "renderHideGround": true,
+              "renderFullWaterLevel": null,
+              "renderInnerWaterSlope": false,
+              "renderInnerWaterSlopeId": 0,
+              "gameEngineFullWaterLevel": null,
+              "obstacles": [
+                {
+                  "x1": 100.12803687993289,
+                  "y1": 110.15364425591947,
+                  "x2": 96.12803687993289,
+                  "y2": 113.4869775892528,
+                  "pDx": -0.4241553962497565,
+                  "pDy": 0.9055894212236647,
+                  "p1C": true,
+                  "p1Dx": -0.7682212795973763,
+                  "p1Dy": 0.6401843996644794,
+                  "p2C": false,
+                  "p2Dx": -0.768221279597375,
+                  "p2Dy": 0.6401843996644809,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 96.12803687993289,
+                  "y1": 113.4869775892528,
+                  "x2": 92.12803687993289,
+                  "y2": 116.82031092258615,
+                  "pDx": -0.7682212795973763,
+                  "pDy": 0.6401843996644794,
+                  "p1C": false,
+                  "p1Dx": -0.768221279597375,
+                  "p1Dy": 0.6401843996644809,
+                  "p2C": true,
+                  "p2Dx": -0.7682212795973763,
+                  "p2Dy": 0.6401843996644794,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 92.06401843996645,
+                  "y1": 116.74348879462642,
+                  "x2": 96.06401843996645,
+                  "y2": 113.41015546129307,
+                  "pDx": 0.7682212795973763,
+                  "pDy": -0.6401843996644794,
+                  "p1C": false,
+                  "p1Dx": 0.768221279597375,
+                  "p1Dy": -0.6401843996644809,
+                  "p2C": false,
+                  "p2Dx": 0.7638439281360776,
+                  "p2Dy": -0.6454010020519386,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                },
+                {
+                  "x1": 96.06401843996645,
+                  "y1": 113.41015546129307,
+                  "x2": 100.1,
+                  "y2": 110.0,
+                  "pDx": 0.768221279597375,
+                  "pDy": -0.6401843996644809,
+                  "p1C": false,
+                  "p1Dx": 0.7638439281360776,
+                  "p1Dy": -0.6454010020519386,
+                  "p2C": false,
+                  "p2Dx": 0.0,
+                  "p2Dy": -1.0,
+                  "xC": null,
+                  "yC": null,
+                  "r": null
+                }
+              ],
+              "nativeTerrainShapeSubNodes": [
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": [
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": [
+                        {
+                          "terrainTypeOrdinal": 0,
+                          "height": 20.0,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        },
+                        {
+                          "terrainTypeOrdinal": -1,
+                          "height": null,
+                          "nativeTerrainShapeSubNodes": null,
+                          "drivewayHeights": null
+                        }
+                      ],
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    },
+                    {
+                      "terrainTypeOrdinal": -1,
+                      "height": null,
+                      "nativeTerrainShapeSubNodes": null,
+                      "drivewayHeights": null
+                    }
+                  ],
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                },
+                {
+                  "terrainTypeOrdinal": -1,
+                  "height": null,
+                  "nativeTerrainShapeSubNodes": null,
+                  "drivewayHeights": null
+                }
+              ],
+              "drivewayBreakingLine": null,
+              "terrainTypeOrdinal": -1,
+              "fullGameEngineDriveway": null,
+              "fullRenderEngineDriveway": null
+            },
             null,
             null,
             null,

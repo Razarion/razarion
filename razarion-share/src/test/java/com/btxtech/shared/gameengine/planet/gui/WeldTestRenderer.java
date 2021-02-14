@@ -236,9 +236,24 @@ public class WeldTestRenderer {
 
             gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
             if (showPoint) {
-                gc.fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
+                gc.fillOval(start.getX() - strokeWidth * 2.0, start.getY() - strokeWidth * 2.0, strokeWidth * 4.0, strokeWidth * 4.0);
             }
         }
+    }
+
+    public void fillPolygon(List<DecimalPosition> polygon, Color color) {
+        gc.setStroke(color);
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
+
+        double[] xCorners = new double[polygon.size()];
+        double[] yCorners = new double[polygon.size()];
+        for(int i = 0; i<polygon.size();i++) {
+            DecimalPosition position = polygon.get(i);
+                    xCorners[i] = position.getX();
+                    yCorners[i] = position.getY();
+        }
+
+        gc.fillPolygon(xCorners, yCorners, polygon.size());
     }
 
     public void fillRectangle(Rectangle2D rectangle, Color color) {
@@ -248,6 +263,10 @@ public class WeldTestRenderer {
 
     public void strokeVertexPolygon(List<Vertex> polygon, double strokeWidth, Color color, boolean showPoint) {
         strokePolygon(Vertex.toXY(polygon), strokeWidth, color, showPoint);
+    }
+
+    private void fillVertexPolygon(List<Vertex> polygon, Color color) {
+        fillPolygon(Vertex.toXY(polygon), color);
     }
 
     public void strokeLine(List<DecimalPosition> line, double strokeWidth, Color color, boolean showPoint) {
@@ -811,8 +830,15 @@ public class WeldTestRenderer {
             return;
         }
         groundSlopeConnectionList.forEach((groundId, groundSlopeConnections) -> {
+            Color color = Color.GREEN;
+            if (groundId == null) {
+                color = Color.DARKGREEN;
+            } else if (groundId == 253) {
+                color = Color.GRAY;
+            }
             for (List<Vertex> groundSlopeConnection : groundSlopeConnections) {
-                strokeVertexPolygon(groundSlopeConnection, LINE_WIDTH, Color.GREEN, true);
+                fillVertexPolygon(groundSlopeConnection, color);
+                strokeVertexPolygon(groundSlopeConnection, LINE_WIDTH, color, true);
             }
         });
     }
@@ -935,10 +961,10 @@ public class WeldTestRenderer {
             }
             gc.fillOval(position.getX() - baseItemType.getPhysicalAreaConfig().getRadius(), position.getY() - baseItemType.getPhysicalAreaConfig().getRadius(), baseItemType.getPhysicalAreaConfig().getRadius() * 2, baseItemType.getPhysicalAreaConfig().getRadius() * 2);
             gc.setFill(BASE_ITEM_TYPE_COLOR);
-            fillPolygon(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
+            fillDirectionMarker(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
             gc.setStroke(highlight ? BASE_ITEM_TYPE_LINE_COLOR_HIGHLIGHTED : BASE_ITEM_TYPE_LINE_COLOR);
             gc.setLineWidth(0.1);
-            strokePolygon(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
+            strokeDirectionMarker(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
             gc.setStroke(BASE_ITEM_TYPE_HEADING_COLOR);
             gc.setLineWidth(0.5);
             createHeadingLine(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
@@ -967,10 +993,10 @@ public class WeldTestRenderer {
             throw new IllegalArgumentException("Unknown SyncItem: " + syncItem);
         }
         if (syncItem.getSyncPhysicalArea().canMove()) {
-            fillPolygon(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
+            fillDirectionMarker(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
             gc.setStroke(BASE_ITEM_TYPE_LINE_COLOR);
             gc.setLineWidth(0.1);
-            strokePolygon(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
+            strokeDirectionMarker(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
             gc.setStroke(BASE_ITEM_TYPE_HEADING_COLOR);
             gc.setLineWidth(0.5);
             createHeadingLine(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
@@ -1000,7 +1026,7 @@ public class WeldTestRenderer {
         }
     }
 
-    private void fillPolygon(DecimalPosition position, double radius, double angle) {
+    private void fillDirectionMarker(DecimalPosition position, double radius, double angle) {
         double angel1 = angle - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
         double angel2 = angle + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
         double angel3 = angel1 + MathHelper.HALF_RADIANT;
@@ -1014,7 +1040,7 @@ public class WeldTestRenderer {
         gc.fillPolygon(new double[]{point1.getX(), point2.getX(), point3.getX(), point4.getX()}, new double[]{point1.getY(), point2.getY(), point3.getY(), point4.getY()}, 4);
     }
 
-    private void strokePolygon(DecimalPosition position, double radius, double angle) {
+    private void strokeDirectionMarker(DecimalPosition position, double radius, double angle) {
         double angel1 = angle - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
         double angel2 = angle + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
         double angel3 = angel1 + MathHelper.HALF_RADIANT;

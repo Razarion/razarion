@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.TestCaseGenerator;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -31,6 +30,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.toNode;
 
 /**
  * Created by Beat
@@ -223,7 +224,8 @@ public class WeldTestController implements Initializable {
     protected void onMousePressedTerrain(DecimalPosition position) {
         System.out.println("-----------------------------------------------");
         System.out.println("position: " + position);
-        TerrainShapeNode terrainShapeNode = terrainService.getPathingAccess().getTerrainShapeNode(TerrainUtil.toNode(position));
+        System.out.println("Node index: " + toNode(position));
+        TerrainShapeNode terrainShapeNode = terrainService.getPathingAccess().getTerrainShapeNode(toNode(position));
         System.out.println("SurfaceAccess: interpolated Z: " + terrainService.getSurfaceAccess().getInterpolatedZ(position));
         System.out.println("Interpolated norm: " + terrainService.getSurfaceAccess().getInterpolatedNorm(position));
         if (terrainShapeNode == null) {
