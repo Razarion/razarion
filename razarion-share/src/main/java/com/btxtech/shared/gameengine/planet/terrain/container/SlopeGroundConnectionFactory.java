@@ -52,6 +52,35 @@ public class SlopeGroundConnectionFactory {
         // printTeatCase(absoluteRect, piercingLines, groundHeight, water, result);
     }
 
+    public static List<List<Vertex>> setupSlopeGroundConnectionBreakingLine(Rectangle2D absoluteRect, List<List<DecimalPosition>> piercingLines, double groundHeight, List<DecimalPosition> breakingGroundPiercing, boolean water, Driveway driveway, double drivewayBaseHeight) {
+        List<List<DecimalPosition>> innerPiercingsTmp1 = new ArrayList<>();
+        piercingLines.stream()
+                .filter(innerPiercing -> {
+                    boolean invalid = false;
+                    for (int i = 0; i < innerPiercing.size() - 1 && !invalid; i++) {
+                        Line piercing = new Line(innerPiercing.get(i), innerPiercing.get(i + 1));
+                        for (int j = 0; j < breakingGroundPiercing.size() - 1 && !invalid; j++) {
+                            Line breaking = new Line(breakingGroundPiercing.get(j), breakingGroundPiercing.get(j + 1));
+                            if (piercing.getCrossInclusive(breaking) != null) {
+                                invalid = true;
+                            }
+                            if (breakingGroundPiercing.get(j).cross(breakingGroundPiercing.get(j + 1), innerPiercing.get(i)) > 0) {
+                                invalid = true;
+                            }
+                            if (breakingGroundPiercing.get(j).cross(breakingGroundPiercing.get(j + 1), innerPiercing.get(i + 1)) > 0) {
+                                invalid = true;
+                            }
+                        }
+                    }
+                    return !invalid;
+                })
+                .forEach(innerPiercingsTmp1::add);
+
+        innerPiercingsTmp1.add(breakingGroundPiercing);
+
+        return setupSlopeGroundConnection(absoluteRect, innerPiercingsTmp1, groundHeight, water, driveway, drivewayBaseHeight);
+    }
+
     private static List<Vertex> setupSlopeGroundConnection1(Rectangle2D absoluteRect, List<DecimalPosition> piercingLine, double groundHeight, boolean water, Driveway driveway, double drivewayBaseHeight) {
         if (water) {
             piercingLine = new ArrayList<>(piercingLine);

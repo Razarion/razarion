@@ -70,7 +70,7 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
 
         setup(parent);
 
-        showDisplay();
+        // showDisplay();
 
         AssertTerrainShape.assertTerrainShape(getClass(), "testInvertedWaterLandShapeGeneration1.json", getTerrainShape());
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(400, 400), getClass(), "testInvertedWaterLandShapeHNT1.json");

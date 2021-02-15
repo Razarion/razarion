@@ -270,8 +270,8 @@ public class TerrainShapeManagerSetup {
                     // Inner slope ground connection regarding driveway break line
                     List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
                     if (breakingGroundPiercing != null) {
-                        terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, Collections.singletonList(breakingGroundPiercing), slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getGroundConfigId());
-                        terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, Collections.singletonList(fractalDriveway.setupPiercingLine(terrainRect, false)), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getGroundConfigId());
+                        terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnectionBreakingLine(terrainRect, innerPiercings, slope.getInnerGroundHeight(), breakingGroundPiercing, false, null, 0), slope.getSlopeConfig().getGroundConfigId());
+                        terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnectionBreakingLine(terrainRect, innerPiercings, slope.getInnerGroundHeight(), fractalDriveway.setupPiercingLine(terrainRect, false), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getGroundConfigId());
                     } else {
                         terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, innerPiercings, slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getGroundConfigId());
                     }
