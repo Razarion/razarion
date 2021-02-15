@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.planet.terrain.slope.Driveway;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -57,17 +58,18 @@ public class SlopeGroundConnectionFactory {
         piercingLines.stream()
                 .filter(innerPiercing -> {
                     boolean invalid = false;
-                    for (int i = 0; i < innerPiercing.size() - 1 && !invalid; i++) {
-                        Line piercing = new Line(innerPiercing.get(i), innerPiercing.get(i + 1));
+                    for (int i = 0; i < innerPiercing.size() && !invalid; i++) {
                         for (int j = 0; j < breakingGroundPiercing.size() - 1 && !invalid; j++) {
-                            Line breaking = new Line(breakingGroundPiercing.get(j), breakingGroundPiercing.get(j + 1));
-                            if (piercing.getCrossInclusive(breaking) != null) {
+                            // Is piercing line already covered in breaking line
+                            if (absoluteRect.contains(Arrays.asList(innerPiercing.get(i), breakingGroundPiercing.get(j))) && innerPiercing.get(i).equalsDelta(breakingGroundPiercing.get(j))) {
                                 invalid = true;
                             }
+                            // Is piercing line already covered in breaking line
+                            if (absoluteRect.contains(Arrays.asList(innerPiercing.get(i), breakingGroundPiercing.get(j + 1))) && innerPiercing.get(i).equalsDelta(breakingGroundPiercing.get(j + 1))) {
+                                invalid = true;
+                            }
+                            // Remove wrong side of the breaking line
                             if (breakingGroundPiercing.get(j).cross(breakingGroundPiercing.get(j + 1), innerPiercing.get(i)) > 0) {
-                                invalid = true;
-                            }
-                            if (breakingGroundPiercing.get(j).cross(breakingGroundPiercing.get(j + 1), innerPiercing.get(i + 1)) > 0) {
                                 invalid = true;
                             }
                         }

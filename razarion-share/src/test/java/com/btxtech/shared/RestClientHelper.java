@@ -73,7 +73,18 @@ public class RestClientHelper {
         System.out.println("List<DrivewayConfig> drivewayConfigs = Arrays.asList(");
         System.out.println(coldGameUiContext.getStaticGameConfig().getDrivewayConfigs().stream().map(driveway -> "    new DrivewayConfig().id(" + driveway.getId() + ").angle(" + driveway.getAngle() + ")").collect(Collectors.joining(",\n")) + ");");
         System.out.println("// ---------------------------Slope corners---------------------------");
-        System.out.println("List<TerrainSlopePosition> terrainSlopePositions = Collections.singletonList(new TerrainSlopePosition()");
+        printTerrainSlopePosition(terrainSlopePosition, null);
+        System.out.println("setupTerrainTypeService(slopeConfigs, drivewayConfigs, null, null, null, terrainSlopePositions, null, null);");
+        System.out.println("showDisplay();");
+    }
+
+    private static void printTerrainSlopePosition(TerrainSlopePosition terrainSlopePosition, Integer childNr) {
+        if (terrainSlopePosition.getChildren() != null) {
+            terrainSlopePosition.getChildren().forEach(child -> {
+                printTerrainSlopePosition(child, 1);
+            });
+        }
+        System.out.println("List<TerrainSlopePosition> " + (childNr != null ? "childTerrainSlopePositions" + childNr : "terrainSlopePositions") + " = Collections.singletonList(new TerrainSlopePosition()");
         System.out.println("        .id(" + terrainSlopePosition.getId() + ")");
         System.out.println("        .slopeConfigId(" + terrainSlopePosition.getSlopeConfigId() + ")");
         System.out.println("        .polygon(Arrays.asList(");
@@ -82,13 +93,11 @@ public class RestClientHelper {
                 .stream()
                 .map(terrainSlopeCorner -> "                 GameTestHelper.createTerrainSlopeCorner(" + terrainSlopeCorner.getPosition().getX() + ", " + terrainSlopeCorner.getPosition().getY() + ", " + terrainSlopeCorner.getSlopeDrivewayId() + ")")
                 .collect(Collectors.joining(",\n")) + ")));");
-        System.out.println("setupTerrainTypeService(slopeConfigs, drivewayConfigs, null, null, null, terrainSlopePositions, null, null);");
-        System.out.println("showDisplay();");
     }
 
     public static void main(String[] args) {
         try {
-            dumpSlope(117, new DecimalPosition(283, 409));
+            dumpSlope(117, new DecimalPosition(285, 410));
         } catch (IOException e) {
             e.printStackTrace();
         }
