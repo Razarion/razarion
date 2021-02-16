@@ -21,6 +21,10 @@ public class TerrainSubNode {
         return terrainSubNodes;
     }
 
+    public void setTerrainSubNodes(TerrainSubNode[][] terrainSubNodes) {
+        this.terrainSubNodes = terrainSubNodes;
+    }
+
     public Double getHeight() {
         return height;
     }

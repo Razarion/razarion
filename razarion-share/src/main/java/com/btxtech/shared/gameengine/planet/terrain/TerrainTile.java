@@ -83,6 +83,10 @@ public class TerrainTile {
         return terrainNodes;
     }
 
+    public void setTerrainNodes(TerrainNode[][] terrainNodes) {
+        this.terrainNodes = terrainNodes;
+    }
+
     public void setHeight(double height) {
         this.height = height;
     }

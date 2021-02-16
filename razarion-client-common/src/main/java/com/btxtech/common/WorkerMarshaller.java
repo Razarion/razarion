@@ -20,7 +20,9 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
@@ -47,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static jsinterop.base.Js.castToDouble;
 import static jsinterop.base.Js.uncheckedCast;
 
 /**
@@ -410,6 +413,9 @@ public class WorkerMarshaller {
         array.push(marshallTerrainSlopeTiles(terrainTile.getTerrainSlopeTiles()));
         array.push(marshallTerrainWaterTiles(terrainTile.getTerrainWaterTiles()));
         array.push(marshallTerrainTileObjectList(terrainTile.getTerrainTileObjectLists()));
+        array.push(terrainTile.getHeight());
+        array.push(terrainTile.getLandWaterProportion());
+        array.push(marshallTerrainNodes(terrainTile.getTerrainNodes()));
         return array;
     }
 
@@ -488,13 +494,72 @@ public class WorkerMarshaller {
     }
 
     private static elemental2.core.Map<Integer, Float32Array> marshallNativeMatrices(List<NativeMatrix> nativeMatrices) {
-        elemental2.core.Map<Integer, Float32Array> result = new elemental2.core.Map<>();;
+        elemental2.core.Map<Integer, Float32Array> result = new elemental2.core.Map<>();
         if (nativeMatrices != null) {
             for (int i = 0; i < nativeMatrices.size(); i++) {
                 result.set(i, Js.uncheckedCast(nativeMatrices.get(i).getColumnMajorFloat32Array()));
             }
         }
         return result;
+    }
+
+    private static Object marshallTerrainNodes(TerrainNode[][] terrainNodes) {
+        if (terrainNodes == null || terrainNodes.length == 0) {
+            return null;
+        }
+        Array<Object> array = new Array<>();
+        Arrays.stream(terrainNodes).forEach(terrainNodesInner -> {
+            if (terrainNodesInner != null) {
+                Array<Object> arrayInner = new Array<>();
+                Arrays.stream(terrainNodesInner).forEach(terrainNode -> {
+                    if (terrainNode != null) {
+                        Array<Object> terrainNodeArray = new Array<>();
+                        terrainNodeArray.push(terrainNode.getHeight());
+                        terrainNodeArray.push(Any.of(terrainNode.getTerrainType()).asDouble());  // Int does not work here -> {a: -1}
+                        if (terrainNode.getTerrainSubNodes() != null) {
+                            terrainNodeArray.push(marshallTerrainSubNodes(terrainNode.getTerrainSubNodes()));
+                        }
+                        arrayInner.push(terrainNodeArray);
+                    } else {
+                        arrayInner.push((Object) null);
+                    }
+                });
+                array.push(arrayInner);
+            } else {
+                array.push((Object) null);
+            }
+        });
+        return array;
+    }
+
+    private static Object marshallTerrainSubNodes(TerrainSubNode[][] terrainSubNodes) {
+        Array<Object> array = new Array<>();
+        Arrays.stream(terrainSubNodes).forEach(terrainSubNodesInner -> {
+            if (terrainSubNodesInner != null) {
+                Array<Object> arrayInner = new Array<>();
+                Arrays.stream(terrainSubNodesInner).forEach(terrainSubNode -> {
+                    if (terrainSubNode != null) {
+                        Array<Object> terrainNodeArray = new Array<>();
+                        if (terrainSubNode.getHeight() != null) {
+                            terrainNodeArray.push(castToDouble(terrainSubNode.getHeight()));
+                        } else {
+                            terrainNodeArray.push((Object)null);
+                        }
+                        terrainNodeArray.push(Any.of(terrainSubNode.getTerrainType()).asDouble()); // Int does not work here -> {a: -1}
+                        if (terrainSubNode.getTerrainSubNodes() != null) {
+                            terrainNodeArray.push(marshallTerrainSubNodes(terrainSubNode.getTerrainSubNodes()));
+                        }
+                        arrayInner.push(terrainNodeArray);
+                    } else {
+                        arrayInner.push((Object) null);
+                    }
+                });
+                array.push(arrayInner);
+            } else {
+                array.push((Object) null);
+            }
+        });
+        return array;
     }
 
     private static TerrainTile demarshallTerrainTile(Object data, NativeMatrixFactory nativeMatrixFactory) {
@@ -506,6 +571,9 @@ public class WorkerMarshaller {
         terrainTile.setTerrainSlopeTiles(demarshallTerrainSlopeTiles(array[3]));
         terrainTile.setTerrainWaterTiles(demarshallTerrainWaterTiles(array[4]));
         terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[5], nativeMatrixFactory));
+        terrainTile.setHeight(array[6].asDouble());
+        terrainTile.setLandWaterProportion(array[7].asDouble());
+        terrainTile.setTerrainNodes(demarshallTerrainNodes(array[8]));
         return terrainTile;
     }
 
@@ -599,6 +667,74 @@ public class WorkerMarshaller {
 
         return nativeMatrices;
 
+    }
+
+    private static TerrainNode[][] demarshallTerrainNodes(Any any) {
+        if (any == null) {
+            return null;
+        }
+        Any[] array = Js.castToArray(any);
+        TerrainNode[][] terrainNodes = new TerrainNode[array.length][];
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == null) {
+                terrainNodes[i] = null;
+                continue;
+            }
+            Any[] innerArray = Js.castToArray(array[i]);
+            TerrainNode[] innerTerrainNodes = new TerrainNode[innerArray.length];
+            for (int j = 0; j < innerArray.length; j++) {
+                if (innerArray[j] == null) {
+                    innerTerrainNodes[j] = null;
+                    continue;
+                }
+                Any[] terrainNodeArray = Js.castToArray(innerArray[j]);
+                TerrainNode terrainNode = new TerrainNode();
+                terrainNode.setHeight(terrainNodeArray[0].asDouble());
+                terrainNode.setTerrainType(terrainNodeArray[1].asInt());
+                if (terrainNodeArray[2] != null) {
+                    terrainNode.setTerrainSubNodes(demarshallTerrainSubNodes(terrainNodeArray[2]));
+                }
+                innerTerrainNodes[j] = terrainNode;
+            }
+            terrainNodes[i] = innerTerrainNodes;
+        }
+
+        return terrainNodes;
+    }
+
+    private static TerrainSubNode[][] demarshallTerrainSubNodes(Any any) {
+        Any[] array = Js.castToArray(any);
+        if (array.length == 0) {
+            return null;
+        }
+        TerrainSubNode[][] terrainSubNodes = new TerrainSubNode[array.length][];
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == null) {
+                terrainSubNodes[i] = null;
+                continue;
+            }
+            Any[] innerArray = Js.castToArray(array[i]);
+            TerrainSubNode[] innerTerrainSubNodes = new TerrainSubNode[innerArray.length];
+            for (int j = 0; j < innerArray.length; j++) {
+                if (innerArray[j] == null) {
+                    innerTerrainSubNodes[j] = null;
+                    continue;
+                }
+                Any[] terrainSubNodeArray = Js.castToArray(innerArray[j]);
+                TerrainSubNode terrainSubNode = new TerrainSubNode();
+                if (terrainSubNodeArray[0] != null) {
+                    terrainSubNode.setHeight(terrainSubNodeArray[0].asDouble());
+                }
+                terrainSubNode.setTerrainType(terrainSubNodeArray[1].asInt());
+                if (terrainSubNodeArray[2] != null) {
+                    terrainSubNode.setTerrainSubNodes(demarshallTerrainSubNodes(terrainSubNodeArray[2]));
+                }
+                innerTerrainSubNodes[j] = terrainSubNode;
+            }
+            terrainSubNodes[i] = innerTerrainSubNodes;
+        }
+
+        return terrainSubNodes;
     }
 
 }

@@ -17,6 +17,10 @@ public class TerrainNode {
         return terrainSubNodes;
     }
 
+    public void setTerrainSubNodes(TerrainSubNode[][] terrainSubNodes) {
+        this.terrainSubNodes = terrainSubNodes;
+    }
+
     public void insertTerrainSubNode(int x, int y, TerrainSubNode terrainSubNode) {
         terrainSubNodes[x][y] = terrainSubNode;
     }
