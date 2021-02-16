@@ -25,6 +25,8 @@ import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ProgressAnimation;
@@ -41,7 +43,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -398,7 +399,9 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
             shapeTransformTRS.setScaleY(1);
             shapeTransformTRS.setScaleZ(1);
             for (ProgressAnimation progressAnimation : progressAnimations) {
-                Objects.requireNonNull(progressAnimation.getAnimationTrigger(), "No animation trigger: " + getHelperString());
+                if (progressAnimation.getAnimationTrigger() == null) {
+                    throw new AlarmRaisedException(Alarm.Type.INVALID_SHAPE_3D, "No animation trigger: " + getHelperString());
+                }
                 switch (progressAnimation.getAnimationTrigger()) {
                     case ITEM_PROGRESS:
                         progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
