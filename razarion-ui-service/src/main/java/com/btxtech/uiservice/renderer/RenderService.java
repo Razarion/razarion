@@ -43,7 +43,7 @@ public abstract class RenderService {
 
     protected abstract void prepareDepthBufferRendering();
 
-    protected abstract void prepare(RenderUnitControl renderUnitControl);
+    protected abstract void prepare();
 
     public void setup() {
         internalSetup();
@@ -85,7 +85,7 @@ public abstract class RenderService {
             long timeStamp = System.currentTimeMillis();
 
             pass = Pass.SHADOW;
-            prepare(RenderUnitControl.NORMAL);
+            prepare();
             prepareDepthBufferRendering();
             renderTaskRunners.stream().filter(AbstractRenderTaskRunner::isEnabled).forEach(runner -> runner.draw(timeStamp));
 

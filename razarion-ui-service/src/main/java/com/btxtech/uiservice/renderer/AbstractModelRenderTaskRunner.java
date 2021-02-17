@@ -14,14 +14,6 @@ public abstract class AbstractModelRenderTaskRunner<T> extends AbstractRenderTas
     @Deprecated
     private List<ModelRenderer<T>> modelRenderers = new ArrayList<>();
 
-    // @Override
-    public void draw() {
-        if (!isActive() || !enabled) {
-            return;
-        }
-        double interpolationFactor = setupInterpolationFactor();
-    }
-
     /**
      * Override in sub classes
      *

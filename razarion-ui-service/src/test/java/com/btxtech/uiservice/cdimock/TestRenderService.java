@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.cdimock;
 
 import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.renderer.RenderUnitControl;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -27,7 +26,7 @@ public class TestRenderService extends RenderService {
     }
 
     @Override
-    protected void prepare(RenderUnitControl renderUnitControl) {
+    protected void prepare() {
         throw new UnsupportedOperationException();
     }
 }
