@@ -61,7 +61,7 @@ public abstract class AbstractRenderTaskRunner {
     }
 
     public void draw(long timeStamp) {
-        double interpolationFactor = setupInterpolationFactor();
+        double interpolationFactor = setupInterpolationFactor(timeStamp);
         if (renderService.getPass() == RenderService.Pass.SHADOW) {
             preRender(timeStamp);
         }
@@ -79,7 +79,7 @@ public abstract class AbstractRenderTaskRunner {
     }
 
     // Override in subclasses
-    protected double setupInterpolationFactor() {
+    protected double setupInterpolationFactor(long timeStamp) {
         return 0;
     }
 

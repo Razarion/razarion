@@ -135,7 +135,7 @@ public class ModelMatrices {
 
     public ModelMatrices interpolateVelocity(double factor) {
         if (interpolatableVelocity != null && factor != 0.0) {
-            factor = MathHelper.clamp(factor - PlanetService.TICK_FACTOR, -PlanetService.TICK_FACTOR, 0.0); // Move from old position to actual poaition.
+            factor = MathHelper.clamp(factor, 0.0, PlanetService.TICK_FACTOR);
             ModelMatrices modelMatrices = new ModelMatrices(matrix.getNativeMatrixFactory().createTranslation(interpolatableVelocity.x * factor, interpolatableVelocity.y * factor, interpolatableVelocity.z * factor).multiply(matrix));
             modelMatrices.progress = progress;
             modelMatrices.interpolatableVelocity = interpolatableVelocity;

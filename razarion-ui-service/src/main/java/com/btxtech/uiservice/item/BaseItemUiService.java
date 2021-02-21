@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toVertex;
+import static com.btxtech.shared.utils.MathHelper.clamp;
 
 /**
  * Created by Beat
@@ -446,8 +447,8 @@ public class BaseItemUiService {
         return houseSpace + gameUiControl.getPlanetConfig().getHouseSpace();
     }
 
-    public double setupInterpolationFactor() {
-        return (double) (System.currentTimeMillis() - lastUpdateTimeStamp) / 1000.0;
+    public double setupInterpolationFactor(long timeStamp) {
+        return clamp((double) (timeStamp - lastUpdateTimeStamp) / 1000.0, 0.0, 1.0);
     }
 
     public int getMyItemCount(int baseItemTypeId) {

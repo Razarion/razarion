@@ -29,12 +29,12 @@ public class ItemMarkerRenderTaskRunner extends AbstractRenderTaskRunner {
     }
 
     @Override
-    protected double setupInterpolationFactor() {
-        return baseItemUiService.setupInterpolationFactor();
+    protected double setupInterpolationFactor(long timeStamp) {
+        return baseItemUiService.setupInterpolationFactor(timeStamp);
     }
 
     private void setupItemMarker() {
-        WebGlRenderTask<ItemMarkerGeometry> markerRenderTask = createModelRenderTask(RenderTask.class,
+        createModelRenderTask(RenderTask.class,
                 new ItemMarkerGeometry(),
                 timeStamp -> itemMarkerService.provideMarkerModelMatrices(),
                 null,

@@ -29,7 +29,7 @@ public abstract class AbstractModelRenderTaskRunner<T> extends AbstractRenderTas
     }
 
     // Override in subclasses
-    protected double setupInterpolationFactor() {
+    protected double setupInterpolationFactor(long timeStamp) {
         return 0;
     }
 

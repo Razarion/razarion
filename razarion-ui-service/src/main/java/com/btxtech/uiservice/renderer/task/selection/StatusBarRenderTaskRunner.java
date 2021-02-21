@@ -29,12 +29,12 @@ public class StatusBarRenderTaskRunner extends AbstractRenderTaskRunner {
     }
 
     @Override
-    protected double setupInterpolationFactor() {
-        return baseItemUiService.setupInterpolationFactor();
+    protected double setupInterpolationFactor(long timeStamp) {
+        return baseItemUiService.setupInterpolationFactor(timeStamp);
     }
 
     private void setupStatusBar() {
-        WebGlRenderTask<StatusBarGeometry> statusBarRenderTask = createModelRenderTask(RenderTask.class,
+        createModelRenderTask(RenderTask.class,
                 new StatusBarGeometry(),
                 timeStamp -> itemMarkerService.provideStatusBarModelMatrices(),
                 null,

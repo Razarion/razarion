@@ -38,8 +38,8 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     }
 
     @Override
-    protected double setupInterpolationFactor() {
-        return baseItemUiService.setupInterpolationFactor();
+    protected double setupInterpolationFactor(long timeStamp) {
+        return baseItemUiService.setupInterpolationFactor(timeStamp);
     }
 
     private void setupBaseItemType(BaseItemType baseItemType) {
