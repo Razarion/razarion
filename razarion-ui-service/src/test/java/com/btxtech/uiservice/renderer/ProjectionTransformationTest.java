@@ -6,9 +6,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.test.shared.SharedTestHelper;
 import com.btxtech.uiservice.WeldUiBaseTest;
-import com.btxtech.uiservice.gui.AbstractUiTestGuiRenderer;
-import com.btxtech.uiservice.gui.UiTestGuiDisplay;
-import javafx.scene.paint.Color;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,15 +28,15 @@ public class ProjectionTransformationTest extends WeldUiBaseTest {
         Matrix4 actual = getProjectionTransformation().getMatrix();
 
 
-        UiTestGuiDisplay.show(new AbstractUiTestGuiRenderer() {
-            @Override
-            protected void doRender() {
-                strokeCurve(getProjectionTransformation().calculateViewField(0).toList(), 0.1, Color.BLACK, true);
-                strokeCurve(getProjectionTransformation().calculateViewField(20).toList(), 0.1, Color.RED, true);
-                strokeCurve(getProjectionTransformation().calculateViewField(-2).toList(), 0.1, Color.BLUE, true);
-                drawPosition(getProjectionTransformation().calculateViewField(0).calculateCenter(), 0.1, Color.PINK);
-            }
-        });
+//        UiTestGuiDisplay.show(new AbstractUiTestGuiRenderer() {
+//            @Override
+//            protected void doRender() {
+//                strokeCurve(getProjectionTransformation().calculateViewField(0).toList(), 0.1, Color.BLACK, true);
+//                strokeCurve(getProjectionTransformation().calculateViewField(20).toList(), 0.1, Color.RED, true);
+//                strokeCurve(getProjectionTransformation().calculateViewField(-2).toList(), 0.1, Color.BLUE, true);
+//                drawPosition(getProjectionTransformation().calculateViewField(0).calculateCenter(), 0.1, Color.PINK);
+//            }
+//        });
 
         Assert.assertEquals(new DecimalPosition(902.3007042041111, 701.7662350913715), getProjectionTransformation().calculateViewField(0).calculateCenter());
 
@@ -57,15 +54,15 @@ public class ProjectionTransformationTest extends WeldUiBaseTest {
         getProjectionTransformation().setFovY(Math.toRadians(45.0));
         getProjectionTransformation().setAspectRatio(0.9982078853046595);
 
-        ViewField viewField = getProjectionTransformation().calculateViewField(0);
-        UiTestGuiDisplay.show(new AbstractUiTestGuiRenderer() {
-            @Override
-            protected void doRender() {
-                strokePolygon(getProjectionTransformation().calculateViewField(0).toList(), 1, Color.BLACK, true);
-                strokePolygon(getProjectionTransformation().calculateViewField(20).toList(), 1, Color.RED, true);
-                strokePolygon(getProjectionTransformation().calculateViewField(-10).toList(), 1, Color.BLUE, true);
-            }
-        });
+//        ViewField viewField = getProjectionTransformation().calculateViewField(0);
+//        UiTestGuiDisplay.show(new AbstractUiTestGuiRenderer() {
+//            @Override
+//            protected void doRender() {
+//                strokePolygon(getProjectionTransformation().calculateViewField(0).toList(), 1, Color.BLACK, true);
+//                strokePolygon(getProjectionTransformation().calculateViewField(20).toList(), 1, Color.RED, true);
+//                strokePolygon(getProjectionTransformation().calculateViewField(-10).toList(), 1, Color.BLUE, true);
+//            }
+//        });
 
 
         Matrix4 actual = getProjectionTransformation().getMatrix();

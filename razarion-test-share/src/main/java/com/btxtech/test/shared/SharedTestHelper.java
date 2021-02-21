@@ -65,7 +65,7 @@ public class SharedTestHelper {
         if (expected.equalsDelta(actual, delta)) {
             return;
         }
-        Assert.fail("Matrices are not equal. Expected: " + expected + " Actual:" + actual);
+        Assert.fail("Matrices are not equal.\nExpected: " + expected + "\nActual:" + actual);
     }
 
     public static void assertColor(Color expected, Color actual) {

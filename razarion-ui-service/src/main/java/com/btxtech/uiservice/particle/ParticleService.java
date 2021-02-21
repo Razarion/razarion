@@ -47,10 +47,14 @@ public class ParticleService {
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
         particleShapeConfigs.clear();
-        particleShapeConfigs.addAll(gameUiControlInitEvent.getColdGameUiContext().getParticleShapeConfigs());
+        if (gameUiControlInitEvent.getColdGameUiContext().getParticleShapeConfigs() != null) {
+            particleShapeConfigs.addAll(gameUiControlInitEvent.getColdGameUiContext().getParticleShapeConfigs());
+        }
         particleEmitterSequenceConfigs.clear();
-        gameUiControlInitEvent.getColdGameUiContext().getParticleEmitterSequenceConfigs()
-                .forEach(particleEmitterSequenceConfig -> particleEmitterSequenceConfigs.put(particleEmitterSequenceConfig.getId(), particleEmitterSequenceConfig));
+        if (gameUiControlInitEvent.getColdGameUiContext().getParticleEmitterSequenceConfigs() != null) {
+            gameUiControlInitEvent.getColdGameUiContext().getParticleEmitterSequenceConfigs()
+                    .forEach(particleEmitterSequenceConfig -> particleEmitterSequenceConfigs.put(particleEmitterSequenceConfig.getId(), particleEmitterSequenceConfig));
+        }
     }
 
     public ParticleEmitterSequenceHandler start(long timestamp, Vertex position, Vertex direction, ParticleEmitterSequenceConfig dependentParticleEmitterConfig) {
