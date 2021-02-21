@@ -37,7 +37,11 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
         }
         staticGameConfig.setGroundConfigs(Collections.singletonList(groundConfig));
         staticGameConfig.setSlopeConfigs(slopeConfigs);
-        staticGameConfig.setWaterConfigs(waterConfigs);
+        if (waterConfigs != null) {
+            staticGameConfig.setWaterConfigs(waterConfigs);
+        } else {
+            staticGameConfig.setWaterConfigs(FallbackConfig.setupWaterConfigs());
+        }
         staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
         if (drivewayConfigs == null) {
             drivewayConfigs = Collections.singletonList(new DrivewayConfig().id(DRIVEWAY_ID_1).angle(Math.toRadians(20)));
