@@ -210,7 +210,7 @@ public class BaseItemUiService {
                 }
                 // Alive
                 if (!isSpawning && isBuildup && isHealthy) {
-                    ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, color);
+                    ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.interpolatableAngularVelocity, color);
                     aliveModelMatrices.put(baseItemType, modelMatrices);
                     if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
                         weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
@@ -229,7 +229,7 @@ public class BaseItemUiService {
 
                 // Demolition
                 if (!isSpawning && isBuildup && !isHealthy) {
-                    ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.health, color);
+                    ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.interpolatableAngularVelocity, nativeSyncBaseItemTickInfo.health, color);
                     demolitionModelMatrices.put(baseItemType, modelMatrices);
                     if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
                         effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, position3d, baseItemType);

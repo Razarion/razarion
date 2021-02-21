@@ -705,6 +705,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             }
             if (getSyncPhysicalArea().canMove()) {
                 nativeSyncBaseItemTickInfo.interpolatableVelocity = getSyncPhysicalMovable().setupInterpolatableVelocity();
+                nativeSyncBaseItemTickInfo.interpolatableAngularVelocity = getSyncPhysicalMovable().setupInterpolatableAngularVelocity();
             }
             nativeSyncBaseItemTickInfo.contained = false;
         } else {

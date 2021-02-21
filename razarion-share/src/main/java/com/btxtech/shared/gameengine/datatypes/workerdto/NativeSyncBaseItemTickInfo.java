@@ -26,6 +26,7 @@ public class NativeSyncBaseItemTickInfo {
     public NativeVertexDto harvestingResourcePosition;
     public NativeVertexDto buildingPosition;
     public NativeVertexDto interpolatableVelocity;
+    public Double interpolatableAngularVelocity;
     public int containingItemCount;
     public double maxContainingRadius;
     public boolean contained;

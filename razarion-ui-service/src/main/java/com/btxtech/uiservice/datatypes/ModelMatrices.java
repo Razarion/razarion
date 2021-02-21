@@ -15,13 +15,12 @@ import com.btxtech.shared.utils.MathHelper;
  * Created by Beat
  * 15.05.2016.
  */
-// May only be used in the GUI part (renderer)
-// Move to razaion-ui-services
 public class ModelMatrices {
     private NativeMatrix matrix;
     private NativeMatrix norm;
     private double progress;
     private NativeVertexDto interpolatableVelocity;
+    private Double interpolatableAngularVelocity;
     private int particleXColorRampOffsetIndex;
     private double radius;
     private Color color;
@@ -29,24 +28,25 @@ public class ModelMatrices {
     private Double turretAngle;
 
     public ModelMatrices(NativeMatrix matrix) {
-        this(matrix, null, 0, null);
+        this(matrix, null, null, 0, null);
     }
 
     public ModelMatrices(NativeMatrix matrix, Color color) {
-        this(matrix, null, 0, color);
+        this(matrix, null, null, 0, color);
     }
 
     public ModelMatrices(NativeMatrix matrix, double progress, Color color) {
-        this(matrix, null, progress, color);
+        this(matrix, null, null, progress, color);
     }
 
-    public ModelMatrices(NativeMatrix matrix, NativeVertexDto interpolatableVelocity, Color color) {
-        this(matrix, interpolatableVelocity, 0, color);
+    public ModelMatrices(NativeMatrix matrix, NativeVertexDto interpolatableVelocity, Double interpolatableAngularVelocity, Color color) {
+        this(matrix, interpolatableVelocity, interpolatableAngularVelocity, 0, color);
     }
 
-    public ModelMatrices(NativeMatrix matrix, NativeVertexDto interpolatableVelocity, double progress, Color color) {
+    public ModelMatrices(NativeMatrix matrix, NativeVertexDto interpolatableVelocity, Double interpolatableAngularVelocity, double progress, Color color) {
         this.matrix = matrix;
         this.interpolatableVelocity = interpolatableVelocity;
+        this.interpolatableAngularVelocity = interpolatableAngularVelocity;
         this.progress = progress;
         this.color = color;
     }
@@ -56,6 +56,7 @@ public class ModelMatrices {
         this.norm = modelMatrices.norm;
         this.progress = modelMatrices.progress;
         this.interpolatableVelocity = modelMatrices.interpolatableVelocity;
+        this.interpolatableAngularVelocity = modelMatrices.interpolatableAngularVelocity;
         this.particleXColorRampOffsetIndex = modelMatrices.particleXColorRampOffsetIndex;
         this.radius = modelMatrices.radius;
         this.color = modelMatrices.color;
@@ -68,16 +69,17 @@ public class ModelMatrices {
     }
 
     public ModelMatrices(Matrix4 model, double progress, NativeMatrixFactory nativeMatrixFactory) {
-        this(model, null, progress, nativeMatrixFactory);
+        this(model, null, null, progress, nativeMatrixFactory);
     }
 
-    public ModelMatrices(Matrix4 model, NativeVertexDto interpolatableVelocity, NativeMatrixFactory nativeMatrixFactory) {
-        this(model, interpolatableVelocity, 0, nativeMatrixFactory);
+    public ModelMatrices(Matrix4 model, NativeVertexDto interpolatableVelocity, Double interpolatableAngularVelocity, NativeMatrixFactory nativeMatrixFactory) {
+        this(model, interpolatableVelocity, interpolatableAngularVelocity, 0, nativeMatrixFactory);
     }
 
-    public ModelMatrices(Matrix4 model, NativeVertexDto interpolatableVelocity, double progress, NativeMatrixFactory nativeMatrixFactory) {
+    public ModelMatrices(Matrix4 model, NativeVertexDto interpolatableVelocity, Double interpolatableAngularVelocity, double progress, NativeMatrixFactory nativeMatrixFactory) {
         matrix = nativeMatrixFactory.createFromColumnMajorArray(model.toWebGlArray());
         this.interpolatableVelocity = interpolatableVelocity;
+        this.interpolatableAngularVelocity = interpolatableAngularVelocity;
         this.progress = progress;
     }
 
@@ -95,7 +97,6 @@ public class ModelMatrices {
         norm = null;
         this.interpolatableVelocity = interpolatableVelocity;
     }
-
 
     public void updatePositionScale(Vertex position, double scale, double progress) {
         updatePositionScale(position, scale, null);
@@ -134,17 +135,19 @@ public class ModelMatrices {
     }
 
     public ModelMatrices interpolateVelocity(double factor) {
-        if (interpolatableVelocity != null && factor != 0.0) {
+        if ((interpolatableVelocity != null || interpolatableAngularVelocity != null) && factor != 0.0) {
             factor = MathHelper.clamp(factor, 0.0, PlanetService.TICK_FACTOR);
-            ModelMatrices modelMatrices = new ModelMatrices(matrix.getNativeMatrixFactory().createTranslation(interpolatableVelocity.x * factor, interpolatableVelocity.y * factor, interpolatableVelocity.z * factor).multiply(matrix));
-            modelMatrices.progress = progress;
-            modelMatrices.interpolatableVelocity = interpolatableVelocity;
-            modelMatrices.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
-            modelMatrices.radius = radius;
-            modelMatrices.color = color;
-            modelMatrices.bgColor = bgColor;
-            modelMatrices.turretAngle = turretAngle;
-            return modelMatrices;
+            NativeMatrix translationMatrix = matrix;
+            if (interpolatableVelocity != null) {
+                translationMatrix = matrix.getNativeMatrixFactory().createTranslation(interpolatableVelocity.x * factor, interpolatableVelocity.y * factor, interpolatableVelocity.z * factor);
+            }
+            if (interpolatableAngularVelocity != null) {
+                translationMatrix = translationMatrix.multiply(matrix.multiply(translationMatrix.getNativeMatrixFactory().createZRotation(interpolatableAngularVelocity * factor)));
+            } else {
+                translationMatrix = translationMatrix.multiply(matrix);
+            }
+            ModelMatrices modelMatrices = new ModelMatrices(translationMatrix);
+            return fillModelMatrices(modelMatrices);
         } else {
             return this;
         }
@@ -152,15 +155,7 @@ public class ModelMatrices {
 
     public ModelMatrices multiplyStaticShapeTransform(NativeMatrix nativeMatrix) {
         ModelMatrices modelMatrices = new ModelMatrices(matrix.multiply(nativeMatrix));
-
-        modelMatrices.progress = progress;
-        modelMatrices.interpolatableVelocity = interpolatableVelocity;
-        modelMatrices.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
-        modelMatrices.radius = radius;
-        modelMatrices.color = color;
-        modelMatrices.bgColor = bgColor;
-        modelMatrices.turretAngle = turretAngle;
-        return modelMatrices;
+        return fillModelMatrices(modelMatrices);
     }
 
     public ModelMatrices multiplyShapeTransform(ShapeTransform shapeTransform) {
@@ -171,14 +166,7 @@ public class ModelMatrices {
         newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createScale(shapeTransform.getScaleX(), shapeTransform.getScaleY(), shapeTransform.getScaleZ()));
 
         ModelMatrices modelMatrices = new ModelMatrices(newMatrix);
-        modelMatrices.progress = progress;
-        modelMatrices.interpolatableVelocity = interpolatableVelocity;
-        modelMatrices.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
-        modelMatrices.radius = radius;
-        modelMatrices.color = color;
-        modelMatrices.bgColor = bgColor;
-        modelMatrices.turretAngle = turretAngle;
-        return modelMatrices;
+        return fillModelMatrices(modelMatrices);
     }
 
     public NativeMatrix getNorm() {
@@ -201,6 +189,7 @@ public class ModelMatrices {
         ModelMatrices modelMatrices = new ModelMatrices(newMatrix);
         modelMatrices.progress = progress;
         modelMatrices.interpolatableVelocity = interpolatableVelocity;
+        modelMatrices.interpolatableAngularVelocity = interpolatableAngularVelocity;
         modelMatrices.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
         modelMatrices.radius = radius;
         modelMatrices.color = color;
@@ -275,5 +264,17 @@ public class ModelMatrices {
     private static NativeMatrix matrixFromPositionAndScale(Vertex position, double scale, NativeMatrixFactory nativeMatrixFactory) {
         NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(position.getX(), position.getY(), position.getZ());
         return newMatrix.multiply(nativeMatrixFactory.createScale(scale, scale, scale));
+    }
+
+    private ModelMatrices fillModelMatrices(ModelMatrices modelMatrices) {
+        modelMatrices.progress = progress;
+        modelMatrices.interpolatableVelocity = interpolatableVelocity;
+        modelMatrices.interpolatableAngularVelocity = interpolatableAngularVelocity;
+        modelMatrices.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
+        modelMatrices.radius = radius;
+        modelMatrices.color = color;
+        modelMatrices.bgColor = bgColor;
+        modelMatrices.turretAngle = turretAngle;
+        return modelMatrices;
     }
 }

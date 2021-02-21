@@ -227,6 +227,19 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         return NativeUtil.toNativeVertex(interpolatableVelocity.getX(), interpolatableVelocity.getY(), z);
     }
 
+    public Double setupInterpolatableAngularVelocity() {
+        if (velocity != null && !velocity.equalsDeltaZero()) {
+            double deltaAngle = MathHelper.negateAngle(velocity.angle() - getAngle());
+            if (Math.abs(deltaAngle) > angularVelocity * PlanetService.TICK_FACTOR) {
+                return Math.signum(deltaAngle) * angularVelocity;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
         super.synchronize(syncPhysicalAreaInfo);
         velocity = syncPhysicalAreaInfo.getVelocity();
