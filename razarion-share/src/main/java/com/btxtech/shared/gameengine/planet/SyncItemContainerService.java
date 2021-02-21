@@ -280,7 +280,7 @@ public class SyncItemContainerService {
         PhysicalAreaConfig physicalAreaConfig = baseItemType.getPhysicalAreaConfig();
         if (physicalAreaConfig.fulfilledMovable()) {
             SyncPhysicalMovable syncPhysicalMovable = syncPhysicalMovableInstance.get();
-            syncPhysicalMovable.init(syncBaseItem, baseItemType.getPhysicalAreaConfig(), position2d, zRotation, null);
+            syncPhysicalMovable.init(syncBaseItem, baseItemType.getPhysicalAreaConfig(), position2d, zRotation);
             return syncPhysicalMovable;
         } else {
             SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
