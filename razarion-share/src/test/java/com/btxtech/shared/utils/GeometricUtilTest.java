@@ -21,49 +21,49 @@ import java.util.List;
 public class GeometricUtilTest {
 
     @Test
-    public void rasterizeLineEast() throws Exception {
+    public void rasterizeLineEast() {
         List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(2.375, 2.75), new DecimalPosition(28.375, 5.5)), 8);
         List<Index> positions = Arrays.asList(new Index(0, 0), new Index(1, 0), new Index(2, 0), new Index(3, 0));
         GeometricUtilTest.assertIndices(positions, actual);
     }
 
     @Test
-    public void rasterizeLineNorth() throws Exception {
+    public void rasterizeLineNorth() {
         List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(45.625, 10.25), new DecimalPosition(41.625, 34.75)), 8);
         List<Index> positions = Arrays.asList(new Index(5, 1), new Index(5, 2), new Index(5, 3), new Index(5, 4));
         GeometricUtilTest.assertIndices(positions, actual);
     }
 
     @Test
-    public void rasterizeLineSouth() throws Exception {
+    public void rasterizeLineSouth() {
         List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(6.875, -7.5), new DecimalPosition(3.125, -33.0)), 8);
         List<Index> positions = Arrays.asList(new Index(0, -1), new Index(0, -2), new Index(0, -3), new Index(0, -4), new Index(0, -5));
         GeometricUtilTest.assertIndices(positions, actual);
     }
 
     @Test
-    public void rasterizeLineWest() throws Exception {
+    public void rasterizeLineWest() {
         List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(39.125, -15.5), new DecimalPosition(11.125, -12.5)), 8);
         List<Index> positions = Arrays.asList(new Index(4, -2), new Index(3, -2), new Index(2, -2), new Index(1, -2));
         GeometricUtilTest.assertIndices(positions, actual);
     }
 
     @Test
-    public void rasterizeLine() throws Exception {
+    public void rasterizeLine() {
         List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(3.6818181818181817, 5.2727272727272725), new DecimalPosition(21.045454545454547, 19.363636363636363)), 8);
         List<Index> positions = Arrays.asList(new Index(0, 0), new Index(0, 1), new Index(1, 1), new Index(2, 1), new Index(2, 2));
         GeometricUtilTest.assertIndices(positions, actual);
     }
 
     @Test
-    public void rasterizeLineLeftOut1() throws Exception {
+    public void rasterizeLineLeftOut1() {
         List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(256.96844848711316, 160.8236704677113), new DecimalPosition(254.56432329181317, 159.06081110957567)), 8);
         List<Index> positions = Arrays.asList(new Index(32, 20), new Index(31, 20), new Index(31, 19));
         GeometricUtilTest.assertIndices(positions, actual);
     }
 
     @Test
-    public void rasterizeLineLeftExactlyOnCorner() throws Exception {
+    public void rasterizeLineLeftExactlyOnCorner() {
         List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(4, 4), new DecimalPosition(12, 12)), 8);
         List<Index> positions = Arrays.asList(new Index(0, 0), new Index(1, 1));
         GeometricUtilTest.assertIndices(positions, actual);
@@ -83,7 +83,7 @@ public class GeometricUtilTest {
     }
 
     @Test
-    public void rasterizeTerrainPolygon1() throws Exception {
+    public void rasterizeTerrainPolygon1() {
         Rectangle2D absAabbRect = new Rectangle2D(67.0, 58.0, 200.0, 200.0);
         Polygon2D viewPolygon = new Polygon2D(Arrays.asList(new DecimalPosition(117.0, 58.0), new DecimalPosition(217.0, 58.0), new DecimalPosition(267.0, 258.0), new DecimalPosition(67.0, 258.0)));
         Collection<Index> actual = GeometricUtil.rasterizeTerrainViewField(absAabbRect, viewPolygon);
@@ -92,7 +92,7 @@ public class GeometricUtilTest {
     }
 
     @Test
-    public void rasterizeTerrainPolygon2() throws Exception {
+    public void rasterizeTerrainPolygon2() {
         Rectangle2D absAabbRect = new Rectangle2D(127.5, 65.0, 200.0, 200.0);
         Polygon2D viewPolygon = new Polygon2D(Arrays.asList(new DecimalPosition(177.5, 65.0), new DecimalPosition(277.5, 65.0), new DecimalPosition(327.5, 265.0), new DecimalPosition(127.5, 265.0)));
         Collection<Index> actual = GeometricUtil.rasterizeTerrainViewField(absAabbRect, viewPolygon);
@@ -101,7 +101,7 @@ public class GeometricUtilTest {
     }
 
     @Test
-    public void rasterizeTerrainPolygon3() throws Exception {
+    public void rasterizeTerrainPolygon3() {
         Rectangle2D absAabbRect = new Rectangle2D(137.5, 131.0, 200.0, 200.0);
         Polygon2D viewPolygon = new Polygon2D(Arrays.asList(new DecimalPosition(187.5, 131.0), new DecimalPosition(287.5, 131.0), new DecimalPosition(337.5, 331.0), new DecimalPosition(137.5, 331.0)));
         Collection<Index> actual = GeometricUtil.rasterizeTerrainViewField(absAabbRect, viewPolygon);
@@ -110,7 +110,7 @@ public class GeometricUtilTest {
     }
 
     @Test
-    public void rasterizeTerrainPolygon4() throws Exception {
+    public void rasterizeTerrainPolygon4() {
         Rectangle2D absAabbRect = new Rectangle2D(140.5, 180.0, 200.0, 200.0);
         Polygon2D viewPolygon = new Polygon2D(Arrays.asList(new DecimalPosition(190.5, 180.0), new DecimalPosition(290.5, 180.0), new DecimalPosition(340.5, 380.0), new DecimalPosition(140.5, 380.0)));
         Collection<Index> actual = GeometricUtil.rasterizeTerrainViewField(absAabbRect, viewPolygon);
@@ -119,7 +119,7 @@ public class GeometricUtilTest {
     }
 
     @Test
-    public void rasterizeTerrainPolygon5() throws Exception {
+    public void rasterizeTerrainPolygon5() {
         Rectangle2D absAabbRect = new Rectangle2D(-100.5, -106.0, 200.0, 200.0);
         Polygon2D viewPolygon = new Polygon2D(Arrays.asList(new DecimalPosition(-50.5, -106.0), new DecimalPosition(49.5, -106.0), new DecimalPosition(99.5, 94.0), new DecimalPosition(-100.5, 94.0)));
         Collection<Index> actual = GeometricUtil.rasterizeTerrainViewField(absAabbRect, viewPolygon);
@@ -128,7 +128,7 @@ public class GeometricUtilTest {
     }
 
     @Test
-    public void rasterizeTerrainPolygon6() throws Exception {
+    public void rasterizeTerrainPolygon6() {
         Rectangle2D absAabbRect = new Rectangle2D(173.5, -372.0, 200.0, 372.0);
         Polygon2D viewPolygon = new Polygon2D(Arrays.asList(new DecimalPosition(223.5, -372.0), new DecimalPosition(323.5, -372.0), new DecimalPosition(373.5, -172.0), new DecimalPosition(173.5, -172.0)));
         Collection<Index> actual = GeometricUtil.rasterizeTerrainViewField(absAabbRect, viewPolygon);
@@ -142,12 +142,6 @@ public class GeometricUtilTest {
         Assert.assertFalse(GeometricUtil.isTriangleValid(new Vertex(0, 0, 0), new Vertex(0, 0, 0), new Vertex(0, 0, 0)));
         Assert.assertFalse(GeometricUtil.isTriangleValid(new Vertex(1, 1, 1), new Vertex(1, 1, 1), new Vertex(1, 1, 1)));
         Assert.assertFalse(GeometricUtil.isTriangleValid(new Vertex(1, 1, 1), new Vertex(1, 1, 1), new Vertex(0, 0, 0)));
-
-        Assert.assertFalse(GeometricUtil.isTriangleValid(new Vertex(353.37352621418523, 142.99428575323748, 0.0),
-                new Vertex(346.77619643213797, 144.9058795416752, 0.0),
-                new Vertex(353.37352621418523, 142.99428575323748, 0.5)));
-
-
         // Positive tests
         Assert.assertTrue(GeometricUtil.isTriangleValid(new Vertex(1, 0, 0), new Vertex(0, 1, 0), new Vertex(0, 0, 0)));
     }
