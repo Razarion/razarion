@@ -10,10 +10,10 @@ import com.btxtech.shared.gui.AbstractTestGuiRenderer;
 import com.btxtech.shared.gui.TestGuiDisplay;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import javafx.scene.paint.Color;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static com.btxtech.shared.gameengine.planet.GameTestHelper.createObstacleSlopes;
@@ -72,6 +72,8 @@ public class OrcaTest {
 //            orca3.solve();
 //            System.out.println("orca3: " + orca3.getNewVelocity());
         DebugHelperStatic.printAfterTick(null);
+
+        Assert.fail("... FIX ME: TestGuiDisplay.show() will block ...");
 
         TestGuiDisplay.show(new AbstractTestGuiRenderer() {
             private DecimalPosition position = new DecimalPosition(243.07001332001306, 339.65095460095426);
@@ -186,7 +188,7 @@ public class OrcaTest {
         Orca orca = new Orca(syncPhysicalMovable);
         shifities.forEach(orca::add);
         orca.solve();
-        display(orca, syncPhysicalMovable, null, shifities);
+        // display(orca, syncPhysicalMovable, null, shifities);
         TestHelper.assertDecimalPosition("New velocity wrong", new DecimalPosition(6.11352, 11.98284), orca.getNewVelocity());
     }
 

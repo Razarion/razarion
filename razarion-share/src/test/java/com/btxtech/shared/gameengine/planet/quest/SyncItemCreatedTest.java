@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -32,6 +33,7 @@ public class SyncItemCreatedTest extends AbstractQuestServiceTest {
         SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.FACTORY_ITEM_TYPE_ID);
         assertQuestNotPassed(playerBaseFull.getUserId());
         // Create two attacker not passed
+        Assert.fail("... FIX ME: below will block ...");
         fabricateAndMove(factory, FallbackConfig.ATTACKER_ITEM_TYPE_ID ,new DecimalPosition(20, 60), playerBaseFull);
         fabricateAndMove(factory, FallbackConfig.ATTACKER_ITEM_TYPE_ID ,new DecimalPosition(20, 80), playerBaseFull);
         assertQuestNotPassed(playerBaseFull.getUserId());

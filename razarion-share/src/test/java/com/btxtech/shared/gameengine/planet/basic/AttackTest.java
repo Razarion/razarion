@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -78,7 +79,7 @@ public class AttackTest extends BaseBasicTest {
         getBotService().executeCommands(Collections.singletonList(botAttackCommandConfig));
 
         // showDisplay();
-
+        Assert.fail("... FIX ME: below will block ...");
         tickPlanetServiceBaseServiceActive();
         assertSyncItemCount(3, 0, 0);
 

@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 import java.util.stream.Collectors;
 
 /**
@@ -139,7 +141,9 @@ public class AbstractIntegrationTest {
         activeItems.removeAll(Arrays.asList(ignores));
         Collection<SyncBaseItem> activeItemQueue = new ArrayList<>((Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItemQueue", baseItemService));
         activeItemQueue.removeAll(Arrays.asList(ignores));
-        return !activeItems.isEmpty() || !activeItemQueue.isEmpty();
+        Collection<BaseCommand> commandQueue = new ArrayList<>((Queue<BaseCommand>) SimpleTestEnvironment.readField("commandQueue", baseItemService));
+        commandQueue.removeIf(baseCommand -> Arrays.stream(ignores).anyMatch(ignoredSyncBaseItem -> ignoredSyncBaseItem.getId() == baseCommand.getId()));
+        return !activeItems.isEmpty() || !activeItemQueue.isEmpty() || !commandQueue.isEmpty();
     }
 
     public boolean isPathingServiceMoving() {
