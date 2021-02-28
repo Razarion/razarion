@@ -1,6 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, Injector} from '@angular/core';
 import {NavigationStart, Router} from "@angular/router";
 import {FrontendService} from "./service/frontend.service";
+import { createCustomElement } from '@angular/elements';
+import {PropertyTableComponent} from "./editor/property-table.component";
 
 @Component({
   selector: 'app-root',
@@ -9,7 +11,7 @@ import {FrontendService} from "./service/frontend.service";
 })
 export class AppComponent {
 
-  constructor(private router: Router, private frontendService: FrontendService) {
+  constructor(injector: Injector, private router: Router, private frontendService: FrontendService) {
     window.addEventListener("beforeunload", event => {
       frontendService.logWindowClosed(event);
     });
@@ -23,6 +25,11 @@ export class AppComponent {
       // NavigationError
       // RoutesRecognized
     });
+
+    const PopupElement = createCustomElement(PropertyTableComponent, {injector});
+    // Register the custom element with the browser.
+    customElements.define('property-table', PopupElement);
+
   }
 
 }

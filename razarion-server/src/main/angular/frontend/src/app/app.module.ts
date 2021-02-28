@@ -14,6 +14,7 @@ import {FormsModule} from "@angular/forms";
 import {ResetPasswordComponent} from "./resetpassword/reset-password.component";
 import {LogoutComponent} from "./logout/logout.component";
 import {ChangePasswordComponent} from "./resetpassword/change-password.component";
+import {PropertyTableComponent} from "./editor/property-table.component";
 import {AppRoutingModule} from "./app-routing.module";
 
 
@@ -28,7 +29,8 @@ import {AppRoutingModule} from "./app-routing.module";
     EmailVerification,
     ResetPasswordComponent,
     ChangePasswordComponent,
-    LogoutComponent
+    LogoutComponent,
+    PropertyTableComponent
   ],
   imports: [
     BrowserModule,
