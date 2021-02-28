@@ -20,7 +20,7 @@ export class FacebookAppStart implements OnInit {
       if (loggedIn) {
         this.router.navigate(['/game']);
       } else {
-        this.frontendService.fbLogin(response => {
+        this.frontendService.fbLogin((response: any) => {
           try {
             if ((<any>window).RAZ_inGameFbAuthResponseCallback) {
               (<any>window).RAZ_inGameFbAuthResponseCallback(response);

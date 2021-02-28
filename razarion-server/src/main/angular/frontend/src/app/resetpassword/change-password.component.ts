@@ -41,6 +41,9 @@ export class ChangePasswordComponent {
       this.passwordConfirmError = "Passwörter sind nicht identisch"
     } else {
       let uuid = this.route.snapshot.paramMap.get('id');
+      if(uuid == null) {
+        throw new Error("uuid == null");
+      }
       this.frontendService.savePassword(this.password, uuid).then(success => {
         this.success = success;
         this.failed = !success;

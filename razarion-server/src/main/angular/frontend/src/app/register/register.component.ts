@@ -45,7 +45,7 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.frontendService.unsubscribeFbAuthChange(this.facebookEventCallback);
         this.facebookEventCallback = null;
       }
-      this.facebookEventCallback = (fbResponse) => {
+      this.facebookEventCallback = (fbResponse: any) => {
         if (fbResponse.status === "connected") {
           this.frontendService.onFbAuthorized(fbResponse.authResponse).then(success => {
             if (success) {

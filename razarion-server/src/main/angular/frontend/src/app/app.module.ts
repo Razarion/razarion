@@ -3,7 +3,6 @@ import {ErrorHandler, NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
 import {FrontendService} from "./service/frontend.service";
 import {HttpClientModule} from "@angular/common/http";
-import {routing} from "./app.routing";
 import {HomeComponent} from "./home/home.component";
 import {GameComponent} from "./game/game.component";
 import {RegisterComponent} from "./register/register.component";
@@ -15,6 +14,7 @@ import {FormsModule} from "@angular/forms";
 import {ResetPasswordComponent} from "./resetpassword/reset-password.component";
 import {LogoutComponent} from "./logout/logout.component";
 import {ChangePasswordComponent} from "./resetpassword/change-password.component";
+import {AppRoutingModule} from "./app-routing.module";
 
 
 @NgModule({
@@ -34,7 +34,7 @@ import {ChangePasswordComponent} from "./resetpassword/change-password.component
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    routing
+    AppRoutingModule
   ],
   providers: [FrontendService, {
     provide: ErrorHandler,

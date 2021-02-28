@@ -16,6 +16,9 @@ export class EmailVerification implements OnInit {
 
   ngOnInit(): void {
     let verificationId = this.route.snapshot.paramMap.get('id');
+    if(verificationId == null) {
+      verificationId = "Service returned null: razarion-server/src/main/angular/frontend/src/app/emailverification/email-verification.component.ts:20";
+    }
     this.frontendService.verifyEmailLink(verificationId).then(success => {
       this.success = success;
       this.fail = !success;

@@ -8,11 +8,11 @@ const FB_TIMEOUT: number = 8000;
 
 @Injectable()
 export class FrontendService {
-  private language: string;
+  private language: string = "";
   private resolve: any;
-  private fbTimerId: number;
-  private loggedIn: boolean = null;
-  private cookieAllowed: boolean = null;
+  private fbTimerId: number = 0;
+  private loggedIn: boolean = false;
+  private cookieAllowed: boolean = false;
   private fbScriptLoadedCallbacks: any[] = [];
 
   constructor(private http: HttpClient, private router: Router) {
@@ -101,37 +101,22 @@ export class FrontendService {
     return this.language;
   }
 
-  private checkFbLoginState() {
-    try {
-      FB.getLoginStatus(fbResponse => {
-        if (this.fbTimerId != null) {
-          window.clearInterval(this.fbTimerId);
-          this.fbTimerId = null;
-        }
-        if (fbResponse.status === 'connected') {
-          // the user is logged in and has authenticated your app
-          this.onFbAuthorized(fbResponse.authResponse).then(loggedIn => {
-            this.resolve(loggedIn);
-          });
-        } else {
-          this.loggedIn = false;
-          this.resolve(false);
-        }
-      });
-    } catch (err) {
-      this.log("checkFbLoginState", err);
-      this.loggedIn = false;
-      this.resolve(false);
+  static validateEmail(email: any) {
+    if (email == null || email == "") {
+      return false;
     }
+    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
   }
 
   onFbAuthorized(authResponse: any): Promise<boolean> {
     return new Promise((resolve) => {
-      let fbAuthResponse: FbAuthResponse = new FbAuthResponse();
-      fbAuthResponse.accessToken = authResponse.accessToken;
-      fbAuthResponse.expiresIn = authResponse.expiresIn;
-      fbAuthResponse.signedRequest = authResponse.signedRequest;
-      fbAuthResponse.userID = authResponse.userID;
+      let fbAuthResponse: FbAuthResponse = {
+        accessToken: authResponse.accessToken,
+        expiresIn: authResponse.expiresIn,
+        signedRequest: authResponse.signedRequest,
+        userID: authResponse.userID
+      };
       this.http.post<boolean>(URL_FRONTEND + '/facebookauthenticated', fbAuthResponse, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
         loggedIn => {
           this.loggedIn = loggedIn;
@@ -312,7 +297,7 @@ export class FrontendService {
         this.log("logout catch", error);
       });
     try {
-      FB.logout((response) => {
+      FB.logout((response: any) => {
         // user is now logged out
       });
     } catch (err) {
@@ -330,11 +315,27 @@ export class FrontendService {
     );
   }
 
-  static validateEmail(email) {
-    if (email == null || email == "") {
-      return false;
+  private checkFbLoginState() {
+    try {
+      FB.getLoginStatus((fbResponse: { status: string; authResponse: any; }) => {
+        if (this.fbTimerId != null) {
+          window.clearInterval(this.fbTimerId);
+          this.fbTimerId = 0;
+        }
+        if (fbResponse.status === 'connected') {
+          // the user is logged in and has authenticated your app
+          this.onFbAuthorized(fbResponse.authResponse).then(loggedIn => {
+            this.resolve(loggedIn);
+          });
+        } else {
+          this.loggedIn = false;
+          this.resolve(false);
+        }
+      });
+    } catch (err) {
+      this.log("checkFbLoginState", err);
+      this.loggedIn = false;
+      this.resolve(false);
     }
-    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
   }
 }
