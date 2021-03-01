@@ -16,6 +16,8 @@ import {LogoutComponent} from "./logout/logout.component";
 import {ChangePasswordComponent} from "./resetpassword/change-password.component";
 import {PropertyTableComponent} from "./editor/property-table.component";
 import {AppRoutingModule} from "./app-routing.module";
+import {TreeTableModule} from "primeng/treetable";
+import {ButtonModule} from "primeng/button";
 
 
 @NgModule({
@@ -36,7 +38,9 @@ import {AppRoutingModule} from "./app-routing.module";
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    TreeTableModule,
+    ButtonModule
   ],
   providers: [FrontendService, {
     provide: ErrorHandler,

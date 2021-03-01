@@ -26,9 +26,9 @@ export class AppComponent {
       // RoutesRecognized
     });
 
-    const PopupElement = createCustomElement(PropertyTableComponent, {injector});
+    const propertyTableComponent = createCustomElement(PropertyTableComponent, {injector});
     // Register the custom element with the browser.
-    customElements.define('property-table', PopupElement);
+    customElements.define('angular-property-table', propertyTableComponent);
 
   }
 
