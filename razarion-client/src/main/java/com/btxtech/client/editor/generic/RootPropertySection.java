@@ -20,6 +20,8 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @Templated("RootPropertySection.html#panel")
 public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvider> {
@@ -49,15 +51,7 @@ public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvi
         try {
             NodeList<Element> nodeList = panel.getElementsByTagName("angular-property-table");
             AngularTreeTable angularTreeTable = Js.uncheckedCast(nodeList.getAt(0));
-
-            AngularTreeNodeData angularTreeNodeData = Js.uncheckedCast(new JsObject());
-            angularTreeNodeData.name = "the name";
-            angularTreeNodeData.value = Any.of("The value");
-            AngularTreeNode angularTreeNode = Js.uncheckedCast(new JsObject());
-            angularTreeNode.data = angularTreeNodeData;
-            AngularTreeNode[] treeNodes = new AngularTreeNode[1];
-            treeNodes[0] = angularTreeNode;
-            angularTreeTable.treeNodes = treeNodes;
+            angularTreeTable.treeNodes = buildTreeNodes(rootPropertyValue);
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }
@@ -75,6 +69,26 @@ public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvi
         } else {
             customWidgetDiv.style.display = "none";
         }
+    }
+
+    private AngularTreeNode[] buildTreeNodes(Object propertyValue) {
+        HasProperties hasProperties = (HasProperties) BindableProxyFactory.getBindableProxy(propertyValue);
+        List<AngularTreeNode> angularTreeNodes = new ArrayList<>();
+        hasProperties.getBeanProperties().forEach((propertyName, propertyType) -> {
+            AngularTreeNode angularTreeNode = Js.uncheckedCast(new JsObject());
+            angularTreeNode.data = Js.uncheckedCast(new JsObject());
+            angularTreeNode.data.name = propertyName;
+            angularTreeNodes.add(angularTreeNode);
+            Object childPropertyValue = hasProperties.get(propertyName);
+            if (propertyType.isBindable() || propertyType.isList()) {
+                if (childPropertyValue != null) {
+                    angularTreeNode.children = buildTreeNodes(childPropertyValue);
+                }
+            } else {
+                angularTreeNode.data.value = Any.of(childPropertyValue);
+            }
+        });
+        return angularTreeNodes.toArray(new AngularTreeNode[0]);
     }
 
     @Override

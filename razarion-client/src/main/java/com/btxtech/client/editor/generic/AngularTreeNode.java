@@ -10,7 +10,7 @@ public class AngularTreeNode {
     public String icon;
     public Any expandedIcon;
     public Any collapsedIcon;
-    public AngularTreeNode children;
+    public AngularTreeNode[] children;
     public boolean leaf;
     public boolean expanded;
     public String type;
