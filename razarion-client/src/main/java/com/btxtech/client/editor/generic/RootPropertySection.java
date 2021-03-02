@@ -3,7 +3,6 @@ package com.btxtech.client.editor.generic;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.generic.custom.CustomWidget;
 import com.btxtech.client.editor.generic.model.Branch;
-import com.btxtech.client.editor.generic.propertyeditors.PropertySection;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.core.JsObject;
@@ -32,9 +31,9 @@ public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvi
     private Branch branch;
     @Inject
     private Instance<CustomWidget<?>> customWidgetInstance;
-    @Inject
-    @DataField
-    private PropertySection rootPropertySection;
+//    @Inject
+//    @DataField
+//    private PropertySection rootPropertySection;
     @Inject
     @DataField
     private HTMLDivElement panel;
@@ -61,7 +60,7 @@ public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvi
                 new PropertyType(rootPropertyValue.getClass(), true, false),
                 null);
 
-        rootPropertySection.init(branch);
+//        rootPropertySection.init(branch);
         if (customWidgetClass != null) {
             CustomWidget customWidget = customWidgetInstance.get();
             customWidget.setRootPropertyValue(rootPropertyValue);
@@ -80,9 +79,27 @@ public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvi
             angularTreeNode.data.name = propertyName;
             angularTreeNodes.add(angularTreeNode);
             Object childPropertyValue = hasProperties.get(propertyName);
-            if (propertyType.isBindable() || propertyType.isList()) {
+            if (propertyType.isBindable()) {
                 if (childPropertyValue != null) {
                     angularTreeNode.children = buildTreeNodes(childPropertyValue);
+                }
+            } else if (propertyType.isList()) {
+                if (childPropertyValue != null) {
+                    List childList = (List) childPropertyValue;
+                    AngularTreeNode[] listElementNodes = new AngularTreeNode[childList.size()];
+                    for (int i = 0; i < childList.size(); i++) {
+                        Object listElement = childList.get(i);
+                        AngularTreeNode angularTreeNodeListElement = Js.uncheckedCast(new JsObject());
+                        angularTreeNodeListElement.data = Js.uncheckedCast(new JsObject());
+                        angularTreeNodeListElement.data.name = "[" + i + "]";
+                        if (BindableProxyFactory.isBindableType(listElement)) {
+                            angularTreeNodeListElement.children = buildTreeNodes(listElement);
+                        } else {
+                            angularTreeNodeListElement.data.value = Any.of(listElement);
+                        }
+                        listElementNodes[i] = angularTreeNodeListElement;
+                    }
+                    angularTreeNode.children = listElementNodes;
                 }
             } else {
                 angularTreeNode.data.value = Any.of(childPropertyValue);
