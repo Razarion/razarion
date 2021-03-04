@@ -18,6 +18,7 @@ import {PropertyTableComponent} from "./editor/property-table.component";
 import {AppRoutingModule} from "./app-routing.module";
 import {TreeTableModule} from "primeng/treetable";
 import {ButtonModule} from "primeng/button";
+import {GwtAngularService} from "./gwtangular/GwtAngularService";
 
 
 @NgModule({
@@ -45,7 +46,7 @@ import {ButtonModule} from "primeng/button";
   providers: [FrontendService, {
     provide: ErrorHandler,
     useClass: GlobalErrorHandler
-  }],
+  }, GwtAngularService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

@@ -1,17 +1,23 @@
-﻿import {Component, OnInit} from '@angular/core';
+﻿import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FrontendService} from "../service/frontend.service";
 import {NavigationStart, Router} from "@angular/router";
+import {GwtAngularService} from "../gwtangular/GwtAngularService";
 
 
 @Component({
   templateUrl: 'game.component.html'
 })
-
 export class GameComponent implements OnInit {
-  constructor(private frontendService: FrontendService, private router: Router) {
+  @ViewChild('canvas', {static: true})
+  canvas?: ElementRef<HTMLCanvasElement>;
+
+  constructor(private frontendService: FrontendService, private router: Router, private gwtAngularService: GwtAngularService) {
   }
 
   ngOnInit(): void {
+    if (this.canvas) {
+      this.gwtAngularService.gwtAngularFacade.canvasElement = this.canvas.nativeElement;
+    }
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game
     this.router.events.subscribe(event => {

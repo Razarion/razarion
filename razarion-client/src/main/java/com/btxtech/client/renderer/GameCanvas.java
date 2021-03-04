@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer;
 
 import com.btxtech.client.ClientTrackerService;
+import com.btxtech.client.GwtAngularService;
 import com.btxtech.client.KeyboardEventHandler;
 import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.ZIndexConstants;
@@ -26,9 +27,14 @@ import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.btxtech.client.utils.DomConstants.Event.*;
-import static com.btxtech.client.utils.DomConstants.Mouse.*;
-import static elemental2.dom.CSSProperties.*;
+import static com.btxtech.client.utils.DomConstants.Event.MOUSEDOWN;
+import static com.btxtech.client.utils.DomConstants.Event.MOUSEMOVE;
+import static com.btxtech.client.utils.DomConstants.Event.MOUSEOUT;
+import static com.btxtech.client.utils.DomConstants.Event.MOUSEUP;
+import static com.btxtech.client.utils.DomConstants.Event.WHEEL;
+import static com.btxtech.client.utils.DomConstants.Mouse.BUTTON_MAIN;
+import static elemental2.dom.CSSProperties.HeightUnionType;
+import static elemental2.dom.CSSProperties.WidthUnionType;
 import static elemental2.dom.DomGlobal.RequestAnimationFrameCallbackFn;
 
 /**
@@ -53,6 +59,8 @@ public class GameCanvas {
     private KeyboardEventHandler keyboardEventHandler;
     @Inject
     private ClientTrackerService trackerService;
+    @Inject
+    private GwtAngularService gwtAngularService;
     private WebGLRenderingContext ctx3d;
     private RequestAnimationFrameCallbackFn animationCallback;
     private double width;
@@ -66,7 +74,7 @@ public class GameCanvas {
 //    }
 
     public void init() {
-        canvasElement = (HTMLCanvasElement) DomGlobal.document.createElement("canvas");
+        canvasElement = gwtAngularService.getCanvasElement();
         if (canvasElement == null) {
             throw new IllegalStateException("Canvas is not supported");
         }
@@ -79,8 +87,6 @@ public class GameCanvas {
 
         initMouseHandler();
         keyboardEventHandler.init();
-
-        mainPanelService.addToGamePanel(canvasElement);
     }
 
     private void onWindowResized() {
