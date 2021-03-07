@@ -4,7 +4,6 @@ import com.btxtech.client.ClientTrackerService;
 import com.btxtech.client.GwtAngularService;
 import com.btxtech.client.KeyboardEventHandler;
 import com.btxtech.client.MainPanelService;
-import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.utils.GwtUtils;
@@ -105,11 +104,6 @@ public class GameCanvas {
     }
 
     private void initCanvas() {
-        // CSS settings
-        canvasElement.style.zIndex = ZIndexConstants.WEBGL_CANVAS;
-        canvasElement.style.width = WidthUnionType.of("100%");
-        canvasElement.style.height = HeightUnionType.of("100%");
-        canvasElement.style.position = "absolute";
         // Create 3d context
         JsPropertyMap<Object> args = JsPropertyMap.of();
         // WEBGL TRANSPARENCY AND ALPHA BLENDING PROBLEM

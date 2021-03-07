@@ -5,11 +5,14 @@ import {GwtAngularService} from "../gwtangular/GwtAngularService";
 
 
 @Component({
-  templateUrl: 'game.component.html'
+  templateUrl: 'game.component.html',
+  styleUrls: ['game.component.scss']
 })
 export class GameComponent implements OnInit {
   @ViewChild('canvas', {static: true})
   canvas?: ElementRef<HTMLCanvasElement>;
+  // TODO @ViewChild('loadingCover', {static: true})
+  // TODO loadingCover?: OverlayPanel;
 
   constructor(private frontendService: FrontendService, private router: Router, private gwtAngularService: GwtAngularService) {
   }
@@ -25,13 +28,16 @@ export class GameComponent implements OnInit {
         window.location.href = event.url;
       }
     });
-    if (!this.frontendService.isCookieAllowed()) {
-      this.router.navigate(['/nocookies']);
-      return;
-    }
+    // TODO if (!this.frontendService.isCookieAllowed()) {
+    //   this.router.navigate(['/nocookies']);
+    //   return;
+    // }
     this.frontendService.autoLogin().then(loggedIn => {
       this.startGame();
     });
+    // TODO if(this.loadingCover) {
+    //    this.loadingCover.show(null, this.canvas);
+    // }
   }
 
   private startGame(): void {

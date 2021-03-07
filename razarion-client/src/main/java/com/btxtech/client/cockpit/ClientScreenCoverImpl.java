@@ -11,7 +11,6 @@ import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import com.btxtech.uiservice.user.UserUiService;
 import elemental.client.Browser;
 import elemental.dom.Element;
-import elemental.html.ProgressElement;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -65,13 +64,13 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     @Override
     public void removeLoadingCover() {
         loadingCoverBackup = Browser.getDocument().getElementById(LOADING_COVER_ID);
-        loadingCoverBackup.getParentElement().removeChild(loadingCoverBackup);
+        // TODO loadingCoverBackup.getParentElement().removeChild(loadingCoverBackup);
     }
 
     @Override
     public void fadeOutLoadingCover() {
         Element element = Browser.getDocument().getElementById(LOADING_COVER_ID);
-        element.getStyle().setOpacity(0);
+        // TODO element.getStyle().setOpacity(0);
     }
 
     @Override
@@ -104,7 +103,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
         try {
             finishedStartupTasks++;
             double progress = (double) finishedStartupTasks / (double) totalStartupTasks;
-            ((ProgressElement) Browser.getDocument().getElementById(LOADING_PROGRESS_ID)).setValue(progress);
+            // TODO ((ProgressElement) Browser.getDocument().getElementById(LOADING_PROGRESS_ID)).setValue(progress);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }

@@ -19,6 +19,8 @@ import {AppRoutingModule} from "./app-routing.module";
 import {TreeTableModule} from "primeng/treetable";
 import {ButtonModule} from "primeng/button";
 import {GwtAngularService} from "./gwtangular/GwtAngularService";
+import {OverlayPanelModule} from 'primeng/overlaypanel';
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 
 @NgModule({
@@ -41,7 +43,9 @@ import {GwtAngularService} from "./gwtangular/GwtAngularService";
     FormsModule,
     AppRoutingModule,
     TreeTableModule,
-    ButtonModule
+    ButtonModule,
+    BrowserAnimationsModule,
+    OverlayPanelModule
   ],
   providers: [FrontendService, {
     provide: ErrorHandler,

@@ -2,51 +2,9 @@ html {
   font-size: 14px;
 }
 
-.homePageMain {
-  display: table;
-  height: 100%;
+body {
   width: 100%;
-  background: url('/assets/BackGround.jpg');
+  height: 100%;
   margin: 0;
 }
-.homePageMiddle {
-  display: table-cell;
-  vertical-align: middle;
-  background: url('/assets/HomePage.jpg') center no-repeat;
-}
-.homePageMiddleCenter {
-  width: 1000px;
-  height: 400px;
-  margin: auto;
-  position: relative;
-}
-.homePageButton {
-  outline: 0;
-  padding: 2px 6px;
-  color: #41acef;
-  font-weight: bold;
-  border: 1px solid #0f4261;
-  border-radius: 3px;
-  background: -moz-linear-gradient(top, #3D4850 3%, #313d45 4%, #232B30 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(3%, #3D4850), color-stop(4%, #313d45), color-stop(100%, #232B30));
-  cursor: pointer;
-  &:hover {
-    color: #fff;
-    background: -moz-linear-gradient(top, #4C5A64 3%, #404F5A 4%, #2E3940 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(3%, #4C5A64), color-stop(4%, #404F5A), color-stop(100%, #2E3940));
-  }
-  &:active {
-    background-position: 0 top;
-    position: relative;
-    top: 1px;
-    color: #fff;
-    background: -moz-linear-gradient(top, #20282D 3%, #252E34 51%, #222A30 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(3%, #20282D), color-stop(51%, #252E34), color-stop(100%, #222A30));
-  }
-  &:disabled {
-    color: #8a8a8a;
-    border: 1px solid #6c6b6b;
-    background: -moz-linear-gradient(top, #3D4850 3%, #313d45 4%, #232B30 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(3%, #3D4850), color-stop(4%, #313d45), color-stop(100%, #232B30));
-  }
-}
+

@@ -12,19 +12,19 @@ import {PropertyTableComponent} from "./editor/property-table.component";
 export class AppComponent {
 
   constructor(injector: Injector, private router: Router, private frontendService: FrontendService) {
-    window.addEventListener("beforeunload", event => {
-      frontendService.logWindowClosed(event);
-    });
+    // TODO window.addEventListener("beforeunload", event => {
+    //   frontendService.logWindowClosed(event);
+    // });
 
-    router.events.subscribe(event => {
-      if (event instanceof NavigationStart) {
-        frontendService.trackNavigation(event.url);
-      }
-      // NavigationEnd
-      // NavigationCancel
-      // NavigationError
-      // RoutesRecognized
-    });
+    // TODO router.events.subscribe(event => {
+    //   if (event instanceof NavigationStart) {
+    //     frontendService.trackNavigation(event.url);
+    //   }
+    //   // NavigationEnd
+    //   // NavigationCancel
+    //   // NavigationError
+    //   // RoutesRecognized
+    // });
 
     const propertyTableComponent = createCustomElement(PropertyTableComponent, {injector});
     // Register the custom element with the browser.
