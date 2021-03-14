@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 23.08.2016.
  */
+@Deprecated // Move to Angular
 @Templated("AbstractCrudeParentSidebar.html#abstract-crud-parent")
 public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends AbstractEditor implements CrudEditor.LoadedListener, CrudEditor.SelectionListener {
     // private Logger logger = Logger.getLogger(AbstractCrudeParentSidebar.class.getName());

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Deprecated // Move to Angular
 public class GenericCrudControllerEditor extends AbstractCrudeEditor<ObjectNameIdProvider> {
     // private Logger logger = Logger.getLogger(GenericCrudControllerEditor.class.getName());
     @Inject

@@ -10,6 +10,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+@Deprecated // Move to Angular
 @Templated("../framework/AbstractCrudeParentSidebar.html#abstract-crud-parent")
 public class GenericCrudEditor extends AbstractCrudeParentSidebar<ObjectNameIdProvider, RootPropertySection> {
     @Inject

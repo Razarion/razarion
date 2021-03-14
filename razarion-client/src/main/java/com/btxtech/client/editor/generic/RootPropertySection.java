@@ -6,9 +6,7 @@ import com.btxtech.client.editor.generic.model.Branch;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.core.JsObject;
-import elemental2.dom.Element;
 import elemental2.dom.HTMLDivElement;
-import elemental2.dom.NodeList;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
@@ -22,6 +20,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated // Move to Angular
 @Templated("RootPropertySection.html#panel")
 public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvider> {
     // private Logger logger = Logger.getLogger(RootPropertySection.class.getName());
@@ -47,13 +46,6 @@ public class RootPropertySection extends AbstractPropertyPanel<ObjectNameIdProvi
 
     @Override
     public void init(ObjectNameIdProvider rootPropertyValue) {
-        try {
-            NodeList<Element> nodeList = panel.getElementsByTagName("angular-property-table");
-            AngularTreeTable angularTreeTable = Js.uncheckedCast(nodeList.getAt(0));
-            angularTreeTable.treeNodes = buildTreeNodes(rootPropertyValue);
-        } catch (Exception e) {
-            exceptionHandler.handleException(e);
-        }
         branch.init(null,
                 null,
                 (HasProperties) BindableProxyFactory.getBindableProxy(rootPropertyValue),

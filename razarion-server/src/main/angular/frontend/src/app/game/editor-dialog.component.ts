@@ -14,11 +14,12 @@ export class EditorDialogComponent {
   constructor(private gwtAngularService: GwtAngularService, private gameComponent: GameComponent) {
   }
 
-  showCrudControllerEditor(name: string, index: number) {
-    this.gameComponent.insertEditorPanel(new EditorModel(name, index));
-  }
-
   onShow() {
     this.crudControllers = this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.crudControllers();
+  }
+
+  openCrudControllerEditor(name: string, index: number) {
+    this.gameComponent.editorDialog = false;
+    this.gameComponent.insertEditorPanel(new EditorModel(name, index));
   }
 }

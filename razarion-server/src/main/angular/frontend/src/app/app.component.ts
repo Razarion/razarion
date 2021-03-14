@@ -1,8 +1,6 @@
 import {Component, Injector} from '@angular/core';
 import {NavigationStart, Router} from "@angular/router";
 import {FrontendService} from "./service/frontend.service";
-import { createCustomElement } from '@angular/elements';
-import {PropertyTableComponent} from "./editor/property-table/property-table.component";
 
 @Component({
   selector: 'app-root',
@@ -25,11 +23,6 @@ export class AppComponent {
     //   // NavigationError
     //   // RoutesRecognized
     // });
-
-    const propertyTableComponent = createCustomElement(PropertyTableComponent, {injector});
-    // Register the custom element with the browser.
-    customElements.define('angular-property-table', propertyTableComponent);
-
   }
 
 }
