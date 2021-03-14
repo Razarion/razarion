@@ -123,6 +123,12 @@
             <version>${gwt.elemental2.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.elemental2</groupId>
+            <artifactId>elemental2-promise</artifactId>
+            <version>${gwt.elemental2.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Errai -->
         <dependency>
             <groupId>org.jboss.errai</groupId>
@@ -205,6 +211,7 @@
                     <hostedWebapp>src/main/webapp</hostedWebapp>
                     <strict>true</strict>
                     <inplace>true</inplace>
+                    <generateJsInteropExports>true</generateJsInteropExports>
                     <deploy>${project.parent.basedir}${raz.web-dir}debug</deploy>
                     <!--<bindAddress>0.0.0.0</bindAddress>-->
                     <!--<saveSource>true</saveSource>-->

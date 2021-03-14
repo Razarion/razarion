@@ -2,7 +2,7 @@ import {Component, Injector} from '@angular/core';
 import {NavigationStart, Router} from "@angular/router";
 import {FrontendService} from "./service/frontend.service";
 import { createCustomElement } from '@angular/elements';
-import {PropertyTableComponent} from "./editor/property-table.component";
+import {PropertyTableComponent} from "./editor/property-table/property-table.component";
 
 @Component({
   selector: 'app-root',

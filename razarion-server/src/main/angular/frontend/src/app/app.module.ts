@@ -14,14 +14,20 @@ import {FormsModule} from "@angular/forms";
 import {ResetPasswordComponent} from "./resetpassword/reset-password.component";
 import {LogoutComponent} from "./logout/logout.component";
 import {ChangePasswordComponent} from "./resetpassword/change-password.component";
-import {PropertyTableComponent} from "./editor/property-table.component";
 import {AppRoutingModule} from "./app-routing.module";
 import {TreeTableModule} from "primeng/treetable";
 import {ButtonModule} from "primeng/button";
 import {GwtAngularService} from "./gwtangular/GwtAngularService";
-import {OverlayPanelModule} from 'primeng/overlaypanel';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-
+import {SidebarModule} from 'primeng/sidebar';
+import {DialogModule} from 'primeng/dialog';
+import {EditorDialogComponent} from "./game/editor-dialog.component";
+import {EditorPanelComponent} from './editor/editor-panel/editor-panel.component';
+import {PropertyTableComponent} from "./editor/property-table/property-table.component";
+import {DropdownModule} from 'primeng/dropdown';
+import {MenubarModule} from 'primeng/menubar';
+import {MessageService} from 'primeng/api';
+import {MessagesModule} from 'primeng/messages';
 
 @NgModule({
   declarations: [
@@ -35,7 +41,9 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     ResetPasswordComponent,
     ChangePasswordComponent,
     LogoutComponent,
-    PropertyTableComponent
+    EditorDialogComponent,
+    PropertyTableComponent,
+    EditorPanelComponent
   ],
   imports: [
     BrowserModule,
@@ -45,12 +53,16 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     TreeTableModule,
     ButtonModule,
     BrowserAnimationsModule,
-    OverlayPanelModule
+    SidebarModule,
+    DialogModule,
+    DropdownModule,
+    MenubarModule,
+    MessagesModule
   ],
   providers: [FrontendService, {
     provide: ErrorHandler,
     useClass: GlobalErrorHandler
-  }, GwtAngularService],
+  }, GwtAngularService, MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

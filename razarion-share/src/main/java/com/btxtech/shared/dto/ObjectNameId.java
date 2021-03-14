@@ -1,10 +1,14 @@
 package com.btxtech.shared.dto;
 
 
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
+
 /**
  * Created by Beat
  * 23.04.2016.
  */
+@JsType
 public class ObjectNameId {
     private int id;
     private String internalName;
@@ -12,9 +16,11 @@ public class ObjectNameId {
     /**
      * Used by GWT
      */
+    @JsIgnore
     public ObjectNameId() {
     }
 
+    @JsIgnore
     public ObjectNameId(int id, String internalName) {
         this.id = id;
         this.internalName = internalName;

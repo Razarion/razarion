@@ -10,6 +10,7 @@ import java.util.List;
  * Created by Beat
  * 24.08.2016.
  */
+@Deprecated // Move to Angular
 public abstract class AbstractCrudeEditor<T> implements CrudEditor<T>, CrudEditor.ChangeListener<T> {
     private Collection<LoadedListener> loadListeners = new ArrayList<>();
     private Collection<SelectionListener> selectionListeners = new ArrayList<>();

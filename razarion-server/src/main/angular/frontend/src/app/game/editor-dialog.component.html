@@ -1,0 +1,10 @@
+﻿<div class="p-field p-grid" *ngFor="let crudControllerName of crudControllers; index as crudControllerIndex">
+  <div class="p-col">
+    <p-button type="button" label="{{crudControllerName}}" icon="pi pi-cog" styleClass="p-button-sm"
+              (onClick)="showCrudControllerEditor(crudControllerName, crudControllerIndex)"></p-button>
+  </div>
+</div>
+
+
+
+

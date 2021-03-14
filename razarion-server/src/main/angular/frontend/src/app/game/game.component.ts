@@ -2,6 +2,7 @@
 import {FrontendService} from "../service/frontend.service";
 import {NavigationStart, Router} from "@angular/router";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
+import {EditorModel} from "../editor/editor-model";
 
 
 @Component({
@@ -13,6 +14,8 @@ export class GameComponent implements OnInit {
   canvas?: ElementRef<HTMLCanvasElement>;
   // TODO @ViewChild('loadingCover', {static: true})
   // TODO loadingCover?: OverlayPanel;
+  editorDialog: boolean = false;
+  editorModels: EditorModel[] = [];
 
   constructor(private frontendService: FrontendService, private router: Router, private gwtAngularService: GwtAngularService) {
   }
@@ -79,5 +82,13 @@ export class GameComponent implements OnInit {
     meta.name = name;
     meta.content = content;
     document.getElementsByTagName('head')[0].appendChild(meta);
+  }
+
+  showEditorDialog() {
+    this.editorDialog = true;
+  }
+
+  insertEditorPanel(editorModel: EditorModel) {
+    this.editorModels.push(editorModel);
   }
 }

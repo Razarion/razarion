@@ -49,6 +49,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 13.08.2016.
  */
+@Deprecated // Is in Angular Code now
 @Templated("EditorMenuDialog.html#editor-menu-dialog")
 public class EditorMenuDialog extends Composite implements ModalDialogContent<Void> {
     @Inject

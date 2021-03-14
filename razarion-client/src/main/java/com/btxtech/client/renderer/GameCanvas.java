@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer;
 
 import com.btxtech.client.ClientTrackerService;
-import com.btxtech.client.GwtAngularService;
+import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.KeyboardEventHandler;
 import com.btxtech.client.MainPanelService;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
