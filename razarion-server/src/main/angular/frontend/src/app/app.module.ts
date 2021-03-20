@@ -21,13 +21,14 @@ import {GwtAngularService} from "./gwtangular/GwtAngularService";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {SidebarModule} from 'primeng/sidebar';
 import {DialogModule} from 'primeng/dialog';
-import {EditorDialogComponent} from "./game/editor-dialog.component";
 import {EditorPanelComponent} from './editor/editor-panel/editor-panel.component';
 import {PropertyTableComponent} from "./editor/property-table/property-table.component";
 import {DropdownModule} from 'primeng/dropdown';
 import {MenubarModule} from 'primeng/menubar';
 import {MessageService} from 'primeng/api';
 import {MessagesModule} from 'primeng/messages';
+import {InputTextModule} from "primeng/inputtext";
+import {EditorDialogComponent} from "./editor/editor-dialog/editor-dialog.component";
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import {MessagesModule} from 'primeng/messages';
     DialogModule,
     DropdownModule,
     MenubarModule,
-    MessagesModule
+    MessagesModule,
+    InputTextModule
   ],
   providers: [FrontendService, {
     provide: ErrorHandler,

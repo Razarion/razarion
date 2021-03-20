@@ -91,4 +91,8 @@ export class GameComponent implements OnInit {
   insertEditorPanel(editorModel: EditorModel) {
     this.editorModels.push(editorModel);
   }
+
+  removeEditorPanel(editorModel: EditorModel) {
+    this.editorModels = this.editorModels.filter(model => model !== editorModel);
+  }
 }

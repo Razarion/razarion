@@ -1,7 +1,7 @@
 import {Component} from "@angular/core";
-import {GwtAngularService} from "../gwtangular/GwtAngularService";
-import {GameComponent} from "./game.component";
-import {EditorModel} from "../editor/editor-model";
+import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+import {GameComponent} from "../../game/game.component";
+import {EditorModel} from "../editor-model";
 
 @Component({
   selector: 'editor-dialog',

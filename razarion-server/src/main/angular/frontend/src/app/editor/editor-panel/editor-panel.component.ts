@@ -3,6 +3,7 @@ import {EditorModel} from "../editor-model";
 import {MenuItem, MessageService, TreeNode} from "primeng/api";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {ObjectNameId} from "../../gwtangular/GwtAngularFacade";
+import {GameComponent} from "../../game/game.component";
 
 @Component({
   selector: 'app-editor-panel',
@@ -15,7 +16,7 @@ export class EditorPanelComponent implements OnInit {
   items: MenuItem[] = [];
   treeNodes?: TreeNode[];
 
-  constructor(private gwtAngularService: GwtAngularService, private messageService: MessageService) {
+  constructor(private gwtAngularService: GwtAngularService, private messageService: MessageService, private gameComponent: GameComponent) {
   }
 
   ngOnInit(): void {
@@ -68,7 +69,9 @@ export class EditorPanelComponent implements OnInit {
       {label: "New"},
       {label: "Save"},
       {label: "Delete"},
-      {label: "Close"},
+      {
+        label: "Close", command: () => this.gameComponent.removeEditorPanel(this.editorModel)
+      },
     ];
   }
 }
