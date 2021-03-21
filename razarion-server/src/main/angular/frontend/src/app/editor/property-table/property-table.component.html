@@ -5,9 +5,13 @@
         <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
         {{rowData.name}}
         <p-button *ngIf="rowData.deleteAllowed" icon="pi pi-times"
-                  styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"></p-button>
+                  styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                  (onClick)="rowData.onDelete()">
+        </p-button>
         <p-button *ngIf="rowData.createAllowed" icon="pi pi-sun"
-                  styleClass="p-button-rounded p-button-text p-button-sm p-button-success"></p-button>
+                  styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+                  (onClick)="rowData.onCreate()">
+        </p-button>
       </td>
       <td>
         <input type="text" pInputText *ngIf="rowData.value" [(ngModel)]="rowData.value"/>
