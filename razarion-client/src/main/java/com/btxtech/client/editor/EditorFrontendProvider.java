@@ -98,10 +98,13 @@ public class EditorFrontendProvider {
             if (propertyType.isBindable()) {
                 if (childPropertyValue != null) {
                     angularTreeNode.children = buildTreeNodes(childPropertyValue);
+                    angularTreeNode.data.deleteAllowed = true;
                 } else {
                     angularTreeNode.leaf = true;
+                    angularTreeNode.data.createAllowed = true;
                 }
             } else if (propertyType.isList()) {
+                angularTreeNode.data.createAllowed = true;
                 if (childPropertyValue != null) {
                     List<?> childList = (List<?>) childPropertyValue;
                     AngularTreeNode[] listElementNodes = new AngularTreeNode[childList.size()];

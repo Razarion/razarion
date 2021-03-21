@@ -7,4 +7,6 @@ import jsinterop.base.Any;
 public class AngularTreeNodeData {
     public String name;
     public Any value;
+    public boolean deleteAllowed;
+    public boolean createAllowed;
 }
