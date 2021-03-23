@@ -1,6 +1,10 @@
 package com.btxtech.client.editor.generic;
 
+import com.btxtech.client.editor.generic.model.AbstractPropertyModel;
 import com.btxtech.client.editor.generic.model.Branch;
+import com.btxtech.client.editor.generic.model.Leaf;
+import com.btxtech.client.editor.generic.propertyeditors.AbstractPropertyEditor;
+import com.btxtech.client.editor.generic.propertyeditors.ListEditor;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.BaseItemTypeEditorController;
@@ -83,15 +87,8 @@ public class GenericEditorFrontendProvider {
     @SuppressWarnings("unused") // Called by Angular
     public Promise<AngularTreeNode[]> readConfig(int crudControllerIndex, int configId) {
         CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
-        return new Promise<>((resolve, reject) -> MessageBuilder.createCall((RemoteCallback<Config>) config -> {
-                    resolve.onInvoke(buildTreeNodes(config));
-                    Branch branch = branchInstance.get();
-                    branch.init(null, null,
-                            (HasProperties) BindableProxyFactory.getBindableProxy(config),
-                            new PropertyType(config.getClass(), true, false),
-                            null);
-                    logger.severe("Branch: " + branch);
-                },
+        return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
+                (RemoteCallback<Config>) config -> configToAngularTreeNodes(config, crudControllerEntry.crudControllerClass, configId, resolve, reject),
                 (message, throwable) -> {
                     logger.log(Level.SEVERE, "CrudController.readConfig() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + configId + "\n" + message, throwable);
                     reject.onInvoke("CrudController.readConfig() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + configId + "\n" + message + "\n" + throwable);
@@ -100,50 +97,60 @@ public class GenericEditorFrontendProvider {
                 crudControllerEntry.crudControllerClass).read(configId));
     }
 
-    private AngularTreeNode[] buildTreeNodes(Object config) {
-        HasProperties hasProperties = (HasProperties) BindableProxyFactory.getBindableProxy(config);
+    private void configToAngularTreeNodes(Object config, Class<? extends CrudController<? extends Config>> crudControllerClass, int configId,
+                                          Promise.PromiseExecutorCallbackFn.ResolveCallbackFn<AngularTreeNode[]> resolve,
+                                          Promise.PromiseExecutorCallbackFn.RejectCallbackFn reject) {
+        try {
+            Branch branch = branchInstance.get();
+            branch.init(null, null,
+                    (HasProperties) BindableProxyFactory.getBindableProxy(config),
+                    new PropertyType(config.getClass(), true, false),
+                    null);
+            resolve.onInvoke(branch2AngularTreeNodes(branch));
+        } catch (Throwable throwable) {
+            logger.log(Level.SEVERE, "configToAngularTreeNodes() failed. Config: " + config + "\n" + crudControllerClass + "\n" + "configId:" + configId, throwable);
+            reject.onInvoke("configToAngularTreeNodes() failed. Config: " + config + "\n" + crudControllerClass + "\n" + "configId:" + configId + "\n" + throwable);
+        }
+    }
+
+    private AngularTreeNode[] branch2AngularTreeNodes(Branch branch) {
         List<AngularTreeNode> angularTreeNodes = new ArrayList<>();
-        hasProperties.getBeanProperties().forEach((propertyName, propertyType) -> {
-            AngularTreeNode angularTreeNode = new AngularTreeNode();
-            angularTreeNode.data = new AngularTreeNodeData();
-            angularTreeNode.data.name = propertyName;
-            angularTreeNodes.add(angularTreeNode);
-            Object childPropertyValue = hasProperties.get(propertyName);
-            if (propertyType.isBindable()) {
-                if (childPropertyValue != null) {
-                    angularTreeNode.children = buildTreeNodes(childPropertyValue);
-                    angularTreeNode.data.deleteAllowed = true;
-                } else {
-                    angularTreeNode.leaf = true;
+        branch.createBindableChildren(childPropertyModel -> angularTreeNodes.add(propertyModel2AngularTreeNode(childPropertyModel)));
+        return angularTreeNodes.toArray(new AngularTreeNode[0]);
+    }
+
+    private AngularTreeNode propertyModel2AngularTreeNode(AbstractPropertyModel propertyModel) {
+        AngularTreeNode angularTreeNode = new AngularTreeNode();
+        angularTreeNode.data = new AngularTreeNodeData();
+        angularTreeNode.data.name = propertyModel.getDisplayName();
+        if (propertyModel instanceof Branch) {
+            Branch branch = (Branch) propertyModel;
+            if (branch.isPropertyValueNotNull() || !branch.isPropertyNullable()) {
+                Class<? extends AbstractPropertyEditor> editorClass = branch.getEditorClass();
+                if (editorClass == ListEditor.class) {
                     angularTreeNode.data.createAllowed = true;
-                }
-            } else if (propertyType.isList()) {
-                angularTreeNode.data.createAllowed = true;
-                if (childPropertyValue != null) {
-                    List<?> childList = (List<?>) childPropertyValue;
-                    AngularTreeNode[] listElementNodes = new AngularTreeNode[childList.size()];
-                    for (int i = 0; i < childList.size(); i++) {
-                        Object listElement = childList.get(i);
-                        AngularTreeNode angularTreeNodeListElement = new AngularTreeNode();
-                        angularTreeNodeListElement.data = new AngularTreeNodeData();
-                        angularTreeNodeListElement.data.name = "[" + i + "]";
-                        if (BindableProxyFactory.isBindableType(listElement)) {
-                            angularTreeNodeListElement.children = buildTreeNodes(listElement);
-                        } else {
-                            angularTreeNodeListElement.data.value = Any.of(listElement);
-                        }
-                        listElementNodes[i] = angularTreeNodeListElement;
+                    List<AngularTreeNode> listAngularTreeNodes = new ArrayList<>();
+                    branch.createListChildren(childListPropertyModel -> listAngularTreeNodes.add(propertyModel2AngularTreeNode(childListPropertyModel)));
+                    if (listAngularTreeNodes.isEmpty()) {
+                        angularTreeNode.leaf = true;
+                    } else {
+                        angularTreeNode.children = listAngularTreeNodes.toArray(new AngularTreeNode[0]);
                     }
-                    angularTreeNode.children = listElementNodes;
                 } else {
-                    angularTreeNode.leaf = true;
+                    angularTreeNode.children = branch2AngularTreeNodes(branch);
+                    angularTreeNode.data.deleteAllowed = true;
                 }
             } else {
-                angularTreeNode.data.value = Any.of(childPropertyValue);
                 angularTreeNode.leaf = true;
+                angularTreeNode.data.createAllowed = true;
             }
-        });
-        return angularTreeNodes.toArray(new AngularTreeNode[0]);
+        } else if (propertyModel instanceof Leaf) {
+            angularTreeNode.data.value = Any.of(propertyModel.getPropertyValue());
+            angularTreeNode.leaf = true;
+        } else {
+            throw new IllegalStateException("Unknown propertyModel type: " + propertyModel);
+        }
+        return angularTreeNode;
     }
 
     private static class CrudControllerEntry {
