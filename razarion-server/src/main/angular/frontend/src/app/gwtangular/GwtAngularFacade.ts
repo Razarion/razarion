@@ -6,6 +6,10 @@ export class GwtAngularFacade {
 }
 
 export interface EditorFrontendProvider {
+  getGenericEditorFrontendProvider(): GenericEditorFrontendProvider;
+}
+
+export interface GenericEditorFrontendProvider {
   crudControllers(): string[];
 
   requestConfigs(crudControllerIndex: number): Promise<ObjectNameId[]>;

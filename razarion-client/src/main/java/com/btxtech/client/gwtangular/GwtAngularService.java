@@ -8,16 +8,18 @@ import jsinterop.base.JsPropertyMapOfAny;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 @ApplicationScoped
 public class GwtAngularService {
-    private GwtAngularFacade gwtAngularFacade;
+    @Inject
     private EditorFrontendProvider editorFrontendProvider;
+    private GwtAngularFacade gwtAngularFacade;
 
     @PostConstruct
     public void init() {
         gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMapOfAny>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
-        gwtAngularFacade.editorFrontendProvider = new EditorFrontendProvider();
+        gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
     }
 
     public HTMLCanvasElement getCanvasElement() {

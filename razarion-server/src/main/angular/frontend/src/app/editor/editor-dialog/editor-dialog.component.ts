@@ -15,7 +15,7 @@ export class EditorDialogComponent {
   }
 
   onShow() {
-    this.crudControllers = this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.crudControllers();
+    this.crudControllers = this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().crudControllers();
   }
 
   openCrudControllerEditor(name: string, index: number) {

@@ -26,7 +26,7 @@ export class EditorPanelComponent implements OnInit {
       }
     ];
 
-    this.gwtAngularService.gwtAngularFacade.editorFrontendProvider
+    this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
       .requestConfigs(this.editorModel.crudControllerIndex)
       .then(value => this.setupMenuItems(value),
         reason => {
@@ -46,7 +46,7 @@ export class EditorPanelComponent implements OnInit {
       menuObjectNameIds.push({
         label: `${objectNameId.getInternalName()} (${objectNameId.getId()})`,
         command: () => {
-          this.gwtAngularService.gwtAngularFacade.editorFrontendProvider
+          this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
             .readConfig(this.editorModel.crudControllerIndex, objectNameId.getId())
             .then(value => this.treeNodes = value,
               reason => {
