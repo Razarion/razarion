@@ -26,7 +26,7 @@ import {PropertyTableComponent} from "./editor/property-table/property-table.com
 import {DropdownModule} from 'primeng/dropdown';
 import {MenubarModule} from 'primeng/menubar';
 import {MessageService} from 'primeng/api';
-import {MessagesModule} from 'primeng/messages';
+import {ToastModule} from 'primeng/toast';
 import {InputTextModule} from "primeng/inputtext";
 import {EditorDialogComponent} from "./editor/editor-dialog/editor-dialog.component";
 
@@ -58,7 +58,7 @@ import {EditorDialogComponent} from "./editor/editor-dialog/editor-dialog.compon
     DialogModule,
     DropdownModule,
     MenubarModule,
-    MessagesModule,
+    ToastModule,
     InputTextModule
   ],
   providers: [FrontendService, {

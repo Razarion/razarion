@@ -33,7 +33,8 @@ export class EditorPanelComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: `Can not load configs for: ${this.editorModel.crudControllerName}`,
-            detail: reason
+            detail: reason,
+            sticky: true
           });
           console.error(reason);
         });
@@ -53,7 +54,8 @@ export class EditorPanelComponent implements OnInit {
                 this.messageService.add({
                   severity: 'error',
                   summary: `Can not load config for: ${this.editorModel.crudControllerName} with id: ${objectNameId.getId()}`,
-                  detail: reason
+                  detail: reason,
+                  sticky: true
                 });
                 console.error(reason);
               })
