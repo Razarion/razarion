@@ -6,7 +6,6 @@ import com.btxtech.client.editor.generic.model.GenericPropertyInfoProvider;
 import com.btxtech.client.editor.generic.model.Leaf;
 import com.btxtech.client.editor.generic.propertyeditors.AbstractPropertyEditor;
 import com.btxtech.client.editor.generic.propertyeditors.ListEditor;
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.BaseItemTypeEditorController;
@@ -134,15 +133,14 @@ public class GenericEditorFrontendProvider {
 
     private AngularTreeNode propertyModel2AngularTreeNode(AbstractPropertyModel propertyModel) {
         AngularTreeNode angularTreeNode = new AngularTreeNode();
-        final SingleHolder<Branch> listBranchHolder = new SingleHolder<>();
         angularTreeNode.data = new AngularTreeNodeData() {
             @Override
             public void onCreate(GwtAngularPropertyTable gwtAngularPropertyTable) {
                 try {
-                    if (listBranchHolder.isEmpty()) {
+                    if (angularTreeNode.listBranch == null) {
                         throw new IllegalStateException("Is not a list element");
                     }
-                    AbstractPropertyModel child = listBranchHolder.getO().createListElement();
+                    AbstractPropertyModel child = angularTreeNode.listBranch.createListElement();
                     if (angularTreeNode.children == null) {
                         angularTreeNode.children = Js.cast(new Array<AngularTreeNode>());
                     }
@@ -162,7 +160,7 @@ public class GenericEditorFrontendProvider {
                 Class<? extends AbstractPropertyEditor> editorClass = branch.getEditorClass();
                 if (editorClass == ListEditor.class) {
                     angularTreeNode.data.createAllowed = true;
-                    listBranchHolder.setO(branch);
+                    angularTreeNode.listBranch = branch;
                     List<AngularTreeNode> listAngularTreeNodes = new ArrayList<>();
                     branch.createListChildren(childListPropertyModel -> listAngularTreeNodes.add(propertyModel2AngularTreeNode(childListPropertyModel)));
                     if (listAngularTreeNodes.isEmpty()) {

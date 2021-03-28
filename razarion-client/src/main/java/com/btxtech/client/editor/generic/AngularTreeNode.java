@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.generic;
 
+import com.btxtech.client.editor.generic.model.Branch;
 import jsinterop.annotations.JsType;
 import jsinterop.base.Any;
 
@@ -20,5 +21,5 @@ public class AngularTreeNode {
     public boolean draggable;
     public boolean droppable;
     public boolean selectable;
-    public String key;
+    public Branch listBranch;
 }
