@@ -1,11 +1,13 @@
 package com.btxtech.client.editor.generic;
 
+import com.btxtech.client.editor.generic.model.AbstractPropertyModel;
 import com.btxtech.client.editor.generic.model.Branch;
 import jsinterop.annotations.JsType;
 import jsinterop.base.Any;
 
 @JsType
 public class AngularTreeNode {
+    // --- Used by Angular PrimeNG in Javascript
     public String label;
     public AngularTreeNodeData data;
     public String icon;
@@ -21,5 +23,12 @@ public class AngularTreeNode {
     public boolean draggable;
     public boolean droppable;
     public boolean selectable;
+    // --- Used by Razarion code
     public Branch listBranch;
+    public AbstractPropertyModel abstractPropertyModel;
+
+    public AngularTreeNode(AbstractPropertyModel abstractPropertyModel, AngularTreeNode parent) {
+        this.parent = parent;
+        this.abstractPropertyModel = abstractPropertyModel;
+    }
 }

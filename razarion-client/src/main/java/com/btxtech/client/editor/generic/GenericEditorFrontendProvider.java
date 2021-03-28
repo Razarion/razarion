@@ -120,35 +120,57 @@ public class GenericEditorFrontendProvider {
 
     private GwtAngularPropertyTable branch2GwtAngularPropertyTable(Branch branch) {
         GwtAngularPropertyTable gwtAngularPropertyTable = new GwtAngularPropertyTable();
-        gwtAngularPropertyTable.rootTreeNodes = branch2AngularTreeNodes(branch);
+        gwtAngularPropertyTable.rootTreeNodes = branch2AngularTreeNodes(null, branch);
         gwtAngularPropertyTable.rootBranch = branch;
         return gwtAngularPropertyTable;
     }
 
-    private AngularTreeNode[] branch2AngularTreeNodes(Branch branch) {
+    private AngularTreeNode[] branch2AngularTreeNodes(AngularTreeNode parent, Branch branch) {
         List<AngularTreeNode> angularTreeNodes = new ArrayList<>();
-        branch.createBindableChildren(childPropertyModel -> angularTreeNodes.add(propertyModel2AngularTreeNode(childPropertyModel)));
+        branch.createBindableChildren(childPropertyModel -> angularTreeNodes.add(propertyModel2AngularTreeNode(parent, childPropertyModel)));
         return angularTreeNodes.toArray(new AngularTreeNode[0]);
     }
 
-    private AngularTreeNode propertyModel2AngularTreeNode(AbstractPropertyModel propertyModel) {
-        AngularTreeNode angularTreeNode = new AngularTreeNode();
+    private AngularTreeNode[] listBranch2AngularTreeNodes(AngularTreeNode parent, Branch branch) {
+        List<AngularTreeNode> listAngularTreeNodes = new ArrayList<>();
+        branch.createListChildren(childListPropertyModel -> listAngularTreeNodes.add(propertyModel2AngularTreeNode(parent, childListPropertyModel)));
+        return listAngularTreeNodes.toArray(new AngularTreeNode[0]);
+    }
+
+    private AngularTreeNode propertyModel2AngularTreeNode(AngularTreeNode parent, AbstractPropertyModel propertyModel) {
+        AngularTreeNode angularTreeNode = new AngularTreeNode(propertyModel, parent);
         angularTreeNode.data = new AngularTreeNodeData() {
             @Override
             public void onCreate(GwtAngularPropertyTable gwtAngularPropertyTable) {
                 try {
                     if (angularTreeNode.listBranch == null) {
-                        throw new IllegalStateException("Is not a list element");
+                        throw new IllegalStateException("Is not a list");
                     }
                     AbstractPropertyModel child = angularTreeNode.listBranch.createListElement();
                     if (angularTreeNode.children == null) {
                         angularTreeNode.children = Js.cast(new Array<AngularTreeNode>());
                     }
                     Array<AngularTreeNode> treeNodeArray = Js.cast(angularTreeNode.children);
-                    treeNodeArray.push(propertyModel2AngularTreeNode(child));
+                    treeNodeArray.push(propertyModel2AngularTreeNode(angularTreeNode, child));
                     rootTreeNodes(gwtAngularPropertyTable);
                 } catch (Throwable throwable) {
                     logger.log(Level.SEVERE, "onCreate failed", throwable);
+                    throw throwable;
+                }
+            }
+
+            @Override
+            public void onDelete(GwtAngularPropertyTable gwtAngularPropertyTable) {
+                try {
+                    if (angularTreeNode.parent.children == null) {
+                        throw new IllegalStateException("Parent is not a list");
+                    }
+                    angularTreeNode.abstractPropertyModel.setPropertyValue(null);
+                    angularTreeNode.parent.children = listBranch2AngularTreeNodes(angularTreeNode.parent, (Branch) angularTreeNode.parent.abstractPropertyModel);
+                    angularTreeNode.parent.leaf = angularTreeNode.parent.children.length == 0;
+                    rootTreeNodes(gwtAngularPropertyTable);
+                } catch (Throwable throwable) {
+                    logger.log(Level.SEVERE, "onDelete failed", throwable);
                     throw throwable;
                 }
             }
@@ -161,16 +183,12 @@ public class GenericEditorFrontendProvider {
                 if (editorClass == ListEditor.class) {
                     angularTreeNode.data.createAllowed = true;
                     angularTreeNode.listBranch = branch;
-                    List<AngularTreeNode> listAngularTreeNodes = new ArrayList<>();
-                    branch.createListChildren(childListPropertyModel -> listAngularTreeNodes.add(propertyModel2AngularTreeNode(childListPropertyModel)));
-                    if (listAngularTreeNodes.isEmpty()) {
-                        angularTreeNode.leaf = true;
-                    } else {
-                        angularTreeNode.children = listAngularTreeNodes.toArray(new AngularTreeNode[0]);
-                    }
+                    angularTreeNode.children = listBranch2AngularTreeNodes(angularTreeNode, branch);
+                    angularTreeNode.leaf = angularTreeNode.children.length == 0;
                 } else {
-                    angularTreeNode.children = branch2AngularTreeNodes(branch);
+                    angularTreeNode.children = branch2AngularTreeNodes(angularTreeNode, branch);
                     angularTreeNode.data.deleteAllowed = true;
+                    angularTreeNode.abstractPropertyModel = propertyModel;
                 }
             } else {
                 angularTreeNode.leaf = true;
