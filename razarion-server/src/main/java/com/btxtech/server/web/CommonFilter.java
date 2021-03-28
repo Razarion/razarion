@@ -14,7 +14,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.nio.channels.ClosedChannelException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -56,7 +55,9 @@ public class CommonFilter implements Filter {
             ".js",
             ".html",
             ".css",
-            ".ico"
+            ".ico",
+            ".ttf",
+            ".woff"
     );
 
     @Override
