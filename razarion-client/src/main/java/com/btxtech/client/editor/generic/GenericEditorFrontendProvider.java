@@ -178,8 +178,14 @@ public class GenericEditorFrontendProvider {
                         throw new IllegalStateException("Parent is not a list");
                     }
                     angularTreeNode.abstractPropertyModel.setPropertyValue(null);
-                    angularTreeNode.parent.children = listBranch2AngularTreeNodes(angularTreeNode.parent, (Branch) angularTreeNode.parent.abstractPropertyModel);
-                    angularTreeNode.parent.leaf = angularTreeNode.parent.children.length == 0;
+                    if (angularTreeNode.parent.abstractPropertyModel.getPropertyType().isList()) {
+                        angularTreeNode.parent.children = listBranch2AngularTreeNodes(angularTreeNode.parent, (Branch) angularTreeNode.parent.abstractPropertyModel);
+                        angularTreeNode.parent.leaf = angularTreeNode.parent.children.length == 0;
+                    } else {
+                        angularTreeNode.children = new AngularTreeNode[0];
+                        angularTreeNode.data.createAllowed = true;
+                        angularTreeNode.data.deleteAllowed = false;
+                    }
                     rootTreeNodes(gwtAngularPropertyTable);
                 } catch (Throwable throwable) {
                     logger.log(Level.SEVERE, "onDelete failed", throwable);
