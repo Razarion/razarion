@@ -22,6 +22,9 @@ public class GenericPropertyInfoProvider {
     private Map<String, Map<String, OpenApi3Schema>> typesWithOpenApi3Schema;
 
     public void load() {
+        if(listElementTypes != null) {
+            return;
+        }
         genericPropertyEditorController.call(response -> setup((GenericPropertyInfo) response),
                 exceptionHandler.restErrorHandler("GenericPropertyEditorController.getListTypeArguments()")).getGenericPropertyInfo();
     }

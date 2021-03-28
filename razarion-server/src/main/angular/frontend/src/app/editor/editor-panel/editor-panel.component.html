@@ -4,5 +4,5 @@
       <h4>{{editorModel.crudControllerName}}</h4>
     </ng-template>
   </p-menubar>
-  <property-table [tree-nodes]=treeNodes *ngIf="treeNodes" [style]="{order: 1, flexGrow: 1, overflowY: 'auto'}"></property-table>
+  <property-table [gwt-angular-property-table]=gwtAngularPropertyTable *ngIf="gwtAngularPropertyTable" [style]="{order: 1, flexGrow: 1, overflowY: 'auto'}"></property-table>
 </div>

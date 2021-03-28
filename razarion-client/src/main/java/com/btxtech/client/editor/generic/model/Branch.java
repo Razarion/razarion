@@ -124,19 +124,23 @@ public class Branch extends AbstractPropertyModel {
         BindableListWrapper bindableListWrapper = (BindableListWrapper) hasProperties;
         for (int propertyIndex = 0; propertyIndex < bindableListWrapper.size(); propertyIndex++) {
             Object childObject = bindableListWrapper.get(propertyIndex);
-            PropertyType propertyType;
-            HasProperties childHasProperties = null;
-            if (BindableProxyFactory.isBindableType(childObject)) {
-                childHasProperties = (HasProperties) childObject;
-                propertyType = new PropertyType(childObject.getClass(), true, false);
-            } else if (childObject instanceof BindableListWrapper) {
-                childHasProperties = (HasProperties) childObject;
-                propertyType = new PropertyType(childObject.getClass(), false, true);
-            } else {
-                propertyType = new PropertyType(childObject.getClass());
-            }
-            childConsumer.accept(createChild(null, propertyIndex, propertyType, childHasProperties));
+            childConsumer.accept(createAbstractPropertyModel(propertyIndex, childObject));
         }
+    }
+
+    private AbstractPropertyModel createAbstractPropertyModel(int propertyIndex, Object childObject) {
+        PropertyType propertyType;
+        HasProperties childHasProperties = null;
+        if (BindableProxyFactory.isBindableType(childObject)) {
+            childHasProperties = (HasProperties) childObject;
+            propertyType = new PropertyType(childObject.getClass(), true, false);
+        } else if (childObject instanceof BindableListWrapper) {
+            childHasProperties = (HasProperties) childObject;
+            propertyType = new PropertyType(childObject.getClass(), false, true);
+        } else {
+            propertyType = new PropertyType(childObject.getClass());
+        }
+        return createChild(null, propertyIndex, propertyType, childHasProperties);
     }
 
     private AbstractPropertyModel createChild(String propertyName, Integer propertyIndex, PropertyType propertyType, HasProperties childHasProperties) {
@@ -151,15 +155,17 @@ public class Branch extends AbstractPropertyModel {
         }
     }
 
-    public void createListElement() {
+    public AbstractPropertyModel createListElement() {
         Class clazz = parent.getPropertyType().getType();
-        if(parent.hasProperties instanceof WrappedPortable) {
-            clazz = ((WrappedPortable)parent.hasProperties).unwrap().getClass();
+        if (parent.hasProperties instanceof WrappedPortable) {
+            clazz = ((WrappedPortable) parent.hasProperties).unwrap().getClass();
         }
 
         Object listElement = genericPropertyInfoProvider.provideListElement(clazz, propertyName);
         BindableListWrapper bindableListWrapper = (BindableListWrapper) BindableProxyFactory.getBindableProxy(getPropertyValue());
         bindableListWrapper.add(listElement);
+
+        return createAbstractPropertyModel(bindableListWrapper.size() - 1, listElement);
     }
 
 }

@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {EditorModel} from "../editor-model";
 import {MenuItem, MessageService, TreeNode} from "primeng/api";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {ObjectNameId} from "../../gwtangular/GwtAngularFacade";
+import {GwtAngularPropertyTable, ObjectNameId} from "../../gwtangular/GwtAngularFacade";
 import {GameComponent} from "../../game/game.component";
 
 @Component({
@@ -14,7 +14,7 @@ export class EditorPanelComponent implements OnInit {
   @Input("editorModel")
   editorModel!: EditorModel;
   items: MenuItem[] = [];
-  treeNodes?: TreeNode[];
+  gwtAngularPropertyTable?: GwtAngularPropertyTable;
 
   constructor(private gwtAngularService: GwtAngularService, private messageService: MessageService, private gameComponent: GameComponent) {
   }
@@ -48,7 +48,7 @@ export class EditorPanelComponent implements OnInit {
         command: () => {
           this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
             .readConfig(this.editorModel.crudControllerIndex, objectNameId.getId())
-            .then(value => this.treeNodes = value,
+            .then(value => this.gwtAngularPropertyTable = value,
               reason => {
                 this.messageService.add({
                   severity: 'error',

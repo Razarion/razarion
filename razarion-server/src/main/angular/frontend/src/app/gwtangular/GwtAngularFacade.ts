@@ -14,7 +14,11 @@ export interface GenericEditorFrontendProvider {
 
   requestConfigs(crudControllerIndex: number): Promise<ObjectNameId[]>;
 
-  readConfig(crudControllerIndex: number, configId: number): Promise<TreeNode[]>;
+  readConfig(crudControllerIndex: number, configId: number): Promise<GwtAngularPropertyTable>;
+}
+
+export interface GwtAngularPropertyTable {
+  rootTreeNodes: TreeNode[];
 }
 
 export interface ObjectNameId {

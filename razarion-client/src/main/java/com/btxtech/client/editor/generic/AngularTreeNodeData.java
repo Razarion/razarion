@@ -8,17 +8,16 @@ import java.util.logging.Logger;
 @JsType
 public class AngularTreeNodeData {
     private static final Logger LOGGER = Logger.getLogger(AngularTreeNodeData.class.getName());
-
     public String name;
     public Any value;
     public boolean deleteAllowed;
     public boolean createAllowed;
 
-    public void onCreate() {
+    public void onCreate(GwtAngularPropertyTable gwtAngularPropertyTable) {
         LOGGER.severe("onCreate");
     }
 
-    public void onDelete() {
+    public void onDelete(GwtAngularPropertyTable gwtAngularPropertyTable) {
         LOGGER.severe("onDelete");
     }
 

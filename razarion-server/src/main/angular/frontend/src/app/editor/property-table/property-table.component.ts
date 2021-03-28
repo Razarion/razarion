@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {TreeNode} from "primeng/api";
+import {GwtAngularPropertyTable} from "../../gwtangular/GwtAngularFacade";
 
 @Component({
   selector: 'property-table',
@@ -7,5 +7,5 @@ import {TreeNode} from "primeng/api";
   styleUrls: ['./property-table.component.scss']
 })
 export class PropertyTableComponent {
-  @Input('tree-nodes') treeNodes: TreeNode[] = [];
+  @Input('gwt-angular-property-table') gwtAngularPropertyTable!: GwtAngularPropertyTable;
 }

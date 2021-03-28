@@ -2,9 +2,11 @@ package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.editor.generic.model.AbstractPropertyModel;
 import com.btxtech.client.editor.generic.model.Branch;
+import com.btxtech.client.editor.generic.model.GenericPropertyInfoProvider;
 import com.btxtech.client.editor.generic.model.Leaf;
 import com.btxtech.client.editor.generic.propertyeditors.AbstractPropertyEditor;
 import com.btxtech.client.editor.generic.propertyeditors.ListEditor;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.BaseItemTypeEditorController;
@@ -25,6 +27,7 @@ import elemental2.core.Array;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 import jsinterop.base.Any;
+import jsinterop.base.Js;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
@@ -60,6 +63,8 @@ public class GenericEditorFrontendProvider {
     };
     @Inject
     private Instance<Branch> branchInstance;
+    @Inject
+    private GenericPropertyInfoProvider genericPropertyInfoProvider;
     private Logger logger = Logger.getLogger(GenericEditorFrontendProvider.class.getName());
 
     @SuppressWarnings("unused") // Called by Angular
@@ -79,16 +84,17 @@ public class GenericEditorFrontendProvider {
 
     @SuppressWarnings("unused") // Called by Angular
     public Array<String> crudControllers() {
+        genericPropertyInfoProvider.load();
         Array<String> crudControllers = new Array<>();
         Arrays.stream(CRUD_CONTROLLERS).forEach(crudControllerEntry -> crudControllers.push(crudControllerEntry.name));
         return crudControllers;
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public Promise<AngularTreeNode[]> readConfig(int crudControllerIndex, int configId) {
+    public Promise<GwtAngularPropertyTable> readConfig(int crudControllerIndex, int configId) {
         CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
         return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
-                (RemoteCallback<Config>) config -> configToAngularTreeNodes(config, crudControllerEntry.crudControllerClass, configId, resolve, reject),
+                (RemoteCallback<Config>) config -> config2GwtAngularPropertyTable(config, crudControllerEntry.crudControllerClass, configId, resolve, reject),
                 (message, throwable) -> {
                     logger.log(Level.SEVERE, "CrudController.readConfig() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + configId + "\n" + message, throwable);
                     reject.onInvoke("CrudController.readConfig() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + configId + "\n" + message + "\n" + throwable);
@@ -97,20 +103,27 @@ public class GenericEditorFrontendProvider {
                 crudControllerEntry.crudControllerClass).read(configId));
     }
 
-    private void configToAngularTreeNodes(Object config, Class<? extends CrudController<? extends Config>> crudControllerClass, int configId,
-                                          Promise.PromiseExecutorCallbackFn.ResolveCallbackFn<AngularTreeNode[]> resolve,
-                                          Promise.PromiseExecutorCallbackFn.RejectCallbackFn reject) {
+    private void config2GwtAngularPropertyTable(Object config, Class<? extends CrudController<? extends Config>> crudControllerClass, int configId,
+                                                Promise.PromiseExecutorCallbackFn.ResolveCallbackFn<GwtAngularPropertyTable> resolve,
+                                                Promise.PromiseExecutorCallbackFn.RejectCallbackFn reject) {
         try {
             Branch branch = branchInstance.get();
             branch.init(null, null,
                     (HasProperties) BindableProxyFactory.getBindableProxy(config),
                     new PropertyType(config.getClass(), true, false),
                     null);
-            resolve.onInvoke(branch2AngularTreeNodes(branch));
+            resolve.onInvoke(branch2GwtAngularPropertyTable(branch));
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "configToAngularTreeNodes() failed. Config: " + config + "\n" + crudControllerClass + "\n" + "configId:" + configId, throwable);
             reject.onInvoke("configToAngularTreeNodes() failed. Config: " + config + "\n" + crudControllerClass + "\n" + "configId:" + configId + "\n" + throwable);
         }
+    }
+
+    private GwtAngularPropertyTable branch2GwtAngularPropertyTable(Branch branch) {
+        GwtAngularPropertyTable gwtAngularPropertyTable = new GwtAngularPropertyTable();
+        gwtAngularPropertyTable.rootTreeNodes = branch2AngularTreeNodes(branch);
+        gwtAngularPropertyTable.rootBranch = branch;
+        return gwtAngularPropertyTable;
     }
 
     private AngularTreeNode[] branch2AngularTreeNodes(Branch branch) {
@@ -121,7 +134,27 @@ public class GenericEditorFrontendProvider {
 
     private AngularTreeNode propertyModel2AngularTreeNode(AbstractPropertyModel propertyModel) {
         AngularTreeNode angularTreeNode = new AngularTreeNode();
-        angularTreeNode.data = new AngularTreeNodeData();
+        final SingleHolder<Branch> listBranchHolder = new SingleHolder<>();
+        angularTreeNode.data = new AngularTreeNodeData() {
+            @Override
+            public void onCreate(GwtAngularPropertyTable gwtAngularPropertyTable) {
+                try {
+                    if (listBranchHolder.isEmpty()) {
+                        throw new IllegalStateException("Is not a list element");
+                    }
+                    AbstractPropertyModel child = listBranchHolder.getO().createListElement();
+                    if (angularTreeNode.children == null) {
+                        angularTreeNode.children = Js.cast(new Array<AngularTreeNode>());
+                    }
+                    Array<AngularTreeNode> treeNodeArray = Js.cast(angularTreeNode.children);
+                    treeNodeArray.push(propertyModel2AngularTreeNode(child));
+                    rootTreeNodes(gwtAngularPropertyTable);
+                } catch (Throwable throwable) {
+                    logger.log(Level.SEVERE, "onCreate failed", throwable);
+                    throw throwable;
+                }
+            }
+        };
         angularTreeNode.data.name = propertyModel.getDisplayName();
         if (propertyModel instanceof Branch) {
             Branch branch = (Branch) propertyModel;
@@ -129,6 +162,7 @@ public class GenericEditorFrontendProvider {
                 Class<? extends AbstractPropertyEditor> editorClass = branch.getEditorClass();
                 if (editorClass == ListEditor.class) {
                     angularTreeNode.data.createAllowed = true;
+                    listBranchHolder.setO(branch);
                     List<AngularTreeNode> listAngularTreeNodes = new ArrayList<>();
                     branch.createListChildren(childListPropertyModel -> listAngularTreeNodes.add(propertyModel2AngularTreeNode(childListPropertyModel)));
                     if (listAngularTreeNodes.isEmpty()) {
@@ -151,6 +185,15 @@ public class GenericEditorFrontendProvider {
             throw new IllegalStateException("Unknown propertyModel type: " + propertyModel);
         }
         return angularTreeNode;
+    }
+
+    /**
+     * This methodes is ued to force the PrimeNG TreeTable update
+     *
+     * @param gwtAngularPropertyTable containes the Angular PrimeNG root TreeNodes
+     */
+    private void rootTreeNodes(GwtAngularPropertyTable gwtAngularPropertyTable) {
+        gwtAngularPropertyTable.rootTreeNodes = Arrays.stream(gwtAngularPropertyTable.rootTreeNodes).toArray(AngularTreeNode[]::new);
     }
 
     private static class CrudControllerEntry {

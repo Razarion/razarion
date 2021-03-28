@@ -1,4 +1,4 @@
-<p-treeTable [value]="treeNodes" [tableStyle]="{width:'auto'}" [autoLayout]="true">
+<p-treeTable [value]="gwtAngularPropertyTable.rootTreeNodes" [tableStyle]="{width:'auto'}" [autoLayout]="true">
   <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
     <tr [ttRow]="rowNode">
       <td style="white-space: nowrap">
@@ -6,11 +6,11 @@
         {{rowData.name}}
         <p-button *ngIf="rowData.deleteAllowed" icon="pi pi-times"
                   styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                  (onClick)="rowData.onDelete()">
+                  (onClick)="rowData.onDelete(this.gwtAngularPropertyTable)">
         </p-button>
         <p-button *ngIf="rowData.createAllowed" icon="pi pi-sun"
                   styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
-                  (onClick)="rowData.onCreate()">
+                  (onClick)="rowData.onCreate(this.gwtAngularPropertyTable)">
         </p-button>
       </td>
       <td>
