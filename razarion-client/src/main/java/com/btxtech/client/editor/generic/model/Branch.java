@@ -128,7 +128,7 @@ public class Branch extends AbstractPropertyModel {
         }
     }
 
-    private AbstractPropertyModel createAbstractPropertyModel(int propertyIndex, Object childObject) {
+    private AbstractPropertyModel createAbstractPropertyModel(Integer propertyIndex, Object childObject) {
         PropertyType propertyType;
         HasProperties childHasProperties = null;
         if (BindableProxyFactory.isBindableType(childObject)) {
@@ -162,6 +162,9 @@ public class Branch extends AbstractPropertyModel {
         }
 
         Object listElement = genericPropertyInfoProvider.provideListElement(clazz, propertyName);
+        if (!isPropertyValueNotNull()) {
+            createAndSetPropertyValue();
+        }
         BindableListWrapper bindableListWrapper = (BindableListWrapper) BindableProxyFactory.getBindableProxy(getPropertyValue());
         bindableListWrapper.add(listElement);
 

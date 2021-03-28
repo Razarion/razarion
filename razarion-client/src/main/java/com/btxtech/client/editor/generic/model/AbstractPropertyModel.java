@@ -70,7 +70,7 @@ public abstract class AbstractPropertyModel {
         return propertyType.getType();
     }
 
-    protected PropertyType getPropertyType() {
+    public PropertyType getPropertyType() {
         return propertyType;
     }
 

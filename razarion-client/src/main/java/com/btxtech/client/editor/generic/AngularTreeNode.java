@@ -1,7 +1,6 @@
 package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.editor.generic.model.AbstractPropertyModel;
-import com.btxtech.client.editor.generic.model.Branch;
 import jsinterop.annotations.JsType;
 import jsinterop.base.Any;
 
@@ -24,7 +23,6 @@ public class AngularTreeNode {
     public boolean droppable;
     public boolean selectable;
     // --- Used by Razarion code
-    public Branch listBranch;
     public AbstractPropertyModel abstractPropertyModel;
 
     public AngularTreeNode(AbstractPropertyModel abstractPropertyModel, AngularTreeNode parent) {

@@ -143,15 +143,27 @@ public class GenericEditorFrontendProvider {
             @Override
             public void onCreate(GwtAngularPropertyTable gwtAngularPropertyTable) {
                 try {
-                    if (angularTreeNode.listBranch == null) {
-                        throw new IllegalStateException("Is not a list");
+                    if (angularTreeNode.abstractPropertyModel == null) {
+                        throw new IllegalStateException("angularTreeNode.abstractPropertyModel == null");
                     }
-                    AbstractPropertyModel child = angularTreeNode.listBranch.createListElement();
-                    if (angularTreeNode.children == null) {
-                        angularTreeNode.children = Js.cast(new Array<AngularTreeNode>());
+                    if(angularTreeNode.abstractPropertyModel instanceof Branch) {
+                        Branch branch = (Branch) angularTreeNode.abstractPropertyModel;
+                        if(branch.getPropertyType().isList()) {
+                            AbstractPropertyModel child = branch.createListElement();
+                            if (angularTreeNode.children == null) {
+                                angularTreeNode.children = new AngularTreeNode[0];
+                            }
+                            Array<AngularTreeNode> treeNodeArray = Js.cast(angularTreeNode.children);
+                            treeNodeArray.push(propertyModel2AngularTreeNode(angularTreeNode, child));
+                            angularTreeNode.expanded = true;
+                        } else if(branch.getPropertyType().isBindable()) {
+                            angularTreeNode.abstractPropertyModel.createAndSetPropertyValue();
+                            angularTreeNode.children = branch2AngularTreeNodes(angularTreeNode, branch);
+                            angularTreeNode.data.createAllowed = false;
+                            angularTreeNode.data.deleteAllowed = true;
+                            angularTreeNode.expanded = true;
+                        }
                     }
-                    Array<AngularTreeNode> treeNodeArray = Js.cast(angularTreeNode.children);
-                    treeNodeArray.push(propertyModel2AngularTreeNode(angularTreeNode, child));
                     rootTreeNodes(gwtAngularPropertyTable);
                 } catch (Throwable throwable) {
                     logger.log(Level.SEVERE, "onCreate failed", throwable);
@@ -182,7 +194,6 @@ public class GenericEditorFrontendProvider {
                 Class<? extends AbstractPropertyEditor> editorClass = branch.getEditorClass();
                 if (editorClass == ListEditor.class) {
                     angularTreeNode.data.createAllowed = true;
-                    angularTreeNode.listBranch = branch;
                     angularTreeNode.children = listBranch2AngularTreeNodes(angularTreeNode, branch);
                     angularTreeNode.leaf = angularTreeNode.children.length == 0;
                 } else {
