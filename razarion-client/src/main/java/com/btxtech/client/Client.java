@@ -1,6 +1,7 @@
 package com.btxtech.client;
 
 import com.btxtech.client.clientI18n.ClientI18nConstants;
+import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.system.LifecycleService;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.CommonUrl;
@@ -32,6 +33,8 @@ public class Client {
     private LifecycleService lifecycleService;
     @Inject
     private MainPanelService mainPanelService;
+    @Inject
+    private GwtAngularService gwtAngularService;
 
     public Client() {
 //        DomGlobal.window.onerror = new Window.OnerrorCallbackFn() {
@@ -70,6 +73,7 @@ public class Client {
 
     @AfterInitialization
     public void afterInitialization() {
+        gwtAngularService.init();
         mainPanelService.init();
         lifecycleService.startCold();
     }
