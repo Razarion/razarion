@@ -29,6 +29,9 @@ import {MessageService} from 'primeng/api';
 import {ToastModule} from 'primeng/toast';
 import {InputTextModule} from "primeng/inputtext";
 import {EditorDialogComponent} from "./editor/editor-dialog/editor-dialog.component";
+import {PropertyEditorComponent} from "./editor/property-table/property-editor.component";
+import {EditorService} from "./editor/editor-service";
+import {StringPropertyEditorComponent} from "./editor/property-table/editors/string-property-editor.component";
 
 @NgModule({
   declarations: [
@@ -44,7 +47,9 @@ import {EditorDialogComponent} from "./editor/editor-dialog/editor-dialog.compon
     LogoutComponent,
     EditorDialogComponent,
     PropertyTableComponent,
-    EditorPanelComponent
+    EditorPanelComponent,
+    PropertyEditorComponent,
+    StringPropertyEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -61,10 +66,15 @@ import {EditorDialogComponent} from "./editor/editor-dialog/editor-dialog.compon
     ToastModule,
     InputTextModule
   ],
-  providers: [FrontendService, {
-    provide: ErrorHandler,
-    useClass: GlobalErrorHandler
-  }, GwtAngularService, MessageService],
+  providers: [
+    FrontendService, {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
+    },
+    GwtAngularService,
+    MessageService,
+    EditorService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

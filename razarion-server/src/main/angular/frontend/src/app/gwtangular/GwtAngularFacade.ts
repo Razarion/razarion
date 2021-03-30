@@ -26,3 +26,16 @@ export interface ObjectNameId {
 
   getInternalName(): string;
 }
+
+export interface AngularTreeNodeData {
+  name: string;
+  value: any;
+  propertyEditorSelector: string;
+  nullable: boolean;
+  deleteAllowed: boolean;
+  createAllowed: boolean;
+
+  onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void;
+
+  onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void;
+}

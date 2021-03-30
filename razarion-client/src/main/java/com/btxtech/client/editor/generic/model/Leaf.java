@@ -1,12 +1,24 @@
 package com.btxtech.client.editor.generic.model;
 
+import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.editor.OpenApi3Schema;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import org.jboss.errai.databinding.client.BindableListWrapper;
 import org.jboss.errai.databinding.client.PropertyType;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import java.util.Map;
 
 @Dependent
 public class Leaf extends AbstractPropertyModel {
+    @Inject
+    private GenericPropertyInfoProvider genericPropertyInfoProvider;
     private Branch branch;
     private String propertyName;
     private Integer propertyIndex;
@@ -67,5 +79,48 @@ public class Leaf extends AbstractPropertyModel {
 
     public Branch getBranch() {
         return branch;
+    }
+
+    public PropertyEditorSelector getPropertyEditorSelector() {
+        Class<?> clazz = getPropertyClass();
+        if (clazz.isEnum()) {
+            return PropertyEditorSelector.ENUM;
+        } else if (clazz.equals(Map.class)) {
+            return PropertyEditorSelector.INTEGER_MAP;
+        } else {
+            if (getPropertyName() != null) {
+                Class<?> parentClass = getBranch().getPropertyClass();
+                OpenApi3Schema openApi3Schema = genericPropertyInfoProvider.scanForOpenApiScheme(parentClass, getPropertyName());
+                if (openApi3Schema != null) {
+                    if (clazz == Integer.class && CommonUrl.IMAGE_ID_TYPE.equals(openApi3Schema.getType())) {
+                        return PropertyEditorSelector.IMAGE;
+                    } else if (clazz == String.class && CommonUrl.COLLADA_STRING_TYPE.equals(openApi3Schema.getType())) {
+                        return PropertyEditorSelector.COLLADA_STRING;
+                    }
+                }
+            }
+            if (clazz.equals(String.class)) {
+                return PropertyEditorSelector.STRING;
+            } else if (clazz.equals(Integer.class)) {
+                return PropertyEditorSelector.INTEGER;
+            } else if (clazz.equals(Double.class)) {
+                return PropertyEditorSelector.DOUBLE;
+            } else if (clazz.equals(Boolean.class)) {
+                return PropertyEditorSelector.BOOLEAN;
+            } else if (clazz.equals(Rectangle.class)) {
+                return PropertyEditorSelector.RECTANGLE;
+            } else if (clazz.equals(Rectangle2D.class)) {
+                return PropertyEditorSelector.RECTANGLE_2D;
+            } else if (clazz.equals(DecimalPosition.class)) {
+                return PropertyEditorSelector.DECIMAL_POSITION;
+            } else if (clazz.equals(Index.class)) {
+                return PropertyEditorSelector.INDEX;
+            } else if (clazz.equals(Vertex.class)) {
+                return PropertyEditorSelector.VERTEX;
+            } else if (clazz.equals(PlaceConfig.class)) {
+                return PropertyEditorSelector.PLACE_CONFIG;
+            }
+            return PropertyEditorSelector.UNKNOWN;
+        }
     }
 }

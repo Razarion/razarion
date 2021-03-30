@@ -37,6 +37,7 @@ public abstract class AbstractPropertyModel {
 
     public abstract void setPropertyValue(Object value);
 
+    @Deprecated
     public Class<? extends AbstractPropertyEditor> getEditorClass() {
         if (propertyType.getType().isEnum()) {
             return EnumEditor.class;

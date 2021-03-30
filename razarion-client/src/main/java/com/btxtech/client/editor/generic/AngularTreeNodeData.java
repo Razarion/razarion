@@ -10,6 +10,8 @@ public class AngularTreeNodeData {
     private static final Logger LOGGER = Logger.getLogger(AngularTreeNodeData.class.getName());
     public String name;
     public Any value;
+    public String propertyEditorSelector;
+    public boolean nullable;
     public boolean deleteAllowed;
     public boolean createAllowed;
 

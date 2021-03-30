@@ -4,8 +4,6 @@ import com.btxtech.client.editor.generic.model.AbstractPropertyModel;
 import com.btxtech.client.editor.generic.model.Branch;
 import com.btxtech.client.editor.generic.model.GenericPropertyInfoProvider;
 import com.btxtech.client.editor.generic.model.Leaf;
-import com.btxtech.client.editor.generic.propertyeditors.AbstractPropertyEditor;
-import com.btxtech.client.editor.generic.propertyeditors.ListEditor;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.BaseItemTypeEditorController;
@@ -197,8 +195,7 @@ public class GenericEditorFrontendProvider {
         if (propertyModel instanceof Branch) {
             Branch branch = (Branch) propertyModel;
             if (branch.isPropertyValueNotNull() || !branch.isPropertyNullable()) {
-                Class<? extends AbstractPropertyEditor> editorClass = branch.getEditorClass();
-                if (editorClass == ListEditor.class) {
+                if (branch.getPropertyType().isList()) {
                     angularTreeNode.data.createAllowed = true;
                     angularTreeNode.children = listBranch2AngularTreeNodes(angularTreeNode, branch);
                     angularTreeNode.leaf = angularTreeNode.children.length == 0;
@@ -213,6 +210,8 @@ public class GenericEditorFrontendProvider {
             }
         } else if (propertyModel instanceof Leaf) {
             angularTreeNode.data.value = Any.of(propertyModel.getPropertyValue());
+            angularTreeNode.data.propertyEditorSelector = ((Leaf) propertyModel).getPropertyEditorSelector().getSelector();
+            angularTreeNode.data.nullable = propertyModel.isPropertyNullable();
             angularTreeNode.leaf = true;
         } else {
             throw new IllegalStateException("Unknown propertyModel type: " + propertyModel);

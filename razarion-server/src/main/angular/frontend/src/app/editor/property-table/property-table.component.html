@@ -14,7 +14,7 @@
         </p-button>
       </td>
       <td>
-        <input type="text" pInputText *ngIf="rowData.value" [(ngModel)]="rowData.value"/>
+        <property-editor *ngIf="rowData.propertyEditorSelector" [angular-tree-node-data]="rowData"></property-editor>
       </td>
     </tr>
   </ng-template>
