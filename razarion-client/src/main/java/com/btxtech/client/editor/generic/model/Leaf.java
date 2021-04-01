@@ -2,7 +2,9 @@ package com.btxtech.client.editor.generic.model;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
@@ -119,6 +121,10 @@ public class Leaf extends AbstractPropertyModel {
                 return PropertyEditorSelector.VERTEX;
             } else if (clazz.equals(PlaceConfig.class)) {
                 return PropertyEditorSelector.PLACE_CONFIG;
+            } else if (clazz.equals(I18nString.class)) {
+                return PropertyEditorSelector.I18N_STRING;
+            } else if (clazz.equals(Polygon2D.class)) {
+                return PropertyEditorSelector.POLYGON_2D;
             }
             return PropertyEditorSelector.UNKNOWN;
         }

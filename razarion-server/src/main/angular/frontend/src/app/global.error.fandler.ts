@@ -9,7 +9,7 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   handleError(error: any) {
     const frontendService: FrontendService = this.injector.get(FrontendService);
-    frontendService.log("GlobalErrorHandler", error);
+    frontendService.log("Angular GlobalErrorHandler", error);
     this.messageService.add({
       severity: 'error',
       summary: `Unknown Error`,
