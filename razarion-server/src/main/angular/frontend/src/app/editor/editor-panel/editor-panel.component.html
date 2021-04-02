@@ -1,8 +1,10 @@
 <div style="display: flex; flex-direction: column" [style]="{display:'flex', flexDirection:'column', height:'100%'}">
+  <div class="p-d-flex p-jc-between">
+    <div style="margin-top: auto; margin-bottom: auto">{{editorModel.crudControllerName}}</div>
+    <p-button icon="pi pi-times" (onClick)="onClose()" styleClass="p-button-rounded p-button-danger p-button-text p-button-plain"></p-button>
+  </div>
   <p-menubar [model]="items" [style]="{order: 0}">
-    <ng-template pTemplate="start">
-      <h4>{{editorModel.crudControllerName}}</h4>
-    </ng-template>
   </p-menubar>
-  <property-table [gwt-angular-property-table]=gwtAngularPropertyTable *ngIf="gwtAngularPropertyTable" [style]="{order: 1, flexGrow: 1, overflowY: 'auto'}"></property-table>
+  <property-table [gwt-angular-property-table]=gwtAngularPropertyTable *ngIf="gwtAngularPropertyTable"
+                  [style]="{order: 1, flexGrow: 1, overflowY: 'auto'}"></property-table>
 </div>

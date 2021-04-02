@@ -15,6 +15,8 @@ export interface GenericEditorFrontendProvider {
   requestConfigs(crudControllerIndex: number): Promise<ObjectNameId[]>;
 
   readConfig(crudControllerIndex: number, configId: number): Promise<GwtAngularPropertyTable>;
+
+  updateConfig(crudControllerIndex: number, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
 }
 
 export interface GwtAngularPropertyTable {
@@ -38,4 +40,6 @@ export interface AngularTreeNodeData {
   onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void;
 
   onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void;
+
+  setValue(value: string): void;
 }

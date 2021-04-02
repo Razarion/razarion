@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {EditorModel} from "../editor-model";
-import {MenuItem, MessageService, TreeNode} from "primeng/api";
+import {MenuItem, MessageService} from "primeng/api";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {GwtAngularPropertyTable, ObjectNameId} from "../../gwtangular/GwtAngularFacade";
 import {GameComponent} from "../../game/game.component";
@@ -40,6 +40,10 @@ export class EditorPanelComponent implements OnInit {
         });
   }
 
+  onClose() {
+    this.gameComponent.removeEditorPanel(this.editorModel)
+  }
+
   private setupMenuItems(objectNameIds: ObjectNameId[]) {
     let menuObjectNameIds: MenuItem[] = [];
 
@@ -69,11 +73,29 @@ export class EditorPanelComponent implements OnInit {
         items: menuObjectNameIds,
       },
       {label: "New"},
-      {label: "Save"},
-      {label: "Delete"},
       {
-        label: "Close", command: () => this.gameComponent.removeEditorPanel(this.editorModel)
+        label: "Save",
+        command: () => {
+          this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
+            .updateConfig(this.editorModel.crudControllerIndex, this.gwtAngularPropertyTable!).then(
+            () => {
+              this.messageService.add({
+                severity: 'success',
+                summary:'Saved'
+              });
+            },
+            reason => {
+              this.messageService.add({
+                severity: 'error',
+                summary: `Can not save config for: ${this.editorModel.crudControllerName} with value : ${this.gwtAngularPropertyTable}`,
+                detail: reason,
+                sticky: true
+              });
+              console.error(reason);
+            });
+        }
       },
+      {label: "Delete"}
     ];
   }
 }

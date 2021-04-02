@@ -15,12 +15,19 @@ public class AngularTreeNodeData {
     public boolean deleteAllowed;
     public boolean createAllowed;
 
+    @SuppressWarnings("unused") // Called by Angular
     public void onCreate(GwtAngularPropertyTable gwtAngularPropertyTable) {
         LOGGER.severe("onCreate");
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void onDelete(GwtAngularPropertyTable gwtAngularPropertyTable) {
         LOGGER.severe("onDelete");
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public void setValue(String value) {
+        LOGGER.severe("setValue: " + value);
     }
 
 }

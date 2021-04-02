@@ -100,6 +100,21 @@ public class GenericEditorFrontendProvider {
                 crudControllerEntry.crudControllerClass).read(configId));
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public Promise<Void> updateConfig(int crudControllerIndex, GwtAngularPropertyTable gwtAngularPropertyTable) {
+        CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
+        Config config = Js.cast(gwtAngularPropertyTable.rootBranch.getPropertyValue());
+
+        return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
+                (RemoteCallback<Void>) ignore -> resolve.onInvoke((Void) null),
+                (message, throwable) -> {
+                    logger.log(Level.SEVERE, "CrudController.update() " + crudControllerEntry.crudControllerClass + "\n" + "config:" + config + "\n" + message, throwable);
+                    reject.onInvoke("CrudController.update() " + crudControllerEntry.crudControllerClass + "\n" + "config:" + config + "\n" + message + "\n" + throwable);
+                    return false;
+                },
+                crudControllerEntry.crudControllerClass).update(Js.cast(config)));
+    }
+
     private void config2GwtAngularPropertyTable(Object config, Class<? extends CrudController<? extends Config>> crudControllerClass, int configId,
                                                 Promise.PromiseExecutorCallbackFn.ResolveCallbackFn<GwtAngularPropertyTable> resolve,
                                                 Promise.PromiseExecutorCallbackFn.RejectCallbackFn reject) {
@@ -185,6 +200,16 @@ public class GenericEditorFrontendProvider {
                         angularTreeNode.data.deleteAllowed = false;
                     }
                     rootTreeNodes(gwtAngularPropertyTable);
+                } catch (Throwable throwable) {
+                    logger.log(Level.SEVERE, "onDelete failed", throwable);
+                    throw throwable;
+                }
+            }
+
+            @Override
+            public void setValue(String value) {
+                try {
+                    angularTreeNode.abstractPropertyModel.setPropertyValue(value);
                 } catch (Throwable throwable) {
                     logger.log(Level.SEVERE, "onDelete failed", throwable);
                     throw throwable;
