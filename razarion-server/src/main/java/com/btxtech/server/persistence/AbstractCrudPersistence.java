@@ -52,6 +52,9 @@ public abstract class AbstractCrudPersistence<C extends Config, E> {
     @Transactional
     public void delete(int id) {
         E entity = entityManager.find(entityClass, id);
+        if (entity == null) {
+            throw new IllegalArgumentException("No entry for id: " + id);
+        }
         entityManager.remove(entity);
     }
 

@@ -12,11 +12,15 @@ export interface EditorFrontendProvider {
 export interface GenericEditorFrontendProvider {
   crudControllers(): string[];
 
-  requestConfigs(crudControllerIndex: number): Promise<ObjectNameId[]>;
+  requestObjectNameIds(crudControllerIndex: number): Promise<ObjectNameId[]>;
+
+  createConfig(crudControllerIndex: number): Promise<GwtAngularPropertyTable>;
 
   readConfig(crudControllerIndex: number, configId: number): Promise<GwtAngularPropertyTable>;
 
   updateConfig(crudControllerIndex: number, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
+
+  deleteConfig(crudControllerIndex: number, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
 }
 
 export interface GwtAngularPropertyTable {

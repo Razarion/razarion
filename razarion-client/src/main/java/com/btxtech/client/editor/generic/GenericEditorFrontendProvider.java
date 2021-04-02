@@ -65,14 +65,22 @@ public class GenericEditorFrontendProvider {
     private Logger logger = Logger.getLogger(GenericEditorFrontendProvider.class.getName());
 
     @SuppressWarnings("unused") // Called by Angular
-    public Promise<ObjectNameId[]> requestConfigs(int crudControllerIndex) {
+    public Array<String> crudControllers() {
+        genericPropertyInfoProvider.load();
+        Array<String> crudControllers = new Array<>();
+        Arrays.stream(CRUD_CONTROLLERS).forEach(crudControllerEntry -> crudControllers.push(crudControllerEntry.name));
+        return crudControllers;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public Promise<ObjectNameId[]> requestObjectNameIds(int crudControllerIndex) {
         return new Promise<>((resolve, reject) -> {
             CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
             MessageBuilder.createCall(
                     (RemoteCallback<List<ObjectNameId>>) response -> resolve.onInvoke(response.toArray(new ObjectNameId[0])),
                     (message, throwable) -> {
-                        logger.log(Level.SEVERE, "CrudController.loadObjectNameId() " + crudControllerEntry.crudControllerClass + "\n" + message, throwable);
-                        reject.onInvoke("CrudController.loadObjectNameId() " + crudControllerEntry.crudControllerClass + "\n" + message + "\n" + throwable);
+                        logger.log(Level.SEVERE, "CrudController.getObjectNameIds() " + crudControllerEntry.crudControllerClass + "\n" + message, throwable);
+                        reject.onInvoke("CrudController.getObjectNameIds() " + crudControllerEntry.crudControllerClass + "\n" + message + "\n" + throwable);
                         return false;
                     },
                     crudControllerEntry.crudControllerClass).getObjectNameIds();
@@ -80,11 +88,17 @@ public class GenericEditorFrontendProvider {
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public Array<String> crudControllers() {
-        genericPropertyInfoProvider.load();
-        Array<String> crudControllers = new Array<>();
-        Arrays.stream(CRUD_CONTROLLERS).forEach(crudControllerEntry -> crudControllers.push(crudControllerEntry.name));
-        return crudControllers;
+    public Promise<GwtAngularPropertyTable> createConfig(int crudControllerIndex) {
+        CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
+
+        return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
+                (RemoteCallback<Config>) config -> config2GwtAngularPropertyTable(config, crudControllerEntry.crudControllerClass, config.getId(), resolve, reject),
+                (message, throwable) -> {
+                    logger.log(Level.SEVERE, "CrudController.create() " + crudControllerEntry.crudControllerClass + "\n" + message, throwable);
+                    reject.onInvoke("CrudController.create() " + crudControllerEntry.crudControllerClass + "\n" + message + "\n" + throwable);
+                    return false;
+                },
+                crudControllerEntry.crudControllerClass).create());
     }
 
     @SuppressWarnings("unused") // Called by Angular
@@ -115,6 +129,20 @@ public class GenericEditorFrontendProvider {
                 crudControllerEntry.crudControllerClass).update(Js.cast(config)));
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public Promise<GwtAngularPropertyTable> deleteConfig(int crudControllerIndex, GwtAngularPropertyTable gwtAngularPropertyTable) {
+        CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
+
+        return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
+                (RemoteCallback<GwtAngularPropertyTable>) resolve::onInvoke,
+                (message, throwable) -> {
+                    logger.log(Level.SEVERE, "CrudController.update() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + gwtAngularPropertyTable.configId + "\n" + message, throwable);
+                    reject.onInvoke("CrudController.update() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + gwtAngularPropertyTable.configId + "\n" + message + "\n" + throwable);
+                    return false;
+                },
+                crudControllerEntry.crudControllerClass).delete(gwtAngularPropertyTable.configId));
+    }
+
     private void config2GwtAngularPropertyTable(Object config, Class<? extends CrudController<? extends Config>> crudControllerClass, int configId,
                                                 Promise.PromiseExecutorCallbackFn.ResolveCallbackFn<GwtAngularPropertyTable> resolve,
                                                 Promise.PromiseExecutorCallbackFn.RejectCallbackFn reject) {
@@ -124,17 +152,18 @@ public class GenericEditorFrontendProvider {
                     (HasProperties) BindableProxyFactory.getBindableProxy(config),
                     new PropertyType(config.getClass(), true, false),
                     null);
-            resolve.onInvoke(branch2GwtAngularPropertyTable(branch));
+            resolve.onInvoke(branch2GwtAngularPropertyTable(branch, configId));
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "configToAngularTreeNodes() failed. Config: " + config + "\n" + crudControllerClass + "\n" + "configId:" + configId, throwable);
             reject.onInvoke("configToAngularTreeNodes() failed. Config: " + config + "\n" + crudControllerClass + "\n" + "configId:" + configId + "\n" + throwable);
         }
     }
 
-    private GwtAngularPropertyTable branch2GwtAngularPropertyTable(Branch branch) {
+    private GwtAngularPropertyTable branch2GwtAngularPropertyTable(Branch branch, int configId) {
         GwtAngularPropertyTable gwtAngularPropertyTable = new GwtAngularPropertyTable();
         gwtAngularPropertyTable.rootTreeNodes = branch2AngularTreeNodes(null, branch);
         gwtAngularPropertyTable.rootBranch = branch;
+        gwtAngularPropertyTable.configId = configId;
         return gwtAngularPropertyTable;
     }
 

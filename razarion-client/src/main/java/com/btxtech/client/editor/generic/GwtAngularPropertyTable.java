@@ -7,4 +7,5 @@ import jsinterop.annotations.JsType;
 public class GwtAngularPropertyTable {
     public AngularTreeNode[] rootTreeNodes;
     public Branch rootBranch;
+    public int configId;
 }
