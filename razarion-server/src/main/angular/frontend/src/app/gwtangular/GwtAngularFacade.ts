@@ -45,5 +45,5 @@ export interface AngularTreeNodeData {
 
   onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void;
 
-  setValue(value: string): void;
+  setValue(value: any): void;
 }

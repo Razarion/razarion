@@ -26,7 +26,7 @@ public class AngularTreeNodeData {
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public void setValue(String value) {
+    public void setValue(Any value) {
         LOGGER.severe("setValue: " + value);
     }
 

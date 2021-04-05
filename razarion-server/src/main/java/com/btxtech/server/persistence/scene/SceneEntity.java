@@ -96,6 +96,7 @@ public class SceneEntity implements ObjectNameIdProvider {
     private StartPointPlacerEntity startPointPlacerEntity;
     private Boolean wait4LevelUpDialog;
     private Boolean wait4QuestPassedDialog;
+    private Boolean waitForBaseCreated;
     private Boolean waitForBaseLostDialog;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "sceneId")
@@ -208,6 +209,9 @@ public class SceneEntity implements ObjectNameIdProvider {
         if (waitForBaseLostDialog != null) {
             sceneConfig.setWaitForBaseLostDialog(waitForBaseLostDialog);
         }
+        if (waitForBaseCreated != null) {
+            sceneConfig.setWaitForBaseCreated(waitForBaseCreated);
+        }
         if (resourceItemPositionEntities != null && !resourceItemPositionEntities.isEmpty()) {
             List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
             for (ResourceItemPositionEntity resourceItemPositionEntity : resourceItemPositionEntities) {
@@ -277,6 +281,7 @@ public class SceneEntity implements ObjectNameIdProvider {
         wait4LevelUpDialog = sceneConfig.isWait4LevelUpDialog();
         wait4QuestPassedDialog = sceneConfig.isWait4QuestPassedDialog();
         waitForBaseLostDialog = sceneConfig.isWaitForBaseLostDialog();
+        waitForBaseCreated = sceneConfig.isWaitForBaseCreated();
         duration = sceneConfig.getDuration();
 
         if (sceneConfig.getScrollUiQuest() != null) {

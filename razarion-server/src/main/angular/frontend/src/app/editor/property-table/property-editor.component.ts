@@ -40,7 +40,8 @@ export class PropertyEditorComponent implements OnInit {
         summary: `PropertyEditorComponent for ${this.angularTreeNodeData.name}`,
         detail: exception
       });
-      this.frontendService.log("Angular PropertyEditorComponent", exception)
+      this.frontendService.log(`Exception in Angular PropertyEditorComponent for ${this.angularTreeNodeData.name}`, exception);
+      throw exception;
     }
   }
 }

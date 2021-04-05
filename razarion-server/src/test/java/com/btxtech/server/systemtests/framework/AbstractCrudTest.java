@@ -48,7 +48,7 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
     /**
      * Override in subclasses
      */
-    protected void doAssert() {
+    protected void doFinalAssert() {
     }
 
     /**
@@ -105,7 +105,7 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
         // Delete
         crudToBeTested.delete(config3.getId());
         assertEquals(0, crudToBeTested.getObjectNameIds().size());
-        doAssert();
+        doFinalAssert();
     }
 
     protected <T> List<T> add(List<T> readonly, T entity) {

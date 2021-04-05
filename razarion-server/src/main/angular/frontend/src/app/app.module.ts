@@ -47,6 +47,8 @@ import {VertexPropertyEditorComponent} from "./editor/property-table/editors/ver
 import {ColladaStringPropertyEditorComponent} from "./editor/property-table/editors/collada-string-property-editor.component";
 import {I18nStringPropertyEditorComponent} from "./editor/property-table/editors/i18n-string-property-editor.component";
 import {Polygon2dPropertyEditorComponent} from "./editor/property-table/editors/polygon-2d-property-editor.component";
+import {InputNumberModule} from 'primeng/inputnumber';
+import {InputSwitchModule} from 'primeng/inputswitch';
 
 @NgModule({
   declarations: [
@@ -94,7 +96,9 @@ import {Polygon2dPropertyEditorComponent} from "./editor/property-table/editors/
     DropdownModule,
     MenubarModule,
     ToastModule,
-    InputTextModule
+    InputTextModule,
+    InputNumberModule,
+    InputSwitchModule
   ],
   providers: [
     FrontendService, {

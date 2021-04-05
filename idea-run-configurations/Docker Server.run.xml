@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Docker Server" type="JBossConfiguration" factoryName="Remote" APPLICATION_SERVER_NAME="JBoss 18.0.0.Final" ALTERNATIVE_JRE_ENABLED="false">
+  <configuration default="false" name="Docker Server" type="JBossConfiguration" factoryName="Remote" APPLICATION_SERVER_NAME="JBoss 18.0.1.Final" ALTERNATIVE_JRE_ENABLED="false">
     <option name="PORT" value="32778" />
     <option name="LOCAL" value="false" />
     <option name="OPEN_IN_BROWSER_URL" value="http://localhost:32778" />

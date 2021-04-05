@@ -4,6 +4,7 @@ import com.btxtech.client.editor.generic.model.AbstractPropertyModel;
 import com.btxtech.client.editor.generic.model.Branch;
 import com.btxtech.client.editor.generic.model.GenericPropertyInfoProvider;
 import com.btxtech.client.editor.generic.model.Leaf;
+import com.btxtech.client.editor.generic.model.PropertyEditorSelector;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.BaseItemTypeEditorController;
@@ -236,11 +237,15 @@ public class GenericEditorFrontendProvider {
             }
 
             @Override
-            public void setValue(String value) {
+            public void setValue(Any value) {
                 try {
-                    angularTreeNode.abstractPropertyModel.setPropertyValue(value);
+                    Object javaValue = value;
+                    if (value != null) {
+                        javaValue = PropertyEditorSelector.fromSelector(angularTreeNode.data.propertyEditorSelector).convert(value);
+                    }
+                    angularTreeNode.abstractPropertyModel.setPropertyValue(javaValue);
                 } catch (Throwable throwable) {
-                    logger.log(Level.SEVERE, "onDelete failed", throwable);
+                    logger.log(Level.SEVERE, "setValue failed", throwable);
                     throw throwable;
                 }
             }

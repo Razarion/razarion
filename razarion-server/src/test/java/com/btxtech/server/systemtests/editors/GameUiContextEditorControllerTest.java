@@ -260,7 +260,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
     }
 
     @Override
-    protected void doAssert() {
+    protected void doFinalAssert() {
         Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM SCENE_BOT").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM ResourceItemPositionEntity r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BoxItemPositionEntity b").getSingleResult()).intValue());
@@ -605,7 +605,10 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         sceneConfig.setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(160, 100)).setSpeed(50.0).setCameraLocked(true));
         sceneConfigs.add(sceneConfig);
 
-        sceneConfigs.add(new SceneConfig().setInternalName("script wait for dead dialog").setWaitForBaseLostDialog(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("setWaitForBaseLostDialog").setWaitForBaseLostDialog(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("setWaitForBaseCreated").setWaitForBaseCreated(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("setWait4LevelUpDialog").setWait4LevelUpDialog(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("setWait4QuestPassedDialog").setWait4QuestPassedDialog(true));
 
         sceneConfigs.add(new SceneConfig().setInternalName("script: explain harvest").setIntroText("Du brauchst viel Razarion um eine Armee zu bauen").setDuration(3000));
 
