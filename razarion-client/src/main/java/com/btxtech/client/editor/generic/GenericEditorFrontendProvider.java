@@ -5,6 +5,7 @@ import com.btxtech.client.editor.generic.model.Branch;
 import com.btxtech.client.editor.generic.model.GenericPropertyInfoProvider;
 import com.btxtech.client.editor.generic.model.Leaf;
 import com.btxtech.client.editor.generic.model.PropertyEditorSelector;
+import com.btxtech.client.editor.generic.updater.EngineUpdater;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.BaseItemTypeEditorController;
@@ -63,6 +64,8 @@ public class GenericEditorFrontendProvider {
     private Instance<Branch> branchInstance;
     @Inject
     private GenericPropertyInfoProvider genericPropertyInfoProvider;
+    @Inject
+    private EngineUpdater engineUpdater;
     private Logger logger = Logger.getLogger(GenericEditorFrontendProvider.class.getName());
 
     @SuppressWarnings("unused") // Called by Angular
@@ -93,7 +96,7 @@ public class GenericEditorFrontendProvider {
         CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
 
         return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
-                (RemoteCallback<Config>) config -> config2GwtAngularPropertyTable(config, crudControllerEntry.crudControllerClass, config.getId(), resolve, reject),
+                (RemoteCallback<Config>) config -> config2GwtAngularPropertyTableAndConnect(config, crudControllerEntry.crudControllerClass, config.getId(), resolve, reject),
                 (message, throwable) -> {
                     logger.log(Level.SEVERE, "CrudController.create() " + crudControllerEntry.crudControllerClass + "\n" + message, throwable);
                     reject.onInvoke("CrudController.create() " + crudControllerEntry.crudControllerClass + "\n" + message + "\n" + throwable);
@@ -106,7 +109,7 @@ public class GenericEditorFrontendProvider {
     public Promise<GwtAngularPropertyTable> readConfig(int crudControllerIndex, int configId) {
         CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
         return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
-                (RemoteCallback<Config>) config -> config2GwtAngularPropertyTable(config, crudControllerEntry.crudControllerClass, configId, resolve, reject),
+                (RemoteCallback<Config>) config -> config2GwtAngularPropertyTableAndConnect(config, crudControllerEntry.crudControllerClass, configId, resolve, reject),
                 (message, throwable) -> {
                     logger.log(Level.SEVERE, "CrudController.readConfig() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + configId + "\n" + message, throwable);
                     reject.onInvoke("CrudController.readConfig() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + configId + "\n" + message + "\n" + throwable);
@@ -144,10 +147,11 @@ public class GenericEditorFrontendProvider {
                 crudControllerEntry.crudControllerClass).delete(gwtAngularPropertyTable.configId));
     }
 
-    private void config2GwtAngularPropertyTable(Object config, Class<? extends CrudController<? extends Config>> crudControllerClass, int configId,
-                                                Promise.PromiseExecutorCallbackFn.ResolveCallbackFn<GwtAngularPropertyTable> resolve,
-                                                Promise.PromiseExecutorCallbackFn.RejectCallbackFn reject) {
+    private void config2GwtAngularPropertyTableAndConnect(Object config, Class<? extends CrudController<? extends Config>> crudControllerClass, int configId,
+                                                          Promise.PromiseExecutorCallbackFn.ResolveCallbackFn<GwtAngularPropertyTable> resolve,
+                                                          Promise.PromiseExecutorCallbackFn.RejectCallbackFn reject) {
         try {
+            engineUpdater.connect(config);
             Branch branch = branchInstance.get();
             branch.init(null, null,
                     (HasProperties) BindableProxyFactory.getBindableProxy(config),
