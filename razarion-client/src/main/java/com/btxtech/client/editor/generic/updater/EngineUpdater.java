@@ -12,6 +12,7 @@ import com.btxtech.uiservice.renderer.task.ParticleRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTaskRunner;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.logging.Logger;
@@ -28,7 +29,7 @@ public class EngineUpdater {
     @Inject
     private ParticleRenderTaskRunner particleRenderTaskRunner;
     @Inject
-    private TerrainObjectRenderTaskRunner terrainObjectRenderTaskRunner;
+    private Instance<TerrainObjectRenderTaskRunner> terrainObjectRenderTaskRunnerInstance; // Use Instance -> called to early
 
     public void connect(Object config) {
         if (config instanceof GroundConfig) {
@@ -42,7 +43,7 @@ public class EngineUpdater {
             viewService.onViewChanged();
         } else if (config instanceof Shape3DConfig) {
             terrainUiService.enableEditMode((Shape3DConfig)config);
-            terrainObjectRenderTaskRunner.reloadEditMode();
+            terrainObjectRenderTaskRunnerInstance.get().reloadEditMode(); // Access here to avoid calling TerrainObjectRenderTaskRunner.postConstruct() too early
             viewService.onViewChanged();
         } else if (config instanceof ParticleEmitterSequenceConfig) {
             particleService.editorUpdate((ParticleEmitterSequenceConfig) config);
