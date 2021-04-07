@@ -20,6 +20,7 @@ import javax.inject.Inject;
  * on 06.12.2017.
  */
 @Templated("ClientItemContainerPanel.html#itemContainerPanel")
+@Deprecated // Is in Angular Code now
 public class ClientItemContainerPanel extends ItemContainerPanel implements IsElement {
     @Inject
     @DataField("itemContainerPanel")

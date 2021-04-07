@@ -20,28 +20,30 @@ import java.util.Map;
 public class ItemCockpitService {
     @Inject
     private Instance<Object> instance;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    private ItemCockpitPanel itemCockpitPanel;
     @Inject
     private ItemTypeService itemTypeService;
+    private ItemCockpitPanel itemCockpitPanel;
     private BuildupItemPanel buildupItemPanel;
     private ItemContainerPanel itemContainerPanel;
-    private boolean isActive = false;
+    private boolean active = false;
+
+    public void init(ItemCockpitPanel itemCockpitPanel) {
+        this.itemCockpitPanel = itemCockpitPanel;
+    }
 
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {
         switch (selectionEvent.getType()) {
             case CLEAR:
                 itemCockpitPanel.cleanPanels();
-                if(buildupItemPanel != null) {
+                if (buildupItemPanel != null) {
                     buildupItemPanel.releaseMonitors();
                 }
-                if (isActive) {
-                    isActive = false;
+                if (active) {
+                    active = false;
                     itemCockpitPanel.showPanel(false);
                 }
                 break;
@@ -50,18 +52,18 @@ public class ItemCockpitService {
                 itemCockpitPanel.maximizeMinButton();
                 itemCockpitPanel.cleanPanels();
                 if (selectedGroup.getCount() == 1) {
-                    activeOwnSingle(selectedGroup.getFirst());
+                    activateOwnSingle(selectedGroup.getFirst());
                 } else {
                     Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> itemTypes = selectedGroup.getGroupedItems();
                     if (itemTypes.size() == 1) {
-                        activeOwnMultiSameType(CollectionUtils.getFirst(itemTypes.keySet()), selectedGroup);
+                        activateOwnMultiSameType(CollectionUtils.getFirst(itemTypes.keySet()), selectedGroup);
                     } else {
                         OwnMultiDifferentItemPanel multiDifferentItemPanel = instance.select(OwnMultiDifferentItemPanel.class).get();
                         multiDifferentItemPanel.init(itemTypes);
                         itemCockpitPanel.setInfoPanel(multiDifferentItemPanel);
                     }
                 }
-                isActive = true;
+                active = true;
                 itemCockpitPanel.showPanel(true);
                 break;
             case OTHER:
@@ -70,13 +72,13 @@ public class ItemCockpitService {
                 OtherInfoPanel otherInfoPanel = instance.select(OtherInfoPanel.class).get();
                 otherInfoPanel.init(selectionEvent.getSelectedOther());
                 itemCockpitPanel.setInfoPanel(otherInfoPanel);
-                isActive = true;
+                active = true;
                 itemCockpitPanel.showPanel(true);
                 break;
         }
     }
 
-    private void activeOwnSingle(SyncBaseItemSimpleDto syncBaseItem) {
+    private void activateOwnSingle(SyncBaseItemSimpleDto syncBaseItem) {
         OwnInfoPanel ownInfoPanel = instance.select(OwnInfoPanel.class).get();
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
         ownInfoPanel.init(baseItemType, 1, syncBaseItem.getId());
@@ -107,7 +109,7 @@ public class ItemCockpitService {
         }
     }
 
-    private void activeOwnMultiSameType(BaseItemType baseItemType, Group group) {
+    private void activateOwnMultiSameType(BaseItemType baseItemType, Group group) {
         OwnInfoPanel ownInfoPanel = instance.select(OwnInfoPanel.class).get();
         ownInfoPanel.init(baseItemType, group.getCount(), null);
         itemCockpitPanel.setInfoPanel(ownInfoPanel);

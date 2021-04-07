@@ -3,6 +3,7 @@ import {FrontendService} from "../service/frontend.service";
 import {NavigationStart, Router} from "@angular/router";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {EditorModel} from "../editor/editor-model";
+import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
 
 
 @Component({
@@ -11,7 +12,9 @@ import {EditorModel} from "../editor/editor-model";
 })
 export class GameComponent implements OnInit {
   @ViewChild('canvas', {static: true})
-  canvas?: ElementRef<HTMLCanvasElement>;
+  canvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('itemCockpitContainer', {static: true})
+  itemCockpitContainer!: ItemCockpitComponent;
   // TODO @ViewChild('loadingCover', {static: true})
   // TODO loadingCover?: OverlayPanel;
   editorDialog: boolean = false;
@@ -21,9 +24,8 @@ export class GameComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.canvas) {
-      this.gwtAngularService.gwtAngularFacade.canvasElement = this.canvas.nativeElement;
-    }
+    this.gwtAngularService.gwtAngularFacade.canvasElement = this.canvas.nativeElement;
+    this.gwtAngularService.gwtAngularFacade.itemCockpitPanel = this.itemCockpitContainer;
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game
     this.router.events.subscribe(event => {

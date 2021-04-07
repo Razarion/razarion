@@ -1,6 +1,7 @@
 package com.btxtech.client.gwtangular;
 
 import com.btxtech.client.editor.EditorFrontendProvider;
+import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLCanvasElement;
 import jsinterop.base.Js;
@@ -13,11 +14,14 @@ import javax.inject.Inject;
 public class GwtAngularService {
     @Inject
     private EditorFrontendProvider editorFrontendProvider;
+    @Inject
+    private ItemCockpitService itemCockpitService;
     private GwtAngularFacade gwtAngularFacade;
 
     public void init() {
         gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMapOfAny>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
         gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
+        itemCockpitService.init(gwtAngularFacade.itemCockpitPanel);
     }
 
     public HTMLCanvasElement getCanvasElement() {

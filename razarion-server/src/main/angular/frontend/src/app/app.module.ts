@@ -49,6 +49,7 @@ import {I18nStringPropertyEditorComponent} from "./editor/property-table/editors
 import {Polygon2dPropertyEditorComponent} from "./editor/property-table/editors/polygon-2d-property-editor.component";
 import {InputNumberModule} from 'primeng/inputnumber';
 import {InputSwitchModule} from 'primeng/inputswitch';
+import {ItemCockpitComponent} from "./game/cockpit/item/item-cockpit.component";
 
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ import {InputSwitchModule} from 'primeng/inputswitch';
     RectanglePropertyEditorComponent,
     ColladaStringPropertyEditorComponent,
     I18nStringPropertyEditorComponent,
-    Polygon2dPropertyEditorComponent
+    Polygon2dPropertyEditorComponent,
+    ItemCockpitComponent
   ],
   imports: [
     BrowserModule,

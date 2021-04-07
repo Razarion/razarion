@@ -2,7 +2,22 @@ import {TreeNode} from "primeng/api";
 
 export class GwtAngularFacade {
   canvasElement!: HTMLCanvasElement;
+  itemCockpitPanel!: ItemCockpitPanel;
   editorFrontendProvider!: EditorFrontendProvider;
+}
+
+export interface ItemCockpitPanel {
+  cleanPanels(): void;
+
+  setInfoPanel(infoPanel: any): void;
+
+  setBuildupItemPanel(buildupItemPanel: any): void;
+
+  setItemContainerPanel(itemContainerPanel: any): void;
+
+  maximizeMinButton(): void;
+
+  showPanel(visible: boolean): void;
 }
 
 export interface EditorFrontendProvider {

@@ -13,6 +13,11 @@
             (onClick)="showEditorDialog()"></p-button>
 </p-sidebar>
 
+<p-sidebar [appendTo]="canvasDiv" [visible]="itemCockpitContainer.showCockpit" [modal]="false" [showCloseIcon]="false"
+           position="bottom"
+           [style]="{height:'auto', width:'auto', position: 'absolute'}">
+  <item-cockpit #itemCockpitContainer></item-cockpit>
+</p-sidebar>
 
 <p-dialog header="Editor" [(visible)]="editorDialog" (onShow)="editorDialogComponent.onShow()">
   <editor-dialog #editorDialogComponent></editor-dialog>
