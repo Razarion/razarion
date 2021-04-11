@@ -1,25 +1,61 @@
 import {TreeNode} from "primeng/api";
 
+// ---------- Common ----------
 export class GwtAngularFacade {
   canvasElement!: HTMLCanvasElement;
-  itemCockpitPanel!: ItemCockpitPanel;
+  itemCockpitFrontend!: ItemCockpitFrontend;
   editorFrontendProvider!: EditorFrontendProvider;
 }
 
-export interface ItemCockpitPanel {
-  cleanPanels(): void;
+// ---------- Item Cockpit ----------
+export interface ItemCockpitFrontend {
+  displayOwnSingleType(count: number, ownItemCockpit: OwnItemCockpit): void;
 
-  setInfoPanel(infoPanel: any): void;
+  displayOwnMultipleItemTypes(ownMultipleIteCockpits: OwnMultipleIteCockpit[]): void;
 
-  setBuildupItemPanel(buildupItemPanel: any): void;
+  displayOtherItemType(otherItemCockpit: OtherItemCockpit): void;
 
-  setItemContainerPanel(itemContainerPanel: any): void;
+  dispose(): void;
 
+  /**
+   * @deprecated The method should not be used
+   */
   maximizeMinButton(): void;
-
-  showPanel(visible: boolean): void;
 }
 
+export interface OwnItemCockpit {
+  imageUrl: string;
+  itemTypeName: string;
+  itemTypeDescr: string;
+  sellButton: boolean;
+  buildupItemInfos: BuildupItemCockpit[];
+}
+
+export interface BuildupItemCockpit {
+  imageUrl: string;
+  price: number;
+  itemCount: number;
+  itemLimit: number;
+  enabled: boolean;
+  tooltip: string;
+  progress: any;
+}
+
+export interface OwnMultipleIteCockpit {
+  ownItemCockpit: OwnItemCockpit;
+  count: number;
+}
+
+export interface OtherItemCockpit {
+  imageUrl: string;
+  itemTypeName: string;
+  itemTypeDescr: string;
+  baseName: string;
+  type: string;
+  friend: boolean;
+}
+
+// ---------- Editor ----------
 export interface EditorFrontendProvider {
   getGenericEditorFrontendProvider(): GenericEditorFrontendProvider;
 }

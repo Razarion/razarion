@@ -5,7 +5,6 @@ import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.utils.Elemental2Utils;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
-import com.btxtech.uiservice.cockpit.item.ItemCockpitPanel;
 import com.btxtech.uiservice.cockpit.item.ItemContainerPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -22,8 +21,9 @@ import javax.inject.Inject;
  * Created by Beat
  * 30.09.2016.
  */
+@Deprecated
 @Templated("ClientItemCockpitPanel.html#item-cockpit")
-public class ClientItemCockpitPanel implements IsElement, ItemCockpitPanel {
+public class ClientItemCockpitPanel implements IsElement/*,TODO  ItemCockpitFrontend*/ {
     @Inject
     private MainPanelService mainPanelService;
     @Inject
@@ -49,7 +49,7 @@ public class ClientItemCockpitPanel implements IsElement, ItemCockpitPanel {
         return itemCockpitDiv;
     }
 
-    @Override
+    // TODO @Override
     public void cleanPanels() {
         infoPanel.clear();
         Elemental2Utils.removeAllChildren(buildupItemPanel);
@@ -57,27 +57,27 @@ public class ClientItemCockpitPanel implements IsElement, ItemCockpitPanel {
         itemCockpitDiv.style.zIndex = ZIndexConstants.ITEM_COCKPIT;
     }
 
-    @Override
-    public void setInfoPanel(Object infoPanel) {
+    // TODO @Override
+    public void displayOwnInfoPanel(Object infoPanel) {
         this.infoPanel.setWidget((IsWidget) infoPanel);
     }
 
-    @Override
+    // TODO @Override
     public void setBuildupItemPanel(BuildupItemPanel buildupItemPanel) {
         this.buildupItemPanel.appendChild(((IsElement) buildupItemPanel).getElement());
     }
 
-    @Override
+    // TODO @Override
     public void setItemContainerPanel(ItemContainerPanel itemContainerPanel) {
         this.itemContainerPanel.appendChild(((IsElement) itemContainerPanel).getElement());
     }
 
-    @Override
+    // TODO  @Override
     public void maximizeMinButton() {
         // TODO
     }
 
-    @Override
+    // TODO @Override
     public void showPanel(boolean visible) {
         if (visible) {
             mainPanelService.addToGamePanel(itemCockpitDiv);

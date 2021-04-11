@@ -22,6 +22,7 @@ import javax.inject.Named;
  * Created by Beat
  * 30.09.2016.
  */
+@Deprecated
 @Templated("ClientOwnMultiDifferentItemPanel.html#selectedItemTd")
 public class BaseItemTypeCountPanel implements TakesValue<BaseItemTypeCount>, IsElement {
     @Inject

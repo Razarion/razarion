@@ -25,7 +25,7 @@ export class GameComponent implements OnInit {
 
   ngOnInit(): void {
     this.gwtAngularService.gwtAngularFacade.canvasElement = this.canvas.nativeElement;
-    this.gwtAngularService.gwtAngularFacade.itemCockpitPanel = this.itemCockpitContainer;
+    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game
     this.router.events.subscribe(event => {

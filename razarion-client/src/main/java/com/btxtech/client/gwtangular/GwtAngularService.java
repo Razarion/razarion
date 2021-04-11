@@ -21,7 +21,7 @@ public class GwtAngularService {
     public void init() {
         gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMapOfAny>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
         gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
-        itemCockpitService.init(gwtAngularFacade.itemCockpitPanel);
+        itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
     }
 
     public HTMLCanvasElement getCanvasElement() {

@@ -9,6 +9,7 @@ import javax.inject.Inject;
  * Created by Beat
  * on 05.12.2017.
  */
+@Deprecated
 public abstract class ItemContainerPanel {
     @Inject
     private CockpitMode cockpitMode;

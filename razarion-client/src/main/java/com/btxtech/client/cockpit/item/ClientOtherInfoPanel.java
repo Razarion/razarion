@@ -1,5 +1,6 @@
 package com.btxtech.client.cockpit.item;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
@@ -8,8 +9,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
-import com.btxtech.shared.CommonUrl;
-import com.btxtech.uiservice.cockpit.item.OtherInfoPanel;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.google.gwt.user.client.ui.Composite;
@@ -26,8 +25,9 @@ import javax.inject.Inject;
  * Created by Beat
  * 30.09.2016.
  */
+@Deprecated
 @Templated("ClientOtherInfoPanel.html#other-info-panel")
-public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
+public class ClientOtherInfoPanel extends Composite /* implements OtherItemCockpit */ {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -54,7 +54,7 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
     @DataField
     private Image enemyImage;
 
-    @Override
+    // TODO @Override
     public void init(SyncItemSimpleDto otherSelection) {
         friendImage.setVisible(false);
         enemyImage.setVisible(false);

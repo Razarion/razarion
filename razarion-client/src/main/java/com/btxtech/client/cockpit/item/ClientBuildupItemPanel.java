@@ -22,6 +22,7 @@ import java.util.List;
  * Created by Beat
  * 30.09.2016.
  */
+@Deprecated
 @Templated("ClientBuildupItemPanel.html#buildup-item-panel")
 public class ClientBuildupItemPanel extends BuildupItemPanel implements IsElement {
     @Inject

@@ -1,6 +1,10 @@
-﻿import {Component, EventEmitter, Input, NgZone, Output} from '@angular/core';
-import {ItemCockpitPanel} from "../../../gwtangular/GwtAngularFacade";
-import {Sidebar} from "primeng/sidebar";
+﻿import {Component, NgZone} from '@angular/core';
+import {
+  ItemCockpitFrontend,
+  OtherItemCockpit,
+  OwnItemCockpit,
+  OwnMultipleIteCockpit
+} from "../../../gwtangular/GwtAngularFacade";
 
 
 @Component({
@@ -8,36 +12,46 @@ import {Sidebar} from "primeng/sidebar";
   templateUrl: 'item-cockpit.component.html',
   styleUrls: ['item-cockpit.component.scss']
 })
-export class ItemCockpitComponent implements ItemCockpitPanel {
+export class ItemCockpitComponent implements ItemCockpitFrontend {
   showCockpit: boolean = false;
+  infoPanel: any;
 
   constructor(private zone: NgZone) {
   }
 
-  cleanPanels(): void {
-    console.info("cleanPanels");
+  displayOwnSingleType(count: number, ownItemCockpit: OwnItemCockpit): void {
+    this.zone.run(() => {
+      this.showCockpit = true;
+      console.info("displayOwnSingleType");
+      console.info(count);
+      console.info(ownItemCockpit);
+    });
+  }
+
+  displayOwnMultipleItemTypes(ownMultipleIteCockpits: OwnMultipleIteCockpit[]): void {
+    this.zone.run(() => {
+      this.showCockpit = true;
+      console.info("displayOwnMultipleItemTypes");
+      console.info(ownMultipleIteCockpits);
+    });
+  }
+
+  displayOtherItemType(otherItemCockpit: OtherItemCockpit): void {
+    this.zone.run(() => {
+      this.showCockpit = true;
+      console.info("displayOtherItemType");
+      console.info(otherItemCockpit);
+    });
+  }
+
+  dispose(): void {
+    this.zone.run(() => {
+      this.showCockpit = false;
+      console.info("dispose");
+    });
   }
 
   maximizeMinButton(): void {
     console.info("maximizeMinButton");
-  }
-
-  setBuildupItemPanel(buildupItemPanel: any): void {
-    console.info("setBuildupItemPanel");
-  }
-
-  setInfoPanel(infoPanel: any): void {
-    console.info("setInfoPanel");
-  }
-
-  setItemContainerPanel(itemContainerPanel: any): void {
-    console.info("setItemContainerPanel");
-  }
-
-  showPanel(visible: boolean): void {
-    // Change comes from outside Angular zone
-    this.zone.run(() => {
-      this.showCockpit = visible;
-    });
   }
 }

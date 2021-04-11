@@ -2,10 +2,9 @@ package com.btxtech.client.cockpit.item;
 
 import com.btxtech.client.cockpit.ClientCockpitHelper;
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.i18n.I18nHelper;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.uiservice.cockpit.item.OwnInfoPanel;
 import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -24,8 +23,9 @@ import javax.inject.Inject;
  * Created by Beat
  * 30.09.2016.
  */
+@Deprecated
 @Templated("ClientOwnInfoPanel.html#own-info-panel")
-public class ClientOwnInfoPanel extends Composite implements OwnInfoPanel {
+public class ClientOwnInfoPanel extends Composite /* TODO implements OwnItemCockpit */ {
     @Inject
     private ClientCockpitHelper clientCockpitHelper;
     @Inject
@@ -48,7 +48,7 @@ public class ClientOwnInfoPanel extends Composite implements OwnInfoPanel {
     @DataField
     private Button sellButton;
 
-    @Override
+    // TODO @Override
     public void init(BaseItemType baseItemType, int count, Integer syncItemId) {
         image.setUrl(CommonUrl.getImageServiceUrlSafe(baseItemType.getThumbnail()));
         itemTypeName.setText(I18nHelper.getLocalizedString(baseItemType.getI18nName()));

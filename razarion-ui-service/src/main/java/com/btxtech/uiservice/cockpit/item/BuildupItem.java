@@ -8,6 +8,7 @@ import java.util.function.Consumer;
  * Created by Beat
  * 30.09.2016.
  */
+@Deprecated
 public class BuildupItem {
     private BaseItemType itemType;
     private Runnable callback;

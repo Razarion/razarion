@@ -28,6 +28,7 @@ import java.util.Map;
  * Created by Beat
  * 29.09.2016.
  */
+@Deprecated
 public abstract class BuildupItemPanel {
     @Inject
     private GameEngineControl gameEngineControl;

@@ -26,6 +26,7 @@ import javax.inject.Named;
  * Created by Beat
  * 30.09.2016.
  */
+@Deprecated
 @Templated("ClientBuildupItemPanel.html#buildItemTd")
 public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     private static final int WIDTH = 40;

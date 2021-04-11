@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
  * Created by Beat
  * 30.09.2016.
  */
+@Deprecated
 public class BaseItemTypeCount {
     private BaseItemType baseItemType;
     private int count;

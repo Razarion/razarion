@@ -10,6 +10,7 @@ import java.util.Map;
  * Created by Beat
  * 29.09.2016.
  */
+@Deprecated
 public interface OwnMultiDifferentItemPanel {
     void init(Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> itemTypes);
 }

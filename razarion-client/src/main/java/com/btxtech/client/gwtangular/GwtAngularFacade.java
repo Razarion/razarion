@@ -1,7 +1,7 @@
 package com.btxtech.client.gwtangular;
 
 import com.btxtech.client.editor.EditorFrontendProvider;
-import com.btxtech.uiservice.cockpit.item.ItemCockpitPanel;
+import com.btxtech.uiservice.cockpit.item.ItemCockpitFrontend;
 import elemental2.dom.HTMLCanvasElement;
 import jsinterop.annotations.JsType;
 
@@ -11,6 +11,6 @@ import jsinterop.annotations.JsType;
 @JsType(isNative = true)
 public class GwtAngularFacade {
     public HTMLCanvasElement canvasElement; // Initialized by Angular
-    public ItemCockpitPanel itemCockpitPanel; // Initialized by Angular
+    public ItemCockpitFrontend itemCockpitFrontend; // Initialized by Angular
     public EditorFrontendProvider editorFrontendProvider;  // Initialized by GWT
 }

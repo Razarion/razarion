@@ -1,11 +1,9 @@
 package com.btxtech.client.cockpit.item;
 
 import com.btxtech.client.cockpit.ClientCockpitHelper;
-import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.cockpit.item.OwnMultiDifferentItemPanel;
-import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.dom.client.Style;
@@ -29,6 +27,7 @@ import java.util.Map;
  * Created by Beat
  * 30.09.2016.
  */
+@Deprecated
 @Templated("ClientOwnMultiDifferentItemPanel.html#own-multi-different-info-panel")
 public class ClientOwnMultiDifferentItemPanel extends Composite implements OwnMultiDifferentItemPanel {
     @Inject
