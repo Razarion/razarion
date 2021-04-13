@@ -158,7 +158,7 @@ public class ItemCockpitService {
     }
 
     private BuildupItemCockpit[] createBuildupItemInfos(BaseItemType baseItemType, Group selectedGroup) {
-        List<Integer> ableToBuildId = null;
+        List<Integer> ableToBuildId;
         Consumer<BaseItemType> onBuildCallback;
         if (baseItemType.getBuilderType() != null) {
             ableToBuildId = baseItemType.getBuilderType().getAbleToBuildIds();
@@ -219,13 +219,6 @@ public class ItemCockpitService {
                         buildupItemInfo.enabled = true;
 
                     }
-//       TODO             buildupItemInfos.add(setupBuildupBlock(itemType, () -> {
-//                        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemTypeId);
-//                        baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
-//                            audioService.onCommandSent();
-//                            gameEngineControl.buildCmd(constructionVehicles.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
-//                        });
-//                    }));
                     return buildupItemInfo;
                 }).toArray(BuildupItemCockpit[]::new);
     }
