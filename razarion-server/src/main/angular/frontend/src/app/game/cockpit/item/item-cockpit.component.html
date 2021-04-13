@@ -1,1 +1,69 @@
-﻿{{infoPanel}}
+﻿<div class="p-d-flex p-flex-column" *ngIf="ownItemCockpit">
+  <div class="p-mb-2">
+    <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
+  </div>
+  <div class="p-mb-2">
+    <div>
+      {{ownItemCockpit.itemTypeName}}
+    </div>
+    <div>
+      {{ownItemCockpit.itemTypeDescr}}
+    </div>
+    <div *ngIf="count && count > 1">
+      {{count}}
+    </div>
+  </div>
+  <div class="p-mb-2" *ngIf="ownItemCockpit.buildupItemInfos">
+    <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="3" [numScroll]="1">
+      <ng-template let-buildupItemCockpit pTemplate="item">
+        <img src="{{buildupItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{buildupItemCockpit.tooltip}}"><br>
+        Tooltip: {{buildupItemCockpit.tooltip}}<br>
+        Price: {{buildupItemCockpit.price}}<br>
+        Limit: {{buildupItemCockpit.itemCount}}/{{buildupItemCockpit.itemLimit}}<br>
+        Enabled: {{buildupItemCockpit.enabled}}<br>
+        <p-button label="Build" (onClick)="buildupItemCockpit.onBuild()"></p-button>
+      </ng-template>
+    </p-carousel>
+  </div>
+</div>
+
+<p-carousel *ngIf="ownMultipleIteCockpits" [value]="ownMultipleIteCockpits" [numVisible]="3" [numScroll]="1">
+  <ng-template let-ownMultipleIteCockpit pTemplate="item">
+    <div class="p-d-flex p-flex-column">
+      <div class="p-mb-2">
+        <img src="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}" class="item-cockpit-image"
+             alt="{{ownMultipleIteCockpit.ownItemCockpit.itemTypeName}}">
+      </div>
+      <div class="p-mb-2">
+        {{ownMultipleIteCockpit.ownItemCockpit.itemTypeName}}
+      </div>
+      <div class="p-mb-2">
+        {{ownMultipleIteCockpit.count}}
+      </div>
+      <div class="p-mb-2">
+        <p-button label="Build" (onClick)="ownMultipleIteCockpit.onSelect()">Select</p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-carousel>
+
+<div class="p-d-flex p-flex-column" *ngIf="otherItemCockpit">
+  <div class="p-mb-2">
+    <img src="{{otherItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{otherItemCockpit.itemTypeName}}">
+  </div>
+  <div class="p-mb-2">
+    Name: {{otherItemCockpit.itemTypeName}}
+  </div>
+  <div class="p-mb-2">
+    Descr: {{otherItemCockpit.itemTypeDescr}}
+  </div>
+  <div class="p-mb-2" *ngIf="otherItemCockpit.baseName">
+    Base: {{otherItemCockpit.baseName}}
+  </div>
+  <div class="p-mb-2" *ngIf="otherItemCockpit.baseName">
+    Type: {{otherItemCockpit.type}}
+  </div>
+  <div class="p-mb-2" *ngIf="otherItemCockpit.baseName">
+    Friend: {{otherItemCockpit.friend}}
+  </div>
+</div>

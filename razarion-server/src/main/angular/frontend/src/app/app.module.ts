@@ -49,6 +49,7 @@ import {I18nStringPropertyEditorComponent} from "./editor/property-table/editors
 import {Polygon2dPropertyEditorComponent} from "./editor/property-table/editors/polygon-2d-property-editor.component";
 import {InputNumberModule} from 'primeng/inputnumber';
 import {InputSwitchModule} from 'primeng/inputswitch';
+import {CarouselModule} from 'primeng/carousel';
 import {ItemCockpitComponent} from "./game/cockpit/item/item-cockpit.component";
 
 @NgModule({
@@ -100,7 +101,8 @@ import {ItemCockpitComponent} from "./game/cockpit/item/item-cockpit.component";
     ToastModule,
     InputTextModule,
     InputNumberModule,
-    InputSwitchModule
+    InputSwitchModule,
+    CarouselModule
   ],
   providers: [
     FrontendService, {

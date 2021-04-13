@@ -32,9 +32,4 @@ public class TestItemCockpitFrontend implements ItemCockpitFrontend {
     public void dispose() {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public void maximizeMinButton() {
-        throw new UnsupportedOperationException();
-    }
 }

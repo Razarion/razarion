@@ -15,7 +15,4 @@ public interface ItemCockpitFrontend {
     void displayOtherItemType(OtherItemCockpit otherItemCockpit);
 
     void dispose();
-
-    @Deprecated
-    void maximizeMinButton();
 }

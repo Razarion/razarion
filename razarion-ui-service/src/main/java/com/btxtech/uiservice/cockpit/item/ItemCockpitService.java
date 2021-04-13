@@ -3,6 +3,7 @@ package com.btxtech.uiservice.cockpit.item;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
@@ -11,12 +12,18 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.SelectionEvent;
+import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.audio.AudioService;
+import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.SyncItemMonitor;
+import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -24,6 +31,7 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @ApplicationScoped
 public class ItemCockpitService {
@@ -33,6 +41,16 @@ public class ItemCockpitService {
     private BaseItemUiService baseItemUiService;
     @Inject
     private GameUiControl gameUiControl;
+    @Inject
+    private BaseItemPlacerService baseItemPlacerService;
+    @Inject
+    private AudioService audioService;
+    @Inject
+    private GameEngineControl gameEngineControl;
+    @Inject
+    private ExceptionHandler exceptionHandler;
+    @Inject
+    private SelectionHandler selectionHandler;
     private ItemCockpitFrontend itemCockpitFrontend;
     // TODO private BuildupItemPanel buildupItemPanel;
 
@@ -50,30 +68,28 @@ public class ItemCockpitService {
                 break;
             case OWN:
                 Group selectedGroup = selectionEvent.getSelectedGroup();
-                itemCockpitFrontend.maximizeMinButton();
                 Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> itemTypes = selectedGroup.getGroupedItems();
                 if (selectedGroup.getCount() == 1) {
-                    itemCockpitFrontend.displayOwnSingleType(1, createOwnItemCockpit(CollectionUtils.getFirst(itemTypes.keySet())));
+                    itemCockpitFrontend.displayOwnSingleType(1, createOwnItemCockpit(CollectionUtils.getFirst(itemTypes.keySet()), selectedGroup));
                 } else {
                     if (itemTypes.size() == 1) {
-                        itemCockpitFrontend.displayOwnSingleType(itemTypes.size(), createOwnItemCockpit(CollectionUtils.getFirst(itemTypes.keySet())));
+                        itemCockpitFrontend.displayOwnSingleType(itemTypes.size(), createOwnItemCockpit(CollectionUtils.getFirst(itemTypes.keySet()), selectedGroup));
                     } else {
                         itemCockpitFrontend.displayOwnMultipleItemTypes(createOwnMultipleInfo(itemTypes));
                     }
                 }
                 break;
             case OTHER:
-                itemCockpitFrontend.maximizeMinButton();
                 itemCockpitFrontend.displayOtherItemType(createOtherInfo(selectionEvent.getSelectedOther()));
                 break;
         }
     }
 
-    private OwnItemCockpit createOwnItemCockpit(BaseItemType baseItemType) {
+    private OwnItemCockpit createOwnItemCockpit(BaseItemType baseItemType, Group selectedGroup) {
         OwnItemCockpit ownInfoPanel = createSimpleOwnItemCockpit(baseItemType);
 
         ownInfoPanel.sellButton = !gameUiControl.isSellSuppressed();
-        ownInfoPanel.buildupItemInfos = createBuildupItemInfos(baseItemType);
+        ownInfoPanel.buildupItemInfos = createBuildupItemInfos(baseItemType, selectedGroup);
         // TODO setupItemContainerPanel(syncBaseItem, baseItemType);
 
         return ownInfoPanel;
@@ -81,7 +97,16 @@ public class ItemCockpitService {
 
     private OwnMultipleIteCockpit[] createOwnMultipleInfo(Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> itemTypes) {
         return itemTypes.entrySet().stream().map(entry -> {
-            OwnMultipleIteCockpit ownMultipleItemInfo = new OwnMultipleIteCockpit();
+            OwnMultipleIteCockpit ownMultipleItemInfo = new OwnMultipleIteCockpit() {
+                @Override
+                public void onSelect() {
+                    try {
+                        selectionHandler.keepOnlyOwnOfType(entry.getKey());
+                    } catch (Throwable t) {
+                        exceptionHandler.handleException(t);
+                    }
+                }
+            };
             ownMultipleItemInfo.count = entry.getValue().size();
             ownMultipleItemInfo.ownItemCockpit = createSimpleOwnItemCockpit(entry.getKey());
             return ownMultipleItemInfo;
@@ -132,15 +157,30 @@ public class ItemCockpitService {
         return otherInfoPanel;
     }
 
-    private BuildupItemCockpit[] createBuildupItemInfos(BaseItemType baseItemType) {
+    private BuildupItemCockpit[] createBuildupItemInfos(BaseItemType baseItemType, Group selectedGroup) {
         List<Integer> ableToBuildId = null;
+        Consumer<BaseItemType> onBuildCallback;
         if (baseItemType.getBuilderType() != null) {
             ableToBuildId = baseItemType.getBuilderType().getAbleToBuildIds();
+            onBuildCallback = (itemType) -> {
+                BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemType.getId());
+                baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
+                    audioService.onCommandSent();
+                    gameEngineControl.buildCmd(selectedGroup.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
+                });
+            };
         } else if (baseItemType.getFactoryType() != null) {
             ableToBuildId = baseItemType.getFactoryType().getAbleToBuildIds();
-        }
-
-        if (ableToBuildId == null || ableToBuildId.isEmpty()) {
+            // Factory
+            onBuildCallback = (itemType) -> {
+                audioService.onCommandSent();
+                selectedGroup.getSyncBaseItemsMonitors().stream()
+                        .filter(syncBaseItemMonitor -> syncBaseItemMonitor.getConstructingBaseItemTypeId() == null)
+                        .map(SyncItemMonitor::getSyncItemId)
+                        .findFirst()
+                        .ifPresent(factoryId -> gameEngineControl.fabricateCmd(factoryId, itemType));
+            };
+        } else {
             return null;
         }
 
@@ -148,7 +188,16 @@ public class ItemCockpitService {
                 .filter(itemTypeId -> gameUiControl.getPlanetConfig().imitation4ItemType(itemTypeId) > 0)
                 .map(itemTypeId -> {
                     BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
-                    BuildupItemCockpit buildupItemInfo = new BuildupItemCockpit();
+                    BuildupItemCockpit buildupItemInfo = new BuildupItemCockpit() {
+                        @Override
+                        public void onBuild() {
+                            try {
+                                onBuildCallback.accept(itemType);
+                            } catch (Throwable t) {
+                                exceptionHandler.handleException(t);
+                            }
+                        }
+                    };
                     buildupItemInfo.imageUrl = CommonUrl.getImageServiceUrlSafe(itemType.getThumbnail());
                     buildupItemInfo.price = itemType.getPrice();
                     // TODO is changed form the game engine side

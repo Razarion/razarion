@@ -16,11 +16,6 @@ export interface ItemCockpitFrontend {
   displayOtherItemType(otherItemCockpit: OtherItemCockpit): void;
 
   dispose(): void;
-
-  /**
-   * @deprecated The method should not be used
-   */
-  maximizeMinButton(): void;
 }
 
 export interface OwnItemCockpit {
@@ -28,7 +23,7 @@ export interface OwnItemCockpit {
   itemTypeName: string;
   itemTypeDescr: string;
   sellButton: boolean;
-  buildupItemInfos: BuildupItemCockpit[];
+  buildupItemInfos: BuildupItemCockpit[] | null;
 }
 
 export interface BuildupItemCockpit {
@@ -39,11 +34,15 @@ export interface BuildupItemCockpit {
   enabled: boolean;
   tooltip: string;
   progress: any;
+
+  onBuild(): void;
 }
 
 export interface OwnMultipleIteCockpit {
   ownItemCockpit: OwnItemCockpit;
   count: number;
+
+  onSelect(): void;
 }
 
 export interface OtherItemCockpit {

@@ -4,6 +4,7 @@ import {NavigationStart, Router} from "@angular/router";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {EditorModel} from "../editor/editor-model";
 import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
+import {OwnItemCockpit} from "../gwtangular/GwtAngularFacade";
 
 
 @Component({
@@ -40,6 +41,17 @@ export class GameComponent implements OnInit {
     this.frontendService.autoLogin().then(loggedIn => {
       this.startGame();
     });
+    // TODO remove
+    // let ownItemCockpit: OwnItemCockpit = {
+    //   buildupItemInfos: null,
+    //   imageUrl: "/rest/image/45",
+    //   itemTypeName: "Viper",
+    //   itemTypeDescr: "Greift andere Einheiten an",
+    //   sellButton: false
+    // };
+    // this.itemCockpitContainer.displayOwnSingleType(11, ownItemCockpit)
+    // TODO remove ends
+
     // TODO if(this.loadingCover) {
     //    this.loadingCover.show(null, this.canvas);
     // }

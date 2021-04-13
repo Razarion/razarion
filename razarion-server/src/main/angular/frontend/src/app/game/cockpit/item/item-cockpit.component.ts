@@ -14,7 +14,10 @@ import {
 })
 export class ItemCockpitComponent implements ItemCockpitFrontend {
   showCockpit: boolean = false;
-  infoPanel: any;
+  ownItemCockpit?: OwnItemCockpit;
+  ownMultipleIteCockpits?: OwnMultipleIteCockpit[];
+  otherItemCockpit?: OtherItemCockpit;
+  count?: number;
 
   constructor(private zone: NgZone) {
   }
@@ -22,36 +25,37 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
   displayOwnSingleType(count: number, ownItemCockpit: OwnItemCockpit): void {
     this.zone.run(() => {
       this.showCockpit = true;
-      console.info("displayOwnSingleType");
-      console.info(count);
-      console.info(ownItemCockpit);
+      this.ownItemCockpit = ownItemCockpit;
+      this.ownMultipleIteCockpits = undefined;
+      this.otherItemCockpit = undefined;
+      this.count = count;
     });
   }
 
   displayOwnMultipleItemTypes(ownMultipleIteCockpits: OwnMultipleIteCockpit[]): void {
     this.zone.run(() => {
       this.showCockpit = true;
-      console.info("displayOwnMultipleItemTypes");
-      console.info(ownMultipleIteCockpits);
+      this.ownItemCockpit = undefined;
+      this.ownMultipleIteCockpits = ownMultipleIteCockpits;
+      this.otherItemCockpit = undefined;
     });
   }
 
   displayOtherItemType(otherItemCockpit: OtherItemCockpit): void {
     this.zone.run(() => {
       this.showCockpit = true;
-      console.info("displayOtherItemType");
-      console.info(otherItemCockpit);
+      this.ownItemCockpit = undefined;
+      this.ownMultipleIteCockpits = undefined;
+      this.otherItemCockpit = otherItemCockpit;
     });
   }
 
   dispose(): void {
     this.zone.run(() => {
       this.showCockpit = false;
-      console.info("dispose");
+      this.ownItemCockpit = undefined;
+      this.ownMultipleIteCockpits = undefined;
+      this.otherItemCockpit = undefined;
     });
-  }
-
-  maximizeMinButton(): void {
-    console.info("maximizeMinButton");
   }
 }

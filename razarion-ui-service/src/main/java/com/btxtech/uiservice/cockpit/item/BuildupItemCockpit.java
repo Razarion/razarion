@@ -3,7 +3,7 @@ package com.btxtech.uiservice.cockpit.item;
 import jsinterop.annotations.JsType;
 
 @JsType
-public class BuildupItemCockpit {
+public abstract class BuildupItemCockpit {
     public String imageUrl;
     public int price;
     public int itemCount;
@@ -12,5 +12,6 @@ public class BuildupItemCockpit {
     public String tooltip;
     public Object progress;
 
-
+    @SuppressWarnings("unused") // Called by Angular
+    public abstract void onBuild();
 }
