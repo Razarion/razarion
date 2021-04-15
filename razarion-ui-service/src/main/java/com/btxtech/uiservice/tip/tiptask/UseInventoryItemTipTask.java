@@ -3,7 +3,7 @@ package com.btxtech.uiservice.tip.tiptask;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.GuiPointingTipVisualization;
@@ -22,7 +22,7 @@ public class UseInventoryItemTipTask extends AbstractTipTask {
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
-    private CockpitService cockpitService;
+    private MainCockpitService cockpitService;
     private int inventoryItemId;
 
     public void init(int inventoryItemId) {

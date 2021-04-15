@@ -6,9 +6,7 @@ import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.uiservice.control.GameUiControl;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.function.Function;
 
@@ -17,17 +15,14 @@ import java.util.function.Function;
  * 16.11.2016.
  */
 @ApplicationScoped
-public class CockpitService {
+public class MainCockpitService {
     @Inject
     private LevelService levelService;
-    @Inject
-    private Instance<SideCockpit> sideCockpitInstance;
-    private SideCockpit sideCockpit;
+    private MainCockpit sideCockpit;
     private Function<Integer, Rectangle> inventoryPositionProvider;
 
-    @PostConstruct
-    public void postConstruct() {
-        sideCockpit = sideCockpitInstance.get();
+    public void init(MainCockpit sideCockpit) {
+        this.sideCockpit = sideCockpit;
     }
 
     public void show(UserContext userContext) {

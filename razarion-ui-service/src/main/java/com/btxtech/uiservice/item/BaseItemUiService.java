@@ -21,7 +21,7 @@ import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
@@ -62,7 +62,7 @@ public class BaseItemUiService {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
-    private CockpitService cockpitService;
+    private MainCockpitService cockpitService;
     @Inject
     private ItemCockpitService itemCockpitService;
     @Inject

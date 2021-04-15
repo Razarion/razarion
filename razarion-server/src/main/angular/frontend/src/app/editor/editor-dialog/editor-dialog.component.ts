@@ -1,7 +1,7 @@
-import {Component} from "@angular/core";
+import {Component, Input} from "@angular/core";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {GameComponent} from "../../game/game.component";
 import {EditorModel} from "../editor-model";
+import {MainCockpitComponent} from "../../game/cockpit/main/main-cockpit.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -10,8 +10,12 @@ import {EditorModel} from "../editor-model";
 })
 export class EditorDialogComponent {
   crudControllers: string[] = [];
+  @Input("editorModels")
+  editorModels!: EditorModel[];
+  @Input("mainCockpitComponent")
+  mainCockpitComponent!: MainCockpitComponent;
 
-  constructor(private gwtAngularService: GwtAngularService, private gameComponent: GameComponent) {
+  constructor(private gwtAngularService: GwtAngularService) {
   }
 
   onShow() {
@@ -19,7 +23,7 @@ export class EditorDialogComponent {
   }
 
   openCrudControllerEditor(name: string, index: number) {
-    this.gameComponent.editorDialog = false;
-    this.gameComponent.insertEditorPanel(new EditorModel(name, index));
+    this.mainCockpitComponent.editorDialog = false;
+    this.editorModels.push(new EditorModel(name, index));
   }
 }

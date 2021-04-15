@@ -5,6 +5,7 @@ import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {EditorModel} from "../editor/editor-model";
 import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
 import {OwnItemCockpit} from "../gwtangular/GwtAngularFacade";
+import {MainCockpitComponent} from "./cockpit/main/main-cockpit.component";
 
 
 @Component({
@@ -14,11 +15,12 @@ import {OwnItemCockpit} from "../gwtangular/GwtAngularFacade";
 export class GameComponent implements OnInit {
   @ViewChild('canvas', {static: true})
   canvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('mainCockpit', {static: true})
+  mainCockpitComponent!: MainCockpitComponent;
   @ViewChild('itemCockpitContainer', {static: true})
   itemCockpitContainer!: ItemCockpitComponent;
   // TODO @ViewChild('loadingCover', {static: true})
   // TODO loadingCover?: OverlayPanel;
-  editorDialog: boolean = false;
   editorModels: EditorModel[] = [];
 
   constructor(private frontendService: FrontendService, private router: Router, private gwtAngularService: GwtAngularService) {
@@ -26,6 +28,7 @@ export class GameComponent implements OnInit {
 
   ngOnInit(): void {
     this.gwtAngularService.gwtAngularFacade.canvasElement = this.canvas.nativeElement;
+    this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game
@@ -96,17 +99,5 @@ export class GameComponent implements OnInit {
     meta.name = name;
     meta.content = content;
     document.getElementsByTagName('head')[0].appendChild(meta);
-  }
-
-  showEditorDialog() {
-    this.editorDialog = true;
-  }
-
-  insertEditorPanel(editorModel: EditorModel) {
-    this.editorModels.push(editorModel);
-  }
-
-  removeEditorPanel(editorModel: EditorModel) {
-    this.editorModels = this.editorModels.filter(model => model !== editorModel);
   }
 }

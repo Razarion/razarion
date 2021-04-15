@@ -3,7 +3,7 @@ package com.btxtech.client.dialog.inventory;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.gameengine.InventoryTypeService;
-import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.uiservice.inventory.InventoryUiService;
@@ -36,7 +36,7 @@ public class InventoryDialog extends Composite implements ModalDialogContent<Voi
     @Inject
     private InventoryUiService inventoryUiService;
     @Inject
-    private CockpitService cockpitService;
+    private MainCockpitService cockpitService;
     @Inject
     @DataField
     private Label crystalsLabel;

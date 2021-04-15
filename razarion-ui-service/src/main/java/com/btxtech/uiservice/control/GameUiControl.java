@@ -27,7 +27,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.cockpit.ChatUiService;
-import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.cockpit.TopRightCockpit;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -66,7 +66,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
-    private CockpitService cockpitService;
+    private MainCockpitService cockpitService;
     @Inject
     private TopRightCockpit topRightCockpit;
     @Inject

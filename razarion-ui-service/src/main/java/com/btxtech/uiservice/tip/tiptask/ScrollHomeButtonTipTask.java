@@ -2,7 +2,7 @@ package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.GuiPointingTipVisualization;
 
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class ScrollHomeButtonTipTask extends AbstractTipTask {
     private Logger logger = Logger.getLogger(ScrollHomeButtonTipTask.class.getName());
     @Inject
-    private CockpitService cockpitService;
+    private MainCockpitService cockpitService;
 
     @Override
     protected void internalStart() {

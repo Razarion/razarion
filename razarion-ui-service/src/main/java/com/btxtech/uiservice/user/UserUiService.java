@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
-import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -35,7 +35,7 @@ public class UserUiService {
     @Inject
     private LevelService levelService;
     @Inject
-    private CockpitService cockpitService;
+    private MainCockpitService cockpitService;
     @Inject
     private ItemCockpitService itemCockpitService;
     @Inject

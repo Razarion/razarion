@@ -3,11 +3,46 @@ import {TreeNode} from "primeng/api";
 // ---------- Common ----------
 export class GwtAngularFacade {
   canvasElement!: HTMLCanvasElement;
+  mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
   editorFrontendProvider!: EditorFrontendProvider;
 }
 
 // ---------- Item Cockpit ----------
+export interface Rectangle {
+
+}
+
+export enum RadarState {
+  NONE,
+  NO_POWER,
+  WORKING
+}
+
+export interface MainCockpit {
+  show(): void;
+
+  hide(): void;
+
+  displayResources(resources: number): void;
+
+  displayXps(xp: number, xp2LevelUp: number): void;
+
+  displayLevel(levelNumber: number): void;
+
+  getInventoryDialogButtonLocation(): Rectangle;
+
+  getScrollHomeButtonLocation(): Rectangle;
+
+  displayItemCount(itemCount: number, houseSpace: number): void;
+
+  displayEnergy(consuming: number, generating: number): void;
+
+  showRadar(radarState: RadarState): void;
+
+  clean(): void;
+}
+
 export interface ItemCockpitFrontend {
   displayOwnSingleType(count: number, ownItemCockpit: OwnItemCockpit): void;
 

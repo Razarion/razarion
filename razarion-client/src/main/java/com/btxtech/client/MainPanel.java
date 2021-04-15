@@ -9,6 +9,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.inject.Inject;
 import java.util.logging.Logger;
 
+@Deprecated
 @Templated("MainPanel.html#flexContainer")
 public class MainPanel implements IsElement {
     private Logger logger = Logger.getLogger(MainPanel.class.getName());

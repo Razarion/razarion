@@ -51,6 +51,7 @@ import {InputNumberModule} from 'primeng/inputnumber';
 import {InputSwitchModule} from 'primeng/inputswitch';
 import {CarouselModule} from 'primeng/carousel';
 import {ItemCockpitComponent} from "./game/cockpit/item/item-cockpit.component";
+import {MainCockpitComponent} from "./game/cockpit/main/main-cockpit.component";
 
 @NgModule({
   declarations: [
@@ -84,7 +85,8 @@ import {ItemCockpitComponent} from "./game/cockpit/item/item-cockpit.component";
     ColladaStringPropertyEditorComponent,
     I18nStringPropertyEditorComponent,
     Polygon2dPropertyEditorComponent,
-    ItemCockpitComponent
+    ItemCockpitComponent,
+    MainCockpitComponent
   ],
   imports: [
     BrowserModule,

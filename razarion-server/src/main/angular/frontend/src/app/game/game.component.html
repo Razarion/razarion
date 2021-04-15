@@ -1,16 +1,15 @@
 ﻿<div class="p-d-flex" [style]="{height:'100%', width:'100%'}">
-  <div #canvasDiv class="p-mr-2 p-order-2" [style]="{height:'100%', width:'100%', position: 'relative'}">
+  <div #canvasDiv class="p-order-2" style="height: 100%; width: 100%; position: relative; margin: 0">
     <canvas #canvas></canvas>
   </div>
   <div class="p-mr-2 p-order-1" *ngFor="let editorModel of editorModels" [style]="{height:'100%'}">
-    <app-editor-panel [editorModel]="editorModel"></app-editor-panel>
+    <app-editor-panel [editorModel]="editorModel" [editorModels]="editorModels"></app-editor-panel>
   </div>
 </div>
 
-<p-sidebar [appendTo]="canvasDiv" [visible]="true" [modal]="false" [showCloseIcon]="false"
+<p-sidebar [appendTo]="canvasDiv" [visible]="mainCockpit.showCockpit" [modal]="false" [showCloseIcon]="false"
            [style]="{height:'auto', width:'auto', position: 'absolute'}">
-  <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
-            (onClick)="showEditorDialog()"></p-button>
+  <main-cockpit #mainCockpit></main-cockpit>
 </p-sidebar>
 
 <p-sidebar [appendTo]="canvasDiv" [visible]="itemCockpitContainer.showCockpit" [modal]="false" [showCloseIcon]="false"
@@ -19,7 +18,8 @@
   <item-cockpit #itemCockpitContainer></item-cockpit>
 </p-sidebar>
 
-<p-dialog header="Editor" [(visible)]="editorDialog" (onShow)="editorDialogComponent.onShow()">
-  <editor-dialog #editorDialogComponent></editor-dialog>
+<p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog" (onShow)="editorDialogComponent.onShow()">
+  <editor-dialog #editorDialogComponent [mainCockpitComponent]="mainCockpit"
+                 [editorModels]="editorModels"></editor-dialog>
 </p-dialog>
 

@@ -6,7 +6,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.control.PlaybackControl;
 import elemental2.dom.CanvasRenderingContext2D;
 import elemental2.dom.DomGlobal;
@@ -39,7 +39,7 @@ public class ClientPlaybackControl extends PlaybackControl {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private CockpitService cockpitService;
+    private MainCockpitService cockpitService;
     private CanvasRenderingContext2D mousePlaybackContext;
     private Index lastMousePosition;
     private HTMLCanvasElement canvasElementPlaybackCanvas;

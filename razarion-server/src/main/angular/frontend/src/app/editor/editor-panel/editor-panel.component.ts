@@ -3,7 +3,6 @@ import {EditorModel} from "../editor-model";
 import {MenuItem, MessageService} from "primeng/api";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {GwtAngularPropertyTable, ObjectNameId} from "../../gwtangular/GwtAngularFacade";
-import {GameComponent} from "../../game/game.component";
 
 @Component({
   selector: 'app-editor-panel',
@@ -13,10 +12,12 @@ import {GameComponent} from "../../game/game.component";
 export class EditorPanelComponent implements OnInit {
   @Input("editorModel")
   editorModel!: EditorModel;
+  @Input("editorModels")
+  editorModels!: EditorModel[];
   items: MenuItem[] = [];
   gwtAngularPropertyTable: GwtAngularPropertyTable | null = null;
 
-  constructor(private gwtAngularService: GwtAngularService, private messageService: MessageService, private gameComponent: GameComponent) {
+  constructor(private gwtAngularService: GwtAngularService, private messageService: MessageService) {
   }
 
   ngOnInit(): void {
@@ -45,7 +46,7 @@ export class EditorPanelComponent implements OnInit {
   }
 
   onClose() {
-    this.gameComponent.removeEditorPanel(this.editorModel)
+    this.editorModels.splice(this.editorModels.indexOf(this.editorModel), 1);
   }
 
   private setupMenuItems(objectNameIds: ObjectNameId[]) {

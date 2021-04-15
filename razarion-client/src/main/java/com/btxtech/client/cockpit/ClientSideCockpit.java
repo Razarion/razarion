@@ -9,7 +9,6 @@ import com.btxtech.client.editor.EditorService;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.uiservice.cockpit.SideCockpit;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.i18n.I18nHelper;
@@ -37,7 +36,8 @@ import javax.inject.Inject;
  * 12.08.2016.
  */
 @Templated("ClientSideCockpit.html#cockpit")
-public class ClientSideCockpit implements IsElement, SideCockpit {
+@Deprecated
+public class ClientSideCockpit implements IsElement {
     @Inject
     private GameTipService gameTipService;
     @Inject
@@ -137,13 +137,13 @@ public class ClientSideCockpit implements IsElement, SideCockpit {
         return cockpit;
     }
 
-    @Override
+    // TODO @Override
     public void show() {
         mainPanelService.addToGamePanel(this);
         editorTableRow.getStyle().setProperty("display", userUiService.isAdmin() ? "table-row" : "none");
     }
 
-    @Override
+    // TODO @Override
     public void hide() {
         mainPanelService.removeFromGamePanel(this);
     }
@@ -188,37 +188,37 @@ public class ClientSideCockpit implements IsElement, SideCockpit {
         modalDialogManager.showUserAccountDialog();
     }
 
-    @Override
+    // TODO @Override
     public void displayResources(int resources) {
         resourceLabel.setTextContent(Integer.toString(resources));
     }
 
-    @Override
+    // TODO @Override
     public void displayItemCount(int itemCount, int houseSpace) {
         itemCountLabel.setTextContent(itemCount + " / " + houseSpace);
     }
 
-    @Override
+    // TODO @Override
     public void displayEnergy(int consuming, int generating) {
         energyBar.setEnergy(consuming, generating);
     }
 
-    @Override
+    // TODO @Override
     public void displayXps(int xp, int xp2LevelUp) {
         xpLabel.setTextContent(xp + " / " + xp2LevelUp);
     }
 
-    @Override
+    // TODO @Override
     public void displayLevel(int levelNumber) {
         levelLabel.setTextContent(Integer.toString(levelNumber));
     }
 
-    @Override
+    // TODO @Override
     public Rectangle getInventoryDialogButtonLocation() {
         return new Rectangle(inventoryButton.getAbsoluteLeft(), inventoryButton.getAbsoluteTop(), inventoryButton.getOffsetWidth(), inventoryButton.getOffsetHeight());
     }
 
-    @Override
+    // TODO @Override
     public Rectangle getScrollHomeButtonLocation() {
         return new Rectangle(scrollHomeButton.getAbsoluteLeft(), scrollHomeButton.getAbsoluteTop(), scrollHomeButton.getOffsetWidth(), scrollHomeButton.getOffsetHeight());
     }
@@ -239,7 +239,7 @@ public class ClientSideCockpit implements IsElement, SideCockpit {
         }
     }
 
-    @Override
+    // TODO @Override
     public void showRadar(GameUiControl.RadarState radarState) {
         switch (radarState) {
             case NONE:
@@ -268,7 +268,7 @@ public class ClientSideCockpit implements IsElement, SideCockpit {
         }
     }
 
-    @Override
+    // TODO @Override
     public void clean() {
         radarPanel.stop();
     }

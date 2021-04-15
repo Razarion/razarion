@@ -16,13 +16,11 @@ import static com.btxtech.client.utils.DomConstants.Event.RESIZE;
 @ApplicationScoped
 public class MainPanelService {
     @Inject
-    private MainPanel mainPanel;
-    @Inject
     private ExceptionHandler exceptionHandler;
     private List<Runnable> resizeListeners = new ArrayList<>();
 
     public void init() {
-        DomGlobal.document.body.appendChild(mainPanel.getElement());
+        // TODO DomGlobal.document.body.appendChild(mainPanel.getElement());
         DomGlobal.window.addEventListener(RESIZE, evt -> {
             fireResizeChanged();
         });
@@ -33,7 +31,7 @@ public class MainPanelService {
     }
 
     public void addToGamePanel(HTMLElement htmlElement) {
-        mainPanel.addToGamePanel(htmlElement);
+        // TODO mainPanel.addToGamePanel(htmlElement);
     }
 
     public void removeFromGamePanel(IsElement isElement) {
@@ -41,16 +39,16 @@ public class MainPanelService {
     }
 
     public void removeFromGamePanel(HTMLElement htmlElement) {
-        mainPanel.removeFromGamePanel(htmlElement);
+        // TODO mainPanel.removeFromGamePanel(htmlElement);
     }
 
     public void addEditorPanel(EditorPanel editorPanel) {
-        mainPanel.addToFlexContainer(editorPanel.getElement());
+        // TODO mainPanel.addToFlexContainer(editorPanel.getElement());
         fireResizeChanged();
     }
 
     public void removeEditorPanel(EditorPanel editorPanel) {
-        mainPanel.removeFromFlexContainer(editorPanel.getElement());
+        // TODO mainPanel.removeFromFlexContainer(editorPanel.getElement());
         fireResizeChanged();
     }
 
@@ -59,7 +57,8 @@ public class MainPanelService {
     }
 
     public HTMLElement getMainPanelElement() {
-        return mainPanel.getElement();
+        // TODO return mainPanel.getElement();
+        throw new UnsupportedOperationException("... TODO ...");
     }
 
     public void addResizeListener(Runnable resizeListener) {
