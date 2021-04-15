@@ -36,6 +36,12 @@ export interface BuildupItemCockpit {
   progress: any;
 
   onBuild(): void;
+
+  setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void;
+}
+
+export interface AngularZoneRunner {
+  runInAngularZone(callback: any): void;
 }
 
 export interface OwnMultipleIteCockpit {

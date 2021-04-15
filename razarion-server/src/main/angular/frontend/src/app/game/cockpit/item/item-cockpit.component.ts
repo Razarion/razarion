@@ -1,5 +1,6 @@
 ﻿import {Component, NgZone} from '@angular/core';
 import {
+  AngularZoneRunner,
   ItemCockpitFrontend,
   OtherItemCockpit,
   OwnItemCockpit,
@@ -29,6 +30,18 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
       this.ownMultipleIteCockpits = undefined;
       this.otherItemCockpit = undefined;
       this.count = count;
+      let zone = this.zone;
+      if (ownItemCockpit.buildupItemInfos) {
+        ownItemCockpit.buildupItemInfos.forEach(buildupItemInfo => {
+          buildupItemInfo.setAngularZoneRunner(new class implements AngularZoneRunner {
+            runInAngularZone(callback: any): void {
+              zone.run(() => {
+                callback();
+              });
+            }
+          });
+        });
+      }
     });
   }
 

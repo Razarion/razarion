@@ -28,6 +28,7 @@ import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import java.util.function.Consumer;
 
 @ApplicationScoped
 public class ItemCockpitService {
+    // private Logger logger = Logger.getLogger(ItemCockpitService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -52,6 +54,7 @@ public class ItemCockpitService {
     @Inject
     private SelectionHandler selectionHandler;
     private ItemCockpitFrontend itemCockpitFrontend;
+    private Collection<BuildupItemCockpit> buildupItemCockpits = new ArrayList<>();
     // TODO private BuildupItemPanel buildupItemPanel;
 
     public void init(ItemCockpitFrontend itemCockpitPanel) {
@@ -61,9 +64,8 @@ public class ItemCockpitService {
     public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {
         switch (selectionEvent.getType()) {
             case CLEAR:
-//    TODO            if (buildupItemPanel != null) {
-//                    TODO buildupItemPanel.releaseMonitors();
-//   TODO             }
+                buildupItemCockpits.forEach(BuildupItemCockpit::releaseMonitor); // TODO releaseMonitor
+                buildupItemCockpits.clear();
                 itemCockpitFrontend.dispose();
                 break;
             case OWN:
@@ -158,10 +160,10 @@ public class ItemCockpitService {
     }
 
     private BuildupItemCockpit[] createBuildupItemInfos(BaseItemType baseItemType, Group selectedGroup) {
-        List<Integer> ableToBuildId;
+        List<Integer> ableToBuildIds;
         Consumer<BaseItemType> onBuildCallback;
         if (baseItemType.getBuilderType() != null) {
-            ableToBuildId = baseItemType.getBuilderType().getAbleToBuildIds();
+            ableToBuildIds = baseItemType.getBuilderType().getAbleToBuildIds();
             onBuildCallback = (itemType) -> {
                 BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemType.getId());
                 baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
@@ -170,7 +172,7 @@ public class ItemCockpitService {
                 });
             };
         } else if (baseItemType.getFactoryType() != null) {
-            ableToBuildId = baseItemType.getFactoryType().getAbleToBuildIds();
+            ableToBuildIds = baseItemType.getFactoryType().getAbleToBuildIds();
             // Factory
             onBuildCallback = (itemType) -> {
                 audioService.onCommandSent();
@@ -184,7 +186,7 @@ public class ItemCockpitService {
             return null;
         }
 
-        return ableToBuildId.stream()
+        return ableToBuildIds.stream()
                 .filter(itemTypeId -> gameUiControl.getPlanetConfig().imitation4ItemType(itemTypeId) > 0)
                 .map(itemTypeId -> {
                     BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
@@ -197,28 +199,47 @@ public class ItemCockpitService {
                                 exceptionHandler.handleException(t);
                             }
                         }
+
+                        @Override
+                        public void setAngularZoneRunner(AngularZoneRunner angularZoneRunner) {
+                            this.angularZoneRunner = angularZoneRunner;
+                        }
+
+                        @Override
+                        public void updateState() {
+                            itemCount = baseItemUiService.getMyItemCount(itemType.getId());
+                            itemLimit = gameUiControl.getMyLimitation4ItemType(itemType.getId());
+
+                            if (baseItemUiService.isMyLevelLimitation4ItemTypeExceeded(itemType, 1)) {
+                                tooltip = I18nHelper.getConstants().tooltipNoBuildLimit(I18nHelper.getLocalizedString(itemType.getI18nName()));
+                                enabled = false;
+                            } else if (baseItemUiService.isMyHouseSpaceExceeded(itemType, 1)) {
+                                tooltip = I18nHelper.getConstants().tooltipNoBuildHouseSpace(I18nHelper.getLocalizedString(itemType.getI18nName()));
+                                enabled = false;
+                            } else if (itemType.getPrice() > baseItemUiService.getResources()) {
+                                tooltip = I18nHelper.getConstants().tooltipNoBuildMoney(I18nHelper.getLocalizedString(itemType.getI18nName()));
+                                enabled = false;
+                            } else {
+                                tooltip = I18nHelper.getConstants().tooltipBuild(I18nHelper.getLocalizedString(itemType.getI18nName()));
+                                enabled = true;
+
+                            }
+                        }
+
+                        @Override
+                        public void updateResources(int resources) {
+                            if (itemType.getPrice() > resources && enabled) {
+                                tooltip = I18nHelper.getConstants().tooltipNoBuildMoney(I18nHelper.getLocalizedString(itemType.getI18nName()));
+                                enabled = false;
+                            } else if (itemType.getPrice() <= resources && !enabled) {
+                                updateState();
+                            }
+                        }
                     };
                     buildupItemInfo.imageUrl = CommonUrl.getImageServiceUrlSafe(itemType.getThumbnail());
                     buildupItemInfo.price = itemType.getPrice();
-                    // TODO is changed form the game engine side
-                    buildupItemInfo.itemCount = baseItemUiService.getMyItemCount(itemType.getId());
-                    buildupItemInfo.itemLimit = gameUiControl.getMyLimitation4ItemType(itemType.getId());
-
-                    if (baseItemUiService.isMyLevelLimitation4ItemTypeExceeded(itemType, 1)) {
-                        buildupItemInfo.tooltip = I18nHelper.getConstants().tooltipNoBuildLimit(I18nHelper.getLocalizedString(itemType.getI18nName()));
-                        buildupItemInfo.enabled = false;
-                    } else if (baseItemUiService.isMyHouseSpaceExceeded(itemType, 1)) {
-                        buildupItemInfo.tooltip = I18nHelper.getConstants().tooltipNoBuildHouseSpace(I18nHelper.getLocalizedString(itemType.getI18nName()));
-                        buildupItemInfo.enabled = false;
-                    }
-                    if (itemType.getPrice() > baseItemUiService.getResources()) {
-                        buildupItemInfo.tooltip = I18nHelper.getConstants().tooltipNoBuildMoney(I18nHelper.getLocalizedString(itemType.getI18nName()));
-                        buildupItemInfo.enabled = false;
-                    } else {
-                        buildupItemInfo.tooltip = I18nHelper.getConstants().tooltipBuild(I18nHelper.getLocalizedString(itemType.getI18nName()));
-                        buildupItemInfo.enabled = true;
-
-                    }
+                    buildupItemInfo.updateState();
+                    buildupItemCockpits.add(buildupItemInfo);
                     return buildupItemInfo;
                 }).toArray(BuildupItemCockpit[]::new);
     }
@@ -249,17 +270,17 @@ public class ItemCockpitService {
         throw new UnsupportedOperationException("...TODO...");
     }
 
-    public void onResourcesChanged(int resources) {
-//  TODO      if (buildupItemPanel != null) {
-//            buildupItemPanel.onResourcesChanged(resources);
-//        }
-    }
-
     // This method is may not called enough. Only called on Level change and houseSpace and usedHouseSpace changed
     // If an item is create and and item of a different item type is killed, this is method not called
     public void onStateChanged() {
-//  TODO      if (buildupItemPanel != null) {
-//            buildupItemPanel.onStateChanged();
-//        }
+        buildupItemCockpits.forEach(buildupItemCockpit ->
+                buildupItemCockpit.angularZoneRunner.runInAngularZone(() ->
+                        // Do not replace by methode reference. GWT can not handle that.
+                        buildupItemCockpit.updateState()
+                ));
+    }
+
+    public void onResourcesChanged(int resources) {
+        buildupItemCockpits.forEach(buildupItemCockpit -> buildupItemCockpit.angularZoneRunner.runInAngularZone(() -> buildupItemCockpit.updateResources(resources)));
     }
 }

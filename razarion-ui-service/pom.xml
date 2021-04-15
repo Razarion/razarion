@@ -34,6 +34,12 @@
             <artifactId>jsinterop-annotations</artifactId>
             <version>1.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.elemental2</groupId>
+            <artifactId>elemental2-promise</artifactId>
+            <version>${gwt.elemental2.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>
