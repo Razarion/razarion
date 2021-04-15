@@ -13,7 +13,7 @@ import java.util.List;
  * 24.01.2017.
  */
 @ApplicationScoped
-public class TestTopRightCockpit implements TopRightCockpit {
+public class TestTopRightCockpit extends TopRightCockpit {
     @Override
     public void showQuestSideBar(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo, boolean showQuestSelectionButton) {
         throw new UnsupportedOperationException();

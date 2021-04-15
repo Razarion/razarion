@@ -22,9 +22,9 @@ public class ChatUiService {
 
     public void start() {
         if (chatCockpit == null) {
-            chatCockpit = instance.get();
-            chatCockpit.show();
-            chatCockpit.displayMessages(chatMessages);
+            // TODO chatCockpit = instance.get();
+            // TODO chatCockpit.show();
+            // TODO chatCockpit.displayMessages(chatMessages);
         }
     }
 
