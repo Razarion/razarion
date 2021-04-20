@@ -1,5 +1,7 @@
 package com.btxtech.shared.system.perfmon;
 
+import jsinterop.annotations.JsType;
+
 import java.util.Date;
 import java.util.List;
 
@@ -7,6 +9,7 @@ import java.util.List;
  * Created by Beat
  * 20.01.2017.
  */
+@JsType
 public class PerfmonStatistic {
     private PerfmonEnum perfmonEnum;
     private List<PerfmonStatisticEntry> perfmonStatisticEntries;
@@ -17,12 +20,22 @@ public class PerfmonStatistic {
         return perfmonEnum;
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public String getPerfmonEnumString() {
+        return perfmonEnum.name();
+    }
+
     public void setPerfmonEnum(PerfmonEnum perfmonEnum) {
         this.perfmonEnum = perfmonEnum;
     }
 
     public List<PerfmonStatisticEntry> getPerfmonStatisticEntries() {
         return perfmonStatisticEntries;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public PerfmonStatisticEntry[] getPerfmonStatisticEntriesArray() {
+        return perfmonStatisticEntries.toArray(new PerfmonStatisticEntry[0]);
     }
 
     public void setPerfmonStatisticEntries(List<PerfmonStatisticEntry> perfmonStatisticEntries) {

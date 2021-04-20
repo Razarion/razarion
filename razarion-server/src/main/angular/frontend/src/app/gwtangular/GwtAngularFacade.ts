@@ -98,6 +98,8 @@ export interface OtherItemCockpit {
 // ---------- Editor ----------
 export interface EditorFrontendProvider {
   getGenericEditorFrontendProvider(): GenericEditorFrontendProvider;
+
+  getPerfmonStatistics(): PerfmonStatistic[];
 }
 
 export interface GenericEditorFrontendProvider {
@@ -137,4 +139,50 @@ export interface AngularTreeNodeData {
   onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void;
 
   setValue(value: any): void;
+}
+
+export interface PerfmonStatistic {
+  getPerfmonEnumString(): string;
+
+  getPerfmonStatisticEntriesArray(): PerfmonStatisticEntry[];
+}
+
+export interface PerfmonStatisticEntry {
+  getFrequency(): number;
+
+  getAvgDuration(): number;
+
+  getSamples(): number;
+
+  getDateAsLong(): number;
+}
+
+export enum PerfmonEnum {
+  RENDERER,
+  GAME_ENGINE,
+  CLIENT_GAME_ENGINE_UPDATE,
+  BOT_TICKER,
+  BOT_SCENE_TICKER,
+  BOT_TIMER,
+  DETAILED_TRACKING,
+  COVER_FADE,
+  DRAW_MINI_MAP,
+  PERFMON_SEND_TO_CLIENT,
+  PERFMON_ANALYSE,
+  PLAYBACK,
+  SCENE_RUNNER,
+  SCENE_WAIT,
+  TRAIL_SERVICE,
+  SCROLL,
+  SCROLL_AUTO,
+  TIP_SCROLL,
+  TIP_SPAWN,
+  TIP_GUI_POINTING,
+  REGISTER,
+  USER_SET_NAME,
+  SERVER_RESTART_WATCHDOG,
+  RELOAD_CLIENT_WRONG_INTERFACE_VERSION,
+  ESTABLISH_CONNECTION,
+  WAIT_RESTART,
+  QUEST_PROGRESS_PANEL_TEXT_REFRESHER
 }

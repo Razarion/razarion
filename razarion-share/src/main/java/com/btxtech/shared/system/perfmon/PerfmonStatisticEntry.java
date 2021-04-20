@@ -1,12 +1,14 @@
 package com.btxtech.shared.system.perfmon;
 
+import jsinterop.annotations.JsType;
+
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Beat
  * on 25.09.2017.
  */
+@JsType
 public class PerfmonStatisticEntry {
     private double frequency;
     private double avgDuration;
@@ -39,6 +41,11 @@ public class PerfmonStatisticEntry {
 
     public Date getDate() {
         return date;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public long getDateAsLong() {
+        return date.getTime();
     }
 
     public void setDate(Date date) {

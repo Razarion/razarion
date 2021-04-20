@@ -1,1 +1,16 @@
-Render Engine
+<div class="p-d-flex p-flex-column">
+  <div class="p-mr-2">
+    <perfmon #rendererPerfmon
+             [stat1]="'FPS'"
+             [stat1-max]=65
+             [stat1-color]="'#ff8b25'"
+             [perfmon-enum]="rendererPerfmonType"></perfmon>
+  </div>
+  <div class="p-mr-2">
+    <perfmon #updatePerfmon
+             [stat1]="'Update'"
+             [stat1-max]=12
+             [stat1-color]="'#25deff'"
+             [perfmon-enum]="updatePerfmonType"></perfmon>
+  </div>
+</div>

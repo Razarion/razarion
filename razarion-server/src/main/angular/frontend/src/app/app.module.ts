@@ -53,6 +53,8 @@ import {CarouselModule} from 'primeng/carousel';
 import {ItemCockpitComponent} from "./game/cockpit/item/item-cockpit.component";
 import {MainCockpitComponent} from "./game/cockpit/main/main-cockpit.component";
 import {RenderEngineComponent} from "./editor/render-engine/render-engine.component";
+import {ChartModule} from 'primeng/chart';
+import {PerfmonComponent} from "./editor/render-engine/perfmon.component";
 
 @NgModule({
   declarations: [
@@ -88,7 +90,8 @@ import {RenderEngineComponent} from "./editor/render-engine/render-engine.compon
     Polygon2dPropertyEditorComponent,
     ItemCockpitComponent,
     MainCockpitComponent,
-    RenderEngineComponent
+    RenderEngineComponent,
+    PerfmonComponent
   ],
   imports: [
     BrowserModule,
@@ -106,7 +109,8 @@ import {RenderEngineComponent} from "./editor/render-engine/render-engine.compon
     InputTextModule,
     InputNumberModule,
     InputSwitchModule,
-    CarouselModule
+    CarouselModule,
+    ChartModule
   ],
   providers: [
     FrontendService, {
