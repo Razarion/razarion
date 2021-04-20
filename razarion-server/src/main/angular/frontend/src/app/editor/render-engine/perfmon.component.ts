@@ -50,15 +50,17 @@ export class PerfmonComponent {
       }
     });
 
-    this.data = {
-      labels: labels,
-      datasets: [
-        {
-          label: this.stat1,
-          data: data,
-          backgroundColor: this.stat1Color,
-        }
-      ]
-    };
+    if (data.length > 0) {
+      this.data = {
+        labels: labels,
+        datasets: [
+          {
+            label: this.stat1,
+            data: data,
+            backgroundColor: this.stat1Color,
+          }
+        ]
+      };
+    }
   }
 }

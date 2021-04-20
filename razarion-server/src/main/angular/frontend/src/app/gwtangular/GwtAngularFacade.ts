@@ -99,7 +99,9 @@ export interface OtherItemCockpit {
 export interface EditorFrontendProvider {
   getGenericEditorFrontendProvider(): GenericEditorFrontendProvider;
 
-  getPerfmonStatistics(): PerfmonStatistic[];
+  getClientPerfmonStatistics(): PerfmonStatistic[];
+
+  getWorkerPerfmonStatistics(): Promise<PerfmonStatistic[]>;
 }
 
 export interface GenericEditorFrontendProvider {
