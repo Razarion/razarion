@@ -1,7 +1,10 @@
 <div style="display: flex; flex-direction: column" [style]="{display:'flex', flexDirection:'column', height:'100%'}">
   <div class="p-d-flex p-jc-between">
     <div style="margin-top: auto; margin-bottom: auto">{{editorModel.name}}</div>
-    <p-button icon="pi pi-times" (onClick)="onClose()" styleClass="p-button-rounded p-button-danger p-button-text p-button-plain"></p-button>
+    <p-button icon="pi pi-times" (onClick)="onClose()"
+              styleClass="p-button-rounded p-button-danger p-button-text p-button-plain"></p-button>
   </div>
-  <ng-template #editorContainer></ng-template>
+  <div class="p-d-flex p-jc-between" [style]="{order: 1, flexGrow: 1, overflowY: 'auto'}">
+    <ng-template #editorContainer></ng-template>
+  </div>
 </div>
