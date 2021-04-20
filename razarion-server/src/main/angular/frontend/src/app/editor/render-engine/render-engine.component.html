@@ -1,4 +1,5 @@
 <div class="p-d-flex p-flex-column">
+  <h4>Performance</h4>
   <div class="p-mr-2">
     <perfmon #rendererPerfmon
              [stat1]="'FPS'"
@@ -19,5 +20,15 @@
              [stat1-max]=12
              [stat1-color]="'#8b25ff'"
              [perfmon-enum]="gameEnginePerfmonType"></perfmon>
+  </div>
+  <div class="p-mr-2">
+    <h4>Control</h4>
+    <div class="p-formgroup-inline">
+      <div class="p-field">
+        <label>Interpolation</label>
+        <p-inputSwitch [ngModel]="gwtAngularService.gwtAngularFacade.editorFrontendProvider.isRenderInterpolation()"
+                       (ngModelChange)="gwtAngularService.gwtAngularFacade.editorFrontendProvider.setRenderInterpolation($event)"></p-inputSwitch>
+      </div>
+    </div>
   </div>
 </div>

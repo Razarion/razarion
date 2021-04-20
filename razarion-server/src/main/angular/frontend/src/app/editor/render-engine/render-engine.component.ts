@@ -20,7 +20,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   gameEnginePerfmonComponent!: PerfmonComponent;
   refresher: any;
 
-  constructor(private gwtAngularService: GwtAngularService) {
+  constructor(public gwtAngularService: GwtAngularService) {
     super();
   }
 

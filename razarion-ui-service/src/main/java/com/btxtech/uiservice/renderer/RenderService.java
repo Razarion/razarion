@@ -36,6 +36,7 @@ public abstract class RenderService {
     private PerfmonService perfmonService;
     private List<AbstractRenderTaskRunner> renderTaskRunners = new ArrayList<>();
     private Pass pass;
+    private boolean interpolation = true;
 
     protected abstract void internalSetup();
 
@@ -107,6 +108,14 @@ public abstract class RenderService {
 
     public List<AbstractRenderTaskRunner> getRenderTaskRunners() {
         return renderTaskRunners;
+    }
+
+    public boolean isInterpolation() {
+        return interpolation;
+    }
+
+    public void setInterpolation(boolean interpolation) {
+        this.interpolation = interpolation;
     }
 
     public enum Pass {

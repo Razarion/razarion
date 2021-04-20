@@ -102,6 +102,10 @@ export interface EditorFrontendProvider {
   getClientPerfmonStatistics(): PerfmonStatistic[];
 
   getWorkerPerfmonStatistics(): Promise<PerfmonStatistic[]>;
+
+  isRenderInterpolation(): boolean;
+
+  setRenderInterpolation(value: boolean): void;
 }
 
 export interface GenericEditorFrontendProvider {

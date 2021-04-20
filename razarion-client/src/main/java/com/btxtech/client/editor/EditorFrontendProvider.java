@@ -4,6 +4,7 @@ import com.btxtech.client.editor.generic.GenericEditorFrontendProvider;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.renderer.RenderService;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 
@@ -19,6 +20,8 @@ public class EditorFrontendProvider {
     private PerfmonService perfmonService;
     @Inject
     private GameEngineControl gameEngineControl;
+    @Inject
+    private RenderService renderService;
 
     @SuppressWarnings("unused") // Called by Angular
     public GenericEditorFrontendProvider getGenericEditorFrontendProvider() {
@@ -33,6 +36,16 @@ public class EditorFrontendProvider {
     @SuppressWarnings("unused") // Called by Angular
     public Promise<PerfmonStatistic[]> getWorkerPerfmonStatistics() {
         return new Promise<>((resolve, reject) -> gameEngineControl.perfmonRequest(perfmonStatistics -> resolve.onInvoke(perfmonStatistics.toArray(new PerfmonStatistic[0]))));
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean isRenderInterpolation() {
+        return renderService.isInterpolation();
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public void setRenderInterpolation(boolean interpolation) {
+        renderService.setInterpolation(interpolation);
     }
 
 }
