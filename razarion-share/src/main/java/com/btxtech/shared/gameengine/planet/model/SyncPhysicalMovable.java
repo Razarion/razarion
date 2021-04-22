@@ -212,6 +212,17 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             return null;
         }
 
+        if (path != null) {
+            if (path.isLastWayPoint()) {
+                double targetDistance = getPosition2d().getDistance(path.getCurrentWayPoint());
+                if (targetDistance < velocity.magnitude() * PlanetService.TICK_FACTOR) {
+                    interpolatableVelocity = velocity.normalize(targetDistance / PlanetService.TICK_FACTOR);
+                }
+            }
+        } else {
+            return null;
+        }
+
         Vertex originalVelocity = new Vertex(interpolatableVelocity, 0);
         double angle = originalVelocity.unsignedAngle(getNorm()) - MathHelper.QUARTER_RADIANT;
         double z = Math.tan(angle) * interpolatableVelocity.magnitude();

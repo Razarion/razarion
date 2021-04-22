@@ -136,17 +136,27 @@ public class ModelMatrices {
 
     public ModelMatrices interpolateVelocity(double factor) {
         if ((interpolatableVelocity != null || interpolatableAngularVelocity != null) && factor != 0.0) {
+            NativeMatrixFactory factory = matrix.getNativeMatrixFactory();
             factor = MathHelper.clamp(factor, 0.0, PlanetService.TICK_FACTOR);
-            NativeMatrix translationMatrix = matrix;
+            NativeMatrix velocityInterpolation = null;
             if (interpolatableVelocity != null) {
-                translationMatrix = matrix.getNativeMatrixFactory().createTranslation(interpolatableVelocity.x * factor, interpolatableVelocity.y * factor, interpolatableVelocity.z * factor);
+                velocityInterpolation = factory.createTranslation(interpolatableVelocity.x * factor, interpolatableVelocity.y * factor, interpolatableVelocity.z * factor);
             }
+            NativeMatrix angularInterpolation = null;
             if (interpolatableAngularVelocity != null) {
-                translationMatrix = translationMatrix.multiply(matrix.multiply(translationMatrix.getNativeMatrixFactory().createZRotation(interpolatableAngularVelocity * factor)));
-            } else {
-                translationMatrix = translationMatrix.multiply(matrix);
+                angularInterpolation = factory.createZRotation(interpolatableAngularVelocity * factor);
             }
-            ModelMatrices modelMatrices = new ModelMatrices(translationMatrix);
+            NativeMatrix result;
+            if (velocityInterpolation != null && angularInterpolation != null) {
+                result = velocityInterpolation.multiply(matrix.multiply(angularInterpolation));
+            } else if (velocityInterpolation != null) {
+                result = velocityInterpolation.multiply(matrix);
+            } else if (angularInterpolation != null) {
+                result = matrix.multiply(angularInterpolation);
+            } else {
+                return this;
+            }
+            ModelMatrices modelMatrices = new ModelMatrices(result);
             return fillModelMatrices(modelMatrices);
         } else {
             return this;
