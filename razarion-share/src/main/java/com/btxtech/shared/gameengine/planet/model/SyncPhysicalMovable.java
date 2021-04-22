@@ -56,7 +56,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private double angularVelocity; // Rad per second
     private Path path;
     private DecimalPosition velocity;
-    private DecimalPosition cosmeticStopVelocity; // Not synchronized
     private DecimalPosition preferredVelocity;
     private DecimalPosition oldPosition;
     private boolean crowded;
@@ -69,7 +68,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void setupForTick() {
-        cosmeticStopVelocity = null;
         oldPosition = getPosition2d();
         crowded = false;
         if (path != null) {
@@ -169,8 +167,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     @Override
     public void stop() {
         if (velocity != null) {
-            double distance = oldPosition.getDistance(getPosition2d());
-            cosmeticStopVelocity = velocity.normalize(distance / PlanetService.TICK_FACTOR);
             velocity = null;
         }
         path = null;
@@ -211,9 +207,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         DecimalPosition interpolatableVelocity = null;
         if (velocity != null && !velocity.equalsDeltaZero()) {
             interpolatableVelocity = velocity;
-        }
-        if (interpolatableVelocity == null && cosmeticStopVelocity != null && !cosmeticStopVelocity.equalsDeltaZero()) {
-            interpolatableVelocity = cosmeticStopVelocity;
         }
         if (interpolatableVelocity == null) {
             return null;
