@@ -176,7 +176,7 @@ public class BotSyncBaseItem {
     }
 
     public void stop() {
-        syncBaseItem.stop();
+        syncBaseItem.stop(true);
         setIdle();
     }
 

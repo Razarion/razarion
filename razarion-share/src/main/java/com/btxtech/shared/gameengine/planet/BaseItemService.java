@@ -573,7 +573,7 @@ public class BaseItemService {
                     try {
                         if (!activeItem.tick()) {
                             try {
-                                activeItem.stop();
+                                activeItem.stop(true);
                                 iterator.remove();
                                 if (!guardingItemService.add(activeItem)) {
                                     gameLogicService.onSyncBaseItemIdle(activeItem);
@@ -584,7 +584,7 @@ public class BaseItemService {
                             }
                         }
                     } catch (Throwable t) {
-                        activeItem.stop();
+                        activeItem.stop(true);
                         exceptionHandler.handleException(t);
                         iterator.remove();
                         gameLogicService.onSyncBaseItemIdle(activeItem);
@@ -601,7 +601,7 @@ public class BaseItemService {
     private void executeCommand(BaseCommand baseCommand) {
         try {
             SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(baseCommand.getId());
-            syncBaseItem.stop();
+            syncBaseItem.stop(false);
             syncBaseItem.executeCommand(baseCommand);
             addToActiveItemQueue(syncBaseItem);
             guardingItemService.remove(syncBaseItem);

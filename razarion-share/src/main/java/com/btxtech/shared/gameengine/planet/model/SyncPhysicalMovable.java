@@ -152,7 +152,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     public void setPath(SimplePath path) {
         this.path = instancePath.get();
         this.path.init(path);
-        velocity = null;
     }
 
     public Path getPath() {
@@ -166,9 +165,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     @Override
     public void stop() {
-        if (velocity != null) {
-            velocity = null;
-        }
+        velocity = null;
         path = null;
         preferredVelocity = null;
     }

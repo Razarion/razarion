@@ -56,7 +56,7 @@ import javax.inject.Inject;
  * Time: 19:11:49
  */
 @Dependent
-public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
+public class SyncBaseItem extends SyncItem {
     @Inject
     private Instance<SyncBaseAbility> instance;
     @Inject
@@ -278,7 +278,13 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
                 || (syncItemContainer != null && syncItemContainer.isActive());
     }
 
-    @Override
+    /**
+     * Ticks this sync item
+     *
+     * @return true if more tick are needed to fullfil the job
+     * @throws ItemDoesNotExistException if the target item does no exist any longer
+     * @throws NoSuchItemTypeException   if the target item type does not exist
+     */
     public boolean tick() throws ItemDoesNotExistException, NoSuchItemTypeException {
         if (isSpawning()) {
             spawnProgress += PlanetService.TICK_FACTOR / (getBaseItemType().getSpawnDurationMillis() / 1000.0);
@@ -322,8 +328,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return getSyncPhysicalArea().hasDestination();
     }
 
-    public void stop() {
-        getSyncPhysicalArea().stop();
+    public void stop(boolean stopMovable) {
+        if (stopMovable) {
+            getSyncPhysicalArea().stop();
+        }
 
         syncBoxItemToPick = null;
         targetContainer = null;
@@ -570,7 +578,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         getSyncPhysicalArea().setPosition2d(null, false);
         if (getSyncPhysicalArea().canMove()) {
             getSyncPhysicalMovable().stop();
-            getSyncPhysicalMovable().setVelocity(null);
         }
     }
 
@@ -590,7 +597,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     private boolean pickSyncBoxItem() {
         if (!syncBoxItemToPick.isAlive()) {
-            stop();
+            stop(true);
             return false;
         }
         if (!getSyncPhysicalArea().isInRange(getBaseItemType().getBoxPickupRange(), syncBoxItemToPick)) {
@@ -603,19 +610,19 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             return true;
         }
         boxService.onSyncBoxItemPicked(syncBoxItemToPick, this);
-        stop();
+        stop(true);
         return false;
     }
 
 
     private boolean putInContainer() {
         if (!targetContainer.isAlive()) {
-            stop();
+            stop(true);
             return false;
         }
         if (getSyncPhysicalArea().isInRange(targetContainer.getSyncItemContainer().getRange(), targetContainer)) {
             targetContainer.getSyncItemContainer().load(this);
-            stop();
+            stop(true);
             return false;
         } else {
             return true;
