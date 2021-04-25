@@ -220,6 +220,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 }
             }
         } else {
+            // TODO fix: item stutters if pushed away
             return null;
         }
 
