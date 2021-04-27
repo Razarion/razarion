@@ -1,24 +1,35 @@
-<p-menubar [model]="items" [style]="{order: 0}"></p-menubar>
+<p-menubar [model]="items"></p-menubar>
+<div style="display: flex; flex-direction: column" [style]="{height: '100%'}">
+  <div class="p-d-flex p-jc-between" [style]="{order: 1, flexGrow: 1, overflowY: 'auto'}">
+    <p-treeTable *ngIf="gwtAngularPropertyTable" [value]="gwtAngularPropertyTable.rootTreeNodes"
+                 [tableStyle]="{width:'auto'}" [autoLayout]="true" [style]="{overflowY: 'auto'}">
+      <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+        <tr [ttRow]="rowNode">
+          <td style="white-space: nowrap">
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            {{rowData.name}}
+            <p-button *ngIf="rowData.deleteAllowed" icon="pi pi-times"
+                      styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                      (onClick)="rowData.onDelete(this.gwtAngularPropertyTable)">
+            </p-button>
+            <p-button *ngIf="rowData.createAllowed" icon="pi pi-sun"
+                      styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+                      (onClick)="rowData.onCreate(this.gwtAngularPropertyTable)">
+            </p-button>
+          </td>
+          <td>
+            <property-editor *ngIf="rowData.propertyEditorSelector"
+                             [angular-tree-node-data]="rowData"></property-editor>
+          </td>
+        </tr>
+      </ng-template>
+    </p-treeTable>
+  </div>
+</div>
 
-<p-treeTable *ngIf="gwtAngularPropertyTable" [value]="gwtAngularPropertyTable.rootTreeNodes"
-             [tableStyle]="{width:'auto'}" [autoLayout]="true">
-  <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-    <tr [ttRow]="rowNode">
-      <td style="white-space: nowrap">
-        <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-        {{rowData.name}}
-        <p-button *ngIf="rowData.deleteAllowed" icon="pi pi-times"
-                  styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                  (onClick)="rowData.onDelete(this.gwtAngularPropertyTable)">
-        </p-button>
-        <p-button *ngIf="rowData.createAllowed" icon="pi pi-sun"
-                  styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
-                  (onClick)="rowData.onCreate(this.gwtAngularPropertyTable)">
-        </p-button>
-      </td>
-      <td>
-        <property-editor *ngIf="rowData.propertyEditorSelector" [angular-tree-node-data]="rowData"></property-editor>
-      </td>
-    </tr>
-  </ng-template>
-</p-treeTable>
+
+
+
+
+
+
