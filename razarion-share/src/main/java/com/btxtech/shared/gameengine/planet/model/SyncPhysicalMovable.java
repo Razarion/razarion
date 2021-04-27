@@ -102,9 +102,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                     if (deltaAngle > endAngleSlowDown) {
                         angleSpeed = ANGLE_SLOW_DOWN;
                     } else if (deltaAngle > startAngleSlowDown && deltaAngle <= endAngleSlowDown) {
-                        System.out.println("deltaAngle: " + Math.toDegrees(deltaAngle));
                         angleSpeed = (deltaAngle - startAngleSlowDown) * ((maxSpeed - ANGLE_SLOW_DOWN) / (startAngleSlowDown - endAngleSlowDown)) + maxSpeed;
-                        System.out.println("speed a: " + angleSpeed);
                     }
                 }
                 if (angleSpeed != null) {
