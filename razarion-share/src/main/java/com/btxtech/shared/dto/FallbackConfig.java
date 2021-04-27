@@ -112,7 +112,7 @@ public final class FallbackConfig {
     public static void setupBuilder(List<BaseItemType> baseItemTypes) {
         BaseItemType bulldozer = new BaseItemType();
         bulldozer.setHealth(40).setBoxPickupRange(1).setId(BUILDER_ITEM_TYPE_ID).setInternalName("Builder test");
-        bulldozer.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(3).setSpeed(20.0));
+        bulldozer.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(1.0).angularVelocity(Math.toRadians(30)).radius(3).speed(20.0));
         bulldozer.setBuilderType(new BuilderType().ableToBuildIds(Arrays.asList(FACTORY_ITEM_TYPE_ID, GENERATOR_ITEM_TYPE_ID, CONSUMER_ITEM_TYPE_ID, HARBOUR_ITEM_TYPE_ID)).animationOrigin(new Vertex(3, 5, 17)).progress(5).range(10));
         baseItemTypes.add(bulldozer);
     }
@@ -120,7 +120,7 @@ public final class FallbackConfig {
     public static void setupFactory(List<BaseItemType> baseItemTypes) {
         BaseItemType factory = new BaseItemType();
         factory.setHealth(30).setId(FACTORY_ITEM_TYPE_ID).setInternalName("Factory test");
-        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setRadius(5));
+        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).radius(5));
         factory.setFactoryType(new FactoryType().setAbleToBuildIds(Arrays.asList(BUILDER_ITEM_TYPE_ID, ATTACKER_ITEM_TYPE_ID, HARVESTER_ITEM_TYPE_ID)).setProgress(2));
         baseItemTypes.add(factory);
     }
@@ -128,7 +128,7 @@ public final class FallbackConfig {
     public static void setupHarbour(List<BaseItemType> baseItemTypes) {
         BaseItemType harbour = new BaseItemType();
         harbour.setHealth(40).setId(HARBOUR_ITEM_TYPE_ID).setInternalName("Harbour test");
-        harbour.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.WATER_COAST).setRadius(4.5));
+        harbour.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER_COAST).radius(4.5));
         harbour.setFactoryType(new FactoryType().setAbleToBuildIds(Arrays.asList(SHIP_ATTACKER_ITEM_TYPE_ID, SHIP_HARVESTER_ITEM_TYPE_ID, SHIP_TRANSPORTER_ITEM_TYPE_ID)).setProgress(3));
         baseItemTypes.add(harbour);
     }
@@ -136,7 +136,7 @@ public final class FallbackConfig {
     public static void setupAttacker(List<BaseItemType> baseItemTypes) {
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(20).setBuildup(8).setId(ATTACKER_ITEM_TYPE_ID).setInternalName("Attacker test");
-        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(2).setSpeed(20.0));
+        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(1.0).angularVelocity(Math.toRadians(30)).radius(2).speed(20.0));
         attacker.setWeaponType(new WeaponType().damage(5).range(10).projectileSpeed(20.0).reloadTime(2).turretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTurretCenter(new Vertex(0, 0, 1))));
         baseItemTypes.add(attacker);
     }
@@ -144,7 +144,7 @@ public final class FallbackConfig {
     public static void setupShipAttacker(List<BaseItemType> baseItemTypes) {
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(30).setBuildup(12).setId(SHIP_ATTACKER_ITEM_TYPE_ID).setInternalName("Ship attacker test");
-        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.WATER).setAcceleration(0.5).setAngularVelocity(Math.toRadians(30)).setRadius(3).setSpeed(10.0));
+        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).acceleration(0.5).angularVelocity(Math.toRadians(30)).radius(3).speed(10.0));
         attacker.setWeaponType(new WeaponType().damage(5).range(15).projectileSpeed(20.0).reloadTime(2).turretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTurretCenter(new Vertex(0, 0, 1))));
         baseItemTypes.add(attacker);
     }
@@ -152,7 +152,7 @@ public final class FallbackConfig {
     public static void setupShipTransporter(List<BaseItemType> baseItemTypes) {
         BaseItemType transporter = new BaseItemType();
         transporter.setHealth(40).setBuildup(15).setId(SHIP_TRANSPORTER_ITEM_TYPE_ID).setInternalName("Ship transporter test");
-        transporter.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.WATER).setAcceleration(0.7).setAngularVelocity(Math.toRadians(45)).setRadius(4).setSpeed(8.0));
+        transporter.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).acceleration(0.7).angularVelocity(Math.toRadians(45)).radius(4).speed(8.0));
         transporter.setItemContainerType(new ItemContainerType().setAbleToContain(Arrays.asList(ATTACKER_ITEM_TYPE_ID, BUILDER_ITEM_TYPE_ID)).setMaxCount(5).setRange(15));
         baseItemTypes.add(transporter);
     }
@@ -160,7 +160,7 @@ public final class FallbackConfig {
     public static void setupGenerator(List<BaseItemType> baseItemTypes) {
         BaseItemType consumer = new BaseItemType();
         consumer.setHealth(15).setBuildup(10).setId(GENERATOR_ITEM_TYPE_ID).setInternalName("Power planet test");
-        consumer.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setRadius(2));
+        consumer.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).radius(2));
         consumer.setGeneratorType(new GeneratorType().setWattage(80));
         baseItemTypes.add(consumer);
     }
@@ -168,7 +168,7 @@ public final class FallbackConfig {
     public static void setupConsumer(List<BaseItemType> baseItemTypes) {
         BaseItemType consumer = new BaseItemType();
         consumer.setHealth(15).setBuildup(20).setId(CONSUMER_ITEM_TYPE_ID).setInternalName("Consumer test");
-        consumer.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setRadius(1.5));
+        consumer.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).radius(1.5));
         consumer.setConsumerType(new ConsumerType().setWattage(60));
         baseItemTypes.add(consumer);
     }
@@ -176,7 +176,7 @@ public final class FallbackConfig {
     public static void setupHarvester(List<BaseItemType> baseItemTypes) {
         BaseItemType harvester = new BaseItemType();
         harvester.setHealth(17).setBuildup(18).setId(HARVESTER_ITEM_TYPE_ID).setInternalName("Harvester test");
-        harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(1.5).setAngularVelocity(Math.toRadians(40)).setRadius(2).setSpeed(15.0));
+        harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(1.5).angularVelocity(Math.toRadians(40)).radius(2).speed(15.0));
         harvester.setHarvesterType(new HarvesterType().setProgress(2.0).setRange(2));
         baseItemTypes.add(harvester);
     }
@@ -184,7 +184,7 @@ public final class FallbackConfig {
     public static void setupShipHarvester(List<BaseItemType> baseItemTypes) {
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(10).setBuildup(5).setId(SHIP_HARVESTER_ITEM_TYPE_ID).setInternalName("Ship harvester test");
-        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.WATER).setAcceleration(1.5).setAngularVelocity(Math.toRadians(20)).setRadius(2.5).setSpeed(15.0));
+        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).acceleration(1.5).angularVelocity(Math.toRadians(20)).radius(2.5).speed(15.0));
         attacker.setHarvesterType(new HarvesterType().setRange(10).setProgress(2.0).setAnimationOrigin(new Vertex(1, 0, 0)).setAnimationShape3dId(1));
         baseItemTypes.add(attacker);
     }
@@ -192,7 +192,7 @@ public final class FallbackConfig {
     public static void setupMoveTestUnits(List<BaseItemType> baseItemTypes) {
         BaseItemType moveTest = new BaseItemType();
         moveTest.setHealth(1).setBuildup(1).setId(MOVING_TEST_ITEM_TYPE_ID).setInternalName("Move Test 1");
-        moveTest.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(5.0).setAngularVelocity(Math.toRadians(180)).setRadius(2).setSpeed(17.0));
+        moveTest.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(5.0).angularVelocity(Math.toRadians(180)).radius(2).speed(17.0));
         baseItemTypes.add(moveTest);
     }
 

@@ -284,7 +284,7 @@ public class SyncItemContainerService {
             return syncPhysicalMovable;
         } else {
             SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
-            syncPhysicalArea.init(syncBaseItem, physicalAreaConfig.getRadius(), physicalAreaConfig.getFixVerticalNorm(), physicalAreaConfig.getTerrainType(), position2d, zRotation);
+            syncPhysicalArea.init(syncBaseItem, physicalAreaConfig.getRadius(), physicalAreaConfig.isFixVerticalNorm(), physicalAreaConfig.getTerrainType(), position2d, zRotation);
             return syncPhysicalArea;
         }
     }

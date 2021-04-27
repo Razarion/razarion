@@ -13,65 +13,114 @@ public class PhysicalAreaConfig {
     private Double angularVelocity; //Rad per second
     private Double speed;
     private Double acceleration;
-
+    private Double startAngleSlowDown;
+    private Double endAngleSlowDown;
 
     public double getRadius() {
         return radius;
     }
 
-    public PhysicalAreaConfig setRadius(double radius) {
+    public void setRadius(double radius) {
         this.radius = radius;
-        return this;
+    }
+
+    public boolean isFixVerticalNorm() {
+        return fixVerticalNorm;
+    }
+
+    public void setFixVerticalNorm(boolean fixVerticalNorm) {
+        this.fixVerticalNorm = fixVerticalNorm;
     }
 
     public TerrainType getTerrainType() {
         return terrainType;
     }
 
-    public PhysicalAreaConfig setTerrainType(TerrainType terrainType) {
+    public void setTerrainType(TerrainType terrainType) {
         this.terrainType = terrainType;
-        return this;
-    }
-
-    // Errai can not handle is-getter. Most likely chained properties with UI binding.
-    public boolean getFixVerticalNorm() {
-        return fixVerticalNorm;
-    }
-
-    public PhysicalAreaConfig setFixVerticalNorm(boolean fixVerticalNorm) {
-        this.fixVerticalNorm = fixVerticalNorm;
-        return this;
     }
 
     public Double getAngularVelocity() {
         return angularVelocity;
     }
 
-    public PhysicalAreaConfig setAngularVelocity(Double angularVelocity) {
+    public void setAngularVelocity(Double angularVelocity) {
         this.angularVelocity = angularVelocity;
-        return this;
     }
 
     public Double getSpeed() {
         return speed;
     }
 
-    public PhysicalAreaConfig setSpeed(Double speed) {
+    public void setSpeed(Double speed) {
         this.speed = speed;
-        return this;
     }
 
     public Double getAcceleration() {
         return acceleration;
     }
 
-    public PhysicalAreaConfig setAcceleration(Double acceleration) {
+    public void setAcceleration(Double acceleration) {
         this.acceleration = acceleration;
+    }
+
+    public Double getStartAngleSlowDown() {
+        return startAngleSlowDown;
+    }
+
+    public void setStartAngleSlowDown(Double startAngleSlowDown) {
+        this.startAngleSlowDown = startAngleSlowDown;
+    }
+
+    public Double getEndAngleSlowDown() {
+        return endAngleSlowDown;
+    }
+
+    public void setEndAngleSlowDown(Double endAngleSlowDown) {
+        this.endAngleSlowDown = endAngleSlowDown;
+    }
+
+    public PhysicalAreaConfig radius(double radius) {
+        setRadius(radius);
+        return this;
+    }
+
+    public PhysicalAreaConfig fixVerticalNorm(boolean fixVerticalNorm) {
+        setFixVerticalNorm(fixVerticalNorm);
+        return this;
+    }
+
+    public PhysicalAreaConfig terrainType(TerrainType terrainType) {
+        setTerrainType(terrainType);
+        return this;
+    }
+
+    public PhysicalAreaConfig angularVelocity(Double angularVelocity) {
+        setAngularVelocity(angularVelocity);
+        return this;
+    }
+
+    public PhysicalAreaConfig speed(Double speed) {
+        setSpeed(speed);
+        return this;
+    }
+
+    public PhysicalAreaConfig acceleration(Double acceleration) {
+        setAcceleration(acceleration);
+        return this;
+    }
+
+    public PhysicalAreaConfig startAngleSlowDown(Double startAngleSlowDown) {
+        setStartAngleSlowDown(startAngleSlowDown);
+        return this;
+    }
+
+    public PhysicalAreaConfig endAngleSlowDown(Double endAngleSlowDown) {
+        setEndAngleSlowDown(endAngleSlowDown);
         return this;
     }
 
     public boolean fulfilledMovable() {
         return angularVelocity != null && speed != null && acceleration != null;
     }
-
 }

@@ -47,6 +47,8 @@ public class BaseItemTypeEntity {
     private Double angularVelocity; //Rad per second
     private Double speed;
     private Double acceleration;
+    private Double startAngleSlowDown;
+    private Double endAngleSlowDown;
     private int health;
     private int price;
     private int buildup;
@@ -126,7 +128,15 @@ public class BaseItemTypeEntity {
         if (i18nDescription != null) {
             baseItemType.setI18nDescription(i18nDescription.toI18nString());
         }
-        baseItemType.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(radius).setFixVerticalNorm(fixVerticalNorm).setTerrainType(terrainType).setSpeed(speed).setAcceleration(acceleration).setAngularVelocity(angularVelocity));
+        baseItemType.setPhysicalAreaConfig(new PhysicalAreaConfig()
+                .radius(radius)
+                .fixVerticalNorm(fixVerticalNorm)
+                .terrainType(terrainType)
+                .speed(speed)
+                .acceleration(acceleration)
+                .angularVelocity(angularVelocity)
+                .startAngleSlowDown(startAngleSlowDown)
+                .endAngleSlowDown(endAngleSlowDown));
         if (shape3DId != null) {
             baseItemType.setShape3DId(shape3DId.getId());
         }
@@ -192,11 +202,13 @@ public class BaseItemTypeEntity {
     public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence) {
         internalName = baseItemType.getInternalName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
-        fixVerticalNorm = baseItemType.getPhysicalAreaConfig().getFixVerticalNorm();
+        fixVerticalNorm = baseItemType.getPhysicalAreaConfig().isFixVerticalNorm();
         terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();
         angularVelocity = baseItemType.getPhysicalAreaConfig().getAngularVelocity();
         speed = baseItemType.getPhysicalAreaConfig().getSpeed();
         acceleration = baseItemType.getPhysicalAreaConfig().getAcceleration();
+        startAngleSlowDown = baseItemType.getPhysicalAreaConfig().getStartAngleSlowDown();
+        endAngleSlowDown = baseItemType.getPhysicalAreaConfig().getEndAngleSlowDown();
         health = baseItemType.getHealth();
         buildup = baseItemType.getBuildup();
         spawnDurationMillis = baseItemType.getSpawnDurationMillis();

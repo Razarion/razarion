@@ -191,7 +191,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         builder.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_2_ID).setThumbnail(IMAGE_3_ID).setShape3DId(SHAPE_3D_1_ID);
         builder.setI18nName(i18nHelper("Builder"));
         builder.setI18nDescription(i18nHelper("Builds buildings"));
-        builder.getPhysicalAreaConfig().setRadius(3).setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60));
+        builder.getPhysicalAreaConfig().radius(3).acceleration(40.0).speed(10.0).angularVelocity(Math.toRadians(60)).startAngleSlowDown(Math.toRadians(30)).endAngleSlowDown(Math.toRadians(120));
         BuilderType builderType = new BuilderType().progress(1).range(10).animationShape3dId(SHAPE_3D_2_ID).animationParticleId(PARTICLE_EMITTER_SEQUENCE_1_ID).animationOrigin(new Vertex(1.63196, 0, 3.04829));
         if (ableToBuild.length > 0) {
             builderType.ableToBuildIds(Arrays.asList(ableToBuild));
@@ -205,7 +205,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         harvester.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_2_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_3_ID).setThumbnail(IMAGE_1_ID).setShape3DId(SHAPE_3D_1_ID);
         harvester.setI18nName(i18nHelper("Harvester"));
         harvester.setI18nDescription(i18nHelper("Collects resources"));
-        harvester.getPhysicalAreaConfig().setRadius(3).setAcceleration(5.0).setSpeed(15.0).setAngularVelocity(Math.toRadians(60));
+        harvester.getPhysicalAreaConfig().radius(3).acceleration(5.0).speed(15.0).angularVelocity(Math.toRadians(60)).startAngleSlowDown(Math.toRadians(40));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(3).setAnimationShape3dId(SHAPE_3D_3_ID).setAnimationOrigin(new Vertex(2.5, 0, 1.25)));
         harvester.setBoxPickupRange(2).setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setBuildup(20);
         harvester.setPrice(100).setWreckageShape3DId(SHAPE_3D_2_ID);
@@ -215,7 +215,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         attacker.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_2_ID).setSpawnAudioId(AUDIO_3_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_1_ID).setThumbnail(IMAGE_2_ID).setShape3DId(SHAPE_3D_3_ID);
         attacker.setI18nName(i18nHelper("Attacker"));
         attacker.setI18nDescription(i18nHelper("Attacks other units"));
-        attacker.getPhysicalAreaConfig().setRadius(2).setAcceleration(5.0).setSpeed(17.0).setAngularVelocity(Math.toRadians(60));
+        attacker.getPhysicalAreaConfig().radius(2).acceleration(5.0).speed(17.0).angularVelocity(Math.toRadians(60)).endAngleSlowDown(Math.toRadians(150));
         attacker.setWeaponType(new WeaponType().range(10).damage(1).reloadTime(3).detonationRadius(1).projectileSpeed(17.0).projectileShape3DId(SHAPE_3D_1_ID).muzzleFlashParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).detonationParticleConfigId(PARTICLE_EMITTER_SEQUENCE_3_ID).turretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
         attacker.setBoxPickupRange(2).setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setBuildup(15);
         attacker.setPrice(100).setWreckageShape3DId(SHAPE_3D_3_ID);
@@ -225,7 +225,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         tower.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_2_ID).setDemolitionImageId(IMAGE_3_ID).setThumbnail(IMAGE_3_ID).setShape3DId(SHAPE_3D_3_ID);
         tower.setI18nName(i18nHelper("Tower"));
         tower.setI18nDescription(i18nHelper("Defense tower"));
-        tower.getPhysicalAreaConfig().setRadius(4).setFixVerticalNorm(true);
+        tower.getPhysicalAreaConfig().radius(4).fixVerticalNorm(true);
         tower.setWeaponType(new WeaponType().range(20).damage(1).reloadTime(3).detonationRadius(1).projectileSpeed(40.0).projectileShape3DId(SHAPE_3D_2_ID).muzzleFlashParticleConfigId(PARTICLE_EMITTER_SEQUENCE_2_ID).detonationParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).turretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
         tower.setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setWreckageShape3DId(SHAPE_3D_1_ID).setBuildup(45);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
@@ -252,7 +252,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         factory.setI18nName(i18nHelper("Factory"));
         factory.setI18nDescription(i18nHelper("Creates units"));
         factory.setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_2_ID).setBuildup(30);
-        factory.getPhysicalAreaConfig().setRadius(6).setFixVerticalNorm(true);
+        factory.getPhysicalAreaConfig().radius(6).fixVerticalNorm(true);
         FactoryType factoryType = new FactoryType().setProgress(1.0).setAbleToBuildIds(Arrays.asList(ableToBuild));
         if (ableToBuild.length > 0) {
             factoryType.setAbleToBuildIds(Arrays.asList(ableToBuild));
@@ -282,7 +282,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         transporter.setI18nName(i18nHelper("Transporter"));
         transporter.setI18nDescription(i18nHelper("Transports units"));
         transporter.setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setBuildup(35);
-        transporter.getPhysicalAreaConfig().setRadius(4).setAcceleration(2.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(40));
+        transporter.getPhysicalAreaConfig().radius(4).acceleration(2.0).speed(10.0).angularVelocity(Math.toRadians(40));
         transporter.setBoxPickupRange(4).setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_2_ID).setBuildup(25);
         transporter.setPrice(200).setWreckageShape3DId(SHAPE_3D_3_ID);
         // Container

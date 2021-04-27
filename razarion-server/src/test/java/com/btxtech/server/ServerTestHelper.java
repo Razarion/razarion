@@ -357,30 +357,30 @@ public class ServerTestHelper {
     protected void setupItemTypes() {
         BaseItemType factory = new BaseItemType();
         factory.setPrice(1).setHealth(100).setSpawnDurationMillis(1000).setBuildup(3).setInternalName("Factory");
-        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(5).setTerrainType(TerrainType.LAND));
+        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().radius(5).terrainType(TerrainType.LAND));
         BASE_ITEM_TYPE_FACTORY_ID = createBaseItemTypeEntity(factory);
 
         BaseItemType builder = new BaseItemType();
         builder.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setInternalName("Builder");
-        builder.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(2.78).setSpeed(17.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        builder.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(2.78).speed(17.0).angularVelocity(Math.toRadians(30)).radius(2));
         builder.setBuilderType(new BuilderType().progress(1).range(3).ableToBuildIds(Collections.singletonList(BASE_ITEM_TYPE_FACTORY_ID)));
         BASE_ITEM_TYPE_BULLDOZER_ID = createBaseItemTypeEntity(builder);
 
         BaseItemType harvester = new BaseItemType();
         harvester.setHealth(10).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Harvester");
-        harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(40.0).speed(80.0).angularVelocity(Math.toRadians(30)).radius(2));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4));
         BASE_ITEM_TYPE_HARVESTER_ID = createBaseItemTypeEntity(harvester);
 
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setInternalName("Attacker");
-        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(40.0).speed(10.0).angularVelocity(Math.toRadians(30)).radius(2));
         attacker.setWeaponType(new WeaponType().projectileSpeed(17.0).range(20).reloadTime(0.3).damage(1).turretType(new TurretType().setTurretCenter(new Vertex(1, 0, 0)).setMuzzlePosition(new Vertex(1, 0, 1)).setAngleVelocity(Math.toRadians(120))));
         BASE_ITEM_TYPE_ATTACKER_ID = createBaseItemTypeEntity(attacker);
 
         BaseItemType tower = new BaseItemType();
         tower.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Tower");
-        tower.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setRadius(3));
+        tower.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).radius(3));
         tower.setWeaponType(new WeaponType().projectileSpeed(17.0).range(20).reloadTime(0.3).damage(1).turretType(new TurretType().setTurretCenter(new Vertex(2, 0, 0)).setMuzzlePosition(new Vertex(2, 0, 1)).setAngleVelocity(Math.toRadians(60))));
         BASE_ITEM_TYPE_TOWER_ID = createBaseItemTypeEntity(tower);
 

@@ -44,6 +44,7 @@ import javax.inject.Named;
 public class SyncPhysicalMovable extends SyncPhysicalArea {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
     private static final double STOP_DETECTION_OTHER_UNITS_RADIOS = 20;
+    private static final double ANGLE_SLOW_DOWN = 0.1;
     // private Logger logger = Logger.getLogger(SyncPhysicalMovable.class.getName());
     @Inject
     private Instance<Path> instancePath;
@@ -59,12 +60,16 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private DecimalPosition preferredVelocity;
     private DecimalPosition oldPosition;
     private boolean crowded;
+    private Double startAngleSlowDown;
+    private Double endAngleSlowDown;
 
     public void init(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, DecimalPosition position2d, double angle) {
-        super.init(syncItem, physicalAreaConfig.getRadius(), physicalAreaConfig.getFixVerticalNorm(), physicalAreaConfig.getTerrainType(), position2d, angle);
+        super.init(syncItem, physicalAreaConfig.getRadius(), physicalAreaConfig.isFixVerticalNorm(), physicalAreaConfig.getTerrainType(), position2d, angle);
         maxSpeed = physicalAreaConfig.getSpeed();
         angularVelocity = physicalAreaConfig.getAngularVelocity();
         acceleration = physicalAreaConfig.getAcceleration();
+        startAngleSlowDown = physicalAreaConfig.getStartAngleSlowDown();
+        endAngleSlowDown = physicalAreaConfig.getEndAngleSlowDown();
     }
 
     public void setupForTick() {
@@ -74,16 +79,39 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             path.setupCurrentWayPoint(this);
 
             double desiredAngle = path.getCurrentWayPoint().sub(getPosition2d()).angle();
+
             // Fix velocity
             double originalSpeed = velocity != null ? velocity.magnitude() : 0;
             double desiredSpeed = maxSpeed;
             if (originalSpeed < maxSpeed) {
                 desiredSpeed = originalSpeed + acceleration * PlanetService.TICK_FACTOR;
             }
-
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
+            if (startAngleSlowDown != null || endAngleSlowDown != null) {
+                Double angleSpeed = null;
+                double deltaAngle = Math.abs(MathHelper.negateAngle(desiredAngle - getAngle()));
+                if (startAngleSlowDown != null && endAngleSlowDown == null) {
+                    if (deltaAngle > startAngleSlowDown) {
+                        angleSpeed = ANGLE_SLOW_DOWN;
+                    }
+                } else if (startAngleSlowDown == null && endAngleSlowDown != null) {
+                    if (deltaAngle > endAngleSlowDown) {
+                        angleSpeed = ANGLE_SLOW_DOWN;
+                    }
+                } else if (startAngleSlowDown != null) {
+                    if (deltaAngle > endAngleSlowDown) {
+                        angleSpeed = ANGLE_SLOW_DOWN;
+                    } else if (deltaAngle > startAngleSlowDown && deltaAngle <= endAngleSlowDown) {
+                        System.out.println("deltaAngle: " + Math.toDegrees(deltaAngle));
+                        angleSpeed = (deltaAngle - startAngleSlowDown) * ((maxSpeed - ANGLE_SLOW_DOWN) / (startAngleSlowDown - endAngleSlowDown)) + maxSpeed;
+                        System.out.println("speed a: " + angleSpeed);
+                    }
+                }
+                if (angleSpeed != null) {
+                    speed = Math.min(speed, angleSpeed);
+                }
+            }
             preferredVelocity = DecimalPosition.createVector(desiredAngle, speed);
-            // debugHelper.debugToConsole(getSyncItem().getId() + ". currentWayPoint(path, " + DebugHelperStatic.generate(getPosition2d()) + ", " + DebugHelperStatic.generate(path.getCurrentWayPoint()) + ", " + DebugHelperStatic.generate(velocity) + ", " + DebugHelperStatic.generate(preferredVelocity) + ");");
         } else {
             stop();
         }
