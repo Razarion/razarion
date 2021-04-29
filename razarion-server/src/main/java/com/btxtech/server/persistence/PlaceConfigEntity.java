@@ -40,7 +40,7 @@ public class PlaceConfigEntity {
     private Double radius;
 
     public PlaceConfig toPlaceConfig() {
-        PlaceConfig placeConfig = new PlaceConfig().setPosition(position).setRadius(radius);
+        PlaceConfig placeConfig = new PlaceConfig().position(position).radius(radius);
         if (polygon2D != null && !polygon2D.isEmpty()) {
             placeConfig.setPolygon2D(new Polygon2D(polygon2D));
         }

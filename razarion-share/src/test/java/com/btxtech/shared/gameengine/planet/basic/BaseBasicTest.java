@@ -81,7 +81,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
     protected SyncBaseItem setupBot(String botName, int itemTypeId, DecimalPosition position, int auxiliaryId) {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(itemTypeId).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(position)).setNoRebuild(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(itemTypeId).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(position)).setNoRebuild(true));
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false).setAuxiliaryId(auxiliaryId));
@@ -140,7 +140,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         String botName = "setupBuilderBot id:" + botId;
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.BUILDER_ITEM_TYPE_ID).setCount(builderCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.BUILDER_ITEM_TYPE_ID).setCount(builderCount).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(botRegion)).setNoRebuild(true));
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));
@@ -154,7 +154,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         String botName = "TestTargetHarvesterBot id:" + botId;
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.HARVESTER_ITEM_TYPE_ID).setCount(harvesterCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.HARVESTER_ITEM_TYPE_ID).setCount(harvesterCount).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(botRegion)).setNoRebuild(true));
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));
@@ -168,7 +168,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         String botName = "setupFactoryBot id:" + botId;
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(factoryCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(factoryCount).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(botRegion)).setNoRebuild(true));
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));

@@ -344,7 +344,7 @@ public class ItemContainerTest extends BaseBasicTest {
         botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.SHIP_ATTACKER_ITEM_TYPE_ID).setCount(5).setCreateDirectly(true));
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Test bot").setNpc(false).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(96,312, 40, 40))));
+        botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Test bot").setNpc(false).setRealm(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(96,312, 40, 40))));
         getBotService().startBots(botConfigs, null);
         tickPlanetServiceBaseServiceActive();
     }

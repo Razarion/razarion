@@ -27,8 +27,8 @@ public class BotServiceTest extends BaseBotServiceTest {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(6).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(6).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         // Start bot
@@ -50,8 +50,8 @@ public class BotServiceTest extends BaseBotServiceTest {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(6).setCreateDirectly(false).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(6).setCreateDirectly(false).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         // Start bot
@@ -73,9 +73,9 @@ public class BotServiceTest extends BaseBotServiceTest {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 10, 10))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 10, 10))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(1).setAutoAttack(true).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 100, 100))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        botConfigs.add(new BotConfig().setId(1).setAutoAttack(true).setRealm(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 100, 100))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         startBots(botConfigs, null);
 
         tickBotRunner();
@@ -98,9 +98,9 @@ public class BotServiceTest extends BaseBotServiceTest {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 10, 10))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 10, 10))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(1).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 100, 100))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        botConfigs.add(new BotConfig().setId(1).setRealm(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 100, 100))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         startBots(botConfigs, null);
 
         tickBotRunner();

@@ -45,11 +45,11 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         TestBaseRestoreProvider testBaseRestoreProvider = new TestBaseRestoreProvider();
         // Resources
         getResourceService().startResourceRegions();
-        Collection<SyncResourceItem> resources = getSyncItemContainerService().findResourceItemWithPlace(FallbackConfig.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
+        Collection<SyncResourceItem> resources = getSyncItemContainerService().findResourceItemWithPlace(FallbackConfig.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().polygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
         Assert.assertEquals(5, resources.size());
         // Box
         Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
-        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID).setMinInterval(1).setMaxInterval(1).setCount(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(200, 20, 20, 20))));
+        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID).setMinInterval(1).setMaxInterval(1).setCount(1).setRegion(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(200, 20, 20, 20))));
         getBoxService().startBoxRegions(boxRegionConfigs);
         // Bot
         SyncBaseItem botTarget = setupBot();
@@ -124,7 +124,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         // Verify resources
         getResourceService().startResourceRegions();
-        Collection<SyncResourceItem> resourcesRestore = getSyncItemContainerService().findResourceItemWithPlace(FallbackConfig.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
+        Collection<SyncResourceItem> resourcesRestore = getSyncItemContainerService().findResourceItemWithPlace(FallbackConfig.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().polygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
         Assert.assertEquals(5, resourcesRestore.size());
         assertDifferentResources(resources, resourcesRestore);
         assertSyncItemCount(7, 5, 0);
@@ -202,7 +202,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         // Verify resources
         getResourceService().startResourceRegions();
-        Collection<SyncResourceItem> resourcesRestore = getSyncItemContainerService().findResourceItemWithPlace(FallbackConfig.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
+        Collection<SyncResourceItem> resourcesRestore = getSyncItemContainerService().findResourceItemWithPlace(FallbackConfig.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().polygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
         Assert.assertEquals(5, resourcesRestore.size());
         assertDifferentResources(resources, resourcesRestore);
         assertSyncItemCount(5, 5, 0);
@@ -255,7 +255,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(100, 70))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(100, 70))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         getBotService().startBots(botConfigs, null);
@@ -274,7 +274,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
     @Override
     protected MasterPlanetConfig setupMasterPlanetConfig() {
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
-        resourceRegionConfigs.add(new ResourceRegionConfig().setResourceItemTypeId(FallbackConfig.RESOURCE_ITEM_TYPE_ID).setCount(5).setMinDistanceToItems(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20))));
+        resourceRegionConfigs.add(new ResourceRegionConfig().setResourceItemTypeId(FallbackConfig.RESOURCE_ITEM_TYPE_ID).setCount(5).setMinDistanceToItems(1).setRegion(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(100, 20, 20, 20))));
         return super.setupMasterPlanetConfig().setResourceRegionConfigs(resourceRegionConfigs);
     }
 

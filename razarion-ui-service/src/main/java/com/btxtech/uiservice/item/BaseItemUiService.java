@@ -497,7 +497,7 @@ public class BaseItemUiService {
 
 
     public boolean hasEnemyForSpawn(DecimalPosition position, double enemyFreeRadius) {
-        return findMyEnemyItemWithPlace(new PlaceConfig().setPosition(position).setRadius(enemyFreeRadius)) != null;
+        return findMyEnemyItemWithPlace(new PlaceConfig().position(position).radius(enemyFreeRadius)) != null;
     }
 
     public boolean hasItemsInRangeInViewField(Collection<DecimalPosition> positions, double radius) {

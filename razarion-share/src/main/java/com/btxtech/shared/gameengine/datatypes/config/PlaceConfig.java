@@ -19,26 +19,38 @@ public class PlaceConfig {
         return polygon2D;
     }
 
-    public PlaceConfig setPolygon2D(Polygon2D polygon2D) {
+    public void setPolygon2D(Polygon2D polygon2D) {
         this.polygon2D = polygon2D;
-        return this;
     }
 
     public DecimalPosition getPosition() {
         return position;
     }
 
-    public PlaceConfig setPosition(DecimalPosition position) {
+    public void setPosition(DecimalPosition position) {
         this.position = position;
-        return this;
     }
 
     public Double getRadius() {
         return radius;
     }
 
-    public PlaceConfig setRadius(Double radius) {
+    public void setRadius(Double radius) {
         this.radius = radius;
+    }
+
+    public PlaceConfig polygon2D(Polygon2D polygon2D) {
+        setPolygon2D(polygon2D);
+        return this;
+    }
+
+    public PlaceConfig position(DecimalPosition position) {
+        setPosition(position);
+        return this;
+    }
+
+    public PlaceConfig radius(Double radius) {
+        setRadius(radius);
         return this;
     }
 
@@ -128,9 +140,9 @@ public class PlaceConfig {
             return null;
         }
         if (realm.getPosition() != null) {
-            return new PlaceConfig().setPosition(realm.getPosition().add(absoluteCenter)).setRadius(realm.getRadius());
+            return new PlaceConfig().position(realm.getPosition().add(absoluteCenter)).radius(realm.getRadius());
         } else if (realm.getPolygon2D() != null) {
-            return new PlaceConfig().setPolygon2D(realm.getPolygon2D().translate(absoluteCenter));
+            return new PlaceConfig().polygon2D(realm.getPolygon2D().translate(absoluteCenter));
         } else {
             throw new IllegalStateException("Invalid PlaceConfig");
         }

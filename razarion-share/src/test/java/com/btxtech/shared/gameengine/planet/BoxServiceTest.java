@@ -40,7 +40,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         // Start box service
         BoxService boxService = getBoxService();
         Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
-        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_ID).setMinInterval(100).setMaxInterval(100).setCount(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(40, 50, 200, 150))));
+        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_ID).setMinInterval(100).setMaxInterval(100).setCount(1).setRegion(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(40, 50, 200, 150))));
         boxService.startBoxRegions(boxRegionConfigs);
         // Span box 1
         tickBoxService(900);
@@ -90,7 +90,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         // Start box service
         BoxService boxService = getBoxService();
         Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
-        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID).setMinInterval(10000).setMaxInterval(10000).setCount(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 1, 1))));
+        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID).setMinInterval(10000).setMaxInterval(10000).setCount(1).setRegion(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 1, 1))));
         boxService.startBoxRegions(boxRegionConfigs);
         tickBoxService(100000);
         assertSyncItemCount(0, 0, 1);
@@ -143,7 +143,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         List<BotItemConfig> botItems = new ArrayList<>();
         botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(1).setAutoAttack(true).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(10, 10, 50, 50))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        botConfigs.add(new BotConfig().setId(1).setAutoAttack(true).setRealm(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(10, 10, 50, 50))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         getBotService().startBots(botConfigs, null);
         // Attack
         assertSyncItemCount(5, 0, 0);

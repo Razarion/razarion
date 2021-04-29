@@ -363,8 +363,8 @@ public class RestServerGameEnginePersistenceTestBase extends IgnoreOldArquillian
     private void setupServerBots1(BotConfig botConfig) {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setCount(6).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setCount(6).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfig.setInternalName("Int bot 1").setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false);
     }
@@ -372,18 +372,18 @@ public class RestServerGameEnginePersistenceTestBase extends IgnoreOldArquillian
     private void setupServerBots2(BotConfig botConfig) {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems1 = new ArrayList<>();
-        botItems1.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
+        botItems1.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems1));
         List<BotItemConfig> botItems2 = new ArrayList<>();
-        botItems2.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_TOWER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(157, 88, 150, 151))));
-        botItems2.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setCount(2).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(152, 82, 154, 155))));
+        botItems2.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_TOWER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(157, 88, 150, 151))));
+        botItems2.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setCount(2).setPlace(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(152, 82, 154, 155))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Norma2").setBotItems(botItems2));
         botConfig.setInternalName("Int bot 22").setActionDelay(300).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kennffffffy").setNpc(true);
     }
 
     private List<ResourceRegionConfig> setupResourceRegionConfigs1() {
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
-        resourceRegionConfigs.add(new ResourceRegionConfig().setCount(10).setMinDistanceToItems(2).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(160, 140, 80, 90))));
+        resourceRegionConfigs.add(new ResourceRegionConfig().setCount(10).setMinDistanceToItems(2).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setRegion(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(160, 140, 80, 90))));
         return resourceRegionConfigs;
     }
 

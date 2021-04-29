@@ -74,7 +74,7 @@ public class AttackTest extends BaseBasicTest {
         BotAttackCommandConfig botAttackCommandConfig = new BotAttackCommandConfig();
         botAttackCommandConfig.setBotAuxiliaryId(2);
         botAttackCommandConfig.setTargetItemTypeId(FallbackConfig.HARVESTER_ITEM_TYPE_ID);
-        botAttackCommandConfig.setTargetSelection(new PlaceConfig().setPosition(new DecimalPosition(133, 185)).setRadius(100.0));
+        botAttackCommandConfig.setTargetSelection(new PlaceConfig().position(new DecimalPosition(133, 185)).radius(100.0));
         botAttackCommandConfig.setActorItemTypeId(FallbackConfig.SHIP_ATTACKER_ITEM_TYPE_ID);
         getBotService().executeCommands(Collections.singletonList(botAttackCommandConfig));
 

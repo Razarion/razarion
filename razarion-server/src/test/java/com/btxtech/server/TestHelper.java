@@ -72,7 +72,7 @@ public interface TestHelper {
 
     static PlaceConfig placeConfigPolygonFromRect(double x, double y, double width, double height) {
         PlaceConfig placeConfig = new PlaceConfig();
-        placeConfig.setPolygon2D(Polygon2D.fromRectangle(x, y, width, height));
+        placeConfig.polygon2D(Polygon2D.fromRectangle(x, y, width, height));
         return placeConfig;
     }
 
