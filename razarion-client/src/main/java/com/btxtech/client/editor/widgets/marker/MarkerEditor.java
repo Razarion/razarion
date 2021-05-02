@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 29.07.2017.
  */
+@Deprecated
 @ApplicationScoped
 public class MarkerEditor implements EditorMouseListener {
     // private Logger logger = Logger.getLogger(MarkerEditor.class.getName());
@@ -40,7 +41,7 @@ public class MarkerEditor implements EditorMouseListener {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
-    private TerrainMarkerEditorRenderTask terrainMarkerEditorRenderTask;
+    private TerrainMarkerEditorRenderTaskRunner terrainMarkerEditorRenderTask;
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
@@ -109,7 +110,7 @@ public class MarkerEditor implements EditorMouseListener {
         deactivationCallback = null;
         terrainMouseHandler.setEditorMouseListener(null);
         activeType = null;
-        terrainMarkerEditorRenderTask.hide();
+        // terrainMarkerEditorRenderTask.hide();
     }
 
     @Override
@@ -131,7 +132,7 @@ public class MarkerEditor implements EditorMouseListener {
             case RECTANGLE:
                 if (rectStart == null) {
                     rectStart = terrainPosition.toXY();
-                    terrainMarkerEditorRenderTask.hide();
+                    // terrainMarkerEditorRenderTask.hide();
                     rectangle2DListener.accept(null);
                 } else {
                     Rectangle2D rectangle2D = Rectangle2D.generateRectangleFromAnyPoints(rectStart, terrainPosition.toXY());
@@ -152,7 +153,7 @@ public class MarkerEditor implements EditorMouseListener {
 
     private void setupPolygon() {
         if (polygon.size() < 3) {
-            terrainMarkerEditorRenderTask.hide();
+            // terrainMarkerEditorRenderTask.hide();
             polygonListener.accept(null);
             return;
         }

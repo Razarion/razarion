@@ -16,6 +16,7 @@ import java.util.function.Consumer;
  * Created by Beat
  * on 27.07.2017.
  */
+@Deprecated
 @Templated("PolygonField.html#field")
 public class PolygonField extends Composite {
     private static final String SHOW = "Show";

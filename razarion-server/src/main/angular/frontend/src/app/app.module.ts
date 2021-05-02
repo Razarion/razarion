@@ -55,6 +55,7 @@ import {MainCockpitComponent} from "./game/cockpit/main/main-cockpit.component";
 import {RenderEngineComponent} from "./editor/render-engine/render-engine.component";
 import {ChartModule} from 'primeng/chart';
 import {PerfmonComponent} from "./editor/render-engine/perfmon.component";
+import {RadioButtonModule} from 'primeng/radiobutton';
 
 @NgModule({
   declarations: [
@@ -110,7 +111,8 @@ import {PerfmonComponent} from "./editor/render-engine/perfmon.component";
     InputNumberModule,
     InputSwitchModule,
     CarouselModule,
-    ChartModule
+    ChartModule,
+    RadioButtonModule
   ],
   providers: [
     FrontendService, {

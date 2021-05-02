@@ -154,7 +154,7 @@ public enum PropertyEditorSelector {
             if (placeConfig.getPosition() != null) {
                 return Js.cast(JsPropertyMap.of("x", placeConfig.getPosition().getX(),
                         "y", placeConfig.getPosition().getY(),
-                        "r", placeConfig.getPosition()));
+                        "r", placeConfig.getRadius()));
             } else {
                 return Any.of(placeConfig.getPolygon2D());
             }

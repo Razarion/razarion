@@ -33,8 +33,8 @@ import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.databinding.client.PropertyType;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
-import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -5,29 +5,23 @@ import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileFactory;
 import com.btxtech.shared.utils.GeometricUtil;
-import com.btxtech.uiservice.renderer.AbstractModelRenderTaskRunner;
-import com.btxtech.uiservice.renderer.CommonRenderComposite;
-import com.btxtech.uiservice.renderer.ModelRenderer;
-import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.renderer.RenderUnitControl;
-import com.google.inject.Inject;
+import com.btxtech.uiservice.renderer.AbstractRenderTaskRunner;
+import com.btxtech.uiservice.renderer.WebGlRenderTask;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 09.12.2016.
  */
-@ApplicationScoped
-public class TerrainMarkerEditorRenderTask extends AbstractModelRenderTaskRunner<List<Vertex>> {
-    private Logger logger = Logger.getLogger(TerrainMarkerEditorRenderTask.class.getName());
+@Dependent
+public class TerrainMarkerEditorRenderTaskRunner extends AbstractRenderTaskRunner {
+    // private Logger logger = Logger.getLogger(TerrainMarkerEditorRenderTaskRunner.class.getName());
     private static final double POSITION_MARKER_HALF_EDGE = 0.2;
     private static final double POSITION_MARKER_HALF_HEIGHT = 20;
-    @Inject
-    private RenderService renderService;
+    private WebGlRenderTask webGlRenderTask;
 
     public void showPolygon(List<Vertex> polygon) {
         List<Vertex> triangles = new ArrayList<>();
@@ -66,26 +60,14 @@ public class TerrainMarkerEditorRenderTask extends AbstractModelRenderTaskRunner
         Vertex tr = new Vertex(rectangle2D.getStart().getX() + rectangle2D.width(), rectangle2D.getStart().getY() + rectangle2D.height(), 0);
         Vertex tl = new Vertex(rectangle2D.getStart().getX(), rectangle2D.getStart().getY() + rectangle2D.height(), 0);
 
-        List<Vertex> marker = new ArrayList<>();
-        marker.addAll(GeometricUtil.generatePlane(bl, br, tr, tl));
+        List<Vertex> marker = new ArrayList<>(GeometricUtil.generatePlane(bl, br, tr, tl));
         showTriangles(marker);
     }
 
     private void showTriangles(List<Vertex> triangles) {
-        hide();
-        ModelRenderer<List<Vertex>> modelRenderer = create();
-        CommonRenderComposite<TerrainMarkerEditorRendererUnit, List<Vertex>> renderComposite = modelRenderer.create();
-        renderComposite.init(triangles);
-        renderComposite.setRenderUnit(TerrainMarkerEditorRendererUnit.class);
-        modelRenderer.add(RenderUnitControl.START_POINT_CIRCLE, renderComposite);
-        add(modelRenderer);
-        renderComposite.fillBuffers();
-        renderService.addRenderTaskRunner(this, "Editor Terrain Marker");
+        if (webGlRenderTask != null) {
+            destroyRenderTask(webGlRenderTask);
+        }
+        webGlRenderTask = createRenderTask(TerrainMarkerRenderTask.class, triangles);
     }
-
-    public void hide() {
-        renderService.removeRenderTaskRunner(this);
-        destroyRenderAllTasks();
-    }
-
 }

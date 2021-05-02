@@ -62,8 +62,4 @@ public interface Shaders extends ClientBundle {
     @Source("Rgba.frag")
     @Deprecated
     TextResource rgbaFragmentShader();
-
-    @Source("RgbaVp.vert")
-    @Deprecated
-    TextResource rgbaVpVertexShader();
 }

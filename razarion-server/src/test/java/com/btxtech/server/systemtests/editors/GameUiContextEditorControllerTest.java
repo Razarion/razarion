@@ -343,12 +343,12 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
 
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setAuxiliaryId(ENEMY_BOT_AUX).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Razar Industries").setNpc(false));
-        sceneConfig.setInternalName("setup: add enemy bot").setBotConfigs(botConfigs).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(270, 275)).setCameraLocked(true).setBottomWidth(120.0));
+        sceneConfig.setInternalName("setup: add enemy bot").setBotConfigs(botConfigs).setViewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(270, 275)).cameraLocked(true).bottomWidth(120.0));
     }
 
     private void setScrollOverTerrain(SceneConfig sceneConfig) {
         sceneConfig.setInternalName("script: scroll over terrain").setIntroText("Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.");
-        sceneConfig.setViewFieldConfig(new ViewFieldConfig().setFromPosition(new DecimalPosition(270, 275)).setToPosition(new DecimalPosition(116, 84)).setSpeed(50.0).setCameraLocked(true).setBottomWidth(120.0));
+        sceneConfig.setViewFieldConfig(new ViewFieldConfig().fromPosition(new DecimalPosition(270, 275)).toPosition(new DecimalPosition(116, 84)).speed(50.0).cameraLocked(true).bottomWidth(120.0));
     }
 
     private void setBotSpawnScene(SceneConfig sceneConfigs) {
@@ -376,7 +376,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
     }
 
     private void setBotMoveScene(SceneConfig sceneConfig) {
-        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(205, 102)).setSpeed(50.0).setCameraLocked(true);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().toPosition(new DecimalPosition(205, 102)).speed(50.0).cameraLocked(true);
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotAuxiliaryId(NPC_BOT_INSTRUCTOR_AUX).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setTargetPosition(new DecimalPosition(188, 90)));
         sceneConfig.setInternalName("script: npc bot move").setViewFieldConfig(viewFieldConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten");
@@ -398,7 +398,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
 
     private void setNpcHarvestAttack(SceneConfig sceneConfig) {
         sceneConfig.setInternalName("script: bot harvest attack");
-        sceneConfig.setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(212, 144)).setSpeed(50.0).setCameraLocked(true));
+        sceneConfig.setViewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(212, 144)).speed(50.0).cameraLocked(true));
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setTargetSelection(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(190, 124, 40, 40))));
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setTargetSelection(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(190, 124, 40, 40))));
@@ -409,7 +409,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         // Scroll Quest
         ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setXp(1).setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(250, 290, 10, 10)).setXp(1).setPassedMessage("Gratuliere, du hast die gegnerische Basis gefunden");
         // div
-        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setCameraLocked(false);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().cameraLocked(false);
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
         botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setResourceSelection(new PlaceConfig().position(new DecimalPosition(212, 144))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID));
         // Tip
@@ -567,7 +567,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         // Attack command
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotAuxiliaryId(NPC_BOT_OUTPOST_2_AUX).setTargetItemTypeId(BASE_ITEM_TYPE_TOWER_ID).setTargetSelection(new PlaceConfig().position(new DecimalPosition(190, 242))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID));
-        sceneConfig.setInternalName("script: npc bot attacks tower").setIntroText("Komm, greiffen wir an!").setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(5000).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(190, 242)).setSpeed(50.0));
+        sceneConfig.setInternalName("script: npc bot attacks tower").setIntroText("Komm, greiffen wir an!").setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(5000).setViewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(190, 242)).speed(50.0));
     }
 
     private void setBuildViperTask2(SceneConfig sceneConfig) {
@@ -602,7 +602,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         sceneConfigs.add(new SceneConfig().setInternalName("script: fade out"));
 
         SceneConfig sceneConfig = new SceneConfig().setInternalName("script: scroll to user").setIntroText("Fahre deine Einheit zum Vorposten");
-        sceneConfig.setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(160, 100)).setSpeed(50.0).setCameraLocked(true));
+        sceneConfig.setViewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(160, 100)).speed(50.0).cameraLocked(true));
         sceneConfigs.add(sceneConfig);
 
         sceneConfigs.add(new SceneConfig().setInternalName("setWaitForBaseLostDialog").setWaitForBaseLostDialog(true));

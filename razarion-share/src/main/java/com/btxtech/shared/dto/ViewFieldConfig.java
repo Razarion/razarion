@@ -3,7 +3,6 @@ package com.btxtech.shared.dto;
 import com.btxtech.shared.datatypes.DecimalPosition;
 
 import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 
 /**
  * Created by Beat
@@ -21,45 +20,64 @@ public class ViewFieldConfig {
         return fromPosition;
     }
 
-    public ViewFieldConfig setFromPosition(DecimalPosition fromPosition) {
+    public void setFromPosition(DecimalPosition fromPosition) {
         this.fromPosition = fromPosition;
-        return this;
     }
 
     public DecimalPosition getToPosition() {
         return toPosition;
     }
 
-    public ViewFieldConfig setToPosition(DecimalPosition toPosition) {
+    public void setToPosition(DecimalPosition toPosition) {
         this.toPosition = toPosition;
-        return this;
     }
 
     public Double getSpeed() {
         return speed;
     }
 
-    public ViewFieldConfig setSpeed(Double speed) {
+    public void setSpeed(Double speed) {
         this.speed = speed;
-        return this;
     }
 
-    // Errai can not handle is-getter. Most likely chained properties with UI binding.
-    public boolean getCameraLocked() {
+    public boolean isCameraLocked() {
         return cameraLocked;
     }
 
-    public ViewFieldConfig setCameraLocked(boolean cameraLocked) {
+    public void setCameraLocked(boolean cameraLocked) {
         this.cameraLocked = cameraLocked;
-        return this;
     }
 
     public Double getBottomWidth() {
         return bottomWidth;
     }
 
-    public ViewFieldConfig setBottomWidth(Double bottomWidth) {
+    public void setBottomWidth(Double bottomWidth) {
         this.bottomWidth = bottomWidth;
+    }
+
+    public ViewFieldConfig fromPosition(DecimalPosition fromPosition) {
+        setFromPosition(fromPosition);
+        return this;
+    }
+
+    public ViewFieldConfig toPosition(DecimalPosition toPosition) {
+        setToPosition(toPosition);
+        return this;
+    }
+
+    public ViewFieldConfig speed(Double speed) {
+        setSpeed(speed);
+        return this;
+    }
+
+    public ViewFieldConfig cameraLocked(boolean cameraLocked) {
+        setCameraLocked(cameraLocked);
+        return this;
+    }
+
+    public ViewFieldConfig bottomWidth(Double bottomWidth) {
+        setBottomWidth(bottomWidth);
         return this;
     }
 }

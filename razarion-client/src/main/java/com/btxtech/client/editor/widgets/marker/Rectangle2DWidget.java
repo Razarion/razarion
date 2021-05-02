@@ -25,6 +25,7 @@ import java.util.function.Consumer;
  * Created by Beat
  * on 15.08.2017.
  */
+@Deprecated
 @Templated("Rectangle2DWidget.html#rectangle2DWidget")
 public class Rectangle2DWidget implements HasValue<Rectangle2D> {
     private static final String SHOW = "Show";

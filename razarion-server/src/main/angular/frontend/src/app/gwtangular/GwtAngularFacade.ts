@@ -106,6 +106,8 @@ export interface EditorFrontendProvider {
   isRenderInterpolation(): boolean;
 
   setRenderInterpolation(value: boolean): void;
+
+  getTerrainMarkerService(): TerrainMarkerService;
 }
 
 export interface GenericEditorFrontendProvider {
@@ -120,6 +122,16 @@ export interface GenericEditorFrontendProvider {
   updateConfig(crudControllerIndex: number, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
 
   deleteConfig(crudControllerIndex: number, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
+}
+
+export interface TerrainMarkerService {
+  showPosition(x: number, y: number): void;
+
+  activatePositionCursor(positionCallback: PositionCallback): void;
+}
+
+export interface PositionCallback {
+  position(x: number, y: number): void;
 }
 
 export interface GwtAngularPropertyTable {

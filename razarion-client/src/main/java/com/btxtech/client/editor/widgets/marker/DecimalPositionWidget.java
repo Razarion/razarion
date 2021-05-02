@@ -25,6 +25,7 @@ import java.util.function.Consumer;
  * Created by Beat
  * on 13.08.2017.
  */
+@Deprecated
 @Templated("DecimalPositionWidget.html#decimalPositionWidget")
 public class DecimalPositionWidget implements HasValue<DecimalPosition> {
     private static final String SHOW = "Show";

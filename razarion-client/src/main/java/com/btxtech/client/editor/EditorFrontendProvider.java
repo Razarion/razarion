@@ -1,6 +1,7 @@
 package com.btxtech.client.editor;
 
 import com.btxtech.client.editor.generic.GenericEditorFrontendProvider;
+import com.btxtech.client.editor.widgets.marker.TerrainMarkerService;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -8,7 +9,7 @@ import com.btxtech.uiservice.renderer.RenderService;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 
-import javax.faces.bean.ApplicationScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @JsType
@@ -22,6 +23,8 @@ public class EditorFrontendProvider {
     private GameEngineControl gameEngineControl;
     @Inject
     private RenderService renderService;
+    @Inject
+    private TerrainMarkerService terrainMarkerService;
 
     @SuppressWarnings("unused") // Called by Angular
     public GenericEditorFrontendProvider getGenericEditorFrontendProvider() {
@@ -48,4 +51,8 @@ public class EditorFrontendProvider {
         renderService.setInterpolation(interpolation);
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public TerrainMarkerService getTerrainMarkerService() {
+        return terrainMarkerService;
+    }
 }
