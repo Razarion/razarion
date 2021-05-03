@@ -4,7 +4,6 @@ import {NavigationStart, Router} from "@angular/router";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {EditorModel} from "../editor/editor-model";
 import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
-import {OwnItemCockpit} from "../gwtangular/GwtAngularFacade";
 import {MainCockpitComponent} from "./cockpit/main/main-cockpit.component";
 
 
@@ -30,6 +29,20 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.gwtAngularFacade.canvasElement = this.canvas.nativeElement;
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
+
+    // @ts-ignore
+    const resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        if (this.canvas.nativeElement == entry.target) {
+          if (this.gwtAngularService.gwtAngularFacade.canvasResizeCallback != undefined) {
+            this.gwtAngularService.gwtAngularFacade.canvasResizeCallback.onCallback();
+          }
+        }
+      }
+    });
+    resizeObserver.observe(this.canvas.nativeElement);
+
+
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game
     this.router.events.subscribe(event => {
@@ -99,5 +112,17 @@ export class GameComponent implements OnInit {
     meta.name = name;
     meta.content = content;
     document.getElementsByTagName('head')[0].appendChild(meta);
+  }
+
+  getGameComponent(): GameComponent {
+    return this;
+  }
+
+  addEditorModel(editorModel: EditorModel) {
+    this.editorModels.push(editorModel);
+  }
+
+  removeEditorModel(editorModel: EditorModel) {
+    this.editorModels.splice(this.editorModels.indexOf(editorModel), 1);
   }
 }

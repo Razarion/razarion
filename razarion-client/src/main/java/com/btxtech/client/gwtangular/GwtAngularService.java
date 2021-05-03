@@ -31,4 +31,8 @@ public class GwtAngularService {
     public HTMLCanvasElement getCanvasElement() {
         return gwtAngularFacade.canvasElement;
     }
+
+    public void setCanvasResizeListener(Callback callback) {
+        gwtAngularFacade.canvasResizeCallback = callback;
+    }
 }

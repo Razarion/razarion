@@ -2,7 +2,6 @@ package com.btxtech.client;
 
 import com.btxtech.client.editor.editorpanel.EditorPanel;
 import com.btxtech.shared.system.ExceptionHandler;
-import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
 
@@ -11,9 +10,8 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.btxtech.client.utils.DomConstants.Event.RESIZE;
-
 @ApplicationScoped
+@Deprecated
 public class MainPanelService {
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -21,9 +19,6 @@ public class MainPanelService {
 
     public void init() {
         // TODO DomGlobal.document.body.appendChild(mainPanel.getElement());
-        DomGlobal.window.addEventListener(RESIZE, evt -> {
-            fireResizeChanged();
-        });
     }
 
     public void addToGamePanel(IsElement isElement) {
@@ -44,12 +39,10 @@ public class MainPanelService {
 
     public void addEditorPanel(EditorPanel editorPanel) {
         // TODO mainPanel.addToFlexContainer(editorPanel.getElement());
-        fireResizeChanged();
     }
 
     public void removeEditorPanel(EditorPanel editorPanel) {
         // TODO mainPanel.removeFromFlexContainer(editorPanel.getElement());
-        fireResizeChanged();
     }
 
     public void addPlaybackPanel(IsElement isElement) {
@@ -59,21 +52,5 @@ public class MainPanelService {
     public HTMLElement getMainPanelElement() {
         // TODO return mainPanel.getElement();
         throw new UnsupportedOperationException("... TODO ...");
-    }
-
-    public void addResizeListener(Runnable resizeListener) {
-        resizeListeners.add(resizeListener);
-    }
-
-    public void removeResizeListener(Runnable resizeListener) {
-        resizeListeners.remove(resizeListener);
-    }
-
-    private void fireResizeChanged() {
-        try {
-            resizeListeners.forEach(Runnable::run);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
     }
 }

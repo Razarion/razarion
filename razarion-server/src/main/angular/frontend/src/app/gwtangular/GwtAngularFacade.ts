@@ -6,12 +6,18 @@ export class GwtAngularFacade {
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
   editorFrontendProvider!: EditorFrontendProvider;
+  canvasResizeCallback!: Callback;
 }
 
-// ---------- Item Cockpit ----------
+export interface Callback {
+  onCallback(): void;
+}
+
 export interface Rectangle {
 
 }
+
+// ---------- Item Cockpit ----------
 
 export enum RadarState {
   NONE,

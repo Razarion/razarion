@@ -1,9 +1,8 @@
 package com.btxtech.client.renderer;
 
 import com.btxtech.client.ClientTrackerService;
-import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.KeyboardEventHandler;
-import com.btxtech.client.MainPanelService;
+import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.utils.GwtUtils;
@@ -47,8 +46,6 @@ public class GameCanvas {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private MainPanelService mainPanelService;
-    @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
     private ProjectionTransformation projectionTransformation;
@@ -82,7 +79,7 @@ public class GameCanvas {
 
         setupAnimationCallback();
 
-        mainPanelService.addResizeListener(this::onWindowResized);
+        gwtAngularService.setCanvasResizeListener(this::onWindowResized);
 
         initMouseHandler();
         keyboardEventHandler.init();

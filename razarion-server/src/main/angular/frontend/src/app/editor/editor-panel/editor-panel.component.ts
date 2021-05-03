@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import {EditorModel, EditorPanel} from "../editor-model";
 import {MessageService} from "primeng/api";
+import {GameComponent} from "../../game/game.component";
 
 @Component({
   selector: 'app-editor-panel',
@@ -20,8 +21,8 @@ export class EditorPanelComponent implements AfterViewInit {
   editorContainer!: ViewContainerRef;
   @Input("editorModel")
   editorModel!: EditorModel;
-  @Input("editorModels")
-  editorModels!: EditorModel[];
+  @Input("gameComponent")
+  gameComponent!: GameComponent;
 
   constructor(private resolver: ComponentFactoryResolver, private messageService: MessageService) {
   }
@@ -47,6 +48,6 @@ export class EditorPanelComponent implements AfterViewInit {
   }
 
   onClose() {
-    this.editorModels.splice(this.editorModels.indexOf(this.editorModel), 1);
+    this.gameComponent.removeEditorModel(this.editorModel);
   }
 }
