@@ -3,7 +3,7 @@
   <div class="p-d-flex p-jc-between" [style]="{order: 1, flexGrow: 1, overflowY: 'auto'}">
     <p-treeTable *ngIf="gwtAngularPropertyTable" [value]="gwtAngularPropertyTable.rootTreeNodes"
                  [columns]="cols" sortField="name" (sortFunction)="sortPropertyNames($event)" [customSort]="true"
-                 [tableStyle]="{width:'auto'}" [autoLayout]="true" [style]="{overflowY: 'auto'}">
+                 [tableStyle]="{width:'auto'}" [autoLayout]="true">
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
         <tr [ttRow]="rowNode">
           <td style="white-space: nowrap">
