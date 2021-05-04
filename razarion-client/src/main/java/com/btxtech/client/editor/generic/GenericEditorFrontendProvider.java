@@ -256,6 +256,7 @@ public class GenericEditorFrontendProvider {
         };
         angularTreeNode.data.name = propertyModel.getDisplayName();
         if (propertyModel instanceof Branch) {
+            angularTreeNode.data.canHaveChildren = true;
             Branch branch = (Branch) propertyModel;
             if (branch.isPropertyValueNotNull() || !branch.isPropertyNullable()) {
                 if (branch.getPropertyType().isList()) {

@@ -14,6 +14,7 @@ public class AngularTreeNodeData {
     public boolean nullable;
     public boolean deleteAllowed;
     public boolean createAllowed;
+    public boolean canHaveChildren;
 
     @SuppressWarnings("unused") // Called by Angular
     public void onCreate(GwtAngularPropertyTable gwtAngularPropertyTable) {

@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-import {GwtAngularPropertyTable, ObjectNameId} from "../../gwtangular/GwtAngularFacade";
-import {MenuItem, MessageService} from "primeng/api";
+import {AngularTreeNodeData, GwtAngularPropertyTable, ObjectNameId} from "../../gwtangular/GwtAngularFacade";
+import {MenuItem, MessageService, SortEvent, TreeNode} from "primeng/api";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {EditorPanel, GenericPropertyEditorModel} from "../editor-model";
 
@@ -15,6 +15,10 @@ export class PropertyTableComponent extends EditorPanel {
     {
       label: 'Loading', icon: 'pi-spinner',
     }
+  ];
+  cols = [
+    {field: 'name', header: 'Name'},
+    {field: 'value', header: 'Value'}
   ];
 
   constructor(private gwtAngularService: GwtAngularService, private messageService: MessageService) {
@@ -50,18 +54,43 @@ export class PropertyTableComponent extends EditorPanel {
         });
   }
 
+  sortPropertyNames(event: SortEvent) {
+    if (event.data == undefined) {
+      return;
+    }
+    event.data.sort((node1: TreeNode, node2: TreeNode) => {
+      const data1: AngularTreeNodeData = node1.data
+      const data2: AngularTreeNodeData = node2.data
+
+      if (!data1.canHaveChildren && data2.canHaveChildren) {
+        return -1;
+      } else if (data1.canHaveChildren && !data2.canHaveChildren) {
+        return 1;
+      }
+      return (data1.name < data2.name ? -1 : (data1.name > data2.name ? 1 : 0));
+    });
+  }
+
+  private updateDeleteSaveDisableState() {
+    this.items[2].disabled = this.gwtAngularPropertyTable == null;
+    this.items[3].disabled = this.gwtAngularPropertyTable == null;
+    this.items = [...this.items];
+  }
+
   private setupMenuItems(objectNameIds: ObjectNameId[]) {
     let menuObjectNameIds: MenuItem[] = [];
 
     objectNameIds.forEach(objectNameId => {
+      const displayObjectName = `${objectNameId.getInternalName()} (${objectNameId.getId()})`;
       menuObjectNameIds.push({
-        label: `${objectNameId.getInternalName()} (${objectNameId.getId()})`,
+        label: displayObjectName,
         command: () => {
           this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
             .readConfig((<GenericPropertyEditorModel>this.editorModel).crudControllerIndex, objectNameId.getId())
             .then(value => {
                 this.gwtAngularPropertyTable = value;
                 this.updateDeleteSaveDisableState();
+                this.items[0].label = displayObjectName;
               },
               reason => {
                 this.messageService.add({
@@ -152,11 +181,4 @@ export class PropertyTableComponent extends EditorPanel {
       }
     ];
   }
-
-  private updateDeleteSaveDisableState() {
-    this.items[2].disabled = this.gwtAngularPropertyTable == null;
-    this.items[3].disabled = this.gwtAngularPropertyTable == null;
-    this.items = [...this.items];
-  }
-
 }

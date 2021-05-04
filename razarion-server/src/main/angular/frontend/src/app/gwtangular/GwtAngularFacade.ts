@@ -157,6 +157,7 @@ export interface AngularTreeNodeData {
   nullable: boolean;
   deleteAllowed: boolean;
   createAllowed: boolean;
+  canHaveChildren: boolean;
 
   onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void;
 
