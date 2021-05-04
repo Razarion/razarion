@@ -142,6 +142,7 @@ export interface PositionCallback {
 
 export interface GwtAngularPropertyTable {
   rootTreeNodes: TreeNode[];
+  configId: number;
 }
 
 export interface ObjectNameId {

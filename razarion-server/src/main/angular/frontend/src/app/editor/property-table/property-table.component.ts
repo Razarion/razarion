@@ -20,6 +20,7 @@ export class PropertyTableComponent extends EditorPanel {
     {field: 'name', header: 'Name'},
     {field: 'value', header: 'Value'}
   ];
+  selectedDisplayObjectName: string | null= null;
 
   constructor(private gwtAngularService: GwtAngularService, private messageService: MessageService) {
     super();
@@ -91,6 +92,7 @@ export class PropertyTableComponent extends EditorPanel {
                 this.gwtAngularPropertyTable = value;
                 this.updateDeleteSaveDisableState();
                 this.items[0].label = displayObjectName;
+                this.selectedDisplayObjectName = displayObjectName;
               },
               reason => {
                 this.messageService.add({
@@ -107,7 +109,7 @@ export class PropertyTableComponent extends EditorPanel {
 
     this.items = [
       {
-        label: 'Select...',
+        label: this.selectedDisplayObjectName != null ? this.selectedDisplayObjectName : 'Select...',
         items: menuObjectNameIds,
       },
       {
@@ -117,6 +119,7 @@ export class PropertyTableComponent extends EditorPanel {
             .createConfig((<GenericPropertyEditorModel>this.editorModel).crudControllerIndex).then(
             value => {
               this.gwtAngularPropertyTable = value;
+              this.selectedDisplayObjectName = `? (${value.configId})`;
               this.requestObjectNameId();
             },
             reason => {
@@ -162,6 +165,7 @@ export class PropertyTableComponent extends EditorPanel {
             .deleteConfig((<GenericPropertyEditorModel>this.editorModel).crudControllerIndex, this.gwtAngularPropertyTable!).then(
             () => {
               this.gwtAngularPropertyTable = null;
+              this.selectedDisplayObjectName = null;
               this.requestObjectNameId();
               this.messageService.add({
                 severity: 'success',
