@@ -56,6 +56,8 @@ import {RenderEngineComponent} from "./editor/render-engine/render-engine.compon
 import {ChartModule} from 'primeng/chart';
 import {PerfmonComponent} from "./editor/render-engine/perfmon.component";
 import {RadioButtonModule} from 'primeng/radiobutton';
+import {StatusPanelComponent} from "./editor/status-panel/status-panel.component";
+import {TableModule} from 'primeng/table';
 
 @NgModule({
   declarations: [
@@ -92,7 +94,8 @@ import {RadioButtonModule} from 'primeng/radiobutton';
     ItemCockpitComponent,
     MainCockpitComponent,
     RenderEngineComponent,
-    PerfmonComponent
+    PerfmonComponent,
+    StatusPanelComponent
   ],
   imports: [
     BrowserModule,
@@ -112,7 +115,8 @@ import {RadioButtonModule} from 'primeng/radiobutton';
     InputSwitchModule,
     CarouselModule,
     ChartModule,
-    RadioButtonModule
+    RadioButtonModule,
+    TableModule
   ],
   providers: [
     FrontendService, {

@@ -2,8 +2,6 @@ package com.btxtech.client.editor;
 
 import com.btxtech.client.MainPanelService;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.client.editor.AlarmServiceView.ClientAlarmView;
-import com.btxtech.client.editor.AlarmServiceView.ServerAlarmView;
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.editor.editorpanel.EditorPanel;
 import com.btxtech.client.editor.generic.custom.CustomWidget;
@@ -57,11 +55,11 @@ public class EditorService {
     }
 
     public void openClientAlarmView() {
-        openEditor(ClientAlarmView.class, "Client Alarms");
+        // openEditor(ClientAlarmView.class, "Client Alarms");
     }
 
     public void openServerAlarmView() {
-        openEditor(ServerAlarmView.class, "Server Alarms");
+        // openEditor(ServerAlarmView.class, "Server Alarms");
     }
 
 

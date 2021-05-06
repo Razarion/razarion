@@ -1,12 +1,21 @@
 import {TreeNode} from "primeng/api";
 
 // ---------- Common ----------
-export class GwtAngularFacade {
+export abstract class GwtAngularFacade {
   canvasElement!: HTMLCanvasElement;
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
   editorFrontendProvider!: EditorFrontendProvider;
   canvasResizeCallback!: Callback;
+  statusProvider!: StatusProvider;
+
+  abstract onCrash(): void;
+}
+
+export interface StatusProvider {
+  getClientAlarms(): Alarm[];
+
+  requestServerAlarms(): Promise<Alarm[]>;
 }
 
 export interface Callback {
@@ -15,6 +24,16 @@ export interface Callback {
 
 export interface Rectangle {
 
+}
+
+export interface Alarm {
+  angularTypeString(): string;
+
+  angularDateAsLong(): number;
+
+  getText(): string;
+
+  getId(): number;
 }
 
 // ---------- Item Cockpit ----------

@@ -1,7 +1,10 @@
 package com.btxtech.shared.system.alarm;
 
+import jsinterop.annotations.JsType;
+
 import java.util.Date;
 
+@JsType
 public class Alarm {
     public enum Type {
         NO_LEVELS,
@@ -46,6 +49,10 @@ public class Alarm {
         this.date = date;
     }
 
+    /**
+     * Also called angular
+     * @return detailed alarm message
+     */
     public String getText() {
         return text;
     }
@@ -80,6 +87,16 @@ public class Alarm {
     public Alarm id(Integer id) {
         setId(id);
         return this;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public String angularTypeString() {
+        return type.name();
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public long angularDateAsLong() {
+        return date.getTime();
     }
 
     @Override

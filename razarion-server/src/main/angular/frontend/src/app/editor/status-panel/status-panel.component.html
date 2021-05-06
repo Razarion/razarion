@@ -1,0 +1,39 @@
+﻿<h1>Client Alarms</h1>
+<p-table [value]="clientAlarms">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Type</th>
+      <th>Date</th>
+      <th>Details</th>
+      <th>Id</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-alarm>
+    <tr>
+      <td>{{alarm.angularTypeString()}}</td>
+      <td>{{alarm.angularDateAsLong() | date:'HH:mm:ss dd.MM.yyyy'}}</td>
+      <td>{{alarm.getText()}}</td>
+      <td>{{alarm.getId()}}</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<h1>Server Alarms</h1>
+<p-table [value]="serverAlarms">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Type</th>
+      <th>Date</th>
+      <th>Details</th>
+      <th>Id</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-alarm>
+    <tr>
+      <td>{{alarm.angularTypeString()}}</td>
+      <td>{{alarm.angularDateAsLong() | date:'HH:mm:ss dd.MM.yyyy'}}</td>
+      <td>{{alarm.getText()}}</td>
+      <td>{{alarm.getId()}}</td>
+    </tr>
+  </ng-template>
+</p-table>

@@ -5,6 +5,7 @@ import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {EditorModel} from "../editor/editor-model";
 import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
 import {MainCockpitComponent} from "./cockpit/main/main-cockpit.component";
+import {StatusPanelComponent} from "../editor/status-panel/status-panel.component";
 
 
 @Component({
@@ -29,6 +30,8 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.gwtAngularFacade.canvasElement = this.canvas.nativeElement;
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
+
+    this.gwtAngularService.crashListener = () => this.addEditorModel(new EditorModel("Client crashed", StatusPanelComponent));
 
     // @ts-ignore
     const resizeObserver = new ResizeObserver(entries => {

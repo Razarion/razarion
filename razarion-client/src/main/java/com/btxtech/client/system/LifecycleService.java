@@ -3,7 +3,7 @@ package com.btxtech.client.system;
 import com.btxtech.client.ClientTrackerService;
 import com.btxtech.client.cockpit.ClientScreenCoverImpl;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.client.editor.EditorService;
+import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
@@ -112,9 +112,9 @@ public class LifecycleService {
     @Inject
     private Caller<ServerMgmtProvider> serverMgmt;
     @Inject
-    private EditorService editorService;
-    @Inject
     private UserUiService userUiService;
+    @Inject
+    private GwtAngularService gwtAngularService;
     private Consumer<ServerState> serverRestartCallback;
     private SimpleScheduledFuture simpleScheduledFuture;
     private boolean beforeUnload;
@@ -127,9 +127,7 @@ public class LifecycleService {
             @Override
             public void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
                 if(userUiService.isAdmin()) {
-                    editorService.activateFallbackEditorMenuButton();
-                    editorService.openClientAlarmView();
-                    editorService.openServerAlarmView();
+                    gwtAngularService.onCrash();
                 }
             }
         });

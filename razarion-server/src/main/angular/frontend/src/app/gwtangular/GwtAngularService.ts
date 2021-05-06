@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import {Injectable, NgZone} from "@angular/core";
 import {GwtAngularFacade} from "./GwtAngularFacade";
 
 declare global {
@@ -9,9 +9,18 @@ declare global {
 
 @Injectable()
 export class GwtAngularService {
-  gwtAngularFacade: GwtAngularFacade = new GwtAngularFacade();
+  gwtAngularFacade!: GwtAngularFacade;
+  crashListener!: () => void;
 
-  constructor() {
+  constructor(private zone: NgZone) {
+    const self = this;
+    this.gwtAngularFacade = new class extends GwtAngularFacade {
+      onCrash(): void {
+        zone.run(() => {
+          self.crashListener();
+        });
+      }
+    };
     window.gwtAngularFacade = this.gwtAngularFacade;
   }
 }

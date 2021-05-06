@@ -32,8 +32,6 @@ public class Client {
     @Inject
     private LifecycleService lifecycleService;
     @Inject
-    private MainPanelService mainPanelService;
-    @Inject
     private GwtAngularService gwtAngularService;
 
     public Client() {

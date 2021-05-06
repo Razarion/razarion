@@ -57,8 +57,8 @@ public class ItemCockpitService {
     private Collection<BuildupItemCockpit> buildupItemCockpits = new ArrayList<>();
     // TODO private BuildupItemPanel buildupItemPanel;
 
-    public void init(ItemCockpitFrontend itemCockpitPanel) {
-        this.itemCockpitFrontend = itemCockpitPanel;
+    public void init(ItemCockpitFrontend itemCockpitFrontend) {
+        this.itemCockpitFrontend = itemCockpitFrontend;
     }
 
     public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {

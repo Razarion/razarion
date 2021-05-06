@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {PerfmonEnum, PerfmonStatistic} from "../../gwtangular/GwtAngularFacade";
+import {DatePipe} from "@angular/common";
 
 @Component({
   selector: 'perfmon',
@@ -18,7 +19,7 @@ export class PerfmonComponent {
   stat1Max!: number;
 
 
-  constructor() {
+  constructor(private datepipe: DatePipe) {
     this.options = {
       animation: {
         duration: 0
@@ -45,7 +46,7 @@ export class PerfmonComponent {
       if (this.perfmonEnum === ((<any>PerfmonEnum)[perfmonStatistic.getPerfmonEnumString()])) {
         perfmonStatistic.getPerfmonStatisticEntriesArray().forEach(perfmonStatisticEntry => {
           data.push(perfmonStatisticEntry.getFrequency())
-          labels.push(new Date(perfmonStatisticEntry.getDateAsLong()).toLocaleTimeString())
+          labels.push(this.datepipe.transform(new Date(perfmonStatisticEntry.getDateAsLong()), 'hh:mm:ss'));
         })
       }
     });

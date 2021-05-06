@@ -19,11 +19,14 @@ public class GwtAngularService {
     private MainCockpitService cockpitService;
     @Inject
     private ItemCockpitService itemCockpitService;
+    @Inject
+    private StatusProvider statusProvider;
     private GwtAngularFacade gwtAngularFacade;
 
     public void init() {
         gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMapOfAny>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
         gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
+        gwtAngularFacade.statusProvider = statusProvider;
         cockpitService.init(gwtAngularFacade.mainCockpit);
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
     }
@@ -34,5 +37,9 @@ public class GwtAngularService {
 
     public void setCanvasResizeListener(Callback callback) {
         gwtAngularFacade.canvasResizeCallback = callback;
+    }
+
+    public void onCrash() {
+        gwtAngularFacade.onCrash();
     }
 }
