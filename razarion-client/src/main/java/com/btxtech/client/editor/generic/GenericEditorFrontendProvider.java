@@ -245,7 +245,7 @@ public class GenericEditorFrontendProvider {
                 try {
                     Object javaValue = value;
                     if (value != null) {
-                        javaValue = PropertyEditorSelector.fromSelector(angularTreeNode.data.propertyEditorSelector).convertFromAngular(value);
+                        javaValue = PropertyEditorSelector.fromSelector(angularTreeNode.data.propertyEditorSelector).convertFromAngular(value,  angularTreeNode.abstractPropertyModel.getPropertyClass());
                     }
                     angularTreeNode.abstractPropertyModel.setPropertyValue(javaValue);
                 } catch (Throwable throwable) {
@@ -277,6 +277,7 @@ public class GenericEditorFrontendProvider {
             if(propertyModel.isPropertyValueNotNull()) {
                 angularTreeNode.data.value = propertyEditorSelector.convertToAngular(propertyModel.getPropertyValue());
             }
+            angularTreeNode.data.options = propertyEditorSelector.angularOptions(propertyModel.getPropertyClass());
             angularTreeNode.data.propertyEditorSelector = propertyEditorSelector.getSelector();
             angularTreeNode.data.nullable = propertyModel.isPropertyNullable();
             angularTreeNode.leaf = true;

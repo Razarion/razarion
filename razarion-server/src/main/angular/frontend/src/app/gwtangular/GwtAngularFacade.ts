@@ -154,6 +154,7 @@ export interface ObjectNameId {
 export interface AngularTreeNodeData {
   name: string;
   value: any;
+  options: string[];
   propertyEditorSelector: string;
   nullable: boolean;
   deleteAllowed: boolean;

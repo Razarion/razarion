@@ -11,13 +11,15 @@ import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
 import jsinterop.base.JsPropertyMapOfAny;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 public enum PropertyEditorSelector {
     STRING("string-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             return value.asString();
         }
 
@@ -28,7 +30,7 @@ public enum PropertyEditorSelector {
     },
     INTEGER("integer-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             return value.asInt();
         }
 
@@ -39,7 +41,7 @@ public enum PropertyEditorSelector {
     },
     DOUBLE("double-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             return value.asDouble();
         }
 
@@ -50,7 +52,7 @@ public enum PropertyEditorSelector {
     },
     BOOLEAN("boolean-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             return value.asBoolean();
         }
 
@@ -61,7 +63,7 @@ public enum PropertyEditorSelector {
     },
     RECTANGLE("rectangle-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             JsPropertyMapOfAny mapOfAny = value.asPropertyMap();
             return new Rectangle((int) mapOfAny.get("x"),
                     (int) mapOfAny.get("y"),
@@ -80,7 +82,7 @@ public enum PropertyEditorSelector {
     },
     RECTANGLE_2D("rectangle-2d-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             JsPropertyMapOfAny mapOfAny = value.asPropertyMap();
             return new Rectangle2D((double) mapOfAny.get("x"),
                     (double) mapOfAny.get("y"),
@@ -99,7 +101,7 @@ public enum PropertyEditorSelector {
     },
     DECIMAL_POSITION("decimal-position-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             JsPropertyMapOfAny mapOfAny = value.asPropertyMap();
             return new DecimalPosition((double) mapOfAny.get("x"), (double) mapOfAny.get("y"));
         }
@@ -111,9 +113,9 @@ public enum PropertyEditorSelector {
     },
     INDEX("index-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             JsPropertyMapOfAny mapOfAny = value.asPropertyMap();
-            return new Index((int)mapOfAny.get("x"), (int)mapOfAny.get("y"));
+            return new Index((int) mapOfAny.get("x"), (int) mapOfAny.get("y"));
         }
 
         @Override
@@ -123,7 +125,7 @@ public enum PropertyEditorSelector {
     },
     VERTEX("vertex-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             JsPropertyMapOfAny mapOfAny = value.asPropertyMap();
             return new Vertex((double) mapOfAny.get("x"), (double) mapOfAny.get("y"), (double) mapOfAny.get("z"));
         }
@@ -137,7 +139,7 @@ public enum PropertyEditorSelector {
     },
     PLACE_CONFIG("place-config-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             JsPropertyMapOfAny mapOfAny = value.asPropertyMap();
             if (mapOfAny.has("x")) {
                 return new PlaceConfig()
@@ -162,18 +164,29 @@ public enum PropertyEditorSelector {
     },
     ENUM("enum-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
-            throw new UnsupportedOperationException("...TODO..."); // TODO
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
+            return Arrays.stream(propertyClass.getEnumConstants())
+                    .filter(e -> ((Enum<?>) e).name().equals(value.asString()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Enum member " + value.asString()+" + not found in: " + propertyClass));
         }
 
         @Override
         public Any convertToAngular(Object object) {
-            return Any.of(object);  // TODO
+            return Js.cast(((Enum<?>) object).name());
+        }
+
+        @Override
+        public String[] angularOptions(Class<?> propertyClass) {
+            return Arrays.stream(propertyClass.getEnumConstants())
+                    .map(e -> ((Enum<?>) e).name())
+                    .sorted(Comparator.comparing(Object::toString))
+                    .toArray(String[]::new);
         }
     },
     INTEGER_MAP("integer-map-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             throw new UnsupportedOperationException("...TODO..."); // TODO
         }
 
@@ -184,7 +197,7 @@ public enum PropertyEditorSelector {
     },
     IMAGE("image-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             throw new UnsupportedOperationException("...TODO..."); // TODO
         }
 
@@ -195,7 +208,7 @@ public enum PropertyEditorSelector {
     },
     COLLADA_STRING("collada-string-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             throw new UnsupportedOperationException("...TODO..."); // TODO
         }
 
@@ -206,7 +219,7 @@ public enum PropertyEditorSelector {
     },
     I18N_STRING("i18n-string-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             throw new UnsupportedOperationException("...TODO..."); // TODO
         }
 
@@ -217,7 +230,7 @@ public enum PropertyEditorSelector {
     },
     POLYGON_2D("polygon-2d-property-editor") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             throw new UnsupportedOperationException("...TODO..."); // TODO
         }
 
@@ -228,7 +241,7 @@ public enum PropertyEditorSelector {
     },
     UNKNOWN("UNKNOWN") {
         @Override
-        public Object convertFromAngular(Any value) {
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
             return value;
         }
 
@@ -258,7 +271,11 @@ public enum PropertyEditorSelector {
         return selectors.get(selector);
     }
 
-    public abstract Object convertFromAngular(Any value);
+    public abstract Object convertFromAngular(Any value, Class<?> propertyClass);
 
     public abstract Any convertToAngular(Object object);
+
+    public String[] angularOptions(Class<?> propertyClass) {
+        return null;
+    }
 }
