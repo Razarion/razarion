@@ -29,6 +29,8 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -36,6 +38,8 @@ import java.util.List;
  */
 @ServerEndpoint(value = CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT, configurator = WebSocketEndpointConfigAware.class)
 public class ClientGameConnection {
+    @Inject
+    private Logger logger;
     @Inject
     private BaseItemService baseItemService;
     @Inject
@@ -78,7 +82,7 @@ public class ClientGameConnection {
 
     @OnError
     public void error(Session session, Throwable error) {
-        System.out.println("**************   error: " + error);
+        logger.log(Level.WARNING, "ClientGameConnection.error(). Session: " + session, error);
     }
 
     @OnClose
