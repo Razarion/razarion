@@ -1,14 +1,17 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, RendererFactory2, ViewChild} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {PerfmonEnum, PerfmonStatistic} from "../../gwtangular/GwtAngularFacade";
 import {PerfmonComponent} from "./perfmon.component";
+import * as Stats from 'stats.js';
 
 @Component({
   selector: 'render-engine',
   templateUrl: './render-engine.component.html'
 })
-export class RenderEngineComponent extends EditorPanel implements OnInit, OnDestroy {
+export class RenderEngineComponent extends EditorPanel implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('statsContainer')
+  statsContainer!: ElementRef;
   rendererPerfmonType: PerfmonEnum = PerfmonEnum.RENDERER;
   @ViewChild("rendererPerfmon")
   rendererPerfmonComponent!: PerfmonComponent;
@@ -20,7 +23,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   gameEnginePerfmonComponent!: PerfmonComponent;
   refresher: any;
 
-  constructor(public gwtAngularService: GwtAngularService) {
+  constructor(public gwtAngularService: GwtAngularService, private rendererFactory: RendererFactory2) {
     super();
   }
 
@@ -32,6 +35,17 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
 
   ngOnDestroy(): void {
     clearInterval(this.refresher);
+    this.gwtAngularService.gwtAngularFacade.statusProvider.setStats(null);
+  }
+
+  ngAfterViewInit(): void {
+    if (this.gwtAngularService.gwtAngularFacade.statusProvider.getStats() === undefined
+      || this.gwtAngularService.gwtAngularFacade.statusProvider.getStats() === null) {
+      this.gwtAngularService.gwtAngularFacade.statusProvider.setStats(new Stats());
+    }
+    this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().dom.style.cssText = '';
+    (<HTMLDivElement>this.statsContainer.nativeElement).appendChild(this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().dom)
+    this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().showPanel(0);
   }
 
   refresh(): void {

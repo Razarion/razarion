@@ -3,6 +3,7 @@ package com.btxtech.client.renderer;
 import com.btxtech.client.ClientTrackerService;
 import com.btxtech.client.KeyboardEventHandler;
 import com.btxtech.client.gwtangular.GwtAngularService;
+import com.btxtech.client.gwtangular.StatusProvider;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.utils.GwtUtils;
@@ -57,6 +58,8 @@ public class GameCanvas {
     private ClientTrackerService trackerService;
     @Inject
     private GwtAngularService gwtAngularService;
+    @Inject
+    private StatusProvider statusProvider;
     private WebGLRenderingContext ctx3d;
     private RequestAnimationFrameCallbackFn animationCallback;
     private double width;
@@ -125,6 +128,9 @@ public class GameCanvas {
     private void setupAnimationCallback() {
         animationCallback = timestamp -> {
             try {
+                if(statusProvider.getStats() != null) {
+                    statusProvider.getStats().begin();
+                }
                 if (!running) {
                     return null;
                 }
@@ -132,6 +138,9 @@ public class GameCanvas {
                     renderService.render();
                 } catch (Throwable t) {
                     logger.log(Level.SEVERE, "requestAnimationFrame() execute failed", t);
+                }
+                if(statusProvider.getStats() != null) {
+                    statusProvider.getStats().end();
                 }
                 DomGlobal.requestAnimationFrame(animationCallback, canvasElement);
             } catch (Throwable throwable) {

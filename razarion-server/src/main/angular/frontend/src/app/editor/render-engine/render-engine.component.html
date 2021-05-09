@@ -1,6 +1,9 @@
 <div class="p-d-flex p-flex-column">
   <h4>Performance</h4>
   <div class="p-mr-2">
+    <div #statsContainer></div>
+  </div>
+  <div class="p-mr-2">
     <perfmon #rendererPerfmon
              [stat1]="'FPS'"
              [stat1-max]=65

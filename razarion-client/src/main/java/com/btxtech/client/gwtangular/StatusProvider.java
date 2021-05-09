@@ -1,5 +1,6 @@
 package com.btxtech.client.gwtangular;
 
+import com.btxtech.client.renderer.Stats;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.rest.AlarmServiceController;
 import com.btxtech.shared.system.alarm.Alarm;
@@ -22,6 +23,7 @@ public class StatusProvider {
     private Caller<AlarmServiceController> alarmServiceControllerCaller;
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
+    private Stats stats;
 
     @SuppressWarnings("unused") // Called by Angular
     public Alarm[] getClientAlarms() {
@@ -32,6 +34,16 @@ public class StatusProvider {
     public Promise<Alarm[]> requestServerAlarms() {
         return new Promise<>((resolve, reject) ->
                 alarmServiceControllerCaller.call((RemoteCallback<List<Alarm>>) response -> resolve.onInvoke(response.toArray(new Alarm[0])),
-                exceptionHandler.restErrorHandler("AlarmServiceController")).getAlarms());
+                        exceptionHandler.restErrorHandler("AlarmServiceController")).getAlarms());
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public Stats getStats() {
+        return stats;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public void setStats(Stats stats) {
+        this.stats = stats;
     }
 }
