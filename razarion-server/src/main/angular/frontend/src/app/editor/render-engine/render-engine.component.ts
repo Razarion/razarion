@@ -43,8 +43,12 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   }
 
   private display(perfmonStatistics: PerfmonStatistic[]): void {
-    this.rendererPerfmonComponent.display(perfmonStatistics);
-    this.updatePerfmonComponent.display(perfmonStatistics);
-    this.gameEnginePerfmonComponent.display(perfmonStatistics);
+    try {
+      this.rendererPerfmonComponent.display(perfmonStatistics);
+      this.updatePerfmonComponent.display(perfmonStatistics);
+      this.gameEnginePerfmonComponent.display(perfmonStatistics);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

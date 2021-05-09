@@ -10,6 +10,7 @@ import {
 import {EditorModel, EditorPanel} from "../editor-model";
 import {MessageService} from "primeng/api";
 import {GameComponent} from "../../game/game.component";
+import {MainCockpitComponent} from "../../game/cockpit/main/main-cockpit.component";
 
 @Component({
   selector: 'app-editor-panel',
@@ -17,6 +18,8 @@ import {GameComponent} from "../../game/game.component";
   styleUrls: ['./editor-panel.component.scss']
 })
 export class EditorPanelComponent implements AfterViewInit {
+  @Input("mainCockpitComponent")
+  mainCockpitComponent!: MainCockpitComponent;
   @ViewChild("editorContainer", {read: ViewContainerRef})
   editorContainer!: ViewContainerRef;
   @Input("editorModel")
@@ -34,7 +37,7 @@ export class EditorPanelComponent implements AfterViewInit {
       try {
         const factory: ComponentFactory<EditorPanel> = this.resolver.resolveComponentFactory(this.editorModel.editorComponent);
         let  componentRef = this.editorContainer.createComponent(factory);
-        componentRef.instance.setEditorModel(this.editorModel);
+        componentRef.instance.init(this.editorModel, this.mainCockpitComponent);
       } catch (error) {
         this.messageService.add({
           severity: 'error',
@@ -43,6 +46,7 @@ export class EditorPanelComponent implements AfterViewInit {
           sticky: true
         });
         console.error(error);
+        throw error;
       }
     });
   }

@@ -3,7 +3,7 @@
     <canvas #canvas></canvas>
   </div>
   <div class="p-mr-2 p-order-1" *ngFor="let editorModel of editorModels" style="margin-right: 0 !important" [style]="{height:'100%'}">
-    <app-editor-panel [editorModel]="editorModel" [gameComponent]="getGameComponent()"></app-editor-panel>
+    <app-editor-panel [editorModel]="editorModel" [gameComponent]="getGameComponent()" [mainCockpitComponent]="mainCockpit"></app-editor-panel>
   </div>
 </div>
 
