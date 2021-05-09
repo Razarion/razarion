@@ -18,6 +18,7 @@ import com.btxtech.shared.rest.ParticleEmitterSequenceEditorController;
 import com.btxtech.shared.rest.ParticleShapeEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
 import com.btxtech.shared.rest.ResourceItemTypeEditorController;
+import com.btxtech.shared.rest.ServerGameEngineEditorController;
 import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainObjectEditorController;
@@ -58,7 +59,8 @@ public class GenericEditorFrontendProvider {
             new GenericEditorFrontendProvider.CrudControllerEntry(BaseItemTypeEditorController.class, "Base Items"),
             new GenericEditorFrontendProvider.CrudControllerEntry(ResourceItemTypeEditorController.class, "Resource Items"),
             new GenericEditorFrontendProvider.CrudControllerEntry(ParticleShapeEditorController.class, "Particle Shapes"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequences")
+            new GenericEditorFrontendProvider.CrudControllerEntry(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequences"),
+            new GenericEditorFrontendProvider.CrudControllerEntry(ServerGameEngineEditorController.class, "Server Game Engines")
     };
     @Inject
     private Instance<Branch> branchInstance;

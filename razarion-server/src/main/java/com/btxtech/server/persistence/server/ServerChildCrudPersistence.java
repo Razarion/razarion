@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  * E = entity
  * C = config
  */
+@Deprecated
 public class ServerChildCrudPersistence<R, P, E extends ObjectNameIdProvider, C> {
     @PersistenceContext
     private EntityManager entityManager;
