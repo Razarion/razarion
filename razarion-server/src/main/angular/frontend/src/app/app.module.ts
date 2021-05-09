@@ -56,7 +56,7 @@ import {RenderEngineComponent} from "./editor/render-engine/render-engine.compon
 import {ChartModule} from 'primeng/chart';
 import {PerfmonComponent} from "./editor/render-engine/perfmon.component";
 import {RadioButtonModule} from 'primeng/radiobutton';
-import {StatusPanelComponent} from "./editor/status-panel/status-panel.component";
+import {CrashPanelComponent} from "./editor/crash-panel/crash-panel.component";
 import {TableModule} from 'primeng/table';
 import {DatePipe} from "@angular/common";
 
@@ -96,7 +96,7 @@ import {DatePipe} from "@angular/common";
     MainCockpitComponent,
     RenderEngineComponent,
     PerfmonComponent,
-    StatusPanelComponent
+    CrashPanelComponent
   ],
   imports: [
     BrowserModule,
