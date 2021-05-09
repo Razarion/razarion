@@ -58,6 +58,7 @@ import {PerfmonComponent} from "./editor/render-engine/perfmon.component";
 import {RadioButtonModule} from 'primeng/radiobutton';
 import {StatusPanelComponent} from "./editor/status-panel/status-panel.component";
 import {TableModule} from 'primeng/table';
+import {DatePipe} from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -125,7 +126,8 @@ import {TableModule} from 'primeng/table';
     },
     GwtAngularService,
     MessageService,
-    EditorService
+    EditorService,
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })
