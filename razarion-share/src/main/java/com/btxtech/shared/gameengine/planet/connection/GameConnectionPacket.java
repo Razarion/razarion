@@ -59,14 +59,14 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     SELL_ITEMS(List.class),
     USE_INVENTORY_ITEM(UseInventoryItem.class);
 
-    private Class theClass;
+    private Class<?> theClass;
 
-    GameConnectionPacket(Class theClass) {
+    GameConnectionPacket(Class<?> theClass) {
         this.theClass = theClass;
     }
 
     @Override
-    public Class getTheClass() {
+    public Class<?> getTheClass() {
         return theClass;
     }
 }
