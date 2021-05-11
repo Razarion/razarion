@@ -86,8 +86,8 @@ export interface OwnItemCockpit {
   imageUrl: string;
   itemTypeName: string;
   itemTypeDescr: string;
-  sellButton: boolean;
   buildupItemInfos: BuildupItemCockpit[] | null;
+  sellHandler: () => void;
 }
 
 export interface BuildupItemCockpit {

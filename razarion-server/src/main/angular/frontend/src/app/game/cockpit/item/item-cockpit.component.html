@@ -1,22 +1,32 @@
 ﻿<div class="p-d-flex p-flex-column" *ngIf="ownItemCockpit">
-  <div class="p-mb-2">
-    <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
-  </div>
-  <div class="p-mb-2">
-    <div>
-      {{ownItemCockpit.itemTypeName}}
+  <div class="p-d-flex">
+    <div class="p-mr-2">
+      <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
     </div>
-    <div>
-      {{ownItemCockpit.itemTypeDescr}}
+    <div class="p-mr-2">
+      <div class="p-d-flex p-flex-column" *ngIf="ownItemCockpit">
+        <div class="p-mb-2" [style]="{fontSize: 'larger', fontcolor: '--primary-color'}">
+          {{ownItemCockpit.itemTypeName}}
+        </div>
+        <div class="p-mb-2">
+          {{ownItemCockpit.itemTypeDescr}}
+        </div>
+        <div class="p-mb-2">
+          <div *ngIf="count && count > 1">
+            {{count}}
+          </div>
+        </div>
+      </div>
     </div>
-    <div *ngIf="count && count > 1">
-      {{count}}
+    <div class="p-mr-2" *ngIf="ownItemCockpit.sellHandler">
+      <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (onClick)="ownItemCockpit.sellHandler()"></p-button>
     </div>
   </div>
   <div class="p-mb-2" *ngIf="ownItemCockpit.buildupItemInfos">
     <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="3" [numScroll]="1">
       <ng-template let-buildupItemCockpit pTemplate="item">
-        <img src="{{buildupItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{buildupItemCockpit.tooltip}}"><br>
+        <img src="{{buildupItemCockpit.imageUrl}}" class="item-cockpit-image"
+             alt="{{buildupItemCockpit.tooltip}}"><br>
         Tooltip: {{buildupItemCockpit.tooltip}}<br>
         Price: {{buildupItemCockpit.price}}<br>
         Limit: {{buildupItemCockpit.itemCount}}/{{buildupItemCockpit.itemLimit}}<br>

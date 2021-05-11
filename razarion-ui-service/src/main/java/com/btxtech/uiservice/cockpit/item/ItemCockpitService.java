@@ -88,9 +88,8 @@ public class ItemCockpitService {
     }
 
     private OwnItemCockpit createOwnItemCockpit(BaseItemType baseItemType, Group selectedGroup) {
-        OwnItemCockpit ownInfoPanel = createSimpleOwnItemCockpit(baseItemType);
+        OwnItemCockpit ownInfoPanel = createSimpleOwnItemCockpit(baseItemType, selectedGroup.getItems());
 
-        ownInfoPanel.sellButton = !gameUiControl.isSellSuppressed();
         ownInfoPanel.buildupItemInfos = createBuildupItemInfos(baseItemType, selectedGroup);
         // TODO setupItemContainerPanel(syncBaseItem, baseItemType);
 
@@ -110,7 +109,7 @@ public class ItemCockpitService {
                 }
             };
             ownMultipleItemInfo.count = entry.getValue().size();
-            ownMultipleItemInfo.ownItemCockpit = createSimpleOwnItemCockpit(entry.getKey());
+            ownMultipleItemInfo.ownItemCockpit = createSimpleOwnItemCockpit(entry.getKey(), entry.getValue());
             return ownMultipleItemInfo;
         }).toArray(OwnMultipleIteCockpit[]::new);
     }
@@ -244,11 +243,17 @@ public class ItemCockpitService {
                 }).toArray(BuildupItemCockpit[]::new);
     }
 
-    private OwnItemCockpit createSimpleOwnItemCockpit(BaseItemType baseItemType) {
+    private OwnItemCockpit createSimpleOwnItemCockpit(BaseItemType baseItemType, Collection<SyncBaseItemSimpleDto> items) {
         OwnItemCockpit ownInfoPanel = new OwnItemCockpit();
         ownInfoPanel.imageUrl = CommonUrl.getImageServiceUrlSafe(baseItemType.getThumbnail());
         ownInfoPanel.itemTypeName = I18nHelper.getLocalizedString(baseItemType.getI18nName());
         ownInfoPanel.itemTypeDescr = I18nHelper.getLocalizedString(baseItemType.getI18nDescription());
+        if (!gameUiControl.isSellSuppressed()) {
+            ownInfoPanel.sellHandler = () -> {
+                // TODO display question dialog
+                gameEngineControl.sellItems(items);
+            };
+        }
         return ownInfoPanel;
     }
 

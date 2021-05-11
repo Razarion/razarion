@@ -13,6 +13,7 @@ import javax.inject.Singleton;
  * Created by Beat
  * on 06.09.2017.
  */
+@Deprecated
 @Singleton
 public class ClientCockpitHelper {
     @Inject
