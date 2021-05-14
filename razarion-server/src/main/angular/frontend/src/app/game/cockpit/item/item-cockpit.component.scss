@@ -4,3 +4,32 @@
   width: 50px;
   height: 50px;
 }
+
+//Remove the carousel paginator
+:host ::ng-deep .buildup-carousel {
+  .p-carousel-indicators {
+    display: none !important;
+  }
+}
+
+.item-cockpit-buildup-button {
+  position: relative;
+  padding: 2px;
+  cursor: pointer;
+  z-index: 1;
+  background: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 0;
+}
+
+.item-cockpit-buildup-limit-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  font-size: 80%;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+}
