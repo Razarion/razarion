@@ -109,6 +109,7 @@ public class ItemCockpitService {
                 }
             };
             ownMultipleItemInfo.count = entry.getValue().size();
+            ownMultipleItemInfo.tooltip = I18nHelper.getConstants().tooltipSelect(I18nHelper.getLocalizedString(entry.getKey().getI18nName()));
             ownMultipleItemInfo.ownItemCockpit = createSimpleOwnItemCockpit(entry.getKey(), entry.getValue());
             return ownMultipleItemInfo;
         }).toArray(OwnMultipleIteCockpit[]::new);

@@ -111,6 +111,7 @@ export interface AngularZoneRunner {
 export interface OwnMultipleIteCockpit {
   ownItemCockpit: OwnItemCockpit;
   count: number;
+  tooltip: string;
 
   onSelect(): void;
 }

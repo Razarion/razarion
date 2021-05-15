@@ -12,6 +12,13 @@
   }
 }
 
+//Remove the carousel paginator
+:host ::ng-deep .multiple-item-carousel {
+  .p-carousel-indicators {
+    display: none !important;
+  }
+}
+
 .item-cockpit-buildup-button {
   position: relative;
   padding: 2px;
@@ -23,6 +30,15 @@
   height: 40px;
   border-radius: 0;
 }
+.item-cockpit-buildup-disabled {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.6);
+}
 
 .item-cockpit-buildup-limit-label {
   position: absolute;
@@ -32,4 +48,13 @@
   font-size: 80%;
   background: rgba(0, 0, 0, 0.4);
   color: #fff;
+}
+
+.item-cockpit-multiple-button {
+  padding: 0;
+  border: none;
+  width: 40px;
+  height: 40px;
+  background: white;
+  cursor: pointer;
 }

@@ -29,17 +29,19 @@
       <ng-template let-buildupItemCockpit pTemplate="item">
         <div class="p-d-flex p-flex-column" [style]="{padding: '0 1px 0 1px'}">
           <div class="p-d-flex">
-            <p-button styleClass='item-cockpit-buildup-button'
+            <button class='item-cockpit-buildup-button'
                     (click)="buildupItemCockpit.onBuild()"
                     title="{{buildupItemCockpit.tooltip}}"
                     [disabled]="!buildupItemCockpit.enabled">
+              <div *ngIf="!buildupItemCockpit.enabled" class='item-cockpit-buildup-disabled'>
+              </div>
               <img src="{{buildupItemCockpit.imageUrl}}"
                    style="position: absolute;top: 0; left: 0; width: 40px; height: 40px"
                    alt="buildupItemCockpit.imageUrl">
               <span class="item-cockpit-buildup-limit-label">
                 {{buildupItemCockpit.itemCount}}/{{buildupItemCockpit.itemLimit}}
               </span>
-            </p-button>
+            </button>
           </div>
           <div class="p-d-flex">
             {{buildupItemCockpit.price}}
@@ -50,21 +52,21 @@
   </div>
 </div>
 
-<p-carousel *ngIf="ownMultipleIteCockpits" [value]="ownMultipleIteCockpits" [numVisible]="3" [numScroll]="1">
+<p-carousel *ngIf="ownMultipleIteCockpits" [value]="ownMultipleIteCockpits" [numVisible]="3" [numScroll]="1"
+            styleClass="multiple-item-carousel">
   <ng-template let-ownMultipleIteCockpit pTemplate="item">
-    <div class="p-d-flex p-flex-column">
-      <div class="p-mb-2">
-        <img src="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}" class="item-cockpit-image"
-             alt="{{ownMultipleIteCockpit.ownItemCockpit.itemTypeName}}">
+    <div class="p-d-flex p-flex-column" [style]="{padding: '0 1px 0 1px'}">
+      <div class="p-d-flex">
+        <button class="item-cockpit-multiple-button"
+                  (click)="ownMultipleIteCockpit.onSelect()"
+                  title="{{ownMultipleIteCockpit.tooltip}}">
+          <img src="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}"
+               style="width: 40px; height: 40px"
+               alt="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}">
+        </button>
       </div>
-      <div class="p-mb-2">
-        {{ownMultipleIteCockpit.ownItemCockpit.itemTypeName}}
-      </div>
-      <div class="p-mb-2">
+      <div class="p-d-flex">
         {{ownMultipleIteCockpit.count}}
-      </div>
-      <div class="p-mb-2">
-        <p-button label="Build" (onClick)="ownMultipleIteCockpit.onSelect()">Select</p-button>
       </div>
     </div>
   </ng-template>
