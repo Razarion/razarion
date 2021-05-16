@@ -29,6 +29,18 @@ public interface PersistenceUtil {
         return null;
     }
 
+    static <E, C> E fromConfig(E outputEntity, C inputConfig, Supplier<E> entityCreator, BiConsumer<E, C> entityFiller) {
+        if (inputConfig == null) {
+            return null;
+        }
+        if (outputEntity == null) {
+            outputEntity = entityCreator.get();
+        }
+        entityFiller.accept(outputEntity, inputConfig);
+
+        return outputEntity;
+    }
+
     static <T> List<T> readAllEntities(EntityManager entityManager, Class<T> theClass, SingularAttribute<T, Date> orderByAttribute) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> userQuery = criteriaBuilder.createQuery(theClass);
@@ -101,7 +113,7 @@ public interface PersistenceUtil {
         return entities.stream().map(configProvider).collect(Collectors.toList());
     }
 
-    static <C, E> List<E> fromConfig(List<E> outputEntities, List<C> inputConfigs, Supplier<E> entityCreator, BiConsumer<E, C> entityFiller) {
+    static <C, E> List<E> fromConfigs(List<E> outputEntities, List<C> inputConfigs, Supplier<E> entityCreator, BiConsumer<E, C> entityFiller) {
         if (outputEntities == null) {
             outputEntities = new ArrayList<>();
         }

@@ -39,6 +39,10 @@ public class PlaceConfigEntity {
     private DecimalPosition position;
     private Double radius;
 
+    public Integer getId() {
+        return id;
+    }
+
     public PlaceConfig toPlaceConfig() {
         PlaceConfig placeConfig = new PlaceConfig().position(position).radius(radius);
         if (polygon2D != null && !polygon2D.isEmpty()) {
@@ -75,5 +79,12 @@ public class PlaceConfigEntity {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
+    }
+
+    public static PlaceConfig toPlaceConfig(PlaceConfigEntity entity) {
+        if (entity != null) {
+            return entity.toPlaceConfig();
+        }
+        return null;
     }
 }

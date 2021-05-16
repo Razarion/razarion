@@ -21,7 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  * Date: 08.05.2010
  * Time: 22:07:56
  */
-public class ResourceRegionConfig implements ObjectNameIdProvider {
+public class ResourceRegionConfig {
     private int id;
     private String internalName;
     private int count;
@@ -33,58 +33,77 @@ public class ResourceRegionConfig implements ObjectNameIdProvider {
         return id;
     }
 
-    public ResourceRegionConfig setId(int id) {
+    public void setId(int id) {
         this.id = id;
-        return this;
     }
 
     public String getInternalName() {
         return internalName;
     }
 
-    public ResourceRegionConfig setInternalName(String internalName) {
+    public void setInternalName(String internalName) {
         this.internalName = internalName;
-        return this;
     }
 
     public int getCount() {
         return count;
     }
 
-    public ResourceRegionConfig setCount(int count) {
+    public void setCount(int count) {
         this.count = count;
-        return this;
-    }
-
-    public PlaceConfig getRegion() {
-        return region;
-    }
-
-    public ResourceRegionConfig setRegion(PlaceConfig region) {
-        this.region = region;
-        return this;
     }
 
     public double getMinDistanceToItems() {
         return minDistanceToItems;
     }
 
-    public ResourceRegionConfig setMinDistanceToItems(double minDistanceToItems) {
+    public void setMinDistanceToItems(double minDistanceToItems) {
         this.minDistanceToItems = minDistanceToItems;
-        return this;
     }
 
     public Integer getResourceItemTypeId() {
         return resourceItemTypeId;
     }
 
-    public ResourceRegionConfig setResourceItemTypeId(Integer resourceItemTypeId) {
+    public void setResourceItemTypeId(Integer resourceItemTypeId) {
         this.resourceItemTypeId = resourceItemTypeId;
+    }
+
+    public PlaceConfig getRegion() {
+        return region;
+    }
+
+    public void setRegion(PlaceConfig region) {
+        this.region = region;
+    }
+
+    public ResourceRegionConfig id(int id) {
+        setId(id);
         return this;
     }
 
-    @Override
-    public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(id, internalName);
+    public ResourceRegionConfig internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
+    }
+
+    public ResourceRegionConfig count(int count) {
+        setCount(count);
+        return this;
+    }
+
+    public ResourceRegionConfig minDistanceToItems(double minDistanceToItems) {
+        setMinDistanceToItems(minDistanceToItems);
+        return this;
+    }
+
+    public ResourceRegionConfig resourceItemTypeId(Integer resourceItemTypeId) {
+        setResourceItemTypeId(resourceItemTypeId);
+        return this;
+    }
+
+    public ResourceRegionConfig region(PlaceConfig region) {
+        setRegion(region);
+        return this;
     }
 }

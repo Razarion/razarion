@@ -297,68 +297,6 @@ public class RestServerGameEnginePersistenceTestBase extends IgnoreOldArquillian
         assertEmptyCount(ServerResourceRegionConfigEntity.class);
     }
 
-    // @Test
-    // If orphan removal fails see: https://hibernate.atlassian.net/browse/HHH-9663
-    public void testResourceRegionConfigCrud() throws Exception {
-        Assert.assertTrue(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds().isEmpty());
-        // Create first
-        ResourceRegionConfig expectedResourceRegionConfig1 = serverGameEngineCrudPersistence.getResourceRegionConfigCrud().create();
-        expectedResourceRegionConfig1.setInternalName("res1").setCount(100).setMinDistanceToItems(15.789).setRegion(TestHelper.placeConfigPolygonFromRect(100, 200, 300, 400)).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID);
-        serverGameEngineCrudPersistence.getResourceRegionConfigCrud().update(expectedResourceRegionConfig1);
-        // Verify
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "res1");
-        int id = TestHelper.findIdForName(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "res1");
-        ResourceRegionConfig actualResourceRegionConfig1 = serverGameEngineCrudPersistence.getResourceRegionConfigCrud().read(id);
-        ReflectionAssert.assertReflectionEquals(expectedResourceRegionConfig1, actualResourceRegionConfig1);
-        // Change
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "res1");
-        ResourceRegionConfig expectedResourceRegionConfig2 = serverGameEngineCrudPersistence.getResourceRegionConfigCrud().read(id);
-        expectedResourceRegionConfig2.setInternalName("res1").setCount(254).setMinDistanceToItems(5653.77).setRegion(TestHelper.placeConfigPolygonFromRect(55, 44, 22, 77)).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID);
-        serverGameEngineCrudPersistence.getResourceRegionConfigCrud().update(expectedResourceRegionConfig2);
-        // Verify
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "res1");
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "res1");
-        ResourceRegionConfig actualResourceRegionConfig2 = serverGameEngineCrudPersistence.getResourceRegionConfigCrud().read(id);
-        ReflectionAssert.assertReflectionEquals(expectedResourceRegionConfig2, actualResourceRegionConfig2);
-        // Change
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "res1");
-        ResourceRegionConfig expectedResourceRegionConfig3 = serverGameEngineCrudPersistence.getResourceRegionConfigCrud().read(id);
-        expectedResourceRegionConfig3.setInternalName("xddfedsfdsfds afdasf").setCount(12).setMinDistanceToItems(1.78).setRegion(null).setResourceItemTypeId(null);
-        serverGameEngineCrudPersistence.getResourceRegionConfigCrud().update(expectedResourceRegionConfig3);
-        // Verify
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "xddfedsfdsfds afdasf");
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "xddfedsfdsfds afdasf");
-        ResourceRegionConfig actualResourceRegionConfig3 = serverGameEngineCrudPersistence.getResourceRegionConfigCrud().read(id);
-        ReflectionAssert.assertReflectionEquals(expectedResourceRegionConfig3, actualResourceRegionConfig3);
-        // Create second
-        ResourceRegionConfig expectedResourceRegionConfig4 = serverGameEngineCrudPersistence.getResourceRegionConfigCrud().create();
-        expectedResourceRegionConfig4.setInternalName("adfasdf lllll").setCount(12).setMinDistanceToItems(23.2).setRegion(TestHelper.placeConfigPolygonFromRect(44, 11, 56, 32)).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID);
-        serverGameEngineCrudPersistence.getResourceRegionConfigCrud().update(expectedResourceRegionConfig4);
-        // Verify
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "xddfedsfdsfds afdasf", "adfasdf lllll");
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "xddfedsfdsfds afdasf");
-        actualResourceRegionConfig3 = serverGameEngineCrudPersistence.getResourceRegionConfigCrud().read(id);
-        ReflectionAssert.assertReflectionEquals(expectedResourceRegionConfig3, actualResourceRegionConfig3);
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "adfasdf lllll");
-        ResourceRegionConfig actualResourceRegionConfig4 = serverGameEngineCrudPersistence.getResourceRegionConfigCrud().read(id);
-        ReflectionAssert.assertReflectionEquals(expectedResourceRegionConfig4, actualResourceRegionConfig4);
-        // Delete first
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "xddfedsfdsfds afdasf");
-        serverGameEngineCrudPersistence.getResourceRegionConfigCrud().delete(id);
-        // Verify
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "adfasdf lllll");
-        actualResourceRegionConfig4 = serverGameEngineCrudPersistence.getResourceRegionConfigCrud().read(id);
-        ReflectionAssert.assertReflectionEquals(expectedResourceRegionConfig4, actualResourceRegionConfig4);
-        // Delete second
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds(), "adfasdf lllll");
-        serverGameEngineCrudPersistence.getResourceRegionConfigCrud().delete(id);
-        // Verify
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds());
-
-        assertEmptyCount(ServerResourceRegionConfigEntity.class);
-        assertEmptyCount(PlaceConfigEntity.class); // If orphan removal fails see: https://hibernate.atlassian.net/browse/HHH-9663
-        assertEmptyCountNative("PLACE_CONFIG_POSITION_POLYGON");
-    }
 
     private void setupServerBots1(BotConfig botConfig) {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
@@ -383,7 +321,7 @@ public class RestServerGameEnginePersistenceTestBase extends IgnoreOldArquillian
 
     private List<ResourceRegionConfig> setupResourceRegionConfigs1() {
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
-        resourceRegionConfigs.add(new ResourceRegionConfig().setCount(10).setMinDistanceToItems(2).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setRegion(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(160, 140, 80, 90))));
+        resourceRegionConfigs.add(new ResourceRegionConfig().count(10).minDistanceToItems(2).resourceItemTypeId(RESOURCE_ITEM_TYPE_ID).region(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(160, 140, 80, 90))));
         return resourceRegionConfigs;
     }
 

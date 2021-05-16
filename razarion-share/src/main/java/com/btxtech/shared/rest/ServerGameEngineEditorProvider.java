@@ -3,7 +3,6 @@ package com.btxtech.shared.rest;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -25,6 +24,7 @@ import java.util.List;
  * Created by Beat
  * on 28.07.2017.
  */
+@Deprecated
 @Path(CommonUrl.SERVER_GAME_ENGINE_EDITOR_PROVIDER_PATH)
 public interface ServerGameEngineEditorProvider {
 
@@ -107,31 +107,6 @@ public interface ServerGameEngineEditorProvider {
     @Path("swapQuestConfig/{levelQuestId}/{index1}/{index2}")
     @Consumes(MediaType.APPLICATION_JSON)
     void swapQuestConfig(@PathParam("levelQuestId") int levelQuestId, @PathParam("index1") int index1, @PathParam("index2") int index2);
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("readResourceRegionObjectNameIds")
-    List<ObjectNameId> readResourceRegionObjectNameIds();
-
-    @POST
-    @Path("createResourceRegionConfig")
-    @Produces(MediaType.APPLICATION_JSON)
-    ResourceRegionConfig createResourceRegionConfig();
-
-    @DELETE
-    @Path("deleteResourceRegionConfig")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void deleteResourceRegionConfig(int resourceRegionConfigId);
-
-    @PUT
-    @Path("updateResourceRegionConfig")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void updateResourceRegionConfig(ResourceRegionConfig resourceRegionConfig);
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("readResourceRegionConfig/{resourceRegionConfigId}")
-    ResourceRegionConfig readResourceRegionConfig(@PathParam("resourceRegionConfigId") int resourceRegionConfigId);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

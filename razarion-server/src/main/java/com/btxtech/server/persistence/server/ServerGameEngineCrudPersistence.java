@@ -23,7 +23,6 @@ import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.SlavePlanetConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
@@ -73,8 +72,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     @Inject
     private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig>> serverQuestCrudInstance;
     @Inject
-    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig>> resourceRegionCrud;
-    @Inject
     private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig>> botConfigCrud;
     @Inject
     private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig>> botSceneConfigCrud;
@@ -92,7 +89,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
 
     @Override
     protected void fromConfig(ServerGameEngineConfig config, ServerGameEngineConfigEntity entity) {
-        entity.fromServerGameEngineConfig(config, planetCrudPersistence);
+        entity.fromServerGameEngineConfig(config, planetCrudPersistence, resourceItemTypeCrudPersistence);
     }
 
     @Transactional
@@ -109,16 +106,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         } catch (Throwable t) {
             logger.severe("Using fallback. Error reading MasterPlanetConfig: " + t.getMessage());
             return FallbackConfig.setupMasterPlanetConfig();
-        }
-    }
-
-    @Transactional
-    public PlanetConfig readPlanetConfig() {
-        try {
-            return serverGameEngineConfigEntity().getPlanetConfig();
-        } catch (Throwable t) {
-            logger.severe("Using fallback. Error reading PlanetConfig: " + t.getMessage());
-            return FallbackConfig.setupPlanetConfig();
         }
     }
 
@@ -310,20 +297,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         crud.setEntityFactory(QuestConfigEntity::new);
         crud.setEntityFiller((questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, questConfig, locale));
         crud.setAdditionalDelete((entityManager, integer) -> entityManager.remove(entityManager.find(QuestConfigEntity.class, integer)));
-        return crud;
-    }
-
-    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig> getResourceRegionConfigCrud() {
-        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig> crud = resourceRegionCrud.get();
-        crud.setRootProvider(this::serverGameEngineConfigEntity).setParentProvider(entityManager -> serverGameEngineConfigEntity());
-        crud.setEntitiesGetter((entityManager) -> serverGameEngineConfigEntity().getResourceRegionConfigs());
-        crud.setEntitiesSetter((entityManager, resourceRegionConfigs) -> serverGameEngineConfigEntity().setResourceRegionConfigs(resourceRegionConfigs));
-        crud.setEntityIdProvider(ServerResourceRegionConfigEntity::getId).setConfigIdProvider(ResourceRegionConfig::getId);
-        crud.setConfigGenerator(ServerResourceRegionConfigEntity::toResourceRegionConfig);
-        crud.setEntityFactory(ServerResourceRegionConfigEntity::new);
-        crud.setEntityFiller((serverResourceRegionConfigEntity, resourceRegionConfig) -> {
-            serverResourceRegionConfigEntity.fromResourceRegionConfig(resourceItemTypeCrudPersistence, resourceRegionConfig);
-        });
         return crud;
     }
 

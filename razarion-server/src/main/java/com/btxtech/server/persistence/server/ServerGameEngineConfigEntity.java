@@ -34,6 +34,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
+import static com.btxtech.server.persistence.PersistenceUtil.fromConfigs;
+import static com.btxtech.server.persistence.PersistenceUtil.toConfigList;
+
 /**
  * Created by Beat
  * 09.05.2017.
@@ -71,16 +75,20 @@ public class ServerGameEngineConfigEntity {
     private List<ServerLevelQuestEntity> serverQuestEntities;
 
     public ServerGameEngineConfig toServerGameEngineConfig() {
-        ServerGameEngineConfig serverGameEngineConfig = new ServerGameEngineConfig().id(id).internalName(internalName);
-        if(planetEntity != null) {
-            serverGameEngineConfig.setPlanetConfigId(planetEntity.getId());
-        }
-        return serverGameEngineConfig;
+        return new ServerGameEngineConfig()
+                .id(id)
+                .internalName(internalName)
+                .resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
+                .planetConfigId(extractId(planetEntity, PlanetEntity::getId));
     }
 
-    public void fromServerGameEngineConfig(ServerGameEngineConfig config, PlanetCrudPersistence planetCrudPersistence) {
+    public void fromServerGameEngineConfig(ServerGameEngineConfig config, PlanetCrudPersistence planetCrudPersistence, ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence) {
         internalName = config.getInternalName();
         planetEntity = planetCrudPersistence.getEntity(config.getPlanetConfigId());
+        resourceRegionConfigs = fromConfigs(resourceRegionConfigs,
+                config.getResourceRegionConfigs(),
+                ServerResourceRegionConfigEntity::new,
+                (serverResourceRegionConfigEntity, resourceRegionConfig) -> serverResourceRegionConfigEntity.fromResourceRegionConfig(resourceItemTypeCrudPersistence, resourceRegionConfig));
     }
 
     public Integer getId() {

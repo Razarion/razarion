@@ -274,7 +274,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
     @Override
     protected MasterPlanetConfig setupMasterPlanetConfig() {
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
-        resourceRegionConfigs.add(new ResourceRegionConfig().setResourceItemTypeId(FallbackConfig.RESOURCE_ITEM_TYPE_ID).setCount(5).setMinDistanceToItems(1).setRegion(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(100, 20, 20, 20))));
+        resourceRegionConfigs.add(new ResourceRegionConfig().resourceItemTypeId(FallbackConfig.RESOURCE_ITEM_TYPE_ID).count(5).minDistanceToItems(1).region(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(100, 20, 20, 20))));
         return super.setupMasterPlanetConfig().setResourceRegionConfigs(resourceRegionConfigs);
     }
 

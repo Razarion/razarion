@@ -54,8 +54,8 @@ public class ParticleEmitterSequenceEntity {
 
     public void fromConfig(ParticleEmitterSequenceConfig config, AudioPersistence audioPersistence, ParticleShapeCrudPersistence particleShapeCrudPersistence) {
         internalName = config.getInternalName();
-        dependent = PersistenceUtil.fromConfig(dependent, config.getDependent(), DependentParticleEmitterEntity::new, (dependentParticleEmitterEntity, config1) -> dependentParticleEmitterEntity.fromConfig(config1, particleShapeCrudPersistence));
-        autonomous = PersistenceUtil.fromConfig(autonomous, config.getAutonomous(), AutonomousParticleEmitterEntity::new, (dependentParticleEmitterEntity, config1) -> dependentParticleEmitterEntity.fromConfig(config1, particleShapeCrudPersistence));
+        dependent = PersistenceUtil.fromConfigs(dependent, config.getDependent(), DependentParticleEmitterEntity::new, (dependentParticleEmitterEntity, config1) -> dependentParticleEmitterEntity.fromConfig(config1, particleShapeCrudPersistence));
+        autonomous = PersistenceUtil.fromConfigs(autonomous, config.getAutonomous(), AutonomousParticleEmitterEntity::new, (dependentParticleEmitterEntity, config1) -> dependentParticleEmitterEntity.fromConfig(config1, particleShapeCrudPersistence));
         audios = audioPersistence.toAudioLibraryEntities(config.getAudioIds());
     }
 
