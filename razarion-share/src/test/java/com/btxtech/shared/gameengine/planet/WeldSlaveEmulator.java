@@ -4,11 +4,14 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -68,6 +71,13 @@ public class WeldSlaveEmulator extends AbstractIntegrationTest {
             } else {
                 throw new IllegalArgumentException("GameEngineWorker.onServerSyncItemDeleted(): unknown type: " + syncItem);
             }
+        }
+
+        @Override
+        public void sendSyncBaseItems(Collection<SyncBaseItemInfo> syncBaseItemInfos) {
+            syncBaseItemInfos.forEach(syncBaseItemInfo -> {
+                getBaseItemService().onSlaveSyncBaseItemChanged(getPlanetService().getTickCount(), syncBaseItemInfo);
+            });
         }
     }
 

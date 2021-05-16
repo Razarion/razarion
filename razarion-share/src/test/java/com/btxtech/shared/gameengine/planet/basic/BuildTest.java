@@ -1,13 +1,15 @@
 package com.btxtech.shared.gameengine.planet.basic;
 
-import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Assert;
 import org.junit.Test;
+
+import static com.btxtech.shared.TestHelper.assertDecimalPosition;
 
 /**
  * Created by Beat
@@ -20,17 +22,28 @@ public class BuildTest extends BaseBasicTest {
         setup();
 
         UserContext userContext = createLevel1UserContext();
+        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        permSlave.connectToMaster(userContext, this);
+
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(167, 136), userContext);
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
+
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
+        assertDecimalPosition("Position", builder.getSyncPhysicalArea().getPosition2d(), slaveBuilder.getSyncPhysicalArea().getPosition2d());
+
         getCommandService().build(builder, new DecimalPosition(104, 144), getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.FACTORY_ITEM_TYPE_ID);
+        permSlave.tickPlanetServiceBaseServiceActive();
 
-        Assert.assertTrue(factory.isBuildup());
-        Assert.assertEquals(30, factory.getHealth(), 0.001);
-        Assert.assertEquals(FallbackConfig.FACTORY_ITEM_TYPE_ID, factory.getBaseItemType().getId());
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(104, 144), factory.getSyncPhysicalArea().getPosition2d());
+        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.FACTORY_ITEM_TYPE_ID);
+        assertFactory(factory, 30, FallbackConfig.FACTORY_ITEM_TYPE_ID, new DecimalPosition(104, 144));
+
+        permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
+        SyncBaseItem slaveFactory = permSlave.getSyncItemContainerService().getSyncBaseItemSave(factory.getId());
+        assertFactory(slaveFactory, 30, FallbackConfig.FACTORY_ITEM_TYPE_ID, new DecimalPosition(104, 144));
+
         // showDisplay();
     }
 
@@ -39,18 +52,28 @@ public class BuildTest extends BaseBasicTest {
         setup();
 
         UserContext userContext = createLevel1UserContext();
+        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        permSlave.connectToMaster(userContext, this);
+
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(240, 130), userContext);
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         // Build harbour
         getCommandService().build(builder, new DecimalPosition(174.5, 194.5), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+
         SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.HARBOUR_ITEM_TYPE_ID);
-        // Verify
+        assertFactory(factory, 40, FallbackConfig.HARBOUR_ITEM_TYPE_ID, new DecimalPosition(174.5, 194.5));
+
+        SyncBaseItem slaveFactory = permSlave.getSyncItemContainerService().getSyncBaseItemSave(factory.getId());
+        assertFactory(slaveFactory, 40, FallbackConfig.HARBOUR_ITEM_TYPE_ID, new DecimalPosition(174.5, 194.5));
+    }
+
+    private void assertFactory(SyncBaseItem factory, double health, int factoryItemTypeId, DecimalPosition position) {
         Assert.assertTrue(factory.isBuildup());
-        Assert.assertEquals(40, factory.getHealth(), 0.001);
-        Assert.assertEquals(FallbackConfig.HARBOUR_ITEM_TYPE_ID, factory.getBaseItemType().getId());
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(174.5, 194.5), factory.getSyncPhysicalArea().getPosition2d());
+        Assert.assertEquals(health, factory.getHealth(), 0.001);
+        Assert.assertEquals(factoryItemTypeId, factory.getBaseItemType().getId());
+        assertDecimalPosition(null, position, factory.getSyncPhysicalArea().getPosition2d());
     }
 
 }

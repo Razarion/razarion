@@ -52,215 +52,285 @@ public class SyncBaseItemInfo {
         return tickCount;
     }
 
-    public SyncBaseItemInfo setTickCount(double tickCount) {
+    public void setTickCount(double tickCount) {
         this.tickCount = tickCount;
-        return this;
     }
 
     public int getId() {
         return id;
     }
 
-    public SyncBaseItemInfo setId(int id) {
+    public void setId(int id) {
         this.id = id;
-        return this;
-    }
-
-    public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {
-        return syncPhysicalAreaInfo;
-    }
-
-    public SyncBaseItemInfo setSyncPhysicalAreaInfo(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
-        this.syncPhysicalAreaInfo = syncPhysicalAreaInfo;
-        return this;
     }
 
     public int getItemTypeId() {
         return itemTypeId;
     }
 
-    public SyncBaseItemInfo setItemTypeId(int itemTypeId) {
+    public void setItemTypeId(int itemTypeId) {
         this.itemTypeId = itemTypeId;
-        return this;
+    }
+
+    public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {
+        return syncPhysicalAreaInfo;
+    }
+
+    public void setSyncPhysicalAreaInfo(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
+        this.syncPhysicalAreaInfo = syncPhysicalAreaInfo;
     }
 
     public int getBaseId() {
         return baseId;
     }
 
-    public SyncBaseItemInfo setBaseId(int baseId) {
+    public void setBaseId(int baseId) {
         this.baseId = baseId;
-        return this;
     }
 
     public DecimalPosition getToBeBuildPosition() {
         return toBeBuildPosition;
     }
 
+    public void setToBeBuildPosition(DecimalPosition toBeBuildPosition) {
+        this.toBeBuildPosition = toBeBuildPosition;
+    }
+
     public Integer getToBeBuiltTypeId() {
         return toBeBuiltTypeId;
+    }
+
+    public void setToBeBuiltTypeId(Integer toBeBuiltTypeId) {
+        this.toBeBuiltTypeId = toBeBuiltTypeId;
     }
 
     public Integer getCurrentBuildup() {
         return currentBuildup;
     }
 
+    public void setCurrentBuildup(Integer currentBuildup) {
+        this.currentBuildup = currentBuildup;
+    }
+
     public Double getFactoryBuildupProgress() {
         return factoryBuildupProgress;
+    }
+
+    public void setFactoryBuildupProgress(Double factoryBuildupProgress) {
+        this.factoryBuildupProgress = factoryBuildupProgress;
     }
 
     public Integer getTarget() {
         return target;
     }
 
+    public void setTarget(Integer target) {
+        this.target = target;
+    }
+
     public double getHealth() {
         return health;
     }
 
-    public Boolean isFollowTarget() {
-        return followTarget;
-    }
-
-    public SyncBaseItemInfo setToBeBuildPosition(DecimalPosition toBeBuildPosition) {
-        this.toBeBuildPosition = toBeBuildPosition;
-        return this;
-    }
-
-    public SyncBaseItemInfo setToBeBuiltTypeId(Integer toBeBuiltTypeId) {
-        this.toBeBuiltTypeId = toBeBuiltTypeId;
-        return this;
-    }
-
-    public SyncBaseItemInfo setCurrentBuildup(Integer currentBuildup) {
-        this.currentBuildup = currentBuildup;
-        return this;
-    }
-
-    public SyncBaseItemInfo setFactoryBuildupProgress(Double factoryBuildupProgress) {
-        this.factoryBuildupProgress = factoryBuildupProgress;
-        return this;
-    }
-
-    public SyncBaseItemInfo setTarget(Integer target) {
-        this.target = target;
-        return this;
-    }
-
-    public SyncBaseItemInfo setHealth(double health) {
+    public void setHealth(double health) {
         this.health = health;
-        return this;
-    }
-
-    public SyncBaseItemInfo setFollowTarget(boolean followTarget) {
-        this.followTarget = followTarget;
-        return this;
-    }
-
-    public double getReloadProgress() {
-        return reloadProgress;
-    }
-
-    public SyncBaseItemInfo setReloadProgress(double reloadProgress) {
-        this.reloadProgress = reloadProgress;
-        return this;
-    }
-
-    public DecimalPosition getSpawnPoint() {
-        return spawnPoint;
-    }
-
-    public SyncBaseItemInfo setSpawnPoint(DecimalPosition spawnPoint) {
-        this.spawnPoint = spawnPoint;
-        return this;
-    }
-
-    public DecimalPosition getRallyPoint() {
-        return rallyPoint;
-    }
-
-    public SyncBaseItemInfo setRallyPoint(DecimalPosition rallyPoint) {
-        this.rallyPoint = rallyPoint;
-        return this;
-    }
-
-    public List<Integer> getContainedItems() {
-        return containedItems;
-    }
-
-    public SyncBaseItemInfo setContainedItems(List<Integer> containedItems) {
-        this.containedItems = containedItems;
-        return this;
-    }
-
-    public Integer getTargetContainer() {
-        return targetContainer;
-    }
-
-    public SyncBaseItemInfo setTargetContainer(Integer targetContainer) {
-        this.targetContainer = targetContainer;
-        return this;
-    }
-
-    public Integer getContainedIn() {
-        return containedIn;
-    }
-
-    public SyncBaseItemInfo setContainedIn(Integer containedIn) {
-        this.containedIn = containedIn;
-        return this;
-    }
-
-    public DecimalPosition getUnloadPos() {
-        return unloadPos;
-    }
-
-    public SyncBaseItemInfo setUnloadPos(DecimalPosition unloadPos) {
-        this.unloadPos = unloadPos;
-        return this;
     }
 
     public double getBuildup() {
         return buildup;
     }
 
-    public SyncBaseItemInfo setBuildup(double buildup) {
+    public void setBuildup(double buildup) {
         this.buildup = buildup;
-        return this;
     }
 
-    public Integer getSyncBoxItemId() {
-        return syncBoxItemId;
+    public Boolean getFollowTarget() {
+        return followTarget;
     }
 
-    public SyncBaseItemInfo setSyncBoxItemId(Integer syncBoxItemId) {
-        this.syncBoxItemId = syncBoxItemId;
-        return this;
+    public void setFollowTarget(Boolean followTarget) {
+        this.followTarget = followTarget;
     }
 
-    private String intCollectionAsString() {
-        StringBuilder builder = new StringBuilder();
-        if (containedItems != null) {
-            builder.append("{");
-            Iterator<Integer> iterator = containedItems.iterator();
-            while (iterator.hasNext()) {
-                builder.append(iterator.next());
-                if (iterator.hasNext()) {
-                    builder.append(", ");
-                }
-            }
-            builder.append("}");
-        } else {
-            builder.append("{-}");
-        }
-        return builder.toString();
+    public double getReloadProgress() {
+        return reloadProgress;
+    }
+
+    public void setReloadProgress(double reloadProgress) {
+        this.reloadProgress = reloadProgress;
+    }
+
+    public DecimalPosition getSpawnPoint() {
+        return spawnPoint;
+    }
+
+    public void setSpawnPoint(DecimalPosition spawnPoint) {
+        this.spawnPoint = spawnPoint;
+    }
+
+    public DecimalPosition getRallyPoint() {
+        return rallyPoint;
+    }
+
+    public void setRallyPoint(DecimalPosition rallyPoint) {
+        this.rallyPoint = rallyPoint;
+    }
+
+    public List<Integer> getContainedItems() {
+        return containedItems;
+    }
+
+    public void setContainedItems(List<Integer> containedItems) {
+        this.containedItems = containedItems;
+    }
+
+    public Integer getTargetContainer() {
+        return targetContainer;
+    }
+
+    public void setTargetContainer(Integer targetContainer) {
+        this.targetContainer = targetContainer;
+    }
+
+    public Integer getContainedIn() {
+        return containedIn;
+    }
+
+    public void setContainedIn(Integer containedIn) {
+        this.containedIn = containedIn;
+    }
+
+    public DecimalPosition getUnloadPos() {
+        return unloadPos;
+    }
+
+    public void setUnloadPos(DecimalPosition unloadPos) {
+        this.unloadPos = unloadPos;
     }
 
     public double getSpawnProgress() {
         return spawnProgress;
     }
 
-    public SyncBaseItemInfo setSpawnProgress(double spawnProgress) {
+    public void setSpawnProgress(double spawnProgress) {
         this.spawnProgress = spawnProgress;
+    }
+
+    public Integer getSyncBoxItemId() {
+        return syncBoxItemId;
+    }
+
+    public void setSyncBoxItemId(Integer syncBoxItemId) {
+        this.syncBoxItemId = syncBoxItemId;
+    }
+
+    public SyncBaseItemInfo tickCount(double tickCount) {
+        setTickCount(tickCount);
+        return this;
+    }
+
+    public SyncBaseItemInfo id(int id) {
+        setId(id);
+        return this;
+    }
+
+    public SyncBaseItemInfo itemTypeId(int itemTypeId) {
+        setItemTypeId(itemTypeId);
+        return this;
+    }
+
+    public SyncBaseItemInfo syncPhysicalAreaInfo(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
+        setSyncPhysicalAreaInfo(syncPhysicalAreaInfo);
+        return this;
+    }
+
+    public SyncBaseItemInfo baseId(int baseId) {
+        setBaseId(baseId);
+        return this;
+    }
+
+    public SyncBaseItemInfo toBeBuildPosition(DecimalPosition toBeBuildPosition) {
+        setToBeBuildPosition(toBeBuildPosition);
+        return this;
+    }
+
+    public SyncBaseItemInfo toBeBuiltTypeId(Integer toBeBuiltTypeId) {
+        setToBeBuiltTypeId(toBeBuiltTypeId);
+        return this;
+    }
+
+    public SyncBaseItemInfo currentBuildup(Integer currentBuildup) {
+        setCurrentBuildup(currentBuildup);
+        return this;
+    }
+
+    public SyncBaseItemInfo factoryBuildupProgress(Double factoryBuildupProgress) {
+        setFactoryBuildupProgress(factoryBuildupProgress);
+        return this;
+    }
+
+    public SyncBaseItemInfo target(Integer target) {
+        setTarget(target);
+        return this;
+    }
+
+    public SyncBaseItemInfo health(double health) {
+        setHealth(health);
+        return this;
+    }
+
+    public SyncBaseItemInfo buildup(double buildup) {
+        setBuildup(buildup);
+        return this;
+    }
+
+    public SyncBaseItemInfo followTarget(Boolean followTarget) {
+        setFollowTarget(followTarget);
+        return this;
+    }
+
+    public SyncBaseItemInfo reloadProgress(double reloadProgress) {
+        setReloadProgress(reloadProgress);
+        return this;
+    }
+
+    public SyncBaseItemInfo spawnPoint(DecimalPosition spawnPoint) {
+        setSpawnPoint(spawnPoint);
+        return this;
+    }
+
+    public SyncBaseItemInfo rallyPoint(DecimalPosition rallyPoint) {
+        setRallyPoint(rallyPoint);
+        return this;
+    }
+
+    public SyncBaseItemInfo containedItems(List<Integer> containedItems) {
+        setContainedItems(containedItems);
+        return this;
+    }
+
+    public SyncBaseItemInfo targetContainer(Integer targetContainer) {
+        setTargetContainer(targetContainer);
+        return this;
+    }
+
+    public SyncBaseItemInfo containedIn(Integer containedIn) {
+        setContainedIn(containedIn);
+        return this;
+    }
+
+    public SyncBaseItemInfo unloadPos(DecimalPosition unloadPos) {
+        setUnloadPos(unloadPos);
+        return this;
+    }
+
+    public SyncBaseItemInfo spawnProgress(double spawnProgress) {
+        setSpawnProgress(spawnProgress);
+        return this;
+    }
+
+    public SyncBaseItemInfo syncBoxItemId(Integer syncBoxItemId) {
+        setSyncBoxItemId(syncBoxItemId);
         return this;
     }
 
@@ -286,4 +356,23 @@ public class SyncBaseItemInfo {
                 " containedIn:" + containedIn +
                 " unloadPos:" + unloadPos;
     }
+
+    private String intCollectionAsString() {
+        StringBuilder builder = new StringBuilder();
+        if (containedItems != null) {
+            builder.append("{");
+            Iterator<Integer> iterator = containedItems.iterator();
+            while (iterator.hasNext()) {
+                builder.append(iterator.next());
+                if (iterator.hasNext()) {
+                    builder.append(", ");
+                }
+            }
+            builder.append("}");
+        } else {
+            builder.append("{-}");
+        }
+        return builder.toString();
+    }
+
 }

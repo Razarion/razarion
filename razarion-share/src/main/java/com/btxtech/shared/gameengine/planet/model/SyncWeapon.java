@@ -175,7 +175,7 @@ public class SyncWeapon extends SyncBaseAbility {
             target = null;
             targetPosition = null;
         }
-        followTarget = syncBaseItemInfo.isFollowTarget();
+        followTarget = syncBaseItemInfo.getFollowTarget();
         reloadProgress = syncBaseItemInfo.getReloadProgress();
     }
 

@@ -36,18 +36,18 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         List<SyncBaseItemInfo> syncBaseItemInfos = new ArrayList<>();
         // Attacker
         SyncPhysicalAreaInfo syncPhysicalAreaInfo = new SyncPhysicalAreaInfo().setPosition(new DecimalPosition(500, 200)).setAngle(0);
-        SyncBaseItemInfo attackerInfo = new SyncBaseItemInfo().setId(203).setBaseId(40).setItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setSyncPhysicalAreaInfo(syncPhysicalAreaInfo).setBuildup(1.0).setHealth(0.99).setSpawnProgress(1.0);
-        attackerInfo.setTarget(15).setFollowTarget(true).setReloadProgress(0.75);
+        SyncBaseItemInfo attackerInfo = new SyncBaseItemInfo().id(203).baseId(40).itemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).syncPhysicalAreaInfo(syncPhysicalAreaInfo).buildup(1.0).health(0.99).spawnProgress(1.0);
+        attackerInfo.target(15).followTarget(true).setReloadProgress(0.75);
         syncBaseItemInfos.add(attackerInfo);
         // Builder
         syncPhysicalAreaInfo = new SyncPhysicalAreaInfo().setPosition(new DecimalPosition(100, 200)).setAngle(Math.toRadians(45));
-        SyncBaseItemInfo builderInfo = new SyncBaseItemInfo().setId(15).setBaseId(99).setItemTypeId(FallbackConfig.BUILDER_ITEM_TYPE_ID).setSyncPhysicalAreaInfo(syncPhysicalAreaInfo).setBuildup(1.0).setHealth(0.34).setSpawnProgress(0.5);
-        builderInfo.setToBeBuiltTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setToBeBuildPosition(new DecimalPosition(200, 200));
+        SyncBaseItemInfo builderInfo = new SyncBaseItemInfo().id(15).baseId(99).itemTypeId(FallbackConfig.BUILDER_ITEM_TYPE_ID).syncPhysicalAreaInfo(syncPhysicalAreaInfo).buildup(1.0).health(0.34).spawnProgress(0.5);
+        builderInfo.toBeBuiltTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setToBeBuildPosition(new DecimalPosition(200, 200));
         syncBaseItemInfos.add(builderInfo);
         // Factory
         syncPhysicalAreaInfo = new SyncPhysicalAreaInfo().setPosition(new DecimalPosition(300, 200)).setAngle(0);
-        SyncBaseItemInfo factoryInfo = new SyncBaseItemInfo().setId(107).setBaseId(99).setItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setSyncPhysicalAreaInfo(syncPhysicalAreaInfo).setBuildup(1.0).setHealth(0.5).setSpawnProgress(0.0);
-        factoryInfo.setFactoryBuildupProgress(0.45).setToBeBuiltTypeId(FallbackConfig.BUILDER_ITEM_TYPE_ID).setRallyPoint(new DecimalPosition(300, 150));
+        SyncBaseItemInfo factoryInfo = new SyncBaseItemInfo().id(107).baseId(99).itemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).syncPhysicalAreaInfo(syncPhysicalAreaInfo).buildup(1.0).health(0.5).spawnProgress(0.0);
+        factoryInfo.factoryBuildupProgress(0.45).toBeBuiltTypeId(FallbackConfig.BUILDER_ITEM_TYPE_ID).rallyPoint(new DecimalPosition(300, 150));
         syncBaseItemInfos.add(factoryInfo);
         initialSlaveSyncItemInfo.setSyncBaseItemInfos(syncBaseItemInfos);
 

@@ -11,7 +11,6 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -74,19 +73,6 @@ public class ClientGameConnectionService {
 
     public void sendSyncBaseItems(Collection<SyncBaseItemInfo> syncBaseItemInfos) {
         syncBaseItemInfos.forEach(syncBaseItemInfo -> sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo));
-    }
-
-    @Deprecated
-    public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
-        if (!syncBaseItem.isAlive()) {
-            return;
-        }
-        SyncBaseItemInfo syncBaseItemInfo = syncBaseItem.getSyncInfo();
-//        if (syncBaseItem.getSyncPhysicalArea().canMove()) {
-//            // System.out.println("*** sendSyncBaseItem: " + syncBaseItem.getId() + ". P: " + syncBaseItem.getSyncPhysicalArea().getPosition2d() + ". V: " + syncBaseItem.getSyncPhysicalMovable().getVelocity());
-//            // Thread.dumpStack();
-//        }
-        sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo);
     }
 
     public void sendResourcesBalanceChanged(PlayerBase playerBase, int resources) {

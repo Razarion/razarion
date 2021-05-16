@@ -14,6 +14,6 @@ import java.util.List;
 public class DummyClientSyncServer extends SyncService {
     @Override
     protected void sendSyncBaseItems(List<SyncBaseItemInfo> infos) {
-        throw new UnsupportedOperationException("... Only on server ...");
+        // Called in client-worker when running as Master -> ignore
     }
 }

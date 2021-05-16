@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
@@ -143,7 +144,9 @@ public class AbstractIntegrationTest {
         activeItemQueue.removeAll(Arrays.asList(ignores));
         Collection<BaseCommand> commandQueue = new ArrayList<>((Queue<BaseCommand>) SimpleTestEnvironment.readField("commandQueue", baseItemService));
         commandQueue.removeIf(baseCommand -> Arrays.stream(ignores).anyMatch(ignoredSyncBaseItem -> ignoredSyncBaseItem.getId() == baseCommand.getId()));
-        return !activeItems.isEmpty() || !activeItemQueue.isEmpty() || !commandQueue.isEmpty();
+        Collection<SyncBaseItemInfo> pendingReceivedSyncBaseItemInfos = new ArrayList<>((PriorityQueue<SyncBaseItemInfo>) SimpleTestEnvironment.readField("pendingReceivedSyncBaseItemInfos", baseItemService));
+        pendingReceivedSyncBaseItemInfos.removeIf(syncBaseItemInfo -> Arrays.stream(ignores).anyMatch(ignoredSyncBaseItem -> ignoredSyncBaseItem.getId() == syncBaseItemInfo.getId()));
+        return !activeItems.isEmpty() || !activeItemQueue.isEmpty() || !commandQueue.isEmpty() || !pendingReceivedSyncBaseItemInfos.isEmpty();
     }
 
     public boolean isPathingServiceMoving() {
