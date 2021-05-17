@@ -25,7 +25,6 @@ import java.util.List;
  * Time: 21:54:50
  */
 public class SyncBaseItemInfo {
-    private double tickCount;
     private int id;
     private int itemTypeId;
     private SyncPhysicalAreaInfo syncPhysicalAreaInfo;
@@ -47,14 +46,6 @@ public class SyncBaseItemInfo {
     private DecimalPosition unloadPos;
     private double spawnProgress;
     private Integer syncBoxItemId;
-
-    public double getTickCount() {
-        return tickCount;
-    }
-
-    public void setTickCount(double tickCount) {
-        this.tickCount = tickCount;
-    }
 
     public int getId() {
         return id;
@@ -224,11 +215,6 @@ public class SyncBaseItemInfo {
         this.syncBoxItemId = syncBoxItemId;
     }
 
-    public SyncBaseItemInfo tickCount(double tickCount) {
-        setTickCount(tickCount);
-        return this;
-    }
-
     public SyncBaseItemInfo id(int id) {
         setId(id);
         return this;
@@ -336,8 +322,7 @@ public class SyncBaseItemInfo {
 
     @Override
     public String toString() {
-        return "tickCount: " + tickCount +
-                " SyncItemInfo: " + id +
+        return " SyncItemInfo: " + id +
                 " itemTypeId:" + itemTypeId +
                 baseId +
                 " syncPhysicalAreaInfo:" + syncPhysicalAreaInfo +

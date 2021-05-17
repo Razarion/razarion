@@ -1,10 +1,9 @@
 package com.btxtech.common;
 
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.SyncService;
 
 import javax.inject.Singleton;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -13,7 +12,7 @@ import java.util.List;
 @Singleton
 public class DummyClientSyncServer extends SyncService {
     @Override
-    protected void sendSyncBaseItems(List<SyncBaseItemInfo> infos) {
+    protected void sendTickInfo(TickInfo tickInfo) {
         // Called in client-worker when running as Master -> ignore
     }
 }

@@ -13,10 +13,10 @@ import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 
 import java.util.List;
@@ -40,8 +40,9 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     BASE_HUMAN_PLAYER_ID_CHANGED(PlayerBaseInfo.class),
     BASE_DELETED(Integer.class),
     RESOURCE_BALANCE_CHANGED(Integer.class),
+    // Tick info
+    TICK_INFO(TickInfo.class),
     // Items
-    SYNC_BASE_ITEM_CHANGED(SyncBaseItemInfo.class),
     SYNC_RESOURCE_ITEM_CHANGED(SyncResourceItemInfo.class),
     SYNC_BOX_ITEM_CHANGED(SyncBoxItemInfo.class),
     SYNC_ITEM_DELETED(SyncItemDeletedInfo.class),

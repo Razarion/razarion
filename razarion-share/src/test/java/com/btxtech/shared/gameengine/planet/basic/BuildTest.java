@@ -57,10 +57,16 @@ public class BuildTest extends BaseBasicTest {
 
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(240, 130), userContext);
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
+
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
+        assertDecimalPosition("Position", builder.getSyncPhysicalArea().getPosition2d(), slaveBuilder.getSyncPhysicalArea().getPosition2d());
+
         // Build harbour
         getCommandService().build(builder, new DecimalPosition(174.5, 194.5), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
 
         SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.HARBOUR_ITEM_TYPE_ID);
         assertFactory(factory, 40, FallbackConfig.HARBOUR_ITEM_TYPE_ID, new DecimalPosition(174.5, 194.5));

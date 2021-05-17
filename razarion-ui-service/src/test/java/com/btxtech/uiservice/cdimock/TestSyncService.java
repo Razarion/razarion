@@ -1,9 +1,7 @@
 package com.btxtech.uiservice.cdimock;
 
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.SyncService;
-
-import java.util.List;
 
 /**
  * Created by Beat
@@ -11,7 +9,7 @@ import java.util.List;
  */
 public class TestSyncService extends SyncService {
     @Override
-    protected void sendSyncBaseItems(List<SyncBaseItemInfo> infos) {
-        System.out.println("TestSyncService.sendSyncBaseItems(): " + infos);
+    protected void sendTickInfo(TickInfo tickInfo) {
+        System.out.println("TestSyncService.sendTickInfo(): " + tickInfo);
     }
 }

@@ -6,10 +6,10 @@ import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -83,8 +83,8 @@ public abstract class AbstractServerGameConnection {
             case BASE_HUMAN_PLAYER_ID_CHANGED:
                 gameEngineWorker.onServerBaseHumanPlayerIdChanged((PlayerBaseInfo) param);
                 break;
-            case SYNC_BASE_ITEM_CHANGED:
-                baseItemService.onSlaveSyncBaseItemChanged(planetService.getTickCount(), (SyncBaseItemInfo) param);
+            case TICK_INFO:
+                baseItemService.onTickInfo(planetService.getTickCount(), (TickInfo) param);
                 break;
             case SYNC_RESOURCE_ITEM_CHANGED:
                 resourceService.onSlaveSyncResourceItemChanged((SyncResourceItemInfo) param);

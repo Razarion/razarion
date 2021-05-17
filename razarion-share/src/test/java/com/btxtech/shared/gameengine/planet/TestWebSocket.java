@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -33,8 +33,8 @@ public class TestWebSocket {
         delegates.forEach(testWebSocket -> testWebSocket.onBaseDeleted(playerBase));
     }
 
-    public void sendSyncBaseItems(Collection<SyncBaseItemInfo> syncBaseItemInfos) {
-        delegates.forEach(testWebSocket -> testWebSocket.sendSyncBaseItems(syncBaseItemInfos));
+    public void onTickInfo(TickInfo tickInfo) {
+        delegates.forEach(testWebSocket -> testWebSocket.onTickInfo(tickInfo));
     }
 
     public void onSyncItemRemoved(SyncItem syncItem, boolean explode) {

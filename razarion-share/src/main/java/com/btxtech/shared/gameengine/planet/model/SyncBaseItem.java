@@ -69,8 +69,6 @@ public class SyncBaseItem extends SyncItem {
     private BoxService boxService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
-    @Inject
-    private PlanetService planetService;
     private PlayerBase base;
     private double buildup;
     private double health;
@@ -214,7 +212,6 @@ public class SyncBaseItem extends SyncItem {
 
     public SyncBaseItemInfo getSyncInfo() {
         SyncBaseItemInfo syncBaseItemInfo = new SyncBaseItemInfo();
-        syncBaseItemInfo.setTickCount(planetService.getTickCount());
         syncBaseItemInfo.setId(getId());
         syncBaseItemInfo.setSyncPhysicalAreaInfo(getSyncPhysicalArea().getSyncPhysicalAreaInfo());
         syncBaseItemInfo.setItemTypeId(getItemType().getId());

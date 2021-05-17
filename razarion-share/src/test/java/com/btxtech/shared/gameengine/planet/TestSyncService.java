@@ -1,9 +1,8 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 
 import javax.inject.Singleton;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -18,9 +17,9 @@ public class TestSyncService extends SyncService {
     }
 
     @Override
-    protected void sendSyncBaseItems(List<SyncBaseItemInfo> infos) {
+    protected void sendTickInfo(TickInfo tickInfo) {
         if (testWebSocket != null) {
-            testWebSocket.sendSyncBaseItems(infos);
+            testWebSocket.onTickInfo(tickInfo);
         }
     }
 }

@@ -211,7 +211,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 onServerSyncItemDeleted((SyncItemDeletedInfo) controlPackage.getData(0));
                 break;
             case PLAYBACK_SYNC_BASE_ITEM:
-                baseItemService.onSlaveSyncBaseItemChanged(planetService.getTickCount(), (SyncBaseItemInfo) controlPackage.getData(0));
+                baseItemService.onSlaveSyncBaseItemChanged((SyncBaseItemInfo) controlPackage.getData(0));
                 break;
             case PLAYBACK_SYNC_RESOURCE_ITEM:
                 resourceService.onSlaveSyncResourceItemChanged((SyncResourceItemInfo) controlPackage.getData(0));

@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -144,8 +145,11 @@ public class AbstractIntegrationTest {
         activeItemQueue.removeAll(Arrays.asList(ignores));
         Collection<BaseCommand> commandQueue = new ArrayList<>((Queue<BaseCommand>) SimpleTestEnvironment.readField("commandQueue", baseItemService));
         commandQueue.removeIf(baseCommand -> Arrays.stream(ignores).anyMatch(ignoredSyncBaseItem -> ignoredSyncBaseItem.getId() == baseCommand.getId()));
-        Collection<SyncBaseItemInfo> pendingReceivedSyncBaseItemInfos = new ArrayList<>((PriorityQueue<SyncBaseItemInfo>) SimpleTestEnvironment.readField("pendingReceivedSyncBaseItemInfos", baseItemService));
-        pendingReceivedSyncBaseItemInfos.removeIf(syncBaseItemInfo -> Arrays.stream(ignores).anyMatch(ignoredSyncBaseItem -> ignoredSyncBaseItem.getId() == syncBaseItemInfo.getId()));
+        Collection<TickInfo> pendingReceivedTickInfos = new ArrayList<>((PriorityQueue<TickInfo>) SimpleTestEnvironment.readField("pendingReceivedTickInfos", baseItemService));
+        List<SyncBaseItemInfo> pendingReceivedSyncBaseItemInfos = pendingReceivedTickInfos.stream()
+                .flatMap(tickInfo -> tickInfo.getSyncBaseItemInfos().stream())
+                .filter(syncBaseItemInfo -> Arrays.stream(ignores).noneMatch(ignoredSyncBaseItem -> ignoredSyncBaseItem.getId() == syncBaseItemInfo.getId()))
+                .collect(Collectors.toList());
         return !activeItems.isEmpty() || !activeItemQueue.isEmpty() || !commandQueue.isEmpty() || !pendingReceivedSyncBaseItemInfos.isEmpty();
     }
 

@@ -7,8 +7,8 @@ import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -71,8 +71,8 @@ public class ClientGameConnectionService {
         sendToClients(GameConnectionPacket.BASE_HUMAN_PLAYER_ID_CHANGED, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setUserId(playerBase.getUserId()));
     }
 
-    public void sendSyncBaseItems(Collection<SyncBaseItemInfo> syncBaseItemInfos) {
-        syncBaseItemInfos.forEach(syncBaseItemInfo -> sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo));
+    public void sendTickinfo(TickInfo tickInfo) {
+        sendToClients(GameConnectionPacket.TICK_INFO, tickInfo);
     }
 
     public void sendResourcesBalanceChanged(PlayerBase playerBase, int resources) {

@@ -1,11 +1,10 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.SyncService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -17,7 +16,7 @@ public class ServerSyncService extends SyncService {
     private ClientGameConnectionService clientGameConnectionService;
 
     @Override
-    protected void sendSyncBaseItems(List<SyncBaseItemInfo> infos) {
-        clientGameConnectionService.sendSyncBaseItems(infos);
+    protected void sendTickInfo(TickInfo tickInfo) {
+        clientGameConnectionService.sendTickinfo(tickInfo);
     }
 }

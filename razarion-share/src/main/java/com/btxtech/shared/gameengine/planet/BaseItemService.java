@@ -26,6 +26,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -93,13 +94,13 @@ public class BaseItemService {
     private final Queue<BaseCommand> commandQueue = new LinkedList<>();
     private PlanetConfig planetConfig;
     private GameEngineMode gameEngineMode;
-    private PriorityQueue<SyncBaseItemInfo> pendingReceivedSyncBaseItemInfos = new PriorityQueue<>(Comparator.comparingDouble(SyncBaseItemInfo::getTickCount));
+    private PriorityQueue<TickInfo> pendingReceivedTickInfos = new PriorityQueue<>(Comparator.comparingDouble(TickInfo::getTickCount));
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         activeItems.clear();
         activeItemQueue.clear();
         bases.clear();
-        pendingReceivedSyncBaseItemInfos.clear();
+        pendingReceivedTickInfos.clear();
         guardingItemService.init(planetActivationEvent.getGameEngineMode());
         lastBaseItId = 1;
         if (planetActivationEvent.getType() == PlanetActivationEvent.Type.INITIALIZE) {
@@ -315,15 +316,16 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
-    public void onSlaveSyncBaseItemChanged(long slaveTickCount, SyncBaseItemInfo syncBaseItemInfo) {
-        if (syncBaseItemInfo.getTickCount() > slaveTickCount) {
-            pendingReceivedSyncBaseItemInfos.add(syncBaseItemInfo);
+
+    public void onTickInfo(long slaveTickCount, TickInfo tickInfo) {
+        if (tickInfo.getTickCount() > slaveTickCount) {
+            pendingReceivedTickInfos.add(tickInfo);
             return;
         }
-        onSlaveSyncBaseItemChanged(syncBaseItemInfo);
+        tickInfo.getSyncBaseItemInfos().forEach(this::onSlaveSyncBaseItemChanged);
     }
 
-    private void onSlaveSyncBaseItemChanged(SyncBaseItemInfo syncBaseItemInfo) {
+    public void onSlaveSyncBaseItemChanged(SyncBaseItemInfo syncBaseItemInfo) {
         SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(syncBaseItemInfo.getId());
         if (syncBaseItem == null) {
             PlayerBase playerBase = getPlayerBase4BaseId(syncBaseItemInfo.getBaseId());
@@ -748,10 +750,10 @@ public class BaseItemService {
     }
 
     public void afterTick(long tickCount) {
-        while (!pendingReceivedSyncBaseItemInfos.isEmpty() && pendingReceivedSyncBaseItemInfos.peek().getTickCount() <= tickCount) {
-            SyncBaseItemInfo syncBaseItemInfo = pendingReceivedSyncBaseItemInfos.remove();
+        while (!pendingReceivedTickInfos.isEmpty() && pendingReceivedTickInfos.peek().getTickCount() <= tickCount) {
+            TickInfo tickInfo = pendingReceivedTickInfos.remove();
             // System.out.println("Synchronize pending: slaveTickCount: " + tickCount + " info tick count: " + syncBaseItemInfo.getTickCount() + ". " + syncBaseItemInfo);
-            onSlaveSyncBaseItemChanged(syncBaseItemInfo);
+            tickInfo.getSyncBaseItemInfos().forEach(this::onSlaveSyncBaseItemChanged);
         }
     }
 
