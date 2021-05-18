@@ -142,12 +142,12 @@ public class PlanetService implements Runnable { // Only available in worker. On
             planetServiceTracker.afterBoxService();
             notifyTickListeners(synchronizationSendingContext);
             planetServiceTracker.afterTickListener();
-            planetServiceTracker.endTick();
             /// --- new experimental
             tickCount++;
             baseItemService.afterTick(tickCount);
             syncService.afterTick(tickCount);
             /// --- new experimental ends
+            planetServiceTracker.endTick();
 
             // DebugHelperStatic.appendAfterTick(tickDatas, tickCount, syncItemContainerService);
         } catch (Throwable t) {

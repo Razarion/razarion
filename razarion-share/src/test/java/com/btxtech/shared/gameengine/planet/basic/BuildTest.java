@@ -40,7 +40,6 @@ public class BuildTest extends BaseBasicTest {
         SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.FACTORY_ITEM_TYPE_ID);
         assertFactory(factory, 30, FallbackConfig.FACTORY_ITEM_TYPE_ID, new DecimalPosition(104, 144));
 
-        permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
         SyncBaseItem slaveFactory = permSlave.getSyncItemContainerService().getSyncBaseItemSave(factory.getId());
         assertFactory(slaveFactory, 30, FallbackConfig.FACTORY_ITEM_TYPE_ID, new DecimalPosition(104, 144));
 

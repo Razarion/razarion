@@ -2,18 +2,13 @@ package com.btxtech.shared.gameengine.planet.gui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.PlanetTickListener;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.SynchronizationSendingContext;
 import com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController;
 import com.btxtech.shared.gameengine.planet.gui.userobject.InstanceStringGenerator;
 import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.TestCaseGenerator;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -52,8 +47,6 @@ public class WeldTestController implements Initializable {
     private TerrainService terrainService;
     @Inject
     private Instance<ScenarioPlaybackController> instance;
-    @Inject
-    private SyncItemContainerService syncItemContainerService;
     @FXML
     private AnchorPane anchorPanel;
     @FXML
@@ -147,28 +140,6 @@ public class WeldTestController implements Initializable {
         addRenderListener(syncItemsCheck);
 
         setupGameEnginePlayback();
-
-        planetService.addTickListener(new PlanetTickListener() {
-            @Override
-            public void onPostTick(SynchronizationSendingContext synchronizationSendingContext) {
-                syncItemContainerService.iterateOverItems(true, true, null, syncItem -> {
-                    try {
-                        if (syncItem instanceof SyncBaseItem) {
-                            SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                            System.out.println(syncBaseItem);
-                            System.out.println(syncBaseItem.getSyncPhysicalMovable().getVelocity());
-                            NativeVertexDto nativeVertexDto = syncBaseItem.getSyncPhysicalMovable().setupInterpolatableVelocity();
-                            if (nativeVertexDto != null) {
-                                System.out.println("InterpolatableVelocity: " + nativeVertexDto.x + ":" + nativeVertexDto.y + ":" + nativeVertexDto.z);
-                            }
-                        }
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    }
-                    return null;
-                });
-            }
-        });
     }
 
     public void onZoomResetButton() {
