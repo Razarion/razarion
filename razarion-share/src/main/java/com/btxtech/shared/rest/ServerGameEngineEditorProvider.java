@@ -4,7 +4,6 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
-import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
@@ -27,31 +26,6 @@ import java.util.List;
 @Deprecated
 @Path(CommonUrl.SERVER_GAME_ENGINE_EDITOR_PROVIDER_PATH)
 public interface ServerGameEngineEditorProvider {
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("readStartRegionObjectNameIds")
-    List<ObjectNameId> readStartRegionObjectNameIds();
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("readStartRegionConfig/{id}")
-    StartRegionConfig readStartRegionConfig(@PathParam("id") int id);
-
-    @POST
-    @Path("createStartRegionConfig")
-    @Produces(MediaType.APPLICATION_JSON)
-    StartRegionConfig createStartRegionConfig();
-
-    @PUT
-    @Path("updateStartRegionConfig")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void updateStartRegionConfig(StartRegionConfig startRegionConfig);
-
-    @DELETE
-    @Path("deleteStartRegionConfig")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void deleteStartRegionConfig(int id);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

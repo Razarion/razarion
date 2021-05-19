@@ -4,7 +4,6 @@ import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
-import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
@@ -24,56 +23,6 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     private ExceptionHandler exceptionHandler;
     @Inject
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
-
-    @Override
-    public List<ObjectNameId> readStartRegionObjectNameIds() {
-        try {
-            return serverGameEngineCrudPersistence.readStartRegionObjectNameIds();
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public StartRegionConfig readStartRegionConfig(int id) {
-        try {
-            return serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public StartRegionConfig createStartRegionConfig() {
-        try {
-            return serverGameEngineCrudPersistence.createStartRegionConfig();
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void updateStartRegionConfig(StartRegionConfig startRegionConfig) {
-        try {
-            serverGameEngineCrudPersistence.updateStartRegionConfig(startRegionConfig);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void deleteStartRegionConfig(int id) {
-        try {
-            serverGameEngineCrudPersistence.deleteStartRegion(id);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
 
     @Override
     public List<ObjectNameId> readLevelQuestConfigObjectNameIds() {

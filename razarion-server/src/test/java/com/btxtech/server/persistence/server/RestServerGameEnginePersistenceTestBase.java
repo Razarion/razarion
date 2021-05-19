@@ -2,12 +2,9 @@ package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.TestHelper;
-import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.ResourceRegionConfig;
-import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -24,7 +21,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -148,155 +144,6 @@ public class RestServerGameEnginePersistenceTestBase extends IgnoreOldArquillian
 //        planetCrudPersistence.deletePlanetConfig(planetId);
 //        assertCount(2, PlanetEntity.class);
     }
-
-    @Test
-    public void crudStartRegion() throws Exception {
-        Assert.assertNull(serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
-        Assert.assertNull(serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion());
-        Assert.assertTrue(serverGameEngineCrudPersistence.readStartRegionObjectNameIds().isEmpty());
-
-        // Add first
-        Polygon2D expectedStartRegion1 = new Polygon2D(Arrays.asList(new DecimalPosition(100, 100), new DecimalPosition(300, 100), new DecimalPosition(300, 300), new DecimalPosition(100, 300)));
-        StartRegionConfig expectedStartRegionConfig1 = serverGameEngineCrudPersistence.createStartRegionConfig();
-        expectedStartRegionConfig1.setMinimalLevelId(LEVEL_4_ID).setRegion(expectedStartRegion1).setInternalName("int name 1");
-        serverGameEngineCrudPersistence.updateStartRegionConfig(expectedStartRegionConfig1);
-
-        // Verify
-        Polygon2D actualStartRegion = serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
-
-        actualStartRegion = serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
-
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 1");
-        int id = TestHelper.findIdForName(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 1");
-        StartRegionConfig actualStartRegionConfig1 = serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        ReflectionAssert.assertReflectionEquals(expectedStartRegionConfig1, actualStartRegionConfig1);
-
-        // Add second
-        Polygon2D expectedStartRegion2 = new Polygon2D(Arrays.asList(new DecimalPosition(200, 200), new DecimalPosition(400, 200), new DecimalPosition(400, 400), new DecimalPosition(200, 400)));
-        StartRegionConfig expectedStartRegionConfig2 = serverGameEngineCrudPersistence.createStartRegionConfig();
-        expectedStartRegionConfig2.setMinimalLevelId(LEVEL_5_ID).setRegion(expectedStartRegion2).setInternalName("int name 2");
-        serverGameEngineCrudPersistence.updateStartRegionConfig(expectedStartRegionConfig2);
-
-        // Verify
-        actualStartRegion = serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
-
-        actualStartRegion = serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion2, actualStartRegion);
-
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 1", "int name 2");
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 1");
-        actualStartRegionConfig1 = serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        ReflectionAssert.assertReflectionEquals(expectedStartRegionConfig1, actualStartRegionConfig1);
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 2");
-        StartRegionConfig actualStartRegionConfig2 = serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        ReflectionAssert.assertReflectionEquals(expectedStartRegionConfig2, actualStartRegionConfig2);
-
-        // Update second
-        Polygon2D expectedStartRegion3 = new Polygon2D(Arrays.asList(new DecimalPosition(500, 600), new DecimalPosition(700, 600), new DecimalPosition(400, 1000)));
-        expectedStartRegionConfig2.setRegion(expectedStartRegion3).setInternalName("int name 3");
-        serverGameEngineCrudPersistence.updateStartRegionConfig(expectedStartRegionConfig2);
-
-        // Verify
-        actualStartRegion = serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
-
-        actualStartRegion = serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion3, actualStartRegion);
-
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 1", "int name 3");
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 1");
-        actualStartRegionConfig1 = serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        ReflectionAssert.assertReflectionEquals(expectedStartRegionConfig1, actualStartRegionConfig1);
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 3");
-        actualStartRegionConfig2 = serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        ReflectionAssert.assertReflectionEquals(expectedStartRegionConfig2, actualStartRegionConfig2);
-
-        // Update first
-        expectedStartRegionConfig1.setRegion(null).setInternalName("int name 4");
-        serverGameEngineCrudPersistence.updateStartRegionConfig(expectedStartRegionConfig1);
-
-        // Verify
-        Assert.assertNull(serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
-
-        actualStartRegion = serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion3, actualStartRegion);
-
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 4", "int name 3");
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 4");
-        actualStartRegionConfig1 = serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        ReflectionAssert.assertReflectionEquals(expectedStartRegionConfig1, actualStartRegionConfig1);
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 3");
-        actualStartRegionConfig2 = serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        ReflectionAssert.assertReflectionEquals(expectedStartRegionConfig2, actualStartRegionConfig2);
-
-        // Update first
-        expectedStartRegionConfig1.setMinimalLevelId(null).setRegion(expectedStartRegion1).setInternalName("int name 5");
-        serverGameEngineCrudPersistence.updateStartRegionConfig(expectedStartRegionConfig1);
-
-        // Verify
-        Assert.assertNull(serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
-
-        actualStartRegion = serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion3, actualStartRegion);
-
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 5", "int name 3");
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 5");
-        actualStartRegionConfig1 = serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        ReflectionAssert.assertReflectionEquals(expectedStartRegionConfig1, actualStartRegionConfig1);
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 3");
-        actualStartRegionConfig2 = serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        ReflectionAssert.assertReflectionEquals(expectedStartRegionConfig2, actualStartRegionConfig2);
-
-        // Remove second
-        expectedStartRegionConfig1.setMinimalLevelId(LEVEL_4_ID).setRegion(expectedStartRegion1).setInternalName("int name 5");
-        serverGameEngineCrudPersistence.updateStartRegionConfig(expectedStartRegionConfig1);
-        serverGameEngineCrudPersistence.deleteStartRegion(actualStartRegionConfig2.getId());
-
-        // Verify
-        actualStartRegion = serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
-
-        actualStartRegion = serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
-
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 5");
-        id = TestHelper.findIdForName(serverGameEngineCrudPersistence.readStartRegionObjectNameIds(), "int name 5");
-        actualStartRegionConfig1 = serverGameEngineCrudPersistence.readStartRegionConfig(id);
-        ReflectionAssert.assertReflectionEquals(expectedStartRegionConfig1, actualStartRegionConfig1);
-
-        // Remove first
-        serverGameEngineCrudPersistence.deleteStartRegion(actualStartRegionConfig1.getId());
-
-        Assert.assertNull(serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
-        Assert.assertNull(serverGameEngineCrudPersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion());
-
-        TestHelper.assertObjectNameIds(serverGameEngineCrudPersistence.readStartRegionObjectNameIds());
-
-        assertEmptyCount(StartRegionLevelConfigEntity.class);
-        assertEmptyCountNative("SERVER_START_REGION_LEVEL_CONFIG_POLYGON");
-    }
-
-    @Test
-    public void crudMasterPlanetConfig() throws Exception {
-        Assert.assertTrue(serverGameEngineCrudPersistence.readMasterPlanetConfig().getResourceRegionConfigs().isEmpty());
-        List<ResourceRegionConfig> expectedResourceRegionConfigs = setupResourceRegionConfigs1();
-        serverGameEngineCrudPersistence.updateResourceRegionConfigs(expectedResourceRegionConfigs);
-        List<ResourceRegionConfig> actualResourceRegionConfigs = serverGameEngineCrudPersistence.readMasterPlanetConfig().getResourceRegionConfigs();
-
-        ObjectComparatorIgnore.add(ResourceRegionConfig.class, "id");
-        ReflectionAssert.assertReflectionEquals(expectedResourceRegionConfigs, actualResourceRegionConfigs);
-        ObjectComparatorIgnore.clear();
-
-        serverGameEngineCrudPersistence.updateResourceRegionConfigs(new ArrayList<>());
-        Assert.assertTrue(serverGameEngineCrudPersistence.readMasterPlanetConfig().getResourceRegionConfigs().isEmpty());
-
-        assertEmptyCount(PlaceConfigEntity.class);
-        assertEmptyCount(ServerResourceRegionConfigEntity.class);
-    }
-
 
     private void setupServerBots1(BotConfig botConfig) {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();

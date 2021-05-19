@@ -19,7 +19,6 @@ import com.btxtech.client.editor.server.bot.BotSidebar;
 import com.btxtech.client.editor.server.botscene.BotSceneSidebar;
 import com.btxtech.client.editor.server.box.BoxRegionSidebar;
 import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
-import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.shared.rest.BaseItemTypeEditorController;
 import com.btxtech.shared.rest.DrivewayEditorController;
@@ -90,9 +89,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button boxRegionButton;
-    @Inject
-    @DataField
-    private Button startRegionsButton;
     @Inject
     @DataField
     private Button levelQuestButton;
@@ -194,12 +190,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private void onBoxRegionsButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
         editorService.openEditor(BoxRegionSidebar.class, "???Unknown");
-    }
-
-    @EventHandler("startRegionsButton")
-    private void startRegionsButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openEditor(StartRegionSidebar.class, "???Unknown");
     }
 
     @EventHandler("levelQuestButton")

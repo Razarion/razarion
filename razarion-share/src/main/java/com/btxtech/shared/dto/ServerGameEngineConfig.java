@@ -7,6 +7,7 @@ public class ServerGameEngineConfig implements Config {
     private String internalName;
     private Integer planetConfigId;
     private List<ResourceRegionConfig> resourceRegionConfigs;
+    private List<StartRegionConfig> startRegionConfigs;
 
     @Override
     public int getId() {
@@ -39,6 +40,14 @@ public class ServerGameEngineConfig implements Config {
         this.resourceRegionConfigs = resourceRegionConfigs;
     }
 
+    public List<StartRegionConfig> getStartRegionConfigs() {
+        return startRegionConfigs;
+    }
+
+    public void setStartRegionConfigs(List<StartRegionConfig> startRegionConfigs) {
+        this.startRegionConfigs = startRegionConfigs;
+    }
+
     public ServerGameEngineConfig id(int id) {
         this.id = id;
         return this;
@@ -56,6 +65,11 @@ public class ServerGameEngineConfig implements Config {
 
     public ServerGameEngineConfig resourceRegionConfigs(List<ResourceRegionConfig> resourceRegionConfigs) {
         setResourceRegionConfigs(resourceRegionConfigs);
+        return this;
+    }
+
+    public ServerGameEngineConfig startRegionConfigs(List<StartRegionConfig> startRegionConfigs) {
+        setStartRegionConfigs(startRegionConfigs);
         return this;
     }
 }

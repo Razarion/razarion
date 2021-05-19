@@ -17,12 +17,9 @@ import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
-import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.SlavePlanetConfig;
-import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
@@ -89,7 +86,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
 
     @Override
     protected void fromConfig(ServerGameEngineConfig config, ServerGameEngineConfigEntity entity) {
-        entity.fromServerGameEngineConfig(config, planetCrudPersistence, resourceItemTypeCrudPersistence);
+        entity.fromServerGameEngineConfig(config, planetCrudPersistence, resourceItemTypeCrudPersistence, levelCrudPersistence);
     }
 
     @Transactional
@@ -150,51 +147,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         } else {
             serverGameEngineConfigEntity.setPlanetEntity(null);
         }
-        entityManager.merge(serverGameEngineConfigEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public List<ObjectNameId> readStartRegionObjectNameIds() {
-        return serverGameEngineConfigEntity().readStartRegionObjectNameIds();
-    }
-
-    @Transactional
-    @SecurityCheck
-    public StartRegionConfig readStartRegionConfig(int id) {
-        return serverGameEngineConfigEntity().readStartRegionConfig(id);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public StartRegionConfig createStartRegionConfig() {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
-        StartRegionLevelConfigEntity startRegionLevelConfigEntity = serverGameEngineConfigEntity.createStartRegionConfig();
-        entityManager.persist(serverGameEngineConfigEntity); // Ignores changes on parent but child id is set
-        return startRegionLevelConfigEntity.toStartRegionConfig();
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void updateStartRegionConfig(StartRegionConfig startRegionConfig) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
-        serverGameEngineConfigEntity.updateStartRegionConfig(startRegionConfig, levelCrudPersistence);
-        entityManager.merge(serverGameEngineConfigEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void updateResourceRegionConfigs(List<ResourceRegionConfig> resourceRegionConfigs) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
-        serverGameEngineConfigEntity.setResourceRegionConfigs(resourceItemTypeCrudPersistence, resourceRegionConfigs);
-        entityManager.merge(serverGameEngineConfigEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void deleteStartRegion(int id) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
-        serverGameEngineConfigEntity.deleteStartRegion(id);
         entityManager.merge(serverGameEngineConfigEntity);
     }
 

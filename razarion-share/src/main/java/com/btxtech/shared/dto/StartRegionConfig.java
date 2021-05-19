@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Polygon2D;
  * Created by Beat
  * on 28.07.2017.
  */
-public class StartRegionConfig implements ObjectNameIdProvider {
+public class StartRegionConfig {
     private int id;
     private String internalName;
     private Integer minimalLevelId;
@@ -16,40 +16,51 @@ public class StartRegionConfig implements ObjectNameIdProvider {
         return id;
     }
 
-    public StartRegionConfig setId(int id) {
+    public void setId(int id) {
         this.id = id;
-        return this;
     }
 
     public String getInternalName() {
         return internalName;
     }
 
-    public StartRegionConfig setInternalName(String internalName) {
+    public void setInternalName(String internalName) {
         this.internalName = internalName;
-        return this;
     }
 
     public Integer getMinimalLevelId() {
         return minimalLevelId;
     }
 
-    public StartRegionConfig setMinimalLevelId(Integer minimalLevelId) {
+    public void setMinimalLevelId(Integer minimalLevelId) {
         this.minimalLevelId = minimalLevelId;
-        return this;
     }
 
     public Polygon2D getRegion() {
         return region;
     }
 
-    public StartRegionConfig setRegion(Polygon2D region) {
+    public void setRegion(Polygon2D region) {
         this.region = region;
+    }
+
+    public StartRegionConfig id(int id) {
+        setId(id);
         return this;
     }
 
-    @Override
-    public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(id, internalName);
+    public StartRegionConfig internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
+    }
+
+    public StartRegionConfig minimalLevelId(Integer minimalLevelId) {
+        setMinimalLevelId(minimalLevelId);
+        return this;
+    }
+
+    public StartRegionConfig region(Polygon2D region) {
+        setRegion(region);
+        return this;
     }
 }

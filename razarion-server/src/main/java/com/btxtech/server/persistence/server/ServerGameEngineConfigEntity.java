@@ -9,10 +9,8 @@ import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
-import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
-import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
@@ -59,7 +57,7 @@ public class ServerGameEngineConfigEntity {
     private List<ServerBoxRegionConfigEntity> boxRegionConfigs;
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "serverGameEngineId", nullable = false)
-    private List<StartRegionLevelConfigEntity> startRegionLevelConfigs;
+    private List<StartRegionConfigEntity> startRegionConfigs;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "SERVER_GAME_ENGINE_BOT_CONFIG",
             joinColumns = @JoinColumn(name = "serverGameEngineId"),
@@ -79,16 +77,21 @@ public class ServerGameEngineConfigEntity {
                 .id(id)
                 .internalName(internalName)
                 .resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
+                .startRegionConfigs(toConfigList(startRegionConfigs, StartRegionConfigEntity::toStartRegionConfig))
                 .planetConfigId(extractId(planetEntity, PlanetEntity::getId));
     }
 
-    public void fromServerGameEngineConfig(ServerGameEngineConfig config, PlanetCrudPersistence planetCrudPersistence, ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence) {
+    public void fromServerGameEngineConfig(ServerGameEngineConfig config, PlanetCrudPersistence planetCrudPersistence, ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence, LevelCrudPersistence levelCrudPersistence) {
         internalName = config.getInternalName();
         planetEntity = planetCrudPersistence.getEntity(config.getPlanetConfigId());
         resourceRegionConfigs = fromConfigs(resourceRegionConfigs,
                 config.getResourceRegionConfigs(),
                 ServerResourceRegionConfigEntity::new,
                 (serverResourceRegionConfigEntity, resourceRegionConfig) -> serverResourceRegionConfigEntity.fromResourceRegionConfig(resourceItemTypeCrudPersistence, resourceRegionConfig));
+        startRegionConfigs = fromConfigs(startRegionConfigs,
+                config.getStartRegionConfigs(),
+                StartRegionConfigEntity::new,
+                (startRegionConfigEntity, startRegionConfig) -> startRegionConfigEntity.fromStartRegionConfig(startRegionConfig, levelCrudPersistence));
     }
 
     public Integer getId() {
@@ -142,68 +145,13 @@ public class ServerGameEngineConfigEntity {
         this.planetEntity = planetEntity;
     }
 
-    public void setResourceRegionConfigs(ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence, List<ResourceRegionConfig> resourceRegionConfigs) {
-        this.resourceRegionConfigs.clear();
-        for (ResourceRegionConfig resourceRegionConfig : resourceRegionConfigs) {
-            ServerResourceRegionConfigEntity serverResourceRegionConfigEntity = new ServerResourceRegionConfigEntity();
-            serverResourceRegionConfigEntity.fromResourceRegionConfig(resourceItemTypeCrudPersistence, resourceRegionConfig);
-            this.resourceRegionConfigs.add(serverResourceRegionConfigEntity);
-        }
-    }
-
-    public List<ObjectNameId> readStartRegionObjectNameIds() {
-        if (startRegionLevelConfigs == null) {
-            return new ArrayList<>();
-        } else {
-            return startRegionLevelConfigs.stream().map(StartRegionLevelConfigEntity::createObjectNameId).collect(Collectors.toList());
-        }
-    }
-
-    public StartRegionConfig readStartRegionConfig(int id) {
-        if (startRegionLevelConfigs != null) {
-            return startRegionLevelConfigs.stream().filter(startRegionLevelConfigEntity -> id == startRegionLevelConfigEntity.getId()).findFirst().map(StartRegionLevelConfigEntity::toStartRegionConfig).orElseThrow(() -> new IllegalArgumentException("No StartRegionLevelConfigEntity for id: " + id + " on ServerGameEngineConfigEntity: " + this.id));
-        } else {
-            throw new IllegalArgumentException("No StartRegionLevelConfigEntity for id: " + id + " on ServerGameEngineConfigEntity: " + this.id);
-        }
-    }
-
-    public StartRegionLevelConfigEntity createStartRegionConfig() {
-        if (startRegionLevelConfigs == null) {
-            startRegionLevelConfigs = new ArrayList<>();
-        }
-        StartRegionLevelConfigEntity startRegionLevelConfigEntity = new StartRegionLevelConfigEntity();
-        startRegionLevelConfigs.add(startRegionLevelConfigEntity);
-        return startRegionLevelConfigEntity;
-    }
-
-    public void updateStartRegionConfig(StartRegionConfig startRegionConfig, LevelCrudPersistence levelCrudPersistence) {
-        if (startRegionLevelConfigs != null) {
-            StartRegionLevelConfigEntity startRegionLevelConfigEntityDb = startRegionLevelConfigs.stream().filter(startRegionLevelConfigEntity -> startRegionConfig.getId() == startRegionLevelConfigEntity.getId()).findFirst().orElseThrow(() -> new IllegalArgumentException("No StartRegionLevelConfigEntity for id: " + id + " on ServerGameEngineConfigEntity: " + this.id));
-            startRegionLevelConfigEntityDb.setMinimalLevel(levelCrudPersistence.getEntity(startRegionConfig.getMinimalLevelId()));
-            startRegionLevelConfigEntityDb.setInternalName(startRegionConfig.getInternalName());
-            if (startRegionConfig.getRegion() != null) {
-                startRegionLevelConfigEntityDb.setStartRegion(startRegionConfig.getRegion().getCorners());
-            } else {
-                startRegionLevelConfigEntityDb.setStartRegion(null);
-            }
-        } else {
-            throw new IllegalArgumentException("No StartRegionLevelConfigEntity for id: " + startRegionConfig.getId() + " on ServerGameEngineConfigEntity: " + this.id);
-        }
-    }
-
-    public void deleteStartRegion(int id) {
-        if (startRegionLevelConfigs != null) {
-            startRegionLevelConfigs.removeIf(startRegionLevelConfigEntity -> id == startRegionLevelConfigEntity.getId());
-        }
-    }
-
     public Polygon2D findStartRegion(int levelNumber) {
-        if (startRegionLevelConfigs == null) {
+        if (startRegionConfigs == null) {
             return null;
         }
         Integer bestLevelNumber = null;
-        StartRegionLevelConfigEntity result = null;
-        for (StartRegionLevelConfigEntity startRegionLevelConfigEntity : startRegionLevelConfigs) {
+        StartRegionConfigEntity result = null;
+        for (StartRegionConfigEntity startRegionLevelConfigEntity : startRegionConfigs) {
             if (startRegionLevelConfigEntity.getMinimalLevel() != null && startRegionLevelConfigEntity.getStartRegion() != null && levelNumber >= startRegionLevelConfigEntity.getMinimalLevel().getNumber()) {
                 if (bestLevelNumber == null || bestLevelNumber < startRegionLevelConfigEntity.getMinimalLevel().getNumber()) {
                     bestLevelNumber = startRegionLevelConfigEntity.getMinimalLevel().getNumber();
