@@ -306,6 +306,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         if (coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion() != null) {
             position = GeometricUtil.findFreeRandomPosition(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion(), null);
             sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield").setViewFieldConfig(new ViewFieldConfig().toPosition(position)));
+        } else {
+            logger.warning("No StartRegion defined. Scroll to 0:0 position");
+            sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield default").setViewFieldConfig(new ViewFieldConfig().toPosition(DecimalPosition.NULL)));
         }
         // Set camera Position
         // Fade out
