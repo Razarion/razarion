@@ -64,6 +64,13 @@ public class TerrainMarkerEditorRenderTaskRunner extends AbstractRenderTaskRunne
         showTriangles(marker);
     }
 
+    public void hide() {
+        if (webGlRenderTask != null) {
+            destroyRenderTask(webGlRenderTask);
+        }
+        webGlRenderTask = null;
+    }
+
     private void showTriangles(List<Vertex> triangles) {
         if (webGlRenderTask != null) {
             destroyRenderTask(webGlRenderTask);

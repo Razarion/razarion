@@ -157,11 +157,19 @@ export interface GenericEditorFrontendProvider {
 export interface TerrainMarkerService {
   showPosition(x: number, y: number): void;
 
+  showPolygon(polygon: any): void;
+
   activatePositionCursor(positionCallback: PositionCallback): void;
+
+  activatePolygonCursor(polygon: any, polygonCallback: PolygonCallback): void;
 }
 
 export interface PositionCallback {
   position(x: number, y: number): void;
+}
+
+export interface PolygonCallback {
+  polygon(polygon: any): void;
 }
 
 export interface GwtAngularPropertyTable {

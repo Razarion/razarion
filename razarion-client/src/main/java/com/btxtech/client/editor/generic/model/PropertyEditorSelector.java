@@ -231,12 +231,12 @@ public enum PropertyEditorSelector {
     POLYGON_2D("polygon-2d-property-editor") {
         @Override
         public Object convertFromAngular(Any value, Class<?> propertyClass) {
-            throw new UnsupportedOperationException("...TODO..."); // TODO
+            return value;
         }
 
         @Override
         public Any convertToAngular(Object object) {
-            return Any.of(object);  // TODO
+            return Any.of(object);
         }
     },
     UNKNOWN("UNKNOWN") {

@@ -30,12 +30,14 @@ import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
             </p-inputNumber>
           </div>
           <div class="p-mr-2">
-            <p-button icon="pi pi-globe"
+            <p-button icon="pi pi-map-marker"
+                      title="Show"
                       styleClass="p-button-rounded p-button-text p-button-sm p-button-warning"
                       (onClick)="onShow()"></p-button>
           </div>
           <div class="p-mr-2">
-            <p-button icon="pi pi-map-marker"
+            <p-button icon="pi pi-pencil"
+                      title="Edit"
                       styleClass="p-button-rounded p-button-text p-button-sm p-button-warning"
                       (onClick)="onActivateCursor()"></p-button>
           </div>
