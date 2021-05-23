@@ -26,22 +26,20 @@ export class ServerPanelComponent extends EditorPanel {
 
   execute(serverCommand: ServerCommand) {
     const url = SERVER_GAME_ENGINE_PATH + "/" + serverCommand.methodUrl
-    console.info("URL: " + url);
     this.http.post(url, null).subscribe(value => {
-      console.log("next: " + value);
-    }, error => {
-      this.messageService.add({
-        severity: 'error',
-        summary: `Can not invoke ${serverCommand.name} on Server. URL: ${url}`,
-        detail: error,
-        sticky: true
+        this.messageService.add({
+          severity: 'success',
+          summary: serverCommand.name
+        });
+      },
+      error => {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Can not invoke ${serverCommand.name} on Server. URL: ${url}`,
+          detail: error,
+          sticky: true
+        });
       });
-    }, () => {
-      this.messageService.add({
-        severity: 'success',
-        summary: `${serverCommand.name}`
-      });
-    });
   }
 }
 
