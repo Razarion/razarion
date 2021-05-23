@@ -1,11 +1,9 @@
 ﻿<div class="p-d-flex">
   <div class="p-mr-2">
     <div class="p-d-flex p-flex-column">
-      <div class="p-mb-2">
-        <div class="p-mb-2" *ngFor="let editor of editors | keyvalue">
-          <p-button type="button" label="{{editor.key}}" icon="pi pi-cog" styleClass="p-button-sm"
-                    (onClick)="openEditor(editor.key, editor.value)"></p-button>
-        </div>
+      <div class="p-mb-2" *ngFor="let editor of editors | keyvalue">
+        <p-button type="button" label="{{editor.key}}" icon="pi pi-cog" styleClass="p-button-sm"
+                  (onClick)="openEditor(editor.key, editor.value)"></p-button>
       </div>
     </div>
   </div>

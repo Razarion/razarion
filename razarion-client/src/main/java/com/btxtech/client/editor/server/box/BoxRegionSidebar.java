@@ -4,8 +4,6 @@ import com.btxtech.client.editor.framework.AbstractCrudeParentSidebar;
 import com.btxtech.client.editor.framework.CrudEditor;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.BoxRegionConfig;
-import com.btxtech.shared.rest.ServerGameEngineControlProvider;
-import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.enterprise.inject.Instance;
@@ -21,8 +19,6 @@ public class BoxRegionSidebar extends AbstractCrudeParentSidebar<BoxRegionConfig
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
-    private Caller<ServerGameEngineControlProvider> provider;
-    @Inject
     private Instance<BoxRegionPropertyPanel> propertyPanelInstance;
     @Inject
     private BoxRegionCrudEditor boxRegionCrudEditor;
@@ -30,8 +26,8 @@ public class BoxRegionSidebar extends AbstractCrudeParentSidebar<BoxRegionConfig
     @Override
     public void onConfigureDialog() {
         super.onConfigureDialog();
-        getEditorPanel().addButton("Restart", () -> provider.call(ignore -> {
-        }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.restartBoxRegions() failed: ")).restartBoxRegions());
+//   TODO     getEditorPanel().addButton("Restart", () -> provider.call(ignore -> {
+//        }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.restartBoxRegions() failed: ")).restartBoxRegions());
     }
 
     @Override

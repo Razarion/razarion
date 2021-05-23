@@ -1,0 +1,7 @@
+﻿<div class="p-d-flex p-flex-column">
+  <div class="p-mb-2" *ngFor="let serverCommand of serverCommands">
+    <p-button type="button" label="{{serverCommand.name}}" icon="pi pi-cog" styleClass="p-button-sm"
+              (onClick)="execute(serverCommand)"></p-button>
+  </div>
+</div>
+

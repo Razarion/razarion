@@ -38,7 +38,8 @@ export class PropertyEditorComponent implements OnInit {
       this.messageService.add({
         severity: 'error',
         summary: `PropertyEditorComponent for ${this.angularTreeNodeData.name}`,
-        detail: exception
+        detail: exception,
+        sticky: true
       });
       this.frontendService.log(`Exception in Angular PropertyEditorComponent for ${this.angularTreeNodeData.name}`, exception);
       throw exception;

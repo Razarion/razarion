@@ -4,7 +4,6 @@ import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.AdditionUserInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
-import com.btxtech.shared.rest.ServerGameEngineControlProvider;
 import com.btxtech.shared.rest.UserServiceProvider;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -40,8 +39,6 @@ public class BaseMgmtEditorPanel extends AbstractEditor {
     private BaseItemUiService baseItemUiService;
     @Inject
     private Caller<UserServiceProvider> userCaller;
-    @Inject
-    private Caller<ServerGameEngineControlProvider> engineCaller;
     @Inject
     @DataField
     private Button loadUserInfoButton;
@@ -146,8 +143,8 @@ public class BaseMgmtEditorPanel extends AbstractEditor {
     private BaseMgmtModel create(PlayerBaseDto playerBaseDto, List<AdditionUserInfo> additionUserInfos) {
         BaseMgmtModel baseMgmtModel = new BaseMgmtModel();
         baseMgmtModel.setPlayerBase(playerBaseDto);
-        baseMgmtModel.setKillCallback(engineCaller.call(ignore -> {
-        }, exceptionHandler.restErrorHandler("ServerGameEngineControlProvider.deleteBase() failed: "))::deleteBase);
+//   TODO     baseMgmtModel.setKillCallback(engineCaller.call(ignore -> {
+//        }, exceptionHandler.restErrorHandler("ServerGameEngineControlProvider.deleteBase() failed: "))::deleteBase);
         if (additionUserInfos != null) {
             AdditionUserInfo additionUserInfo = find(playerBaseDto.getUserId(), additionUserInfos);
             if (additionUserInfo != null) {

@@ -59,6 +59,7 @@ import {RadioButtonModule} from 'primeng/radiobutton';
 import {CrashPanelComponent} from "./editor/crash-panel/crash-panel.component";
 import {TableModule} from 'primeng/table';
 import {DatePipe} from "@angular/common";
+import {ServerPanelComponent} from "./editor/server-panel/server-panel.component";
 
 @NgModule({
   declarations: [
@@ -96,7 +97,8 @@ import {DatePipe} from "@angular/common";
     MainCockpitComponent,
     RenderEngineComponent,
     PerfmonComponent,
-    CrashPanelComponent
+    CrashPanelComponent,
+    ServerPanelComponent
   ],
   imports: [
     BrowserModule,

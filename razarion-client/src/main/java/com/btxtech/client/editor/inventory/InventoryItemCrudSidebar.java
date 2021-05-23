@@ -4,8 +4,6 @@ import com.btxtech.client.editor.framework.AbstractCrudeParentSidebar;
 import com.btxtech.client.editor.framework.CrudEditor;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.rest.ServerGameEngineControlProvider;
-import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.enterprise.inject.Instance;
@@ -24,14 +22,12 @@ public class InventoryItemCrudSidebar extends AbstractCrudeParentSidebar<Invento
     private InventoryItemCrud inventoryItemCrud;
     @Inject
     private Instance<InventoryItemPropertyPanel> propertyPanelInstance;
-    @Inject
-    private Caller<ServerGameEngineControlProvider> provider;
 
     @Override
     public void onConfigureDialog() {
         super.onConfigureDialog();
-        getEditorPanel().addButton("Restart", () -> provider.call(ignore -> {
-        }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.reloadStatic() failed: ")).reloadStatic());
+//  TODO      getEditorPanel().addButton("Restart", () -> provider.call(ignore -> {
+//        }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.reloadStatic() failed: ")).reloadStatic());
     }
 
     @Override

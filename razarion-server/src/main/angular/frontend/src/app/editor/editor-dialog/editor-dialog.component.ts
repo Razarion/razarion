@@ -5,6 +5,7 @@ import {MainCockpitComponent} from "../../game/cockpit/main/main-cockpit.compone
 import {PropertyTableComponent} from "../property-table/property-table.component";
 import {RenderEngineComponent} from "../render-engine/render-engine.component";
 import {GameComponent} from "../../game/game.component";
+import {ServerPanelComponent} from "../server-panel/server-panel.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -21,6 +22,7 @@ export class EditorDialogComponent {
 
   constructor(private gwtAngularService: GwtAngularService) {
     this.editors.set("Render Engine", RenderEngineComponent)
+    this.editors.set("Server Control", ServerPanelComponent)
   }
 
   onShow() {
