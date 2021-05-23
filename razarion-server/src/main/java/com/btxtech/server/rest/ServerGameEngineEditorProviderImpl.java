@@ -17,6 +17,7 @@ import java.util.Locale;
  * Created by Beat
  * on 28.07.2017.
  */
+@Deprecated
 public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEditorProvider {
     @Inject
     private ExceptionHandler exceptionHandler;
