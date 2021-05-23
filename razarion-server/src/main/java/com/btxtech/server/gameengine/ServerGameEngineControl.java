@@ -101,12 +101,12 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
         //debugGui.display();
-        List<ServerGameEngineConfig> serverGameEngineConfigEntities = serverGameEngineCrudPersistence.read();
-        if (serverGameEngineConfigEntities.isEmpty()) {
+        List<ServerGameEngineConfig> serverGameEngineConfigs = serverGameEngineCrudPersistence.read();
+        if (serverGameEngineConfigs.isEmpty()) {
             return;
         }
-        int planetConfigId = serverGameEngineConfigEntities.get(0).getPlanetConfigId();
-        PlanetConfig planetConfig = planetCrudPersistence.read(planetConfigId);
+        ServerGameEngineConfig serverGameEngineConfig = serverGameEngineConfigs.get(0);
+        PlanetConfig planetConfig = planetCrudPersistence.read(serverGameEngineConfig.getPlanetConfigId());
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
         planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEngineCrudPersistence.readMasterPlanetConfig(), () -> {
             gameLogicService.setGameLogicListener(this);
@@ -117,7 +117,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             planetService.addTickListener(this);
             resourceService.startResourceRegions();
             boxService.startBoxRegions(serverGameEngineCrudPersistence.readBoxRegionConfigs());
-            botService.startBots(serverGameEngineCrudPersistence.readBotConfigs(), serverGameEngineCrudPersistence.readBotSceneConfigs());
+            botService.startBots(serverGameEngineConfig.getBotConfigs(), serverGameEngineCrudPersistence.readBotSceneConfigs());
             planetService.enableTracking(false);
         }, failText -> logger.severe("TerrainSetup failed: " + failText));
         if (activateQuests) {
