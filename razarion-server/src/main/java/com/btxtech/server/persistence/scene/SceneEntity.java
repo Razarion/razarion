@@ -66,6 +66,7 @@ public class SceneEntity implements ObjectNameIdProvider {
     })
     private ViewFieldConfig viewFieldConfig;
     private Boolean suppressSell;
+    // TODO BotConfigEntity in "BOT_CONFIG" table not getting removed if an entity from this list is removed. Same in ServerGameEngineConfigEntity
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinTable(name = "SCENE_BOT",
             joinColumns = @JoinColumn(name = "sceneId"),

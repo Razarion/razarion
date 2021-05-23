@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence.bot;
 
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 
@@ -39,7 +38,7 @@ public class BotEnragementStateConfigEntity {
                 botItems.add(botItemEntity.toBotItemConfig());
             }
         }
-        return new BotEnragementStateConfig().setName(name).setEnrageUpKills(enrageUpKills).setBotItems(botItems);
+        return new BotEnragementStateConfig().name(name).enrageUpKills(enrageUpKills).botItems(botItems);
     }
 
     public void fromBotEnragementStateConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotEnragementStateConfig botEnragementStateConfig) {

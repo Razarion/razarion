@@ -255,9 +255,9 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(100, 70))));
-        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        botItems.add(new BotItemConfig().baseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(100, 70))));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
+        botConfigs.add(new BotConfig().id(1).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name("Kenny").npc(false));
         getBotService().startBots(botConfigs, null);
         TestSimpleScheduledFuture botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT_TICKER);
         for (int i = 0; i < 1000; i++) {

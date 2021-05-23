@@ -40,7 +40,7 @@ public class BotEnragementStateConfigPropertyPanel extends Composite implements 
     @Override
     public void setValue(BotEnragementStateConfig botEnragementStateConfig) {
         dataBinder.setModel(botEnragementStateConfig);
-        botItems.init(botEnragementStateConfig.getBotItems(), botEnragementStateConfig::setBotItems, BotItemConfig::new, BotItemConfigPropertyPanel.class);
+        botItems.init(botEnragementStateConfig.getBotItems(), botEnragementStateConfig::botItems, BotItemConfig::new, BotItemConfigPropertyPanel.class);
     }
 
     @Override

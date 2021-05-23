@@ -5,7 +5,6 @@ import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 
 import javax.ws.rs.Consumes;
@@ -81,31 +80,6 @@ public interface ServerGameEngineEditorProvider {
     @Path("swapQuestConfig/{levelQuestId}/{index1}/{index2}")
     @Consumes(MediaType.APPLICATION_JSON)
     void swapQuestConfig(@PathParam("levelQuestId") int levelQuestId, @PathParam("index1") int index1, @PathParam("index2") int index2);
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("readBotConfigObjectNameIds")
-    List<ObjectNameId> readBotConfigObjectNameIds();
-
-    @POST
-    @Path("createBotConfig")
-    @Produces(MediaType.APPLICATION_JSON)
-    BotConfig createBotConfig();
-
-    @DELETE
-    @Path("deleteBotConfigConfig")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void deleteBotConfigConfig(int id);
-
-    @PUT
-    @Path("updateBotConfig")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void updateBotConfig(BotConfig botConfig);
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("readBotConfig/{id}")
-    BotConfig readBotConfig(@PathParam("id") int id);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

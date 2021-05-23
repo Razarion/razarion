@@ -15,7 +15,6 @@ import com.btxtech.client.editor.inventory.InventoryItemCrudSidebar;
 import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
 import com.btxtech.client.editor.renderpanel.RenderEngineEditorPanel;
-import com.btxtech.client.editor.server.bot.BotSidebar;
 import com.btxtech.client.editor.server.botscene.BotSceneSidebar;
 import com.btxtech.client.editor.server.box.BoxRegionSidebar;
 import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
@@ -92,9 +91,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button levelQuestButton;
-    @Inject
-    @DataField
-    private Button botButton;
     @Inject
     @DataField
     private Button botSceneButton;
@@ -202,12 +198,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private void inventoryItemButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
         editorService.openEditor(InventoryItemCrudSidebar.class, "???Unknown");
-    }
-
-    @EventHandler("botButton")
-    private void botButtonClicked(ClickEvent event) {
-        modalDialogPanel.close();
-        editorService.openEditor(BotSidebar.class, "???Unknown");
     }
 
     @EventHandler("botSceneButton")

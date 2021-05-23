@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -58,6 +59,7 @@ public class ServerGameEngineConfigEntity {
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "serverGameEngineId", nullable = false)
     private List<StartRegionConfigEntity> startRegionConfigs;
+    // TODO BotConfigEntity in "BOT_CONFIG" table not getting removed if an entity from this list is removed. Same in SceneEntity
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "SERVER_GAME_ENGINE_BOT_CONFIG",
             joinColumns = @JoinColumn(name = "serverGameEngineId"),
@@ -76,12 +78,13 @@ public class ServerGameEngineConfigEntity {
         return new ServerGameEngineConfig()
                 .id(id)
                 .internalName(internalName)
+                .planetConfigId(extractId(planetEntity, PlanetEntity::getId))
                 .resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
                 .startRegionConfigs(toConfigList(startRegionConfigs, StartRegionConfigEntity::toStartRegionConfig))
-                .planetConfigId(extractId(planetEntity, PlanetEntity::getId));
+                .botConfigs(toConfigList(botConfigs, BotConfigEntity::toBotConfig));
     }
 
-    public void fromServerGameEngineConfig(ServerGameEngineConfig config, PlanetCrudPersistence planetCrudPersistence, ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence, LevelCrudPersistence levelCrudPersistence) {
+    public void fromServerGameEngineConfig(ServerGameEngineConfig config, PlanetCrudPersistence planetCrudPersistence, ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence, LevelCrudPersistence levelCrudPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence) {
         internalName = config.getInternalName();
         planetEntity = planetCrudPersistence.getEntity(config.getPlanetConfigId());
         resourceRegionConfigs = fromConfigs(resourceRegionConfigs,
@@ -92,6 +95,10 @@ public class ServerGameEngineConfigEntity {
                 config.getStartRegionConfigs(),
                 StartRegionConfigEntity::new,
                 (startRegionConfigEntity, startRegionConfig) -> startRegionConfigEntity.fromStartRegionConfig(startRegionConfig, levelCrudPersistence));
+        botConfigs = fromConfigs(botConfigs,
+                config.getBotConfigs(),
+                BotConfigEntity::new,
+                (botConfigEntity, botConfig) -> botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, botConfig));
     }
 
     public Integer getId() {
@@ -171,22 +178,6 @@ public class ServerGameEngineConfigEntity {
 
     public void setServerQuestEntities(List<ServerLevelQuestEntity> serverQuestEntities) {
         this.serverQuestEntities = serverQuestEntities;
-    }
-
-    public List<ServerResourceRegionConfigEntity> getResourceRegionConfigs() {
-        return resourceRegionConfigs;
-    }
-
-    public void setResourceRegionConfigs(List<ServerResourceRegionConfigEntity> resourceRegionConfigs) {
-        this.resourceRegionConfigs = resourceRegionConfigs;
-    }
-
-    public List<BotConfigEntity> getBotConfigEntities() {
-        return botConfigs;
-    }
-
-    public void setBotConfigEntities(List<BotConfigEntity> botConfigs) {
-        this.botConfigs = botConfigs;
     }
 
     public List<BotSceneConfigEntity> getBotSceneConfigEntities() {

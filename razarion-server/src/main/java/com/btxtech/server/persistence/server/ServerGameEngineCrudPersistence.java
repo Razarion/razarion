@@ -69,8 +69,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     @Inject
     private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig>> serverQuestCrudInstance;
     @Inject
-    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig>> botConfigCrud;
-    @Inject
     private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig>> botSceneConfigCrud;
     @Inject
     private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig>> boxRegionCrud;
@@ -86,7 +84,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
 
     @Override
     protected void fromConfig(ServerGameEngineConfig config, ServerGameEngineConfigEntity entity) {
-        entity.fromServerGameEngineConfig(config, planetCrudPersistence, resourceItemTypeCrudPersistence, levelCrudPersistence);
+        entity.fromServerGameEngineConfig(config, planetCrudPersistence, resourceItemTypeCrudPersistence, levelCrudPersistence, baseItemTypeCrudPersistence);
     }
 
     @Transactional
@@ -249,20 +247,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         crud.setEntityFactory(QuestConfigEntity::new);
         crud.setEntityFiller((questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, questConfig, locale));
         crud.setAdditionalDelete((entityManager, integer) -> entityManager.remove(entityManager.find(QuestConfigEntity.class, integer)));
-        return crud;
-    }
-
-    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig> getBotConfigCrud() {
-        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig> crud = botConfigCrud.get();
-        crud.setRootProvider(this::serverGameEngineConfigEntity).setParentProvider(entityManager -> serverGameEngineConfigEntity());
-        crud.setEntitiesGetter((entityManager) -> serverGameEngineConfigEntity().getBotConfigEntities());
-        crud.setEntitiesSetter((entityManager, botConfigs) -> serverGameEngineConfigEntity().setBotConfigEntities(botConfigs));
-        crud.setEntityIdProvider(BotConfigEntity::getId).setConfigIdProvider(BotConfig::getId);
-        crud.setConfigGenerator(BotConfigEntity::toBotConfig);
-        crud.setEntityFactory(() -> new BotConfigEntity().setAutoAttack(true));
-        crud.setEntityFiller((botConfigEntity, botConfig) -> {
-            botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, botConfig);
-        });
         return crud;
     }
 

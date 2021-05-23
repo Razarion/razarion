@@ -38,12 +38,12 @@ public class BotItemConfigEntity {
     private Integer rePopTime;
 
     public BotItemConfig toBotItemConfig() {
-        BotItemConfig botItemConfig = new BotItemConfig().setCount(count).setCreateDirectly(createDirectly).setAngle(angle).setMoveRealmIfIdle(moveRealmIfIdle).setIdleTtl(idleTtl).setNoRebuild(noRebuild).setRePopTime(rePopTime).setNoSpawn(noSpawn);
+        BotItemConfig botItemConfig = new BotItemConfig().count(count).createDirectly(createDirectly).angle(angle).moveRealmIfIdle(moveRealmIfIdle).idleTtl(idleTtl).noRebuild(noRebuild).rePopTime(rePopTime).noSpawn(noSpawn);
         if (baseItemTypeEntity != null) {
-            botItemConfig.setBaseItemTypeId(baseItemTypeEntity.getId());
+            botItemConfig.baseItemTypeId(baseItemTypeEntity.getId());
         }
         if (place != null) {
-            botItemConfig.setPlace(place.toPlaceConfig());
+            botItemConfig.place(place.toPlaceConfig());
         }
         return botItemConfig;
     }

@@ -2,8 +2,6 @@ package com.btxtech.server.persistence.bot;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
-import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -27,7 +25,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "BOT_CONFIG")
-public class BotConfigEntity implements ObjectNameIdProvider {
+public class BotConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -62,7 +60,7 @@ public class BotConfigEntity implements ObjectNameIdProvider {
                 botEnragementStateConfigs.add(botEnragementStateConfigEnity.toBotEnragementStateConfig());
             }
         }
-        return new BotConfig().setAuxiliaryId(auxiliaryId).setId(id).setInternalName(internalName).setAutoAttack(autoAttack).setNpc(npc).setActionDelay(actionDelay).setRealm(realm).setName(name).setMinInactiveMs(minInactiveMs).setMaxInactiveMs(maxInactiveMs).setMinActiveMs(minActiveMs).setMaxActiveMs(maxActiveMs).setBotEnragementStateConfigs(botEnragementStateConfigs);
+        return new BotConfig().auxiliaryId(auxiliaryId).id(id).internalName(internalName).autoAttack(autoAttack).npc(npc).actionDelay(actionDelay).realm(realm).name(name).minInactiveMs(minInactiveMs).maxInactiveMs(maxInactiveMs).minActiveMs(minActiveMs).maxActiveMs(maxActiveMs).botEnragementStateConfigs(botEnragementStateConfigs);
     }
 
     public void fromBotConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotConfig botConfig) {
@@ -98,11 +96,6 @@ public class BotConfigEntity implements ObjectNameIdProvider {
     public BotConfigEntity setAutoAttack(boolean autoAttack) {
         this.autoAttack = autoAttack;
         return this;
-    }
-
-    @Override
-    public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(id, internalName);
     }
 
     public String getInternalName() {

@@ -311,14 +311,14 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(223, 130))).setAngle(Math.toRadians(110)).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(220, 109))).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(213, 92))).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(207, 111))).setAngle(Math.toRadians(30)).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(201, 94))).setAngle(Math.toRadians(175)).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(201, 88))).setAngle(Math.toRadians(310)).setNoSpawn(true).setNoRebuild(true));
-        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setAuxiliaryId(NPC_BOT_OUTPOST_AUX).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Roger").setNpc(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(223, 130))).angle(Math.toRadians(110)).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(220, 109))).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(213, 92))).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(207, 111))).angle(Math.toRadians(30)).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(201, 94))).angle(Math.toRadians(175)).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(201, 88))).angle(Math.toRadians(310)).noSpawn(true).noRebuild(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
+        botConfigs.add(new BotConfig().auxiliaryId(NPC_BOT_OUTPOST_AUX).actionDelay(3000).botEnragementStateConfigs(botEnragementStateConfigs).name("Roger").npc(true));
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
         botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotAuxiliaryId(NPC_BOT_OUTPOST_AUX).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setResourceSelection(new PlaceConfig().position(new DecimalPosition(212, 144))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID));
         sceneConfig.setInternalName("setup: add NPC bot").setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs);
@@ -328,21 +328,21 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_TOWER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(190, 242))).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(248, 283))).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(277, 296))).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(299, 261))).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(240, 255))).setAngle(Math.toRadians(100)).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(277, 252))).setAngle(Math.toRadians(200)).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(260, 227))).setAngle(Math.toRadians(333)).setNoSpawn(true).setNoRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_TOWER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(190, 242))).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(248, 283))).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(277, 296))).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(299, 261))).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(240, 255))).angle(Math.toRadians(100)).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(277, 252))).angle(Math.toRadians(200)).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(260, 227))).angle(Math.toRadians(333)).noSpawn(true).noRebuild(true));
         // Attackers 4 harvester
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(230, 187))).setAngle(Math.toRadians(260)).setNoSpawn(true).setNoRebuild(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(234, 187))).setAngle(Math.toRadians(260)).setNoSpawn(true).setNoRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(230, 187))).angle(Math.toRadians(260)).noSpawn(true).noRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(234, 187))).angle(Math.toRadians(260)).noSpawn(true).noRebuild(true));
         // Harvester to harvest after attack
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(253, 200))).setAngle(Math.toRadians(240)).setNoSpawn(true).setNoRebuild(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(253, 200))).angle(Math.toRadians(240)).noSpawn(true).noRebuild(true));
 
-        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setAuxiliaryId(ENEMY_BOT_AUX).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Razar Industries").setNpc(false));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
+        botConfigs.add(new BotConfig().auxiliaryId(ENEMY_BOT_AUX).actionDelay(3000).botEnragementStateConfigs(botEnragementStateConfigs).name("Razar Industries").npc(false));
         sceneConfig.setInternalName("setup: add enemy bot").setBotConfigs(botConfigs).setViewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(270, 275)).cameraLocked(true).bottomWidth(120.0));
     }
 
@@ -355,9 +355,9 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(116, 100))).setNoRebuild(true));
-        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setAuxiliaryId(NPC_BOT_INSTRUCTOR_AUX).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(116, 100))).noRebuild(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
+        botConfigs.add(new BotConfig().auxiliaryId(NPC_BOT_INSTRUCTOR_AUX).actionDelay(3000).botEnragementStateConfigs(botEnragementStateConfigs).name("Kenny").npc(true));
         sceneConfigs.setInternalName("script: npc bot spawn").setBotConfigs(botConfigs).setIntroText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen.").setDuration(3000);
     }
 
@@ -485,9 +485,9 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().position(new DecimalPosition(145, 260))).setNoSpawn(true).setNoRebuild(true));
-        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setAuxiliaryId(NPC_BOT_OUTPOST_2_AUX).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Roger").setNpc(true));
+        botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(145, 260))).noSpawn(true).noRebuild(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
+        botConfigs.add(new BotConfig().auxiliaryId(NPC_BOT_OUTPOST_2_AUX).actionDelay(3000).botEnragementStateConfigs(botEnragementStateConfigs).name("Roger").npc(true));
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0).setAllowedArea(Polygon2D.fromRectangle(80, 260, 50, 50));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();

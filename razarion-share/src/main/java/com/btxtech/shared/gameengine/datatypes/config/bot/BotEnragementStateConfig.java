@@ -15,31 +15,43 @@ public class BotEnragementStateConfig {
     private List<BotItemConfig> botItems;
     private Integer enrageUpKills;
 
-    public BotEnragementStateConfig setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public BotEnragementStateConfig setBotItems(List<BotItemConfig> botItems) {
-        this.botItems = botItems;
-        return this;
-    }
-
-    public BotEnragementStateConfig setEnrageUpKills(Integer enrageUpKills) {
-        this.enrageUpKills = enrageUpKills;
-        return this;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<BotItemConfig> getBotItems() {
         return botItems;
     }
 
+    public void setBotItems(List<BotItemConfig> botItems) {
+        this.botItems = botItems;
+    }
+
     public Integer getEnrageUpKills() {
         return enrageUpKills;
+    }
+
+    public void setEnrageUpKills(Integer enrageUpKills) {
+        this.enrageUpKills = enrageUpKills;
+    }
+
+    public BotEnragementStateConfig name(String name) {
+        setName(name);
+        return this;
+    }
+
+    public BotEnragementStateConfig botItems(List<BotItemConfig> botItems) {
+        setBotItems(botItems);
+        return this;
+    }
+
+    public BotEnragementStateConfig enrageUpKills(Integer enrageUpKills) {
+        setEnrageUpKills(enrageUpKills);
+        return this;
     }
 
     public BotEnragementStateConfig clone4BotScene(DecimalPosition absoluteCenter) {

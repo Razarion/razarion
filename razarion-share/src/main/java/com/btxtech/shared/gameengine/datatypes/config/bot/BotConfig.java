@@ -2,8 +2,6 @@ package com.btxtech.shared.gameengine.datatypes.config.bot;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 import java.util.List;
@@ -14,7 +12,7 @@ import java.util.stream.Collectors;
  * Date: 10.10.2011
  * Time: 13:36:14
  */
-public class BotConfig implements ObjectNameIdProvider {
+public class BotConfig {
     private Integer id;
     private String internalName;
     private Integer auxiliaryId;
@@ -29,117 +27,173 @@ public class BotConfig implements ObjectNameIdProvider {
     private Integer maxActiveMs;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
 
-    public BotConfig setId(int id) {
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
         this.id = id;
-        return this;
     }
 
     public String getInternalName() {
         return internalName;
     }
 
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
+    }
+
     public Integer getAuxiliaryId() {
         return auxiliaryId;
     }
 
-    public BotConfig setAuxiliaryId(Integer auxiliaryId) {
+    public void setAuxiliaryId(Integer auxiliaryId) {
         this.auxiliaryId = auxiliaryId;
-        return this;
-    }
-
-    public BotConfig setNpc(boolean npc) {
-        this.npc = npc;
-        return this;
-    }
-
-    public BotConfig setActionDelay(int actionDelay) {
-        this.actionDelay = actionDelay;
-        return this;
-    }
-
-    public BotConfig setRealm(PlaceConfig realm) {
-        this.realm = realm;
-        return this;
-    }
-
-    public BotConfig setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public BotConfig setAutoAttack(boolean autoAttack) {
-        this.autoAttack = autoAttack;
-        return this;
-    }
-
-    public BotConfig setMinInactiveMs(Integer minInactiveMs) {
-        this.minInactiveMs = minInactiveMs;
-        return this;
-    }
-
-    public BotConfig setMaxInactiveMs(Integer maxInactiveMs) {
-        this.maxInactiveMs = maxInactiveMs;
-        return this;
-    }
-
-    public BotConfig setMinActiveMs(Integer minActiveMs) {
-        this.minActiveMs = minActiveMs;
-        return this;
-    }
-
-    public BotConfig setMaxActiveMs(Integer maxActiveMs) {
-        this.maxActiveMs = maxActiveMs;
-        return this;
-    }
-
-    public BotConfig setBotEnragementStateConfigs(List<BotEnragementStateConfig> botEnragementStateConfigs) {
-        this.botEnragementStateConfigs = botEnragementStateConfigs;
-        return this;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public BotConfig setInternalName(String internalName) {
-        this.internalName = internalName;
-        return this;
     }
 
     public boolean isNpc() {
         return npc;
     }
 
+    public void setNpc(boolean npc) {
+        this.npc = npc;
+    }
+
     public int getActionDelay() {
         return actionDelay;
+    }
+
+    public void setActionDelay(int actionDelay) {
+        this.actionDelay = actionDelay;
     }
 
     public PlaceConfig getRealm() {
         return realm;
     }
 
+    public void setRealm(PlaceConfig realm) {
+        this.realm = realm;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isAutoAttack() {
         return autoAttack;
     }
 
+    public void setAutoAttack(boolean autoAttack) {
+        this.autoAttack = autoAttack;
+    }
+
     public Integer getMinInactiveMs() {
         return minInactiveMs;
+    }
+
+    public void setMinInactiveMs(Integer minInactiveMs) {
+        this.minInactiveMs = minInactiveMs;
     }
 
     public Integer getMaxInactiveMs() {
         return maxInactiveMs;
     }
 
+    public void setMaxInactiveMs(Integer maxInactiveMs) {
+        this.maxInactiveMs = maxInactiveMs;
+    }
+
     public Integer getMinActiveMs() {
         return minActiveMs;
     }
 
+    public void setMinActiveMs(Integer minActiveMs) {
+        this.minActiveMs = minActiveMs;
+    }
+
     public Integer getMaxActiveMs() {
         return maxActiveMs;
+    }
+
+    public void setMaxActiveMs(Integer maxActiveMs) {
+        this.maxActiveMs = maxActiveMs;
+    }
+
+    public List<BotEnragementStateConfig> getBotEnragementStateConfigs() {
+        return botEnragementStateConfigs;
+    }
+
+    public void setBotEnragementStateConfigs(List<BotEnragementStateConfig> botEnragementStateConfigs) {
+        this.botEnragementStateConfigs = botEnragementStateConfigs;
+    }
+
+    public BotConfig id(Integer id) {
+        setId(id);
+        return this;
+    }
+
+    public BotConfig internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
+    }
+
+    public BotConfig auxiliaryId(Integer auxiliaryId) {
+        setAuxiliaryId(auxiliaryId);
+        return this;
+    }
+
+    public BotConfig npc(boolean npc) {
+        setNpc(npc);
+        return this;
+    }
+
+    public BotConfig actionDelay(int actionDelay) {
+        setActionDelay(actionDelay);
+        return this;
+    }
+
+    public BotConfig realm(PlaceConfig realm) {
+        setRealm(realm);
+        return this;
+    }
+
+    public BotConfig name(String name) {
+        setName(name);
+        return this;
+    }
+
+    public BotConfig autoAttack(boolean autoAttack) {
+        setAutoAttack(autoAttack);
+        return this;
+    }
+
+    public BotConfig minInactiveMs(Integer minInactiveMs) {
+        setMinInactiveMs(minInactiveMs);
+        return this;
+    }
+
+    public BotConfig maxInactiveMs(Integer maxInactiveMs) {
+        setMaxInactiveMs(maxInactiveMs);
+        return this;
+    }
+
+    public BotConfig minActiveMs(Integer minActiveMs) {
+        setMinActiveMs(minActiveMs);
+        return this;
+    }
+
+    public BotConfig maxActiveMs(Integer maxActiveMs) {
+        setMaxActiveMs(maxActiveMs);
+        return this;
+    }
+
+    public BotConfig botEnragementStateConfigs(List<BotEnragementStateConfig> botEnragementStateConfigs) {
+        setBotEnragementStateConfigs(botEnragementStateConfigs);
+        return this;
     }
 
     public boolean intervalBot() {
@@ -151,10 +205,6 @@ public class BotConfig implements ObjectNameIdProvider {
                 && !(minInactiveMs <= 0 || maxInactiveMs <= 0 || minActiveMs <= 0 || maxActiveMs <= 0)
                 && minInactiveMs <= maxInactiveMs
                 && minActiveMs <= maxActiveMs;
-    }
-
-    public List<BotEnragementStateConfig> getBotEnragementStateConfigs() {
-        return botEnragementStateConfigs;
     }
 
     public BotConfig clone4BotScene(DecimalPosition absoluteCenter) {
@@ -169,11 +219,6 @@ public class BotConfig implements ObjectNameIdProvider {
         botConfig.autoAttack = autoAttack;
         botConfig.botEnragementStateConfigs = botEnragementStateConfigs.stream().map(botEnragementStateConfig -> botEnragementStateConfig.clone4BotScene(absoluteCenter)).collect(Collectors.toList());
         return botConfig;
-    }
-
-    @Override
-    public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(id, internalName);
     }
 
     @Override

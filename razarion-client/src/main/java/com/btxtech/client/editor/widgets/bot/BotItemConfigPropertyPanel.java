@@ -1,19 +1,15 @@
 package com.btxtech.client.editor.widgets.bot;
 
 
-import com.btxtech.client.editor.widgets.childtable.ChildTable;
 import com.btxtech.client.editor.widgets.itemtype.base.BaseItemTypeWidget;
 import com.btxtech.client.editor.widgets.placeconfig.PlaceConfigWidget;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.utils.GradToRadConverter;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.NumberInput;
-import org.jboss.errai.common.client.dom.TextInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -74,7 +70,7 @@ public class BotItemConfigPropertyPanel extends Composite implements TakesValue<
     @Override
     public void setValue(BotItemConfig botItemConfig) {
         dataBinder.setModel(botItemConfig);
-        baseItemTypeId.init(botItemConfig.getBaseItemTypeId(), botItemConfig::setBaseItemTypeId);
+        baseItemTypeId.init(botItemConfig.getBaseItemTypeId(), botItemConfig::baseItemTypeId);
     }
 
     @Override

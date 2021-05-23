@@ -141,9 +141,9 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true));
-        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(1).setAutoAttack(true).setRealm(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(10, 10, 50, 50))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        botItems.add(new BotItemConfig().baseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).count(3).createDirectly(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
+        botConfigs.add(new BotConfig().id(1).autoAttack(true).realm(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(10, 10, 50, 50))).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name("Kenny").npc(false));
         getBotService().startBots(botConfigs, null);
         // Attack
         assertSyncItemCount(5, 0, 0);

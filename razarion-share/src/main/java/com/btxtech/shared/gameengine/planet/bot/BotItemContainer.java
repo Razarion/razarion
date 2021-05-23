@@ -346,7 +346,7 @@ public class BotItemContainer {
 
         for (int i = 0; i < targets.size() * botKillBaseCommandConfig.getDominanceFactor(); i++) {
             BotItemConfig botItemConfig = new BotItemConfig();
-            botItemConfig.setBaseItemTypeId(botKillBaseCommandConfig.getAttackerBaseItemTypeId()).setNoRebuild(true).setCreateDirectly(true).setNoSpawn(true).setPlace(botKillBaseCommandConfig.getSpawnPoint());
+            botItemConfig.baseItemTypeId(botKillBaseCommandConfig.getAttackerBaseItemTypeId()).noRebuild(true).createDirectly(true).noSpawn(true).place(botKillBaseCommandConfig.getSpawnPoint());
             createItem(botItemConfig, base);
         }
 

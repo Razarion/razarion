@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+
 import java.util.List;
 
 public class ServerGameEngineConfig implements Config {
@@ -8,6 +10,7 @@ public class ServerGameEngineConfig implements Config {
     private Integer planetConfigId;
     private List<ResourceRegionConfig> resourceRegionConfigs;
     private List<StartRegionConfig> startRegionConfigs;
+    private List<BotConfig> botConfigs;
 
     @Override
     public int getId() {
@@ -48,6 +51,14 @@ public class ServerGameEngineConfig implements Config {
         this.startRegionConfigs = startRegionConfigs;
     }
 
+    public List<BotConfig> getBotConfigs() {
+        return botConfigs;
+    }
+
+    public void setBotConfigs(List<BotConfig> botConfigs) {
+        this.botConfigs = botConfigs;
+    }
+
     public ServerGameEngineConfig id(int id) {
         this.id = id;
         return this;
@@ -70,6 +81,11 @@ public class ServerGameEngineConfig implements Config {
 
     public ServerGameEngineConfig startRegionConfigs(List<StartRegionConfig> startRegionConfigs) {
         setStartRegionConfigs(startRegionConfigs);
+        return this;
+    }
+
+    public ServerGameEngineConfig botConfigs(List<BotConfig> botConfigs) {
+        setBotConfigs(botConfigs);
         return this;
     }
 }

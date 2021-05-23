@@ -1,5 +1,6 @@
 package com.btxtech.server.systemtests.editors;
 
+import com.btxtech.server.persistence.bot.BotItemConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerResourceRegionConfigEntity;
 import com.btxtech.server.persistence.server.StartRegionConfigEntity;
@@ -10,6 +11,9 @@ import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.rest.ServerGameEngineEditorController;
 import com.btxtech.test.JsonAssert;
 import org.junit.After;
@@ -31,6 +35,8 @@ public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<Serve
 
     @After
     public void cleanTables() {
+        cleanTable(BotItemConfigEntity.class);
+        cleanTableNative("SERVER_START_REGION_CONFIG_POLYGON");
         cleanTable(StartRegionConfigEntity.class);
         cleanTable(ServerResourceRegionConfigEntity.class);
         cleanTable(ServerGameEngineConfigEntity.class);
@@ -40,7 +46,8 @@ public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<Serve
     protected void setupUpdate() {
         JsonAssert.IdSuppressor[] idSuppressor = new JsonAssert.IdSuppressor[]{
                 new JsonAssert.IdSuppressor("/resourceRegionConfigs", "id", true),
-                new JsonAssert.IdSuppressor("/startRegionConfigs", "id", true)};
+                new JsonAssert.IdSuppressor("/startRegionConfigs", "id", true),
+                new JsonAssert.IdSuppressor("/botConfigs", "id", true)};
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.planetConfigId(PLANET_1_ID));
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.planetConfigId(PLANET_2_ID).setResourceRegionConfigs(Collections.singletonList(
                 new ResourceRegionConfig().region(new PlaceConfig().position(new DecimalPosition(1, 1)).radius(9.0)))), idSuppressor);
@@ -52,7 +59,13 @@ public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<Serve
                 new DecimalPosition(20, 10),
                 new DecimalPosition(20, 20))))),
                 idSuppressor);
+        registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.botConfigs(Collections.singletonList(
+                new BotConfig().botEnragementStateConfigs(Collections.singletonList(
+                        new BotEnragementStateConfig().botItems(Collections.singletonList(
+                                new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID))))))),
+                idSuppressor);
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.getStartRegionConfigs().remove(1), idSuppressor);
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.getStartRegionConfigs().remove(0), idSuppressor);
+        registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.getBotConfigs().remove(0), idSuppressor);
     }
 }

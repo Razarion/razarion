@@ -27,7 +27,7 @@ public class MasterBaseItemServiceTest extends BaseItemServiceBase {
         setup(planetConfig, GameEngineMode.MASTER, null, null);
 
         PlayerBaseFull base1 = getBaseItemService().createHumanBase(1000, 1, Collections.emptyMap(), 105, "Unit test Base human");
-        PlayerBaseFull base2 = getBaseItemService().createBotBase(new BotConfig().setName("Test Bot").setNpc(false));
+        PlayerBaseFull base2 = getBaseItemService().createBotBase(new BotConfig().name("Test Bot").npc(false));
         int builderId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(FallbackConfig.BUILDER_ITEM_TYPE_ID), new DecimalPosition(100, 200), Math.toRadians(80), base1, true).getId();
         int factoryId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID), new DecimalPosition(200, 200), Math.toRadians(100), base2, true).getId();
         int attackerId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID), new DecimalPosition(300, 200), Math.toRadians(120), base2, false).getId();

@@ -5,7 +5,6 @@ import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 import com.btxtech.shared.rest.ServerGameEngineEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -129,56 +128,6 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     public void swapQuestConfig(int levelQuestId, int index1, int index2) {
         try {
             serverGameEngineCrudPersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).swap(index1, index2);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public List<ObjectNameId> readBotConfigObjectNameIds() {
-        try {
-            return serverGameEngineCrudPersistence.getBotConfigCrud().readObjectNameIds();
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public BotConfig createBotConfig() {
-        try {
-            return serverGameEngineCrudPersistence.getBotConfigCrud().create();
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void deleteBotConfigConfig(int id) {
-        try {
-            serverGameEngineCrudPersistence.getBotConfigCrud().delete(id);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void updateBotConfig(BotConfig botConfig) {
-        try {
-            serverGameEngineCrudPersistence.getBotConfigCrud().update(botConfig);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public BotConfig readBotConfig(int id) {
-        try {
-            return serverGameEngineCrudPersistence.getBotConfigCrud().read(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

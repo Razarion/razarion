@@ -20,94 +20,134 @@ public class BotItemConfig {
     private boolean noRebuild;
     private Integer rePopTime;
 
-    public BotItemConfig setBaseItemTypeId(Integer baseItemTypeId) {
-        this.baseItemTypeId = baseItemTypeId;
-        return this;
-    }
-
-    public BotItemConfig setCount(int count) {
-        this.count = count;
-        return this;
-    }
-
-    public BotItemConfig setCreateDirectly(boolean createDirectly) {
-        this.createDirectly = createDirectly;
-        return this;
-    }
-
-    public BotItemConfig setNoSpawn(boolean noSpawn) {
-        this.noSpawn = noSpawn;
-        return this;
-    }
-
-    public BotItemConfig setPlace(PlaceConfig place) {
-        this.place = place;
-        return this;
-    }
-
-    public BotItemConfig setMoveRealmIfIdle(boolean moveRealmIfIdle) {
-        this.moveRealmIfIdle = moveRealmIfIdle;
-        return this;
-    }
-
-    public double getAngle() {
-        return angle;
-    }
-
-    public BotItemConfig setAngle(double angle) {
-        this.angle = angle;
-        return this;
-    }
-
-    public BotItemConfig setIdleTtl(Integer idleTtl) {
-        this.idleTtl = idleTtl;
-        return this;
-    }
-
-    public BotItemConfig setNoRebuild(boolean noRebuild) {
-        this.noRebuild = noRebuild;
-        return this;
-    }
-
-    public BotItemConfig setRePopTime(Integer rePopTime) {
-        this.rePopTime = rePopTime;
-        return this;
-    }
-
     public Integer getBaseItemTypeId() {
         return baseItemTypeId;
+    }
+
+    public void setBaseItemTypeId(Integer baseItemTypeId) {
+        this.baseItemTypeId = baseItemTypeId;
     }
 
     public int getCount() {
         return count;
     }
 
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     public boolean isCreateDirectly() {
         return createDirectly;
+    }
+
+    public void setCreateDirectly(boolean createDirectly) {
+        this.createDirectly = createDirectly;
     }
 
     public boolean isNoSpawn() {
         return noSpawn;
     }
 
+    public void setNoSpawn(boolean noSpawn) {
+        this.noSpawn = noSpawn;
+    }
+
     public PlaceConfig getPlace() {
         return place;
+    }
+
+    public void setPlace(PlaceConfig place) {
+        this.place = place;
+    }
+
+    public double getAngle() {
+        return angle;
+    }
+
+    public void setAngle(double angle) {
+        this.angle = angle;
     }
 
     public boolean isMoveRealmIfIdle() {
         return moveRealmIfIdle;
     }
 
+    public void setMoveRealmIfIdle(boolean moveRealmIfIdle) {
+        this.moveRealmIfIdle = moveRealmIfIdle;
+    }
+
     public Integer getIdleTtl() {
         return idleTtl;
+    }
+
+    public void setIdleTtl(Integer idleTtl) {
+        this.idleTtl = idleTtl;
     }
 
     public boolean isNoRebuild() {
         return noRebuild;
     }
 
+    public void setNoRebuild(boolean noRebuild) {
+        this.noRebuild = noRebuild;
+    }
+
     public Integer getRePopTime() {
         return rePopTime;
+    }
+
+    public void setRePopTime(Integer rePopTime) {
+        this.rePopTime = rePopTime;
+    }
+
+    public BotItemConfig baseItemTypeId(Integer baseItemTypeId) {
+        setBaseItemTypeId(baseItemTypeId);
+        return this;
+    }
+
+    public BotItemConfig count(int count) {
+        setCount(count);
+        return this;
+    }
+
+    public BotItemConfig createDirectly(boolean createDirectly) {
+        setCreateDirectly(createDirectly);
+        return this;
+    }
+
+    public BotItemConfig noSpawn(boolean noSpawn) {
+        setNoSpawn(noSpawn);
+        return this;
+    }
+
+    public BotItemConfig place(PlaceConfig place) {
+        setPlace(place);
+        return this;
+    }
+
+    public BotItemConfig angle(double angle) {
+        setAngle(angle);
+        return this;
+    }
+
+    public BotItemConfig moveRealmIfIdle(boolean moveRealmIfIdle) {
+        setMoveRealmIfIdle(moveRealmIfIdle);
+        return this;
+    }
+
+    public BotItemConfig idleTtl(Integer idleTtl) {
+        setIdleTtl(idleTtl);
+        return this;
+    }
+
+    public BotItemConfig noRebuild(boolean noRebuild) {
+        setNoRebuild(noRebuild);
+        return this;
+    }
+
+    public BotItemConfig rePopTime(Integer rePopTime) {
+        setRePopTime(rePopTime);
+        return this;
     }
 
     public BotItemConfig clone4BotScene(DecimalPosition absoluteCenter) {
@@ -129,4 +169,5 @@ public class BotItemConfig {
         }
         return botItemConfig;
     }
+
 }

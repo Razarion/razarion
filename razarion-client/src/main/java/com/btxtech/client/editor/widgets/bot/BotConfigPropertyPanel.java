@@ -83,7 +83,7 @@ public class BotConfigPropertyPanel extends Composite implements TakesValue<BotC
     @Override
     public void setValue(BotConfig botConfig) {
         dataBinder.setModel(botConfig);
-        botEnragementStateConfig.init(botConfig.getBotEnragementStateConfigs(), botConfig::setBotEnragementStateConfigs, BotEnragementStateConfig::new, BotEnragementStateConfigPropertyPanel.class);
+        botEnragementStateConfig.init(botConfig.getBotEnragementStateConfigs(), botConfig::botEnragementStateConfigs, BotEnragementStateConfig::new, BotEnragementStateConfigPropertyPanel.class);
     }
 
     @Override
