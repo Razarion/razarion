@@ -2,6 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerTerrainShapeService;
+import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -26,6 +27,8 @@ public class ServerGameEngineController {
     private BaseItemService baseItemService;
     @Inject
     private ServerTerrainShapeService serverTerrainShapeService;
+    @Inject
+    private ServerMgmt serverMgmt;
 
     @POST
     @Path("restartBots")
@@ -81,6 +84,30 @@ public class ServerGameEngineController {
     public void restartBoxRegions() {
         try {
             serverGameEngineControl.restartBoxRegions();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @POST
+    @Path("restartPlanetWarm")
+    @SecurityCheck
+    public void restartPlanetWarm() {
+        try {
+            serverMgmt.restartPlanetWarm();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @POST
+    @Path("restartPlanetCold")
+    @SecurityCheck
+    public void restartPlanetCold() {
+        try {
+            serverMgmt.restartPlanetCold();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

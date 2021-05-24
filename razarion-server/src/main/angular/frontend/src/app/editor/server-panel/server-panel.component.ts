@@ -15,7 +15,9 @@ export class ServerPanelComponent extends EditorPanel {
     new ServerCommand("Reload Static", "reloadStatic"),
     new ServerCommand("Restart Resource Regions", "restartResourceRegions"),
     new ServerCommand("Reload Planet Shapes", "reloadPlanetShapes"),
-    new ServerCommand("Restart Box Regions", "restartBoxRegions")
+    new ServerCommand("Restart Box Regions", "restartBoxRegions"),
+    new ServerCommand("Restart Planet warm", "restartPlanetWarm"),
+    new ServerCommand("Restart Planet cold", "restartPlanetCold")
   ]
 
   constructor(private gwtAngularService: GwtAngularService,

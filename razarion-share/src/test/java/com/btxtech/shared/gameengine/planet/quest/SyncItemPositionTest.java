@@ -209,7 +209,7 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         assertQuestNotPassed(playerBaseFull.getUserId());
         assertQuestProgressPositionDownload(playerBaseFull.getUserId(), 30, 10, FallbackConfig.ATTACKER_ITEM_TYPE_ID, 2);
         // Backup
-        BackupPlanetInfo backupPlanetInfo = getPlanetService().backup(false);
+        BackupPlanetInfo backupPlanetInfo = getPlanetService().backup();
         for (int i = 0; i < 150; i++) {
             getQuestService().tick();
         }

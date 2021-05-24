@@ -4,10 +4,12 @@ import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ClientGameConnection;
 import com.btxtech.server.gameengine.ClientGameConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.QuestPersistence;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
+import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
@@ -52,6 +54,12 @@ public class ServerMgmt {
     private HistoryPersistence historyPersistence;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private ServerTerrainShapeService serverTerrainShapeService;
+    @Inject
+    private ClientSystemConnectionService systemConnectionService;
+    @Inject
+    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     private ServerState serverState = ServerState.UNKNOWN;
 
     public ServerState getServerState() {
@@ -204,4 +212,27 @@ public class ServerMgmt {
         serverState = ServerState.SHUTTING_DOWN;
         clientSystemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.RESTART));
     }
+
+    @SecurityCheck
+    public void restartPlanetWarm() {
+        restartPlanet(LifecyclePacket.Type.PLANET_RESTART_WARM);
+    }
+
+    @SecurityCheck
+    public void restartPlanetCold() {
+        restartPlanet(LifecyclePacket.Type.PLANET_RESTART_COLD);
+    }
+
+    private void restartPlanet(LifecyclePacket.Type type) {
+        try {
+            systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
+            serverTerrainShapeService.createTerrainShape(serverGameEngineCrudPersistence.read().get(0).getPlanetConfigId());
+            serverGameEngineControl.restartPlanet();
+            systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(type));
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
 }

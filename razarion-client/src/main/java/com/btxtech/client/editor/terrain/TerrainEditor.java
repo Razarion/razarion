@@ -87,9 +87,6 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @Inject
     @DataField
     private Button showMiniMapButton;
-    @Inject
-    @DataField
-    private Button restartPlanetButton;
 
     @PostConstruct
     public void init() {
@@ -127,11 +124,6 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
         projectionTransformation.disableFovYConstrain();
         terrainScrollHandler.setScrollDisabled(false, null);
         camera.setTop();
-    }
-
-    @EventHandler("restartPlanetButton")
-    private void restartPlanetButtonClick(ClickEvent event) {
-        terrainEditorService.restartPlanetButton();
     }
 
     @Override

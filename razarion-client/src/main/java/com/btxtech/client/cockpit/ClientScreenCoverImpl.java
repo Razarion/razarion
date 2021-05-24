@@ -63,25 +63,25 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
 
     @Override
     public void removeLoadingCover() {
-        loadingCoverBackup = Browser.getDocument().getElementById(LOADING_COVER_ID);
+        // TODO loadingCoverBackup = Browser.getDocument().getElementById(LOADING_COVER_ID);
         // TODO loadingCoverBackup.getParentElement().removeChild(loadingCoverBackup);
     }
 
     @Override
     public void fadeOutLoadingCover() {
-        Element element = Browser.getDocument().getElementById(LOADING_COVER_ID);
+        // TODO Element element = Browser.getDocument().getElementById(LOADING_COVER_ID);
         // TODO element.getStyle().setOpacity(0);
     }
 
     @Override
     public void fadeInLoadingCover() {
-        Element element = Browser.getDocument().getElementById(LOADING_COVER_ID);
-        if (element == null) {
-            element = loadingCoverBackup;
-            Browser.getDocument().getBody().appendChild(element);
-            loadingCoverBackup = null;
-        }
-        element.getStyle().setOpacity(1);
+        // TODO Element element = Browser.getDocument().getElementById(LOADING_COVER_ID);
+        // TODO if (element == null) {
+        // TODO     element = loadingCoverBackup;
+        // TODO     Browser.getDocument().getBody().appendChild(element);
+        // TODO     loadingCoverBackup = null;
+        // TODO }
+        // TODO element.getStyle().setOpacity(1);
     }
 
     @Override
@@ -100,13 +100,13 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
 
     @Override
     public void onTaskFinished(AbstractStartupTask task) {
-        try {
-            finishedStartupTasks++;
-            double progress = (double) finishedStartupTasks / (double) totalStartupTasks;
-            // TODO ((ProgressElement) Browser.getDocument().getElementById(LOADING_PROGRESS_ID)).setValue(progress);
-        } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
-        }
+        // TODO try {
+        // TODO     finishedStartupTasks++;
+        // TODO     double progress = (double) finishedStartupTasks / (double) totalStartupTasks;
+        // TODO ((ProgressElement) Browser.getDocument().getElementById(LOADING_PROGRESS_ID)).setValue(progress);
+        // TODO } catch (Throwable throwable) {
+        // TODO     exceptionHandler.handleException(throwable);
+        // TODO }
     }
 
     @Override

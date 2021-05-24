@@ -1,12 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.DataUrlDecoder;
-import com.btxtech.server.connection.ClientSystemConnectionService;
-import com.btxtech.server.gameengine.ServerGameEngineControl;
-import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
-import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
@@ -24,12 +19,6 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
     private ExceptionHandler exceptionHandler;
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
-    @Inject
-    private ServerTerrainShapeService serverTerrainShapeService;
-    @Inject
-    private ServerGameEngineControl serverGameEngineControl;
-    @Inject
-    private ClientSystemConnectionService systemConnectionService;
 
     @Override
     public TerrainEditorLoad readTerrainEditorLoad(int planetId) {
@@ -69,32 +58,6 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
             if (terrainEditorUpdate.getDeletedTerrainObjectsIds() != null && !terrainEditorUpdate.getDeletedTerrainObjectsIds().isEmpty()) {
                 planetCrudPersistence.deleteTerrainObjectPositionIds(planetId, terrainEditorUpdate.getDeletedTerrainObjectsIds());
             }
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public void restartPlanetWarm(int planetId) {
-        restartPlanet(planetId, LifecyclePacket.Type.PLANET_RESTART_WARM);
-    }
-
-    @Override
-    @SecurityCheck
-    public void restartPlanetCold(int planetId) {
-        restartPlanet(planetId, LifecyclePacket.Type.PLANET_RESTART_COLD);
-    }
-
-    // TODO Move to ServerMgmt
-    @Deprecated
-    private void restartPlanet(int planetId, LifecyclePacket.Type type) {
-        try {
-            systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
-            serverTerrainShapeService.createTerrainShape(planetId);
-            serverGameEngineControl.restartPlanet();
-            systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(type));
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

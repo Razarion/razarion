@@ -97,11 +97,11 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         getCommandService().build(builder2, new DecimalPosition(40, 40), getBaseItemType(FallbackConfig.GENERATOR_ITEM_TYPE_ID));
         Assert.assertNotNull(harvester1.getSyncHarvester().getResource());
         // ---------- Backup ---------
-        BackupPlanetInfo backupPlanetInfoUnregistered = getPlanetService().backup(true);
+        BackupPlanetInfo backupPlanetInfoUnregistered = getPlanetService().backup();
         Assert.assertEquals(2, backupPlanetInfoUnregistered.getPlayerBaseInfos().size());
         Assert.assertEquals(7, backupPlanetInfoUnregistered.getSyncBaseItemInfos().size());
         assertQuestUnregistered(backupPlanetInfoUnregistered.getBackupComparisionInfos(), playerBaseFull1, playerBaseFull2);
-        BackupPlanetInfo backupPlanetInfoRegistered = getPlanetService().backup(false);
+        BackupPlanetInfo backupPlanetInfoRegistered = getPlanetService().backup();
         Assert.assertEquals(1, backupPlanetInfoRegistered.getPlayerBaseInfos().size());
         Assert.assertEquals(5, backupPlanetInfoRegistered.getSyncBaseItemInfos().size());
         Assert.assertEquals(1, backupPlanetInfoRegistered.getBackupComparisionInfos().size());

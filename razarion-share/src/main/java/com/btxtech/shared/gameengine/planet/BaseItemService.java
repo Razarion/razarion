@@ -642,30 +642,24 @@ public class BaseItemService {
         return playerBaseInfos;
     }
 
-    public List<PlayerBaseInfo> getBackupPlayerBaseInfos(boolean saveUnregistered) {
-        throw new UnsupportedOperationException("...saveUnregistered not supported...");
-//        List<PlayerBaseInfo> playerBaseInfos = new ArrayList<>();
-//        for (PlayerBase playerBase : bases.values()) {
-//            if (playerBase.getCharacter().isBot()) {
-//                continue;
-//            }
-//            if (!saveUnregistered) {
-//                if (playerBase.getUserId() == null) {
-//                    continue;
-//                }
-//            }
-//            PlayerBaseFull playerBaseFull = (PlayerBaseFull) playerBase;
-//            if (playerBaseFull.getItemCount() > 0) {
-//                playerBaseInfos.add(playerBaseFull.getPlayerBaseInfo());
-//            }
-//        }
-//        return playerBaseInfos;
+    public List<PlayerBaseInfo> getBackupPlayerBaseInfos() {
+        List<PlayerBaseInfo> playerBaseInfos = new ArrayList<>();
+        for (PlayerBase playerBase : bases.values()) {
+            if (playerBase.getCharacter().isBot()) {
+                continue;
+            }
+            PlayerBaseFull playerBaseFull = (PlayerBaseFull) playerBase;
+            if (playerBaseFull.getItemCount() > 0) {
+                playerBaseInfos.add(playerBaseFull.getPlayerBaseInfo());
+            }
+        }
+        return playerBaseInfos;
     }
 
-    public void fillBackup(BackupPlanetInfo backupPlanetInfo, boolean saveUnregistered) {
+    public void fillBackup(BackupPlanetInfo backupPlanetInfo) {
         List<SyncBaseItemInfo> syncBaseItemInfos = getSyncBaseItemInfos();
         syncBaseItemInfos.removeIf(syncBaseItemInfo -> {
-            if (!isSaveNeeded(syncBaseItemInfo.getBaseId(), saveUnregistered)) {
+            if (!isSaveNeeded(syncBaseItemInfo.getBaseId())) {
                 return true;
             }
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
@@ -674,7 +668,7 @@ public class BaseItemService {
                 if (targetItem instanceof SyncBaseItem) {
                     SyncBaseItem targetSyncBaseItem = (SyncBaseItem) targetItem;
                     if (isEnemy(syncItemContainerService.getSyncBaseItem(syncBaseItemInfo.getId()), targetSyncBaseItem)) {
-                        if (!isSaveNeeded(targetSyncBaseItem.getBase(), saveUnregistered)) {
+                        if (!isSaveNeeded(targetSyncBaseItem.getBase())) {
                             syncBaseItemInfo.setTarget(null);
                         }
                     }
@@ -690,17 +684,16 @@ public class BaseItemService {
             return false;
         });
         backupPlanetInfo.setSyncBaseItemInfos(syncBaseItemInfos);
-        backupPlanetInfo.setPlayerBaseInfos(getBackupPlayerBaseInfos(saveUnregistered));
+        backupPlanetInfo.setPlayerBaseInfos(getBackupPlayerBaseInfos());
     }
 
-    private boolean isSaveNeeded(int playerBaseId, boolean saveUnregistered) {
+    private boolean isSaveNeeded(int playerBaseId) {
         PlayerBase playerBase = getPlayerBase4BaseId(playerBaseId);
-        return isSaveNeeded(playerBase, saveUnregistered);
+        return isSaveNeeded(playerBase);
     }
 
-    private boolean isSaveNeeded(PlayerBase playerBase, boolean saveUnregistered) {
-        // TODO return !playerBase.getCharacter().isBot() && (saveUnregistered || playerBase.getHumanPlayerId().getUserId() != null);
-        throw new UnsupportedOperationException("...saveUnregistered not supported...");
+    private boolean isSaveNeeded(PlayerBase playerBase) {
+        return !playerBase.getCharacter().isBot();
     }
 
     public void restore(BackupPlanetInfo backupPlanetInfo, BaseRestoreProvider baseRestoreProvider) {

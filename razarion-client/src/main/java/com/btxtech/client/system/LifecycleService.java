@@ -190,7 +190,9 @@ public class LifecycleService {
             baseItemUiService.clear();
             boxUiService.clear();
             resourceUiService.clear();
-            deferredStartup.finished();
+            if (deferredStartup != null) {
+                deferredStartup.finished();
+            }
         });
         modalDialogManager.closeAll();
         gameCanvas.stopRenderLoop();

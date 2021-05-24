@@ -172,7 +172,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             return;
         }
         long time = System.currentTimeMillis();
-        BackupPlanetInfo backupPlanetInfo = planetService.backup(true);
+        BackupPlanetInfo backupPlanetInfo = planetService.backup();
         stop();
         start(backupPlanetInfo, false);
         logger.info("ServerGameEngineControl.restartPlanet() in: " + (System.currentTimeMillis() - time));
@@ -184,7 +184,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             return;
         }
         long time = System.currentTimeMillis();
-        BackupPlanetInfo backupPlanetInfo = planetService.backup(false);
+        BackupPlanetInfo backupPlanetInfo = planetService.backup();
         planetBackupMongoDb.saveBackup(backupPlanetInfo);
         logger.info("ServerGameEngineControl.backupPlanet() in: " + (System.currentTimeMillis() - time));
     }
@@ -221,7 +221,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void shutdown() {
         try {
             if (running) {
-                planetBackupMongoDb.saveBackup(planetService.backup(false));
+                planetBackupMongoDb.saveBackup(planetService.backup());
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

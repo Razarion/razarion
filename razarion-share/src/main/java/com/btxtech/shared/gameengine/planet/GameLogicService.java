@@ -35,6 +35,8 @@ public class GameLogicService {
     private Instance<QuestService> questServiceInstance;
     @Inject
     private Instance<BotService> botServiceInstance;
+    @Inject
+    private Instance<GuardingItemService> guardingItemServiceInstance;
     private Optional<GameLogicListener> gameLogicListener = Optional.empty();
 
     public void setGameLogicListener(GameLogicListener gameLogicListener) {
@@ -102,6 +104,7 @@ public class GameLogicService {
 
     public void onBuildup(SyncBaseItem syncBaseItem) {
         questServiceInstance.get().onSyncItemBuilt(syncBaseItem);
+        guardingItemServiceInstance.get().add(syncBaseItem);
     }
 
     public void onAttacked(SyncBaseItem target, SyncBaseItem actor, double damage) {

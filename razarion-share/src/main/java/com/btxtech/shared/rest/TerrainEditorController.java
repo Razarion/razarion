@@ -30,15 +30,6 @@ public interface TerrainEditorController {
     void updateTerrain(@PathParam("planetId") int planetId, TerrainEditorUpdate terrainEditorUpdate);
 
     @PUT
-    @Path("restartPlanetWarm/{planetId}")
-    @Deprecated
-    void restartPlanetWarm(@PathParam("planetId") int planetId);
-
-    @PUT
-    @Path("restartPlanetCold/{planetId}")
-    void restartPlanetCold(@PathParam("planetId") int planetId);
-
-    @PUT
     @Path("updatePlanetVisualConfig/{planetId}")
     @Consumes(MediaType.APPLICATION_JSON)
     void updatePlanetVisualConfig(@PathParam("planetId") int planetId, PlanetVisualConfig planetVisualConfig);

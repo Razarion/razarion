@@ -364,12 +364,6 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
                 .collect(Collectors.toList());
     }
 
-    public void restartPlanetButton() {
-        modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> terrainEditorController.call(ignore -> {
-        }, exceptionHandler.restErrorHandler("PlanetEditorProvider.restartPlanetWarm() failed: ")).restartPlanetWarm(getPlanetId()), () -> {
-        });
-    }
-
     public void save() {
         TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
         setupChangedSlopes(terrainEditorUpdate);
