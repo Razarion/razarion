@@ -187,12 +187,22 @@ public enum PropertyEditorSelector {
     INTEGER_MAP("integer-map-property-editor") {
         @Override
         public Object convertFromAngular(Any value, Class<?> propertyClass) {
-            throw new UnsupportedOperationException("...TODO..."); // TODO
+            Map<Integer, Integer> resultMap = new HashMap<>();
+            elemental2.core.Map<Any, Any> jsMap = Js.cast(value);
+            jsMap.forEach((numberValue, numberKey, ignoreMap) -> {
+                resultMap.put(numberKey.asInt(), numberValue.asInt());
+                return null;
+            });
+            return resultMap;
         }
 
         @Override
         public Any convertToAngular(Object object) {
-            return Any.of(object);  // TODO
+            @SuppressWarnings("ALL")
+            Map<Integer, Integer> map = (Map<Integer, Integer>) object;
+            elemental2.core.Map<Any, Any> jsMap = new elemental2.core.Map<>();
+            map.forEach((key, value) -> jsMap.set(Any.of(key.intValue()), Any.of(value.intValue())));
+            return Any.of(jsMap);
         }
     },
     IMAGE("image-property-editor") {
