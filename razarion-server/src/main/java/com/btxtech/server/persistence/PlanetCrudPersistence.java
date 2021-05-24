@@ -60,13 +60,13 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
                 baseItemTypeLimitation(planetConfig.getItemTypeLimitation()));
     }
 
-    public Map<BaseItemTypeEntity, Integer> baseItemTypeLimitation(Map<Integer, Integer> input) {
+    private Map<BaseItemTypeEntity, Integer> baseItemTypeLimitation(Map<Integer, Integer> input) {
         if(input == null) {
             return Collections.emptyMap();
         }
         return input.entrySet()
                 .stream()
-                .collect(Collectors.toMap(entry -> baseItemTypeCrudPersistence.getEntity(entry.getKey()), Map.Entry::getKey));
+                .collect(Collectors.toMap(entry -> baseItemTypeCrudPersistence.getEntity(entry.getKey()), Map.Entry::getValue));
     }
 
     @Override
