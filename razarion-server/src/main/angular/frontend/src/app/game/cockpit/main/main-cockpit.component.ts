@@ -13,9 +13,9 @@ export class MainCockpitComponent implements MainCockpit {
   levelNumber!: number;
   xp!: number;
   xp2LevelUp!: number;
-  resources!: number;
-  itemCount!: number;
-  houseSpace!: number;
+  resources: number = 0;
+  itemCount: number = 0;
+  houseSpace: number = 0;
   consuming!: number;
   generating!: number;
   radarState!: RadarState;
