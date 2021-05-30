@@ -61,6 +61,7 @@ import {TableModule} from 'primeng/table';
 import {DatePipe} from "@angular/common";
 import {ServerPanelComponent} from "./editor/server-panel/server-panel.component";
 import {Polygon2dEditorComponent} from "./editor/common/polygon-2d-editor.component";
+import {BackupRestoreComponent} from "./editor/backup-restore/backup-restore.component";
 
 @NgModule({
   declarations: [
@@ -100,7 +101,8 @@ import {Polygon2dEditorComponent} from "./editor/common/polygon-2d-editor.compon
     PerfmonComponent,
     CrashPanelComponent,
     ServerPanelComponent,
-    Polygon2dEditorComponent
+    Polygon2dEditorComponent,
+    BackupRestoreComponent
   ],
   imports: [
     BrowserModule,

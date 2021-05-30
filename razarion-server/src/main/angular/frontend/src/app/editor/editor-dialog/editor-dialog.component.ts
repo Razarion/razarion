@@ -1,11 +1,12 @@
 import {Component, Input, Type} from "@angular/core";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {EditorModel, GenericPropertyEditorModel} from "../editor-model";
+import {EditorModel, EditorPanel, GenericPropertyEditorModel} from "../editor-model";
 import {MainCockpitComponent} from "../../game/cockpit/main/main-cockpit.component";
 import {PropertyTableComponent} from "../property-table/property-table.component";
 import {RenderEngineComponent} from "../render-engine/render-engine.component";
 import {GameComponent} from "../../game/game.component";
 import {ServerPanelComponent} from "../server-panel/server-panel.component";
+import {BackupRestoreComponent} from "../backup-restore/backup-restore.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -13,7 +14,7 @@ import {ServerPanelComponent} from "../server-panel/server-panel.component";
   styleUrls: ['editor-dialog.component.scss']
 })
 export class EditorDialogComponent {
-  editors: Map<string, Type<any>> = new Map<string, Type<any>>();
+  editors: Map<string, Type<EditorPanel>> = new Map<string, Type<EditorPanel>>();
   crudControllerEditors: string[] = [];
   @Input("gameComponent")
   gameComponent!: GameComponent;
@@ -23,6 +24,7 @@ export class EditorDialogComponent {
   constructor(private gwtAngularService: GwtAngularService) {
     this.editors.set("Render Engine", RenderEngineComponent)
     this.editors.set("Server Control", ServerPanelComponent)
+    this.editors.set("Backup Restore", BackupRestoreComponent)
   }
 
   onShow() {

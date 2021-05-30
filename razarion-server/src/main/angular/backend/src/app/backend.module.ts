@@ -10,8 +10,6 @@ import {AppRoutingModule} from "./app-routing.module";
 import {SessionHistory} from "./session/session-history.component";
 import {SessionService} from "./session/session.service";
 import {SessionDetails} from "./session/session-detail.component";
-import {BackupRestoreComponent} from "./backuprestore/backup-restore.component";
-import {BackupRestoreService} from "./backuprestore/backup-restore.service";
 import {OnlineService} from "./connection/online.service";
 import {OnlineComponent} from "./connection/online.component";
 import {DurationPipe} from "./duration.pipe";
@@ -32,7 +30,6 @@ import {ServerMgmtService} from "./servermgmt/server-mgmt.service";
     Dashboard,
     SessionHistory,
     SessionDetails,
-    BackupRestoreComponent,
     OnlineComponent,
     DurationPipe,
     UserComponent,
@@ -48,7 +45,7 @@ import {ServerMgmtService} from "./servermgmt/server-mgmt.service";
     AppRoutingModule,
     // InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/servermgmtprovider"})
   ],
-  providers: [SessionService, BackupRestoreService, OnlineService, UserService, NewUserService, UserHistoryService, ItemHistoryService, ServerMgmtService],
+  providers: [SessionService, OnlineService, UserService, NewUserService, UserHistoryService, ItemHistoryService, ServerMgmtService],
   bootstrap: [MainWindow]
 })
 export class Backend {
