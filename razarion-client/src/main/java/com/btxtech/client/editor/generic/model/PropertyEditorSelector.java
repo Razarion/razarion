@@ -2,6 +2,7 @@ package com.btxtech.client.editor.generic.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
@@ -145,8 +146,10 @@ public enum PropertyEditorSelector {
                 return new PlaceConfig()
                         .position(new DecimalPosition((double) mapOfAny.get("x"), (double) mapOfAny.get("y")))
                         .radius((Double) mapOfAny.get("r"));
+            } else if (mapOfAny.has("p")) {
+                return new PlaceConfig().polygon2D((Polygon2D) mapOfAny.get("p"));
             } else {
-                throw new UnsupportedOperationException("...TODO..."); // TODO
+                return null;
             }
         }
 
@@ -158,7 +161,7 @@ public enum PropertyEditorSelector {
                         "y", placeConfig.getPosition().getY(),
                         "r", placeConfig.getRadius()));
             } else {
-                return Any.of(placeConfig.getPolygon2D());
+                return Js.cast(JsPropertyMap.of("p", Any.of(placeConfig.getPolygon2D())));
             }
         }
     },

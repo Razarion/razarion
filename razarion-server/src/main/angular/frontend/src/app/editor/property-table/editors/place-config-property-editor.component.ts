@@ -1,4 +1,4 @@
-import {Component, NgZone} from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import {AngularTreeNodeData, PositionCallback} from "../../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
 
@@ -14,32 +14,37 @@ import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
           <div class="p-mr-2">
             <p-inputNumber [ngModel]="x" prefix="x: " [minFractionDigits]="1"
                            [size]=5
-                           [maxFractionDigits]="6" (onInput)="onChangeX($event)">
+                           [maxFractionDigits]="6" (onInput)="onChangeX($event)"
+                           [disabled]="selected !== 'position'">
             </p-inputNumber>
           </div>
           <div class="p-mr-2">
             <p-inputNumber [ngModel]="y" prefix="y: " [minFractionDigits]="1"
                            [size]=5
-                           [maxFractionDigits]="6" (onInput)="onChangeY($event)">
+                           [maxFractionDigits]="6" (onInput)="onChangeY($event)"
+                           [disabled]="selected !== 'position'">
             </p-inputNumber>
           </div>
           <div class="p-mr-2">
             <p-inputNumber [ngModel]="r" prefix="r: " [minFractionDigits]="1"
                            [size]=5
-                           [maxFractionDigits]="6" (onInput)="onChangeR($event)">
+                           [maxFractionDigits]="6" (onInput)="onChangeR($event)"
+                           [disabled]="selected !== 'position'">
             </p-inputNumber>
           </div>
           <div class="p-mr-2">
             <p-button icon="pi pi-map-marker"
                       title="Show"
                       styleClass="p-button-rounded p-button-text p-button-sm p-button-warning"
-                      (onClick)="onShow()"></p-button>
+                      (onClick)="onShowPosition()"
+                      [disabled]="selected !== 'position'"></p-button>
           </div>
           <div class="p-mr-2">
             <p-button icon="pi pi-pencil"
                       title="Edit"
                       styleClass="p-button-rounded p-button-text p-button-sm p-button-warning"
-                      (onClick)="onActivateCursor()"></p-button>
+                      (onClick)="onActivatePositionCursor()"
+                      [disabled]="selected !== 'position'"></p-button>
           </div>
         </div>
       </div>
@@ -50,9 +55,8 @@ import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
               <p-radioButton name="radio-button" value="polygon" [(ngModel)]="selected"></p-radioButton>
             </div>
             <div class="p-mr-2">
-              {{angularTreeNodeData.value}}
-            </div>
-            <div class="p-mr-2">
+              <polygon-2d-editor [polygon]="polygon" (change)="onPolygon($event)"
+                                 [disabled]="selected !== 'polygon'"></polygon-2d-editor>
             </div>
           </div>
         </div>
@@ -60,12 +64,13 @@ import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
     </div>
   `
 })
-export class PlaceConfigPropertyEditorComponent {
+export class PlaceConfigPropertyEditorComponent implements OnInit {
   angularTreeNodeData!: AngularTreeNodeData;
+  selected: any;
   x: any;
   y: any;
   r: any;
-  selected: any;
+  polygon: any;
 
   constructor(private gwtAngularService: GwtAngularService, private zone: NgZone) {
   }
@@ -74,50 +79,60 @@ export class PlaceConfigPropertyEditorComponent {
     if (this.angularTreeNodeData.value != undefined) {
       if (this.angularTreeNodeData.value.x != undefined) {
         this.selected = "position";
+        this.x = this.angularTreeNodeData.value.x;
+        this.y = this.angularTreeNodeData.value.y;
+        this.r = this.angularTreeNodeData.value.r;
+      } else if (this.angularTreeNodeData.value.p != undefined) {
+        this.selected = "polygon";
+        this.polygon = this.angularTreeNodeData.value.p;
       }
-      this.x = this.angularTreeNodeData.value.x;
-      this.y = this.angularTreeNodeData.value.y;
-      this.r = this.angularTreeNodeData.value.r;
     }
   }
 
   onChangeX(event: any) {
     this.x = event.value;
-    this.savePosition();
+    this.save();
   }
 
   onChangeY(event: any) {
     this.y = event.value;
-    this.savePosition();
+    this.save();
   }
 
   onChangeR(event: any) {
     this.r = event.value;
-    this.savePosition();
+    this.save();
   }
 
-  savePosition() {
-    if (this.x == undefined || this.y == undefined) {
-      this.angularTreeNodeData.setValue(null)
-    } else {
+  save() {
+    if (this.selected === 'position' && this.x !== undefined && this.y !== undefined) {
       this.angularTreeNodeData.setValue({x: this.x, y: this.y, r: this.r})
+    } else if (this.selected === 'polygon' && this.polygon !== undefined && this.polygon !== null) {
+      this.angularTreeNodeData.setValue({p: this.polygon})
+    } else {
+      this.angularTreeNodeData.setValue(null)
     }
   }
 
-  onShow() {
+  onShowPosition() {
     this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainMarkerService().showPosition(this.x, this.y);
   }
 
-  onActivateCursor() {
+  onActivatePositionCursor() {
     const self = this;
     this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainMarkerService().activatePositionCursor(new class implements PositionCallback {
       position(x: number, y: number): void {
         self.zone.run(() => {
           self.x = x;
           self.y = y;
-          self.savePosition();
+          self.save();
         });
       }
     });
+  }
+
+  onPolygon(polygon: any) {
+    this.polygon = polygon;
+    this.save();
   }
 }

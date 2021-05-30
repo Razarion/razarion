@@ -60,6 +60,7 @@ import {CrashPanelComponent} from "./editor/crash-panel/crash-panel.component";
 import {TableModule} from 'primeng/table';
 import {DatePipe} from "@angular/common";
 import {ServerPanelComponent} from "./editor/server-panel/server-panel.component";
+import {Polygon2dEditorComponent} from "./editor/common/polygon-2d-editor.component";
 
 @NgModule({
   declarations: [
@@ -98,7 +99,8 @@ import {ServerPanelComponent} from "./editor/server-panel/server-panel.component
     RenderEngineComponent,
     PerfmonComponent,
     CrashPanelComponent,
-    ServerPanelComponent
+    ServerPanelComponent,
+    Polygon2dEditorComponent
   ],
   imports: [
     BrowserModule,
