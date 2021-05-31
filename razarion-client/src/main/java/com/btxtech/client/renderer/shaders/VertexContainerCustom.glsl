@@ -34,6 +34,10 @@ uniform sampler2D uDemolitionSampler;
 uniform float uHealth;
 const float DELTA_HEALTH = 0.75;
 #endif
+#ifdef CHARACTER_REPRESENTING
+uniform vec3 characterRepresentingColor;
+#endif
+
 //-$$$-CHUNK uniforms-fragment END
 
 //-$$$-CHUNK main-code-fragment BEGIN
@@ -58,5 +62,11 @@ const float DELTA_HEALTH = 0.75;
     #ifdef ALPHA_TO_COVERAGE
     sharpenAlpha = (rgba.a - alphaToCoverage) / max(fwidth(rgba.a), 0.0001) + 0.5;
     #endif
-    gl_FragColor = vec4(rgba.rgb, sharpenAlpha);
+
+    vec3 rgb = rgba.rgb;
+    #ifdef CHARACTER_REPRESENTING
+    rgb = mix(characterRepresentingColor, rgba.rgb, rgba.a);
+    #endif
+
+    gl_FragColor = vec4(rgb, sharpenAlpha);
 //-$$$-CHUNK main-code-fragment END

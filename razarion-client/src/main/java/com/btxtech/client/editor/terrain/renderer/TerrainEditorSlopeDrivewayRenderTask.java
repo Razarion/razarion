@@ -37,7 +37,7 @@ public class TerrainEditorSlopeDrivewayRenderTask extends AbstractWebGlRenderTas
     @Override
     protected void setup(EditorSlopeWrapper modifiedSlope) {
         fillBuffers(modifiedSlope);
-        setupUniform("uColor", UniformLocation.Type.COLOR, () -> TerrainEditorSlopeDrivewayRenderTask.this.modifiedSlope.isHover() ? COLOR_SLOPE_HOVER : COLOR_NORMAL);
+        setupUniform("uColor", UniformLocation.Type.COLOR_RGBA, () -> TerrainEditorSlopeDrivewayRenderTask.this.modifiedSlope.isHover() ? COLOR_SLOPE_HOVER : COLOR_NORMAL);
 
     }
 

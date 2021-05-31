@@ -21,6 +21,7 @@ import java.util.List;
 import static com.btxtech.client.renderer.shaders.Shaders.SHADERS;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.ALPHA_TO_COVERAGE;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.BUILDUP_STATE;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.CHARACTER_REPRESENTING;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.HEALTH_STATE;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
 
@@ -36,8 +37,6 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
     private boolean alphaToCoverage;
     private ProgressState progressState;
     private VertexContainer vertexContainer;
-    // private WebGLUniformLocation characterRepresenting;
-    // private WebGLUniformLocation characterRepresentingColor;
 
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(VertexContainer vertexContainer) {
@@ -80,23 +79,14 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
             }
         }
 
-        // characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
-        // characterRepresentingColor = webGlFacade.getUniformLocation("characterRepresentingColor");
+        if(vertexContainer.getVertexContainerMaterial().isCharacterRepresenting()) {
+            setupModelMatrixUniform("characterRepresentingColor", UniformLocation.Type.COLOR_RGB, ModelMatrices::getColor);
+        }
     }
 
     private void setupProgressUniforms(String progressUniformName, String textureSampleName) {
         setupModelMatrixUniform(progressUniformName, UniformLocation.Type.F, modelMatrices -> progressState.calculateProgress(modelMatrices.getProgress()));
         createWebGLTexture(textureSampleName, progressState.getBuildupTextureId());
-    }
-
-    private void draw(ModelMatrices modelMatrices) {
-//   TODO     if (modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting()) {
-//  TODO          webGlFacade.uniform1b(characterRepresenting, true);
-//  TODO          webGlFacade.uniform3fNoAlpha(characterRepresentingColor, modelMatrices.getColor());
-//  TODO      } else {
-//  TODO          webGlFacade.uniform1b(characterRepresenting, false);
-//  TODO      }
-
     }
 
     @Override
@@ -118,7 +108,9 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
         } else if(progressState instanceof DemolitionState) {
             defines.add(HEALTH_STATE);
         }
-
+        if(vertexContainer.getVertexContainerMaterial().isCharacterRepresenting()) {
+            defines.add(CHARACTER_REPRESENTING);
+        }
     }
 
     @Override

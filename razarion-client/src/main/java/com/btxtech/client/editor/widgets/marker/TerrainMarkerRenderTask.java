@@ -27,6 +27,6 @@ public class TerrainMarkerRenderTask extends AbstractWebGlRenderTask<List<Vertex
     @Override
     protected void setup(List<Vertex> vertices) {
         setupVec3VertexPositionArray(vertices);
-        setupUniform(WebGlFacade.U_COLOR, UniformLocation.Type.COLOR, () -> new Color(0, 1, 0, 0.5));
+        setupUniform(WebGlFacade.U_COLOR, UniformLocation.Type.COLOR_RGBA, () -> new Color(0, 1, 0, 0.5));
     }
 }

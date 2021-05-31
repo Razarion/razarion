@@ -21,7 +21,8 @@ public class UniformLocation<T> {
         I, // Integer
         B, // Boolean
         F,  // Float
-        COLOR, // Color
+        COLOR_RGBA, // Color
+        COLOR_RGB, // Color
         MATRIX_4 // Matrix 4 as double array
     }
 
@@ -61,8 +62,11 @@ public class UniformLocation<T> {
             case F:
                 webGlFacade.uniform1f(webGLUniformLocation, Js.uncheckedCast(t));
                 return;
-            case COLOR:
+            case COLOR_RGBA:
                 webGlFacade.uniform4f(webGLUniformLocation, (Color) t);
+                return;
+            case COLOR_RGB:
+                webGlFacade.uniform3fNoAlpha(webGLUniformLocation, (Color) t);
                 return;
             case MATRIX_4:
                 webGlFacade.uniformMatrix4fv(webGLUniformLocation, (double[]) t);

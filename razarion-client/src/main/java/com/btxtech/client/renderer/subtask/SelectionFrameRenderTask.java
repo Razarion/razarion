@@ -30,7 +30,7 @@ public class SelectionFrameRenderTask extends AbstractWebGlRenderTask<GroupSelec
     @Override
     protected void setup(GroupSelectionFrame groupSelectionFrame) {
         setupVec3VertexPositionArray(groupSelectionFrame.generateVertices());
-        setupUniform(U_COLOR, UniformLocation.Type.COLOR, () -> Colors.SELECTION_FRAME);
+        setupUniform(U_COLOR, UniformLocation.Type.COLOR_RGBA, () -> Colors.SELECTION_FRAME);
 
     }
 }

@@ -30,8 +30,8 @@ public class StatusBarRendererTask extends AbstractWebGlRenderTask<StatusBarGeom
         setupVec3VertexPositionArray(statusBarGeometry.getVertexes());
         setupVec1Array("aVisibility", statusBarGeometry.getVisibilities());
 
-        setupModelMatrixUniform(U_COLOR, UniformLocation.Type.COLOR, ModelMatrices::getColor);
-        setupModelMatrixUniform("uBgColor", UniformLocation.Type.COLOR, ModelMatrices::getBgColor);
+        setupModelMatrixUniform(U_COLOR, UniformLocation.Type.COLOR_RGBA, ModelMatrices::getColor);
+        setupModelMatrixUniform("uBgColor", UniformLocation.Type.COLOR_RGBA, ModelMatrices::getBgColor);
         setupModelMatrixUniform("uProgress", UniformLocation.Type.F, ModelMatrices::getProgress);
     }
 }

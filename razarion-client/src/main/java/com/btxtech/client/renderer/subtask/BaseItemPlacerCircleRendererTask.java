@@ -34,6 +34,6 @@ public class BaseItemPlacerCircleRendererTask extends AbstractWebGlRenderTask<Ba
     @Override
     protected void setup(BaseItemPlacer baseItemPlacer) {
         setupVec3PositionArray(jsInteropObjectFactory.newFloat32Array4Vertices(baseItemPlacer.getVertexes()));
-        setupUniform(U_COLOR, UniformLocation.Type.COLOR, () -> baseItemPlacer.isPositionValid() ? START_POINT_PLACER_VALID : START_POINT_PLACER_IN_VALID);
+        setupUniform(U_COLOR, UniformLocation.Type.COLOR_RGBA, () -> baseItemPlacer.isPositionValid() ? START_POINT_PLACER_VALID : START_POINT_PLACER_IN_VALID);
     }
 }

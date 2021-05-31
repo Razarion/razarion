@@ -30,7 +30,7 @@ public class ItemMarkerRenderTask extends AbstractWebGlRenderTask<ItemMarkerGeom
         setupVec3VertexPositionArray(itemMarkerGeometry.getVertexes());
         setupVec1Array("aVisibility", itemMarkerGeometry.getVisibilities());
 
-        setupModelMatrixUniform(U_COLOR, UniformLocation.Type.COLOR, ModelMatrices::getColor);
+        setupModelMatrixUniform(U_COLOR, UniformLocation.Type.COLOR_RGBA, ModelMatrices::getColor);
         setupModelMatrixUniform("uRadius", UniformLocation.Type.F, ModelMatrices::getRadius);
     }
 }
