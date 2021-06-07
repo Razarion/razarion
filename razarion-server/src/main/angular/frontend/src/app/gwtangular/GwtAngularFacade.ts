@@ -209,7 +209,7 @@ export interface TerrainEditorService {
 
   deactivate(): void;
 
-  save(): void;
+  save(): Promise<string>;
 
   isSlopeMode(): boolean;
 

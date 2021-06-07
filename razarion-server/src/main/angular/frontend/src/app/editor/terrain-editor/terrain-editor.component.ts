@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {TerrainEditorService} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'app-terrain-editor',
@@ -15,7 +16,8 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   selectedSlope: any;
   selectedDriveway: any;
 
-  constructor(private gwtAngularService: GwtAngularService) {
+  constructor(private gwtAngularService: GwtAngularService,
+              private messageService: MessageService) {
     super();
     this.terrainEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService();
   }
@@ -59,5 +61,21 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
 
   onSelectedDrivewayChange(event: any) {
     this.terrainEditorService.setDriveway4New(event.value.objectNameId);
+  }
+
+  save() {
+    this.terrainEditorService.save()
+      .then(okString => this.messageService.add({
+        severity: 'success',
+        summary: okString
+      }))
+      .catch(error => {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Save terrain failed`,
+          detail: `${JSON.stringify(error)}`,
+          sticky: true
+        });
+      });
   }
 }

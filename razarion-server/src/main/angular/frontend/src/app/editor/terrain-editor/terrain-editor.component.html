@@ -8,6 +8,8 @@
         <td><label for="cursorRadius">Cursor Radius</label></td>
         <td>
           <p-inputNumber id="cursorRadius"
+                         [showButtons]="true"
+                         [step]=5
                          [ngModel]="terrainEditorService.getCursorRadius()"
                          (onInput)="terrainEditorService.setCursorRadius($event.value)"
                          [minFractionDigits]="2"
@@ -18,6 +20,7 @@
         <td><label for="cursorCorners">Cursor Corners</label></td>
         <td>
           <p-inputNumber id="cursorCorners"
+                         [showButtons]="true"
                          [ngModel]="terrainEditorService.getCursorCorners()"
                          (onInput)="terrainEditorService.setCursorCorners($event.value)"></p-inputNumber>
         </td>
@@ -67,3 +70,8 @@
   </p-tabPanel>
 </p-tabView>
 
+<p-button type="button"
+          label="Save"
+          icon="pi pi pi-save"
+          styleClass="p-button-sm"
+          (onClick)="save()"></p-button>

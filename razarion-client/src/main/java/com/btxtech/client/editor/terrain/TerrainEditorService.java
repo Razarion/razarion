@@ -2,7 +2,6 @@ package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.KeyboardEventHandler;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.editor.terrain.renderer.TerrainEditorRenderTaskRunner;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
@@ -105,7 +104,6 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     private double terrainObjectRandomZRotation = Math.toDegrees(180);
     private double terrainObjectRandomScale = 1.5;
     private Consumer<Vertex> terrainPositionListener;
-    private ModalDialogPanel saveDialog;
 
     @Override
     @JsIgnore
@@ -307,10 +305,6 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
                     .collect(Collectors.toList());
             terrainObjectModelMatrices = setupModelMatrices();
             terrainEditorRenderTask.activate(cursor, editorSlopeWrapperContainer.getPolygons(), slopeMode);
-            if (saveDialog != null) {
-                saveDialog.close();
-                saveDialog = null;
-            }
         }, exceptionHandler.restErrorHandler("readTerrainSlopePositions failed: ")).readTerrainEditorLoad(getPlanetId());
     }
 
@@ -388,24 +382,24 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public void save() {
+    public Promise<String> save() {
         TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
         setupChangedSlopes(terrainEditorUpdate);
         setupChangedTerrainObjects(terrainEditorUpdate);
 
         if (!terrainEditorUpdate.hasAnyChanged()) {
-            return;
+            return new Promise<>((resolve, reject) -> resolve.onInvoke("Terrain not changed. Save not needed."));
         }
-        modalDialogManager.showMessageNoClosableDialog("Save", "Please wait while saving terrain", modalDialogPanel -> this.saveDialog = modalDialogPanel);
-        terrainEditorController.call(ignore -> loadFromServer(), (message, throwable) -> {
-            if (saveDialog != null) {
-                saveDialog.close();
-                saveDialog = null;
-            }
-            modalDialogManager.showMessageDialog("Save failed", "Save terrain failed. message: " + message + " throwable: " + throwable);
-            exceptionHandler.handleException(message.toString(), throwable);
-            return false;
-        }).updateTerrain(getPlanetId(), terrainEditorUpdate);
+        return new Promise<>((resolve, reject) -> {
+            terrainEditorController.call(ignore -> {
+                loadFromServer();
+                resolve.onInvoke("Terrain saved");
+            }, (message, throwable) -> {
+                exceptionHandler.handleException(message.toString(), throwable);
+                reject.onInvoke(message.toString() + throwable);
+                return false;
+            }).updateTerrain(getPlanetId(), terrainEditorUpdate);
+        });
     }
 
     private void setupChangedSlopes(TerrainEditorUpdate terrainEditorUpdate) {
