@@ -90,16 +90,25 @@ export class PlaceConfigPropertyEditorComponent implements OnInit {
   }
 
   onChangeX(event: any) {
+    if(typeof event.value !== "number") {
+      return;
+    }
     this.x = event.value;
     this.save();
   }
 
   onChangeY(event: any) {
+    if(typeof event.value !== "number") {
+      return;
+    }
     this.y = event.value;
     this.save();
   }
 
   onChangeR(event: any) {
+    if(typeof event.value !== "number") {
+      return;
+    }
     this.r = event.value;
     this.save();
   }

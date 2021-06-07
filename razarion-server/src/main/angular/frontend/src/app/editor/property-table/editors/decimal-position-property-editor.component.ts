@@ -32,11 +32,17 @@ export class DecimalPositionPropertyEditorComponent implements OnInit {
   }
 
   onChangeX(event: any) {
+    if(typeof event.value !== "number") {
+      return;
+    }
     this.x = event.value;
     this.updateModel();
   }
 
   onChangeY(event: any) {
+    if(typeof event.value !== "number") {
+      return;
+    }
     this.y = event.value;
     this.updateModel();
   }

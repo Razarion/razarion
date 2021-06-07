@@ -8,7 +8,10 @@ import {AngularTreeNodeData} from "../../../gwtangular/GwtAngularFacade";
 export class DoublePropertyEditorComponent {
   angularTreeNodeData!: AngularTreeNodeData;
 
-  onchange(value: any) {
-    this.angularTreeNodeData.setValue(value.value);
+  onchange(event: any) {
+    if(typeof event.value !== "number") {
+      return;
+    }
+    this.angularTreeNodeData.setValue(event.value);
   }
 }
