@@ -1,11 +1,37 @@
+Index: errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java b/errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java
+--- a/errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java	(revision efbbcd5f205afe3199c48b9f691fae320fb8e386)
++++ b/errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java	(date 1623096048720)
+@@ -72,13 +72,13 @@
+     }
+
+     handlers.put(ErraiSystemLogHandler.class, new ErraiSystemLogHandler());
+-    logger.addHandler(handlers.get(ErraiSystemLogHandler.class));
++    // logger.addHandler(handlers.get(ErraiSystemLogHandler.class));
+
+     handlers.put(ErraiConsoleLogHandler.class, new ErraiConsoleLogHandler());
+-    logger.addHandler(handlers.get(ErraiConsoleLogHandler.class));
++    // logger.addHandler(handlers.get(ErraiConsoleLogHandler.class));
+
+     handlers.put(ErraiDevelopmentModeLogHandler.class, new ErraiDevelopmentModeLogHandler());
+-    logger.addHandler(handlers.get(ErraiDevelopmentModeLogHandler.class));
++    // logger.addHandler(handlers.get(ErraiDevelopmentModeLogHandler.class));
+
+     instance = this;
+   }
 Index: errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java	(date 1517950579000)
-+++ errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java	(date 1521059100886)
-@@ -32,26 +32,26 @@
+diff --git a/errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java b/errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java
+--- a/errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java	(revision efbbcd5f205afe3199c48b9f691fae320fb8e386)
++++ b/errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java	(date 1623096048736)
+@@ -32,14 +32,14 @@
   */
  public class ManagementConsole {
    private final ClientMessageBusImpl clientMessageBus;
@@ -22,12 +48,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 
      java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManagementConsole.class.getName());
      ErraiSimpleFormatter esf = new ErraiSimpleFormatter("%5$s");
-     ErraiConsoleLogHandler eclh = new ErraiConsoleLogHandler(esf);
--    logger.addHandler(eclh);
-+    // logger.addHandler(eclh);
-     logger.setUseParentHandlers(false);
-
-     declareDebugFunction();
+@@ -51,7 +51,7 @@
    }
 
    public void displayError(final String message, final String additionalDetails, final Throwable e) {
@@ -47,37 +68,14 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
    }
 
    /**
-Index: errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
---- errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java	(date 1517950579000)
-+++ errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java	(date 1521059100856)
-@@ -72,13 +72,13 @@
-     }
-
-     handlers.put(ErraiSystemLogHandler.class, new ErraiSystemLogHandler());
--    logger.addHandler(handlers.get(ErraiSystemLogHandler.class));
-+    // logger.addHandler(handlers.get(ErraiSystemLogHandler.class));
-
-     handlers.put(ErraiConsoleLogHandler.class, new ErraiConsoleLogHandler());
--    logger.addHandler(handlers.get(ErraiConsoleLogHandler.class));
-+    // logger.addHandler(handlers.get(ErraiConsoleLogHandler.class));
-
-     handlers.put(ErraiDevelopmentModeLogHandler.class, new ErraiDevelopmentModeLogHandler());
--    logger.addHandler(handlers.get(ErraiDevelopmentModeLogHandler.class));
-+    // logger.addHandler(handlers.get(ErraiDevelopmentModeLogHandler.class));
-
-     instance = this;
-   }
 Index: errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java	(date 1517950579000)
-+++ errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java	(date 1521037469635)
+diff --git a/errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java b/errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java
+--- a/errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java	(revision efbbcd5f205afe3199c48b9f691fae320fb8e386)
++++ b/errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java	(date 1623096048730)
 @@ -124,6 +124,9 @@
              if (arr.get(i).isObject() != null && arr.get(i).isObject().get(NUMERIC_VALUE) != null) {
                arr.set(i, arr.get(i).isObject().get(NUMERIC_VALUE));
