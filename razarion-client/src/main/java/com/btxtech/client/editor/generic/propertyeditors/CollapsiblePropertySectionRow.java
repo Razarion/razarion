@@ -16,6 +16,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.logging.Logger;
 
+@Deprecated
 @Templated("CollapsiblePropertySectionRow.html#propertyTableRow")
 public class CollapsiblePropertySectionRow implements IsElement {
     private Logger logger = Logger.getLogger(CollapsiblePropertySectionRow.class.getName());

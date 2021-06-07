@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.logging.Logger;
 
+@Deprecated
 @Templated("PropertySectionRow.html#propertyTableRow")
 public class PropertySectionRow implements IsElement {
     private Logger logger = Logger.getLogger(PropertySectionRow.class.getName());
