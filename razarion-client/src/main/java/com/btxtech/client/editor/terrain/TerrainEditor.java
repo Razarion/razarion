@@ -95,9 +95,9 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
         id.textContent = Integer.toString(terrainEditorService.getPlanetConfig().getId());
         terrainSize.textContent = DisplayUtils.handleDecimalPosition(terrainEditorService.getPlanetConfig().getSize());
 
-        slopeRadio.setChecked(terrainEditorService.getSlopeMode());
-        terrainObjectRadio.setChecked(!terrainEditorService.getSlopeMode());
-        setSlopeMode(terrainEditorService.getSlopeMode());
+        slopeRadio.setChecked(terrainEditorService.isSlopeMode());
+        terrainObjectRadio.setChecked(!terrainEditorService.isSlopeMode());
+        setSlopeMode(terrainEditorService.isSlopeMode());
 
         terrainEditorService.setTerrainPositionListener(vertex -> terrainPositionLabel.textContent = DisplayUtils.formatVertex(vertex));
         viewService.addViewFieldListeners(this);

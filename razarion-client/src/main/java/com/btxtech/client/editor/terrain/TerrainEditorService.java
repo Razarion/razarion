@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.rest.DrivewayEditorController;
 import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.shared.utils.MathHelper;
@@ -77,6 +78,8 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     private NativeMatrixFactory nativeMatrixFactory;
     @Inject
     private Caller<SlopeEditorController> slopeEditorController;
+    @Inject
+    private Caller<DrivewayEditorController> drivewayEditorController;
     private boolean active;
     private boolean slopeMode = true;
     private boolean drivewayMode;
@@ -458,6 +461,15 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         });
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public Promise<ObjectNameId[]> getAllDriveways() {
+        return new Promise<>((resolve, reject) -> {
+            drivewayEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
+                resolve.onInvoke(objectNameIds.toArray(new ObjectNameId[0]));
+            }, exceptionHandler.restErrorHandler("DrivewayEditorController.getObjectNameIds() failed: ")).getObjectNameIds();
+        });
+    }
+
     // TODO -> call from angular?
     @JsIgnore
     public void setTerrainObject4New(ObjectNameId terrainObject4New) {
@@ -525,6 +537,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         return terrainObjectRandomScale;
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void setSlopeMode(boolean slopeMode) {
         if (this.slopeMode == slopeMode) {
             return;
@@ -536,7 +549,8 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         terrainEditorRenderTask.setSlopeMode(slopeMode);
     }
 
-    public boolean getSlopeMode() {
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean isSlopeMode() {
         return this.slopeMode;
     }
 
@@ -558,20 +572,17 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         return gameUiControl.getPlanetConfig();
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
-    public void setDrivewayModeChanged(boolean drivewayMode) {
+    @SuppressWarnings("unused") // Called by Angular
+    public void setDrivewayMode(boolean drivewayMode) {
         this.drivewayMode = drivewayMode;
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
+    @SuppressWarnings("unused") // Called by Angular
     public boolean isDrivewayMode() {
         return drivewayMode;
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
+    @SuppressWarnings("unused") // Called by Angular
     public void setDriveway4New(ObjectNameId driveway4New) {
         this.driveway4New = driveway4New;
     }
@@ -583,14 +594,12 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         }, exceptionHandler.restErrorHandler("updateMiniMapImage failed: ")).updateMiniMapImage(getPlanetId(), dataUrl);
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
+    @SuppressWarnings("unused") // Called by Angular
     public boolean isInvertedSlope() {
         return invertedSlope;
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
+    @SuppressWarnings("unused") // Called by Angular
     public void setInvertedSlope(boolean invertedSlope) {
         this.invertedSlope = invertedSlope;
     }

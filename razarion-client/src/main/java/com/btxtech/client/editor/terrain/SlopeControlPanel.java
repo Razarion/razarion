@@ -79,7 +79,7 @@ public class SlopeControlPanel implements IsElement {
 
     @EventHandler("drivewayMode")
     public void drivewayModeChanged(ChangeEvent e) {
-        terrainEditorService.setDrivewayModeChanged(Js.castToBoolean(drivewayMode.value));
+        terrainEditorService.setDrivewayMode(Js.castToBoolean(drivewayMode.value));
     }
 
     @EventHandler("cursorRadius")

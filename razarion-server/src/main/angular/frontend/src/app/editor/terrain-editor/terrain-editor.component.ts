@@ -11,7 +11,9 @@ import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy {
   terrainEditorService: TerrainEditorService;
   slopes: any[] = [];
+  driveways: any[] = [];
   selectedSlope: any;
+  selectedDriveway: any;
 
   constructor(private gwtAngularService: GwtAngularService) {
     super();
@@ -29,6 +31,14 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
       this.terrainEditorService.setSlope4New(this.slopes[0].objectNameId);
       this.selectedSlope = this.slopes[0];
     })
+    this.terrainEditorService.getAllDriveways().then(driveways => {
+      this.driveways = [];
+      driveways.forEach(driveway => {
+        this.driveways.push({name: driveway.toString(), objectNameId: driveway})
+      });
+      this.terrainEditorService.setDriveway4New(this.driveways[0].objectNameId);
+      this.selectedDriveway = this.driveways[0];
+    });
   }
 
   ngOnDestroy(): void {
@@ -43,7 +53,11 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
     }
   }
 
-  onSlopeChange(event: any) {
+  onSelectedSlopeChange(event: any) {
     this.terrainEditorService.setSlope4New(event.value.objectNameId);
+  }
+
+  onSelectedDrivewayChange(event: any) {
+    this.terrainEditorService.setDriveway4New(event.value.objectNameId);
   }
 }

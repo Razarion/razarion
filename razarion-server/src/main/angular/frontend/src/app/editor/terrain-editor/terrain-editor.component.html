@@ -27,7 +27,7 @@
         <td>
           <p-dropdown id="slopeSelection"
                       [options]="slopes"
-                      (onChange)="onSlopeChange($event)"
+                      (onChange)="onSelectedSlopeChange($event)"
                       [(ngModel)]="selectedSlope"
                       optionLabel="name"></p-dropdown>
         </td>
@@ -35,19 +35,29 @@
       <tr>
         <td><label for="slopeInverted">Inverted</label></td>
         <td>
-          <p-checkbox id="slopeInverted"></p-checkbox>
+          <p-checkbox id="slopeInverted"
+                      [binary]="true"
+                      [ngModel]="terrainEditorService.isInvertedSlope()"
+                      (onChange)="terrainEditorService.setInvertedSlope($event.checked)"></p-checkbox>
         </td>
       </tr>
       <tr>
         <td><label for="drivewayMode">Driveway&nbsp;Mode</label></td>
         <td>
-          <p-checkbox id="drivewayMode"></p-checkbox>
+          <p-checkbox id="drivewayMode"
+                      [binary]="true"
+                      [ngModel]="terrainEditorService.isDrivewayMode()"
+                      (onChange)="terrainEditorService.setDrivewayMode($event.checked)"></p-checkbox>
         </td>
       </tr>
       <tr>
         <td><label for="drivewaySelection">New Driveway</label></td>
         <td>
-          <p-dropdown id="drivewaySelection"></p-dropdown>
+          <p-dropdown id="drivewaySelection"
+                      [options]="driveways"
+                      (onChange)="onSelectedDrivewayChange($event)"
+                      [(ngModel)]="selectedDriveway"
+                      optionLabel="name"></p-dropdown>
         </td>
       </tr>
     </table>

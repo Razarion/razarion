@@ -209,23 +209,39 @@ export interface TerrainEditorService {
 
   deactivate(): void;
 
-  getSlopeMode(): boolean;
+  save(): void;
 
-  setSlopeMode(slope: boolean): void;
+  isSlopeMode(): boolean;
+
+  setSlopeMode(slopeMode: boolean): void;
+
+  // --- Slope mode
+  getAllSlopes(): Promise<ObjectNameId[]>;
 
   getCursorRadius(): number;
 
-  setCursorRadius(value: number): void;
+  setCursorRadius(cursorRadius: number): void;
 
   getCursorCorners(): number;
 
-  setCursorCorners(value: number): void;
+  setCursorCorners(cursorCorners: number): void;
 
-  setSlope4New(objectNameId: ObjectNameId): void;
+  setSlope4New(slope4New: ObjectNameId): void;
 
-  getAllSlopes(): Promise<ObjectNameId[]>;
+  isInvertedSlope(): boolean;
 
-  save(): void;
+  setInvertedSlope(invertedSlope: boolean): void
+
+  getAllDriveways(): Promise<ObjectNameId[]>;
+
+  setDrivewayMode(drivewayMode: boolean): void;
+
+  isDrivewayMode(): boolean;
+
+  setDriveway4New(driveway4New: ObjectNameId): void;
+
+  // --- Terrain Object Mode
+
 }
 
 // ---------- Performance ----------
