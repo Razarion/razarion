@@ -1,6 +1,7 @@
 package com.btxtech.client.editor;
 
 import com.btxtech.client.editor.generic.GenericEditorFrontendProvider;
+import com.btxtech.client.editor.terrain.TerrainEditorService;
 import com.btxtech.client.editor.widgets.marker.TerrainMarkerService;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
@@ -25,6 +26,8 @@ public class EditorFrontendProvider {
     private RenderService renderService;
     @Inject
     private TerrainMarkerService terrainMarkerService;
+    @Inject
+    private TerrainEditorService terrainEditorService;
 
     @SuppressWarnings("unused") // Called by Angular
     public GenericEditorFrontendProvider getGenericEditorFrontendProvider() {
@@ -54,5 +57,10 @@ public class EditorFrontendProvider {
     @SuppressWarnings("unused") // Called by Angular
     public TerrainMarkerService getTerrainMarkerService() {
         return terrainMarkerService;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public TerrainEditorService getTerrainEditorService() {
+        return terrainEditorService;
     }
 }

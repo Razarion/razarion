@@ -7,6 +7,7 @@ import {RenderEngineComponent} from "../render-engine/render-engine.component";
 import {GameComponent} from "../../game/game.component";
 import {ServerPanelComponent} from "../server-panel/server-panel.component";
 import {BackupRestoreComponent} from "../backup-restore/backup-restore.component";
+import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -31,13 +32,18 @@ export class EditorDialogComponent {
     this.crudControllerEditors = this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().crudControllers();
   }
 
-  openCrudControllerEditor(name: string, index: number) {
+  openConfigurationEditor(name: string, index: number) {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new GenericPropertyEditorModel(PropertyTableComponent, name, index));
   }
 
-  openEditor(name: string, editorComponent: Type<any>) {
+  openAdministrationEditor(name: string, editorComponent: Type<any>) {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel(name, editorComponent));
+  }
+
+  openTerrainEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
   }
 }

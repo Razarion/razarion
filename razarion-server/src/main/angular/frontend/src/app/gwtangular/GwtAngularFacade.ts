@@ -138,6 +138,8 @@ export interface EditorFrontendProvider {
   setRenderInterpolation(value: boolean): void;
 
   getTerrainMarkerService(): TerrainMarkerService;
+
+  getTerrainEditorService(): TerrainEditorService;
 }
 
 export interface GenericEditorFrontendProvider {
@@ -181,6 +183,8 @@ export interface ObjectNameId {
   getId(): number;
 
   getInternalName(): string;
+
+  toString(): string;
 }
 
 export interface AngularTreeNodeData {
@@ -200,6 +204,31 @@ export interface AngularTreeNodeData {
   setValue(value: any): void;
 }
 
+export interface TerrainEditorService {
+  activate(): void;
+
+  deactivate(): void;
+
+  getSlopeMode(): boolean;
+
+  setSlopeMode(slope: boolean): void;
+
+  getCursorRadius(): number;
+
+  setCursorRadius(value: number): void;
+
+  getCursorCorners(): number;
+
+  setCursorCorners(value: number): void;
+
+  setSlope4New(objectNameId: ObjectNameId): void;
+
+  getAllSlopes(): Promise<ObjectNameId[]>;
+
+  save(): void;
+}
+
+// ---------- Performance ----------
 export interface PerfmonStatistic {
   getPerfmonEnumString(): string;
 

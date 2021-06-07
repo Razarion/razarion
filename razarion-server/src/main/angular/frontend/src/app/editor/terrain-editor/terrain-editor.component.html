@@ -1,0 +1,59 @@
+<p-tabView styleClass="tabview-custom" (onChange)="onTabSelected($event)">
+  <p-tabPanel header="Slope" [selected]="true">
+    <p style="font-size: 80%">Press Insert for new Slope</p>
+    <p style="font-size: 80%">Save before drawing a child</p>
+    <p style="font-size: 80%">Shift & Delete & Click removes whole slope</p>
+    <table style="border-spacing: 0; border-collapse: separate; margin: 5px">
+      <tr>
+        <td><label for="cursorRadius">Cursor Radius</label></td>
+        <td>
+          <p-inputNumber id="cursorRadius"
+                         [ngModel]="terrainEditorService.getCursorRadius()"
+                         (onInput)="terrainEditorService.setCursorRadius($event.value)"
+                         [minFractionDigits]="2"
+                         [maxFractionDigits]="5"></p-inputNumber>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="cursorCorners">Cursor Corners</label></td>
+        <td>
+          <p-inputNumber id="cursorCorners"
+                         [ngModel]="terrainEditorService.getCursorCorners()"
+                         (onInput)="terrainEditorService.setCursorCorners($event.value)"></p-inputNumber>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="slopeSelection">New Slope</label></td>
+        <td>
+          <p-dropdown id="slopeSelection"
+                      [options]="slopes"
+                      (onChange)="onSlopeChange($event)"
+                      [(ngModel)]="selectedSlope"
+                      optionLabel="name"></p-dropdown>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="slopeInverted">Inverted</label></td>
+        <td>
+          <p-checkbox id="slopeInverted"></p-checkbox>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="drivewayMode">Driveway&nbsp;Mode</label></td>
+        <td>
+          <p-checkbox id="drivewayMode"></p-checkbox>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="drivewaySelection">New Driveway</label></td>
+        <td>
+          <p-dropdown id="drivewaySelection"></p-dropdown>
+        </td>
+      </tr>
+    </table>
+  </p-tabPanel>
+  <p-tabPanel header="Terrain Objects">
+    Content 2
+  </p-tabPanel>
+</p-tabView>
+

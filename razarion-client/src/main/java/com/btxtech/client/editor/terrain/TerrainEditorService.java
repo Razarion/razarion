@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.EditorKeyboardListener;
@@ -26,6 +27,9 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.renderer.RenderService;
+import elemental2.promise.Promise;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
@@ -41,6 +45,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 05.05.2016.
  */
+@JsType
 @ApplicationScoped
 public class TerrainEditorService implements EditorMouseListener, EditorKeyboardListener {
     public enum CursorType {
@@ -70,6 +75,8 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     private TerrainTypeService terrainTypeService;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
+    @Inject
+    private Caller<SlopeEditorController> slopeEditorController;
     private boolean active;
     private boolean slopeMode = true;
     private boolean drivewayMode;
@@ -98,6 +105,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     private ModalDialogPanel saveDialog;
 
     @Override
+    @JsIgnore
     public void onMouseMove(Vertex terrainPosition, boolean primaryButtonDown) {
         // Cursor
         this.terrainPosition = terrainPosition;
@@ -136,6 +144,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     @Override
+    @JsIgnore
     public void onMouseDown(Vertex terrainPosition) {
         if (slopeMode) {
             if (hoverSlope != null) {
@@ -217,11 +226,13 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     @Override
+    @JsIgnore
     public void onMouseUp() {
         modifyingTerrainObject = null;
     }
 
     @Override
+    @JsIgnore
     public void onDeleteKeyDown(boolean down) {
         deletePressed = down;
         if (down) {
@@ -236,11 +247,13 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     @Override
+    @JsIgnore
     public void onShiftKeyDown(boolean down) {
         shiftPressed = down;
     }
 
     @Override
+    @JsIgnore
     public void onInsertKeyDown(boolean down) {
         insertPressed = down;
         if (down) {
@@ -256,12 +269,14 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
 
 
     @Override
+    @JsIgnore
     public void onSpaceKeyDown(boolean down) {
         if (down && terrainPosition != null && terrainPositionListener != null) {
             terrainPositionListener.accept(terrainPosition);
         }
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void activate() {
         if (active) {
             return;
@@ -311,6 +326,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         }
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void deactivate() {
         if (!active) {
             return;
@@ -324,19 +340,23 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         terrainEditorRenderTask.deactivate();
     }
 
-    double getCursorRadius() {
+    @SuppressWarnings("unused") // Called by Angular
+    public double getCursorRadius() {
         return cursorRadius;
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void setCursorRadius(double cursorRadius) {
         this.cursorRadius = cursorRadius;
         onCursorChanged();
     }
 
-    int getCursorCorners() {
+    @SuppressWarnings("unused") // Called by Angular
+    public int getCursorCorners() {
         return cursorCorners;
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void setCursorCorners(int cursorCorners) {
         this.cursorCorners = cursorCorners;
         onCursorChanged();
@@ -364,6 +384,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void save() {
         TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
         setupChangedSlopes(terrainEditorUpdate);
@@ -423,22 +444,40 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         terrainEditorUpdate.setDeletedTerrainObjectsIds(deletedTerrainObjectsIds);
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void setSlope4New(ObjectNameId slope4New) {
         this.slope4New = slope4New;
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public Promise<ObjectNameId[]> getAllSlopes() {
+        return new Promise<>((resolve, reject) -> {
+            slopeEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
+                resolve.onInvoke(objectNameIds.toArray(new ObjectNameId[0]));
+            }, exceptionHandler.restErrorHandler("SlopeEditorController.getObjectNameIds() failed: ")).getObjectNameIds();
+        });
+    }
+
+    // TODO -> call from angular?
+    @JsIgnore
     public void setTerrainObject4New(ObjectNameId terrainObject4New) {
         this.terrainObject4New = terrainObject4New;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public Matrix4 getCursorModelMatrix() {
         return cursorModelMatrix;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public CursorType getCursorType() {
         return cursorType;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public boolean isDeletePressed() {
         return deletePressed;
     }
@@ -456,22 +495,32 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         terrainObjects.forEach(modifiedTerrainObject -> modifiedTerrainObject.setHover(false));
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public List<ModelMatrices> provideTerrainObjectModelMatrices() {
         return terrainObjectModelMatrices;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public void setTerrainObjectRandomZRotation(double terrainObjectRandomZRotation) {
         this.terrainObjectRandomZRotation = terrainObjectRandomZRotation;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public void setTerrainObjectRandomScale(double terrainObjectRandomScale) {
         this.terrainObjectRandomScale = terrainObjectRandomScale;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public double getTerrainObjectRandomZRotation() {
         return terrainObjectRandomZRotation;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public double getTerrainObjectRandomScale() {
         return terrainObjectRandomScale;
     }
@@ -491,39 +540,57 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         return this.slopeMode;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public void setTerrainPositionListener(Consumer<Vertex> terrainPositionListener) {
         this.terrainPositionListener = terrainPositionListener;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public int getPlanetId() {
         return getPlanetConfig().getId();
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public PlanetConfig getPlanetConfig() {
         return gameUiControl.getPlanetConfig();
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public void setDrivewayModeChanged(boolean drivewayMode) {
         this.drivewayMode = drivewayMode;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public boolean isDrivewayMode() {
         return drivewayMode;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public void setDriveway4New(ObjectNameId driveway4New) {
         this.driveway4New = driveway4New;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public void saveMiniMapImage(String dataUrl) {
         terrainEditorController.call(ignore -> {
         }, exceptionHandler.restErrorHandler("updateMiniMapImage failed: ")).updateMiniMapImage(getPlanetId(), dataUrl);
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public boolean isInvertedSlope() {
         return invertedSlope;
     }
 
+    // TODO -> call from angular?
+    @JsIgnore
     public void setInvertedSlope(boolean invertedSlope) {
         this.invertedSlope = invertedSlope;
     }

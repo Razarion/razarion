@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
 
+@Deprecated
 @Templated("SlopeControlPanel.html#slopeControlPanel")
 public class SlopeControlPanel implements IsElement {
     @Inject

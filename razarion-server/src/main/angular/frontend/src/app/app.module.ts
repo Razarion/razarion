@@ -62,6 +62,9 @@ import {DatePipe} from "@angular/common";
 import {ServerPanelComponent} from "./editor/server-panel/server-panel.component";
 import {Polygon2dEditorComponent} from "./editor/common/polygon-2d-editor.component";
 import {BackupRestoreComponent} from "./editor/backup-restore/backup-restore.component";
+import {TerrainEditorComponent} from './editor/terrain-editor/terrain-editor.component';
+import {TabViewModule} from 'primeng/tabview';
+import {CheckboxModule} from 'primeng/checkbox';
 
 @NgModule({
   declarations: [
@@ -102,7 +105,8 @@ import {BackupRestoreComponent} from "./editor/backup-restore/backup-restore.com
     CrashPanelComponent,
     ServerPanelComponent,
     Polygon2dEditorComponent,
-    BackupRestoreComponent
+    BackupRestoreComponent,
+    TerrainEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -123,7 +127,9 @@ import {BackupRestoreComponent} from "./editor/backup-restore/backup-restore.com
     CarouselModule,
     ChartModule,
     RadioButtonModule,
-    TableModule
+    TableModule,
+    TabViewModule,
+    CheckboxModule
   ],
   providers: [
     FrontendService, {

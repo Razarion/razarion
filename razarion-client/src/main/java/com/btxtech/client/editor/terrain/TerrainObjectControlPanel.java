@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
 
+@Deprecated
 @Templated("TerrainObjectControlPanel.html#terrainObjectControlPanel")
 public class TerrainObjectControlPanel implements IsElement {
     @Inject
