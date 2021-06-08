@@ -241,7 +241,17 @@ export interface TerrainEditorService {
   setDriveway4New(driveway4New: ObjectNameId): void;
 
   // --- Terrain Object Mode
+  getAllTerrainObjects(): Promise<ObjectNameId[]>;
 
+  setTerrainObject4New(terrainObject4New: ObjectNameId): void;
+
+  getTerrainObjectRandomZRotation(): number;
+
+  setTerrainObjectRandomZRotation(terrainObjectRandomZRotation: number): void;
+
+  getTerrainObjectRandomScale(): number;
+
+  setTerrainObjectRandomScale(terrainObjectRandomScale: number): void;
 }
 
 // ---------- Performance ----------

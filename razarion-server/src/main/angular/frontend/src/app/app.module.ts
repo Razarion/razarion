@@ -65,6 +65,7 @@ import {BackupRestoreComponent} from "./editor/backup-restore/backup-restore.com
 import {TerrainEditorComponent} from './editor/terrain-editor/terrain-editor.component';
 import {TabViewModule} from 'primeng/tabview';
 import {CheckboxModule} from 'primeng/checkbox';
+import {SliderModule} from 'primeng/slider';
 
 @NgModule({
   declarations: [
@@ -129,7 +130,8 @@ import {CheckboxModule} from 'primeng/checkbox';
     RadioButtonModule,
     TableModule,
     TabViewModule,
-    CheckboxModule
+    CheckboxModule,
+    SliderModule
   ],
   providers: [
     FrontendService, {

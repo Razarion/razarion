@@ -20,6 +20,7 @@ import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.rest.DrivewayEditorController;
 import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainEditorController;
+import com.btxtech.shared.rest.TerrainObjectEditorController;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.EditorKeyboardListener;
 import com.btxtech.uiservice.EditorMouseListener;
@@ -79,6 +80,8 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     private Caller<SlopeEditorController> slopeEditorController;
     @Inject
     private Caller<DrivewayEditorController> drivewayEditorController;
+    @Inject
+    private Caller<TerrainObjectEditorController> terrainObjectEditorController;
     private boolean active;
     private boolean slopeMode = true;
     private boolean drivewayMode;
@@ -390,16 +393,14 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         if (!terrainEditorUpdate.hasAnyChanged()) {
             return new Promise<>((resolve, reject) -> resolve.onInvoke("Terrain not changed. Save not needed."));
         }
-        return new Promise<>((resolve, reject) -> {
-            terrainEditorController.call(ignore -> {
-                loadFromServer();
-                resolve.onInvoke("Terrain saved");
-            }, (message, throwable) -> {
-                exceptionHandler.handleException(message.toString(), throwable);
-                reject.onInvoke(message.toString() + throwable);
-                return false;
-            }).updateTerrain(getPlanetId(), terrainEditorUpdate);
-        });
+        return new Promise<>((resolve, reject) -> terrainEditorController.call(ignore -> {
+            loadFromServer();
+            resolve.onInvoke("Terrain saved");
+        }, (message, throwable) -> {
+            exceptionHandler.handleException(message.toString(), throwable);
+            reject.onInvoke(message.toString() + throwable);
+            return false;
+        }).updateTerrain(getPlanetId(), terrainEditorUpdate));
     }
 
     private void setupChangedSlopes(TerrainEditorUpdate terrainEditorUpdate) {
@@ -448,42 +449,38 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
 
     @SuppressWarnings("unused") // Called by Angular
     public Promise<ObjectNameId[]> getAllSlopes() {
-        return new Promise<>((resolve, reject) -> {
-            slopeEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
-                resolve.onInvoke(objectNameIds.toArray(new ObjectNameId[0]));
-            }, exceptionHandler.restErrorHandler("SlopeEditorController.getObjectNameIds() failed: ")).getObjectNameIds();
-        });
+        return new Promise<>((resolve, reject) -> slopeEditorController.call(
+                (RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> resolve.onInvoke(objectNameIds.toArray(new ObjectNameId[0])),
+                exceptionHandler.restErrorHandler("SlopeEditorController.getObjectNameIds() failed: ")).getObjectNameIds());
     }
 
     @SuppressWarnings("unused") // Called by Angular
     public Promise<ObjectNameId[]> getAllDriveways() {
-        return new Promise<>((resolve, reject) -> {
-            drivewayEditorController.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
-                resolve.onInvoke(objectNameIds.toArray(new ObjectNameId[0]));
-            }, exceptionHandler.restErrorHandler("DrivewayEditorController.getObjectNameIds() failed: ")).getObjectNameIds();
-        });
+        return new Promise<>((resolve, reject) -> drivewayEditorController.call(
+                (RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> resolve.onInvoke(objectNameIds.toArray(new ObjectNameId[0])),
+                exceptionHandler.restErrorHandler("DrivewayEditorController.getObjectNameIds() failed: ")).getObjectNameIds());
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
+    @SuppressWarnings("unused") // Called by Angular
+    public Promise<ObjectNameId[]> getAllTerrainObjects() {
+        return new Promise<>((resolve, reject) -> terrainObjectEditorController.call(
+                (RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> resolve.onInvoke(objectNameIds.toArray(new ObjectNameId[0])),
+                exceptionHandler.restErrorHandler("TerrainObjectEditorController.getObjectNameIds() failed: ")).getObjectNameIds());
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
     public void setTerrainObject4New(ObjectNameId terrainObject4New) {
         this.terrainObject4New = terrainObject4New;
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
     public Matrix4 getCursorModelMatrix() {
         return cursorModelMatrix;
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
     public CursorType getCursorType() {
         return cursorType;
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
     public boolean isDeletePressed() {
         return deletePressed;
     }
@@ -501,34 +498,28 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         terrainObjects.forEach(modifiedTerrainObject -> modifiedTerrainObject.setHover(false));
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
     public List<ModelMatrices> provideTerrainObjectModelMatrices() {
         return terrainObjectModelMatrices;
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
-    public void setTerrainObjectRandomZRotation(double terrainObjectRandomZRotation) {
-        this.terrainObjectRandomZRotation = terrainObjectRandomZRotation;
-    }
-
-    // TODO -> call from angular?
-    @JsIgnore
-    public void setTerrainObjectRandomScale(double terrainObjectRandomScale) {
-        this.terrainObjectRandomScale = terrainObjectRandomScale;
-    }
-
-    // TODO -> call from angular?
-    @JsIgnore
+    @SuppressWarnings("unused") // Called by Angular
     public double getTerrainObjectRandomZRotation() {
         return terrainObjectRandomZRotation;
     }
 
-    // TODO -> call from angular?
-    @JsIgnore
+    @SuppressWarnings("unused") // Called by Angular
+    public void setTerrainObjectRandomZRotation(double terrainObjectRandomZRotation) {
+        this.terrainObjectRandomZRotation = terrainObjectRandomZRotation;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
     public double getTerrainObjectRandomScale() {
         return terrainObjectRandomScale;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public void setTerrainObjectRandomScale(double terrainObjectRandomScale) {
+        this.terrainObjectRandomScale = terrainObjectRandomScale;
     }
 
     @SuppressWarnings("unused") // Called by Angular

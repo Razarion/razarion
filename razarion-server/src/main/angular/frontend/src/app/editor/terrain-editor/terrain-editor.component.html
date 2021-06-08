@@ -45,7 +45,7 @@
         </td>
       </tr>
       <tr>
-        <td><label for="drivewayMode">Driveway&nbsp;Mode</label></td>
+        <td><label for="drivewayMode">Driveway Mode</label></td>
         <td>
           <p-checkbox id="drivewayMode"
                       [binary]="true"
@@ -66,7 +66,29 @@
     </table>
   </p-tabPanel>
   <p-tabPanel header="Terrain Objects">
-    Content 2
+    <table style="border-spacing: 0; border-collapse: separate; margin: 5px">
+      <tr>
+        <td>New Terrain Object</td>
+        <td>
+          <p-dropdown [options]="terrainObjects"
+                      (onChange)="onSelectedTerrainObjectChange($event)"
+                      [(ngModel)]="selectedTerrainObject"
+                      optionLabel="name"></p-dropdown>
+        </td>
+      </tr>
+      <tr>
+        <td>Random Z Rotation [0&#176;...180&#176;]</td>
+        <td><p-slider [ngModel]="terrainEditorService.getTerrainObjectRandomZRotation()"
+                      (onChange)="terrainEditorService.setTerrainObjectRandomZRotation($event.value)"
+                      [min]="0" [max]="180" [step]="1"></p-slider></td>
+      </tr>
+      <tr>
+        <td>Random Scale [1...5]</td>
+        <td><p-slider [ngModel]="terrainEditorService.getTerrainObjectRandomScale()"
+                      (onChange)="terrainEditorService.setTerrainObjectRandomScale($event.value)"
+                      [min]="1" [max]="5" [step]="0.01"></p-slider></td>
+      </tr>
+    </table>
   </p-tabPanel>
 </p-tabView>
 
