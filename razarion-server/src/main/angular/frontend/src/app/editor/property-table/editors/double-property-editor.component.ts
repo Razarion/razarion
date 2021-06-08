@@ -9,7 +9,7 @@ export class DoublePropertyEditorComponent {
   angularTreeNodeData!: AngularTreeNodeData;
 
   onchange(event: any) {
-    if(typeof event.value !== "number") {
+    if (event.value != null && typeof event.value !== "number") {
       return;
     }
     this.angularTreeNodeData.setValue(event.value);

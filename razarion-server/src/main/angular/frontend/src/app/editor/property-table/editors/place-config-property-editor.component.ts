@@ -90,7 +90,7 @@ export class PlaceConfigPropertyEditorComponent implements OnInit {
   }
 
   onChangeX(event: any) {
-    if(typeof event.value !== "number") {
+    if(event.value != null && typeof event.value !== "number") {
       return;
     }
     this.x = event.value;
@@ -98,7 +98,7 @@ export class PlaceConfigPropertyEditorComponent implements OnInit {
   }
 
   onChangeY(event: any) {
-    if(typeof event.value !== "number") {
+    if(event.value != null && typeof event.value !== "number") {
       return;
     }
     this.y = event.value;
@@ -106,7 +106,7 @@ export class PlaceConfigPropertyEditorComponent implements OnInit {
   }
 
   onChangeR(event: any) {
-    if(typeof event.value !== "number") {
+    if(event.value != null && typeof event.value !== "number") {
       return;
     }
     this.r = event.value;
@@ -114,7 +114,7 @@ export class PlaceConfigPropertyEditorComponent implements OnInit {
   }
 
   save() {
-    if (this.selected === 'position' && this.x !== undefined && this.y !== undefined) {
+    if (this.selected === 'position' && this.x != undefined && this.y != undefined) {
       this.angularTreeNodeData.setValue({x: this.x, y: this.y, r: this.r})
     } else if (this.selected === 'polygon' && this.polygon !== undefined && this.polygon !== null) {
       this.angularTreeNodeData.setValue({p: this.polygon})

@@ -32,7 +32,7 @@ export class DecimalPositionPropertyEditorComponent implements OnInit {
   }
 
   onChangeX(event: any) {
-    if(typeof event.value !== "number") {
+    if (event.value != null && typeof event.value !== "number") {
       return;
     }
     this.x = event.value;
@@ -40,7 +40,7 @@ export class DecimalPositionPropertyEditorComponent implements OnInit {
   }
 
   onChangeY(event: any) {
-    if(typeof event.value !== "number") {
+    if (event.value != null && typeof event.value !== "number") {
       return;
     }
     this.y = event.value;
