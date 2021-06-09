@@ -74,19 +74,19 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
 
     private void setup(TerrainSlopePosition terrainSlopePosition) {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
-        SlopeConfig slopeConfigLand = new SlopeConfig()
+        slopeConfigs.add(new SlopeConfig()
                 .id(SLOPE_CONFIG_ID_1)
                 .groundConfigId(10)
-                .setHorizontalSpace(5)
+                .horizontalSpace(5)
                 .slopeShapes(Arrays.asList(
                         new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
                         new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
                         new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7),
                         new SlopeShape().position(new DecimalPosition(10, 20)).slopeFactor(0.7),
-                        new SlopeShape().position(new DecimalPosition(11, 20)).slopeFactor(0.7)));
-
-        slopeConfigLand.setOuterLineGameEngine(2).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(9);
-        slopeConfigs.add(slopeConfigLand);
+                        new SlopeShape().position(new DecimalPosition(11, 20)).slopeFactor(0.7)))
+                .outerLineGameEngine(2)
+                .coastDelimiterLineGameEngine(5)
+                .innerLineGameEngine(9));
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         terrainSlopePositions.add(terrainSlopePosition);

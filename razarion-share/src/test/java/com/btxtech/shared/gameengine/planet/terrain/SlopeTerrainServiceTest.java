@@ -91,14 +91,14 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
-        slopeConfigLand.setHorizontalSpace(5);
+        slopeConfigLand.horizontalSpace(5);
         List<SlopeShape> slopeShapes = new ArrayList<>();
         slopeShapes.add(new SlopeShape().slopeFactor(1));
         slopeShapes.add(new SlopeShape().position(new DecimalPosition(5, 5)).slopeFactor(1));
         slopeShapes.add(new SlopeShape().position(new DecimalPosition(15, 10)).slopeFactor(0.7));
         slopeShapes.add(new SlopeShape().position(new DecimalPosition(25, 20)).slopeFactor(0.7));
         slopeConfigLand.setSlopeShapes(slopeShapes);
-        slopeConfigLand.setInnerLineGameEngine(22).setOuterLineGameEngine(2);
+        slopeConfigLand.innerLineGameEngine(22).outerLineGameEngine(2);
         slopeConfigs.add(slopeConfigLand);
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
@@ -128,7 +128,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
-        slopeConfigLand.setHorizontalSpace(5);
+        slopeConfigLand.horizontalSpace(5);
 
         List<SlopeShape> slopeShapes = new ArrayList<>();
         slopeShapes.add(new SlopeShape().slopeFactor(1));
@@ -136,7 +136,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         slopeShapes.add(new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7));
         slopeShapes.add(new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7));
         slopeConfigLand.setSlopeShapes(slopeShapes);
-        slopeConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(5);
+        slopeConfigLand.outerLineGameEngine(2).innerLineGameEngine(5);
         slopeConfigs.add(slopeConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

@@ -35,23 +35,23 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
-        slopeConfigLand.setHorizontalSpace(5);
+        slopeConfigLand.horizontalSpace(5);
         slopeConfigLand.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7)));
-        slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
+        slopeConfigLand.outerLineGameEngine(1).innerLineGameEngine(6);
         slopeConfigs.add(slopeConfigLand);
 
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID);
-        slopeConfigWater.setHorizontalSpace(6);
+        slopeConfigWater.horizontalSpace(6);
         slopeConfigWater.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(5, 0.5)).slopeFactor(0.5),
                 new SlopeShape().position(new DecimalPosition(10, -0.1)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(15, -0.8)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(20, -2)).slopeFactor(1)));
-        slopeConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
+        slopeConfigWater.outerLineGameEngine(8).coastDelimiterLineGameEngine(10).innerLineGameEngine(16);
         slopeConfigs.add(slopeConfigWater);
 
         // Land slope

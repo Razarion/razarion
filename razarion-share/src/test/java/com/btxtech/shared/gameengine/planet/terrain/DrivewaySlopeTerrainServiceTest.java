@@ -190,8 +190,8 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         if (slopeConfig == null) {
             slopeConfig = new SlopeConfig();
             slopeConfig.id(1);
-            slopeConfig.setHorizontalSpace(5);
-            slopeConfig.setOuterLineGameEngine(3).setInnerLineGameEngine(7);
+            slopeConfig.horizontalSpace(5);
+            slopeConfig.outerLineGameEngine(3).innerLineGameEngine(7);
             slopeConfig.setSlopeShapes(Arrays.asList(
                     new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
                     new SlopeShape().position(new DecimalPosition(4, 8)).slopeFactor(0.7),

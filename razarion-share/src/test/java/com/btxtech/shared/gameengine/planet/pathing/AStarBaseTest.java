@@ -31,7 +31,7 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         // Land slope config
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
-        slopeConfigLand.setHorizontalSpace(5);
+        slopeConfigLand.horizontalSpace(5);
         slopeConfigLand.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(0),
                 new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
@@ -39,17 +39,17 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
                 new SlopeShape().position(new DecimalPosition(9, 20)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(11, 25)).slopeFactor(0)
         ));
-        slopeConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(9);
+        slopeConfigLand.outerLineGameEngine(2).innerLineGameEngine(9);
         // Water slope config
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(2).waterConfigId(1);
-        slopeConfigWater.setHorizontalSpace(5);
+        slopeConfigWater.horizontalSpace(5);
         slopeConfigWater.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(4, -1)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(8, -1.5)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(12, -2)).slopeFactor(0.7)));
-        slopeConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(6).setInnerLineGameEngine(10);
+        slopeConfigWater.outerLineGameEngine(3).coastDelimiterLineGameEngine(6).innerLineGameEngine(10);
 
         List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig().id(1).waterLevel(-0.2).groundLevel(-2));
 

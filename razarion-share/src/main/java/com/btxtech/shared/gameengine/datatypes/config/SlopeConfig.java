@@ -63,36 +63,32 @@ public class SlopeConfig implements Config {
         return outerLineGameEngine;
     }
 
-    public SlopeConfig setOuterLineGameEngine(double outerLineGameEngine) {
+    public void setOuterLineGameEngine(double outerLineGameEngine) {
         this.outerLineGameEngine = outerLineGameEngine;
-        return this;
     }
 
     public double getInnerLineGameEngine() {
         return innerLineGameEngine;
     }
 
-    public SlopeConfig setInnerLineGameEngine(double innerLineGameEngine) {
+    public void setInnerLineGameEngine(double innerLineGameEngine) {
         this.innerLineGameEngine = innerLineGameEngine;
-        return this;
     }
 
     public double getCoastDelimiterLineGameEngine() {
         return coastDelimiterLineGameEngine;
     }
 
-    public SlopeConfig setCoastDelimiterLineGameEngine(double coastDelimiterLineGameEngine) {
+    public void setCoastDelimiterLineGameEngine(double coastDelimiterLineGameEngine) {
         this.coastDelimiterLineGameEngine = coastDelimiterLineGameEngine;
-        return this;
     }
 
     public double getHorizontalSpace() {
         return horizontalSpace;
     }
 
-    public SlopeConfig setHorizontalSpace(double horizontalSpace) {
+    public void setHorizontalSpace(double horizontalSpace) {
         this.horizontalSpace = horizontalSpace;
-        return this;
     }
 
     public Integer getGroundConfigId() {
@@ -115,9 +111,8 @@ public class SlopeConfig implements Config {
         return interpolateNorm;
     }
 
-    public SlopeConfig setInterpolateNorm(boolean interpolateNorm) {
+    public void setInterpolateNorm(boolean interpolateNorm) {
         this.interpolateNorm = interpolateNorm;
-        return this;
     }
 
     public ShallowWaterConfig getShallowWaterConfig() {

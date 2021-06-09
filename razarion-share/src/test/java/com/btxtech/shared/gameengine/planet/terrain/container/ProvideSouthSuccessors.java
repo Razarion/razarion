@@ -30,14 +30,14 @@ public class ProvideSouthSuccessors extends WeldTerrainServiceTestBase {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
-        slopeConfigLand.setHorizontalSpace(5);
+        slopeConfigLand.horizontalSpace(5);
         slopeConfigLand.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 1)).slopeFactor(0.3),
                 new SlopeShape().position(new DecimalPosition(4, 5)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(8, 10)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(10, 20)).slopeFactor(0.7)
         ));
-        slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(8);
+        slopeConfigLand.outerLineGameEngine(1).innerLineGameEngine(8);
         slopeConfigs.add(slopeConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

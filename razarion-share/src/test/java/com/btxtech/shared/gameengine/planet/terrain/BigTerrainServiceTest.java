@@ -26,26 +26,26 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
-        slopeConfigLand.setHorizontalSpace(5);
+        slopeConfigLand.horizontalSpace(5);
         slopeConfigLand.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(4, 8)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(7, 12)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(10, 20)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(11, 20)).slopeFactor(0.7)));
-        slopeConfigLand.setOuterLineGameEngine(3).setInnerLineGameEngine(7);
+        slopeConfigLand.outerLineGameEngine(3).innerLineGameEngine(7);
         slopeConfigs.add(slopeConfigLand);
 
         SlopeConfig slopeConfigWater = new SlopeConfig();
         slopeConfigWater.id(2).setWaterConfigId(1);
-        slopeConfigWater.setHorizontalSpace(5);
+        slopeConfigWater.horizontalSpace(5);
         slopeConfigWater.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(4, 0)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(8, -1)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(10, -1.5)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(12, -2)).slopeFactor(0.7)));
-        slopeConfigWater.setOuterLineGameEngine(4).setCoastDelimiterLineGameEngine(7).setInnerLineGameEngine(11);
+        slopeConfigWater.outerLineGameEngine(4).coastDelimiterLineGameEngine(7).innerLineGameEngine(11);
         slopeConfigs.add(slopeConfigWater);
 
         List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig().id(1).waterLevel(-0.2).groundLevel(-2));

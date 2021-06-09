@@ -132,7 +132,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                                 new SlopeShape().position(new DecimalPosition(5, -0.2)).slopeFactor(1),
                                 new SlopeShape().position(new DecimalPosition(10, -0.6)).slopeFactor(0.7),
                                 new SlopeShape().position(new DecimalPosition(15, -1)).slopeFactor(0.7)))
-                        .innerLineGameEngine(13).setCoastDelimiterLineGameEngine(8).setOuterLineGameEngine(2));
+                        .innerLineGameEngine(13).coastDelimiterLineGameEngine(8).outerLineGameEngine(2));
 
         List<TerrainObjectConfig> terrainObjectConfigs = Arrays.asList(
                 new TerrainObjectConfig().id(1).radius(1),

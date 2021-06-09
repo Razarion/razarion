@@ -29,13 +29,13 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
-        slopeConfigLand.setHorizontalSpace(5);
+        slopeConfigLand.horizontalSpace(5);
         slopeConfigLand.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
                 new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7)));
 
-        slopeConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(5);
+        slopeConfigLand.outerLineGameEngine(2).innerLineGameEngine(5);
         slopeConfigs.add(slopeConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

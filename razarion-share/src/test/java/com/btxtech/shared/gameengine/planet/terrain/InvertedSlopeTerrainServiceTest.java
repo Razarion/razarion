@@ -125,7 +125,7 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
 
         List<SlopeConfig> slopeConfigs = Arrays.asList(new SlopeConfig()
                         .id(1)
-                        .setHorizontalSpace(5)
+                        .horizontalSpace(5)
                         .slopeShapes(Arrays.asList(
                                 new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
                                 new SlopeShape().position(new DecimalPosition(4, 8)).slopeFactor(0.7),
