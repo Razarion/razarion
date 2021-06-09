@@ -160,9 +160,12 @@ public class TerrainShapeManagerSetup {
                 for (Index nodeIndex : outerRasterizer.getPiercedTiles()) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     terrainShapeNode.setRenderHideGround(true);
+                    // Outer slope ground connection
                     List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
                     Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                    terrainShapeNode.addGroundSlopeConnections(SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, outerPiercings, slope.getOuterGroundHeight(), false, null, 0), null);
+                    terrainShapeNode.addGroundSlopeConnections(
+                            SlopeGroundConnectionFactory.setupSlopeGroundConnection(terrainRect, outerPiercings, slope.getOuterGroundHeight(), false, null, 0),
+                            parent != null ? parent.getSlopeConfig().getGroundConfigId() : null);
                 }
                 // Setup inner water
                 for (Index nodeIndex : outerRasterizer.getInnerTiles()) {
