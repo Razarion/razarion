@@ -1,6 +1,5 @@
 package com.btxtech.client.editor.generic.model;
 
-import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Index;
@@ -8,7 +7,7 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.editor.OpenApi3Schema;
+import com.btxtech.shared.dto.editor.CollectionReferenceInfo;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import org.jboss.errai.databinding.client.BindableListWrapper;
 import org.jboss.errai.databinding.client.PropertyType;
@@ -92,14 +91,18 @@ public class Leaf extends AbstractPropertyModel {
         } else {
             if (getPropertyName() != null) {
                 Class<?> parentClass = getBranch().getPropertyClass();
-                OpenApi3Schema openApi3Schema = genericPropertyInfoProvider.scanForOpenApiScheme(parentClass, getPropertyName());
-                if (openApi3Schema != null) {
-                    if (clazz == Integer.class && CommonUrl.IMAGE_ID_TYPE.equals(openApi3Schema.getType())) {
-                        return PropertyEditorSelector.IMAGE_REFERENCE;
-                    } else if (clazz == String.class && CommonUrl.COLLADA_STRING_TYPE.equals(openApi3Schema.getType())) {
-                        return PropertyEditorSelector.COLLADA_STRING;
+                CollectionReferenceInfo collectionReferenceInfo = genericPropertyInfoProvider.scanForCollectionReference(parentClass, getPropertyName());
+                if (collectionReferenceInfo != null) {
+                    switch (collectionReferenceInfo.getType()) {
+                        case IMAGE:
+                            return PropertyEditorSelector.IMAGE_REFERENCE;
+                        case BASE_ITEM:
+                            return PropertyEditorSelector.BASE_ITEM_REFERENCE;
+                        default:
+                            throw new IllegalArgumentException("CollectionReferenceType unknown: " + collectionReferenceInfo.getType());
                     }
                 }
+                // TODO Collada String handling -> SpecialEditor annotation
             }
             if (clazz.equals(String.class)) {
                 return PropertyEditorSelector.STRING;

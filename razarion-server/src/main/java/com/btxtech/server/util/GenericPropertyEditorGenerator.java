@@ -1,9 +1,9 @@
 package com.btxtech.server.util;
 
+import com.btxtech.shared.datatypes.CollectionReference;
 import com.btxtech.shared.dto.editor.GenericPropertyInfo;
-import com.btxtech.shared.dto.editor.OpenApi3Schema;
+import com.btxtech.shared.dto.editor.CollectionReferenceInfo;
 import com.btxtech.shared.rest.CrudController;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.reflections.Reflections;
 import org.reflections.scanners.FieldAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
@@ -43,7 +43,7 @@ public class GenericPropertyEditorGenerator {
     private GenericPropertyInfo generateGenericPropertyInfo() {
         return new GenericPropertyInfo()
                 .listElementTypes(generateListElementTypes())
-                .openApi3Schemas(generateOpenApiSchemaTypes());
+                .collectionReferenceInfos(generateCollectionReferenceInfos());
 
     }
 
@@ -112,16 +112,14 @@ public class GenericPropertyEditorGenerator {
         listProperties.put(propertyName, typeArgument.getName());
     }
 
-    private List<OpenApi3Schema> generateOpenApiSchemaTypes() {
-        List<OpenApi3Schema> openApi3Schemas = new ArrayList<>();
-        Set<Field> allSchemaFields = reflection.getFieldsAnnotatedWith(Schema.class);
-        allSchemaFields.forEach(field -> {
-            openApi3Schemas.add(new OpenApi3Schema()
-                    .javaParentPropertyClass(field.getDeclaringClass().getName())
-                    .javaPropertyName(field.getName())
-                    .type(field.getAnnotation(Schema.class).type()));
-        });
-        return openApi3Schemas;
+    private List<CollectionReferenceInfo> generateCollectionReferenceInfos() {
+        List<CollectionReferenceInfo> collectionReferenceInfos = new ArrayList<>();
+        Set<Field> allSchemaFields = reflection.getFieldsAnnotatedWith(CollectionReference.class);
+        allSchemaFields.forEach(field -> collectionReferenceInfos.add(new CollectionReferenceInfo()
+                .javaParentPropertyClass(field.getDeclaringClass().getName())
+                .javaPropertyName(field.getName())
+                .type(field.getAnnotation(CollectionReference.class).value())));
+        return collectionReferenceInfos;
     }
 
 }

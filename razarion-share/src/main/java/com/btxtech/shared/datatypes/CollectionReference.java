@@ -1,18 +1,12 @@
 package com.btxtech.shared.datatypes;
 
-public class CollectionReference {
-    public enum Type {
-        IMAGE("image"),
-        BASE_ITEM("base-item");
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-        private String collectionName;
-
-        Type(String collectionName) {
-            this.collectionName = collectionName;
-        }
-
-        public String getCollectionName() {
-            return collectionName;
-        }
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface CollectionReference {
+    CollectionReferenceType value();
 }

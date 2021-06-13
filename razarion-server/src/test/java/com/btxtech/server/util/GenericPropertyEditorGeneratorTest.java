@@ -1,10 +1,11 @@
 package com.btxtech.server.util;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DElementConfig;
 import com.btxtech.shared.dto.editor.GenericPropertyInfo;
-import com.btxtech.shared.dto.editor.OpenApi3Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.btxtech.shared.dto.editor.CollectionReferenceInfo;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -13,7 +14,7 @@ import java.util.NoSuchElementException;
 
 public class GenericPropertyEditorGeneratorTest {
     public static class TestClass {
-        @Schema(type="testType")
+        @CollectionReference(CollectionReferenceType.IMAGE)
         private int imageId;
     }
 
@@ -24,7 +25,7 @@ public class GenericPropertyEditorGeneratorTest {
         Map<String, Map<String, String>> listElementTypes = genericPropertyInfo.getListElementTypes();
         Assert.assertEquals(Shape3DElementConfig.class.getName(), listElementTypes.get(Shape3DConfig.class.getName()).get("shape3DElementConfigs"));
         // Verify OpenApi3Schema
-        OpenApi3Schema openApi3Schema = genericPropertyInfo.getOpenApi3Schemas().stream()
+        CollectionReferenceInfo openApi3Schema = genericPropertyInfo.getCollectionReferenceInfos().stream()
                 .filter(op3s -> op3s.getJavaParentPropertyClass().equals(TestClass.class.getName()))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);

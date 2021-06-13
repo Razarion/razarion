@@ -1,11 +1,10 @@
 package com.btxtech.shared.datatypes.particle;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.dto.Config;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
-
-import static com.btxtech.shared.CommonUrl.IMAGE_ID_TYPE;
 
 /**
  * Created by Beat
@@ -16,9 +15,9 @@ public class ParticleShapeConfig implements Config {
     private String internalName;
     private double edgeLength;
     private double shadowAlphaCutOff;
-    @Schema(type = IMAGE_ID_TYPE)
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer colorRampImageId;
-    @Schema(type = IMAGE_ID_TYPE)
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer alphaOffsetImageId; // rad canal = alpha, greed canal = offset
     private List<Double> colorRampXOffsets; // 0..1 for x part of the color-ramp lookup
     private double textureOffsetScope; // 0 .. 0.5 for scoping the offset change to the color-ramp from the green part of the alphaOffsetImage

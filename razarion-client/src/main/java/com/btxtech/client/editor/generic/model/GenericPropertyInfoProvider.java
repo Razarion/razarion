@@ -2,7 +2,7 @@ package com.btxtech.client.editor.generic.model;
 
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.editor.GenericPropertyInfo;
-import com.btxtech.shared.dto.editor.OpenApi3Schema;
+import com.btxtech.shared.dto.editor.CollectionReferenceInfo;
 import com.btxtech.shared.rest.GenericPropertyEditorController;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
@@ -19,7 +19,7 @@ public class GenericPropertyInfoProvider {
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     private Map<String, Map<String, String>> listElementTypes;
-    private Map<String, Map<String, OpenApi3Schema>> typesWithOpenApi3Schema;
+    private Map<String, Map<String, CollectionReferenceInfo>> typesWithCollectionReference;
 
     public void load() {
         if(listElementTypes != null) {
@@ -54,12 +54,12 @@ public class GenericPropertyInfoProvider {
         return BindableProxyFactory.getBindableProxy(typeArgument);
     }
 
-    public OpenApi3Schema scanForOpenApiScheme(Class type, String propertyName) {
-        if (typesWithOpenApi3Schema == null) {
+    public CollectionReferenceInfo scanForCollectionReference(Class<?> type, String propertyName) {
+        if (typesWithCollectionReference == null) {
             throw new IllegalArgumentException("No typesWithOpenApi3Schema received");
         }
 
-        Map<String, OpenApi3Schema> schemaProperties = typesWithOpenApi3Schema.get(type.getName());
+        Map<String, CollectionReferenceInfo> schemaProperties = typesWithCollectionReference.get(type.getName());
         if (schemaProperties == null) {
             return null;
         }
@@ -68,10 +68,10 @@ public class GenericPropertyInfoProvider {
 
     private void setup(GenericPropertyInfo genericPropertyInfo) {
         listElementTypes = genericPropertyInfo.getListElementTypes();
-        typesWithOpenApi3Schema = new HashMap<>();
-        genericPropertyInfo.getOpenApi3Schemas().forEach(openApi3Schema -> {
-            Map<String, OpenApi3Schema> propertySchemas = typesWithOpenApi3Schema.computeIfAbsent(openApi3Schema.getJavaParentPropertyClass(), s -> new HashMap<>());
-            propertySchemas.put(openApi3Schema.getJavaPropertyName(), openApi3Schema);
+        typesWithCollectionReference = new HashMap<>();
+        genericPropertyInfo.getCollectionReferenceInfos().forEach(collectionReferenceInfo -> {
+            Map<String, CollectionReferenceInfo> propertySchemas = typesWithCollectionReference.computeIfAbsent(collectionReferenceInfo.getJavaParentPropertyClass(), s -> new HashMap<>());
+            propertySchemas.put(collectionReferenceInfo.getJavaPropertyName(), collectionReferenceInfo);
         });
     }
 }

@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.generic.model;
 
-import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -217,12 +217,12 @@ public enum PropertyEditorSelector {
 
         @Override
         public Any convertToAngular(Object object) {
-            return convertCollectionReferenceToAngular(CollectionReference.Type.IMAGE, object);
+            return convertCollectionReferenceToAngular(CollectionReferenceType.IMAGE, object);
         }
 
         @Override
         public Any convertNullToAngular() {
-            return convertNullCollectionReferenceToAngular(CollectionReference.Type.IMAGE);
+            return convertNullCollectionReferenceToAngular(CollectionReferenceType.IMAGE);
         }
     },
     BASE_ITEM_REFERENCE("collection-reference-property-editor") {
@@ -233,12 +233,12 @@ public enum PropertyEditorSelector {
 
         @Override
         public Any convertToAngular(Object object) {
-            return convertCollectionReferenceToAngular(CollectionReference.Type.BASE_ITEM, object);
+            return convertCollectionReferenceToAngular(CollectionReferenceType.BASE_ITEM, object);
         }
 
         @Override
         public Any convertNullToAngular() {
-            return convertNullCollectionReferenceToAngular(CollectionReference.Type.BASE_ITEM);
+            return convertNullCollectionReferenceToAngular(CollectionReferenceType.BASE_ITEM);
         }
     },
     COLLADA_STRING("collada-string-property-editor") {
@@ -286,11 +286,11 @@ public enum PropertyEditorSelector {
         }
     };
 
-    private static Any convertCollectionReferenceToAngular(CollectionReference.Type type, Object object) {
+    private static Any convertCollectionReferenceToAngular(CollectionReferenceType type, Object object) {
         return Js.cast(JsPropertyMap.of("collection", type.getCollectionName(), "value", object));
     }
 
-    private static Any convertNullCollectionReferenceToAngular(CollectionReference.Type type) {
+    private static Any convertNullCollectionReferenceToAngular(CollectionReferenceType type) {
         return Js.cast(JsPropertyMap.of("collection", type.getCollectionName()));
     }
 

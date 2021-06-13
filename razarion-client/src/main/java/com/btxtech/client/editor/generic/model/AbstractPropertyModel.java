@@ -1,16 +1,12 @@
 package com.btxtech.client.editor.generic.model;
 
 import com.btxtech.client.editor.generic.propertyeditors.AbstractPropertyEditor;
-import com.btxtech.client.editor.generic.propertyeditors.ColladaStringEditor;
 import com.btxtech.client.editor.generic.propertyeditors.EnumEditor;
-import com.btxtech.client.editor.generic.propertyeditors.ImageIdEditor;
 import com.btxtech.client.editor.generic.propertyeditors.IntegerMapEditor;
 import com.btxtech.client.editor.generic.propertyeditors.ListEditor;
 import com.btxtech.client.editor.generic.propertyeditors.PropertyEditorClassFactory;
 import com.btxtech.client.editor.generic.propertyeditors.PropertySection;
 import com.btxtech.client.editor.generic.propertyeditors.UnknownEditor;
-import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.dto.editor.OpenApi3Schema;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.PropertyType;
 
@@ -49,15 +45,15 @@ public abstract class AbstractPropertyModel {
             return IntegerMapEditor.class;
         } else {
             if (this instanceof Leaf && getPropertyName() != null) {
-                Class parentClass = (((Leaf) this).getBranch()).getPropertyClass();
-                OpenApi3Schema openApi3Schema = genericPropertyInfoProvider.scanForOpenApiScheme(parentClass, getPropertyName());
-                if (openApi3Schema != null) {
-                    if (propertyType.getType() == Integer.class && CommonUrl.IMAGE_ID_TYPE.equals(openApi3Schema.getType())) {
-                        return ImageIdEditor.class;
-                    } else if (propertyType.getType() == String.class && CommonUrl.COLLADA_STRING_TYPE.equals(openApi3Schema.getType())) {
-                        return ColladaStringEditor.class;
-                    }
-                }
+//  TODO remove               Class parentClass = (((Leaf) this).getBranch()).getPropertyClass();
+//                CollectionReferenceInfo openApi3Schema = genericPropertyInfoProvider.scanForCollectionReference(parentClass, getPropertyName());
+//                if (openApi3Schema != null) {
+//                    if (propertyType.getType() == Integer.class && CommonUrl.IMAGE_ID_TYPE.equals(openApi3Schema.getType())) {
+//                        return ImageIdEditor.class;
+//                    } else if (propertyType.getType() == String.class && CommonUrl.COLLADA_STRING_TYPE.equals(openApi3Schema.getType())) {
+//                        return ColladaStringEditor.class;
+//                    }
+//                }
             }
             Class<? extends AbstractPropertyEditor> propertyEditorClass = PropertyEditorClassFactory.get(propertyType.getType());
             if (propertyEditorClass == null) {

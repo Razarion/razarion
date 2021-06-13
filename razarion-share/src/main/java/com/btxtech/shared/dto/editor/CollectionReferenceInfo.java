@@ -1,9 +1,11 @@
 package com.btxtech.shared.dto.editor;
 
-public class OpenApi3Schema {
+import com.btxtech.shared.datatypes.CollectionReferenceType;
+
+public class CollectionReferenceInfo {
     private String javaParentPropertyClass;
     private String javaPropertyName;
-    private String type;
+    private CollectionReferenceType type;
 
     public String getJavaParentPropertyClass() {
         return javaParentPropertyClass;
@@ -21,25 +23,25 @@ public class OpenApi3Schema {
         this.javaPropertyName = javaPropertyName;
     }
 
-    public String getType() {
+    public CollectionReferenceType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(CollectionReferenceType type) {
         this.type = type;
     }
 
-    public OpenApi3Schema javaParentPropertyClass(String javaParentPropertyClass) {
+    public CollectionReferenceInfo javaParentPropertyClass(String javaParentPropertyClass) {
         setJavaParentPropertyClass(javaParentPropertyClass);
         return this;
     }
 
-    public OpenApi3Schema javaPropertyName(String javaPropertyName) {
+    public CollectionReferenceInfo javaPropertyName(String javaPropertyName) {
         setJavaPropertyName(javaPropertyName);
         return this;
     }
 
-    public OpenApi3Schema type(String type) {
+    public CollectionReferenceInfo type(CollectionReferenceType type) {
         setType(type);
         return this;
     }

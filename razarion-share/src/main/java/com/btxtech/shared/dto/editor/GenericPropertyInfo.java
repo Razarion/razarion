@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class GenericPropertyInfo {
     private Map<String, Map<String, String>> listElementTypes;
-    private List<OpenApi3Schema> openApi3Schemas;
+    private List<CollectionReferenceInfo> collectionReferenceInfos;
 
     public Map<String, Map<String, String>> getListElementTypes() {
         return listElementTypes;
@@ -16,12 +16,12 @@ public class GenericPropertyInfo {
         this.listElementTypes = listElementTypes;
     }
 
-    public List<OpenApi3Schema> getOpenApi3Schemas() {
-        return openApi3Schemas;
+    public List<CollectionReferenceInfo> getCollectionReferenceInfos() {
+        return collectionReferenceInfos;
     }
 
-    public void setOpenApi3Schemas(List<OpenApi3Schema> openApi3Schemas) {
-        this.openApi3Schemas = openApi3Schemas;
+    public void setCollectionReferenceInfos(List<CollectionReferenceInfo> collectionReferenceInfos) {
+        this.collectionReferenceInfos = collectionReferenceInfos;
     }
 
     public GenericPropertyInfo listElementTypes(Map<String, Map<String, String>> listElementTypes) {
@@ -29,8 +29,8 @@ public class GenericPropertyInfo {
         return this;
     }
 
-    public GenericPropertyInfo openApi3Schemas(List<OpenApi3Schema> openApi3Schemas) {
-        setOpenApi3Schemas(openApi3Schemas);
+    public GenericPropertyInfo collectionReferenceInfos(List<CollectionReferenceInfo> collectionReferenceInfos) {
+        setCollectionReferenceInfos(collectionReferenceInfos);
         return this;
     }
 }

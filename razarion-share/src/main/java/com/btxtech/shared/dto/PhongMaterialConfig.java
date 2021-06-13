@@ -1,14 +1,13 @@
 package com.btxtech.shared.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import static com.btxtech.shared.CommonUrl.IMAGE_ID_TYPE;
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 
 public class PhongMaterialConfig {
-    @Schema(type = IMAGE_ID_TYPE)
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer textureId;
     private double scale;
-    @Schema(type = IMAGE_ID_TYPE)
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer bumpMapId;
     private Double bumpMapDepth;
     private Double shininess;

@@ -74,9 +74,6 @@ public class CommonUrl {
     // Cookies
     public static final String LOGIN_COOKIE_NAME = "LoginToken";
     public static final String RAZARION_COOKIE_NAME = "RazarionToken";
-    // OpenApi schema types
-    public static final String IMAGE_ID_TYPE = "imageId";
-    public static final String COLLADA_STRING_TYPE = "colladaString";
 
 
     public static String getImageServiceUrl(int id) {
