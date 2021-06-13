@@ -1,5 +1,8 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
+
 import java.util.Objects;
 
 /**
@@ -17,6 +20,7 @@ public class BotSceneConflictConfig {
     private Integer rePopMillis;
     private double minDistance;
     private double maxDistance;
+    @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer targetBaseItemTypeId;
     private BotConfig botConfig;
     // Bot stop settings

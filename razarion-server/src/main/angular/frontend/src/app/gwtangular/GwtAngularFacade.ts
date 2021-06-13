@@ -143,17 +143,17 @@ export interface EditorFrontendProvider {
 }
 
 export interface GenericEditorFrontendProvider {
-  crudControllers(): string[];
+  collectionNames(): string[];
 
-  requestObjectNameIds(crudControllerIndex: number): Promise<ObjectNameId[]>;
+  requestObjectNameIds(collectionName: string): Promise<ObjectNameId[]>;
 
-  createConfig(crudControllerIndex: number): Promise<GwtAngularPropertyTable>;
+  createConfig(collectionName: string): Promise<GwtAngularPropertyTable>;
 
-  readConfig(crudControllerIndex: number, configId: number): Promise<GwtAngularPropertyTable>;
+  readConfig(collectionName: string, configId: number): Promise<GwtAngularPropertyTable>;
 
-  updateConfig(crudControllerIndex: number, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
+  updateConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
 
-  deleteConfig(crudControllerIndex: number, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
+  deleteConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
 }
 
 export interface TerrainMarkerService {

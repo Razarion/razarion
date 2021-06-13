@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 
 /**
@@ -7,6 +9,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
  * 13.09.2016.
  */
 public class BotMoveCommandConfig extends AbstractBotCommandConfig<BotMoveCommandConfig> {
+    @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer baseItemTypeId;
     private DecimalPosition targetPosition;
 

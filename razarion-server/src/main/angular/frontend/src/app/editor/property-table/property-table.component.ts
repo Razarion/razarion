@@ -32,7 +32,7 @@ export class PropertyTableComponent extends EditorPanel {
     } catch (error) {
       this.messageService.add({
         severity: 'error',
-        summary: `Can not read ObjectNameId: ${(<GenericPropertyEditorModel>this.editorModel).crudControllerName}`,
+        summary: `Can not read ObjectNameId: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
         detail: error,
         sticky: true
       });
@@ -42,12 +42,12 @@ export class PropertyTableComponent extends EditorPanel {
 
   private requestObjectNameId(): void {
     this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-      .requestObjectNameIds((<GenericPropertyEditorModel>this.editorModel).crudControllerIndex)
+      .requestObjectNameIds((<GenericPropertyEditorModel>this.editorModel).collectionName)
       .then(value => this.setupMenuItems(value),
         reason => {
           this.messageService.add({
             severity: 'error',
-            summary: `Can not load configs for: ${(<GenericPropertyEditorModel>this.editorModel).crudControllerName}`,
+            summary: `Can not load configs for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
             detail: reason,
             sticky: true
           });
@@ -87,7 +87,7 @@ export class PropertyTableComponent extends EditorPanel {
         label: displayObjectName,
         command: () => {
           this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-            .readConfig((<GenericPropertyEditorModel>this.editorModel).crudControllerIndex, objectNameId.getId())
+            .readConfig((<GenericPropertyEditorModel>this.editorModel).collectionName, objectNameId.getId())
             .then(value => {
                 this.gwtAngularPropertyTable = value;
                 this.updateDeleteSaveDisableState();
@@ -97,7 +97,7 @@ export class PropertyTableComponent extends EditorPanel {
               reason => {
                 this.messageService.add({
                   severity: 'error',
-                  summary: `Can not load config for: ${(<GenericPropertyEditorModel>this.editorModel).crudControllerName} with id: ${objectNameId.getId()}`,
+                  summary: `Can not load config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName} with id: ${objectNameId.getId()}`,
                   detail: reason,
                   sticky: true
                 });
@@ -116,7 +116,7 @@ export class PropertyTableComponent extends EditorPanel {
         label: "New",
         command: () => {
           this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-            .createConfig((<GenericPropertyEditorModel>this.editorModel).crudControllerIndex).then(
+            .createConfig((<GenericPropertyEditorModel>this.editorModel).collectionName).then(
             value => {
               this.gwtAngularPropertyTable = value;
               this.selectedDisplayObjectName = `? (${value.configId})`;
@@ -125,7 +125,7 @@ export class PropertyTableComponent extends EditorPanel {
             reason => {
               this.messageService.add({
                 severity: 'error',
-                summary: `Can not create config for: ${(<GenericPropertyEditorModel>this.editorModel).crudControllerName}`,
+                summary: `Can not create config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
                 detail: reason,
                 sticky: true
               });
@@ -138,7 +138,7 @@ export class PropertyTableComponent extends EditorPanel {
         disabled: this.gwtAngularPropertyTable == null,
         command: () => {
           this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-            .updateConfig((<GenericPropertyEditorModel>this.editorModel).crudControllerIndex, this.gwtAngularPropertyTable!).then(
+            .updateConfig((<GenericPropertyEditorModel>this.editorModel).collectionName, this.gwtAngularPropertyTable!).then(
             () => {
               this.requestObjectNameId();
               this.messageService.add({
@@ -149,7 +149,7 @@ export class PropertyTableComponent extends EditorPanel {
             reason => {
               this.messageService.add({
                 severity: 'error',
-                summary: `Can not save config for: ${(<GenericPropertyEditorModel>this.editorModel).crudControllerName} with value : ${this.gwtAngularPropertyTable}`,
+                summary: `Can not save config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName} with value : ${this.gwtAngularPropertyTable}`,
                 detail: reason,
                 sticky: true
               });
@@ -162,7 +162,7 @@ export class PropertyTableComponent extends EditorPanel {
         disabled: this.gwtAngularPropertyTable == null,
         command: () => {
           this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-            .deleteConfig((<GenericPropertyEditorModel>this.editorModel).crudControllerIndex, this.gwtAngularPropertyTable!).then(
+            .deleteConfig((<GenericPropertyEditorModel>this.editorModel).collectionName, this.gwtAngularPropertyTable!).then(
             () => {
               this.gwtAngularPropertyTable = null;
               this.selectedDisplayObjectName = null;
@@ -175,7 +175,7 @@ export class PropertyTableComponent extends EditorPanel {
             reason => {
               this.messageService.add({
                 severity: 'error',
-                summary: `Can not delete config for: ${(<GenericPropertyEditorModel>this.editorModel).crudControllerName} with value : ${this.gwtAngularPropertyTable}`,
+                summary: `Can not delete config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName} with value : ${this.gwtAngularPropertyTable}`,
                 detail: reason,
                 sticky: true
               });

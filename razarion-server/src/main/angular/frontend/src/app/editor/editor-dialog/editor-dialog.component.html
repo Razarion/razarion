@@ -15,9 +15,9 @@
       <div class="p-mb-2">
         <h3>Configuration</h3>
       </div>
-      <div class="p-mb-2" *ngFor="let crudControllerName of crudControllerEditors; index as crudControllerIndex">
-        <p-button type="button" label="{{crudControllerName}}" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openConfigurationEditor(crudControllerName, crudControllerIndex)"></p-button>
+      <div class="p-mb-2" *ngFor="let collectionName of collectionNames;">
+        <p-button type="button" label="{{collectionName}}" icon="pi pi-cog" styleClass="p-button-sm"
+                  (onClick)="openConfigurationEditor(collectionName)"></p-button>
       </div>
     </div>
   </div>

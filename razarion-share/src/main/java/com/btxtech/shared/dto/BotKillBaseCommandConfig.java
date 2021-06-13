@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 /**
@@ -7,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  * 01.11.2016.
  */
 public class BotKillBaseCommandConfig<T extends BotKillBaseCommandConfig<T>> extends AbstractBotCommandConfig<T> {
+    @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer attackerBaseItemTypeId;
     private int dominanceFactor;
     private PlaceConfig spawnPoint;

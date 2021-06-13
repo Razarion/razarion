@@ -16,7 +16,7 @@ import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component
 })
 export class EditorDialogComponent {
   editors: Map<string, Type<EditorPanel>> = new Map<string, Type<EditorPanel>>();
-  crudControllerEditors: string[] = [];
+  collectionNames: string[] = [];
   @Input("gameComponent")
   gameComponent!: GameComponent;
   @Input("mainCockpitComponent")
@@ -29,12 +29,12 @@ export class EditorDialogComponent {
   }
 
   onShow() {
-    this.crudControllerEditors = this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().crudControllers();
+    this.collectionNames = this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().collectionNames();
   }
 
-  openConfigurationEditor(name: string, index: number) {
+  openConfigurationEditor(collectionName: string) {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new GenericPropertyEditorModel(PropertyTableComponent, name, index));
+    this.gameComponent.addEditorModel(new GenericPropertyEditorModel(PropertyTableComponent, collectionName));
   }
 
   openAdministrationEditor(name: string, editorComponent: Type<any>) {

@@ -15,6 +15,7 @@ public class InventoryItem implements ObjectNameIdProvider {
     private I18nString i18nName;
     private String internalName;
     private Integer razarion;
+    @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer baseItemTypeId;
     private int baseItemTypeCount;
     private double baseItemTypeFreeRange;

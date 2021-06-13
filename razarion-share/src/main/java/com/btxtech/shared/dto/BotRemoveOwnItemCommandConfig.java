@@ -1,10 +1,14 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
+
 /**
  * Created by Beat
  * 01.11.2016.
  */
 public class BotRemoveOwnItemCommandConfig extends AbstractBotCommandConfig<BotRemoveOwnItemCommandConfig> {
+    @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer baseItemType2RemoveId;
 
     public Integer getBaseItemType2RemoveId() {

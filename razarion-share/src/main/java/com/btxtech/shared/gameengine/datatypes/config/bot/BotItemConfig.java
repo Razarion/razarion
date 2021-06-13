@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
@@ -9,6 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  * Time: 13:37:24
  */
 public class BotItemConfig {
+    @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer baseItemTypeId;
     private int count;
     private boolean createDirectly;

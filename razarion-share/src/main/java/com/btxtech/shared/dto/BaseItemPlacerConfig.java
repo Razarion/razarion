@@ -1,9 +1,9 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
-
-import java.util.List;
 
 /**
  * User: beat
@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class BaseItemPlacerConfig {
     private DecimalPosition suggestedPosition;
+    @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private int baseItemTypeId;
     private int baseItemCount;
     private Double enemyFreeRadius;

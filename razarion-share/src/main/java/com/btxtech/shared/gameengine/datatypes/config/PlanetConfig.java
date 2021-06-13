@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.Config;
 
@@ -16,6 +18,7 @@ public class PlanetConfig implements Config {
     private Map<Integer, Integer> itemTypeLimitation;
     private int houseSpace;
     private int startRazarion;
+    @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer startBaseItemTypeId;
     private Integer groundConfigId;
 

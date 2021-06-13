@@ -6,23 +6,10 @@ import com.btxtech.client.editor.generic.model.GenericPropertyInfoProvider;
 import com.btxtech.client.editor.generic.model.Leaf;
 import com.btxtech.client.editor.generic.model.PropertyEditorSelector;
 import com.btxtech.client.editor.generic.updater.EngineUpdater;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.rest.BaseItemTypeEditorController;
 import com.btxtech.shared.rest.CrudController;
-import com.btxtech.shared.rest.DrivewayEditorController;
-import com.btxtech.shared.rest.GameUiContextEditorController;
-import com.btxtech.shared.rest.GroundEditorController;
-import com.btxtech.shared.rest.LevelEditorController;
-import com.btxtech.shared.rest.ParticleEmitterSequenceEditorController;
-import com.btxtech.shared.rest.ParticleShapeEditorController;
-import com.btxtech.shared.rest.PlanetEditorController;
-import com.btxtech.shared.rest.ResourceItemTypeEditorController;
-import com.btxtech.shared.rest.ServerGameEngineEditorController;
-import com.btxtech.shared.rest.Shape3DEditorController;
-import com.btxtech.shared.rest.SlopeEditorController;
-import com.btxtech.shared.rest.TerrainObjectEditorController;
-import com.btxtech.shared.rest.WaterEditorController;
 import elemental2.core.Array;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
@@ -46,22 +33,6 @@ import java.util.logging.Logger;
 @JsType
 @ApplicationScoped
 public class GenericEditorFrontendProvider {
-    private static final GenericEditorFrontendProvider.CrudControllerEntry[] CRUD_CONTROLLERS = new GenericEditorFrontendProvider.CrudControllerEntry[]{
-            new GenericEditorFrontendProvider.CrudControllerEntry(LevelEditorController.class, "Levels"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(PlanetEditorController.class, "Planets"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(GroundEditorController.class, "Grounds"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(SlopeEditorController.class, "Slope"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(DrivewayEditorController.class, "Driveway"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(WaterEditorController.class, "Water"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(GameUiContextEditorController.class, "Game Ui Context"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(Shape3DEditorController.class, "Shape 3D"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(TerrainObjectEditorController.class, "Terrain Object"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(BaseItemTypeEditorController.class, "Base Items"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(ResourceItemTypeEditorController.class, "Resource Items"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(ParticleShapeEditorController.class, "Particle Shapes"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequences"),
-            new GenericEditorFrontendProvider.CrudControllerEntry(ServerGameEngineEditorController.class, "Server Game Engines")
-    };
     @Inject
     private Instance<Branch> branchInstance;
     @Inject
@@ -71,82 +42,82 @@ public class GenericEditorFrontendProvider {
     private Logger logger = Logger.getLogger(GenericEditorFrontendProvider.class.getName());
 
     @SuppressWarnings("unused") // Called by Angular
-    public Array<String> crudControllers() {
+    public Array<String> collectionNames() {
         genericPropertyInfoProvider.load();
         Array<String> crudControllers = new Array<>();
-        Arrays.stream(CRUD_CONTROLLERS).forEach(crudControllerEntry -> crudControllers.push(crudControllerEntry.name));
+        Arrays.stream(CollectionReferenceType.values()).forEach(crudControllerEntry -> crudControllers.push(crudControllerEntry.getCollectionName()));
         return crudControllers;
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public Promise<ObjectNameId[]> requestObjectNameIds(int crudControllerIndex) {
+    public Promise<ObjectNameId[]> requestObjectNameIds(String collectionName) {
         return new Promise<>((resolve, reject) -> {
-            CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
+            CollectionReferenceType collectionReferenceType = CollectionReferenceType.getType4CollectionName(collectionName);
             MessageBuilder.createCall(
                     (RemoteCallback<List<ObjectNameId>>) response -> resolve.onInvoke(response.toArray(new ObjectNameId[0])),
                     (message, throwable) -> {
-                        logger.log(Level.SEVERE, "CrudController.getObjectNameIds() " + crudControllerEntry.crudControllerClass + "\n" + message, throwable);
-                        reject.onInvoke("CrudController.getObjectNameIds() " + crudControllerEntry.crudControllerClass + "\n" + message + "\n" + throwable);
+                        logger.log(Level.SEVERE, "CrudController.getObjectNameIds() " + collectionReferenceType.getCrudControllerClass() + "\n" + message, throwable);
+                        reject.onInvoke("CrudController.getObjectNameIds() " + collectionReferenceType.getCrudControllerClass() + "\n" + message + "\n" + throwable);
                         return false;
                     },
-                    crudControllerEntry.crudControllerClass).getObjectNameIds();
+                    collectionReferenceType.getCrudControllerClass()).getObjectNameIds();
         });
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public Promise<GwtAngularPropertyTable> createConfig(int crudControllerIndex) {
-        CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
+    public Promise<GwtAngularPropertyTable> createConfig(String collectionName) {
+        CollectionReferenceType collectionReferenceType = CollectionReferenceType.getType4CollectionName(collectionName);
 
         return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
-                (RemoteCallback<Config>) config -> config2GwtAngularPropertyTableAndConnect(config, crudControllerEntry.crudControllerClass, config.getId(), resolve, reject),
+                (RemoteCallback<Config>) config -> config2GwtAngularPropertyTableAndConnect(config, collectionReferenceType.getCrudControllerClass(), config.getId(), resolve, reject),
                 (message, throwable) -> {
-                    logger.log(Level.SEVERE, "CrudController.create() " + crudControllerEntry.crudControllerClass + "\n" + message, throwable);
-                    reject.onInvoke("CrudController.create() " + crudControllerEntry.crudControllerClass + "\n" + message + "\n" + throwable);
+                    logger.log(Level.SEVERE, "CrudController.create() " + collectionReferenceType.getCrudControllerClass() + "\n" + message, throwable);
+                    reject.onInvoke("CrudController.create() " + collectionReferenceType.getCrudControllerClass() + "\n" + message + "\n" + throwable);
                     return false;
                 },
-                crudControllerEntry.crudControllerClass).create());
+                collectionReferenceType.getCrudControllerClass()).create());
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public Promise<GwtAngularPropertyTable> readConfig(int crudControllerIndex, int configId) {
-        CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
+    public Promise<GwtAngularPropertyTable> readConfig(String collectionName, int configId) {
+        CollectionReferenceType collectionReferenceType = CollectionReferenceType.getType4CollectionName(collectionName);
         return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
-                (RemoteCallback<Config>) config -> config2GwtAngularPropertyTableAndConnect(config, crudControllerEntry.crudControllerClass, configId, resolve, reject),
+                (RemoteCallback<Config>) config -> config2GwtAngularPropertyTableAndConnect(config, collectionReferenceType.getCrudControllerClass(), configId, resolve, reject),
                 (message, throwable) -> {
-                    logger.log(Level.SEVERE, "CrudController.readConfig() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + configId + "\n" + message, throwable);
-                    reject.onInvoke("CrudController.readConfig() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + configId + "\n" + message + "\n" + throwable);
+                    logger.log(Level.SEVERE, "CrudController.readConfig() " + collectionReferenceType.getCrudControllerClass() + "\n" + "configId:" + configId + "\n" + message, throwable);
+                    reject.onInvoke("CrudController.readConfig() " + collectionReferenceType.getCrudControllerClass() + "\n" + "configId:" + configId + "\n" + message + "\n" + throwable);
                     return false;
                 },
-                crudControllerEntry.crudControllerClass).read(configId));
+                collectionReferenceType.getCrudControllerClass()).read(configId));
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public Promise<Void> updateConfig(int crudControllerIndex, GwtAngularPropertyTable gwtAngularPropertyTable) {
-        CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
+    public Promise<Void> updateConfig(String collectionName, GwtAngularPropertyTable gwtAngularPropertyTable) {
+        CollectionReferenceType collectionReferenceType = CollectionReferenceType.getType4CollectionName(collectionName);
         Config config = Js.cast(gwtAngularPropertyTable.rootBranch.getPropertyValue());
 
         return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
                 (RemoteCallback<Void>) ignore -> resolve.onInvoke((Void) null),
                 (message, throwable) -> {
-                    logger.log(Level.SEVERE, "CrudController.update() " + crudControllerEntry.crudControllerClass + "\n" + "config:" + config + "\n" + message, throwable);
-                    reject.onInvoke("CrudController.update() " + crudControllerEntry.crudControllerClass + "\n" + "config:" + config + "\n" + message + "\n" + throwable);
+                    logger.log(Level.SEVERE, "CrudController.update() " + collectionReferenceType.getCrudControllerClass() + "\n" + "config:" + config + "\n" + message, throwable);
+                    reject.onInvoke("CrudController.update() " + collectionReferenceType.getCrudControllerClass() + "\n" + "config:" + config + "\n" + message + "\n" + throwable);
                     return false;
                 },
-                crudControllerEntry.crudControllerClass).update(Js.cast(config)));
+                collectionReferenceType.getCrudControllerClass()).update(Js.cast(config)));
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public Promise<GwtAngularPropertyTable> deleteConfig(int crudControllerIndex, GwtAngularPropertyTable gwtAngularPropertyTable) {
-        CrudControllerEntry crudControllerEntry = CRUD_CONTROLLERS[crudControllerIndex];
+    public Promise<GwtAngularPropertyTable> deleteConfig(String collectionName, GwtAngularPropertyTable gwtAngularPropertyTable) {
+        CollectionReferenceType collectionReferenceType = CollectionReferenceType.getType4CollectionName(collectionName);
 
         return new Promise<>((resolve, reject) -> MessageBuilder.createCall(
                 (RemoteCallback<GwtAngularPropertyTable>) resolve::onInvoke,
                 (message, throwable) -> {
-                    logger.log(Level.SEVERE, "CrudController.update() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + gwtAngularPropertyTable.configId + "\n" + message, throwable);
-                    reject.onInvoke("CrudController.update() " + crudControllerEntry.crudControllerClass + "\n" + "configId:" + gwtAngularPropertyTable.configId + "\n" + message + "\n" + throwable);
+                    logger.log(Level.SEVERE, "CrudController.update() " + collectionReferenceType.getCrudControllerClass() + "\n" + "configId:" + gwtAngularPropertyTable.configId + "\n" + message, throwable);
+                    reject.onInvoke("CrudController.update() " + collectionReferenceType.getCrudControllerClass() + "\n" + "configId:" + gwtAngularPropertyTable.configId + "\n" + message + "\n" + throwable);
                     return false;
                 },
-                crudControllerEntry.crudControllerClass).delete(gwtAngularPropertyTable.configId));
+                collectionReferenceType.getCrudControllerClass()).delete(gwtAngularPropertyTable.configId));
     }
 
     private void config2GwtAngularPropertyTableAndConnect(Object config, Class<? extends CrudController<? extends Config>> crudControllerClass, int configId,
@@ -299,15 +270,4 @@ public class GenericEditorFrontendProvider {
     private void rootTreeNodes(GwtAngularPropertyTable gwtAngularPropertyTable) {
         gwtAngularPropertyTable.rootTreeNodes = Arrays.stream(gwtAngularPropertyTable.rootTreeNodes).toArray(AngularTreeNode[]::new);
     }
-
-    private static class CrudControllerEntry {
-        private Class<? extends CrudController<? extends Config>> crudControllerClass;
-        private String name;
-
-        public CrudControllerEntry(Class<? extends CrudController<? extends Config>> crudControllerClass, String name) {
-            this.crudControllerClass = crudControllerClass;
-            this.name = name;
-        }
-    }
-
 }

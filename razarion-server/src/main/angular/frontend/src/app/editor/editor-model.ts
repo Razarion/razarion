@@ -7,8 +7,8 @@ export class EditorModel {
 }
 
 export class GenericPropertyEditorModel extends EditorModel {
-  constructor(public editorComponent: Type<any>, public crudControllerName: string, public crudControllerIndex: number) {
-    super(crudControllerName, editorComponent);
+  constructor(public editorComponent: Type<any>, public collectionName: string) {
+    super(collectionName, editorComponent);
   }
 }
 

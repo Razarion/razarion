@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.datatypes.I18nString;
 
 /**
@@ -12,6 +14,7 @@ public class LevelUnlockConfig {
     private Integer thumbnail;
     private I18nString i18nName;
     private I18nString i18nDescription;
+    @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer baseItemType;
     private int baseItemTypeCount;
     private int crystalCost;

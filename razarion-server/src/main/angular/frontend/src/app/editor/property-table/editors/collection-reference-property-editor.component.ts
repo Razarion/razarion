@@ -1,8 +1,14 @@
 import {Component, OnInit, Pipe, PipeTransform} from '@angular/core';
-import {AngularTreeNodeData, ImageGalleryItem} from "../../../gwtangular/GwtAngularFacade";
+import {
+  AngularTreeNodeData,
+  GenericEditorFrontendProvider,
+  ImageGalleryItem,
+  ObjectNameId
+} from "../../../gwtangular/GwtAngularFacade";
 import {URL_IMAGE} from "../../../common";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
+import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
 
 @Component({
   selector: 'collection-reference-property-editor',
@@ -61,19 +67,48 @@ import {MessageService} from "primeng/api";
       </p-dialog>
     </div>
     <div *ngIf="this.angularTreeNodeData.value.collection!=='image'" class="p-inputgroup">
-      <button type="button" pButton label="Search"></button>
-      <input type="text" pInputText placeholder="Keyword">
+      <div class="p-inputgroup">
+        <p-button icon="pi pi-pencil"
+                  styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+                  (onClick)="showObjectNameIdGallery = !showObjectNameIdGallery">
+        </p-button>
+        <span (click)="showObjectNameIdGallery = !showObjectNameIdGallery"
+          style="width: 7em; line-height: 2em; background-color: #17212f;border: 1px solid #304562;cursor: pointer">
+          {{this.angularTreeNodeData.value.value}}</span>
+        <p-button icon="pi pi-times"
+                  styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                  (onClick)="onObjectNameIdDeleted()"
+                  *ngIf="this.angularTreeNodeData.value.value !== undefined">
+        </p-button>
+      </div>
+      <p-dialog header="Choose {{this.angularTreeNodeData.value.collection}}"
+                [(visible)]="showObjectNameIdGallery"
+                [style]="{width: '20em'}"
+                (onShow)="onShowCollectionGallery()">
+        <p-dataView [value]="objectNameIds">
+          <ng-template let-objectNameId pTemplate="listItem">
+            <div class="p-col-7" style="cursor: pointer" (click)="onObjectNameIdClicked(objectNameId)">
+              {{objectNameId.getInternalName()}} ({{objectNameId.getId()}})
+            </div>
+          </ng-template>
+        </p-dataView>
+      </p-dialog>
     </div>
   `
 })
 export class CollectionReferencePropertyEditorComponent implements OnInit {
   angularTreeNodeData!: AngularTreeNodeData;
+  genericEditorFrontendProvider: GenericEditorFrontendProvider;
   collection!: string;
   showImageGallery: boolean = false;
+  showObjectNameIdGallery: boolean = false;
   imageGalleryItems: ImageGalleryItem[] = [];
+  objectNameIds: ObjectNameId[] = [];
 
   constructor(private messageService: MessageService,
-              private http: HttpClient) {
+              private http: HttpClient,
+              gwtAngularService: GwtAngularService) {
+    this.genericEditorFrontendProvider = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider();
   }
 
   ngOnInit(): void {
@@ -110,6 +145,32 @@ export class CollectionReferencePropertyEditorComponent implements OnInit {
   onClearImage() {
     this.angularTreeNodeData.setValue(null);
     this.angularTreeNodeData.value.value = undefined;
+  }
+
+  onObjectNameIdClicked(objectNameId: ObjectNameId) {
+    this.angularTreeNodeData.setValue(objectNameId.getId());
+    this.showObjectNameIdGallery = false;
+    this.angularTreeNodeData.value.value = objectNameId.getId();
+  }
+
+  onObjectNameIdDeleted() {
+    this.angularTreeNodeData.setValue(null);
+    this.angularTreeNodeData.value.value = undefined;
+  }
+
+  onShowCollectionGallery() {
+    this.genericEditorFrontendProvider.requestObjectNameIds(this.angularTreeNodeData.value.collection)
+      .then(value => this.objectNameIds = value,
+        reason => {
+          this.messageService.add({
+            severity: 'error',
+            summary: `Can not load ObjectNameIds for: ${this.angularTreeNodeData.value.collection}`,
+            detail: reason,
+            sticky: true
+          });
+          console.error(reason);
+        });
+
   }
 }
 

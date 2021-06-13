@@ -69,7 +69,6 @@ import {TerrainEditorComponent} from './editor/terrain-editor/terrain-editor.com
 import {TabViewModule} from 'primeng/tabview';
 import {CheckboxModule} from 'primeng/checkbox';
 import {SliderModule} from 'primeng/slider';
-import {OverlayPanelModule} from 'primeng/overlaypanel';
 import {DataViewModule} from 'primeng/dataview';
 import {FormatFileSizePipe} from "./common/format-file-size-pipe";
 
@@ -140,7 +139,6 @@ import {FormatFileSizePipe} from "./common/format-file-size-pipe";
     TabViewModule,
     CheckboxModule,
     SliderModule,
-    OverlayPanelModule,
     DataViewModule
   ],
   providers: [
