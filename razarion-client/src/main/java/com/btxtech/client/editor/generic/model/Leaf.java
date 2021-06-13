@@ -95,7 +95,7 @@ public class Leaf extends AbstractPropertyModel {
                 OpenApi3Schema openApi3Schema = genericPropertyInfoProvider.scanForOpenApiScheme(parentClass, getPropertyName());
                 if (openApi3Schema != null) {
                     if (clazz == Integer.class && CommonUrl.IMAGE_ID_TYPE.equals(openApi3Schema.getType())) {
-                        return PropertyEditorSelector.IMAGE;
+                        return PropertyEditorSelector.IMAGE_REFERENCE;
                     } else if (clazz == String.class && CommonUrl.COLLADA_STRING_TYPE.equals(openApi3Schema.getType())) {
                         return PropertyEditorSelector.COLLADA_STRING;
                     }

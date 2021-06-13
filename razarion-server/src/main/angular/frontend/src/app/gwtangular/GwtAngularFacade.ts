@@ -254,6 +254,13 @@ export interface TerrainEditorService {
   setTerrainObjectRandomScale(terrainObjectRandomScale: number): void;
 }
 
+export interface ImageGalleryItem {
+  id: number;
+  size: number;
+  type: string;
+  internalName: string
+}
+
 // ---------- Performance ----------
 export interface PerfmonStatistic {
   getPerfmonEnumString(): string;

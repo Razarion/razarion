@@ -276,8 +276,10 @@ public class GenericEditorFrontendProvider {
             }
         } else if (propertyModel instanceof Leaf) {
             PropertyEditorSelector propertyEditorSelector = ((Leaf) propertyModel).getPropertyEditorSelector();
-            if(propertyModel.isPropertyValueNotNull()) {
+            if (propertyModel.isPropertyValueNotNull()) {
                 angularTreeNode.data.value = propertyEditorSelector.convertToAngular(propertyModel.getPropertyValue());
+            } else {
+                angularTreeNode.data.value = propertyEditorSelector.convertNullToAngular();
             }
             angularTreeNode.data.options = propertyEditorSelector.angularOptions(propertyModel.getPropertyClass());
             angularTreeNode.data.propertyEditorSelector = propertyEditorSelector.getSelector();

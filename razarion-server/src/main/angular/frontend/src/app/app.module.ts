@@ -37,7 +37,10 @@ import {IntegerPropertyEditorComponent} from "./editor/property-table/editors/in
 import {IntegerMapPropertyEditorComponent} from "./editor/property-table/editors/integer-map-property-editor.component";
 import {DecimalPositionPropertyEditorComponent} from "./editor/property-table/editors/decimal-position-property-editor.component";
 import {DoublePropertyEditorComponent} from "./editor/property-table/editors/double-property-editor.component";
-import {ImagePropertyEditorComponent} from "./editor/property-table/editors/image-property-editor.component";
+import {
+  CollectionReferencePropertyEditorComponent,
+  ImageTypePipe
+} from "./editor/property-table/editors/collection-reference-property-editor.component";
 import {BooleanPropertyEditorComponent} from "./editor/property-table/editors/boolean-property-editor.component";
 import {PlaceConfigPropertyEditorComponent} from "./editor/property-table/editors/place-config-property-editor.component";
 import {Rectangle2dPropertyEditorComponent} from "./editor/property-table/editors/rectangle-2d-property-editor.component";
@@ -66,6 +69,9 @@ import {TerrainEditorComponent} from './editor/terrain-editor/terrain-editor.com
 import {TabViewModule} from 'primeng/tabview';
 import {CheckboxModule} from 'primeng/checkbox';
 import {SliderModule} from 'primeng/slider';
+import {OverlayPanelModule} from 'primeng/overlaypanel';
+import {DataViewModule} from 'primeng/dataview';
+import {FormatFileSizePipe} from "./common/format-file-size-pipe";
 
 @NgModule({
   declarations: [
@@ -91,7 +97,7 @@ import {SliderModule} from 'primeng/slider';
     VertexPropertyEditorComponent,
     IndexPropertyEditorComponent,
     DoublePropertyEditorComponent,
-    ImagePropertyEditorComponent,
+    CollectionReferencePropertyEditorComponent,
     BooleanPropertyEditorComponent,
     PlaceConfigPropertyEditorComponent,
     Rectangle2dPropertyEditorComponent,
@@ -107,7 +113,9 @@ import {SliderModule} from 'primeng/slider';
     ServerPanelComponent,
     Polygon2dEditorComponent,
     BackupRestoreComponent,
-    TerrainEditorComponent
+    TerrainEditorComponent,
+    ImageTypePipe,
+    FormatFileSizePipe
   ],
   imports: [
     BrowserModule,
@@ -131,7 +139,9 @@ import {SliderModule} from 'primeng/slider';
     TableModule,
     TabViewModule,
     CheckboxModule,
-    SliderModule
+    SliderModule,
+    OverlayPanelModule,
+    DataViewModule
   ],
   providers: [
     FrontendService, {

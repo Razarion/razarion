@@ -1,9 +1,9 @@
-export const LOCALHOST_PREFIX = '';
-// export const LOCALHOST_PREFIX = 'http://localhost:8080';
-export const URL_FRONTEND = LOCALHOST_PREFIX + '/rest/frontend';
-export const SERVER_GAME_ENGINE_PATH = LOCALHOST_PREFIX + '/rest/server-game-engine';
-export const URL_BACKEND_PROVIDER = LOCALHOST_PREFIX + '/rest/backend';
-export const URL_PLANET_MGMT = LOCALHOST_PREFIX + '/rest/servergameenginemgmt';
+export const APPLICATION_PATH = '/rest';
+export const URL_FRONTEND = APPLICATION_PATH + '/frontend';
+export const SERVER_GAME_ENGINE_PATH = APPLICATION_PATH + '/server-game-engine';
+export const URL_BACKEND_PROVIDER = APPLICATION_PATH + '/backend';
+export const URL_PLANET_MGMT = APPLICATION_PATH + '/servergameenginemgmt';
+export const URL_IMAGE = APPLICATION_PATH + '/image';
 
 export interface FrontendLoginState {
   loggedIn: boolean;

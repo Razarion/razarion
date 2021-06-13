@@ -30,12 +30,12 @@ public interface ImageProvider {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("imagegallery")
+    @Path("image-gallery")
     List<ImageGalleryItem> getImageGalleryItems();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("imagegallery/{id}")
+    @Path("image-gallery/{id}")
     ImageGalleryItem getImageGalleryItem(@PathParam("id") int id);
 
     @POST

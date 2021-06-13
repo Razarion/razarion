@@ -5,7 +5,7 @@ import {EnumPropertyEditorComponent} from "./property-table/editors/enum-propert
 import {IntegerMapPropertyEditorComponent} from "./property-table/editors/integer-map-property-editor.component";
 import {DecimalPositionPropertyEditorComponent} from "./property-table/editors/decimal-position-property-editor.component";
 import {DoublePropertyEditorComponent} from "./property-table/editors/double-property-editor.component";
-import {ImagePropertyEditorComponent} from "./property-table/editors/image-property-editor.component";
+import {CollectionReferencePropertyEditorComponent} from "./property-table/editors/collection-reference-property-editor.component";
 import {BooleanPropertyEditorComponent} from "./property-table/editors/boolean-property-editor.component";
 import {PlaceConfigPropertyEditorComponent} from "./property-table/editors/place-config-property-editor.component";
 import {Rectangle2dPropertyEditorComponent} from "./property-table/editors/rectangle-2d-property-editor.component";
@@ -29,7 +29,7 @@ export class EditorService {
       DecimalPositionPropertyEditorComponent,
       IndexPropertyEditorComponent,
       DoublePropertyEditorComponent,
-      ImagePropertyEditorComponent,
+      CollectionReferencePropertyEditorComponent,
       BooleanPropertyEditorComponent,
       PlaceConfigPropertyEditorComponent,
       Rectangle2dPropertyEditorComponent,

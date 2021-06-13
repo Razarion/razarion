@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.generic.model;
 
+import com.btxtech.shared.datatypes.CollectionReference;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -208,15 +209,36 @@ public enum PropertyEditorSelector {
             return Any.of(jsMap);
         }
     },
-    IMAGE("image-property-editor") {
+    IMAGE_REFERENCE("collection-reference-property-editor") {
         @Override
         public Object convertFromAngular(Any value, Class<?> propertyClass) {
-            throw new UnsupportedOperationException("...TODO..."); // TODO
+            return value.asInt();
         }
 
         @Override
         public Any convertToAngular(Object object) {
-            return Any.of(object);  // TODO
+            return convertCollectionReferenceToAngular(CollectionReference.Type.IMAGE, object);
+        }
+
+        @Override
+        public Any convertNullToAngular() {
+            return convertNullCollectionReferenceToAngular(CollectionReference.Type.IMAGE);
+        }
+    },
+    BASE_ITEM_REFERENCE("collection-reference-property-editor") {
+        @Override
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
+            return value.asInt();
+        }
+
+        @Override
+        public Any convertToAngular(Object object) {
+            return convertCollectionReferenceToAngular(CollectionReference.Type.BASE_ITEM, object);
+        }
+
+        @Override
+        public Any convertNullToAngular() {
+            return convertNullCollectionReferenceToAngular(CollectionReference.Type.BASE_ITEM);
         }
     },
     COLLADA_STRING("collada-string-property-editor") {
@@ -264,6 +286,14 @@ public enum PropertyEditorSelector {
         }
     };
 
+    private static Any convertCollectionReferenceToAngular(CollectionReference.Type type, Object object) {
+        return Js.cast(JsPropertyMap.of("collection", type.getCollectionName(), "value", object));
+    }
+
+    private static Any convertNullCollectionReferenceToAngular(CollectionReference.Type type) {
+        return Js.cast(JsPropertyMap.of("collection", type.getCollectionName()));
+    }
+
     private String selector;
     private static Map<String, PropertyEditorSelector> selectors = new HashMap<>();
 
@@ -287,6 +317,10 @@ public enum PropertyEditorSelector {
     public abstract Object convertFromAngular(Any value, Class<?> propertyClass);
 
     public abstract Any convertToAngular(Object object);
+
+    public Any convertNullToAngular() {
+        return null;
+    }
 
     public String[] angularOptions(Class<?> propertyClass) {
         return null;
