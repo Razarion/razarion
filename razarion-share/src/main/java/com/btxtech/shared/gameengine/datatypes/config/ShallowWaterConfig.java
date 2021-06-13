@@ -1,10 +1,16 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
+
 public class ShallowWaterConfig  {
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer textureId;
     private double scale;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer distortionId;
     private double distortionStrength;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer stencilId;
     private double durationSeconds;
 

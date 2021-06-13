@@ -1,5 +1,8 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
+
 /**
  * Created by Beat
  * 15.03.2017.
@@ -10,16 +13,19 @@ public class WaterConfig implements Config {
     private double waterLevel;
     private double groundLevel;
     private double transparency;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer reflectionId;
     private double reflectionScale;
     private double fresnelOffset;
     private double fresnelDelta;
     private double shininess;
     private double specularStrength;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer bumpMapId;
     private double bumpDistortionScale;
     private double bumpDistortionDurationSeconds;
     private double bumpMapDepth;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer distortionId;
     private double distortionStrength;
 

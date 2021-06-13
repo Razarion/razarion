@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
@@ -16,6 +18,7 @@ public class InventoryItem implements ObjectNameIdProvider {
     private Integer baseItemTypeId;
     private int baseItemTypeCount;
     private double baseItemTypeFreeRange;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer imageId;
     private Integer crystalCost;
 

@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.datatypes.Color;
 
 /**
@@ -20,9 +22,12 @@ public class GameTipVisualConfig {
     private Color baseItemPlacerCornerColor;
     private Color grabCommandCornerColor;
     private Color attackCommandCornerColor;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer westLeftMouseGuiImageId;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer southLeftMouseGuiImageId;
     private Integer directionShape3DId;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer scrollDialogKeyboardImageId;
 
     public double getCornerLength() {

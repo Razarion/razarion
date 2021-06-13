@@ -13,6 +13,9 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
+
 import java.util.List;
 
 /**
@@ -46,7 +49,9 @@ public class BaseItemType extends ItemType {
     private Integer explosionParticleConfigId;
     private List<DemolitionStepEffect> demolitionStepEffects;
     private Integer wreckageShape3DId;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer demolitionImageId;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer buildupTextureId;
 
     public PhysicalAreaConfig getPhysicalAreaConfig() {

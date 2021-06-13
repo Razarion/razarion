@@ -1,6 +1,10 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
+
 public class SlopeSplattingConfig {
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer textureId;
     private double scale;
     private double impact;

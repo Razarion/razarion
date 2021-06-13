@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
@@ -33,6 +35,7 @@ public class GameTipConfig {
     private Integer inventoryItemId;
     private DecimalPosition terrainPositionHint;
     private PlaceConfig placeConfig;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer scrollMapImageId;
 
     public Tip getTip() {

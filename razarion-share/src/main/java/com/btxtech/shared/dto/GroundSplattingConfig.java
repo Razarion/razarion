@@ -1,6 +1,10 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.CollectionReference;
+import com.btxtech.shared.datatypes.CollectionReferenceType;
+
 public class GroundSplattingConfig {
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer textureId;
     private double scale1;
     private double scale2;
