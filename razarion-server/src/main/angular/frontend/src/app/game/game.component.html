@@ -2,7 +2,7 @@
   <div #canvasDiv class="p-order-2" style="height: 100%; width: 100%; position: relative; margin: 0">
     <canvas #canvas></canvas>
   </div>
-  <div class="p-mr-2 p-order-1" *ngFor="let editorModel of editorModels" style="margin-right: 0 !important" [style]="{height:'100%'}">
+  <div class="p-order-1" *ngFor="let editorModel of editorModels" style="margin-right: 0 !important">
     <app-editor-panel [editorModel]="editorModel" [gameComponent]="getGameComponent()" [mainCockpitComponent]="mainCockpit"></app-editor-panel>
   </div>
 </div>
