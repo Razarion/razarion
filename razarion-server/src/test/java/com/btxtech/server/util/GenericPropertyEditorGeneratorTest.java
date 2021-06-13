@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 public class GenericPropertyEditorGeneratorTest {
     public static class TestClass {
         @CollectionReference(CollectionReferenceType.IMAGE)
+        @SuppressWarnings("unused")
         private int imageId;
     }
 
@@ -31,7 +32,7 @@ public class GenericPropertyEditorGeneratorTest {
                 .orElseThrow(NoSuchElementException::new);
         Assert.assertEquals(TestClass.class.getName(), openApi3Schema.getJavaParentPropertyClass());
         Assert.assertEquals("imageId", openApi3Schema.getJavaPropertyName());
-        Assert.assertEquals("testType", openApi3Schema.getType());
+        Assert.assertEquals(CollectionReferenceType.IMAGE, openApi3Schema.getType());
     }
 
 }
