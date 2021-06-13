@@ -25,14 +25,14 @@ public class GenericPropertyEditorGeneratorTest {
         // Verify listElementTypes
         Map<String, Map<String, String>> listElementTypes = genericPropertyInfo.getListElementTypes();
         Assert.assertEquals(Shape3DElementConfig.class.getName(), listElementTypes.get(Shape3DConfig.class.getName()).get("shape3DElementConfigs"));
-        // Verify OpenApi3Schema
-        CollectionReferenceInfo openApi3Schema = genericPropertyInfo.getCollectionReferenceInfos().stream()
+        // Verify CollectionReference
+        CollectionReferenceInfo collectionReferenceInfo = genericPropertyInfo.getCollectionReferenceInfos().stream()
                 .filter(op3s -> op3s.getJavaParentPropertyClass().equals(TestClass.class.getName()))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
-        Assert.assertEquals(TestClass.class.getName(), openApi3Schema.getJavaParentPropertyClass());
-        Assert.assertEquals("imageId", openApi3Schema.getJavaPropertyName());
-        Assert.assertEquals(CollectionReferenceType.IMAGE, openApi3Schema.getType());
+        Assert.assertEquals(TestClass.class.getName(), collectionReferenceInfo.getJavaParentPropertyClass());
+        Assert.assertEquals("imageId", collectionReferenceInfo.getJavaPropertyName());
+        Assert.assertEquals(CollectionReferenceType.IMAGE, collectionReferenceInfo.getType());
     }
 
 }
