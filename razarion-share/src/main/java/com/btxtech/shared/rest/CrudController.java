@@ -19,6 +19,11 @@ public interface CrudController<C extends Config> {
     @Path("objectNameIds")
     List<ObjectNameId> getObjectNameIds();
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("objectNameId/{id}")
+    ObjectNameId getObjectNameId(@PathParam("id") int id);
+
     @POST
     @Path("create")
     @Produces(MediaType.APPLICATION_JSON)

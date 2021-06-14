@@ -15,7 +15,7 @@ import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
   styles: ['.image-gallery-descr { width: 50px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis }',
     '.image-gallery-img { width: 100px;height: 100px; background: url(\'/assets/TransparentBg.png\'); cursor: pointer}'],
   template: `
-    <div *ngIf="this.angularTreeNodeData.value.collection==='image'">
+    <div *ngIf="this.angularTreeNodeData.value.collection==='Image'">
       <img *ngIf="this.angularTreeNodeData.value.value !== undefined"
            src="{{getImageUrl(this.angularTreeNodeData.value.value)}}" alt="Show Image Gallery"
            class="image-gallery-img"
@@ -66,15 +66,15 @@ import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
         </p-dataView>
       </p-dialog>
     </div>
-    <div *ngIf="this.angularTreeNodeData.value.collection!=='image'" class="p-inputgroup">
+    <div *ngIf="this.angularTreeNodeData.value.collection!=='Image'" class="p-inputgroup">
       <div class="p-inputgroup">
         <p-button icon="pi pi-pencil"
                   styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
                   (onClick)="showObjectNameIdGallery = !showObjectNameIdGallery">
         </p-button>
         <span (click)="showObjectNameIdGallery = !showObjectNameIdGallery"
-          style="width: 7em; line-height: 2em; background-color: #17212f;border: 1px solid #304562;cursor: pointer">
-          {{this.angularTreeNodeData.value.value}}</span>
+              style="line-height: 2em; background-color: #17212f;border: 1px solid #304562;cursor: pointer; padding-left: 0.5em;padding-right: 0.5em;">
+          {{objectNameIdString}}</span>
         <p-button icon="pi pi-times"
                   styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
                   (onClick)="onObjectNameIdDeleted()"
@@ -104,6 +104,7 @@ export class CollectionReferencePropertyEditorComponent implements OnInit {
   showObjectNameIdGallery: boolean = false;
   imageGalleryItems: ImageGalleryItem[] = [];
   objectNameIds: ObjectNameId[] = [];
+  objectNameIdString: string = '';
 
   constructor(private messageService: MessageService,
               private http: HttpClient,
@@ -112,7 +113,18 @@ export class CollectionReferencePropertyEditorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.angularTreeNodeData.value.collection;
+    if (this.angularTreeNodeData.value.collection !== 'Image' && this.angularTreeNodeData.value.value !== undefined) {
+      this.genericEditorFrontendProvider.requestObjectNameId(this.angularTreeNodeData.value.collection,
+        this.angularTreeNodeData.value.value).then(objectNameId => {
+        this.displayObjectNameId(objectNameId);
+      }, error => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Can not load ObjectNameId from server' + error,
+          sticky: true
+        })
+      })
+    }
   }
 
   getImageUrl(id: number): string {
@@ -123,16 +135,11 @@ export class CollectionReferencePropertyEditorComponent implements OnInit {
     this.http.get<ImageGalleryItem[]>(URL_IMAGE + "/image-gallery").subscribe(
       value => this.imageGalleryItems = value,
       error => {
-        console.error(error);
-        try {
           this.messageService.add({
             severity: 'error',
-            summary: 'Can not load image gallery from server',
+            summary: 'Can not load image gallery from server' + error,
             sticky: true
           })
-        } catch (innerError) {
-          console.error(innerError);
-        }
       });
   }
 
@@ -150,12 +157,14 @@ export class CollectionReferencePropertyEditorComponent implements OnInit {
   onObjectNameIdClicked(objectNameId: ObjectNameId) {
     this.angularTreeNodeData.setValue(objectNameId.getId());
     this.showObjectNameIdGallery = false;
-    this.angularTreeNodeData.value.value = objectNameId.getId();
+    this.angularTreeNodeData.value.value = objectNameId;
+    this.displayObjectNameId(objectNameId);
   }
 
   onObjectNameIdDeleted() {
     this.angularTreeNodeData.setValue(null);
     this.angularTreeNodeData.value.value = undefined;
+    this.objectNameIdString = '';
   }
 
   onShowCollectionGallery() {
@@ -170,7 +179,10 @@ export class CollectionReferencePropertyEditorComponent implements OnInit {
           });
           console.error(reason);
         });
+  }
 
+  private displayObjectNameId(objectNameId: ObjectNameId) {
+    this.objectNameIdString = `${objectNameId.getInternalName()} (${objectNameId.getId()})`
   }
 }
 

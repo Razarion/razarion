@@ -15,6 +15,11 @@ public abstract class AbstractCrudController<C extends Config, E> implements Cru
         return getCrudPersistence().getObjectNameIds();
     }
 
+    @Override
+    public ObjectNameId getObjectNameId(int id) {
+        return getCrudPersistence().read(id).createObjectNameId();
+    }
+
     @SecurityCheck
     @Override
     public C create() {

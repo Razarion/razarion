@@ -65,6 +65,21 @@ public class GenericEditorFrontendProvider {
     }
 
     @SuppressWarnings("unused") // Called by Angular
+    public Promise<ObjectNameId> requestObjectNameId(String collectionName, int configId) {
+        return new Promise<>((resolve, reject) -> {
+            CollectionReferenceType collectionReferenceType = CollectionReferenceType.getType4CollectionName(collectionName);
+            MessageBuilder.createCall(
+                    (RemoteCallback<ObjectNameId>) resolve::onInvoke,
+                    (message, throwable) -> {
+                        logger.log(Level.SEVERE, "CrudController.getObjectNameId() " + collectionReferenceType.getCrudControllerClass() + " id:" + configId + "\n" + message, throwable);
+                        reject.onInvoke("CrudController.getObjectNameId() " + collectionReferenceType.getCrudControllerClass()  + " id:" + configId + "\n" + message + "\n" + throwable);
+                        return false;
+                    },
+                    collectionReferenceType.getCrudControllerClass()).getObjectNameId(configId);
+        });
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
     public Promise<GwtAngularPropertyTable> createConfig(String collectionName) {
         CollectionReferenceType collectionReferenceType = CollectionReferenceType.getType4CollectionName(collectionName);
 

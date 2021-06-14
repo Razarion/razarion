@@ -147,6 +147,8 @@ export interface GenericEditorFrontendProvider {
 
   requestObjectNameIds(collectionName: string): Promise<ObjectNameId[]>;
 
+  requestObjectNameId(collectionName: string, configId: number): Promise<ObjectNameId>;
+
   createConfig(collectionName: string): Promise<GwtAngularPropertyTable>;
 
   readConfig(collectionName: string, configId: number): Promise<GwtAngularPropertyTable>;
