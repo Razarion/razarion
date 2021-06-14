@@ -9,6 +9,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.editor.CollectionReferenceInfo;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import org.jboss.errai.common.client.api.WrappedPortable;
 import org.jboss.errai.databinding.client.BindableListWrapper;
 import org.jboss.errai.databinding.client.PropertyType;
 
@@ -91,6 +92,9 @@ public class Leaf extends AbstractPropertyModel {
         } else {
             if (getPropertyName() != null) {
                 Class<?> parentClass = getBranch().getPropertyClass();
+                if (getBranch().getHasProperties() instanceof WrappedPortable) {
+                    parentClass = ((WrappedPortable) getBranch().getHasProperties()).unwrap().getClass();
+                }
                 CollectionReferenceInfo collectionReferenceInfo = genericPropertyInfoProvider.scanForCollectionReference(parentClass, getPropertyName());
                 if (collectionReferenceInfo != null) {
                     switch (collectionReferenceInfo.getType()) {
