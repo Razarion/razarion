@@ -8,6 +8,7 @@ import {GameComponent} from "../../game/game.component";
 import {ServerPanelComponent} from "../server-panel/server-panel.component";
 import {BackupRestoreComponent} from "../backup-restore/backup-restore.component";
 import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component";
+import {ImageEditorComponent} from "../image-editor/image-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -45,5 +46,10 @@ export class EditorDialogComponent {
   openTerrainEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
+  }
+
+  openImageEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Image Editor", ImageEditorComponent));
   }
 }

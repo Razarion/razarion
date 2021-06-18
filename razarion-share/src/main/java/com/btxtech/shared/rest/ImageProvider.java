@@ -4,6 +4,7 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.ImageGalleryItem;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -12,7 +13,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import static com.btxtech.shared.CommonUrl.PLANET_MINI_MAP_PATH;
 
@@ -40,13 +43,17 @@ public interface ImageProvider {
 
     @POST
     @Path("upload")
-    @Consumes(MediaType.TEXT_PLAIN)
-    void uploadImage(String dataUrl);
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    void uploadImage(Map<String, InputStream> files);
 
     @PUT
-    @Path("save/{id}")
-    @Consumes(MediaType.TEXT_PLAIN)
-    void save(@PathParam("id") int id, String dataUrl);
+    @Path("update/{id}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    void update(@PathParam("id") int id, Map<String, InputStream> files);
+
+    @DELETE
+    @Path("/delete/{id}")
+    void delete(@PathParam("id") int id);
 
     @GET
     @Produces({"image/jpeg", "image/png", "image/gif"})

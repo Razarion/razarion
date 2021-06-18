@@ -32,3 +32,7 @@ export enum LoginResult {
   OK = 'OK',
   UNKNOWN = 'UNKNOWN'
 }
+
+export function getImageUrl(id: number) {
+  return `${URL_IMAGE}/${id}`
+}

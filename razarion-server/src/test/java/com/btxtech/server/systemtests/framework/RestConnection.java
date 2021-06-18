@@ -91,4 +91,8 @@ public class RestConnection {
     public <T> T proxy(Class<T> clazz) {
         return target.proxy(clazz);
     }
+
+    public ResteasyWebTarget getTarget() {
+        return target;
+    }
 }

@@ -1,9 +1,9 @@
 package com.btxtech.client.imageservice;
 
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
-import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -140,20 +139,20 @@ public class ImageUiService {
     }
 
     public void create(String dataUrl, final ImageGalleryItemListener imageGalleryItemListener) {
-        imageService.call(aVoid -> getImageGalleryItems(imageGalleryItemListener), exceptionHandler.restErrorHandler("ImageProvider.uploadImage(): ")).uploadImage(dataUrl);
+        // TODO not used anymore imageService.call(aVoid -> getImageGalleryItems(imageGalleryItemListener), exceptionHandler.restErrorHandler("ImageProvider.uploadImage(): ")).uploadImage(dataUrl);
     }
 
     public void save(final ImageGalleryItemListener imageGalleryItemListener) {
-        if (changed.isEmpty()) {
-            return;
-        }
-        Collection<ImageGalleryItem> changedCopy = new ArrayList<>(changed);
-        for (ImageGalleryItem imageGalleryItem : changedCopy) {
-            imageService.call(aVoid -> reload(imageGalleryItemListener), (message, throwable) -> {
-                logger.log(Level.SEVERE, "save failed: " + message, throwable);
-                return false;
-            }).save(imageGalleryItem.getId(), imageElementLibrary.get(imageGalleryItem.getId()).getSrc());
-        }
+//   TODO not used anymore     if (changed.isEmpty()) {
+//            return;
+//        }
+//        Collection<ImageGalleryItem> changedCopy = new ArrayList<>(changed);
+//        for (ImageGalleryItem imageGalleryItem : changedCopy) {
+//            imageService.call(aVoid -> reload(imageGalleryItemListener), (message, throwable) -> {
+//                logger.log(Level.SEVERE, "save failed: " + message, throwable);
+//                return false;
+//            }).save(imageGalleryItem.getId(), imageElementLibrary.get(imageGalleryItem.getId()).getSrc());
+//        }
     }
 
     public void removeListener(int id, ImageListener listener) {

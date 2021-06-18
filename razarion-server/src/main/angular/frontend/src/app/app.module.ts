@@ -37,10 +37,7 @@ import {IntegerPropertyEditorComponent} from "./editor/property-table/editors/in
 import {IntegerMapPropertyEditorComponent} from "./editor/property-table/editors/integer-map-property-editor.component";
 import {DecimalPositionPropertyEditorComponent} from "./editor/property-table/editors/decimal-position-property-editor.component";
 import {DoublePropertyEditorComponent} from "./editor/property-table/editors/double-property-editor.component";
-import {
-  CollectionReferencePropertyEditorComponent,
-  ImageTypePipe
-} from "./editor/property-table/editors/collection-reference-property-editor.component";
+import {CollectionReferencePropertyEditorComponent} from "./editor/property-table/editors/collection-reference-property-editor.component";
 import {BooleanPropertyEditorComponent} from "./editor/property-table/editors/boolean-property-editor.component";
 import {PlaceConfigPropertyEditorComponent} from "./editor/property-table/editors/place-config-property-editor.component";
 import {Rectangle2dPropertyEditorComponent} from "./editor/property-table/editors/rectangle-2d-property-editor.component";
@@ -71,6 +68,9 @@ import {CheckboxModule} from 'primeng/checkbox';
 import {SliderModule} from 'primeng/slider';
 import {DataViewModule} from 'primeng/dataview';
 import {FormatFileSizePipe} from "./common/format-file-size-pipe";
+import {ImageEditorComponent} from './editor/image-editor/image-editor.component';
+import {ImageGalleryItemComponent, ImageTypePipe} from "./editor/image-editor/image-gallery-item.component";
+import {FileUploadModule} from 'primeng/fileupload';
 
 @NgModule({
   declarations: [
@@ -114,7 +114,9 @@ import {FormatFileSizePipe} from "./common/format-file-size-pipe";
     BackupRestoreComponent,
     TerrainEditorComponent,
     ImageTypePipe,
-    FormatFileSizePipe
+    FormatFileSizePipe,
+    ImageEditorComponent,
+    ImageGalleryItemComponent
   ],
   imports: [
     BrowserModule,
@@ -139,7 +141,8 @@ import {FormatFileSizePipe} from "./common/format-file-size-pipe";
     TabViewModule,
     CheckboxModule,
     SliderModule,
-    DataViewModule
+    DataViewModule,
+    FileUploadModule
   ],
   providers: [
     FrontendService, {

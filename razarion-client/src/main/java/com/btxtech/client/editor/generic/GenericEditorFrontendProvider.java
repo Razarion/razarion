@@ -45,7 +45,9 @@ public class GenericEditorFrontendProvider {
     public Array<String> collectionNames() {
         genericPropertyInfoProvider.load();
         Array<String> crudControllers = new Array<>();
-        Arrays.stream(CollectionReferenceType.values()).forEach(crudControllerEntry -> crudControllers.push(crudControllerEntry.getCollectionName()));
+        Arrays.stream(CollectionReferenceType.values())
+                .filter(collectionReferenceType -> collectionReferenceType.getCrudControllerClass() != null)
+                .forEach(crudControllerEntry -> crudControllers.push(crudControllerEntry.getCollectionName()));
         return crudControllers;
     }
 

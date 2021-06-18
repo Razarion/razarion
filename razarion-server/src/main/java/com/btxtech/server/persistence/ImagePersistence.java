@@ -1,6 +1,5 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.ImageGalleryItem;
 
@@ -25,14 +24,14 @@ public class ImagePersistence {
     private EntityManager entityManager;
 
     @Transactional
-    public byte[] getImage(int id) {
+    public Image getImage(int id) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
         Root<ImageLibraryEntity> root = cq.from(ImageLibraryEntity.class);
         cq.where(criteriaBuilder.equal(root.get(ImageLibraryEntity_.id), id));
-        cq.multiselect(root.get(ImageLibraryEntity_.data));
+        cq.multiselect(root.get(ImageLibraryEntity_.data), root.get(ImageLibraryEntity_.type));
         Tuple tupleResult = entityManager.createQuery(cq).getSingleResult();
-        return (byte[]) tupleResult.get(0);
+        return new Image((byte[]) tupleResult.get(0), (String) tupleResult.get(1));
     }
 
     @Transactional
@@ -57,22 +56,32 @@ public class ImagePersistence {
 
     @Transactional
     @SecurityCheck
-    public void createImage(DataUrlDecoder dataUrlDecoder) {
+    public void createImage(byte[] imageData, String type) {
         ImageLibraryEntity imageLibraryEntity = new ImageLibraryEntity();
-        imageLibraryEntity.setType(dataUrlDecoder.getType());
-        imageLibraryEntity.setData(dataUrlDecoder.getData());
-        imageLibraryEntity.setSize(dataUrlDecoder.getDataLength());
+        imageLibraryEntity.setType(type);
+        imageLibraryEntity.setData(imageData);
+        imageLibraryEntity.setSize(imageData.length);
         entityManager.persist(imageLibraryEntity);
     }
 
     @Transactional
     @SecurityCheck
-    public void save(int id, DataUrlDecoder dataUrlDecoder) {
+    public void save(int id, byte[] imageData, String type) {
         ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, id);
-        imageLibraryEntity.setType(dataUrlDecoder.getType());
-        imageLibraryEntity.setData(dataUrlDecoder.getData());
-        imageLibraryEntity.setSize(dataUrlDecoder.getDataLength());
+        imageLibraryEntity.setType(type);
+        imageLibraryEntity.setData(imageData);
+        imageLibraryEntity.setSize(imageData.length);
         entityManager.persist(imageLibraryEntity);
+    }
+
+    @Transactional
+    @SecurityCheck
+    public void delete(int id) {
+        ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, id);
+        if (imageLibraryEntity == null) {
+            throw new IllegalArgumentException("No image for id: " + id);
+        }
+        entityManager.remove(imageLibraryEntity);
     }
 
     @Transactional
@@ -92,6 +101,24 @@ public class ImagePersistence {
             return libraryEntity.getId();
         } else {
             return null;
+        }
+    }
+
+    public static class Image {
+        private byte[] data;
+        private String type;
+
+        public Image(byte[] data, String type) {
+            this.data = data;
+            this.type = type;
+        }
+
+        public byte[] getData() {
+            return data;
+        }
+
+        public String getType() {
+            return type;
         }
     }
 }
