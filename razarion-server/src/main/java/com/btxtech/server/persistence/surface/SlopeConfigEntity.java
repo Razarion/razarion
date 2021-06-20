@@ -50,10 +50,12 @@ public class SlopeConfigEntity {
     private WaterConfigEntity waterConfig;
     @AssociationOverrides({
             @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "materialTextureId")),
+            @AssociationOverride(name = "normalMap", joinColumns = @JoinColumn(name = "materialNormalMapId")),
             @AssociationOverride(name = "bumpMap", joinColumns = @JoinColumn(name = "materialBumpMapId"))
     })
     @AttributeOverrides({
             @AttributeOverride(name = "scale", column = @Column(name = "materialScale")),
+            @AttributeOverride(name = "normalMapDepth", column = @Column(name = "materialNormalMapDepth")),
             @AttributeOverride(name = "bumpMapDepth", column = @Column(name = "materialBumpMapDepth")),
             @AttributeOverride(name = "shininess", column = @Column(name = "materialShininess")),
             @AttributeOverride(name = "specularStrength", column = @Column(name = "materialSpecularStrength")),

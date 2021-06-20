@@ -39,7 +39,7 @@ vec2 reflectionCoord = (vWorldVertexPosition.xy) / uReflectionScale + totalDisto
 vec3 reflection = texture2D(uReflection, reflectionCoord).rgb;
 
 // Specular
-vec3 normal = perturbNormalArb(-vViewPosition, normalize(vNormal), dHdxy_fwd_animation());
+vec3 normal = normFromBumpMap(-vViewPosition, normalize(vNormal), dHdxy_fwd_animation());
 vec3 viewDir = normalize(vViewPosition);
 vec3 halfwayDir = normalize(correctedDirectLightDirection + viewDir);
 float spec = pow(max(dot(normal, halfwayDir), 0.0), uShininess);

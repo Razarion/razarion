@@ -8,6 +8,9 @@ public class PhongMaterialConfig {
     private Integer textureId;
     private double scale;
     @CollectionReference(CollectionReferenceType.IMAGE)
+    private Integer normalMapId;
+    private Double normalMapDepth;
+    @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer bumpMapId;
     private Double bumpMapDepth;
     private Double shininess;
@@ -27,6 +30,22 @@ public class PhongMaterialConfig {
 
     public void setScale(double scale) {
         this.scale = scale;
+    }
+
+    public Integer getNormalMapId() {
+        return normalMapId;
+    }
+
+    public void setNormalMapId(Integer normalMapId) {
+        this.normalMapId = normalMapId;
+    }
+
+    public Double getNormalMapDepth() {
+        return normalMapDepth;
+    }
+
+    public void setNormalMapDepth(Double normalMapDepth) {
+        this.normalMapDepth = normalMapDepth;
     }
 
     public Integer getBumpMapId() {
@@ -68,6 +87,16 @@ public class PhongMaterialConfig {
 
     public PhongMaterialConfig scale(double scale) {
         setScale(scale);
+        return this;
+    }
+
+    public PhongMaterialConfig normalMapId(Integer normalMapId) {
+        setNormalMapId(normalMapId);
+        return this;
+    }
+
+    public PhongMaterialConfig normalMapDepth(Double normalMapDepth) {
+        setNormalMapDepth(normalMapDepth);
         return this;
     }
 

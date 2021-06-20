@@ -40,8 +40,9 @@ float calculateShadowFactor() {
 struct PhongMaterial {
     sampler2D texture;
     float scale;
-    sampler2D bumpMap;
-    float bumpMapDepth;
+    sampler2D map;
+    float mapDepth;
+    bool normal;// false = bump map; true = normal map
     float shininess;
     float specularStrength;
 };
@@ -59,8 +60,8 @@ struct Splatting {
 uniform Splatting splatting;
 #endif
 
-vec3 vec3ToRgb(vec3 normVec) {
-    return normVec * 0.5 + 0.5;
+vec4 vec3ToRgba(vec3 normVec) {
+    return vec4(normVec * 0.5 + 0.5, 1.0);
 }
 
 //-$$$-INCLUDE-CHUNK uniforms-fragment
@@ -75,7 +76,7 @@ vec2 dHdxy_fwd(sampler2D bumpMap, float bumpMapDepth, float textureScale, vec2 u
     return vec2(dBx, dBy);
 }
 
-vec3 perturbNormalArb(vec3 surf_pos, vec3 surf_norm, vec2 dHdxy) {
+vec3 normFromBumpMap(vec3 surf_pos, vec3 surf_norm, vec2 dHdxy) {
     vec3 vSigmaX = vec3(dFdx(surf_pos.x), dFdx(surf_pos.y), dFdx(surf_pos.z));
     vec3 vSigmaY = vec3(dFdy(surf_pos.x), dFdy(surf_pos.y), dFdy(surf_pos.z));
     vec3 vN = surf_norm;
@@ -87,8 +88,25 @@ vec3 perturbNormalArb(vec3 surf_pos, vec3 surf_norm, vec2 dHdxy) {
     return normalize(abs(fDet) * surf_norm - vGrad);
 }
 
+vec3 normFromNormalMap(vec3 objectNormal, sampler2D normalMap, float normalMapDepth, float textureScale, vec2 uv) {
+    vec2 uvScalled = uv / textureScale;
+    vec3 normal = texture2D(normalMap, uvScalled).rgb * 2.0 - 1.0;
+    vec3 correctedNormal = normalMapDepth * normalize((viewNormMatrix * vec4(normal, 1.0)).xyz);
+
+    return normalize(correctedNormal + objectNormal);
+}
+
+
 vec4 phongAlpha(PhongMaterial phongMaterial, vec2 uv) {
-    vec3 normal = perturbNormalArb(-vViewPosition, normalize(vNormal), dHdxy_fwd(phongMaterial.bumpMap, phongMaterial.bumpMapDepth, phongMaterial.scale, uv));
+    vec3 normal;
+    if (phongMaterial.normal) {
+        normal = normFromNormalMap(normalize(vNormal), phongMaterial.map, phongMaterial.mapDepth, phongMaterial.scale, uv);
+    } else {
+        normal = normFromBumpMap(-vViewPosition, normalize(vNormal), dHdxy_fwd(phongMaterial.map, phongMaterial.mapDepth, phongMaterial.scale, uv));
+    }
+    // Use the display object norm
+    // return vec3ToRgba(normal);
+
     vec3 viewDir = normalize(vViewPosition);
 
     vec4 texture = texture2D(phongMaterial.texture, uv / phongMaterial.scale);

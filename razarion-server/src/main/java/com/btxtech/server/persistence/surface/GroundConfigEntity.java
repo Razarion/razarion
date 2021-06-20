@@ -31,10 +31,12 @@ public class GroundConfigEntity {
     private String internalName;
     @AssociationOverrides({
             @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "topTextureId")),
+            @AssociationOverride(name = "normalMap", joinColumns = @JoinColumn(name = "topNormalMapId")),
             @AssociationOverride(name = "bumpMap", joinColumns = @JoinColumn(name = "topBumpMapId"))
     })
     @AttributeOverrides({
             @AttributeOverride(name = "scale", column = @Column(name = "topScale")),
+            @AttributeOverride(name = "normalMapDepth", column = @Column(name = "topNormalMapDepth")),
             @AttributeOverride(name = "bumpMapDepth", column = @Column(name = "topBumpMapDepth")),
             @AttributeOverride(name = "shininess", column = @Column(name = "topShininess")),
             @AttributeOverride(name = "specularStrength", column = @Column(name = "topSpecularStrength")),
@@ -43,10 +45,12 @@ public class GroundConfigEntity {
     private PhongMaterialConfigEmbeddable topMaterial;
     @AssociationOverrides({
             @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "bottomTextureId")),
+            @AssociationOverride(name = "normalMap", joinColumns = @JoinColumn(name = "bottomNormalMapId")),
             @AssociationOverride(name = "bumpMap", joinColumns = @JoinColumn(name = "bottomBumpMapId"))
     })
     @AttributeOverrides({
             @AttributeOverride(name = "scale", column = @Column(name = "bottomScale")),
+            @AttributeOverride(name = "normalMapDepth", column = @Column(name = "bottomNormalMapDepth")),
             @AttributeOverride(name = "bumpMapDepth", column = @Column(name = "bottomBumpMapDepth")),
             @AttributeOverride(name = "shininess", column = @Column(name = "bottomShininess")),
             @AttributeOverride(name = "specularStrength", column = @Column(name = "bottomSpecularStrength")),
