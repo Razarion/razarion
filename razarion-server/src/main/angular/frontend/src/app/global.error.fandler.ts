@@ -10,13 +10,13 @@ export class GlobalErrorHandler implements ErrorHandler {
   handleError(error: any) {
     const frontendService: FrontendService = this.injector.get(FrontendService);
     frontendService.log("Angular GlobalErrorHandler", error);
+    console.error(error);
     this.messageService.add({
       severity: 'error',
       summary: `Unknown Error`,
       detail: error,
       sticky: true
     });
-    throw error;
   }
 
 }
