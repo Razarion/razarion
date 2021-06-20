@@ -1,4 +1,4 @@
-package com.btxtech.client.renderer.shaders.library;
+package com.btxtech.client.renderer.shaders;
 
 import java.util.Arrays;
 import java.util.List;

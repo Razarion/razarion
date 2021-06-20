@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.renderer.shaders.library.GlslLibrarian;
+import com.btxtech.client.renderer.shaders.GlslLibrarian;
 import com.btxtech.client.utils.DomConstants;
 
 import javax.enterprise.context.ApplicationScoped;
