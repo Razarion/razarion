@@ -211,17 +211,15 @@ public class GenericEditorFrontendProvider {
             @Override
             public void onDelete(GwtAngularPropertyTable gwtAngularPropertyTable) {
                 try {
-                    if (angularTreeNode.parent.children == null) {
-                        throw new IllegalStateException("Parent is not a list");
-                    }
                     angularTreeNode.abstractPropertyModel.setPropertyValue(null);
-                    if (angularTreeNode.parent.abstractPropertyModel.getPropertyType().isList()) {
+                    if (angularTreeNode.parent != null && angularTreeNode.parent.abstractPropertyModel.getPropertyType().isList()) {
                         angularTreeNode.parent.children = listBranch2AngularTreeNodes(angularTreeNode.parent, (Branch) angularTreeNode.parent.abstractPropertyModel);
                         angularTreeNode.parent.leaf = angularTreeNode.parent.children.length == 0;
                     } else {
                         angularTreeNode.children = new AngularTreeNode[0];
                         angularTreeNode.data.createAllowed = true;
                         angularTreeNode.data.deleteAllowed = false;
+                        angularTreeNode.leaf = true;
                     }
                     rootTreeNodes(gwtAngularPropertyTable);
                 } catch (Throwable throwable) {
@@ -280,7 +278,7 @@ public class GenericEditorFrontendProvider {
     }
 
     /**
-     * This methodes is ued to force the PrimeNG TreeTable update
+     * This method is ued to force the PrimeNG TreeTable update
      *
      * @param gwtAngularPropertyTable containes the Angular PrimeNG root TreeNodes
      */
