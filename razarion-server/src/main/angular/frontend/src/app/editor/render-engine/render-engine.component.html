@@ -1,5 +1,5 @@
 <div class="p-d-flex p-flex-column">
-  <h4>Performance</h4>
+  <h3>Performance</h3>
   <div class="p-mr-2">
     <div #statsContainer></div>
   </div>
@@ -25,12 +25,84 @@
              [perfmon-enum]="gameEnginePerfmonType"></perfmon>
   </div>
   <div class="p-mr-2">
-    <h4>Control</h4>
-    <div class="p-formgroup-inline">
-      <div class="p-field">
-        <label>Interpolation</label>
-        <p-inputSwitch [ngModel]="gwtAngularService.gwtAngularFacade.editorFrontendProvider.isRenderInterpolation()"
-                       (ngModelChange)="gwtAngularService.gwtAngularFacade.editorFrontendProvider.setRenderInterpolation($event)"></p-inputSwitch>
+    <h3>Control</h3>
+    <div class="p-field p-grid">
+      <label for="renderInterpolation" class="p-col">Interpolation</label>
+      <div class="p-col">
+        <p-inputSwitch id="renderInterpolation"
+                       [ngModel]="rendererEditorService.isRenderInterpolation()"
+                       (ngModelChange)="rendererEditorService.setRenderInterpolation($event)"></p-inputSwitch>
+      </div>
+    </div>
+    <div class="p-field p-grid">
+      <label for="callGetError" class="p-col">Call GetError</label>
+      <div class="p-col">
+        <p-inputSwitch id="callGetError"
+                       [ngModel]="rendererEditorService.isCallGetError()"
+                       (ngModelChange)="rendererEditorService.setCallGetError($event)"></p-inputSwitch>
+      </div>
+    </div>
+  </div>
+  <div class="p-mr-2">
+    <h3>Performance</h3>
+    <div class="p-field p-grid">
+      <label for="cameraXPosition" class="p-col">Camera X Position</label>
+      <div class="p-col">
+        <p-inputNumber id="cameraXPosition"
+                       [ngModel]="rendererEditorService.getCameraXPosition()"
+                       (onInput)="rendererEditorService.setCameraXPosition($event.value)"></p-inputNumber>
+      </div>
+    </div>
+    <div class="p-field p-grid">
+      <label for="cameraYPosition" class="p-col">Camera Y Position</label>
+      <div class="p-col">
+        <p-inputNumber id="cameraYPosition"
+                       [ngModel]="rendererEditorService.getCameraYPosition()"
+                       (onInput)="rendererEditorService.setCameraYPosition($event.value)"></p-inputNumber>
+      </div>
+    </div>
+    <div class="p-field p-grid">
+      <label for="cameraZPosition" class="p-col">Camera Z Position</label>
+      <div class="p-col">
+        <p-inputNumber id="cameraZPosition"
+                       [ngModel]="rendererEditorService.getCameraZPosition()"
+                       (onInput)="rendererEditorService.setCameraZPosition($event.value)"></p-inputNumber>
+      </div>
+    </div>
+    <div class="p-field p-grid">
+      <label for="cameraXRotation" class="p-col">Camera X Rotation</label>
+      <div class="p-col">
+        <p-inputNumber id="cameraXRotation"
+                       [ngModel]="rendererEditorService.getCameraXRotation() | radToDegree"
+                       (onInput)="rendererEditorService.setCameraXRotation(toRad($event.value))"></p-inputNumber>
+      </div>
+    </div>
+    <div class="p-field p-grid">
+      <label for="cameraZRotation" class="p-col">Camera Z Rotation</label>
+      <div class="p-col">
+        <p-inputNumber id="cameraZRotation"
+                       [ngModel]="rendererEditorService.getCameraZRotation() | radToDegree"
+                       (onInput)="rendererEditorService.setCameraZRotation(toRad($event.value))"></p-inputNumber>
+      </div>
+    </div>
+    <div class="p-field p-grid">
+      <label for="cameraOpeningAngleY" class="p-col">Camera Opening AngleY</label>
+      <div class="p-col">
+        <p-inputNumber id="cameraOpeningAngleY"
+                       [ngModel]="rendererEditorService.getCameraOpeningAngleY() | radToDegree"
+                       (onInput)="rendererEditorService.setCameraOpeningAngleY(toRad($event.value))"></p-inputNumber>
+      </div>
+    </div>
+  </div>
+  <div class="p-mr-2">
+    <h3>Performance</h3>
+    <div class="p-grid p-flex-column">
+      <div class="p-col" *ngFor="let renderTaskRunnerControl of renderTaskRunnerControls">
+        <p-checkbox label="{{renderTaskRunnerControl.getName()}}"
+                    [binary]="true"
+                    [ngModel]="renderTaskRunnerControl.isEnabled()"
+                    (onChange)="renderTaskRunnerControl.setEnabled($event.checked)">
+        </p-checkbox>
       </div>
     </div>
   </div>

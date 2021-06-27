@@ -71,6 +71,7 @@ import {FormatFileSizePipe} from "./common/format-file-size-pipe";
 import {ImageEditorComponent} from './editor/image-editor/image-editor.component';
 import {ImageGalleryItemComponent, ImageTypePipe} from "./editor/image-editor/image-gallery-item.component";
 import {FileUploadModule} from 'primeng/fileupload';
+import {RadToDegreePipe} from "./common/rad-to-degree-pipe";
 
 @NgModule({
   declarations: [
@@ -115,6 +116,7 @@ import {FileUploadModule} from 'primeng/fileupload';
     TerrainEditorComponent,
     ImageTypePipe,
     FormatFileSizePipe,
+    RadToDegreePipe,
     ImageEditorComponent,
     ImageGalleryItemComponent
   ],

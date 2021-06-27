@@ -1,7 +1,12 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, RendererFactory2, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {PerfmonEnum, PerfmonStatistic} from "../../gwtangular/GwtAngularFacade";
+import {
+  PerfmonEnum,
+  PerfmonStatistic,
+  RendererEditorService,
+  RenderTaskRunnerControl
+} from "../../gwtangular/GwtAngularFacade";
 import {PerfmonComponent} from "./perfmon.component";
 import * as Stats from 'stats.js';
 
@@ -22,9 +27,13 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   @ViewChild("gameEnginePerfmon")
   gameEnginePerfmonComponent!: PerfmonComponent;
   refresher: any;
+  rendererEditorService: RendererEditorService;
+  renderTaskRunnerControls: RenderTaskRunnerControl[];
 
-  constructor(public gwtAngularService: GwtAngularService, private rendererFactory: RendererFactory2) {
+  constructor(public gwtAngularService: GwtAngularService) {
     super();
+    this.rendererEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getCameraFrontendService();
+    this.renderTaskRunnerControls = this.rendererEditorService.getRenderTaskRunnerControls()
   }
 
   ngOnInit(): void {
@@ -64,5 +73,13 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     } catch (error) {
       console.error(error);
     }
+  }
+
+  toRad(degree: number) {
+    return degree * Math.PI / 180;
+  }
+
+  onRenderTaskRunnerControl(event: any) {
+    console.info(event)
   }
 }

@@ -14,7 +14,7 @@ import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.inventory.InventoryItemCrudSidebar;
 import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
-import com.btxtech.client.editor.renderpanel.RenderEngineEditorPanel;
+import com.btxtech.client.editor.rendercontrol.RenderEngineEditorPanel;
 import com.btxtech.client.editor.server.botscene.BotSceneSidebar;
 import com.btxtech.client.editor.server.box.BoxRegionSidebar;
 import com.btxtech.client.editor.server.quest.LevelQuestSidebar;

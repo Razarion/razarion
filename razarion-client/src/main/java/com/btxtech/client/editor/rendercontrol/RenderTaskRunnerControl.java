@@ -1,42 +1,36 @@
-package com.btxtech.client.editor.renderpanel;
+package com.btxtech.client.editor.rendercontrol;
 
 import com.btxtech.uiservice.renderer.AbstractRenderTaskRunner;
-import org.jboss.errai.databinding.client.api.Bindable;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 26.03.2017.
  */
-@Bindable
-public class RenderTaskModel {
-    private String name;
+
+@JsType
+public class RenderTaskRunnerControl {
+    public String name;
+    public boolean enabled;
     private AbstractRenderTaskRunner abstractRenderTask;
-    private boolean enabled;
 
-    /**
-     * Used by Errai
-     */
-    public RenderTaskModel() {
-    }
-
-    public RenderTaskModel(AbstractRenderTaskRunner abstractRenderTask) {
+    public RenderTaskRunnerControl(AbstractRenderTaskRunner abstractRenderTask) {
         name = abstractRenderTask.getName();
         enabled = abstractRenderTask.isEnabled();
         this.abstractRenderTask = abstractRenderTask;
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    @SuppressWarnings("unused") // Called by Angular
     public boolean isEnabled() {
         return enabled;
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         abstractRenderTask.setEnabled(enabled);

@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.renderpanel;
+package com.btxtech.client.editor.rendercontrol;
 
 import com.btxtech.client.editor.editorpanel.AbstractEditor;
 import com.btxtech.client.editor.renderer.MonitorRenderTaskRunner;
@@ -13,21 +13,18 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DoubleBox;
 import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.common.client.dom.CheckboxInput;
-import org.jboss.errai.common.client.dom.DOMUtil;
-import org.jboss.errai.databinding.client.components.ListComponent;
-import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
  * 13.08.2016.
  */
+@Deprecated
 @Templated("RenderEngineEditorPanel.html#render-engine-editor-panel")
 public class RenderEngineEditorPanel extends AbstractEditor {
     @Inject
@@ -95,10 +92,10 @@ public class RenderEngineEditorPanel extends AbstractEditor {
     @Inject
     @DataField
     private HTMLInputElement openingAngleYBox;
-    @Inject
-    @DataField
-    @ListContainer("tbody")
-    private ListComponent<RenderTaskModel, RenderTaskComponent> renderTasks;
+//    @Inject
+//    @DataField
+//    @ListContainer("tbody")
+//    private ListComponent<RenderTaskRunnerControl, RenderTaskComponent> renderTasks;
 
     @PostConstruct
     public void init() {
@@ -107,8 +104,8 @@ public class RenderEngineEditorPanel extends AbstractEditor {
         // TODO wireMode.setChecked(renderService.isWire());
         // TODO showNorm.setChecked(renderService.isShowNorm());
         callGetError.setChecked(WebGlUtil.isCallGetError());
-        DOMUtil.removeAllElementChildren(renderTasks.getElement());
-        renderTasks.setValue(renderService.getRenderTaskRunners().stream().map(RenderTaskModel::new).collect(Collectors.toList()));
+//        DOMUtil.removeAllElementChildren(renderTasks.getElement());
+//        renderTasks.setValue(renderService.getRenderTaskRunners().stream().map(RenderTaskRunnerControl::new).collect(Collectors.toList()));
         updateCamera();
     }
 
