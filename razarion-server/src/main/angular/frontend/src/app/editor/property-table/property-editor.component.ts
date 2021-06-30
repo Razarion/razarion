@@ -7,7 +7,7 @@ import {
   OnInit,
   ViewContainerRef
 } from '@angular/core';
-import {AngularTreeNodeData} from "../../gwtangular/GwtAngularFacade";
+import {AngularTreeNodeData, GwtAngularPropertyTable} from "../../gwtangular/GwtAngularFacade";
 import {EditorService} from "../editor-service";
 import {StringPropertyEditorComponent} from "./editors/string-property-editor.component";
 import {MessageService} from "primeng/api";
@@ -18,7 +18,10 @@ import {FrontendService} from "../../service/frontend.service";
   template: ''
 })
 export class PropertyEditorComponent implements OnInit {
-  @Input('angular-tree-node-data') angularTreeNodeData!: AngularTreeNodeData;
+  @Input('angular-tree-node-data')
+  angularTreeNodeData!: AngularTreeNodeData;
+  @Input('property-table')
+  gwtAngularPropertyTable!: GwtAngularPropertyTable;
 
   constructor(private viewContainerRef: ViewContainerRef,
               private editorService: EditorService,
@@ -34,6 +37,7 @@ export class PropertyEditorComponent implements OnInit {
 
       const componentRef: ComponentRef<StringPropertyEditorComponent> = this.viewContainerRef.createComponent(componentFactory, 0, this.viewContainerRef.injector);
       componentRef.instance.angularTreeNodeData = this.angularTreeNodeData;
+      componentRef.instance.gwtAngularPropertyTable = this.gwtAngularPropertyTable;
     } catch (exception) {
       this.messageService.add({
         severity: 'error',

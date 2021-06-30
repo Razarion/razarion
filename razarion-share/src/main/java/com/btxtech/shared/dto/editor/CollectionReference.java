@@ -1,4 +1,4 @@
-package com.btxtech.shared.datatypes;
+package com.btxtech.shared.dto.editor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

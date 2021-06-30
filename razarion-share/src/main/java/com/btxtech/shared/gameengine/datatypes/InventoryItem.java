@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes;
 
-import com.btxtech.shared.datatypes.CollectionReference;
-import com.btxtech.shared.datatypes.CollectionReferenceType;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;

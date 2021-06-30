@@ -20,7 +20,8 @@
           </td>
           <td>
             <property-editor *ngIf="rowData.propertyEditorSelector"
-                             [angular-tree-node-data]="rowData"></property-editor>
+                             [angular-tree-node-data]="rowData"
+                             [property-table]="gwtAngularPropertyTable"></property-editor>
           </td>
         </tr>
       </ng-template>

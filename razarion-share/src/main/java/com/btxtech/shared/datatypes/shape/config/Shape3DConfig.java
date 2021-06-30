@@ -1,6 +1,8 @@
 package com.btxtech.shared.datatypes.shape.config;
 
 import com.btxtech.shared.dto.Config;
+import com.btxtech.shared.dto.editor.CustomEditor;
+import com.btxtech.shared.dto.editor.CustomEditorType;
 
 import java.util.List;
 
@@ -11,7 +13,7 @@ import java.util.List;
 public class Shape3DConfig implements Config {
     private int id;
     private String internalName;
-    // TODO special editor
+    @CustomEditor(CustomEditorType.COLLADA)
     private String colladaString;
     private List<Shape3DElementConfig> shape3DElementConfigs;
 

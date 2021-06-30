@@ -7,6 +7,7 @@ import java.util.Map;
 public class GenericPropertyInfo {
     private Map<String, Map<String, String>> listElementTypes;
     private List<CollectionReferenceInfo> collectionReferenceInfos;
+    private List<CustomEditorInfo> customEditorInfos;
 
     public Map<String, Map<String, String>> getListElementTypes() {
         return listElementTypes;
@@ -24,6 +25,14 @@ public class GenericPropertyInfo {
         this.collectionReferenceInfos = collectionReferenceInfos;
     }
 
+    public List<CustomEditorInfo> getCustomEditorInfos() {
+        return customEditorInfos;
+    }
+
+    public void setCustomEditorInfos(List<CustomEditorInfo> customEditorInfos) {
+        this.customEditorInfos = customEditorInfos;
+    }
+
     public GenericPropertyInfo listElementTypes(Map<String, Map<String, String>> listElementTypes) {
         setListElementTypes(listElementTypes);
         return this;
@@ -31,6 +40,11 @@ public class GenericPropertyInfo {
 
     public GenericPropertyInfo collectionReferenceInfos(List<CollectionReferenceInfo> collectionReferenceInfos) {
         setCollectionReferenceInfos(collectionReferenceInfos);
+        return this;
+    }
+
+    public GenericPropertyInfo customEditorInfos(List<CustomEditorInfo> customEditorInfos) {
+        setCustomEditorInfos(customEditorInfos);
         return this;
     }
 }

@@ -154,6 +154,8 @@ export interface GenericEditorFrontendProvider {
   updateConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
 
   deleteConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
+
+  colladaConvert(gwtAngularPropertyTable: GwtAngularPropertyTable, colladaString: string): Promise<void>;
 }
 
 export interface TerrainMarkerService {

@@ -13,8 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import com.btxtech.shared.datatypes.CollectionReference;
-import com.btxtech.shared.datatypes.CollectionReferenceType;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 
 import java.util.List;
 

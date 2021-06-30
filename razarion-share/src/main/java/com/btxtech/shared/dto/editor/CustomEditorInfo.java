@@ -1,9 +1,9 @@
 package com.btxtech.shared.dto.editor;
 
-public class CollectionReferenceInfo {
+public class CustomEditorInfo {
     private String javaParentPropertyClass;
     private String javaPropertyName;
-    private CollectionReferenceType type;
+    private CustomEditorType type;
 
     public String getJavaParentPropertyClass() {
         return javaParentPropertyClass;
@@ -21,25 +21,25 @@ public class CollectionReferenceInfo {
         this.javaPropertyName = javaPropertyName;
     }
 
-    public CollectionReferenceType getType() {
+    public CustomEditorType getType() {
         return type;
     }
 
-    public void setType(CollectionReferenceType type) {
+    public void setType(CustomEditorType type) {
         this.type = type;
     }
 
-    public CollectionReferenceInfo javaParentPropertyClass(String javaParentPropertyClass) {
+    public CustomEditorInfo javaParentPropertyClass(String javaParentPropertyClass) {
         setJavaParentPropertyClass(javaParentPropertyClass);
         return this;
     }
 
-    public CollectionReferenceInfo javaPropertyName(String javaPropertyName) {
+    public CustomEditorInfo javaPropertyName(String javaPropertyName) {
         setJavaPropertyName(javaPropertyName);
         return this;
     }
 
-    public CollectionReferenceInfo type(CollectionReferenceType type) {
+    public CustomEditorInfo type(CustomEditorType type) {
         setType(type);
         return this;
     }

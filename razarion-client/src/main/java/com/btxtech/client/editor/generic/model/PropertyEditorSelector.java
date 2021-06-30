@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.generic.model;
 
-import com.btxtech.shared.datatypes.CollectionReferenceType;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -244,12 +244,12 @@ public enum PropertyEditorSelector {
     COLLADA_STRING("collada-string-property-editor") {
         @Override
         public Object convertFromAngular(Any value, Class<?> propertyClass) {
-            throw new UnsupportedOperationException("...TODO..."); // TODO
+            return value.asString();
         }
 
         @Override
         public Any convertToAngular(Object object) {
-            return Any.of(object);  // TODO
+            return null;
         }
     },
     I18N_STRING("i18n-string-property-editor") {

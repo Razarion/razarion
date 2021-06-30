@@ -8,6 +8,8 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.editor.CollectionReferenceInfo;
+import com.btxtech.shared.dto.editor.CustomEditorInfo;
+import com.btxtech.shared.dto.editor.CustomEditorType;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import org.jboss.errai.common.client.api.WrappedPortable;
 import org.jboss.errai.databinding.client.BindableListWrapper;
@@ -106,7 +108,13 @@ public class Leaf extends AbstractPropertyModel {
                             throw new IllegalArgumentException("CollectionReferenceType unknown: " + collectionReferenceInfo.getType());
                     }
                 }
-                // TODO Collada String handling -> SpecialEditor annotation
+                CustomEditorInfo customEditorInfo = genericPropertyInfoProvider.scanForCustomEditor(parentClass, getPropertyName());
+                if (customEditorInfo != null) {
+                    if (customEditorInfo.getType() == CustomEditorType.COLLADA) {
+                        return PropertyEditorSelector.COLLADA_STRING;
+                    }
+                    throw new IllegalArgumentException("CustomEditorType unknown: " + customEditorInfo.getType());
+                }
             }
             if (clazz.equals(String.class)) {
                 return PropertyEditorSelector.STRING;

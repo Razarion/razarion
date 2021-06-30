@@ -1,7 +1,7 @@
 package com.btxtech.shared.datatypes.particle;
 
-import com.btxtech.shared.datatypes.CollectionReference;
-import com.btxtech.shared.datatypes.CollectionReferenceType;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.dto.Config;
 
 import java.util.List;

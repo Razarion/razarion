@@ -1,8 +1,10 @@
 package com.btxtech.server.util;
 
-import com.btxtech.shared.datatypes.CollectionReference;
-import com.btxtech.shared.dto.editor.GenericPropertyInfo;
+import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceInfo;
+import com.btxtech.shared.dto.editor.CustomEditor;
+import com.btxtech.shared.dto.editor.CustomEditorInfo;
+import com.btxtech.shared.dto.editor.GenericPropertyInfo;
 import com.btxtech.shared.rest.CrudController;
 import org.reflections.Reflections;
 import org.reflections.scanners.FieldAnnotationsScanner;
@@ -29,8 +31,7 @@ public class GenericPropertyEditorGenerator {
     private Set<Class<?>> alreadyAnalyzed = new HashSet<>();
 
     public static GenericPropertyInfo generate() {
-        GenericPropertyEditorGenerator genericPropertyEditorGenerator = new GenericPropertyEditorGenerator();
-        return genericPropertyEditorGenerator.generateGenericPropertyInfo();
+        return new GenericPropertyEditorGenerator().generateGenericPropertyInfo();
     }
 
     private GenericPropertyEditorGenerator() {
@@ -43,7 +44,8 @@ public class GenericPropertyEditorGenerator {
     private GenericPropertyInfo generateGenericPropertyInfo() {
         return new GenericPropertyInfo()
                 .listElementTypes(generateListElementTypes())
-                .collectionReferenceInfos(generateCollectionReferenceInfos());
+                .collectionReferenceInfos(generateCollectionReferenceInfos())
+                .customEditorInfos(generateCustomEditorInfos());
 
     }
 
@@ -114,12 +116,22 @@ public class GenericPropertyEditorGenerator {
 
     private List<CollectionReferenceInfo> generateCollectionReferenceInfos() {
         List<CollectionReferenceInfo> collectionReferenceInfos = new ArrayList<>();
-        Set<Field> allSchemaFields = reflection.getFieldsAnnotatedWith(CollectionReference.class);
-        allSchemaFields.forEach(field -> collectionReferenceInfos.add(new CollectionReferenceInfo()
+        Set<Field> allCollectionReferenceField = reflection.getFieldsAnnotatedWith(CollectionReference.class);
+        allCollectionReferenceField.forEach(field -> collectionReferenceInfos.add(new CollectionReferenceInfo()
                 .javaParentPropertyClass(field.getDeclaringClass().getName())
                 .javaPropertyName(field.getName())
                 .type(field.getAnnotation(CollectionReference.class).value())));
         return collectionReferenceInfos;
+    }
+
+    private List<CustomEditorInfo> generateCustomEditorInfos() {
+        List<CustomEditorInfo> customEditorInfos = new ArrayList<>();
+        Set<Field> allCustomEditorField = reflection.getFieldsAnnotatedWith(CustomEditor.class);
+        allCustomEditorField.forEach(field -> customEditorInfos.add(new CustomEditorInfo()
+                .javaParentPropertyClass(field.getDeclaringClass().getName())
+                .javaPropertyName(field.getName())
+                .type(field.getAnnotation(CustomEditor.class).value())));
+        return customEditorInfos;
     }
 
 }
