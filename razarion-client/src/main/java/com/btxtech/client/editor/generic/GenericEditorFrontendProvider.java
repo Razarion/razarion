@@ -7,6 +7,7 @@ import com.btxtech.client.editor.generic.model.Leaf;
 import com.btxtech.client.editor.generic.model.PropertyEditorSelector;
 import com.btxtech.client.editor.generic.updater.EngineUpdater;
 import com.btxtech.shared.datatypes.shape.Shape3DComposite;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
@@ -146,8 +147,11 @@ public class GenericEditorFrontendProvider {
     public Promise<Void> colladaConvert(GwtAngularPropertyTable gwtAngularPropertyTable, String colladaString) {
         return new Promise<>((resolve, reject) -> {
             shape3DEditorController.call((RemoteCallback<Shape3DComposite>) shape3DComposite -> {
-                shape3DComposite.getShape3DConfig().setColladaString(colladaString);
-                config2GwtAngularPropertyTableAndConnect(shape3DComposite.getShape3DConfig(), Shape3DEditorController.class, gwtAngularPropertyTable.configId, resolveUnionType -> {
+                Shape3DConfig oldShape3DConfig = Js.cast(gwtAngularPropertyTable.rootBranch.getPropertyValue());
+                Shape3DConfig newShape3DConfig = shape3DComposite.getShape3DConfig()
+                        .colladaString(colladaString)
+                        .internalName(oldShape3DConfig.getInternalName());
+                config2GwtAngularPropertyTableAndConnect(newShape3DConfig, Shape3DEditorController.class, gwtAngularPropertyTable.configId, resolveUnionType -> {
                     resolve.onInvoke((Void) null);
                     gwtAngularPropertyTable.rootTreeNodes = resolveUnionType.asT().rootTreeNodes;
                     gwtAngularPropertyTable.rootBranch = resolveUnionType.asT().rootBranch;

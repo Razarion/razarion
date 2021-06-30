@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
  * 08.03.2017.
  */
 public class Shape3DBuilder {
-    private int id;
     private String internalName;
     private List<Element3DBuilder> element3DBuilders = new ArrayList<>();
     private ColladaConverterMapper colladaConverterMapper;
