@@ -2,7 +2,7 @@
           (onClick)="showEditorDialog()"></p-button>
 
 <h1>Client Alarms</h1>
-<p-table [value]="clientAlarms">
+<p-table [value]="clientAlarms" [style]="{width:'500px'}">
   <ng-template pTemplate="header">
     <tr>
       <th>Type</th>
@@ -22,7 +22,7 @@
 </p-table>
 
 <h1>Server Alarms</h1>
-<p-table [value]="serverAlarms">
+<p-table [value]="serverAlarms" [style]="{width:'500px'}">
   <ng-template pTemplate="header">
     <tr>
       <th>Type</th>
