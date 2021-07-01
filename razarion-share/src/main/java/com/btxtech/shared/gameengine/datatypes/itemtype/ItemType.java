@@ -15,6 +15,8 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.dto.Config;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 
 /**
  * User: beat
@@ -26,6 +28,7 @@ public abstract class ItemType implements Config {
     private String internalName;
     private I18nString i18nName;
     private I18nString i18nDescription;
+    @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer shape3DId;
     private Integer thumbnail;
 

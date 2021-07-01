@@ -29,7 +29,7 @@ public enum CollectionReferenceType {
     DRIVEWAY(DrivewayEditorController.class, "Driveway"),
     WATER(WaterEditorController.class, "Water"),
     GAME_UI_CONTEXT(GameUiContextEditorController.class, "Game Ui Context"),
-    SHAPE_D(Shape3DEditorController.class, "Shape 3D"),
+    SHAPE_3D(Shape3DEditorController.class, "Shape 3D"),
     TERRAIN_OBJECT(TerrainObjectEditorController.class, "Terrain Object"),
     BASE_ITEM(BaseItemTypeEditorController.class, "Base Item"),
     RESOURCE_ITEM(ResourceItemTypeEditorController.class, "Resource Item"),

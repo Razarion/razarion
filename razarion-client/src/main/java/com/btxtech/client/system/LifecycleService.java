@@ -137,7 +137,6 @@ public class LifecycleService {
     public void startCold() {
         try {
             boot.start(GameStartupSeq.COLD);
-            // boot.start(GameStartupSeq.COLD_EXPERIMENTAL);
         } catch (Throwable throwable) {
             exceptionHandler.handleException("Start failed", throwable);
         }

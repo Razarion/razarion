@@ -1,5 +1,8 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
+
 /**
  * Created by Beat
  * 10.05.2016.
@@ -7,6 +10,7 @@ package com.btxtech.shared.dto;
 public class TerrainObjectConfig implements Config {
     private int id;
     private String internalName;
+    @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer shape3DId;
     private double radius;
 

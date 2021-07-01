@@ -12,12 +12,16 @@ public class GameTipVisualConfig {
     private double cornerLength;
     private double cornerMoveDistance;
     private int cornerMoveDuration;
+    @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer selectShape3DId;
+    @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer outOfViewShape3DId;
     private Color selectCornerColor;
+    @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer defaultCommandShape3DId;
     private Color moveCommandCornerColor;
     private Color toBeFinalizedCornerColor;
+    @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer baseItemPlacerShape3DId;
     private Color baseItemPlacerCornerColor;
     private Color grabCommandCornerColor;
@@ -26,6 +30,7 @@ public class GameTipVisualConfig {
     private Integer westLeftMouseGuiImageId;
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer southLeftMouseGuiImageId;
+    @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer directionShape3DId;
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer scrollDialogKeyboardImageId;

@@ -15,6 +15,7 @@ import java.util.Map;
 
 @Singleton
 public class GenericPropertyInfoProvider {
+    // private static Logger logger = Logger.getLogger(GenericPropertyInfoProvider.class.getName());
     @Inject
     private Caller<GenericPropertyEditorController> genericPropertyEditorController;
     @Inject
@@ -62,10 +63,13 @@ public class GenericPropertyInfoProvider {
         }
 
         Map<String, CollectionReferenceInfo> collectionReferenceProperties = typesWithCollectionReference.get(type.getName());
-        if (collectionReferenceProperties == null) {
+        if (collectionReferenceProperties != null && collectionReferenceProperties.containsKey(propertyName)) {
+            return collectionReferenceProperties.get(propertyName);
+        }
+        if (type.getSuperclass() == Object.class) {
             return null;
         }
-        return collectionReferenceProperties.get(propertyName);
+        return scanForCollectionReference(type.getSuperclass(), propertyName);
     }
 
     public CustomEditorInfo scanForCustomEditor(Class<?> type, String propertyName) {
@@ -74,10 +78,13 @@ public class GenericPropertyInfoProvider {
         }
 
         Map<String, CustomEditorInfo> customEditorProperties = typesWithCustomEditor.get(type.getName());
-        if (customEditorProperties == null) {
+        if (customEditorProperties != null && customEditorProperties.containsKey(propertyName)) {
+            return customEditorProperties.get(propertyName);
+        }
+        if (type.getSuperclass() == Object.class) {
             return null;
         }
-        return customEditorProperties.get(propertyName);
+        return scanForCustomEditor(type.getSuperclass(), propertyName);
     }
 
     private void setup(GenericPropertyInfo genericPropertyInfo) {

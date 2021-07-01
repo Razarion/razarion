@@ -44,10 +44,12 @@ public class BaseItemType extends ItemType {
     private double boxPickupRange;
     private Integer unlockCrystals;
     private int spawnDurationMillis;
+    @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer spawnShape3DId;
     private Integer spawnAudioId;
     private Integer explosionParticleConfigId;
     private List<DemolitionStepEffect> demolitionStepEffects;
+    @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer wreckageShape3DId;
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer demolitionImageId;
