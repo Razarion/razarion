@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -24,15 +25,11 @@ public class Element3DBuilder {
     }
 
     public Element3D createElement3D(int shape3DId) {
-        Element3D element3D = new Element3D();
-        element3D.setId(id);
-
-        List<VertexContainer> vertexContainers = new ArrayList<>();
-        for (VertexContainerBuilder vertexContainerBuilder : vertexContainerBuilders) {
-            vertexContainers.add(vertexContainerBuilder.getVertexContainer(shape3DId, id));
-        }
-        element3D.setVertexContainers(vertexContainers);
-        return element3D;
+        return new Element3D()
+                .id(id)
+                .vertexContainers(vertexContainerBuilders.stream()
+                        .map(vertexContainerBuilder -> vertexContainerBuilder.getVertexContainer(shape3DId, id))
+                        .collect(Collectors.toList()));
     }
 
     public List<VertexContainerBuffer> createVertexContainerBuffers(int shape3DId) {

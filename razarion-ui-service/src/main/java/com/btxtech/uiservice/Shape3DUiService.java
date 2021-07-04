@@ -1,7 +1,7 @@
 package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
@@ -32,16 +32,7 @@ public abstract class Shape3DUiService {
         return shape3Ds.get(id);
     }
 
-    public void overrideShape3DConfig(Shape3DConfig shape3DConfig) {
-//   TODO     if(shape3Ds.get(shape3DConfig.getId()) == null) {
-//            return;
-//        }
-//        shape3Ds.get(shape3DConfig.getId()).getElement3Ds().forEach(element3D -> element3D.getVertexContainers().forEach(vertexContainer -> {
-//            vertexContainer.setShape3DMaterial(shape3DConfig.getShape3DElementConfigs()
-//                    .stream()
-//                    .filter(shape3DMaterialConfig -> shape3DMaterialConfig.getMaterialId().equals(vertexContainer.getShape3DMaterial().getMaterialId()))
-//                    .findFirst()
-//                    .orElse(null));
-//        }));
+    public void overrideShape3D(Shape3DComposite shape3DComposite) {
+        shape3Ds.put(shape3DComposite.getShape3D().getId(), shape3DComposite.getShape3D());
     }
 }

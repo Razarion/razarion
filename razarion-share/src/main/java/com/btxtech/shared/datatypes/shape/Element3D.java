@@ -1,6 +1,7 @@
 package com.btxtech.shared.datatypes.shape;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Beat
@@ -15,9 +16,16 @@ public class Element3D {
         return id;
     }
 
-    public Element3D setId(String id) {
+    public void setId(String id) {
         this.id = id;
-        return this;
+    }
+
+    public List<ModelMatrixAnimation> getModelMatrixAnimations() {
+        return modelMatrixAnimations;
+    }
+
+    public void setModelMatrixAnimations(List<ModelMatrixAnimation> modelMatrixAnimations) {
+        this.modelMatrixAnimations = modelMatrixAnimations;
     }
 
     public List<VertexContainer> getVertexContainers() {
@@ -28,12 +36,19 @@ public class Element3D {
         this.vertexContainers = vertexContainers;
     }
 
-    public void setModelMatrixAnimations(List<ModelMatrixAnimation> modelMatrixAnimations) {
-        this.modelMatrixAnimations = modelMatrixAnimations;
+    public Element3D id(String id) {
+        setId(id);
+        return this;
     }
 
-    public List<ModelMatrixAnimation> getModelMatrixAnimations() {
-        return modelMatrixAnimations;
+    public Element3D modelMatrixAnimations(List<ModelMatrixAnimation> modelMatrixAnimations) {
+        setModelMatrixAnimations(modelMatrixAnimations);
+        return this;
+    }
+
+    public Element3D vertexContainers(List<VertexContainer> vertexContainers) {
+        setVertexContainers(vertexContainers);
+        return this;
     }
 
     @Override
@@ -47,7 +62,7 @@ public class Element3D {
 
         Element3D element3D = (Element3D) o;
 
-        return id != null ? id.equals(element3D.id) : element3D.id == null;
+        return Objects.equals(id, element3D.id);
 
     }
 

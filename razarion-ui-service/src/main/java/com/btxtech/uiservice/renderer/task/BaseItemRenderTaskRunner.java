@@ -42,6 +42,11 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
         return baseItemUiService.setupInterpolationFactor(timeStamp);
     }
 
+    public void onEditorBaseItemTypeChanged() {
+        destroyRenderAllTasks();
+        postConstruct();
+    }
+
     private void setupBaseItemType(BaseItemType baseItemType) {
         if (baseItemType.getShape3DId() != null) {
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());

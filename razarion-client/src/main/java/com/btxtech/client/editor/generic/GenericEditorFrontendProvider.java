@@ -151,6 +151,7 @@ public class GenericEditorFrontendProvider {
                 Shape3DConfig newShape3DConfig = shape3DComposite.getShape3DConfig()
                         .colladaString(colladaString)
                         .internalName(oldShape3DConfig.getInternalName());
+                engineUpdater.onShape3D(shape3DComposite);
                 config2GwtAngularPropertyTableAndConnect(newShape3DConfig, Shape3DEditorController.class, gwtAngularPropertyTable.configId, resolveUnionType -> {
                     resolve.onInvoke((Void) null);
                     gwtAngularPropertyTable.rootTreeNodes = resolveUnionType.asT().rootTreeNodes;

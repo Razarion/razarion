@@ -51,11 +51,14 @@ public class WebGlUtil {
     }
 
     public static Float32Array createArrayBufferOfFloat32(List<Float> floatList) {
-        JsArrayOfNumber vertices = JsArrayOfNumber.create();
-        for (double f : floatList) {
-            vertices.push(f);
+        if (floatList == null) {
+            return null;
         }
-        return createFloat32Array(vertices);
+        double [] doubleArray = new double[floatList.size()];
+        for (int i = 0, floatListSize = floatList.size(); i < floatListSize; i++) {
+            doubleArray[i] = floatList.get(i);
+        }
+        return new Float32Array(doubleArray);
     }
 
     public native static Float32Array toFloat32Array(NativeMatrix jsFloat32Array) /*-{

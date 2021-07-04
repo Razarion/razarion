@@ -275,7 +275,7 @@ public class TerrainUiService {
     }
 
     public void enableEditMode(Shape3DConfig config) {
-        shape3DUiService.overrideShape3DConfig(config);
+        // TODO ??? shape3DUiService.overrideShape3D(config);
         onEditorTerrainChanged();
     }
 
