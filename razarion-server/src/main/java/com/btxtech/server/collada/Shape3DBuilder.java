@@ -10,7 +10,6 @@ import com.btxtech.shared.datatypes.shape.config.Shape3DAnimationTriggerConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DElementConfig;
 import com.btxtech.shared.datatypes.shape.config.VertexContainerMaterialConfig;
-import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.utils.Shape3DUtils;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public class Shape3DBuilder {
 
         List<Element3D> element3Ds = createElement3DS(id);
         if (colladaConverterMapper != null) {
-            fillElement3Ds(element3Ds);
+            fillMaterials(element3Ds);
         }
 
         MapList<Element3D, ModelMatrixAnimation> modelMatrixAnimations = new MapList<>();
@@ -79,12 +78,14 @@ public class Shape3DBuilder {
                     .stream()
                     .map(element3D -> new Shape3DElementConfig()
                             .shape3DMaterialConfigs(element3D.getVertexContainers().stream()
-                                    .map(vertexContainer -> new VertexContainerMaterialConfig()
-                                            .materialId(vertexContainer.getVertexContainerMaterial().getMaterialId())
-                                            .materialName(vertexContainer.getVertexContainerMaterial().getMaterialName())
-                                            .phongMaterialConfig(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig())
-                                            .characterRepresenting(vertexContainer.getVertexContainerMaterial().isCharacterRepresenting())
-                                            .alphaToCoverage(vertexContainer.getVertexContainerMaterial().getAlphaToCoverage()))
+                                    .filter(vertexContainer -> vertexContainer.getVertexContainerMaterial() != null)
+                                    .map(vertexContainer ->
+                                            new VertexContainerMaterialConfig()
+                                                    .materialId(vertexContainer.getVertexContainerMaterial().getMaterialId())
+                                                    .materialName(vertexContainer.getVertexContainerMaterial().getMaterialName())
+                                                    .phongMaterialConfig(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig())
+                                                    .characterRepresenting(vertexContainer.getVertexContainerMaterial().isCharacterRepresenting())
+                                                    .alphaToCoverage(vertexContainer.getVertexContainerMaterial().getAlphaToCoverage()))
                                     .collect(Collectors.toList()))
                             .shape3DAnimationTriggerConfigs(setupAnimationTriggerConfigs(element3D)))
                     .collect(Collectors.toList()));
@@ -111,22 +112,16 @@ public class Shape3DBuilder {
         return vertexContainerBuffers;
     }
 
-    private void fillElement3Ds(List<Element3D> element3Ds) {
+    private void fillMaterials(List<Element3D> element3Ds) {
         for (Element3D element3D : element3Ds) {
             if (element3D.getVertexContainers() == null) {
                 continue;
             }
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                String materialId = vertexContainer.getVertexContainerMaterial().getMaterialId();
-                PhongMaterialConfig phongMaterialConfig = vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig();
-                if (materialId != null && phongMaterialConfig != null) {
-                    phongMaterialConfig.setScale(1.0);
-                    phongMaterialConfig.setTextureId(colladaConverterMapper.getTextureId(materialId));
-                    phongMaterialConfig.setBumpMapId(colladaConverterMapper.getBumpMapId(materialId));
-                    phongMaterialConfig.setBumpMapDepth(colladaConverterMapper.getBumpMapDepth(materialId));
+                if (vertexContainer.getVertexContainerMaterial() != null) {
+                    String materialId = vertexContainer.getVertexContainerMaterial().getMaterialId();
+                    vertexContainer.getVertexContainerMaterial().override(colladaConverterMapper.toVertexContainerMaterial(materialId));
                 }
-                vertexContainer.getVertexContainerMaterial().setAlphaToCoverage(colladaConverterMapper.getAlphaToCoverage(materialId));
-                vertexContainer.getVertexContainerMaterial().setCharacterRepresenting(colladaConverterMapper.isCharacterRepresenting(materialId));
             }
         }
     }

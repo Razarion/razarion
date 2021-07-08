@@ -67,18 +67,11 @@
       ],
       "vertexContainers": [
         {
-          "key": "76-CubeId-Material-material",
+          "key": "76-CubeId",
           "vertexContainerMaterial": {
             "materialId": "Material-material",
             "materialName": "Material",
-            "phongMaterialConfig": {
-              "textureId": null,
-              "scale": 1.0,
-              "bumpMapId": null,
-              "bumpMapDepth": null,
-              "shininess": 50.0,
-              "specularStrength": 0.5
-            },
+            "phongMaterialConfig": null,
             "characterRepresenting": false,
             "alphaToCoverage": null
           },
@@ -152,7 +145,7 @@
       ],
       "vertexContainers": [
         {
-          "key": "76-RotPlane-null",
+          "key": "76-RotPlane",
           "vertexContainerMaterial": {
             "materialId": null,
             "materialName": null,
@@ -230,7 +223,7 @@
       ],
       "vertexContainers": [
         {
-          "key": "76-PlaneId-null",
+          "key": "76-PlaneId",
           "vertexContainerMaterial": {
             "materialId": null,
             "materialName": null,

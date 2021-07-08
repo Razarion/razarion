@@ -1,11 +1,10 @@
 package com.btxtech.server.collada;
 
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
-import com.btxtech.shared.dto.PhongMaterialConfig;
+import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 import org.w3c.dom.Node;
@@ -46,7 +45,6 @@ public class NodeScene extends NameIdColladaXml {
             if (geometry == null) {
                 throw new ColladaRuntimeException("No geometry for url found: " + instanceGeometry.getUrl());
             }
-            Effect effect = null;
             String materialUri = instanceGeometry.getMaterialTargetUri();
             String materialId = null;
             String materialName = null;
@@ -55,7 +53,6 @@ public class NodeScene extends NameIdColladaXml {
                 if (material != null) {
                     materialId = material.getId();
                     materialName = material.getName();
-                    effect = effects.get(material.getInstanceEffectUrl());
                 }
             }
 
@@ -63,22 +60,8 @@ public class NodeScene extends NameIdColladaXml {
             VertexContainerBuffer vertexContainerBuffer = geometry.getMesh().createVertexContainerBuffer();
             VertexContainer vertexContainer = new VertexContainer();
             vertexContainer.setShapeTransform(transform);
-            VertexContainerMaterial shape3DMaterialConfig = new VertexContainerMaterial();
-            shape3DMaterialConfig.setMaterialId(materialId);
-            shape3DMaterialConfig.setMaterialName(materialName);
             vertexContainer.setVerticesCount(vertexContainerBuffer.calculateVertexCount());
-            if (effect != null && effect.getTechnique() != null) {
-                PhongMaterialConfig phongMaterialConfig = new PhongMaterialConfig()
-                        .scale(1)
-                        .shininess(effect.getTechnique().getShininess());
-                if (effect.getTechnique().getSpecular() != null) {
-                    phongMaterialConfig.setSpecularStrength(effect.getTechnique().getSpecular().getR());
-                }
-                shape3DMaterialConfig.setPhongMaterialConfig(phongMaterialConfig);
-                // vertexContainer.setDiffuse(effect.getTechnique().getDiffuse());
-                // vertexContainer.setEmission(effect.getTechnique().getEmission());
-            }
-            vertexContainer.setVertexContainerMaterial(shape3DMaterialConfig);
+            vertexContainer.setVertexContainerMaterial(new VertexContainerMaterial().materialId(materialId).materialName(materialName));
             element3DBuilder.addVertexContainer(vertexContainer, vertexContainerBuffer);
         }
         return element3DBuilder;

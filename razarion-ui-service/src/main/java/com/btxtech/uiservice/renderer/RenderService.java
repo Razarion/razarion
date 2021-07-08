@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.renderer.task.BaseItemPlacerRenderTaskRunner;
@@ -68,7 +69,11 @@ public abstract class RenderService {
     }
 
     private void addRenderTaskRunner(Class<? extends AbstractRenderTaskRunner> clazz, String name) {
-        addRenderTaskRunner(instance.select(clazz).get(), name);
+        try {
+            addRenderTaskRunner(instance.select(clazz).get(), name);
+        } catch (AlarmRaisedException e) {
+            exceptionHandler.handleException(e);
+        }
     }
 
     public void addRenderTaskRunner(AbstractRenderTaskRunner abstractRenderTask, String name) {

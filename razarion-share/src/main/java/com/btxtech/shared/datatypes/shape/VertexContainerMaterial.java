@@ -73,4 +73,13 @@ public class VertexContainerMaterial {
         setAlphaToCoverage(alphaToCoverage);
         return this;
     }
+
+    public void override(VertexContainerMaterial origin) {
+        if(origin == null) {
+            return;
+        }
+        phongMaterialConfig = origin.phongMaterialConfig;
+        characterRepresenting = origin.characterRepresenting;
+        alphaToCoverage = origin.alphaToCoverage;
+    }
 }

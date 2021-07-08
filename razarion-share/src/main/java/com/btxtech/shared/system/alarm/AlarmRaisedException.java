@@ -10,6 +10,7 @@ public class AlarmRaisedException extends RuntimeException {
     }
 
     public AlarmRaisedException(Alarm.Type type, String text, Integer id) {
+        super(type + ": " + text);
         this.type = type;
         this.text = text;
         this.id = id;

@@ -10,7 +10,9 @@
           "materialName": "Material",
           "phongMaterialConfig": {
             "textureId": "$_IMAGE_1_ID_$",
-            "scale": 1.0,
+            "scale": 0.0,
+            "normalMapId": null,
+            "normalMapDepth": null,
             "bumpMapId": "$_IMAGE_2_ID_$",
             "bumpMapDepth": 0.5,
             "shininess": null,
@@ -29,11 +31,13 @@
           "materialName": "Material_002",
           "phongMaterialConfig": {
             "textureId": "$_IMAGE_2_ID_$",
-            "scale": 1.0,
+            "scale": 0.0,
+            "normalMapId": null,
+            "normalMapDepth": null,
             "bumpMapId": "$_IMAGE_3_ID_$",
             "bumpMapDepth": 0.9,
-            "shininess": 50.0,
-            "specularStrength": 0.2
+            "shininess": null,
+            "specularStrength": null
           },
           "characterRepresenting": true,
           "alphaToCoverage": 0.1

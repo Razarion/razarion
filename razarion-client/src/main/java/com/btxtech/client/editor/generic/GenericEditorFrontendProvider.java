@@ -65,7 +65,7 @@ public class GenericEditorFrontendProvider {
                     (RemoteCallback<List<ObjectNameId>>) response -> resolve.onInvoke(response.toArray(new ObjectNameId[0])),
                     (message, throwable) -> {
                         logger.log(Level.SEVERE, "CrudController.getObjectNameIds() " + collectionReferenceType.getCrudControllerClass() + "\n" + message, throwable);
-                        reject.onInvoke("CrudController.getObjectNameIds() " + collectionReferenceType.getCrudControllerClass() + "\n" + message + "\n" + throwable);
+                        reject.onInvoke(throwable.getMessage());
                         return false;
                     },
                     collectionReferenceType.getCrudControllerClass()).getObjectNameIds();
@@ -80,7 +80,7 @@ public class GenericEditorFrontendProvider {
                     (RemoteCallback<ObjectNameId>) resolve::onInvoke,
                     (message, throwable) -> {
                         logger.log(Level.SEVERE, "CrudController.getObjectNameId() " + collectionReferenceType.getCrudControllerClass() + " id:" + configId + "\n" + message, throwable);
-                        reject.onInvoke("CrudController.getObjectNameId() " + collectionReferenceType.getCrudControllerClass()  + " id:" + configId + "\n" + message + "\n" + throwable);
+                        reject.onInvoke(throwable.getMessage());
                         return false;
                     },
                     collectionReferenceType.getCrudControllerClass()).getObjectNameId(configId);
@@ -95,7 +95,7 @@ public class GenericEditorFrontendProvider {
                 (RemoteCallback<Config>) config -> config2GwtAngularPropertyTableAndConnect(config, collectionReferenceType.getCrudControllerClass(), config.getId(), resolve, reject),
                 (message, throwable) -> {
                     logger.log(Level.SEVERE, "CrudController.create() " + collectionReferenceType.getCrudControllerClass() + "\n" + message, throwable);
-                    reject.onInvoke("CrudController.create() " + collectionReferenceType.getCrudControllerClass() + "\n" + message + "\n" + throwable);
+                    reject.onInvoke(throwable.getMessage());
                     return false;
                 },
                 collectionReferenceType.getCrudControllerClass()).create());
@@ -108,7 +108,7 @@ public class GenericEditorFrontendProvider {
                 (RemoteCallback<Config>) config -> config2GwtAngularPropertyTableAndConnect(config, collectionReferenceType.getCrudControllerClass(), configId, resolve, reject),
                 (message, throwable) -> {
                     logger.log(Level.SEVERE, "CrudController.readConfig() " + collectionReferenceType.getCrudControllerClass() + "\n" + "configId:" + configId + "\n" + message, throwable);
-                    reject.onInvoke("CrudController.readConfig() " + collectionReferenceType.getCrudControllerClass() + "\n" + "configId:" + configId + "\n" + message + "\n" + throwable);
+                    reject.onInvoke(throwable.getMessage());
                     return false;
                 },
                 collectionReferenceType.getCrudControllerClass()).read(configId));
@@ -123,7 +123,7 @@ public class GenericEditorFrontendProvider {
                 (RemoteCallback<Void>) ignore -> resolve.onInvoke((Void) null),
                 (message, throwable) -> {
                     logger.log(Level.SEVERE, "CrudController.update() " + collectionReferenceType.getCrudControllerClass() + "\n" + "config:" + config + "\n" + message, throwable);
-                    reject.onInvoke("CrudController.update() " + collectionReferenceType.getCrudControllerClass() + "\n" + "config:" + config + "\n" + message + "\n" + throwable);
+                    reject.onInvoke(throwable.getMessage());
                     return false;
                 },
                 collectionReferenceType.getCrudControllerClass()).update(Js.cast(config)));
@@ -137,7 +137,7 @@ public class GenericEditorFrontendProvider {
                 (RemoteCallback<GwtAngularPropertyTable>) resolve::onInvoke,
                 (message, throwable) -> {
                     logger.log(Level.SEVERE, "CrudController.update() " + collectionReferenceType.getCrudControllerClass() + "\n" + "configId:" + gwtAngularPropertyTable.configId + "\n" + message, throwable);
-                    reject.onInvoke("CrudController.update() " + collectionReferenceType.getCrudControllerClass() + "\n" + "configId:" + gwtAngularPropertyTable.configId + "\n" + message + "\n" + throwable);
+                    reject.onInvoke(throwable.getMessage());
                     return false;
                 },
                 collectionReferenceType.getCrudControllerClass()).delete(gwtAngularPropertyTable.configId));
@@ -159,7 +159,7 @@ public class GenericEditorFrontendProvider {
                 }, reject);
             }, (message, throwable) -> {
                 logger.log(Level.SEVERE, "Shape3DEditorController.colladaConvert() failed: " + message, throwable);
-                reject.onInvoke("Collada convert failed: " + message + "\n" + throwable);
+                reject.onInvoke(throwable.getMessage());
                 return false;
             }).colladaConvert(gwtAngularPropertyTable.configId, colladaString);
         });

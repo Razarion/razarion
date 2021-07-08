@@ -6,13 +6,15 @@
       "modelMatrixAnimations": null,
       "vertexContainers": [
         {
-          "key": "87-Plane_029-Material-material",
+          "key": "87-Plane_029",
           "vertexContainerMaterial": {
             "materialId": "Material-material",
             "materialName": "Material",
             "phongMaterialConfig": {
               "textureId": 101,
-              "scale": 1.0,
+              "scale": 0.0,
+              "normalMapId": 303,
+              "normalMapDepth": 0.8,
               "bumpMapId": null,
               "bumpMapDepth": null,
               "shininess": null,
@@ -69,17 +71,19 @@
       "modelMatrixAnimations": null,
       "vertexContainers": [
         {
-          "key": "87-Trunk33-Material_002-material",
+          "key": "87-Trunk33",
           "vertexContainerMaterial": {
             "materialId": "Material_002-material",
             "materialName": "Material_002",
             "phongMaterialConfig": {
               "textureId": 201,
-              "scale": 1.0,
+              "scale": 0.0,
+              "normalMapId": null,
+              "normalMapDepth": null,
               "bumpMapId": null,
               "bumpMapDepth": null,
-              "shininess": 50.0,
-              "specularStrength": 0.2
+              "shininess": 0.765,
+              "specularStrength": 10.3
             },
             "characterRepresenting": false,
             "alphaToCoverage": null

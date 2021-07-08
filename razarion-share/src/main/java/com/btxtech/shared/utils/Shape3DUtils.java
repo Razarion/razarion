@@ -1,7 +1,6 @@
 package com.btxtech.shared.utils;
 
 import com.btxtech.shared.datatypes.shape.Element3D;
-import com.btxtech.shared.datatypes.shape.VertexContainer;
 
 import java.util.Collection;
 
@@ -19,7 +18,7 @@ public class Shape3DUtils {
         throw new IllegalArgumentException("No Element3D in Shape3D found for: " + id);
     }
 
-    public static String generateVertexContainerKey(int shape3DId, String element3DId, VertexContainer vertexContainer) {
-        return shape3DId + "-" + element3DId + "-" + vertexContainer.getVertexContainerMaterial().getMaterialId();
+    public static String generateVertexContainerKey(int shape3DId, String element3DId) {
+        return shape3DId + "-" + element3DId;
     }
 }

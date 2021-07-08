@@ -3,8 +3,10 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.server.collada.ColladaConverterMapper;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
+import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -13,11 +15,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,26 +38,9 @@ public class ColladaEntity implements ColladaConverterMapper {
     private String internalName;
     @Lob
     private String colladaString;
-    @ManyToMany
-    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
-    @CollectionTable(name = "COLLADA_TEXTURES")
-    private Map<String, ImageLibraryEntity> textures;
-    @ManyToMany
-    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
-    @CollectionTable(name = "COLLADA_BUMP_MAPS")
-    private Map<String, ImageLibraryEntity> bumpMaps;
-    @ElementCollection
-    @CollectionTable(name = "COLLADA_BUMP_MAP_DEPTS")
-    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
-    private Map<String, Double> bumpMapDepts;
-    @ElementCollection
-    @CollectionTable(name = "COLLADA_ALPHA_TO_COVERAGE")
-    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
-    private Map<String, Double> alphaToCoverages;
-    @ElementCollection
-    @CollectionTable(name = "COLLADA_CHARACTER_REPRESENTING")
-    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
-    private Map<String, Boolean> characterRepresentings;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "colladaEntityId", nullable = false)
+    private List<ColladaMaterialEntity> colladaMaterials;
     @ElementCollection
     @CollectionTable(name = "COLLADA_ANIMATIONS")
     @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
@@ -81,39 +69,24 @@ public class ColladaEntity implements ColladaConverterMapper {
     }
 
     @Override
-    public Integer getTextureId(String materialId) {
-        ImageLibraryEntity imageLibraryEntity = textures.get(materialId);
-        if (imageLibraryEntity != null) {
-            return imageLibraryEntity.getId();
-        } else {
+    public VertexContainerMaterial toVertexContainerMaterial(String materialId) {
+        if (colladaMaterials == null) {
             return null;
         }
+
+        return colladaMaterials.stream()
+                .filter(colladaMaterialEntity -> colladaMaterialEntity.getMaterialId().equals(materialId))
+                .findFirst()
+                .map(ColladaMaterialEntity::to)
+                .orElse(null);
     }
 
-    @Override
-    public Integer getBumpMapId(String materialId) {
-        ImageLibraryEntity imageLibraryEntity = bumpMaps.get(materialId);
-        if (imageLibraryEntity != null) {
-            return imageLibraryEntity.getId();
-        } else {
-            return null;
+    public void setColladaMaterials(List<ColladaMaterialEntity> colladaMaterials) {
+        if(this.colladaMaterials == null) {
+            this.colladaMaterials = new ArrayList<>();
         }
-    }
-
-    @Override
-    public Double getBumpMapDepth(String materialId) {
-        return bumpMapDepts.get(materialId);
-    }
-
-    @Override
-    public Double getAlphaToCoverage(String materialId) {
-        return alphaToCoverages.get(materialId);
-    }
-
-    @Override
-    public boolean isCharacterRepresenting(String materialId) {
-        Boolean characterRepresenting = characterRepresentings.get(materialId);
-        return characterRepresenting != null && characterRepresenting;
+        this.colladaMaterials.clear();
+        this.colladaMaterials.addAll(colladaMaterials);
     }
 
     @Override
@@ -123,48 +96,6 @@ public class ColladaEntity implements ColladaConverterMapper {
 
     public void setInternalName(String internalName) {
         this.internalName = internalName;
-    }
-
-    public void setTextures(Map<String, ImageLibraryEntity> textures) {
-        if(this.textures == null) {
-            this.textures = new HashMap<>();
-        }
-        this.textures.clear();
-        this.textures.putAll(textures);
-    }
-
-    public void setBumpMaps(Map<String, ImageLibraryEntity> bumpMaps) {
-        if(this.bumpMaps == null) {
-            this.bumpMaps = new HashMap<>();
-        }
-        this.bumpMaps.clear();
-        this.bumpMaps.putAll(bumpMaps);
-    }
-
-    public void setBumpMapDepts(Map<String, Double> bumpMapDepts) {
-        if(this.bumpMapDepts == null) {
-            this.bumpMapDepts = new HashMap<>();
-        }
-        this.bumpMapDepts.clear();
-        this.bumpMapDepts.putAll(bumpMapDepts);
-    }
-
-    public void setAlphaToCoverages(Map<String, Double> alphaToCoverages) {
-        if(this.alphaToCoverages == null) {
-            this.alphaToCoverages = new HashMap<>();
-        }
-        this.alphaToCoverages.clear();
-        this.alphaToCoverages.putAll(alphaToCoverages);
-    }
-
-    public void setCharacterRepresentings(Map<String, Boolean> characterRepresentings) {
-        if(this.characterRepresentings == null) {
-            this.characterRepresentings = new HashMap<>();
-        }
-        this.characterRepresentings.clear();
-        if (characterRepresentings != null) {
-            this.characterRepresentings.putAll(characterRepresentings);
-        }
     }
 
     public void setAnimations(Map<String, AnimationTrigger> animations) {

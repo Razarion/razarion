@@ -6,7 +6,7 @@
       "modelMatrixAnimations": null,
       "vertexContainers": [
         {
-          "key": "501-Plane_Id-null",
+          "key": "501-Plane_Id",
           "vertexContainerMaterial": {
             "materialId": null,
             "materialName": null,

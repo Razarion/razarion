@@ -20,14 +20,7 @@
         {
           "materialId": "Chassis_Material-material",
           "materialName": "Chassis_Material",
-          "phongMaterialConfig": {
-            "textureId": null,
-            "scale": 1.0,
-            "bumpMapId": null,
-            "bumpMapDepth": null,
-            "shininess": 50.0,
-            "specularStrength": 0.5
-          },
+          "phongMaterialConfig": null,
           "characterRepresenting": false,
           "alphaToCoverage": null
         }

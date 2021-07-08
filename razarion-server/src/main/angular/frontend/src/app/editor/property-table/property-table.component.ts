@@ -149,7 +149,7 @@ export class PropertyTableComponent extends EditorPanel {
             reason => {
               this.messageService.add({
                 severity: 'error',
-                summary: `Can not save config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName} with value : ${this.gwtAngularPropertyTable}`,
+                summary: `Can not save config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
                 detail: reason,
                 sticky: true
               });
@@ -175,7 +175,7 @@ export class PropertyTableComponent extends EditorPanel {
             reason => {
               this.messageService.add({
                 severity: 'error',
-                summary: `Can not delete config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName} with value : ${this.gwtAngularPropertyTable}`,
+                summary: `Can not delete config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
                 detail: reason,
                 sticky: true
               });

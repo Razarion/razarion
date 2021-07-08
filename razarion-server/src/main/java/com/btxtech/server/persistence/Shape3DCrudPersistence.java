@@ -46,20 +46,12 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
                 ColladaConverter.createShape3DBuilder(config.getColladaString(), entity); // Verification
                 entity.setColladaString(config.getColladaString());
             }
-            Map<String, ImageLibraryEntity> textures = new HashMap<>();
-            Map<String, ImageLibraryEntity> bumpMaps = new HashMap<>();
-            Map<String, Double> bumpMapDepts = new HashMap<>();
-            Map<String, Boolean> characterRepresentings = new HashMap<>();
-            Map<String, Double> alphaToCoverages = new HashMap<>();
             Map<String, AnimationTrigger> animations = new HashMap<>();
+            List<ColladaMaterialEntity> colladaMaterialEntities = new ArrayList<>();
             if (config.getShape3DElementConfigs() != null) {
                 config.getShape3DElementConfigs().forEach(shape3DElementConfig -> {
-                    shape3DElementConfig.getVertexContainerMaterialConfigs().forEach(shape3DMaterialConfig -> {
-                        textures.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getTextureId()));
-                        bumpMaps.put(shape3DMaterialConfig.getMaterialId(), imagePersistence.getImageLibraryEntity(shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapId()));
-                        bumpMapDepts.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getPhongMaterialConfig().getBumpMapDepth());
-                        characterRepresentings.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.isCharacterRepresenting());
-                        alphaToCoverages.put(shape3DMaterialConfig.getMaterialId(), shape3DMaterialConfig.getAlphaToCoverage());
+                    shape3DElementConfig.getVertexContainerMaterialConfigs().forEach(vertexContainerMaterialConfig -> {
+                        colladaMaterialEntities.add(new ColladaMaterialEntity().from(vertexContainerMaterialConfig, imagePersistence));
                     });
                     if (shape3DElementConfig.getShape3DAnimationTriggerConfigs() != null) {
                         shape3DElementConfig.getShape3DAnimationTriggerConfigs().forEach(shape3DAnimationTriggerConfig -> {
@@ -68,11 +60,7 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
                     }
                 });
             }
-            entity.setTextures(textures);
-            entity.setBumpMaps(bumpMaps);
-            entity.setBumpMapDepts(bumpMapDepts);
-            entity.setCharacterRepresentings(characterRepresentings);
-            entity.setAlphaToCoverages(alphaToCoverages);
+            entity.setColladaMaterials(colladaMaterialEntities);
             entity.setAnimations(animations);
         } catch (Exception e) {
             throw new RuntimeException(e);

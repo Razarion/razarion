@@ -55,7 +55,7 @@
       ],
       "vertexContainers": [
         {
-          "key": "22-Plane_Id-null",
+          "key": "22-Plane_Id",
           "vertexContainerMaterial": {
             "materialId": null,
             "materialName": null,

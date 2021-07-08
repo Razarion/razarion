@@ -1,6 +1,7 @@
 package com.btxtech.server.systemtests.editors;
 
 import com.btxtech.server.persistence.ColladaEntity;
+import com.btxtech.server.persistence.ColladaMaterialEntity;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.server.systemtests.framework.ObjectMapperResolver;
 import com.btxtech.server.systemtests.framework.RestConnection;
@@ -24,12 +25,8 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
 
     @After
     public void cleanTables() {
-        cleanTableNative("COLLADA_TEXTURES");
-        cleanTableNative("COLLADA_BUMP_MAPS");
-        cleanTableNative("COLLADA_BUMP_MAP_DEPTS");
-        cleanTableNative("COLLADA_ALPHA_TO_COVERAGE");
-        cleanTableNative("COLLADA_CHARACTER_REPRESENTING");
         cleanTableNative("COLLADA_ANIMATIONS");
+        cleanTable(ColladaMaterialEntity.class);
         cleanTable(ColladaEntity.class);
     }
 
@@ -52,8 +49,7 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
                 s -> s.replace("\"$ID$\"", Integer.toString(shape3DConfig1.getId())),
                 null,
                 getClass(),
-                shape3DConfig1,
-                false);
+                shape3DConfig1);
 
         // Update via collada file
         shape3DConfig1.setInternalName("Shape 1");
@@ -69,17 +65,19 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
         VertexContainerMaterialConfig materialConfig1 = shape3DConfig2.getShape3DElementConfigs().get(0).getVertexContainerMaterialConfigs().get(0);
         materialConfig1.setAlphaToCoverage(0.3);
         materialConfig1.setCharacterRepresenting(false);
-        PhongMaterialConfig phongMaterialConfig1 = materialConfig1.getPhongMaterialConfig();
+        PhongMaterialConfig phongMaterialConfig1 = new PhongMaterialConfig();
         phongMaterialConfig1.setTextureId(IMAGE_1_ID);
         phongMaterialConfig1.setBumpMapId(IMAGE_2_ID);
         phongMaterialConfig1.setBumpMapDepth(0.5);
+        materialConfig1.setPhongMaterialConfig(phongMaterialConfig1);
         VertexContainerMaterialConfig materialConfig2 = shape3DConfig2.getShape3DElementConfigs().get(1).getVertexContainerMaterialConfigs().get(0);
         materialConfig2.setAlphaToCoverage(0.1);
         materialConfig2.setCharacterRepresenting(true);
-        PhongMaterialConfig phongMaterialConfig2 = materialConfig2.getPhongMaterialConfig();
+        PhongMaterialConfig phongMaterialConfig2 = new PhongMaterialConfig();
         phongMaterialConfig2.setTextureId(IMAGE_2_ID);
         phongMaterialConfig2.setBumpMapId(IMAGE_3_ID);
         phongMaterialConfig2.setBumpMapDepth(0.9);
+        materialConfig2.setPhongMaterialConfig(phongMaterialConfig2);
         underTest.update(shape3DConfig2);
         // Verify
         Shape3DConfig shape3DConfig3 = underTest.read(shape3DConfig1.getId());
@@ -90,8 +88,16 @@ public class Shape3DEditorControllerTest extends AbstractSystemTest {
                         .replace("\"$_IMAGE_3_ID_$\"", Integer.toString(IMAGE_3_ID)),
                 null,
                 getClass(),
-                shape3DConfig2);
-
+                shape3DConfig3);
+        // Save with no PhongMaterialConfig
+        Shape3DConfig shape3DConfig4 = underTest.read(shape3DConfig1.getId());
+        VertexContainerMaterialConfig materialConfig4 = shape3DConfig4.getShape3DElementConfigs().get(0).getVertexContainerMaterialConfigs().get(0);
+        materialConfig4.setPhongMaterialConfig(null);
+        underTest.update(shape3DConfig4);
+        // Verify
+        Shape3DConfig shape3DConfig5 = underTest.read(shape3DConfig1.getId());
+        Assert.assertNull(shape3DConfig5.getShape3DElementConfigs().get(0).getVertexContainerMaterialConfigs().get(0).getPhongMaterialConfig());
+        Assert.assertNotNull(shape3DConfig5.getShape3DElementConfigs().get(1).getVertexContainerMaterialConfigs().get(0).getPhongMaterialConfig());
         // Delete
         underTest.delete(shape3DConfig1.getId());
         Assert.assertTrue(underTest.getObjectNameIds().isEmpty());

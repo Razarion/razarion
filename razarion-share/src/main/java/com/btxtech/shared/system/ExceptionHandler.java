@@ -22,7 +22,6 @@ public abstract class ExceptionHandler {
     public void handleException(String message, Throwable throwable) {
         if (throwable instanceof AlarmRaisedException) {
             alarmService.riseAlarm((AlarmRaisedException) throwable);
-            return;
         }
         handleExceptionInternal(message, throwable);
     }

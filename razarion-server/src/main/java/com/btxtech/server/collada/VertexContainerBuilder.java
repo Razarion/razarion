@@ -18,12 +18,12 @@ public class VertexContainerBuilder {
     }
 
     public VertexContainer getVertexContainer(int shape3DId, String element3DId) {
-        vertexContainer.setKey(Shape3DUtils.generateVertexContainerKey(shape3DId, element3DId, vertexContainer));
+        vertexContainer.setKey(Shape3DUtils.generateVertexContainerKey(shape3DId, element3DId));
         return vertexContainer;
     }
 
     public VertexContainerBuffer getVertexContainerBuffer(int shape3DId, String element3DId) {
-        vertexContainerBuffer.setKey(Shape3DUtils.generateVertexContainerKey(shape3DId, element3DId, vertexContainer));
+        vertexContainerBuffer.setKey(Shape3DUtils.generateVertexContainerKey(shape3DId, element3DId));
         return vertexContainerBuffer;
     }
 }

@@ -1,21 +1,14 @@
 package com.btxtech.server.collada;
 
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
+import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 
 /**
  * Created by Beat
  * 12.07.2016.
  */
 public interface ColladaConverterMapper {
-    Integer getTextureId(String materialId);
-
-    Integer getBumpMapId(String materialId);
-
-    Double getBumpMapDepth(String materialId);
-
-    Double getAlphaToCoverage(String materialId);
-
-    boolean isCharacterRepresenting(String materialId);
+    VertexContainerMaterial toVertexContainerMaterial(String materialId);
 
     AnimationTrigger getAnimationTrigger(String animationId);
 }

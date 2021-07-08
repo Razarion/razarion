@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.renderer.ViewService;
@@ -27,6 +28,8 @@ import java.util.logging.Logger;
 @Singleton
 public class EngineUpdater {
     private Logger logger = Logger.getLogger(EngineUpdater.class.getName());
+    @Inject
+    private ExceptionHandler exceptionHandler;
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
@@ -45,6 +48,14 @@ public class EngineUpdater {
     private Instance<BaseItemRenderTaskRunner> baseItemRenderTaskRunnerInstance; // Use Instance -> called to early
 
     public void connect(Object config) {
+        try {
+            innerConnect(config);
+        } catch (Throwable t) {
+            exceptionHandler.handleException("Can not connect to engines " + config, t);
+        }
+    }
+
+    public void innerConnect(Object config) {
         if (config instanceof GroundConfig) {
             terrainUiService.enableEditMode((GroundConfig) config);
             viewService.onViewChanged();

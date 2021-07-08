@@ -6,17 +6,19 @@
       "modelMatrixAnimations": null,
       "vertexContainers": [
         {
-          "key": "111-Cube1-Material-material",
+          "key": "111-Cube1",
           "vertexContainerMaterial": {
             "materialId": "Material-material",
             "materialName": "Material",
             "phongMaterialConfig": {
               "textureId": 99,
-              "scale": 1.0,
+              "scale": 0.0,
+              "normalMapId": null,
+              "normalMapDepth": null,
               "bumpMapId": 20,
               "bumpMapDepth": 0.5,
-              "shininess": 50.0,
-              "specularStrength": 0.5
+              "shininess": null,
+              "specularStrength": null
             },
             "characterRepresenting": true,
             "alphaToCoverage": 0.5

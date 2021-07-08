@@ -6,7 +6,7 @@
       "modelMatrixAnimations": null,
       "vertexContainers": [
         {
-          "key": "22-Wheel1-null",
+          "key": "22-Wheel1",
           "vertexContainerMaterial": {
             "materialId": null,
             "materialName": null,
@@ -62,18 +62,11 @@
       "modelMatrixAnimations": null,
       "vertexContainers": [
         {
-          "key": "22-Chassis1-Chassis_Material-material",
+          "key": "22-Chassis1",
           "vertexContainerMaterial": {
             "materialId": "Chassis_Material-material",
             "materialName": "Chassis_Material",
-            "phongMaterialConfig": {
-              "textureId": null,
-              "scale": 1.0,
-              "bumpMapId": null,
-              "bumpMapDepth": null,
-              "shininess": 50.0,
-              "specularStrength": 0.5
-            },
+            "phongMaterialConfig": null,
             "characterRepresenting": false,
             "alphaToCoverage": null
           },
