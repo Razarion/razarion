@@ -61,7 +61,9 @@ public class NodeScene extends NameIdColladaXml {
             VertexContainer vertexContainer = new VertexContainer();
             vertexContainer.setShapeTransform(transform);
             vertexContainer.setVerticesCount(vertexContainerBuffer.calculateVertexCount());
-            vertexContainer.setVertexContainerMaterial(new VertexContainerMaterial().materialId(materialId).materialName(materialName));
+            if (materialId != null) {
+                vertexContainer.setVertexContainerMaterial(new VertexContainerMaterial().materialId(materialId).materialName(materialName));
+            }
             element3DBuilder.addVertexContainer(vertexContainer, vertexContainerBuffer);
         }
         return element3DBuilder;

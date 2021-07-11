@@ -29,7 +29,11 @@ public abstract class Shape3DUiService {
     }
 
     public Shape3D getShape3D(int id) {
-        return shape3Ds.get(id);
+        Shape3D shape3D = shape3Ds.get(id);
+        if (shape3D == null) {
+            throw new IllegalArgumentException("No Shape3D for id: " + id);
+        }
+        return shape3D;
     }
 
     public void overrideShape3D(Shape3DComposite shape3DComposite) {

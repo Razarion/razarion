@@ -3,12 +3,15 @@ package com.btxtech.uiservice.renderer.task;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractRenderTaskRunner;
 import com.btxtech.uiservice.renderer.ProgressAnimation;
 import com.btxtech.uiservice.renderer.WebGlRenderTask;
 import com.btxtech.uiservice.renderer.task.progress.ProgressState;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -16,6 +19,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
+    @Inject
+    private AlarmService alarmService;
 
     public interface RenderTask extends WebGlRenderTask<VertexContainer> {
         void setProgressState(ProgressState buildupState);
@@ -29,6 +34,10 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
         for (Element3D element3D : shape3D.getElement3Ds()) {
             Collection<ProgressAnimation> progressAnimations = setupProgressAnimation(element3D);
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                if (vertexContainer.getVertexContainerMaterial() == null) {
+                    alarmService.riseAlarm(Alarm.Type.INVALID_SHAPE_3D, "No material for: " + vertexContainer.getKey(), shape3D.getId());
+                    return;
+                }
                 if (predicate != null && !predicate.test(vertexContainer)) {
                     continue;
                 }
