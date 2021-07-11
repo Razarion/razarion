@@ -1,9 +1,10 @@
 {
   "id": 99,
-  "internalName": "Test-Simple-Plane-01:Test-Simple-Plane-01",
+  "internalName": null,
   "colladaString": null,
   "shape3DElementConfigs": [
     {
+      "id": "Plane_Id",
       "vertexContainerMaterialConfigs": [
         {
           "materialId": "PlaneMat-material",

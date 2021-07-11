@@ -4,6 +4,7 @@
   "colladaString": null,
   "shape3DElementConfigs": [
     {
+      "id": "Plane_029",
       "vertexContainerMaterialConfigs": [
         {
           "materialId": "Material-material",
@@ -16,6 +17,7 @@
       "shape3DAnimationTriggerConfigs": null
     },
     {
+      "id": "Trunk33",
       "vertexContainerMaterialConfigs": [
         {
           "materialId": "Material_002-material",

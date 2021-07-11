@@ -1,9 +1,10 @@
 {
   "id": 22,
-  "internalName": "Scene:Scene",
+  "internalName": null,
   "colladaString": null,
   "shape3DElementConfigs": [
     {
+      "id": "Wheel1",
       "vertexContainerMaterialConfigs": [
         {
           "materialId": null,
@@ -16,6 +17,7 @@
       "shape3DAnimationTriggerConfigs": null
     },
     {
+      "id": "Chassis1",
       "vertexContainerMaterialConfigs": [
         {
           "materialId": "Chassis_Material-material",

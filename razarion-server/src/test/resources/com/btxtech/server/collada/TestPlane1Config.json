@@ -1,9 +1,10 @@
 {
   "id": 111,
-  "internalName": "Scene:Scene",
+  "internalName": null,
   "colladaString": null,
   "shape3DElementConfigs": [
     {
+      "id": "Cube1",
       "vertexContainerMaterialConfigs": [
         {
           "materialId": "Material-material",
