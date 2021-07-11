@@ -80,6 +80,14 @@ public class EngineUpdater {
     }
 
     public void onShape3D(Shape3DComposite shape3DComposite) {
+        try {
+            innerOnShape3D(shape3DComposite);
+        } catch (Throwable t) {
+            exceptionHandler.handleException("Can not connect to engines " + shape3DComposite, t);
+        }
+    }
+
+    private void innerOnShape3D(Shape3DComposite shape3DComposite) {
         Shape3D shape3D = shape3DComposite.getShape3D();
         shape3DUiService.overrideShape3D(shape3DComposite);
         // Update BaseItemType renderer
