@@ -43,7 +43,7 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
         try {
             entity.setInternalName(config.getInternalName());
             if (config.getColladaString() != null) {
-                ColladaConverter.createShape3DBuilder(config.getColladaString(), entity); // Verification
+                ColladaConverter.createShape3DBuilder(config.getColladaString(), entity, null); // Verification
                 entity.setColladaString(config.getColladaString());
             }
             Map<String, AnimationTrigger> animations = new HashMap<>();
@@ -73,7 +73,7 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
         List<Shape3D> shape3Ds = new ArrayList<>();
         for (ColladaEntity colladaEntity : getEntities()) {
             try {
-                shape3Ds.add(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createShape3D(colladaEntity.getId()));
+                shape3Ds.add(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity, null).createShape3D(colladaEntity.getId()));
             } catch (Exception e) {
                 exceptionHandler.handleException(e);
             }
@@ -85,7 +85,7 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
     public List<VertexContainerBuffer> getVertexContainerBuffers() throws ParserConfigurationException, SAXException, IOException {
         List<VertexContainerBuffer> vertexContainerBuffers = new ArrayList<>();
         for (ColladaEntity colladaEntity : getEntities()) {
-            vertexContainerBuffers.addAll(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createVertexContainerBuffer(colladaEntity.getId()));
+            vertexContainerBuffers.addAll(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity, null).createVertexContainerBuffer(colladaEntity.getId()));
         }
         return vertexContainerBuffers;
     }

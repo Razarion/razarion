@@ -1,5 +1,6 @@
 package com.btxtech.shared.datatypes.shape.config;
 
+import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 
 public class VertexContainerMaterialConfig {
@@ -72,5 +73,14 @@ public class VertexContainerMaterialConfig {
     public VertexContainerMaterialConfig alphaToCoverage(Double alphaToCoverage) {
         setAlphaToCoverage(alphaToCoverage);
         return this;
+    }
+
+    public VertexContainerMaterial toVertexContainerMaterial() {
+        return new VertexContainerMaterial()
+                .materialId(materialId)
+                .materialName(materialName)
+                .alphaToCoverage(alphaToCoverage)
+                .characterRepresenting(characterRepresenting)
+                .phongMaterialConfig(phongMaterialConfig);
     }
 }

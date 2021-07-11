@@ -27,7 +27,7 @@ public class ColladaMaterialEntity {
     private Integer id;
     private String materialId;
     private String materialName;
-    private Double alphaToCoverages;
+    private Double alphaToCoverage;
     private boolean characterRepresenting;
     @AssociationOverrides({
             @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "phongTextureId")),
@@ -52,7 +52,7 @@ public class ColladaMaterialEntity {
         return new VertexContainerMaterial()
                 .materialId(materialId)
                 .materialName(materialName)
-                .alphaToCoverage(alphaToCoverages)
+                .alphaToCoverage(alphaToCoverage)
                 .characterRepresenting(characterRepresenting)
                 .phongMaterialConfig(phongMaterial != null ? phongMaterial.to() : null);
     }
@@ -60,7 +60,7 @@ public class ColladaMaterialEntity {
     public ColladaMaterialEntity from(VertexContainerMaterialConfig vertexContainerMaterialConfig, ImagePersistence imagePersistence) {
         materialId = vertexContainerMaterialConfig.getMaterialId();
         materialName = vertexContainerMaterialConfig.getMaterialName();
-        alphaToCoverages = vertexContainerMaterialConfig.getAlphaToCoverage();
+        alphaToCoverage = vertexContainerMaterialConfig.getAlphaToCoverage();
         characterRepresenting = vertexContainerMaterialConfig.isCharacterRepresenting();
         phongMaterial = factorize(vertexContainerMaterialConfig.getPhongMaterialConfig(), imagePersistence);
         return this;

@@ -27,13 +27,13 @@ public class Shape3DEditorControllerImpl extends AbstractCrudController<Shape3DC
 
     @Override
     @SecurityCheck
-    public Shape3DComposite colladaConvert(int id, String colladaString) {
+    public Shape3DComposite colladaConvert(Shape3DConfig shape3DConfig) {
         try {
-            Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(colladaString, null);
+            Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(shape3DConfig.getColladaString(), null, shape3DConfig);
             return new Shape3DComposite()
-                    .shape3DConfig(shape3DBuilder.createShape3DConfig(id))
-                    .shape3D(shape3DBuilder.createShape3D(id))
-                    .vertexContainerBuffers(shape3DBuilder.createVertexContainerBuffer(id));
+                    .shape3DConfig(shape3DBuilder.createShape3DConfig(shape3DConfig.getId()))
+                    .shape3D(shape3DBuilder.createShape3D(shape3DConfig.getId()))
+                    .vertexContainerBuffers(shape3DBuilder.createVertexContainerBuffer(shape3DConfig.getId()));
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);

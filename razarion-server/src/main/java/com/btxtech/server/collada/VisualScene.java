@@ -26,7 +26,6 @@ public class VisualScene extends NameIdColladaXml {
 
     public Shape3DBuilder create(Map<String, Geometry> geometries, Map<String, Material> materials, Map<String, Effect> effects) {
         Shape3DBuilder shape3DBuilder = new Shape3DBuilder();
-        shape3DBuilder.setInternalName(getId() + ":" + getName());
         for (NodeScene nodeScene : nodeScenes.values()) {
             LOGGER.finest("-:convert node : " + nodeScene);
             Element3DBuilder element3DBuilder = nodeScene.create(geometries, materials, effects);

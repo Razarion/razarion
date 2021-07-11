@@ -66,4 +66,14 @@ public class Shape3DConfig implements Config {
         setShape3DElementConfigs(shape3DElementConfigs);
         return this;
     }
+
+    public VertexContainerMaterialConfig findMaterial(String elementId, String materialId) {
+        return shape3DElementConfigs.stream()
+                .filter(shape3DElementConfig -> shape3DElementConfig.getId().equals(elementId))
+                .findFirst()
+                .flatMap(shape3DElementConfig -> shape3DElementConfig.getVertexContainerMaterialConfigs().stream()
+                        .filter(vertexContainerMaterialConfig -> vertexContainerMaterialConfig.getMaterialId().equals(materialId))
+                        .findFirst())
+                .orElse(null);
+    }
 }

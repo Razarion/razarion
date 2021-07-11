@@ -49,7 +49,7 @@ public class Collada extends ColladaXml {
         }
 
         Shape3DBuilder shape3DBuilder = visualScene.create(geometries, materials, effects);
-        shape3DBuilder.setAnimations(animations);
+        shape3DBuilder.animations(animations);
         return shape3DBuilder;
     }
 

@@ -10,6 +10,7 @@ import com.btxtech.shared.datatypes.shape.config.Shape3DAnimationTriggerConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DElementConfig;
 import com.btxtech.shared.datatypes.shape.config.VertexContainerMaterialConfig;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.utils.Shape3DUtils;
 
 import java.util.ArrayList;
@@ -25,29 +26,39 @@ public class Shape3DBuilder {
     private String internalName;
     private List<Element3DBuilder> element3DBuilders = new ArrayList<>();
     private ColladaConverterMapper colladaConverterMapper;
+    private Shape3DConfig source;
     private Collection<Animation> animations;
 
-    public void setInternalName(String internalName) {
+    public Shape3DBuilder internalName(String internalName) {
         this.internalName = internalName;
+        return this;
     }
 
-    public void setColladaConverterMapper(ColladaConverterMapper colladaConverterMapper) {
+    public Shape3DBuilder colladaConverterMapper(ColladaConverterMapper colladaConverterMapper) {
         this.colladaConverterMapper = colladaConverterMapper;
+        return this;
+    }
+
+    public Shape3DBuilder animations(Collection<Animation> animations) {
+        this.animations = animations;
+        return this;
+    }
+
+    public Shape3DBuilder source(Shape3DConfig source) {
+        this.source = source;
+        return this;
     }
 
     public void addElement3DBuilder(Element3DBuilder element3DBuilder) {
         element3DBuilders.add(element3DBuilder);
     }
 
-    public void setAnimations(Collection<Animation> animations) {
-        this.animations = animations;
-    }
-
     public Shape3D createShape3D(int id) {
-
         List<Element3D> element3Ds = createElement3DS(id);
         if (colladaConverterMapper != null) {
-            fillMaterials(element3Ds);
+            fillMaterialsFromMapper(element3Ds);
+        } else if (source != null) {
+            fillMaterialFromSource(element3Ds);
         }
 
         MapList<Element3D, ModelMatrixAnimation> modelMatrixAnimations = new MapList<>();
@@ -63,6 +74,7 @@ public class Shape3DBuilder {
                 return true;
             });
         }
+        // TODO copy animation from source
         element3Ds.forEach(element3D -> element3D.setModelMatrixAnimations(modelMatrixAnimations.get(element3D)));
 
         return new Shape3D().id(id).element3Ds(element3Ds);
@@ -72,11 +84,12 @@ public class Shape3DBuilder {
         Shape3D shape3D = createShape3D(id);
         Shape3DConfig shape3DConfig = new Shape3DConfig()
                 .id(id)
-                .internalName(internalName);
+                .internalName(source != null ? source.getInternalName() : internalName);
         if (shape3D.getElement3Ds() != null) {
             shape3DConfig.setShape3DElementConfigs(shape3D.getElement3Ds()
                     .stream()
                     .map(element3D -> new Shape3DElementConfig()
+                            .id(element3D.getId())
                             .shape3DMaterialConfigs(element3D.getVertexContainers().stream()
                                     .filter(vertexContainer -> vertexContainer.getVertexContainerMaterial() != null)
                                     .map(vertexContainer ->
@@ -112,7 +125,7 @@ public class Shape3DBuilder {
         return vertexContainerBuffers;
     }
 
-    private void fillMaterials(List<Element3D> element3Ds) {
+    private void fillMaterialsFromMapper(List<Element3D> element3Ds) {
         for (Element3D element3D : element3Ds) {
             if (element3D.getVertexContainers() == null) {
                 continue;
@@ -121,6 +134,26 @@ public class Shape3DBuilder {
                 if (vertexContainer.getVertexContainerMaterial() != null) {
                     String materialId = vertexContainer.getVertexContainerMaterial().getMaterialId();
                     vertexContainer.getVertexContainerMaterial().override(colladaConverterMapper.toVertexContainerMaterial(materialId));
+                }
+            }
+        }
+    }
+
+    private void fillMaterialFromSource(List<Element3D> element3Ds) {
+        for (Element3D element3D : element3Ds) {
+            if (element3D.getVertexContainers() == null) {
+                continue;
+            }
+            for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                if (vertexContainer.getVertexContainerMaterial() != null) {
+                    String materialId = vertexContainer.getVertexContainerMaterial().getMaterialId();
+                    VertexContainerMaterialConfig sourceMaterial = source.findMaterial(element3D.getId(), materialId);
+                    if (sourceMaterial != null) {
+                        vertexContainer.getVertexContainerMaterial().override(sourceMaterial.toVertexContainerMaterial());
+                    }
+                    if (vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig() == null) {
+                        vertexContainer.getVertexContainerMaterial().setPhongMaterialConfig(new PhongMaterialConfig().scale(1.0));
+                    }
                 }
             }
         }

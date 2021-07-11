@@ -34,7 +34,7 @@ public class ColladaConverter_2_75_Test {
     }
 
     private void testSimplePlane1(String location) throws Exception {
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text(location, getClass()), null);
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text(location, getClass()), null, null);
         Shape3D shape3D = shape3DBuilder.createShape3D(99);
         JsonAssert.assertViaJson("TestSimplePlane01.json",
                 null,
@@ -62,7 +62,7 @@ public class ColladaConverter_2_75_Test {
 
     @Test
     public void testSimpleSphere3x3() throws Exception {
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestSphere3x3.dae", getClass()), null);
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestSphere3x3.dae", getClass()), null, null);
         Shape3D shape3D = shape3DBuilder.createShape3D(101);
         JsonAssert.assertViaJson("TestSphere3x3.json",
                 null,
@@ -90,7 +90,7 @@ public class ColladaConverter_2_75_Test {
 
     @Test
     public void testPlaneTranslation() throws Exception {
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestPlaneTranslation.dae", getClass()), null);
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestPlaneTranslation.dae", getClass()), null, null);
         Shape3D shape3D = shape3DBuilder.createShape3D(501);
         JsonAssert.assertViaJson("TestPlaneTranslation.json",
                 null,
@@ -118,7 +118,7 @@ public class ColladaConverter_2_75_Test {
 
     @Test
     public void testPlaneRotate() throws Exception {
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestPlaneRotate.dae", getClass()), null);
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestPlaneRotate.dae", getClass()), null, null);
         Shape3D shape3D = shape3DBuilder.createShape3D(105);
         JsonAssert.assertViaJson("TestPlaneRotate.json",
                 null,
@@ -139,7 +139,7 @@ public class ColladaConverter_2_75_Test {
 
     @Test
     public void testPlaneScale() throws Exception {
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestPlaneScale.dae", getClass()), null);
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestPlaneScale.dae", getClass()), null, null);
         Shape3D shape3D = shape3DBuilder.createShape3D(1);
         JsonAssert.assertViaJson("TestPlaneScale.json",
                 null,
@@ -159,7 +159,7 @@ public class ColladaConverter_2_75_Test {
 
     @Test
     public void testPlaneTranslRotScale() throws Exception {
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestPlaneTranslRotScale.dae", getClass()), null);
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestPlaneTranslRotScale.dae", getClass()), null, null);
         Shape3D shape3D = shape3DBuilder.createShape3D(2);
         JsonAssert.assertViaJson("TestPlaneTranslRotScale.json",
                 null,
@@ -179,7 +179,7 @@ public class ColladaConverter_2_75_Test {
 
     @Test
     public void testPlaneTranslRotScaleAnimation() throws Exception {
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestPlaneTranslRotScaleAnimation.dae", getClass()), null);
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestPlaneTranslRotScaleAnimation.dae", getClass()), null, null);
         Shape3D shape3D = shape3DBuilder.createShape3D(22);
         JsonAssert.assertViaJson("TestPlaneTranslRotScaleAnimation.json",
                 null,
@@ -199,7 +199,7 @@ public class ColladaConverter_2_75_Test {
 
     @Test
     public void testReadItemType1() throws Exception {
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestItemType1.dae", getClass()), null);
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestItemType1.dae", getClass()), null, null);
         Shape3D shape3D = shape3DBuilder.createShape3D(22);
         JsonAssert.assertViaJson("TestItemType1.json",
                 null,
@@ -246,7 +246,7 @@ public class ColladaConverter_2_75_Test {
                         .bumpMapId(20)
                         .bumpMapDepth(0.5)));
 
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/plane1.dae", getClass()), testMapper);
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/plane1.dae", getClass()), testMapper, null);
 
         Shape3D shape3D = shape3DBuilder.createShape3D(111);
         JsonAssert.assertViaJson("TestPlane1.json",
@@ -282,7 +282,7 @@ public class ColladaConverter_2_75_Test {
                 new VertexContainerMaterial().materialId("Material_002-material")
                         .phongMaterialConfig(new PhongMaterialConfig().textureId(201).shininess(0.765).specularStrength(10.3)));
 
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), testMapper);
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), testMapper, null);
 
         Shape3D shape3D = shape3DBuilder.createShape3D(87);
         JsonAssert.assertViaJson("TestTerrainObject1.json",
@@ -334,7 +334,7 @@ public class ColladaConverter_2_75_Test {
         animationTriggers.put("RotPlane_rotation_euler_X", AnimationTrigger.ITEM_PROGRESS);
         animationTriggers.put("RotPlane_rotation_euler_Y", AnimationTrigger.ITEM_PROGRESS);
 
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestAnimation01.dae", getClass()), new TestMapper(animationTriggers));
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(SharedTestHelper.resource2Text("/collada/TestAnimation01.dae", getClass()), new TestMapper(animationTriggers), null);
 
         Shape3D shape3D = shape3DBuilder.createShape3D(76);
         JsonAssert.assertViaJson("TestAnimation01.json",

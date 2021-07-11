@@ -146,25 +146,27 @@ public class GenericEditorFrontendProvider {
     @SuppressWarnings("unused") // Called by Angular
     public Promise<Void> colladaConvert(GwtAngularPropertyTable gwtAngularPropertyTable, String colladaString) {
         return new Promise<>((resolve, reject) -> {
+            Shape3DConfig shape3DConfig = Js.cast(gwtAngularPropertyTable.rootBranch.getPropertyValue());
+            shape3DConfig.colladaString(colladaString);
             shape3DEditorController.call((RemoteCallback<Shape3DComposite>) shape3DComposite -> {
-                Shape3DConfig oldShape3DConfig = Js.cast(gwtAngularPropertyTable.rootBranch.getPropertyValue());
-                Shape3DConfig newShape3DConfig = shape3DComposite.getShape3DConfig()
-                        .colladaString(colladaString)
-                        .internalName(oldShape3DConfig.getInternalName());
+                shape3DComposite.getShape3DConfig().setColladaString(colladaString);
                 engineUpdater.onShape3D(shape3DComposite);
-                config2GwtAngularPropertyTableAndConnect(newShape3DConfig, Shape3DEditorController.class, gwtAngularPropertyTable.configId, resolveUnionType -> {
-                    resolve.onInvoke((Void) null);
-                    gwtAngularPropertyTable.rootTreeNodes = resolveUnionType.asT().rootTreeNodes;
-                    gwtAngularPropertyTable.rootBranch = resolveUnionType.asT().rootBranch;
-                }, reject);
+                config2GwtAngularPropertyTableAndConnect(shape3DComposite.getShape3DConfig(),
+                        Shape3DEditorController.class,
+                        gwtAngularPropertyTable.configId,
+                        resolveUnionType -> {
+                            resolve.onInvoke((Void) null);
+                            gwtAngularPropertyTable.rootTreeNodes = resolveUnionType.asT().rootTreeNodes; // Needed in AngularPrimeNg
+                            gwtAngularPropertyTable.rootBranch = resolveUnionType.asT().rootBranch; // Needed in AngularPrimeNg
+                        }, reject);
             }, (message, throwable) -> {
+                shape3DConfig.colladaString(null);
                 logger.log(Level.SEVERE, "Shape3DEditorController.colladaConvert() failed: " + message, throwable);
                 reject.onInvoke(throwable.getMessage());
                 return false;
-            }).colladaConvert(gwtAngularPropertyTable.configId, colladaString);
+            }).colladaConvert(shape3DConfig);
         });
     }
-
 
     private void config2GwtAngularPropertyTableAndConnect(Object config, Class<? extends CrudController<? extends Config>> crudControllerClass, int configId,
                                                           Promise.PromiseExecutorCallbackFn.ResolveCallbackFn<GwtAngularPropertyTable> resolve,

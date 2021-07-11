@@ -61,7 +61,7 @@ public class ColladaEntity implements ColladaConverterMapper {
 
     public Shape3DConfig toShape3DConfig() {
         try {
-            return ColladaConverter.createShape3DBuilder(colladaString, this).createShape3DConfig(id)
+            return ColladaConverter.createShape3DBuilder(colladaString, this, null).createShape3DConfig(id)
                     .internalName(internalName);
         } catch (Exception e) {
             throw new RuntimeException(e);
