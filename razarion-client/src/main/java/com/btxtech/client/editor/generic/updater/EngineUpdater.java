@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.renderer.ViewService;
@@ -65,10 +66,6 @@ public class EngineUpdater {
         } else if (config instanceof WaterConfig) {
             terrainUiService.enableEditMode((WaterConfig) config);
             viewService.onViewChanged();
-        } else if (config instanceof Shape3DConfig) {
-            terrainUiService.enableEditMode((Shape3DConfig)config);
-            terrainObjectRenderTaskRunnerInstance.get().reloadEditMode(); // Access here to avoid calling TerrainObjectRenderTaskRunner.postConstruct() too early
-            viewService.onViewChanged();
         } else if (config instanceof ParticleEmitterSequenceConfig) {
             particleService.editorUpdate((ParticleEmitterSequenceConfig) config);
         } else if (config instanceof ParticleShapeConfig) {
@@ -89,7 +86,7 @@ public class EngineUpdater {
 
     private void innerOnShape3D(Shape3DComposite shape3DComposite) {
         Shape3D shape3D = shape3DComposite.getShape3D();
-        shape3DUiService.overrideShape3D(shape3DComposite);
+        shape3DUiService.editorOverrideShape3D(shape3D);
         // Update BaseItemType renderer
         BaseItemRenderTaskRunner baseItemRenderTaskRunner = baseItemRenderTaskRunnerInstance.get();
         for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
@@ -123,4 +120,19 @@ public class EngineUpdater {
         // TODO terrainTypeService.getTerrainObjectConfigs().stream().filter(terrainObjectConfig -> terrainObjectConfig.getShape3DId() != null && shape3D.getDbId() == terrainObjectConfig.getShape3DId()).forEach(terrainObjectConfig -> terrainObjectRenderTask.onTerrainObjectChanged(terrainObjectConfig));
     }
 
+    public void handleSetValue(Object object) {
+        try {
+            innerHandleSetValue(object);
+        } catch (Throwable t) {
+            exceptionHandler.handleException("handleSetValue failed " + object, t);
+        }
+    }
+
+    public void innerHandleSetValue(Object object) {
+        if (object instanceof Shape3DConfig) {
+            Shape3DConfig shape3DConfig = (Shape3DConfig) object;
+            Shape3D shape3D = shape3DUiService.getShape3D(shape3DConfig.getId());
+            Shape3DUtils.fillMaterialFromSource(shape3D.getElement3Ds(), shape3DConfig);
+        }
+    }
 }

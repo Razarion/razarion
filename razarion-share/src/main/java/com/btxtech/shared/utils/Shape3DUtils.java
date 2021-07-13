@@ -1,8 +1,12 @@
 package com.btxtech.shared.utils;
 
 import com.btxtech.shared.datatypes.shape.Element3D;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.config.VertexContainerMaterialConfig;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -20,5 +24,22 @@ public class Shape3DUtils {
 
     public static String generateVertexContainerKey(int shape3DId, String element3DId) {
         return shape3DId + "-" + element3DId;
+    }
+
+    public static void fillMaterialFromSource(List<Element3D> element3Ds, Shape3DConfig source) {
+        element3Ds.stream()
+                .filter(element3D -> element3D.getVertexContainers() != null)
+                .forEach(element3D -> element3D.getVertexContainers().stream()
+                        .filter(vertexContainer -> vertexContainer.getVertexContainerMaterial() != null)
+                        .forEach(vertexContainer -> {
+                            String materialId = vertexContainer.getVertexContainerMaterial().getMaterialId();
+                            VertexContainerMaterialConfig sourceMaterial = source.findMaterial(element3D.getId(), materialId);
+                            if (vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig() == null) {
+                                vertexContainer.getVertexContainerMaterial().setPhongMaterialConfig(new PhongMaterialConfig().scale(1.0));
+                            }
+                            if (sourceMaterial != null) {
+                                vertexContainer.getVertexContainerMaterial().override(sourceMaterial.toVertexContainerMaterial());
+                            }
+                        }));
     }
 }

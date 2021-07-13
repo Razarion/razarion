@@ -75,10 +75,22 @@ public class VertexContainerMaterial {
     }
 
     public void override(VertexContainerMaterial origin) {
-        if(origin == null) {
+        if (origin == null) {
             return;
         }
-        phongMaterialConfig = origin.phongMaterialConfig;
+        if (origin.phongMaterialConfig != null) {
+            if (phongMaterialConfig == null) {
+                phongMaterialConfig = new PhongMaterialConfig();
+            }
+            phongMaterialConfig.scale(origin.phongMaterialConfig.getScale())
+                    .textureId(origin.phongMaterialConfig.getTextureId())
+                    .bumpMapId(origin.phongMaterialConfig.getBumpMapId())
+                    .bumpMapDepth(origin.phongMaterialConfig.getBumpMapDepth())
+                    .normalMapId(origin.phongMaterialConfig.getNormalMapId())
+                    .normalMapDepth(origin.phongMaterialConfig.getNormalMapDepth())
+                    .shininess(origin.phongMaterialConfig.getShininess())
+                    .specularStrength(origin.phongMaterialConfig.getSpecularStrength());
+        }
         characterRepresenting = origin.characterRepresenting;
         alphaToCoverage = origin.alphaToCoverage;
     }

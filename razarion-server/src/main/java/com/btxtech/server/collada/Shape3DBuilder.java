@@ -10,7 +10,6 @@ import com.btxtech.shared.datatypes.shape.config.Shape3DAnimationTriggerConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DElementConfig;
 import com.btxtech.shared.datatypes.shape.config.VertexContainerMaterialConfig;
-import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.utils.Shape3DUtils;
 
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class Shape3DBuilder {
         if (colladaConverterMapper != null) {
             fillMaterialsFromMapper(element3Ds);
         } else if (source != null) {
-            fillMaterialFromSource(element3Ds);
+            Shape3DUtils.fillMaterialFromSource(element3Ds, source);
         }
 
         MapList<Element3D, ModelMatrixAnimation> modelMatrixAnimations = new MapList<>();
@@ -134,26 +133,6 @@ public class Shape3DBuilder {
                 if (vertexContainer.getVertexContainerMaterial() != null) {
                     String materialId = vertexContainer.getVertexContainerMaterial().getMaterialId();
                     vertexContainer.getVertexContainerMaterial().override(colladaConverterMapper.toVertexContainerMaterial(materialId));
-                }
-            }
-        }
-    }
-
-    private void fillMaterialFromSource(List<Element3D> element3Ds) {
-        for (Element3D element3D : element3Ds) {
-            if (element3D.getVertexContainers() == null) {
-                continue;
-            }
-            for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                if (vertexContainer.getVertexContainerMaterial() != null) {
-                    String materialId = vertexContainer.getVertexContainerMaterial().getMaterialId();
-                    VertexContainerMaterialConfig sourceMaterial = source.findMaterial(element3D.getId(), materialId);
-                    if (sourceMaterial != null) {
-                        vertexContainer.getVertexContainerMaterial().override(sourceMaterial.toVertexContainerMaterial());
-                    }
-                    if (vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig() == null) {
-                        vertexContainer.getVertexContainerMaterial().setPhongMaterialConfig(new PhongMaterialConfig().scale(1.0));
-                    }
                 }
             }
         }

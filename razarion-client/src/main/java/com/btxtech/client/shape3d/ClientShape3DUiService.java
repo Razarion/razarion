@@ -1,12 +1,10 @@
 package com.btxtech.client.shape3d;
 
-import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.shape.Shape3DComposite;
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -53,17 +51,17 @@ public class ClientShape3DUiService extends Shape3DUiService {
     }
 
     @Override
-    public void overrideShape3D(Shape3DComposite shape3DComposite) {
-        super.overrideShape3D(shape3DComposite);
-        shape3DComposite.getShape3D().getElement3Ds().forEach(element3D -> element3D.getVertexContainers().forEach(vertexContainer -> {
-            VertexContainerBuffer vertexContainerBuffer = shape3DComposite.getVertexContainerBuffers().stream()
-                    .filter(vcb -> vcb.getKey().equals(vertexContainer.getKey()))
-                    .findFirst()
-                    .orElseThrow(IllegalArgumentException::new);
-            buffer.put(vertexContainerBuffer.getKey(), new Shape3DBuffer(WebGlUtil.createArrayBufferOfFloat32(vertexContainerBuffer.getVertexData()),
-                    WebGlUtil.createArrayBufferOfFloat32(vertexContainerBuffer.getNormData()),
-                    WebGlUtil.createArrayBufferOfFloat32(vertexContainerBuffer.getTextureCoordinate())));
-        }));
+    public void editorOverrideShape3D(Shape3D shape3D) {
+        super.editorOverrideShape3D(shape3D);
+        // TODO shape3DComposite.getShape3D().getElement3Ds().forEach(element3D -> element3D.getVertexContainers().forEach(vertexContainer -> {
+        // TODO     VertexContainerBuffer vertexContainerBuffer = shape3DComposite.getVertexContainerBuffers().stream()
+        // TODO             .filter(vcb -> vcb.getKey().equals(vertexContainer.getKey()))
+        // TODO             .findFirst()
+        // TODO             .orElseThrow(IllegalArgumentException::new);
+        // TODO     buffer.put(vertexContainerBuffer.getKey(), new Shape3DBuffer(WebGlUtil.createArrayBufferOfFloat32(vertexContainerBuffer.getVertexData()),
+        // TODO             WebGlUtil.createArrayBufferOfFloat32(vertexContainerBuffer.getNormData()),
+        // TODO             WebGlUtil.createArrayBufferOfFloat32(vertexContainerBuffer.getTextureCoordinate())));
+        // TODO }));
     }
 
     public void loadBuffer(DeferredStartup deferredStartup) {

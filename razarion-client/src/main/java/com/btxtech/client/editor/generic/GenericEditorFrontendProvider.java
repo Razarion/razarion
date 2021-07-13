@@ -187,25 +187,25 @@ public class GenericEditorFrontendProvider {
 
     private GwtAngularPropertyTable branch2GwtAngularPropertyTable(Branch branch, int configId) {
         GwtAngularPropertyTable gwtAngularPropertyTable = new GwtAngularPropertyTable();
-        gwtAngularPropertyTable.rootTreeNodes = branch2AngularTreeNodes(null, branch);
         gwtAngularPropertyTable.rootBranch = branch;
         gwtAngularPropertyTable.configId = configId;
+        gwtAngularPropertyTable.rootTreeNodes = branch2AngularTreeNodes(null, branch, gwtAngularPropertyTable);
         return gwtAngularPropertyTable;
     }
 
-    private AngularTreeNode[] branch2AngularTreeNodes(AngularTreeNode parent, Branch branch) {
+    private AngularTreeNode[] branch2AngularTreeNodes(AngularTreeNode parent, Branch branch, GwtAngularPropertyTable gwtAngularPropertyTable) {
         List<AngularTreeNode> angularTreeNodes = new ArrayList<>();
-        branch.createBindableChildren(childPropertyModel -> angularTreeNodes.add(propertyModel2AngularTreeNode(parent, childPropertyModel)));
+        branch.createBindableChildren(childPropertyModel -> angularTreeNodes.add(propertyModel2AngularTreeNode(parent, childPropertyModel, gwtAngularPropertyTable)));
         return angularTreeNodes.toArray(new AngularTreeNode[0]);
     }
 
-    private AngularTreeNode[] listBranch2AngularTreeNodes(AngularTreeNode parent, Branch branch) {
+    private AngularTreeNode[] listBranch2AngularTreeNodes(AngularTreeNode parent, Branch branch, GwtAngularPropertyTable gwtAngularPropertyTable) {
         List<AngularTreeNode> listAngularTreeNodes = new ArrayList<>();
-        branch.createListChildren(childListPropertyModel -> listAngularTreeNodes.add(propertyModel2AngularTreeNode(parent, childListPropertyModel)));
+        branch.createListChildren(childListPropertyModel -> listAngularTreeNodes.add(propertyModel2AngularTreeNode(parent, childListPropertyModel, gwtAngularPropertyTable)));
         return listAngularTreeNodes.toArray(new AngularTreeNode[0]);
     }
 
-    private AngularTreeNode propertyModel2AngularTreeNode(AngularTreeNode parent, AbstractPropertyModel propertyModel) {
+    private AngularTreeNode propertyModel2AngularTreeNode(AngularTreeNode parent, AbstractPropertyModel propertyModel, GwtAngularPropertyTable gwtAngularPropertyTable) {
         AngularTreeNode angularTreeNode = new AngularTreeNode(propertyModel, parent);
         angularTreeNode.data = new AngularTreeNodeData() {
             @Override
@@ -222,11 +222,11 @@ public class GenericEditorFrontendProvider {
                                 angularTreeNode.children = new AngularTreeNode[0];
                             }
                             Array<AngularTreeNode> treeNodeArray = Js.cast(angularTreeNode.children);
-                            treeNodeArray.push(propertyModel2AngularTreeNode(angularTreeNode, child));
+                            treeNodeArray.push(propertyModel2AngularTreeNode(angularTreeNode, child, gwtAngularPropertyTable));
                             angularTreeNode.expanded = true;
                         } else if(branch.getPropertyType().isBindable()) {
                             angularTreeNode.abstractPropertyModel.createAndSetPropertyValue();
-                            angularTreeNode.children = branch2AngularTreeNodes(angularTreeNode, branch);
+                            angularTreeNode.children = branch2AngularTreeNodes(angularTreeNode, branch, gwtAngularPropertyTable);
                             angularTreeNode.data.createAllowed = false;
                             angularTreeNode.data.deleteAllowed = true;
                             angularTreeNode.expanded = true;
@@ -244,7 +244,7 @@ public class GenericEditorFrontendProvider {
                 try {
                     angularTreeNode.abstractPropertyModel.setPropertyValue(null);
                     if (angularTreeNode.parent != null && angularTreeNode.parent.abstractPropertyModel.getPropertyType().isList()) {
-                        angularTreeNode.parent.children = listBranch2AngularTreeNodes(angularTreeNode.parent, (Branch) angularTreeNode.parent.abstractPropertyModel);
+                        angularTreeNode.parent.children = listBranch2AngularTreeNodes(angularTreeNode.parent, (Branch) angularTreeNode.parent.abstractPropertyModel, gwtAngularPropertyTable);
                         angularTreeNode.parent.leaf = angularTreeNode.parent.children.length == 0;
                     } else {
                         angularTreeNode.children = new AngularTreeNode[0];
@@ -267,6 +267,7 @@ public class GenericEditorFrontendProvider {
                         javaValue = PropertyEditorSelector.fromSelector(angularTreeNode.data.propertyEditorSelector).convertFromAngular(value,  angularTreeNode.abstractPropertyModel.getPropertyClass());
                     }
                     angularTreeNode.abstractPropertyModel.setPropertyValue(javaValue);
+                    engineUpdater.handleSetValue(gwtAngularPropertyTable.rootBranch.getPropertyValue());
                 } catch (Throwable throwable) {
                     logger.log(Level.SEVERE, "setValue failed", throwable);
                     throw throwable;
@@ -280,10 +281,10 @@ public class GenericEditorFrontendProvider {
             if (branch.isPropertyValueNotNull() || !branch.isPropertyNullable()) {
                 if (branch.getPropertyType().isList()) {
                     angularTreeNode.data.createAllowed = true;
-                    angularTreeNode.children = listBranch2AngularTreeNodes(angularTreeNode, branch);
+                    angularTreeNode.children = listBranch2AngularTreeNodes(angularTreeNode, branch, gwtAngularPropertyTable);
                     angularTreeNode.leaf = angularTreeNode.children.length == 0;
                 } else {
-                    angularTreeNode.children = branch2AngularTreeNodes(angularTreeNode, branch);
+                    angularTreeNode.children = branch2AngularTreeNodes(angularTreeNode, branch, gwtAngularPropertyTable);
                     angularTreeNode.data.deleteAllowed = true;
                     angularTreeNode.abstractPropertyModel = propertyModel;
                 }
