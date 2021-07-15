@@ -86,7 +86,7 @@ public class EngineUpdater {
 
     private void innerOnShape3D(Shape3DComposite shape3DComposite) {
         Shape3D shape3D = shape3DComposite.getShape3D();
-        shape3DUiService.editorOverrideShape3D(shape3D);
+        shape3DUiService.editorOverride(shape3DComposite);
         // Update BaseItemType renderer
         BaseItemRenderTaskRunner baseItemRenderTaskRunner = baseItemRenderTaskRunnerInstance.get();
         for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
