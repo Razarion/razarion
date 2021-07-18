@@ -57,7 +57,7 @@ public class Shape3DBuilder {
         if (colladaConverterMapper != null) {
             fillMaterialsFromMapper(element3Ds);
         } else if (source != null) {
-            Shape3DUtils.fillMaterialFromSource(element3Ds, source);
+            Shape3DUtils.fillMaterialFromSource(element3Ds, source, null);
         }
 
         MapList<Element3D, ModelMatrixAnimation> modelMatrixAnimations = new MapList<>();
@@ -132,7 +132,7 @@ public class Shape3DBuilder {
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                 if (vertexContainer.getVertexContainerMaterial() != null) {
                     String materialId = vertexContainer.getVertexContainerMaterial().getMaterialId();
-                    vertexContainer.getVertexContainerMaterial().override(colladaConverterMapper.toVertexContainerMaterial(materialId));
+                    vertexContainer.getVertexContainerMaterial().override(colladaConverterMapper.toVertexContainerMaterial(materialId), null);
                 }
             }
         }

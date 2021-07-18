@@ -26,7 +26,7 @@ public class Shape3DUtils {
         return shape3DId + "-" + element3DId;
     }
 
-    public static void fillMaterialFromSource(List<Element3D> element3Ds, Shape3DConfig source) {
+    public static void fillMaterialFromSource(List<Element3D> element3Ds, Shape3DConfig source, Context context) {
         element3Ds.stream()
                 .filter(element3D -> element3D.getVertexContainers() != null)
                 .forEach(element3D -> element3D.getVertexContainers().stream()
@@ -38,8 +38,43 @@ public class Shape3DUtils {
                                 vertexContainer.getVertexContainerMaterial().setPhongMaterialConfig(new PhongMaterialConfig().scale(1.0));
                             }
                             if (sourceMaterial != null) {
-                                vertexContainer.getVertexContainerMaterial().override(sourceMaterial.toVertexContainerMaterial());
+                                vertexContainer.getVertexContainerMaterial().override(sourceMaterial.toVertexContainerMaterial(), context);
                             }
                         }));
+    }
+
+    public static class Context {
+        private boolean characterRepresenting;
+        private boolean alphaToCoverage;
+        private boolean image;
+        private boolean specular;
+
+        public void characterRepresenting(boolean changed) {
+            if (changed) {
+                characterRepresenting = true;
+            }
+        }
+
+        public void alphaToCoverage(boolean changed) {
+            if (changed) {
+                alphaToCoverage = true;
+            }
+        }
+
+        public void image(boolean changed) {
+            if (changed) {
+                image = true;
+            }
+        }
+
+        public void specular(boolean changed) {
+            if (changed) {
+                specular = true;
+            }
+        }
+
+        public boolean hasChange() {
+            return characterRepresenting || alphaToCoverage || image || specular;
+        }
     }
 }

@@ -78,15 +78,36 @@ public class EngineUpdater {
 
     public void onShape3D(Shape3DComposite shape3DComposite) {
         try {
-            innerOnShape3D(shape3DComposite);
+            Shape3D shape3D = shape3DComposite.getShape3D();
+            shape3DUiService.editorOverride(shape3DComposite);
+            reloadShape3DRenderer(shape3D);
         } catch (Throwable t) {
             exceptionHandler.handleException("Can not connect to engines " + shape3DComposite, t);
         }
     }
 
-    private void innerOnShape3D(Shape3DComposite shape3DComposite) {
-        Shape3D shape3D = shape3DComposite.getShape3D();
-        shape3DUiService.editorOverride(shape3DComposite);
+    public void handleSetValue(Object object) {
+        try {
+            innerHandleSetValue(object);
+        } catch (Throwable t) {
+            exceptionHandler.handleException("handleSetValue failed " + object, t);
+        }
+    }
+
+    public void innerHandleSetValue(Object object) {
+        if (object instanceof Shape3DConfig) {
+            Shape3DConfig shape3DConfig = (Shape3DConfig) object;
+            Shape3D shape3D = shape3DUiService.getShape3D(shape3DConfig.getId());
+            Shape3DUtils.Context context = new Shape3DUtils.Context();
+            Shape3DUtils.fillMaterialFromSource(shape3D.getElement3Ds(), shape3DConfig, context);
+            if (context.hasChange()) {
+                reloadShape3DRenderer(shape3D);
+            }
+        }
+    }
+
+
+    private void reloadShape3DRenderer(Shape3D shape3D) {
         // Update BaseItemType renderer
         BaseItemRenderTaskRunner baseItemRenderTaskRunner = baseItemRenderTaskRunnerInstance.get();
         for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
@@ -118,21 +139,5 @@ public class EngineUpdater {
         // TODO itemTypeService.getBoxItemTypes().stream().filter(boxItemType -> boxItemType.getShape3DId() != null && shape3D.getDbId() == boxItemType.getShape3DId()).forEach(boxItemType -> boxItemRenderTask.onBoxItemTypeChanged(boxItemType));
         // Update TerrainObject renderer
         // TODO terrainTypeService.getTerrainObjectConfigs().stream().filter(terrainObjectConfig -> terrainObjectConfig.getShape3DId() != null && shape3D.getDbId() == terrainObjectConfig.getShape3DId()).forEach(terrainObjectConfig -> terrainObjectRenderTask.onTerrainObjectChanged(terrainObjectConfig));
-    }
-
-    public void handleSetValue(Object object) {
-        try {
-            innerHandleSetValue(object);
-        } catch (Throwable t) {
-            exceptionHandler.handleException("handleSetValue failed " + object, t);
-        }
-    }
-
-    public void innerHandleSetValue(Object object) {
-        if (object instanceof Shape3DConfig) {
-            Shape3DConfig shape3DConfig = (Shape3DConfig) object;
-            Shape3D shape3D = shape3DUiService.getShape3D(shape3DConfig.getId());
-            Shape3DUtils.fillMaterialFromSource(shape3D.getElement3Ds(), shape3DConfig);
-        }
     }
 }

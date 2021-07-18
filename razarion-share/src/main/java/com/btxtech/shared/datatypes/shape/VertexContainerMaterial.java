@@ -1,6 +1,9 @@
 package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.dto.PhongMaterialConfig;
+import com.btxtech.shared.utils.Shape3DUtils;
+
+import java.util.Objects;
 
 public class VertexContainerMaterial {
     private String materialId;
@@ -74,24 +77,35 @@ public class VertexContainerMaterial {
         return this;
     }
 
-    public void override(VertexContainerMaterial origin) {
-        if (origin == null) {
+    public void override(VertexContainerMaterial source, Shape3DUtils.Context context) {
+        if (source == null) {
             return;
         }
-        if (origin.phongMaterialConfig != null) {
+        if (source.phongMaterialConfig != null) {
             if (phongMaterialConfig == null) {
                 phongMaterialConfig = new PhongMaterialConfig();
             }
-            phongMaterialConfig.scale(origin.phongMaterialConfig.getScale())
-                    .textureId(origin.phongMaterialConfig.getTextureId())
-                    .bumpMapId(origin.phongMaterialConfig.getBumpMapId())
-                    .bumpMapDepth(origin.phongMaterialConfig.getBumpMapDepth())
-                    .normalMapId(origin.phongMaterialConfig.getNormalMapId())
-                    .normalMapDepth(origin.phongMaterialConfig.getNormalMapDepth())
-                    .shininess(origin.phongMaterialConfig.getShininess())
-                    .specularStrength(origin.phongMaterialConfig.getSpecularStrength());
+            if (context != null) {
+                context.image(!Objects.equals(phongMaterialConfig.getTextureId(), source.phongMaterialConfig.getTextureId()));
+                context.image(!Objects.equals(phongMaterialConfig.getBumpMapId(), source.phongMaterialConfig.getBumpMapId()));
+                context.image(!Objects.equals(phongMaterialConfig.getNormalMapId(), source.phongMaterialConfig.getNormalMapId()));
+                context.specular(phongMaterialConfig.getSpecularStrength() == null ^ source.phongMaterialConfig.getSpecularStrength() == null);
+                context.specular(phongMaterialConfig.getShininess() == null ^ source.phongMaterialConfig.getShininess() == null);
+            }
+            phongMaterialConfig.scale(source.phongMaterialConfig.getScale())
+                    .textureId(source.phongMaterialConfig.getTextureId())
+                    .bumpMapId(source.phongMaterialConfig.getBumpMapId())
+                    .bumpMapDepth(source.phongMaterialConfig.getBumpMapDepth())
+                    .normalMapId(source.phongMaterialConfig.getNormalMapId())
+                    .normalMapDepth(source.phongMaterialConfig.getNormalMapDepth())
+                    .shininess(source.phongMaterialConfig.getShininess())
+                    .specularStrength(source.phongMaterialConfig.getSpecularStrength());
         }
-        characterRepresenting = origin.characterRepresenting;
-        alphaToCoverage = origin.alphaToCoverage;
+        if (context != null) {
+            context.characterRepresenting(characterRepresenting != source.characterRepresenting);
+            context.alphaToCoverage(alphaToCoverage == null ^ source.alphaToCoverage == null);
+        }
+        characterRepresenting = source.characterRepresenting;
+        alphaToCoverage = source.alphaToCoverage;
     }
 }
