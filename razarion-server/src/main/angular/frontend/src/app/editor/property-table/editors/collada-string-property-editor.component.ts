@@ -9,25 +9,13 @@ import {MessageService} from "primeng/api";
   template: `
     <div class="p-d-flex p-flex-column">
       <div class="p-mb-2">
-        <div class="p-d-inline-flex">
-          <div class="p-mr-2">
-            <p-fileUpload #fileUploadElement
-                          chooseIcon="pi pi-folder-open"
-                          mode="basic"
-                          [auto]="true"
-                          [customUpload]=true
-                          (uploadHandler)="onUpload($event)">
-            </p-fileUpload>
-          </div>
-          <div class="p-mr-2">
-            <p-button *ngIf="file !== undefined"
-                      styleClass="p-button-sm"
-                      icon="pi pi-refresh"
-                      (onClick)="onReload()">
-
-            </p-button>
-          </div>
-        </div>
+        <p-fileUpload #fileUploadElement
+                      chooseIcon="pi pi-folder-open"
+                      mode="basic"
+                      [auto]="true"
+                      [customUpload]=true
+                      (uploadHandler)="onUpload($event)">
+        </p-fileUpload>
       </div>
       <div *ngIf="lastLoadedDate !== undefined" class="p-mb-2" style="white-space: nowrap">
         File loaded: {{lastLoadedDate | date:'dd.MM.yyyy HH:mm:ss'}}
@@ -59,10 +47,6 @@ export class ColladaStringPropertyEditorComponent implements OnInit {
     this.loadFile();
   }
 
-  onReload() {
-    this.loadFile();
-  }
-
   private loadFile() {
     if (this.file === undefined) {
       this.messageService.add({
@@ -77,6 +61,7 @@ export class ColladaStringPropertyEditorComponent implements OnInit {
     this.setupPermanentFields();
     let reader = new FileReader();
     reader.onerror = () => {
+      console.error(reader.error)
       this.messageService.add({
         severity: 'error',
         summary: `Error during file read: ${reader.error}`,
