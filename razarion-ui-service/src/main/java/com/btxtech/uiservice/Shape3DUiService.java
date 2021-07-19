@@ -1,7 +1,6 @@
 package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
@@ -36,7 +35,7 @@ public abstract class Shape3DUiService {
         return shape3D;
     }
 
-    public void editorOverride(Shape3DComposite shape3DComposite) {
-        shape3Ds.put(shape3DComposite.getShape3D().getId(), shape3DComposite.getShape3D());
+    public void editorOverrideShape3D(Shape3D shape3D) {
+        shape3Ds.put(shape3D.getId(), shape3D);
     }
 }

@@ -6,31 +6,40 @@ import com.btxtech.client.editor.generic.model.GenericPropertyInfoProvider;
 import com.btxtech.client.editor.generic.model.Leaf;
 import com.btxtech.client.editor.generic.model.PropertyEditorSelector;
 import com.btxtech.client.editor.generic.updater.EngineUpdater;
-import com.btxtech.shared.datatypes.shape.Shape3DComposite;
+import com.btxtech.client.shape3d.Shape3DBuffer;
+import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.rest.CrudController;
 import com.btxtech.shared.rest.Shape3DEditorController;
+import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.core.Array;
+import elemental2.core.Float32Array;
+import elemental2.core.Global;
+import elemental2.dom.XMLHttpRequest;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMapOfAny;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
-import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.databinding.client.PropertyType;
+import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,13 +47,13 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class GenericEditorFrontendProvider {
     @Inject
+    private ExceptionHandler exceptionHandler;
+    @Inject
     private Instance<Branch> branchInstance;
     @Inject
     private GenericPropertyInfoProvider genericPropertyInfoProvider;
     @Inject
     private EngineUpdater engineUpdater;
-    @Inject
-    private Caller<Shape3DEditorController> shape3DEditorController;
     private Logger logger = Logger.getLogger(GenericEditorFrontendProvider.class.getName());
 
     @SuppressWarnings("unused") // Called by Angular
@@ -148,23 +157,65 @@ public class GenericEditorFrontendProvider {
         return new Promise<>((resolve, reject) -> {
             Shape3DConfig shape3DConfig = Js.cast(gwtAngularPropertyTable.rootBranch.getPropertyValue());
             shape3DConfig.colladaString(colladaString);
-            shape3DEditorController.call((RemoteCallback<Shape3DComposite>) shape3DComposite -> {
-                shape3DComposite.getShape3DConfig().setColladaString(colladaString);
-                engineUpdater.onShape3D(shape3DComposite);
-                config2GwtAngularPropertyTableAndConnect(shape3DComposite.getShape3DConfig(),
-                        Shape3DEditorController.class,
-                        gwtAngularPropertyTable.configId,
-                        resolveUnionType -> {
-                            resolve.onInvoke((Void) null);
-                            gwtAngularPropertyTable.rootTreeNodes = resolveUnionType.asT().rootTreeNodes; // Needed in AngularPrimeNg
-                            gwtAngularPropertyTable.rootBranch = resolveUnionType.asT().rootBranch; // Needed in AngularPrimeNg
-                        }, reject);
-            }, (message, throwable) -> {
-                shape3DConfig.colladaString(null);
-                logger.log(Level.SEVERE, "Shape3DEditorController.colladaConvert() failed: " + message, throwable);
-                reject.onInvoke(throwable.getMessage());
-                return false;
-            }).colladaConvert(shape3DConfig);
+
+            XMLHttpRequest xmlHttpRequest = new XMLHttpRequest();
+            xmlHttpRequest.onload = progressEvent -> {
+                try {
+                    if (xmlHttpRequest.readyState == 4 && xmlHttpRequest.status == 200) {
+                        JsPropertyMapOfAny mapOfAny = Js.cast(xmlHttpRequest.response);
+                        Map<String, Shape3DBuffer> newShape3DBuffers = new HashMap<>();
+                        Arrays.stream((JsPropertyMapOfAny[]) mapOfAny.get("vertexContainerBuffers")).forEach(vertexContainerMap -> {
+                            // GWT compiler issue. Can not be inlined. Must be double[] explicit declaration.
+                            double[] vertexData = Js.uncheckedCast(vertexContainerMap.get("vertexData"));
+                            double[] normData = Js.uncheckedCast(vertexContainerMap.get("normData"));
+                            double[] textureCoordinate = Js.uncheckedCast(vertexContainerMap.get("textureCoordinate"));
+                            newShape3DBuffers.put(vertexContainerMap.getAny("key").asString(),
+                                    new Shape3DBuffer(
+                                            new Float32Array(vertexData),
+                                            new Float32Array(normData),
+                                            new Float32Array(textureCoordinate)));
+                        });
+                        Shape3DConfig newShape3DConfig = MarshallingWrapper.fromJSON(Global.JSON.stringify(mapOfAny.getAny("shape3DConfig")), Shape3DConfig.class);
+                        Shape3D newShape3D = MarshallingWrapper.fromJSON(Global.JSON.stringify(mapOfAny.getAny("shape3D")), Shape3D.class);
+
+                        engineUpdater.onShape3D(newShape3D, newShape3DBuffers);
+                        newShape3DConfig.setColladaString(colladaString);
+                        config2GwtAngularPropertyTableAndConnect(newShape3DConfig,
+                                Shape3DEditorController.class,
+                                gwtAngularPropertyTable.configId,
+                                resolveUnionType -> {
+                                    resolve.onInvoke((Void) null);
+                                    gwtAngularPropertyTable.rootTreeNodes = resolveUnionType.asT().rootTreeNodes; // Needed in AngularPrimeNg
+                                    gwtAngularPropertyTable.rootBranch = resolveUnionType.asT().rootBranch; // Needed in AngularPrimeNg
+                                }, reject);
+                    } else {
+                        reject.onInvoke("Shape3DController.colladaConvert onload error. Status: '" + xmlHttpRequest.status + "' StatusText: '" + xmlHttpRequest.statusText + "'");
+                    }
+                } catch (Throwable t) {
+                    exceptionHandler.handleException(t);
+                    reject.onInvoke("Shape3DController.colladaConvert failed: " + t.getMessage());
+                }
+            };
+            xmlHttpRequest.addEventListener("error", evt -> {
+                reject.onInvoke("Shape3DController.colladaConver error: " + evt);
+                logger.severe("Shape3DController.colladaConver error: " + evt);
+            });
+            xmlHttpRequest.onabort = progressEvent -> {
+                reject.onInvoke("Shape3DController.colladaConver abort: " + progressEvent);
+                logger.severe("Shape3DController.colladaConver onabort: " + progressEvent);
+            };
+            xmlHttpRequest.open("POST", CommonUrl.colladaConverterUrl());
+            xmlHttpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xmlHttpRequest.responseType = "json";
+            String params;
+            try {
+                params = MarshallingWrapper.toJSON(shape3DConfig);
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
+                reject.onInvoke("MarshallingWrapper.toJSON failed:  " + throwable.getMessage());
+                return;
+            }
+            xmlHttpRequest.send(params);
         });
     }
 

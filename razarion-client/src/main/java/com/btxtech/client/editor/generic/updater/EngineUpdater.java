@@ -1,9 +1,10 @@
 package com.btxtech.client.editor.generic.updater;
 
+import com.btxtech.client.shape3d.ClientShape3DUiService;
+import com.btxtech.client.shape3d.Shape3DBuffer;
 import com.btxtech.shared.datatypes.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.shared.datatypes.particle.ParticleShapeConfig;
 import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.WaterConfig;
@@ -13,7 +14,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.Shape3DUtils;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTaskRunner;
@@ -24,6 +24,7 @@ import com.btxtech.uiservice.terrain.TerrainUiService;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Singleton
@@ -42,7 +43,7 @@ public class EngineUpdater {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private Shape3DUiService shape3DUiService;
+    private ClientShape3DUiService shape3DUiService;
     @Inject
     private Instance<TerrainObjectRenderTaskRunner> terrainObjectRenderTaskRunnerInstance; // Use Instance -> called to early
     @Inject
@@ -76,13 +77,13 @@ public class EngineUpdater {
         }
     }
 
-    public void onShape3D(Shape3DComposite shape3DComposite) {
+    public void onShape3D(Shape3D shape3D, Map<String, Shape3DBuffer> shape3DBuffers) {
         try {
-            Shape3D shape3D = shape3DComposite.getShape3D();
-            shape3DUiService.editorOverride(shape3DComposite);
+            shape3DUiService.editorOverrideShape3D(shape3D);
+            shape3DUiService.editorOverrideShape3DBuffer(shape3DBuffers);
             reloadShape3DRenderer(shape3D);
         } catch (Throwable t) {
-            exceptionHandler.handleException("Can not connect to engines " + shape3DComposite, t);
+            exceptionHandler.handleException("Can not connect to engines " + shape3D, t);
         }
     }
 
@@ -105,7 +106,6 @@ public class EngineUpdater {
             }
         }
     }
-
 
     private void reloadShape3DRenderer(Shape3D shape3D) {
         // Update BaseItemType renderer

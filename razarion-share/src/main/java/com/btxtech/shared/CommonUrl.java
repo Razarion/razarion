@@ -56,6 +56,7 @@ public class CommonUrl {
     public static final String SHAPE_3D_CONTROLLER = G_ZIPPED + "/" + "shape3d-controller";
     public static final String TERRAIN_SHAPE_CONTROLLER = G_ZIPPED + "/" + "terrainshape";
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
+    public static final String COLLADA_CONVERTER = "collada-convert";
     @Deprecated
     public static final String ITEM_TYPE_PROVIDER = "itemtypeprovider";
     public static final String TRACKER_PATH = "tracker";
@@ -96,6 +97,10 @@ public class CommonUrl {
 
     public static String loadShape3dBufferUrl() {
         return APPLICATION_PATH + "/" + SHAPE_3D_CONTROLLER + "/" + SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
+    }
+
+    public static String colladaConverterUrl() {
+        return APPLICATION_PATH + "/" + SHAPE_3D_CONTROLLER + "/" + COLLADA_CONVERTER;
     }
 
     public static String terrainShapeController(int planetId) {

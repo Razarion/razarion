@@ -17,6 +17,9 @@ import {MessageService} from "primeng/api";
                       (uploadHandler)="onUpload($event)">
         </p-fileUpload>
       </div>
+      <div *ngIf="state !== undefined" class="p-mb-2" style="color: #ff00b6">
+        {{state}}
+      </div>
       <div *ngIf="lastLoadedDate !== undefined" class="p-mb-2" style="white-space: nowrap">
         File loaded: {{lastLoadedDate | date:'dd.MM.yyyy HH:mm:ss'}}
       </div>
@@ -34,6 +37,7 @@ export class ColladaStringPropertyEditorComponent implements OnInit {
   lastModifiedDate: Date | undefined;
   lastLoadedDate: Date | undefined;
   file?: any;
+  state?: string;
 
   constructor(private messageService: MessageService, private gwtAngularService: GwtAngularService) {
   }
@@ -49,9 +53,10 @@ export class ColladaStringPropertyEditorComponent implements OnInit {
 
   private loadFile() {
     if (this.file === undefined) {
+      this.state = "No file";
       this.messageService.add({
         severity: 'error',
-        summary: 'No File',
+        summary: 'No file',
         sticky: true
       })
       return;
@@ -62,6 +67,7 @@ export class ColladaStringPropertyEditorComponent implements OnInit {
     let reader = new FileReader();
     reader.onerror = () => {
       console.error(reader.error)
+      this.state = "Read failed";
       this.messageService.add({
         severity: 'error',
         summary: `Error during file read: ${reader.error}`,
@@ -73,10 +79,15 @@ export class ColladaStringPropertyEditorComponent implements OnInit {
         this.fileUploadElement.clear();
         if (typeof progressEvent.target.result === "string") {
           let colladaString = progressEvent.target.result;
+          this.state = "Converting";
           this.gwtAngularService.gwtAngularFacade.editorFrontendProvider
             .getGenericEditorFrontendProvider().colladaConvert(this.gwtAngularPropertyTable, colladaString).then(
-            () => this.angularTreeNodeData.setValue(colladaString),
+            () => {
+              this.state = undefined;
+              this.angularTreeNodeData.setValue(colladaString)
+            },
             reason => {
+              this.state = "Failed";
               this.messageService.add({
                 severity: 'error',
                 summary: `Can not process Collada file: ${reason}`,
@@ -86,6 +97,7 @@ export class ColladaStringPropertyEditorComponent implements OnInit {
               console.error(reason);
             });
         } else {
+          this.state = "Failed";
           this.messageService.add({
             severity: 'error',
             summary: `Collada content must be a string ${typeof progressEvent.target.result}`,
@@ -93,6 +105,7 @@ export class ColladaStringPropertyEditorComponent implements OnInit {
           });
         }
       } else {
+        this.state = "Failed";
         this.messageService.add({
           severity: 'error',
           summary: 'No Target',
@@ -101,6 +114,7 @@ export class ColladaStringPropertyEditorComponent implements OnInit {
       }
     }
     reader.readAsText(this.file);
+    this.state = "Reading";
   }
 
   private setupPermanentFields(): void {
