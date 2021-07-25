@@ -9,6 +9,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class SecurityExceptionMapper implements ExceptionMapper<SecurityException> {
 
+    @Override
     public Response toResponse(SecurityException e) {
         return Response.status(Response.Status.UNAUTHORIZED).build();
     }

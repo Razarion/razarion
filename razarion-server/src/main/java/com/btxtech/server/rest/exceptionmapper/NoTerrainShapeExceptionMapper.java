@@ -9,6 +9,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class NoTerrainShapeExceptionMapper implements ExceptionMapper<NoTerrainShapeException> {
 
+    @Override
     public Response toResponse(NoTerrainShapeException e) {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
