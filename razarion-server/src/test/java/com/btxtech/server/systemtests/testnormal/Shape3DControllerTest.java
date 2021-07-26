@@ -64,7 +64,7 @@ public class Shape3DControllerTest extends AbstractSystemTest {
     }
 
     @Test
-    public void shape3DController() {
+    public void getVertexBuffer() {
         RestConnection restConnection = new RestConnection(new ObjectMapperResolver(() -> Shape3DConfig.class));
 
         String key1 = "\"" + shape3DId + "-Plane_029" + "\"";
