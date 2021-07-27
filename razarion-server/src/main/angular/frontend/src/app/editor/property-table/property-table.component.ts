@@ -82,12 +82,12 @@ export class PropertyTableComponent extends EditorPanel {
     let menuObjectNameIds: MenuItem[] = [];
 
     objectNameIds.forEach(objectNameId => {
-      const displayObjectName = `${objectNameId.getInternalName()} (${objectNameId.getId()})`;
+      const displayObjectName = `${objectNameId.internalName} (${objectNameId.id})`;
       menuObjectNameIds.push({
         label: displayObjectName,
         command: () => {
           this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-            .readConfig((<GenericPropertyEditorModel>this.editorModel).collectionName, objectNameId.getId())
+            .readConfig((<GenericPropertyEditorModel>this.editorModel).collectionName, objectNameId.id)
             .then(value => {
                 this.gwtAngularPropertyTable = value;
                 this.updateDeleteSaveDisableState();
@@ -97,7 +97,7 @@ export class PropertyTableComponent extends EditorPanel {
               reason => {
                 this.messageService.add({
                   severity: 'error',
-                  summary: `Can not load config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName} with id: ${objectNameId.getId()}`,
+                  summary: `Can not load config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName} with id: ${objectNameId.id}`,
                   detail: reason,
                   sticky: true
                 });

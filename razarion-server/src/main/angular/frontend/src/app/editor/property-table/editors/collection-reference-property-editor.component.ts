@@ -60,10 +60,10 @@ import {getImageUrl, URL_IMAGE} from "../../../common";
                 [(visible)]="showObjectNameIdGallery"
                 [style]="{width: '20em'}"
                 (onShow)="onShowCollectionGallery()">
-        <p-dataView [value]="objectNameIds">
+        <p-dataView [value]="objectNameIds" [sortField]="sortField" [sortOrder]="sortOrder">
           <ng-template let-objectNameId pTemplate="listItem">
-            <div class="p-col-7" style="cursor: pointer" (click)="onObjectNameIdClicked(objectNameId)">
-              {{objectNameId.getInternalName()}} ({{objectNameId.getId()}})
+            <div class="p-col-12" style="cursor: pointer" (click)="onObjectNameIdClicked(objectNameId)">
+              {{objectNameId.internalName}} ({{objectNameId.id}})
             </div>
           </ng-template>
         </p-dataView>
@@ -80,6 +80,8 @@ export class CollectionReferencePropertyEditorComponent implements OnInit {
   imageGalleryItems: ImageGalleryItem[] = [];
   objectNameIds: ObjectNameId[] = [];
   objectNameIdString: string = '';
+  sortField: string = '-'; // Value must change or sort is not triggered
+  sortOrder: number = 0; // Value must change or sort is not triggered
 
   constructor(private messageService: MessageService,
               private http: HttpClient,
@@ -130,7 +132,7 @@ export class CollectionReferencePropertyEditorComponent implements OnInit {
   }
 
   onObjectNameIdClicked(objectNameId: ObjectNameId) {
-    this.angularTreeNodeData.setValue(objectNameId.getId());
+    this.angularTreeNodeData.setValue(objectNameId.id);
     this.showObjectNameIdGallery = false;
     this.angularTreeNodeData.value.value = objectNameId;
     this.displayObjectNameId(objectNameId);
@@ -144,7 +146,11 @@ export class CollectionReferencePropertyEditorComponent implements OnInit {
 
   onShowCollectionGallery() {
     this.genericEditorFrontendProvider.requestObjectNameIds(this.angularTreeNodeData.value.collection)
-      .then(value => this.objectNameIds = value,
+      .then(value => {
+          this.objectNameIds = value;
+          this.sortField = 'internalName';
+          this.sortOrder = 1;
+        },
         reason => {
           this.messageService.add({
             severity: 'error',
@@ -157,7 +163,7 @@ export class CollectionReferencePropertyEditorComponent implements OnInit {
   }
 
   private displayObjectNameId(objectNameId: ObjectNameId) {
-    this.objectNameIdString = `${objectNameId.getInternalName()} (${objectNameId.getId()})`
+    this.objectNameIdString = `${objectNameId.internalName} (${objectNameId.id})`
   }
 
 }

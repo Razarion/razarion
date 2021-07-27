@@ -10,8 +10,8 @@ import jsinterop.annotations.JsType;
  */
 @JsType
 public class ObjectNameId {
-    private int id;
-    private String internalName;
+    public int id; // Only public for Angular access
+    public String internalName; // Only public for Angular access
 
     /**
      * Used by GWT

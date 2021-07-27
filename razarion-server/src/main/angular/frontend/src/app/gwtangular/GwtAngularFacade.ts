@@ -182,9 +182,8 @@ export interface GwtAngularPropertyTable {
 }
 
 export interface ObjectNameId {
-  getId(): number;
-
-  getInternalName(): string;
+  id: number;
+  internalName: string;
 
   toString(): string;
 }
