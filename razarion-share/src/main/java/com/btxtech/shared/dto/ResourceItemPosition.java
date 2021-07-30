@@ -1,12 +1,15 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 
 /**
  * Created by Beat
  * 06.10.2016.
  */
 public class ResourceItemPosition {
+    @CollectionReference(CollectionReferenceType.RESOURCE_ITEM)
     private Integer resourceItemTypeId;
     private DecimalPosition position;
     private double rotationZ;

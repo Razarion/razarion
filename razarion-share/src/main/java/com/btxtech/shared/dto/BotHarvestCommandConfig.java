@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 /**
@@ -7,7 +9,9 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  * 07.10.2016.
  */
 public class BotHarvestCommandConfig extends AbstractBotCommandConfig<BotHarvestCommandConfig> {
+    @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer harvesterItemTypeId;
+    @CollectionReference(CollectionReferenceType.RESOURCE_ITEM)
     private Integer resourceItemTypeId;
     private PlaceConfig resourceSelection;
 

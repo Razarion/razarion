@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 
@@ -26,6 +28,7 @@ public class ResourceRegionConfig {
     private String internalName;
     private int count;
     private double minDistanceToItems;
+    @CollectionReference(CollectionReferenceType.RESOURCE_ITEM)
     private Integer resourceItemTypeId;
     private PlaceConfig region;
 
