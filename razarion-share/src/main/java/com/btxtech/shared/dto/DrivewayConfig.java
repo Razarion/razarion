@@ -48,6 +48,6 @@ public class DrivewayConfig implements Config {
     }
 
     public double calculateDrivewayLength(double height) {
-        return height / Math.tan(angle);
+        return Math.abs(height) / Math.tan(angle);
     }
 }

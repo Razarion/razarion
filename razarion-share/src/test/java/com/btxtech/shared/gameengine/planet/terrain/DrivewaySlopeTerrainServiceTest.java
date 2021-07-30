@@ -44,6 +44,36 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
     }
 
     @Test
+    public void testDeeperEdge() {
+            SlopeConfig slopeConfig = new SlopeConfig()
+                    .id(1)
+                    .horizontalSpace(5)
+                    .outerLineGameEngine(3)
+                    .innerLineGameEngine(7)
+                    .slopeShapes(Arrays.asList(
+                            new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
+                            new SlopeShape().position(new DecimalPosition(4, -8)).slopeFactor(0.7),
+                            new SlopeShape().position(new DecimalPosition(7, -12)).slopeFactor(0.7),
+                            new SlopeShape().position(new DecimalPosition(10, -20)).slopeFactor(0.7),
+                            new SlopeShape().position(new DecimalPosition(11, -20)).slopeFactor(0.7)));
+
+        setup(slopeConfig,
+                null,
+                null,
+                GameTestHelper.createTerrainSlopeCorner(50, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(103, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(103, 60, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(103, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(103, 110, null),
+                GameTestHelper.createTerrainSlopeCorner(50, 110, null));
+        // showDisplay();
+
+        AssertTerrainShape.assertTerrainShape(getClass(), "testDeeperDrivewayEdgeShape1.json", getTerrainShape());
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(180, 130), getClass(), "testDeeperDrivewayEdgeShapeHNT1.json");
+        AssertTerrainTile.assertTerrainTile(getClass(), "testDeeperDrivewayEdgeTile1.json", generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)));
+    }
+
+    @Test
     public void testCorner1() {
         setup(null,
                 null,

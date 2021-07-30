@@ -21,7 +21,8 @@ public abstract class JsonAssert {
     // public static String TEST_RESOURCE_FOLDER = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\test\\resources";
     // public static String TEST_RESOURCE_FOLDER = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\test\\resources\\com\\btxtech\\server\\collada";
     // public static String TEST_RESOURCE_FOLDER = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\test\\resources\\com\\btxtech\\server\\systemtests\\editors";
-    public static String TEST_RESOURCE_FOLDER = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\test\\resources\\com\\btxtech\\server\\systemtests\\testnormal";
+    // public static String TEST_RESOURCE_FOLDER = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\test\\resources\\com\\btxtech\\server\\systemtests\\testnormal";
+    public static String TEST_RESOURCE_FOLDER = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
 
     private JsonAssert() {
 

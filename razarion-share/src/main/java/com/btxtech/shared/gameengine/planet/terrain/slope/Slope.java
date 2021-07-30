@@ -3,10 +3,10 @@ package com.btxtech.shared.gameengine.planet.terrain.slope;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.ObstacleFactoryContext;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
@@ -401,14 +401,14 @@ public class Slope {
 
     public Driveway getDriveway(DecimalPosition positionOnInnerPolygon) {
         if (driveways == null || driveways.isEmpty()) {
-            return null;
+            throw new IllegalStateException("driveways == null || driveways.isEmpty()");
         }
         for (Driveway driveway : driveways) {
             if (driveway.findSimilarInnerCorner(positionOnInnerPolygon, 0.5) != null) {
                 return driveway;
             }
         }
-        return null;
+        throw new IllegalArgumentException("No corner found on driveway: " + positionOnInnerPolygon);
     }
 
     public Driveway getDriveway(Collection<DecimalPosition> positions) {
