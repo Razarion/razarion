@@ -16,7 +16,7 @@ public class ScenarioPlayback {
         return scenario;
     }
 
-    public ScenarioPlayback setScenario(Scenario scenario) {
+    public ScenarioPlayback scenario(Scenario scenario) {
         this.scenario = scenario;
         return this;
     }
@@ -25,7 +25,7 @@ public class ScenarioPlayback {
         return actualSyncBaseItemInfo;
     }
 
-    public ScenarioPlayback setActualSyncBaseItemInfo(ScenarioTicks actualSyncBaseItemInfo) {
+    public ScenarioPlayback actualSyncBaseItemInfo(ScenarioTicks actualSyncBaseItemInfo) {
         this.actualSyncBaseItemInfo = actualSyncBaseItemInfo;
         return this;
     }
@@ -42,7 +42,7 @@ public class ScenarioPlayback {
         return expectedSyncBaseItemInfo;
     }
 
-    public ScenarioPlayback setExpectedSyncBaseItemInfo(ScenarioTicks expectedSyncBaseItemInfo) {
+    public ScenarioPlayback expectedSyncBaseItemInfo(ScenarioTicks expectedSyncBaseItemInfo) {
         this.expectedSyncBaseItemInfo = expectedSyncBaseItemInfo;
         return this;
     }

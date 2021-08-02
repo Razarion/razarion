@@ -46,6 +46,17 @@ public interface GameTestHelper {
         return syncPhysicalMovable;
     }
 
+    static SyncPhysicalArea createSyncPhysicalArea(double radius, TerrainType terrainType, DecimalPosition position) {
+        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea();
+        SimpleTestEnvironment.injectService("position2d", syncPhysicalArea, SyncPhysicalArea.class, position);
+        SimpleTestEnvironment.injectService("radius", syncPhysicalArea, SyncPhysicalArea.class, radius);
+        SimpleTestEnvironment.injectService("terrainType", syncPhysicalArea, SyncPhysicalArea.class, terrainType);
+        SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerService.class);
+        EasyMock.replay(syncItemContainerService);
+        SimpleTestEnvironment.injectService("syncItemContainerService", syncPhysicalArea, SyncPhysicalArea.class, syncItemContainerService);
+        return syncPhysicalArea;
+    }
+
     static List<ObstacleSlope> createObstacleSlopes(DecimalPosition... polygon) {
         List<ObstacleSlope> obstacleSlopes = new ArrayList<>();
         for (int i = 0; i < polygon.length; i++) {

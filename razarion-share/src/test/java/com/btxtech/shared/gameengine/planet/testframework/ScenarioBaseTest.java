@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
+import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import org.junit.Assert;
@@ -123,12 +124,20 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
             compareScenario(expectedTicks, actualTicks, scenario);
         } catch (Throwable t) {
             t.printStackTrace();
-            try {
-                // TODO showDisplay(new ScenarioPlayback().setActualSyncBaseItemInfo(actualTicks).setExpectedSyncBaseItemInfo(expectedTicks).setScenario(scenario));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            showDisplay(scenario, actualTicks, expectedTicks);
             throw new RuntimeException(t);
+        }
+        showDisplay(scenario, actualTicks, expectedTicks);
+    }
+
+    private void showDisplay(Scenario scenario, ScenarioTicks actualTicks, ScenarioTicks expectedTicks) {
+        try {
+            showDisplay(new ScenarioPlayback()
+                    .scenario(scenario)
+                    .actualSyncBaseItemInfo(actualTicks)
+                    .expectedSyncBaseItemInfo(expectedTicks));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

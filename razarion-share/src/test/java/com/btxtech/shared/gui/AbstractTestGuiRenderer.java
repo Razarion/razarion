@@ -4,10 +4,9 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
-import com.btxtech.shared.gameengine.planet.pathing.Orca;
 import com.btxtech.shared.gameengine.planet.pathing.OrcaLine;
 import javafx.event.Event;
 import javafx.scene.canvas.Canvas;
@@ -208,14 +207,23 @@ public abstract class AbstractTestGuiRenderer {
         gc.strokeOval(circle2D.getCenter().getX() - circle2D.getRadius(), circle2D.getCenter().getY() - circle2D.getRadius(), 2 * circle2D.getRadius(), 2 * circle2D.getRadius());
     }
 
+    protected void strokeSyncPhysicalArea(SyncPhysicalArea syncPhysicalMovable, double lineWidth, Paint color) {
+        gc.setStroke(color);
+        gc.setLineWidth(lineWidth);
+        gc.strokeOval(syncPhysicalMovable.getPosition2d().getX() - syncPhysicalMovable.getRadius(),
+                syncPhysicalMovable.getPosition2d().getY() - syncPhysicalMovable.getRadius(),
+                2 * syncPhysicalMovable.getRadius(),
+                2 * syncPhysicalMovable.getRadius());
+    }
+
     protected void strokeSyncPhysicalMovable(SyncPhysicalMovable syncPhysicalMovable, double lineWidth, Paint color) {
         gc.setStroke(color);
         gc.setLineWidth(lineWidth);
-        gc.strokeOval(syncPhysicalMovable.getPosition2d().getX() - syncPhysicalMovable.getRadius(), syncPhysicalMovable.getPosition2d().getY() - syncPhysicalMovable.getRadius(), 2 * syncPhysicalMovable.getRadius(), 2 * syncPhysicalMovable.getRadius());
+        strokeSyncPhysicalArea(syncPhysicalMovable, lineWidth, color);
         gc.setStroke(Color.PINK);
         if (syncPhysicalMovable.getVelocity() != null) {
-            DecimalPosition v = syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR);
-            double speedRadius = v.magnitude();
+            DecimalPosition v = syncPhysicalMovable.getVelocity();
+            // double speedRadius = v.magnitude();
             // gc.strokeOval(syncPhysicalMovable.getPosition2d().getX() - syncPhysicalMovable.getRadius() - speedRadius, syncPhysicalMovable.getPosition2d().getY() - syncPhysicalMovable.getRadius() - speedRadius, 2 * (syncPhysicalMovable.getRadius() + speedRadius), 2 * (syncPhysicalMovable.getRadius() + speedRadius));
             gc.strokeLine(syncPhysicalMovable.getPosition2d().getX(), syncPhysicalMovable.getPosition2d().getY(), syncPhysicalMovable.getPosition2d().getX() + v.getX(), syncPhysicalMovable.getPosition2d().getY() + v.getY());
         }
