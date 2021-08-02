@@ -122,7 +122,7 @@ public class PathingService {
             // DebugHelperStatic.setCurrentTick(-1);
             this.synchronizationSendingContext = synchronizationSendingContext;
             pathingServiceTracker.startTick();
-            preparationPreferredVelocity();
+            setupPreferredVelocity();
             pathingServiceTracker.afterPreparation();
             orcaSolver();
             pathingServiceTracker.afterSolveVelocity();
@@ -142,12 +142,12 @@ public class PathingService {
         this.synchronizationSendingContext = null;
     }
 
-    private void preparationPreferredVelocity() {
+    private void setupPreferredVelocity() {
         syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
             if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
                 return;
             }
-            syncBaseItem.getSyncPhysicalMovable().setupForTick();
+            syncBaseItem.getSyncPhysicalMovable().setupPreferredVelocity();
         });
     }
 

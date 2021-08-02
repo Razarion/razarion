@@ -72,7 +72,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         endAngleSlowDown = physicalAreaConfig.getEndAngleSlowDown();
     }
 
-    public void setupForTick() {
+    public void setupPreferredVelocity() {
         oldPosition = getPosition2d();
         crowded = false;
         if (path != null) {
