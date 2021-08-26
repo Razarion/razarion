@@ -119,7 +119,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         try {
             expectedTicks = scenario.readExpectedTicks();
             if (actualTicks.size() >= MAX_TICK_COUNT + 1) {
-                throw new Exception("Max ticks (+ start state) reached: " + expectedTicks.size());
+                throw new Exception("Max ticks (+ start state) reached: " + MAX_TICK_COUNT + ". Expected ticks: + " + expectedTicks.size());
             }
             compareScenario(expectedTicks, actualTicks, scenario);
         } catch (Throwable t) {
@@ -127,7 +127,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
             showDisplay(scenario, actualTicks, expectedTicks);
             throw new RuntimeException(t);
         }
-        showDisplay(scenario, actualTicks, expectedTicks);
+        // showDisplay(scenario, actualTicks, expectedTicks);
     }
 
     private void showDisplay(Scenario scenario, ScenarioTicks actualTicks, ScenarioTicks expectedTicks) {
@@ -147,11 +147,11 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         actualTicks.addSlaveTick(slave.getBaseItemService().getSyncBaseItemInfos());
         actualTicks.compareMasterSlave();
         for (int tickCount = 0; tickCount < MAX_TICK_COUNT && (isBaseServiceActive() || isPathingServiceMoving()); tickCount++) {
-            DebugHelperStatic.setCurrentTick(actualTicks.size());
+            DebugHelperStatic.setCurrentTick(actualTicks.size() - 1);
             tickPlanetService();
-            // System.out.println("----------------- Master ticks done: " + getPlanetService().getTickCount());
+            System.out.println("----------------- Master ticks done: " + getPlanetService().getTickCount());
             slave.tickPlanetService();
-            // System.out.println("----------------- Slave ticks done: " + slave.getPlanetService().getTickCount());
+            System.out.println("----------------- Slave ticks done: " + slave.getPlanetService().getTickCount());
             DebugHelperStatic.printAfterTick(null);
             actualTicks.addMasterTick(getBaseItemService().getSyncBaseItemInfos());
             actualTicks.addSlaveTick(slave.getBaseItemService().getSyncBaseItemInfos());

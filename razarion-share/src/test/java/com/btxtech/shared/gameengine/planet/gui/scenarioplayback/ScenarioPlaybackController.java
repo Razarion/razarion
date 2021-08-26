@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.gui.scenarioplayback;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.gui.WeldTestRenderer;
+import com.btxtech.shared.gameengine.planet.gui.userobject.InstanceStringGenerator;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -342,5 +343,29 @@ public class ScenarioPlaybackController implements Initializable {
 
     public void onSaveButton() {
         scenarioPlayback.getScenario().onSave();
+    }
+
+    public void onDumpToConsole() {
+        System.out.println("--------------------------------------------------------------------");
+        System.out.println("Tick: " + tick);
+        currentMasterActual.forEach(syncBaseItemInfo -> {
+            if (currentSyncBaseItemId != null && currentSyncBaseItemId == syncBaseItemInfo.getId()) {
+                System.out.println("SyncPhysicalMovable protagonist = GameTestHelper.createSyncPhysicalMovableSetupPreferredVelocity(2, TerrainType.LAND, "
+                        + InstanceStringGenerator.generate(syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition())
+                        + ", "
+                        + InstanceStringGenerator.generate(syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity())
+                        + ", "
+                        + InstanceStringGenerator.generateSimpleDecimalPositionList(syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions())
+                        + ");");
+            } else {
+                System.out.println("physicalAreas.add(GameTestHelper.createSyncPhysicalMovableSetupPreferredVelocity(2, TerrainType.LAND, "
+                        + InstanceStringGenerator.generate(syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition())
+                        + ", "
+                        + InstanceStringGenerator.generate(syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity())
+                        + ", "
+                        + InstanceStringGenerator.generateSimpleDecimalPositionList(syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions())
+                        + "));");
+            }
+        });
     }
 }

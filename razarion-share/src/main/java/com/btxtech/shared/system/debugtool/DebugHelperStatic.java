@@ -63,6 +63,7 @@ public class DebugHelperStatic {
     }
 
     public static void add2printOnTick(String message) {
+        System.out.println(message);
         if (omitTick()) {
             return;
         }
@@ -100,23 +101,16 @@ public class DebugHelperStatic {
         if (syncPhysicalMovable.getSyncItem() == null) {
             return;
         }
-        String stringBuilder = "\nSyncPhysicalMovable syncPhysicalMovable" +
-                syncPhysicalMovable.getSyncItem().getId() +
-                " = GameTestHelper.createSyncPhysicalMovable(" +
+        String stringBuilder = "GameTestHelper.createSyncPhysicalMovable(" +
                 syncPhysicalMovable.getRadius() +
                 ", TerrainType." +
                 syncPhysicalMovable.getTerrainType() +
                 ", " +
                 generate(syncPhysicalMovable.getPosition2d()) +
                 ", " +
-                generate(syncPhysicalMovable.getVelocity()) +
-                ", " +
                 generate(syncPhysicalMovable.getPreferredVelocity()) +
-                ", " +
-                syncPhysicalMovable.getMaxSpeed() +
-                ");";
-        add2printOnTick(stringBuilder);
-        add2printOnTick("\norca.add(syncPhysicalMovable" + syncPhysicalMovable.getSyncItem().getId() + ");");
+                ")";
+        add2printOnTick("physicalAreas.add(" + stringBuilder + ");");
     }
 
     public static void addOrcaAdd(ObstacleSlope obstacleSlope) {
@@ -172,7 +166,7 @@ public class DebugHelperStatic {
 
     // Comes to early
     public static boolean isCurrentTick(int tick) {
-        return currentTick == tick;
+        return currentTick != null && currentTick == tick;
     }
 
     public static String generate(DecimalPosition decimalPosition) {

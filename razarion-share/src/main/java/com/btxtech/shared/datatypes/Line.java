@@ -112,10 +112,10 @@ public class Line {
 
     }
 
-  /*  public double getShortestDistanceOnInfiniteLine(Index point) {
-        Index projection = projectOnInfiniteLine(point);
-        return point.getDistanceDouble(projection);
-    }*/
+    public double getShortestDistanceOnInfiniteLine(DecimalPosition point) {
+        DecimalPosition projection = projectOnInfiniteLine(point);
+        return point.getDistance(projection);
+    }
 
     /**
      * Project the given point on this line with infinite length
@@ -300,14 +300,20 @@ public class Line {
         double dx = point2.getX() - point1.getX();
         double dy = point2.getY() - point1.getY();
         double dr2 = dx * dx + dy * dy;
-        double d = point1.getX() * point2.getY() - point2.getX() * point1.getY();
+        double determinant = point1.getX() * point2.getY() - point2.getX() * point1.getY();
 
-        double part1 = Math.sqrt(radius * radius * dr2 - d * d);
+        double discriminantSquare = radius * radius * dr2 - determinant * determinant;
 
-        double x1 = (d * dy + Math.signum(dy) * dx * part1) / dr2;
-        double y1 = (-d * dx + Math.abs(dy) * part1) / dr2;
-        double x2 = (d * dy - Math.signum(dy) * dx * part1) / dr2;
-        double y2 = (-d * dx - Math.abs(dy) * part1) / dr2;
+        if (discriminantSquare < 0) {
+            return null;
+        }
+
+        double discriminant = Math.sqrt(discriminantSquare);
+
+        double x1 = (determinant * dy + MathHelper.signumNoZero(dy) * dx * discriminant) / dr2;
+        double x2 = (determinant * dy - MathHelper.signumNoZero(dy) * dx * discriminant) / dr2;
+        double y1 = (-determinant * dx + Math.abs(dy) * discriminant) / dr2;
+        double y2 = (-determinant * dx - Math.abs(dy) * discriminant) / dr2;
 
         Collection<DecimalPosition> intersections = new ArrayList<>();
         intersections.add(new DecimalPosition(x1, y1));

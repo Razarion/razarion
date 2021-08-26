@@ -38,7 +38,7 @@ public class SyncTurret {
         if (Math.abs(deltaAngle) < moveAngle) {
             angle -= deltaAngle;
         } else {
-            angle -= Math.signum(deltaAngle) * moveAngle;
+            angle -= Math.signum(deltaAngle) * moveAngle; // TODO Math.signum() return 0 if deltaAngle = 0
         }
     }
 

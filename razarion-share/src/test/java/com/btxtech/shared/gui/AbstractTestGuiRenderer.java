@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -207,6 +208,22 @@ public abstract class AbstractTestGuiRenderer {
         gc.strokeOval(circle2D.getCenter().getX() - circle2D.getRadius(), circle2D.getCenter().getY() - circle2D.getRadius(), 2 * circle2D.getRadius(), 2 * circle2D.getRadius());
     }
 
+
+    public void fillPolygon(List<DecimalPosition> polygon, Color color) {
+        gc.setStroke(color);
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
+
+        double[] xCorners = new double[polygon.size()];
+        double[] yCorners = new double[polygon.size()];
+        for(int i = 0; i<polygon.size();i++) {
+            DecimalPosition position = polygon.get(i);
+            xCorners[i] = position.getX();
+            yCorners[i] = position.getY();
+        }
+
+        gc.fillPolygon(xCorners, yCorners, polygon.size());
+    }
+
     protected void strokeSyncPhysicalArea(SyncPhysicalArea syncPhysicalMovable, double lineWidth, Paint color) {
         gc.setStroke(color);
         gc.setLineWidth(lineWidth);
@@ -221,8 +238,8 @@ public abstract class AbstractTestGuiRenderer {
         gc.setLineWidth(lineWidth);
         strokeSyncPhysicalArea(syncPhysicalMovable, lineWidth, color);
         gc.setStroke(Color.PINK);
-        if (syncPhysicalMovable.getVelocity() != null) {
-            DecimalPosition v = syncPhysicalMovable.getVelocity();
+        if (syncPhysicalMovable.getPreferredVelocity() != null) {
+            DecimalPosition v = syncPhysicalMovable.getPreferredVelocity();
             // double speedRadius = v.magnitude();
             // gc.strokeOval(syncPhysicalMovable.getPosition2d().getX() - syncPhysicalMovable.getRadius() - speedRadius, syncPhysicalMovable.getPosition2d().getY() - syncPhysicalMovable.getRadius() - speedRadius, 2 * (syncPhysicalMovable.getRadius() + speedRadius), 2 * (syncPhysicalMovable.getRadius() + speedRadius));
             gc.strokeLine(syncPhysicalMovable.getPosition2d().getX(), syncPhysicalMovable.getPosition2d().getY(), syncPhysicalMovable.getPosition2d().getX() + v.getX(), syncPhysicalMovable.getPosition2d().getY() + v.getY());
@@ -246,6 +263,18 @@ public abstract class AbstractTestGuiRenderer {
         strokeDecimalPosition(orcaLine.getPoint(), 0.2, Color.RED);
         strokeLine(new Line(orcaLine.getPoint(), orcaLine.getPoint().add(orcaLine.getDirection())), 0.05, Color.RED);
         // strokeDecimalPosition(orcaLine.getRelativeVelocity(), 0.2, Color.BLUE);
+
+        List<DecimalPosition> forbiddenPolygon = new ArrayList<>();
+        DecimalPosition p1 = orcaLine.toLine().getPoint1();
+        DecimalPosition p2 = orcaLine.toLine().getPoint2();
+        forbiddenPolygon.add(p1);
+        forbiddenPolygon.add(p2);
+        forbiddenPolygon.add(p1.rotateCounterClock(p2, -Math.PI / 2.0));
+        forbiddenPolygon.add(p2.rotateCounterClock(p1, Math.PI / 2.0));
+
+
+        fillPolygon(forbiddenPolygon, new Color(1.0f, 0.0f, 0.0f, 0.5));
+
     }
 
     // Override in subclasses

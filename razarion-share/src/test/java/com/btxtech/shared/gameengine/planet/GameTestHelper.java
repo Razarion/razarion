@@ -3,16 +3,24 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
+import com.btxtech.shared.gameengine.datatypes.Path;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.CollectionUtils;
 import org.easymock.EasyMock;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.easymock.EasyMock.anyDouble;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.expect;
 
 /**
  * Created by Beat
@@ -22,7 +30,7 @@ public interface GameTestHelper {
 
     static SyncBaseItem createMockSyncBaseItem(int id, double radius, TerrainType terrainType, DecimalPosition position) {
         SyncBaseItem syncBaseItem = new SyncBaseItem();
-        SyncPhysicalMovable syncPhysicalMovable = createSyncPhysicalMovable(radius, terrainType, position, null, null, 17);
+        SyncPhysicalMovable syncPhysicalMovable = createSyncPhysicalMovable(radius, terrainType, position, null);
         syncBaseItem.init(id, null, syncPhysicalMovable);
         SimpleTestEnvironment.injectService("syncItem", syncPhysicalMovable, SyncPhysicalArea.class, syncBaseItem);
         return syncBaseItem;
@@ -32,17 +40,43 @@ public interface GameTestHelper {
         return createMockSyncBaseItem(-99, radius, terrainType, position);
     }
 
-    static SyncPhysicalMovable createSyncPhysicalMovable(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity, DecimalPosition preferredVelocity, double maxSpeed) {
+    static SyncPhysicalMovable createSyncPhysicalMovable(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition preferredVelocity) {
         SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
         SimpleTestEnvironment.injectService("position2d", syncPhysicalMovable, SyncPhysicalArea.class, position);
-        SimpleTestEnvironment.injectService("velocity", syncPhysicalMovable, SyncPhysicalMovable.class, velocity);
         SimpleTestEnvironment.injectService("preferredVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, preferredVelocity);
         SimpleTestEnvironment.injectService("radius", syncPhysicalMovable, SyncPhysicalArea.class, radius);
-        SimpleTestEnvironment.injectService("maxSpeed", syncPhysicalMovable, SyncPhysicalMovable.class, maxSpeed);
+        SimpleTestEnvironment.injectService("terrainType", syncPhysicalMovable, SyncPhysicalArea.class, terrainType);
+        SimpleTestEnvironment.injectService("maxSpeed", syncPhysicalMovable, SyncPhysicalMovable.class, 17);
+        SimpleTestEnvironment.injectService("acceleration", syncPhysicalMovable, SyncPhysicalMovable.class, 5.0);
+        SimpleTestEnvironment.injectService("angularVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, Math.toRadians(180));
+        SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerService.class);
+        EasyMock.replay(syncItemContainerService);
+        SimpleTestEnvironment.injectService("syncItemContainerService", syncPhysicalMovable, SyncPhysicalArea.class, syncItemContainerService);
+        return syncPhysicalMovable;
+    }
+
+    static SyncPhysicalMovable createSyncPhysicalMovableSetupPreferredVelocity(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity, List<DecimalPosition> wayPositions) {
+        Path path = new Path();
+        path.init(new SimplePath().wayPositions(wayPositions));
+        PathingAccess pathingAccess = EasyMock.createNiceMock(PathingAccess.class);
+        expect(pathingAccess.isInSight(anyObject(), anyDouble(), anyObject())).andReturn(true);
+        TerrainService terrainService = EasyMock.createNiceMock(TerrainService.class);
+        expect(terrainService.getPathingAccess()).andReturn(pathingAccess);
+        EasyMock.replay(pathingAccess, terrainService);
+        SimpleTestEnvironment.injectService("terrainService", path, Path.class, terrainService);
+        SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
+        SimpleTestEnvironment.injectService("position2d", syncPhysicalMovable, SyncPhysicalArea.class, position);
+        SimpleTestEnvironment.injectService("path", syncPhysicalMovable, SyncPhysicalMovable.class, path);
+        SimpleTestEnvironment.injectService("maxSpeed", syncPhysicalMovable, SyncPhysicalMovable.class, 17);
+        SimpleTestEnvironment.injectService("acceleration", syncPhysicalMovable, SyncPhysicalMovable.class, 5.0);
+        SimpleTestEnvironment.injectService("angularVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, Math.toRadians(180));
+        SimpleTestEnvironment.injectService("velocity", syncPhysicalMovable, SyncPhysicalMovable.class, velocity);
+        SimpleTestEnvironment.injectService("radius", syncPhysicalMovable, SyncPhysicalArea.class, radius);
         SimpleTestEnvironment.injectService("terrainType", syncPhysicalMovable, SyncPhysicalArea.class, terrainType);
         SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerService.class);
         EasyMock.replay(syncItemContainerService);
         SimpleTestEnvironment.injectService("syncItemContainerService", syncPhysicalMovable, SyncPhysicalArea.class, syncItemContainerService);
+        syncPhysicalMovable.setupPreferredVelocity();
         return syncPhysicalMovable;
     }
 

@@ -13,9 +13,11 @@ public class OrcaLine {
     private DecimalPosition relativeVelocity;
     private DecimalPosition relativePosition;
     private double combinedRadius;
-    private DecimalPosition u;
 
     public OrcaLine(DecimalPosition point, DecimalPosition direction) {
+        if(direction.magnitude() < 0.9 || direction.magnitude() > 1.1) {
+            throw new IllegalStateException("direction: " + direction);
+        }
         this.point = point;
         this.direction = direction;
     }
@@ -56,11 +58,7 @@ public class OrcaLine {
         this.combinedRadius = combinedRadius;
     }
 
-    public DecimalPosition getU() {
-        return u;
-    }
-
-    public void setU(DecimalPosition u) {
-        this.u = u;
+    public boolean isVelocityAllowed(DecimalPosition velocity) {
+        return direction.determinant(velocity.sub(point)) >= 0.0;
     }
 }

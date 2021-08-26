@@ -319,4 +319,8 @@ public class MathHelper {
     public static int shiftFloor(double input, int times) {
         return ((int) input) >> times;
     }
+
+    public static double signumNoZero(double x) {
+        return x < 0.0 ? -1 : 1;
+    }
 }

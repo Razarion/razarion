@@ -44,7 +44,7 @@ public class MoveMultipleUnitTest extends ScenarioBaseTest {
     }
 
     @Test
-    public void move25East1() {
+    public void  move25East1() {
         testScenario(new Scenario("MoveMultipleUnitTest_move25East1.json", getClass()) {
             @Override
             protected void createSyncItems() {

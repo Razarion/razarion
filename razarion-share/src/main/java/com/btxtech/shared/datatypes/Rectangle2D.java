@@ -233,9 +233,15 @@ public class Rectangle2D {
         if (crossPoint != null && !crossPoints.contains(crossPoint)) {
             crossPoints.add(crossPoint);
         }
+        if (crossPoint != null && crossPoints.size() == 2) {
+            return crossPoints;
+        }
         crossPoint = lineE().getCrossInclusive(line);
         if (crossPoint != null && !crossPoints.contains(crossPoint)) {
             crossPoints.add(crossPoint);
+        }
+        if (crossPoint != null && crossPoints.size() == 2) {
+            return crossPoints;
         }
         crossPoint = lineN().getCrossInclusive(line);
         if (crossPoint != null && !crossPoints.contains(crossPoint)) {

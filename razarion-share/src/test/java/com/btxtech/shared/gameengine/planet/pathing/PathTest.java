@@ -1,15 +1,11 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.TestHelper;
-import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
-import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
-import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import javafx.scene.paint.Color;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -67,7 +63,7 @@ public class PathTest extends AStarBaseTest {
     }
 
     private void assertPath(DecimalPosition expected, Path path, double radius, DecimalPosition inputPosition) {
-        path.setupCurrentWayPoint(GameTestHelper.createSyncPhysicalMovable(radius, TerrainType.LAND, inputPosition, null, null, 0));
+        path.setupCurrentWayPoint(GameTestHelper.createSyncPhysicalMovable(radius, TerrainType.LAND, inputPosition, null));
         TestHelper.assertDecimalPosition("Unexpected getCurrentWayPoint()", expected, path.getCurrentWayPoint());
     }
 

@@ -18,4 +18,9 @@ public class SimplePath {
     public void setWayPositions(List<DecimalPosition> wayPositions) {
         this.wayPositions = wayPositions;
     }
+
+    public SimplePath wayPositions(List<DecimalPosition> wayPositions) {
+        setWayPositions(wayPositions);
+        return this;
+    }
 }

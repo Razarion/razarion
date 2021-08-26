@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.inject.Inject;
@@ -155,22 +156,26 @@ public class PathingService {
         Collection<Orca> orcas = new ArrayList<>();
         Collection<SyncPhysicalMovable> pushAways = new LinkedList<>();
         syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
-            SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
-            if (!syncPhysicalArea.canMove()) {
-                return;
-            }
-
-            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
-            if (syncPhysicalMovable.isMoving()) {
-                Orca orca = new Orca(syncPhysicalMovable);
-                // debugHelper.debugToConsole("new Orca1");
-                addOtherSyncItemOrcaLines(orca, syncBaseItem, pushAways);
-                addObstaclesOrcaLines(orca, syncBaseItem);
-                if (!orca.isEmpty()) {
-                    orcas.add(orca);
-                } else {
-                    syncPhysicalMovable.setVelocity(syncPhysicalMovable.getPreferredVelocity());
+            try {
+                SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
+                if (!syncPhysicalArea.canMove()) {
+                    return;
                 }
+
+                SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
+                if (syncPhysicalMovable.isMoving()) {
+                    Orca orca = new Orca(syncPhysicalMovable);
+                    // debugHelper.debugToConsole("new Orca1");
+                    addOtherSyncItemOrcaLines(orca, syncBaseItem, pushAways);
+                    addObstaclesOrcaLines(orca, syncBaseItem);
+                    if (!orca.isEmpty()) {
+                        orcas.add(orca);
+                    } else {
+                        syncPhysicalMovable.setVelocity(syncPhysicalMovable.getPreferredVelocity());
+                    }
+                }
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
             }
         });
         handlePushAways(orcas, pushAways, 0);
@@ -201,11 +206,19 @@ public class PathingService {
     private void addOtherSyncItemOrcaLines(Orca orca, SyncBaseItem syncBaseItem, Collection<SyncPhysicalMovable> pushAways) {
         syncItemContainerService.iterateCellRadiusItem(syncBaseItem.getSyncPhysicalArea().getPosition2d(), NEIGHBOR_ITEM_RADIUS, otherSyncItem -> {
             if (syncBaseItem.equals(otherSyncItem)) {
+                if(DebugHelperStatic.isCurrentTick(21) && syncBaseItem.getId() == 9) {
+                    System.out.println("------------------------------");
+                    DebugHelperStatic.addOrcaAdd(syncBaseItem.getSyncPhysicalMovable());
+                    System.out.println("---");
+                }
                 return;
             }
             SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
             if (other instanceof SyncPhysicalMovable) {
                 SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
+                if (DebugHelperStatic.isCurrentTick(21) && syncBaseItem.getId() == 9) {
+                    DebugHelperStatic.addOrcaAdd(otherSyncPhysicalMovable);
+                }
                 if (otherSyncPhysicalMovable.isMoving() || otherSyncPhysicalMovable.hasDestination()) {
                     orca.add(otherSyncPhysicalMovable);
                 } else {

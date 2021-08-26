@@ -1,13 +1,19 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
+
+import static com.btxtech.shared.gameengine.planet.PlanetService.TICK_FACTOR;
 
 /**
  * Created by Beat
@@ -16,8 +22,8 @@ import java.util.logging.Logger;
 // http://gamma.cs.unc.edu/ORCA/
 // Reciprocal n-body Collision Avoidance
 public class Orca {
-    public static final double TIME_HORIZON_ITEMS = 10;
-    public static final double TIME_HORIZON_OBSTACLES = 2; // Do not make bigger, it becomes unstable
+    public static final double TIME_HORIZON_ITEMS = 0.5;
+    public static final double TIME_HORIZON_OBSTACLES = 0.5; // Do not make bigger, it becomes unstable
     public static final double EPSILON = 0.00001;
     private static final Logger LOGGER = Logger.getLogger(Orca.class.getName());
     private SyncPhysicalMovable syncPhysicalMovable;
@@ -25,7 +31,7 @@ public class Orca {
     private double radius;
     private DecimalPosition preferredVelocity;
     private DecimalPosition newVelocity;
-    private double maxSpeed;
+    private double speed;
     private List<OrcaLine> itemOrcaLines = new ArrayList<>();
     private List<OrcaLine> obstacleOrcaLines = new ArrayList<>();
     private List<ObstacleSlope> debugObstacles_WRONG = new ArrayList<>();
@@ -41,35 +47,46 @@ public class Orca {
         position = syncPhysicalMovable.getPosition2d();
         radius = syncPhysicalMovable.getRadius();
         preferredVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity());
-        maxSpeed = preferredVelocity.magnitude();
+        speed = preferredVelocity.magnitude();
         //DebugHelperStatic.addOrcaCreate(syncPhysicalMovable);
     }
 
-    public void add(SyncPhysicalMovable other) {
-//        DebugHelperStatic.addOrcaAdd(other);
-        addOrcaLine(other.getPosition2d(), other.getVelocity(), other.getRadius(), 0.5);
-    }
-
-    public void add(SyncPhysicalArea syncPhysicalArea) {
-        addOrcaLine(syncPhysicalArea.getPosition2d(), null, syncPhysicalArea.getRadius(), 1.0);
+    public void add(SyncPhysicalArea other) {
+        DecimalPosition otherVelocity = null;
+        double reciprocalFactor = 1.0;
+        if (other instanceof SyncPhysicalMovable) {
+            otherVelocity = ((SyncPhysicalMovable) other).getPreferredVelocity();
+            if (otherVelocity != null) {
+                DecimalPosition relativePosition = position.sub(other.getPosition2d());
+                if (relativePosition.normalize().dotProduct(preferredVelocity.normalize()) > 0.0) {
+                    // Ignore pusher from directly behind. We can't do anything against them.
+                    return;
+                }
+                reciprocalFactor = 0.5;
+            }
+        }
+        addOrcaLine(other.getPosition2d(), otherVelocity, other.getRadius(), reciprocalFactor);
     }
 
     public void add(ObstacleTerrainObject obstacleTerrainObject) {
         addOrcaLine(obstacleTerrainObject.getCircle().getCenter(), null, obstacleTerrainObject.getCircle().getRadius(), 1.0);
     }
 
-    private void addOrcaLine(DecimalPosition otherPosition, DecimalPosition otherVelocity, double otherRadius, double uReciprocalFactor) {
+    private void addOrcaLine(DecimalPosition otherPosition, DecimalPosition otherVelocity, double otherRadius, double reciprocalFactor) {
         DecimalPosition relativePosition = otherPosition.sub(position);
-        DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity()).sub(DecimalPosition.zeroIfNull(otherVelocity));
+        DecimalPosition preferredVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity());
+        DecimalPosition relativeVelocity = preferredVelocity.sub(DecimalPosition.zeroIfNull(otherVelocity));
         double distanceSq = relativePosition.magnitudeSq();
         double combinedRadius = radius + otherRadius;
         double combinedRadiusSq = combinedRadius * combinedRadius;
 
-        DecimalPosition u;
-        DecimalPosition direction;
 
-        if (distanceSq > combinedRadiusSq) {
+        OrcaLine orcaLine;
+        if (distanceSq >= combinedRadiusSq) {
             // No collision.
+            DecimalPosition u;
+            DecimalPosition direction;
+
             DecimalPosition w = relativeVelocity.sub(relativePosition.divide(TIME_HORIZON_ITEMS));
 
             // Vector from cutoff center to relative velocity.
@@ -98,29 +115,20 @@ public class Orca {
                 double dotProduct2 = relativeVelocity.dotProduct(direction);
                 u = direction.multiply(dotProduct2).sub(relativeVelocity);
             }
+            DecimalPosition point = preferredVelocity.add(reciprocalFactor, u);
+            orcaLine = new OrcaLine(point, direction);
         } else {
-            // Collision. Project on cut-off circle of time timeStep.
-
-            // Vector from cutoff center to relative velocity.
-            DecimalPosition w = relativeVelocity.sub(relativePosition.multiply(PlanetService.TICKS_PER_SECONDS));
-
-            double wLength = w.magnitude();
-            if (wLength == 0.0) {
-                // Not properly handled
-                LOGGER.warning("wLength == 0.0 not handled for: " + syncPhysicalMovable);
-                return;
-            }
-            DecimalPosition unitW = w.multiply(1.0 / wLength);
-
-            direction = new DecimalPosition(unitW.getY(), -unitW.getX());
-            u = unitW.multiply(combinedRadius * PlanetService.TICKS_PER_SECONDS - wLength);
+            // Collision
+            double overlapDistance = combinedRadius - relativePosition.magnitude();
+            DecimalPosition overlapCorrection = position.sub(otherPosition).normalize(overlapDistance / TICK_FACTOR); // Make sure the collision is eliminated next tick
+            DecimalPosition point = preferredVelocity.add(overlapCorrection.sub(relativeVelocity).multiply(reciprocalFactor));
+            point = point.normalize(Math.min(speed, point.magnitude()));
+            DecimalPosition direction = new DecimalPosition(-relativePosition.getY(), relativePosition.getX()).normalize();
+            orcaLine = new OrcaLine(point, direction);
         }
-        DecimalPosition point = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity()).add(uReciprocalFactor, u);
-        OrcaLine orcaLine = new OrcaLine(point, direction);
         orcaLine.setRelativeVelocity(relativeVelocity);
         orcaLine.setRelativePosition(relativePosition);
         orcaLine.setCombinedRadius(combinedRadius);
-        orcaLine.setU(u);
         itemOrcaLines.add(orcaLine);
     }
 
@@ -267,7 +275,7 @@ public class Orca {
         // Project current velocity on velocity obstacle.
 
         // Check if current velocity is projected on cutoff circles.
-        DecimalPosition velocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity());
+        DecimalPosition velocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity());
 
         double t = obstacle1EqualsObstacle2 ? 0.5 : velocity.sub(leftCutOff).dotProduct(cutOffVector) / cutOffVector.magnitudeSq();
         double tLeft = velocity.sub(leftCutOff).dotProduct(leftLegDirection);
@@ -369,180 +377,69 @@ public class Orca {
 
     public void solve() {
         orcaLines = getOrcaLines();
-        int lineFail = linearProgram2(orcaLines, preferredVelocity, false);
-        if (lineFail < orcaLines.size()) {
-            linearProgram3(obstacleOrcaLines.size(), lineFail);
-        }
-        if (newVelocity != null && !preferredVelocity.equalsDelta(newVelocity)) {
-            syncPhysicalMovable.setCrowded();
-        }
+        newVelocity = linearProgram();
+        // TODO if (newVelocity != null && !preferredVelocity.equalsDelta(newVelocity)) {
+        // TODO syncPhysicalMovable.setCrowded();
+        // TODO}
     }
 
-    /**
-     * Solves a two-dimensional linear program subject to linear constraints
-     * defined by orcaLines and a circular constraint.
-     *
-     * @param orcaLines            Lines defining the linear constraints.
-     * @param optimizationVelocity The optimization velocity.
-     * @param optimizeDirection    True if the direction should be optimized.
-     * @return The number of the line on which it fails, or the number of orcaLines
-     * if successful.
-     */
-    private int linearProgram2(List<OrcaLine> orcaLines, DecimalPosition optimizationVelocity, boolean optimizeDirection) {
-        if (optimizeDirection) {
-            // Optimize direction. Note that the optimization velocity is of unit length in this case.
-            newVelocity = optimizationVelocity.multiply(maxSpeed);
-        } else if (optimizationVelocity.magnitude() > maxSpeed) {
-            // Optimize closest point and outside circle.
-            newVelocity = optimizationVelocity.normalize(maxSpeed);
-        } else {
-            // Optimize closest point and inside circle.
-            newVelocity = optimizationVelocity;
+    private DecimalPosition linearProgram() {
+        // 1) If preferredVelocity does not violate any OrcaLine
+        if (orcaLines.stream().allMatch(orcaLine -> orcaLine.isVelocityAllowed(preferredVelocity))) {
+            return preferredVelocity;
         }
 
-        for (int lineNo = 0; lineNo < orcaLines.size(); lineNo++) {
-            if (orcaLines.get(lineNo).getDirection().determinant(orcaLines.get(lineNo).getPoint().sub(newVelocity)) > 0.0) {
-                // Result does not satisfy constraint i. Compute new optimal result.
-                DecimalPosition tempResult = newVelocity;
-                if (!linearProgram1(orcaLines, lineNo, optimizationVelocity, optimizeDirection)) {
-                    newVelocity = tempResult;
-
-                    return lineNo;
-                }
+        // 2) If a simple intersection between OrcaLine and speed is possible
+        List<DecimalPosition> intersections = new ArrayList<>();
+        orcaLines.forEach(orcaLine -> {
+            Collection<DecimalPosition> possibleVelocities = orcaLine.toLine().circleLineIntersection(speed);
+            if (possibleVelocities == null) {
+                return;
             }
+            DecimalPosition possibleVelocity = DecimalPosition.getNearestPoint(preferredVelocity, possibleVelocities);
+            if (isVelocityAllowed(possibleVelocity, orcaLine)) {
+                intersections.add(possibleVelocity);
+            }
+        });
+        if (!intersections.isEmpty()) {
+            return DecimalPosition.getNearestPoint(preferredVelocity, intersections);
         }
 
-
-        return orcaLines.size();
-    }
-
-    /**
-     * Solves a one-dimensional linear program on a specified line subject to
-     * linear constraints defined by orcaLines and a circular constraint.
-     *
-     * @param orcaLines            Lines defining the linear constraints.
-     * @param lineNo               The specified line constraint.
-     * @param optimizationVelocity The optimization velocity.
-     * @param optimizeDirection    True if the direction should be optimized.
-     * @return True if successful.
-     */
-    private boolean linearProgram1(List<OrcaLine> orcaLines, int lineNo, DecimalPosition optimizationVelocity, boolean optimizeDirection) {
-        double dotProduct = orcaLines.get(lineNo).getPoint().dotProduct(orcaLines.get(lineNo).getDirection());
-        double discriminant = dotProduct * dotProduct + maxSpeed * maxSpeed - orcaLines.get(lineNo).getPoint().magnitude() * orcaLines.get(lineNo).getPoint().magnitude();
-
-        if (discriminant < 0.0) {
-            // Max speed circle fully invalidates line lineNo.
-            return false;
-        }
-
-        double sqrtDiscriminant = Math.sqrt(discriminant);
-        double tLeft = -sqrtDiscriminant - dotProduct;
-        double tRight = sqrtDiscriminant - dotProduct;
-
-        for (int i = 0; i < lineNo; i++) {
-            double denominator = orcaLines.get(lineNo).getDirection().determinant(orcaLines.get(i).getDirection());
-            double numerator = orcaLines.get(i).getDirection().determinant(orcaLines.get(lineNo).getPoint().sub(orcaLines.get(i).getPoint()));
-
-            if (Math.abs(denominator) <= EPSILON) {
-                // Lines lineNo and i are (almost) parallel.
-                if (numerator < 0.0) {
-                    return false;
-                }
-
-                continue;
-            }
-
-            double t = numerator / denominator;
-
-            if (denominator >= 0.0) {
-                // Line i bounds line lineNo on the right.
-                tRight = Math.min(tRight, t);
-            } else {
-                // Line i bounds line lineNo on the left.
-                tLeft = Math.max(tLeft, t);
-            }
-
-            if (tLeft > tRight) {
-                return false;
-            }
-        }
-
-        if (optimizeDirection) {
-            // Optimize direction.
-            if (optimizationVelocity.dotProduct(orcaLines.get(lineNo).getDirection()) > 0.0) {
-                // Take right extreme.
-                newVelocity = orcaLines.get(lineNo).getPoint().add(tRight, orcaLines.get(lineNo).getDirection());
-            } else {
-                // Take left extreme.
-                newVelocity = orcaLines.get(lineNo).getPoint().add(tLeft, orcaLines.get(lineNo).getDirection());
-            }
-        } else {
-            // Optimize closest point.
-            double t = orcaLines.get(lineNo).getDirection().dotProduct(optimizationVelocity.sub(orcaLines.get(lineNo).getPoint()));
-
-            if (t < tLeft) {
-                newVelocity = orcaLines.get(lineNo).getPoint().add(tLeft, orcaLines.get(lineNo).getDirection());
-            } else if (t > tRight) {
-                newVelocity = orcaLines.get(lineNo).getPoint().add(tRight, orcaLines.get(lineNo).getDirection());
-            } else {
-                newVelocity = orcaLines.get(lineNo).getPoint().add(t, orcaLines.get(lineNo).getDirection());
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Solves a two-dimensional linear program subject to linear constraints
-     * defined by lines and a circular constraint.
-     *
-     * @param numObstacleLines Count of obstacle lines.
-     * @param beginLine        The line on which the 2-D linear program failed.
-     */
-    private void linearProgram3(int numObstacleLines, int beginLine) {
-        double distance = 0.0;
-
-        for (int i = beginLine; i < orcaLines.size(); i++) {
-            if (orcaLines.get(i).getDirection().determinant(orcaLines.get(i).getPoint().sub(newVelocity)) > distance) {
-                // Result does not satisfy constraint of line i.
-                List<OrcaLine> projectedLines = new ArrayList<>(numObstacleLines);
-                for (int j = 0; j < numObstacleLines; j++) {
-                    projectedLines.add(orcaLines.get(j));
-                }
-
-                for (int j = numObstacleLines; j < i; j++) {
-                    double determinant = orcaLines.get(i).getDirection().determinant(orcaLines.get(j).getDirection());
-                    DecimalPosition point;
-
-                    if (Math.abs(determinant) <= EPSILON) {
-                        // Line i and line j are parallel.
-                        if (orcaLines.get(i).getDirection().dotProduct(orcaLines.get(j).getDirection()) > 0.0) {
-                            // Line i and line j point in the same direction.
-                            continue;
+        //  3) Find best solution
+        List<DecimalPosition> possibleVelocities = new ArrayList<>();
+        for (int i = 0; i < orcaLines.size(); i++) {
+            OrcaLine orcaLine = orcaLines.get(i);
+            Line line = orcaLine.toLine();
+            for (int j = i + 1; j < orcaLines.size(); j++) {
+                OrcaLine otherOrcaLine = orcaLines.get(j);
+                Line otherLine = otherOrcaLine.toLine();
+                DecimalPosition possibleVelocity = line.getCrossInfinite(otherLine);
+                if (possibleVelocity != null) {
+                    if (possibleVelocity.magnitude() <= speed) {
+                        if (isVelocityAllowed(possibleVelocity, orcaLine, otherOrcaLine)) {
+                            possibleVelocities.add(possibleVelocity);
                         }
-
-                        // Line i and line j point in opposite direction.
-                        point = orcaLines.get(i).getPoint().add(orcaLines.get(j).getPoint()).multiply(0.5);
                     } else {
-                        point = orcaLines.get(i).getPoint().add(orcaLines.get(i).getDirection().multiply(orcaLines.get(j).getDirection().determinant(orcaLines.get(i).getPoint().sub(orcaLines.get(j).getPoint())) / determinant));
+                        DecimalPosition correctedPossibleVelocity = possibleVelocity.normalize(speed);
+                        if (isVelocityAllowed(correctedPossibleVelocity)) {
+                            possibleVelocities.add(correctedPossibleVelocity);
+                        }
                     }
-
-                    DecimalPosition direction = orcaLines.get(j).getDirection().sub(orcaLines.get(i).getDirection()).normalize();
-                    projectedLines.add(new OrcaLine(point, direction));
                 }
-
-                DecimalPosition tempResult = newVelocity;
-                if (linearProgram2(projectedLines, new DecimalPosition(-orcaLines.get(i).getDirection().getY(), orcaLines.get(i).getDirection().getX()), true) < projectedLines.size()) {
-                    // This should in principle not happen. The result is by
-                    // definition already in the feasible region of this linear
-                    // program. If it fails, it is due to small floating point
-                    // error, and the current result is kept.
-                    newVelocity = tempResult;
-                }
-
-                distance = orcaLines.get(i).getDirection().determinant(orcaLines.get(i).getPoint().sub(newVelocity));
             }
         }
+
+        if (!possibleVelocities.isEmpty()) {
+            return DecimalPosition.getNearestPoint(preferredVelocity, possibleVelocities);
+        }
+
+        return DecimalPosition.NULL;
+    }
+
+    private boolean isVelocityAllowed(DecimalPosition velocity, OrcaLine... ignoredLines) {
+        Set<OrcaLine> ignored = new HashSet<>();
+        Collections.addAll(ignored, ignoredLines);
+        return orcaLines.stream().allMatch(ol -> ignored.contains(ol) || ol.isVelocityAllowed(velocity));
     }
 
     public List<ObstacleSlope> getDebugObstacles_WRONG() {

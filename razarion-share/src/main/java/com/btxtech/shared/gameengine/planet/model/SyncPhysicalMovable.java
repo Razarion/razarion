@@ -259,7 +259,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         if (velocity != null && !velocity.equalsDeltaZero()) {
             double deltaAngle = MathHelper.negateAngle(velocity.angle() - getAngle());
             if (Math.abs(deltaAngle) > angularVelocity * PlanetService.TICK_FACTOR) {
-                return Math.signum(deltaAngle) * angularVelocity;
+                return Math.signum(deltaAngle) * angularVelocity; // TODO Math.signum() return 0 if deltaAngle = 0
             } else {
                 return null;
             }
@@ -311,7 +311,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         if (velocity != null) {
             double deltaAngle = MathHelper.negateAngle(velocity.angle() - getAngle());
             if (Math.abs(deltaAngle) > angularVelocity * PlanetService.TICK_FACTOR) {
-                setAngle(MathHelper.negateAngle(getAngle() + Math.signum(deltaAngle) * angularVelocity * PlanetService.TICK_FACTOR));
+                setAngle(MathHelper.negateAngle(getAngle() + Math.signum(deltaAngle) * angularVelocity * PlanetService.TICK_FACTOR));  // TODO Math.signum() return 0 if deltaAngle = 0
             } else {
                 setAngle(velocity.angle());
             }
