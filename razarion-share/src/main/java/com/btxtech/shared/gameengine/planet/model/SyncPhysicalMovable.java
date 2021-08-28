@@ -159,7 +159,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             });
         }
         if (path == null) {
-            return; // TODO Ugly performance: can not stop iteration of syncItemContainerService.iterateCellQuadBaseItem()
+            return;
         }
 
         Line line = new Line(oldPosition, getPosition2d());

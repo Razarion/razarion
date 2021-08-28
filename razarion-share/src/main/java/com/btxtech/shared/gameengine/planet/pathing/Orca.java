@@ -378,9 +378,6 @@ public class Orca {
     public void solve() {
         orcaLines = getOrcaLines();
         newVelocity = linearProgram();
-        // TODO if (newVelocity != null && !preferredVelocity.equalsDelta(newVelocity)) {
-        // TODO syncPhysicalMovable.setCrowded();
-        // TODO}
     }
 
     private DecimalPosition linearProgram() {
@@ -388,6 +385,8 @@ public class Orca {
         if (orcaLines.stream().allMatch(orcaLine -> orcaLine.isVelocityAllowed(preferredVelocity))) {
             return preferredVelocity;
         }
+
+        syncPhysicalMovable.setCrowded();
 
         // 2) If a simple intersection between OrcaLine and speed is possible
         List<DecimalPosition> intersections = new ArrayList<>();
