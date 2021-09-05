@@ -4,14 +4,11 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -111,7 +108,7 @@ public class Scenario {
         try {
             File savePath = new File(saveDir, fileName);
             System.out.println("Save expected text case values to: " + savePath);
-            new ObjectMapper().writeValue(savePath, expectedScenarioTicks);
+            new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(savePath, expectedScenarioTicks);
         } catch (Throwable t) {
             t.printStackTrace();
         }

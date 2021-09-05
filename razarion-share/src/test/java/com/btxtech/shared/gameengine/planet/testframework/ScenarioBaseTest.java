@@ -124,10 +124,10 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
             compareScenario(expectedTicks, actualTicks, scenario);
         } catch (Throwable t) {
             t.printStackTrace();
-            showDisplay(scenario, actualTicks, expectedTicks);
+            // showDisplay(scenario, actualTicks, expectedTicks);
             throw new RuntimeException(t);
         }
-        showDisplay(scenario, actualTicks, expectedTicks);
+        // showDisplay(scenario, actualTicks, expectedTicks);
     }
 
     private void showDisplay(Scenario scenario, ScenarioTicks actualTicks, ScenarioTicks expectedTicks) {

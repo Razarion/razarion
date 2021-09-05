@@ -269,7 +269,7 @@ public class OrcaTest {
         Orca orca = new Orca(protagonist);
         physicalAreas.forEach(orca::add);
         orca.solve();
-        display(orca, protagonist, null, physicalAreas);
+        //display(orca, protagonist, null, physicalAreas);
         TestHelper.assertDecimalPosition("New velocity wrong", expected, orca.getNewVelocity());
     }
 
