@@ -31,7 +31,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
@@ -54,7 +54,7 @@ public class SyncBuilder extends SyncBaseAbility {
     @Inject
     private TerrainService terrainService;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private SyncService syncService;
     private BuilderType builderType;

@@ -127,7 +127,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
             showDisplay(scenario, actualTicks, expectedTicks);
             throw new RuntimeException(t);
         }
-        // showDisplay(scenario, actualTicks, expectedTicks);
+        showDisplay(scenario, actualTicks, expectedTicks);
     }
 
     private void showDisplay(Scenario scenario, ScenarioTicks actualTicks, ScenarioTicks expectedTicks) {

@@ -215,7 +215,7 @@ public abstract class AbstractTestGuiRenderer {
 
         double[] xCorners = new double[polygon.size()];
         double[] yCorners = new double[polygon.size()];
-        for(int i = 0; i<polygon.size();i++) {
+        for (int i = 0; i < polygon.size(); i++) {
             DecimalPosition position = polygon.get(i);
             xCorners[i] = position.getX();
             yCorners[i] = position.getY();
@@ -224,17 +224,29 @@ public abstract class AbstractTestGuiRenderer {
         gc.fillPolygon(xCorners, yCorners, polygon.size());
     }
 
-    protected void strokeSyncPhysicalArea(SyncPhysicalArea syncPhysicalMovable, double lineWidth, Paint color) {
-        gc.setStroke(color);
+    protected void strokeSyncPhysicalArea(SyncPhysicalArea syncPhysicalArea, double lineWidth, Paint color) {
+        if (syncPhysicalArea instanceof SyncPhysicalMovable) {
+            if (((SyncPhysicalMovable) syncPhysicalArea).getVelocity() != null) {
+                gc.setStroke(color);
+            } else {
+                gc.setStroke(Color.DARKGRAY);
+            }
+        } else {
+            gc.setStroke(Color.LIGHTGRAY);
+        }
         gc.setLineWidth(lineWidth);
-        gc.strokeOval(syncPhysicalMovable.getPosition2d().getX() - syncPhysicalMovable.getRadius(),
-                syncPhysicalMovable.getPosition2d().getY() - syncPhysicalMovable.getRadius(),
-                2 * syncPhysicalMovable.getRadius(),
-                2 * syncPhysicalMovable.getRadius());
+        gc.strokeOval(syncPhysicalArea.getPosition2d().getX() - syncPhysicalArea.getRadius(),
+                syncPhysicalArea.getPosition2d().getY() - syncPhysicalArea.getRadius(),
+                2 * syncPhysicalArea.getRadius(),
+                2 * syncPhysicalArea.getRadius());
     }
 
     protected void strokeSyncPhysicalMovable(SyncPhysicalMovable syncPhysicalMovable, double lineWidth, Paint color) {
-        gc.setStroke(color);
+        if (syncPhysicalMovable.getVelocity() != null) {
+            gc.setStroke(color);
+        } else {
+            gc.setStroke(Color.DARKGRAY);
+        }
         gc.setLineWidth(lineWidth);
         strokeSyncPhysicalArea(syncPhysicalMovable, lineWidth, color);
         gc.setStroke(Color.PINK);

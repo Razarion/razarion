@@ -44,7 +44,7 @@ import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
@@ -68,7 +68,7 @@ public class SyncBaseItem extends SyncItem {
     @Inject
     private BoxService boxService;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     private PlayerBase base;
     private double buildup;
     private double health;

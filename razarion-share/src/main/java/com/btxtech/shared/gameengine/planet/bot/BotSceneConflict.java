@@ -6,7 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
@@ -29,7 +29,7 @@ public class BotSceneConflict {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private Instance<TerrainAreaFinder> terrainAreaFinderInstance;
     @Inject

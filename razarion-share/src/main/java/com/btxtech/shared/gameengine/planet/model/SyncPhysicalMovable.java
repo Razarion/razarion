@@ -24,7 +24,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.utils.MathHelper;
 
@@ -51,7 +51,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     //    @Inject
 //    private DebugHelper debugHelper;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     private double acceleration; // Meter per square second
     private double maxSpeed; // Meter per second
     private double angularVelocity; // Rad per second

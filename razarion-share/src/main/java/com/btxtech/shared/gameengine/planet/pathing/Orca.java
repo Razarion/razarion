@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.planet.PlanetService.TICK_FACTOR;
 
@@ -25,9 +24,9 @@ public class Orca {
     public static final double TIME_HORIZON_ITEMS = 0.5;
     public static final double TIME_HORIZON_OBSTACLES = 0.5; // Do not make bigger, it becomes unstable
     public static final double EPSILON = 0.00001;
-    private static final Logger LOGGER = Logger.getLogger(Orca.class.getName());
-    private SyncPhysicalMovable syncPhysicalMovable;
-    private DecimalPosition position;
+    // private static final Logger LOGGER = Logger.getLogger(Orca.class.getName());
+    private final SyncPhysicalMovable syncPhysicalMovable;
+    private final DecimalPosition position;
     private double radius;
     private DecimalPosition preferredVelocity;
     private DecimalPosition newVelocity;
@@ -443,5 +442,13 @@ public class Orca {
 
     public List<ObstacleSlope> getDebugObstacles_WRONG() {
         return debugObstacles_WRONG;
+    }
+
+    public DecimalPosition getPosition() {
+        return position;
+    }
+
+    public SyncPhysicalMovable getSyncPhysicalMovable() {
+        return syncPhysicalMovable;
     }
 }

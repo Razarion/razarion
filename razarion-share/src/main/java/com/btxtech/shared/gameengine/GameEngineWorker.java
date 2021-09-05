@@ -41,7 +41,7 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.PlanetTickListener;
 import com.btxtech.shared.gameengine.planet.ResourceService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.SynchronizationSendingContext;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
@@ -87,7 +87,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Inject
     private BaseItemService baseItemService;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private QuestService questService;
     @Inject

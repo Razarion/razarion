@@ -44,6 +44,10 @@ public class InstanceStringGenerator {
     }
 
     public static String generateSimpleDecimalPositionList(List<DecimalPosition> positions) {
+        if (positions == null) {
+            return NULL_STRING;
+        }
+
         StringBuilder builder = new StringBuilder();
         builder.append("Arrays.asList(");
         for (int i = 0; i < positions.size(); i++) {

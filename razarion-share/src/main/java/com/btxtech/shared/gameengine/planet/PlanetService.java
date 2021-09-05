@@ -55,7 +55,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     @Inject
     private ProjectileService projectileService;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private TerrainService terrainService;
     @Inject

@@ -90,8 +90,8 @@ public class AbstractIntegrationTest {
         return baseItemService;
     }
 
-    public SyncItemContainerService getSyncItemContainerService() {
-        return getWeldBean(SyncItemContainerService.class);
+    public SyncItemContainerServiceImpl getSyncItemContainerService() {
+        return getWeldBean(SyncItemContainerServiceImpl.class);
     }
 
     public ItemTypeService getItemTypeService() {

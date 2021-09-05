@@ -19,7 +19,7 @@ import java.util.List;
 @Singleton
 public class GuardingItemService {
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject

@@ -59,7 +59,7 @@ public class WeldSlaveEmulator extends AbstractIntegrationTest {
         @Override
         public void onSyncItemRemoved(SyncItem serverSyncItem, boolean explode) {
             // System.out.println("--- onSyncItemRemoved");
-            SyncItem syncItem = getWeldBean(SyncItemContainerService.class).getSyncItem(serverSyncItem.getId());
+            SyncItem syncItem = getWeldBean(SyncItemContainerServiceImpl.class).getSyncItem(serverSyncItem.getId());
             if (syncItem instanceof SyncBaseItem) {
                 getWeldBean(BaseItemService.class).onSlaveSyncBaseItemDeleted((SyncBaseItem) syncItem, new SyncItemDeletedInfo().setExplode(explode));
             } else if (syncItem instanceof SyncResourceItem) {

@@ -358,13 +358,16 @@ public class ScenarioPlaybackController implements Initializable {
                         + InstanceStringGenerator.generateSimpleDecimalPositionList(syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions())
                         + ");");
             } else {
-                System.out.println("physicalAreas.add(GameTestHelper.createSyncPhysicalMovableSetupPreferredVelocity(2, TerrainType.LAND, "
-                        + InstanceStringGenerator.generate(syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition())
-                        + ", "
-                        + InstanceStringGenerator.generate(syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity())
-                        + ", "
-                        + InstanceStringGenerator.generateSimpleDecimalPositionList(syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions())
-                        + "));");
+                StringBuilder s = new StringBuilder("new SyncItemHelper().baseItemType(" + syncBaseItemInfo.getItemTypeId() + ")"
+                        + ".position(" + InstanceStringGenerator.generate(syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition()) + ")");
+                if(syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity() != null) {
+                    s.append(".velocity("+InstanceStringGenerator.generate(syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity())+")");
+                }
+                if(syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions() != null) {
+                    s.append(".wayPositions("+InstanceStringGenerator.generateSimpleDecimalPositionList(syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions())+")");
+                }
+                System.out.println(s + ",");
+
             }
         });
     }

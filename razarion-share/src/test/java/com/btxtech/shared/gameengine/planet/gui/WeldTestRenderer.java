@@ -15,7 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -91,7 +91,7 @@ public class WeldTestRenderer {
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private ItemTypeService itemTypeService;
     private Canvas canvas;
@@ -954,7 +954,7 @@ public class WeldTestRenderer {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
         DecimalPosition position = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
         if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
-            if (syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions() != null) {
+            if (syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions() != null || syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity() != null) {
                 gc.setFill(BASE_ITEM_TYPE_BG_COLOR_ACTIVE);
             } else {
                 gc.setFill(BASE_ITEM_TYPE_BG_COLOR_PASSIVE);

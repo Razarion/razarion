@@ -22,7 +22,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public class SyncItemContainer extends SyncBaseAbility {
     public static final TerrainType DEFAULT_UNLOAD_TERRAIN_TYPE = TerrainType.LAND;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private TerrainService terrainService;
     @Inject

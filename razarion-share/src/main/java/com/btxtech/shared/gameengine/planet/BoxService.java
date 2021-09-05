@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class BoxService {
     private static final long TICK_TO_SLEEP_MS = 10 * PlanetService.TICKS_PER_SECONDS;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject

@@ -17,10 +17,10 @@ import java.util.function.Supplier;
  * 23.09.2016.
  */
 public class SimpleTestEnvironment {
-    private static ExceptionHandler exceptionHandler = new ExceptionHandler() {
+    private final static ExceptionHandler exceptionHandler = new ExceptionHandler() {
         @Override
         protected void handleExceptionInternal(String message, Throwable t) {
-            System.out.println(message);
+            System.out.println("ExceptionHandler from com.btxtech.share.SimpleTestEnvironment: " + message);
             if (t != null) {
                 t.printStackTrace();
             }

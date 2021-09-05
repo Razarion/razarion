@@ -1,7 +1,7 @@
 package com.btxtech.shared.system.debugtool;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
@@ -50,7 +50,7 @@ public class DebugHelperStatic {
     }
 
 
-    public static void appendAfterTick(List<DebugHelperStatic.TickData> tickDatas, double tickCount, SyncItemContainerService syncItemContainerService) {
+    public static void appendAfterTick(List<DebugHelperStatic.TickData> tickDatas, double tickCount, SyncItemContainerServiceImpl syncItemContainerService) {
         TickData tickData = new TickData();
         tickData.setDate(new Date());
         tickData.setTickCount(tickCount);

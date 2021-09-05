@@ -68,7 +68,7 @@ public class BaseItemService {
     @Inject
     private GameLogicService gameLogicService;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private LevelService levelService;
     @Inject

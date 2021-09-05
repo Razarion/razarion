@@ -43,7 +43,7 @@ import java.util.Map;
 @ApplicationScoped
 public class ResourceService {
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject

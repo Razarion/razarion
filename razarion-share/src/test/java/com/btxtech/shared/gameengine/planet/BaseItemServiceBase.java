@@ -34,14 +34,14 @@ import java.util.function.Supplier;
 // WeldMasterBaseTest
 public class BaseItemServiceBase {
     private BaseItemService baseItemService;
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     private ItemTypeService itemTypeService;
 
     protected void setup(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
         baseItemService = new BaseItemService();
         itemTypeService = new ItemTypeService();
         // SyncItemContainerService
-        syncItemContainerService = new SyncItemContainerService();
+        syncItemContainerService = new SyncItemContainerServiceImpl();
         Map<Class, Supplier> selectorSupplier = new HashMap<>();
         selectorSupplier.put(SyncBaseItem.class, () -> {
             SyncBaseItem syncBaseItem = new SyncBaseItem();
@@ -107,7 +107,7 @@ public class BaseItemServiceBase {
         return baseItemService;
     }
 
-    public SyncItemContainerService getSyncItemContainerService() {
+    public SyncItemContainerServiceImpl getSyncItemContainerService() {
         return syncItemContainerService;
     }
 

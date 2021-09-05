@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.nativejs.NativeMatrixDto;
@@ -30,7 +30,7 @@ public class SyncPhysicalArea {
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     private SyncItem syncItem;
     private DecimalPosition position2d;
     private double angle;

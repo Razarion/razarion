@@ -14,7 +14,6 @@ import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
-import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -47,7 +46,7 @@ public class CommandService { // Is part of the Base service
     @Inject
     private BoxService boxService;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject

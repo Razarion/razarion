@@ -49,31 +49,36 @@ public interface GameTestHelper {
         SimpleTestEnvironment.injectService("maxSpeed", syncPhysicalMovable, SyncPhysicalMovable.class, 17);
         SimpleTestEnvironment.injectService("acceleration", syncPhysicalMovable, SyncPhysicalMovable.class, 5.0);
         SimpleTestEnvironment.injectService("angularVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, Math.toRadians(180));
-        SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerService.class);
+        SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerServiceImpl.class);
         EasyMock.replay(syncItemContainerService);
         SimpleTestEnvironment.injectService("syncItemContainerService", syncPhysicalMovable, SyncPhysicalArea.class, syncItemContainerService);
         return syncPhysicalMovable;
     }
 
-    static SyncPhysicalMovable createSyncPhysicalMovableSetupPreferredVelocity(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity, List<DecimalPosition> wayPositions) {
-        Path path = new Path();
-        path.init(new SimplePath().wayPositions(wayPositions));
+    static SyncPhysicalMovable createSyncPhysicalMovable(double radius, int syncItemId, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity, List<DecimalPosition> wayPositions) {
         PathingAccess pathingAccess = EasyMock.createNiceMock(PathingAccess.class);
         expect(pathingAccess.isInSight(anyObject(), anyDouble(), anyObject())).andReturn(true);
         TerrainService terrainService = EasyMock.createNiceMock(TerrainService.class);
         expect(terrainService.getPathingAccess()).andReturn(pathingAccess);
         EasyMock.replay(pathingAccess, terrainService);
-        SimpleTestEnvironment.injectService("terrainService", path, Path.class, terrainService);
         SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
+        if(wayPositions != null) {
+            Path path = new Path();
+            path.init(new SimplePath().wayPositions(wayPositions));
+            SimpleTestEnvironment.injectService("path", syncPhysicalMovable, SyncPhysicalMovable.class, path);
+            SimpleTestEnvironment.injectService("terrainService", path, Path.class, terrainService);
+        }
         SimpleTestEnvironment.injectService("position2d", syncPhysicalMovable, SyncPhysicalArea.class, position);
-        SimpleTestEnvironment.injectService("path", syncPhysicalMovable, SyncPhysicalMovable.class, path);
         SimpleTestEnvironment.injectService("maxSpeed", syncPhysicalMovable, SyncPhysicalMovable.class, 17);
         SimpleTestEnvironment.injectService("acceleration", syncPhysicalMovable, SyncPhysicalMovable.class, 5.0);
         SimpleTestEnvironment.injectService("angularVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, Math.toRadians(180));
         SimpleTestEnvironment.injectService("velocity", syncPhysicalMovable, SyncPhysicalMovable.class, velocity);
         SimpleTestEnvironment.injectService("radius", syncPhysicalMovable, SyncPhysicalArea.class, radius);
         SimpleTestEnvironment.injectService("terrainType", syncPhysicalMovable, SyncPhysicalArea.class, terrainType);
-        SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerService.class);
+        SyncBaseItem syncItem = new SyncBaseItem();
+        syncItem.init(syncItemId, null, syncPhysicalMovable);
+        SimpleTestEnvironment.injectService("syncItem", syncPhysicalMovable, SyncPhysicalArea.class, syncItem);
+        SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerServiceImpl.class);
         EasyMock.replay(syncItemContainerService);
         SimpleTestEnvironment.injectService("syncItemContainerService", syncPhysicalMovable, SyncPhysicalArea.class, syncItemContainerService);
         syncPhysicalMovable.setupPreferredVelocity();
@@ -85,7 +90,7 @@ public interface GameTestHelper {
         SimpleTestEnvironment.injectService("position2d", syncPhysicalArea, SyncPhysicalArea.class, position);
         SimpleTestEnvironment.injectService("radius", syncPhysicalArea, SyncPhysicalArea.class, radius);
         SimpleTestEnvironment.injectService("terrainType", syncPhysicalArea, SyncPhysicalArea.class, terrainType);
-        SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerService.class);
+        SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerServiceImpl.class);
         EasyMock.replay(syncItemContainerService);
         SimpleTestEnvironment.injectService("syncItemContainerService", syncPhysicalArea, SyncPhysicalArea.class, syncItemContainerService);
         return syncPhysicalArea;

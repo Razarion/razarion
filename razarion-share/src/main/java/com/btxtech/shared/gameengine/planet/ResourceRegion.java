@@ -39,7 +39,7 @@ public class ResourceRegion {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private SyncItemContainerServiceImpl syncItemContainerService;
     @Inject
     private ResourceService resourceService;
     private final Set<Integer> syncResourceItems = new HashSet<>();
