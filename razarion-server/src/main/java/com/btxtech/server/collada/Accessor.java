@@ -1,5 +1,6 @@
 package com.btxtech.server.collada;
 
+import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
 import org.w3c.dom.Node;
@@ -71,6 +72,32 @@ public class Accessor extends ColladaXml {
             vetextureCoordinatestices.add(new TextureCoordinate(doubles.get(i), doubles.get(i + 1)));
         }
         return vetextureCoordinatestices;
+    }
+
+    public List<Color> convertToColor(List<Double> doubles, int count) {
+        if (stride != 4) {
+            throw new ColladaRuntimeException("Only color with RGBA supported: " + stride);
+        }
+        if (count % 4 != 0) {
+            throw new ColladaRuntimeException("Doubles count mismatch. Must be a multiple of 2. Received: " + count);
+        }
+        if (!params.get(0).getName().equals("R") || !params.get(0).getType().equals("float")) {
+            throw new ColladaRuntimeException("Parameter mismatch. Expected R as float. Received: " + params.get(0));
+        }
+        if (!params.get(1).getName().equals("G") || !params.get(1).getType().equals("float")) {
+            throw new ColladaRuntimeException("Parameter mismatch. Expected G as float. Received: " + params.get(1));
+        }
+        if (!params.get(2).getName().equals("B") || !params.get(2).getType().equals("float")) {
+            throw new ColladaRuntimeException("Parameter mismatch. Expected B as float. Received: " + params.get(1));
+        }
+        if (!params.get(3).getName().equals("A") || !params.get(3).getType().equals("float")) {
+            throw new ColladaRuntimeException("Parameter mismatch. Expected A as float. Received: " + params.get(1));
+        }
+        List<Color> colors = new ArrayList<>();
+        for (int i = 0; i < doubles.size(); i = i + 4) {
+            colors.add(new Color(doubles.get(i), doubles.get(i + 1), doubles.get(i + 2), doubles.get(i + 3)));
+        }
+        return colors;
     }
 
     public List<Param> getParams() {

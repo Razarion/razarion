@@ -1,5 +1,6 @@
 package com.btxtech.server.collada;
 
+import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
 import org.w3c.dom.Node;
@@ -40,6 +41,10 @@ public class Source extends NameIdColladaXml {
 
     public List<TextureCoordinate> setupTextureCoordinates() {
         return techniqueCommon.getAccessor().convertToTextureCoordinate(floatArray.getFloatArray(), floatArray.getCount());
+    }
+
+    public List<Color> setupColors() {
+        return techniqueCommon.getAccessor().convertToColor(floatArray.getFloatArray(), floatArray.getCount());
     }
 
     public TechniqueCommon getTechniqueCommon() {

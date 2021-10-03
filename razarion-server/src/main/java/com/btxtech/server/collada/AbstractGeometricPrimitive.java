@@ -1,5 +1,6 @@
 package com.btxtech.server.collada;
 
+import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
@@ -8,15 +9,19 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * on 16.11.2018.
  */
 public class AbstractGeometricPrimitive extends ColladaXml{
+    private static Logger LOGGER = Logger.getLogger(AbstractGeometricPrimitive.class.getName());
     private Input vertexInput;
     private Input normInput;
     private Input textCoordInput;
+    private Input colorInput;
     private List<Integer> primitiveIndices;
 
     public AbstractGeometricPrimitive(Node node) {
@@ -31,6 +36,9 @@ public class AbstractGeometricPrimitive extends ColladaXml{
                     break;
                 case SEMANTIC_TEXCOORD:
                     textCoordInput = input;
+                    break;
+                case SEMANTIC_COLOR:
+                    colorInput = input;
                     break;
             }
         }
@@ -56,32 +64,51 @@ public class AbstractGeometricPrimitive extends ColladaXml{
         List<Vertex> vertices = sources.get(positionVertex.getInput().getSourceId()).setupVertices();
         List<Vertex> norms = sources.get(normInput.getSourceId()).setupVertices();
         List<TextureCoordinate> textureCoordinates = null;
+        List<Color> colors = null;
 
         int step = 2;
         int textureOffset = 0;
+        int colorOffset = 0;
         if (textCoordInput != null) {
             textureCoordinates = sources.get(textCoordInput.getSourceId()).setupTextureCoordinates();
-            step = 3;
+            step++;
             textureOffset = textCoordInput.getOffset();
+        }
+        if (colorInput != null) {
+            colors = sources.get(colorInput.getSourceId()).setupColors();
+            step++;
+            colorOffset = colorInput.getOffset();
         }
 
         List<Float> verticesDest = new ArrayList<>();
         List<Float> normsDest = new ArrayList<>();
         List<Float> textureCoordinatesDest = new ArrayList<>();
+        List<Float> colorDest = new ArrayList<>();
         for (int i = 0; i < primitiveIndices.size() / step; i++) {
-            int baseIndex = i * step;
-            Vertex vertex = vertices.get(primitiveIndices.get(baseIndex + vertexOffset));
-            verticesDest.add((float) vertex.getX());
-            verticesDest.add((float) vertex.getY());
-            verticesDest.add((float) vertex.getZ());
-            Vertex norm = norms.get(primitiveIndices.get(baseIndex + normOffset));
-            normsDest.add((float) norm.getX());
-            normsDest.add((float) norm.getY());
-            normsDest.add((float) norm.getZ());
-            if (textureCoordinates != null) {
-                TextureCoordinate textureCoordinate = textureCoordinates.get(primitiveIndices.get(baseIndex + textureOffset));
-                textureCoordinatesDest.add((float) textureCoordinate.getS());
-                textureCoordinatesDest.add((float) textureCoordinate.getT());
+            try {
+                int baseIndex = i * step;
+                Vertex vertex = vertices.get(primitiveIndices.get(baseIndex + vertexOffset));
+                verticesDest.add((float) vertex.getX());
+                verticesDest.add((float) vertex.getY());
+                verticesDest.add((float) vertex.getZ());
+                Vertex norm = norms.get(primitiveIndices.get(baseIndex + normOffset));
+                normsDest.add((float) norm.getX());
+                normsDest.add((float) norm.getY());
+                normsDest.add((float) norm.getZ());
+                if (textureCoordinates != null) {
+                    TextureCoordinate textureCoordinate = textureCoordinates.get(primitiveIndices.get(baseIndex + textureOffset));
+                    textureCoordinatesDest.add((float) textureCoordinate.getS());
+                    textureCoordinatesDest.add((float) textureCoordinate.getT());
+                }
+                if (colors != null) {
+                    Color color = colors.get(primitiveIndices.get(baseIndex + colorOffset));
+                    colorDest.add((float) color.getR());
+                    colorDest.add((float) color.getB());
+                    colorDest.add((float) color.getG());
+                    colorDest.add((float) color.getA());
+                }
+            } catch (Throwable throwable) {
+                LOGGER.log(Level.WARNING, throwable.getMessage(), throwable);
             }
 
         }
