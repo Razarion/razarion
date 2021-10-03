@@ -23,7 +23,7 @@ public class Camera {
     private ViewService viewService;
     private double translateX;
     private double translateY;
-    private double translateZ = 80;
+    private double translateZ = 40;
     private double rotateX = Math.toRadians(40);
     private double rotateZ;
     private Matrix4 matrix4;
