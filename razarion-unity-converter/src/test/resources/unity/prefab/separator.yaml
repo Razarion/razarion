@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5678528082777868109
+GameObject:
+  m_Name: TestNameGameObject
+  m_Component:
+    - component: { fileID: 5678528082777578285 }
+    - component: { fileID: 5678528082781002573 }
+    - component: { fileID: 5678528082779871501 }
+--- !u!4 &5678528082777578285
+Transform:
+  m_GameObject: { fileID: 5678528082777868109 }
+  m_LocalRotation: { x: 0, y: 0, z: 0, w: 1 }
+  m_LocalPosition: { x: 1, y: 5, z: 2 }
+  m_LocalScale: { x: 1, y: 2, z: 3 }
+  m_LocalEulerAnglesHint: { x: 0, y: 0, z: 0 }
+--- !u!33 &5678528082781002573
+MeshFilter:
+  m_GameObject: { fileID: 5678528082777868109 }
+  m_Mesh: { fileID: 4300180, guid: e449f791897e9da408437dfc51ec9045, type: 3 }
+--- !u!23 &5678528082779871501
+MeshRenderer:
+  m_GameObject: { fileID: 5678528082777868109 }
+  m_Materials:
+    - { fileID: 2100000, guid: 764dd703330d9564cbd30492a7de6a4b, type: 2 }

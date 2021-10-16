@@ -79,6 +79,7 @@
         <module>razarion-ui-service</module>
 <!--        <module>razarion-dev-tools</module>-->
         <module>razarion-server</module>
+        <module>razarion-unity-converter</module>
         <module>razarion-share</module>
         <module>razarion-test</module>
         <module>razarion-test-share</module>
