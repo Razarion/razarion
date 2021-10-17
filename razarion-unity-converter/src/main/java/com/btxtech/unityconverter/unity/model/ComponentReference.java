@@ -1,13 +1,14 @@
 package com.btxtech.unityconverter.unity.model;
 
 public class ComponentReference {
-    private FileID component;
+    // TODO this property name should be dynamic
+    private Reference component;
 
-    public FileID getComponent() {
+    public Reference getComponent() {
         return component;
     }
 
-    public void setComponent(FileID component) {
+    public void setComponent(Reference component) {
         this.component = component;
     }
 

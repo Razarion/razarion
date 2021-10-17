@@ -2,10 +2,10 @@ package com.btxtech.unityconverter.unity.asset.type;
 
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.unityconverter.unity.asset.Meta;
-import com.btxtech.unityconverter.unity.model.ComponentReference;
 import com.btxtech.unityconverter.unity.model.GameObject;
 import com.btxtech.unityconverter.unity.model.MeshFilter;
 import com.btxtech.unityconverter.unity.model.MeshRenderer;
+import com.btxtech.unityconverter.unity.model.Reference;
 import com.btxtech.unityconverter.unity.model.Transform;
 import com.btxtech.unityconverter.unity.model.UnityObject;
 import org.yaml.snakeyaml.DumperOptions;
@@ -21,7 +21,6 @@ import org.yaml.snakeyaml.resolver.Resolver;
 
 import java.io.FileInputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -41,10 +40,6 @@ public class Prefab extends AssetType {
             // GameObject
             TypeDescription typeDescription = new TypeDescription(GameObjectHolder.class, "tag:unity3d.com,2011:1");
             typeDescription.substituteProperty("GameObject", GameObject.class, "getObject", "setGameObject");
-            constructor.addTypeDescription(typeDescription);
-            typeDescription = new TypeDescription(GameObject.class);
-            typeDescription.substituteProperty("m_Name", String.class, "getName", "setName");
-            typeDescription.substituteProperty("m_Component", List.class, "getComponentReferences", "setComponentReferences", ComponentReference.class);
             constructor.addTypeDescription(typeDescription);
             // Transform
             typeDescription = new TypeDescription(TransformHolder.class, "tag:unity3d.com,2011:4");
@@ -80,9 +75,7 @@ public class Prefab extends AssetType {
                 }
             });
 
-            GameObject gameObject = gameObjectHolder.getO();
-            gameObject.resolveComponents(unityObjects);
-            return gameObject;
+            return gameObjectHolder.getO();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

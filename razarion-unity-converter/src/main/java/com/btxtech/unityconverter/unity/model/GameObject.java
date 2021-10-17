@@ -6,29 +6,29 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GameObject extends UnityObject {
-    private String name;
-    private List<ComponentReference> componentReferences;
+    private String m_Name;
+    private List<ComponentReference> m_Component;
     private List<Component> components;
 
-    public String getName() {
-        return name;
+    public String getM_Name() {
+        return m_Name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setM_Name(String m_Name) {
+        this.m_Name = m_Name;
     }
 
-    public List<ComponentReference> getComponentReferences() {
-        return componentReferences;
+    public List<ComponentReference> getM_Component() {
+        return m_Component;
     }
 
-    public void setComponentReferences(List<ComponentReference> componentReferences) {
-        this.componentReferences = componentReferences;
+    public void setM_Component(List<ComponentReference> m_Component) {
+        this.m_Component = m_Component;
     }
 
     public void resolveComponents(Map<String, UnityObject> unityObjects) {
-        components = componentReferences.stream()
-                .map(ref -> unityObjects.get(ref.getComponent().getFileID()))
+        components = m_Component.stream()
+                .map(ref -> unityObjects.get(ref))
                 .map(unityObject -> (Component) unityObject)
                 .collect(Collectors.toList());
     }
@@ -40,8 +40,8 @@ public class GameObject extends UnityObject {
     @Override
     public String toString() {
         return "GameObject{" +
-                "name=" + name +
-                ", componentReferences=" + componentReferences +
+                "m_Name=" + m_Name +
+                ", m_Component=" + m_Component +
                 ", components=" + components +
                 '}';
     }
