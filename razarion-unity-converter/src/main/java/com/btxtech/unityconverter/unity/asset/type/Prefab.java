@@ -1,11 +1,9 @@
 package com.btxtech.unityconverter.unity.asset.type;
 
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.unityconverter.unity.asset.Meta;
 import com.btxtech.unityconverter.unity.model.GameObject;
 import com.btxtech.unityconverter.unity.model.MeshFilter;
 import com.btxtech.unityconverter.unity.model.MeshRenderer;
-import com.btxtech.unityconverter.unity.model.Reference;
 import com.btxtech.unityconverter.unity.model.Transform;
 import com.btxtech.unityconverter.unity.model.UnityObject;
 import org.yaml.snakeyaml.DumperOptions;
@@ -21,17 +19,18 @@ import org.yaml.snakeyaml.resolver.Resolver;
 
 import java.io.FileInputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Prefab extends AssetType {
     private static final Logger LOGGER = Logger.getLogger(Prefab.class.getName());
+    private Map<String, UnityObject> unityObjects = new HashMap<>();
+    private GameObject gameObject;
 
     public Prefab(Meta meta) {
         super(meta);
-    }
-
-    public GameObject readGameObject() {
         try {
             LOGGER.info("readGameObjects: " + getMeta());
             Representer representer = new Representer();
@@ -54,12 +53,9 @@ public class Prefab extends AssetType {
             typeDescription.substituteProperty("MeshRenderer", MeshRenderer.class, "getObject", "setMeshRenderer");
             constructor.addTypeDescription(typeDescription);
 
-            DumperOptions dumperOptions = new DumperOptions();
-            Yaml yaml = new Yaml(constructor, representer, dumperOptions);
+            Yaml yaml = new Yaml(constructor, representer, new DumperOptions());
 
 
-            SingleHolder<GameObject> gameObjectHolder = new SingleHolder<>();
-            Map<String, UnityObject> unityObjects = new HashMap<>();
 
             constructor.setComposer(new Composer(new ParserImpl(new StreamReader(new UnicodeReader(new FileInputStream(getAssetFile())))), new Resolver()));
             yaml.composeAll(new UnicodeReader(new FileInputStream(getAssetFile()))).forEach(node -> {
@@ -68,17 +64,27 @@ public class Prefab extends AssetType {
                 UnityObject unityObject = ((Holder<?>) constructor.getData()).getObject();
                 unityObject.setObjectId(objectId);
 
-                if (gameObjectHolder.isEmpty() && unityObject instanceof GameObject) {
-                    gameObjectHolder.setO((GameObject) unityObject);
-                } else {
-                    unityObjects.put(objectId, unityObject);
+                if (gameObject == null && unityObject instanceof GameObject) {
+                    gameObject = (GameObject) unityObject;
                 }
+                unityObjects.put(objectId, unityObject);
             });
 
-            return gameObjectHolder.getO();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public GameObject getGameObject() {
+        return gameObject;
+    }
+
+    public List<MeshFilter> getMeshFilters() {
+        return gameObject.getM_Component().stream()
+                .map(componentReference -> unityObjects.get(componentReference.getComponent().getFileID()))
+                .filter(unityObject -> unityObject instanceof MeshFilter)
+                .map(unityObject -> (MeshFilter)unityObject)
+                .collect(Collectors.toList());
     }
 
     private String readObjectId(String snippet) {

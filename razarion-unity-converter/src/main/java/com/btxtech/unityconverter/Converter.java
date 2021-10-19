@@ -12,10 +12,6 @@ public class Converter {
     public static void main(String[] args) {
         try {
             Asset asset = AssetReader.read("C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor");
-            // LOGGER.info("Asset:" + asset);
-            // LOGGER.info("Fbxes:" + asset.getFbxes());
-            // LOGGER.info("Prefabs:" + asset.getPrefabs());
-            asset.getPrefabs().forEach(prefab -> prefab.readGameObject());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error Converter Asset", e);
         }

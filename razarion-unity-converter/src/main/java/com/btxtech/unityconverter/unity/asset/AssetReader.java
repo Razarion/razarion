@@ -22,10 +22,14 @@ import static com.btxtech.unityconverter.unity.asset.type.AssetTypeFactory.META;
 public class AssetReader {
     private static final Logger LOGGER = Logger.getLogger(AssetReader.class.getName());
 
-    public static Asset read(String dirLocation) throws Exception {
-        Asset asset = new Asset();
-        processAssetFolder(new File(dirLocation), asset);
-        return asset;
+    public static Asset read(String dirLocation) {
+        try {
+            Asset asset = new Asset();
+            processAssetFolder(new File(dirLocation), asset);
+            return asset;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void processAssetFolder(File assetFolder, Asset asset) throws IOException {

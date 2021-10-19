@@ -1,7 +1,7 @@
 package com.btxtech.unityconverter.unity.asset.type;
 
 import com.btxtech.unityconverter.unity.asset.Meta;
-import com.btxtech.unityconverter.unity.model.GameObject;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
@@ -14,12 +14,11 @@ import static org.hamcrest.Matchers.nullValue;
 
 class PrefabTest {
 
-    @org.junit.jupiter.api.Test
+    @Test
     void readGameObjects() {
         Prefab prefab = new Prefab(new Meta().assetFile(new File("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-unity-converter\\src\\test\\resources\\unity\\prefab\\separator.yaml")));
-        GameObject gameObject = prefab.readGameObject();
 
-        assertThat(gameObject,
+        assertThat(prefab.getGameObject(),
                 allOf(
                         hasProperty("m_Name", equalTo("TestNameGameObject")),
                         hasProperty("m_Component", containsInAnyOrder(
@@ -53,4 +52,20 @@ class PrefabTest {
                         )
                 ));
     }
-}
+
+    @Test
+    void getMeshFilters() {
+        Prefab prefab = new Prefab(new Meta().assetFile(new File("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-unity-converter\\src\\test\\resources\\unity\\prefab\\separator.yaml")));
+        prefab.getMeshFilters();
+        assertThat(prefab.getMeshFilters(),containsInAnyOrder(
+                allOf(
+                        hasProperty("m_Mesh",  allOf(
+                                hasProperty("fileID", equalTo("4300180")),
+                                hasProperty("guid", equalTo("e449f791897e9da408437dfc51ec9045")),
+                                hasProperty("type", equalTo("3"))
+                        ))
+                )
+        ));
+
+    }
+    }
