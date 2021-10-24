@@ -2,6 +2,7 @@ package com.btxtech.unityconverter.unity.asset.type;
 
 import com.btxtech.unityconverter.unity.asset.Meta;
 import com.btxtech.unityconverter.unity.model.GameObject;
+import com.btxtech.unityconverter.unity.model.IgnoredAssetType;
 import com.btxtech.unityconverter.unity.model.MeshFilter;
 import com.btxtech.unityconverter.unity.model.MeshRenderer;
 import com.btxtech.unityconverter.unity.model.Transform;
@@ -17,22 +18,29 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
 import org.yaml.snakeyaml.resolver.Resolver;
 
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Prefab extends AssetType {
     private static final Logger LOGGER = Logger.getLogger(Prefab.class.getName());
-    private Map<String, UnityObject> unityObjects = new HashMap<>();
+    private final Map<String, UnityObject> unityObjects = new HashMap<>();
     private GameObject gameObject;
 
     public Prefab(Meta meta) {
         super(meta);
         try {
-            LOGGER.info("readGameObjects: " + getMeta());
+            LOGGER.fine("readGameObjects: " + getMeta());
             Representer representer = new Representer();
             representer.getPropertyUtils().setSkipMissingProperties(true);
             Constructor constructor = new Constructor();
@@ -52,26 +60,39 @@ public class Prefab extends AssetType {
             typeDescription = new TypeDescription(MeshRendererHolder.class, "tag:unity3d.com,2011:23");
             typeDescription.substituteProperty("MeshRenderer", MeshRenderer.class, "getObject", "setMeshRenderer");
             constructor.addTypeDescription(typeDescription);
+            // MeshRenderer
+            typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:114");
+            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
+            constructor.addTypeDescription(typeDescription);
+            typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:65");
+            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
+            constructor.addTypeDescription(typeDescription);
+            typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:54");
+            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
+            constructor.addTypeDescription(typeDescription);
+            typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:1001");
+            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
+            constructor.addTypeDescription(typeDescription);
 
             Yaml yaml = new Yaml(constructor, representer, new DumperOptions());
 
-
-
-            constructor.setComposer(new Composer(new ParserImpl(new StreamReader(new UnicodeReader(new FileInputStream(getAssetFile())))), new Resolver()));
-            yaml.composeAll(new UnicodeReader(new FileInputStream(getAssetFile()))).forEach(node -> {
+            constructor.setComposer(new Composer(new ParserImpl(new StreamReader(new UnicodeReader(removeUnityCrap(getAssetFile())))), new Resolver()));
+            yaml.composeAll(new UnicodeReader(removeUnityCrap(getAssetFile()))).forEach(node -> {
                 String snippet = node.getStartMark().get_snippet();
                 String objectId = readObjectId(snippet);
                 UnityObject unityObject = ((Holder<?>) constructor.getData()).getObject();
-                unityObject.setObjectId(objectId);
+                if (unityObject != null) {
+                    unityObject.setObjectId(objectId);
 
-                if (gameObject == null && unityObject instanceof GameObject) {
-                    gameObject = (GameObject) unityObject;
+                    if (gameObject == null && unityObject instanceof GameObject) {
+                        gameObject = (GameObject) unityObject;
+                    }
+                    unityObjects.put(objectId, unityObject);
                 }
-                unityObjects.put(objectId, unityObject);
             });
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(meta.toString(), e);
         }
     }
 
@@ -83,8 +104,22 @@ public class Prefab extends AssetType {
         return gameObject.getM_Component().stream()
                 .map(componentReference -> unityObjects.get(componentReference.getComponent().getFileID()))
                 .filter(unityObject -> unityObject instanceof MeshFilter)
-                .map(unityObject -> (MeshFilter)unityObject)
+                .map(unityObject -> (MeshFilter) unityObject)
                 .collect(Collectors.toList());
+    }
+
+    private InputStream removeUnityCrap(File assetFile) {
+        try (Stream<String> stream = Files.lines(Paths.get(assetFile.toURI()))) {
+            return new ByteArrayInputStream(stream.map(s -> {
+                if (s.startsWith("---") && s.endsWith(" stripped")) {
+                    return s.substring(0, s.length() - " stripped".length());
+                } else {
+                    return s;
+                }
+            }).collect(Collectors.joining("\n")).getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException("Error processing: " + assetFile, e);
+        }
     }
 
     private String readObjectId(String snippet) {
@@ -111,6 +146,7 @@ public class Prefab extends AssetType {
             return gameObject;
         }
 
+        @SuppressWarnings("unused")
         public void setGameObject(GameObject gameObject) {
             this.gameObject = gameObject;
         }
@@ -130,6 +166,7 @@ public class Prefab extends AssetType {
             return transform;
         }
 
+        @SuppressWarnings("unused")
         public void setTransform(Transform transform) {
             this.transform = transform;
         }
@@ -149,6 +186,7 @@ public class Prefab extends AssetType {
             return meshFilter;
         }
 
+        @SuppressWarnings("unused")
         public void setMeshFilter(MeshFilter meshFilter) {
             this.meshFilter = meshFilter;
         }
@@ -168,6 +206,7 @@ public class Prefab extends AssetType {
             return meshRenderer;
         }
 
+        @SuppressWarnings("unused")
         public void setMeshRenderer(MeshRenderer meshRenderer) {
             this.meshRenderer = meshRenderer;
         }
@@ -176,6 +215,26 @@ public class Prefab extends AssetType {
         public String toString() {
             return "MeshRendererHolder{" +
                     "meshRenderer=" + meshRenderer +
+                    '}';
+        }
+    }
+
+    public static class IgnoredAssetTypeHolder implements Holder<IgnoredAssetType> {
+        public IgnoredAssetType ignoredAssetType;
+
+        public IgnoredAssetType getObject() {
+            return ignoredAssetType;
+        }
+
+        @SuppressWarnings("unused")
+        public void setIgnoredAssetType(IgnoredAssetType ignoredAssetType) {
+            this.ignoredAssetType = ignoredAssetType;
+        }
+
+        @Override
+        public String toString() {
+            return "MeshRendererHolder{" +
+                    "meshRenderer=" + ignoredAssetType +
                     '}';
         }
     }

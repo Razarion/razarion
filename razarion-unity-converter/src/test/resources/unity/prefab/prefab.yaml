@@ -14,7 +14,7 @@ Transform:
   m_LocalPosition: { x: 1, y: 5, z: 2 }
   m_LocalScale: { x: 1, y: 2, z: 3 }
   m_LocalEulerAnglesHint: { x: 0, y: 0, z: 0 }
---- !u!33 &5678528082781002573
+--- !u!33 &5678528082781002573 stripped
 MeshFilter:
   m_GameObject: { fileID: 5678528082777868109 }
   m_Mesh: { fileID: 4300180, guid: e449f791897e9da408437dfc51ec9045, type: 3 }

@@ -3,6 +3,8 @@ package com.btxtech.unityconverter.unity.asset;
 import com.btxtech.unityconverter.unity.asset.type.AssetType;
 import com.btxtech.unityconverter.unity.asset.type.Fbx;
 import com.btxtech.unityconverter.unity.asset.type.Prefab;
+import com.btxtech.unityconverter.unity.model.MeshFilter;
+import com.btxtech.unityconverter.unity.model.Reference;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,17 +17,19 @@ public class Asset {
         assets.put(assetType.getGuid(), assetType);
     }
 
-    public List<Fbx> getFbxes() {
-        return assets.values().stream()
-                .filter(assetType -> assetType.getClass().equals(Fbx.class))
-                .map(assetType -> (Fbx) assetType)
-                .collect(Collectors.toList());
+    public Fbx getFbx(Reference reference) {
+        AssetType assetType = assets.get(reference.getGuid());
+        if (assetType == null) {
+            throw new IllegalArgumentException("No AssetType found with Reference: " + reference);
+        }
+        return (Fbx) assetType;
     }
 
-    public List<Prefab> getPrefabs() {
+    public List<MeshFilter> getMeshFilterPrefabs() {
         return assets.values().stream()
                 .filter(assetType -> assetType.getClass().equals(Prefab.class))
                 .map(assetType -> (Prefab) assetType)
+                .flatMap(prefab -> prefab.getMeshFilters().stream())
                 .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,7 @@
 package com.btxtech.unityconverter.unity.asset.type;
 
 import com.btxtech.unityconverter.unity.asset.Meta;
+import com.btxtech.unityconverter.unity.asset.TestHelper;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -16,7 +17,7 @@ class PrefabTest {
 
     @Test
     void readGameObjects() {
-        Prefab prefab = new Prefab(new Meta().assetFile(new File("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-unity-converter\\src\\test\\resources\\unity\\prefab\\separator.yaml")));
+        Prefab prefab = new Prefab(new Meta().assetFile(new File(TestHelper.BASE_DIR + "prefab\\prefab.yaml")));
 
         assertThat(prefab.getGameObject(),
                 allOf(
@@ -55,7 +56,7 @@ class PrefabTest {
 
     @Test
     void getMeshFilters() {
-        Prefab prefab = new Prefab(new Meta().assetFile(new File("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-unity-converter\\src\\test\\resources\\unity\\prefab\\separator.yaml")));
+        Prefab prefab = new Prefab(new Meta().assetFile(new File(TestHelper.BASE_DIR + "prefab\\prefab.yaml")));
         prefab.getMeshFilters();
         assertThat(prefab.getMeshFilters(),containsInAnyOrder(
                 allOf(
@@ -68,4 +69,4 @@ class PrefabTest {
         ));
 
     }
-    }
+}
