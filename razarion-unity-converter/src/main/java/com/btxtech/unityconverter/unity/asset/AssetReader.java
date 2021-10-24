@@ -22,9 +22,9 @@ import static com.btxtech.unityconverter.unity.asset.type.AssetTypeFactory.META;
 public class AssetReader {
     private static final Logger LOGGER = Logger.getLogger(AssetReader.class.getName());
 
-    public static Asset read(String dirLocation) {
+    public static UnityAsset read(String dirLocation) {
         try {
-            Asset asset = new Asset();
+            UnityAsset asset = new UnityAsset();
             processAssetFolder(new File(dirLocation), asset);
             return asset;
         } catch (IOException e) {
@@ -32,7 +32,7 @@ public class AssetReader {
         }
     }
 
-    private static void processAssetFolder(File assetFolder, Asset asset) throws IOException {
+    private static void processAssetFolder(File assetFolder, UnityAsset asset) throws IOException {
         if (!assetFolder.isDirectory()) {
             throw new IllegalArgumentException("Is not a folder: " + assetFolder);
         }
@@ -44,7 +44,7 @@ public class AssetReader {
         metaFiles.forEach(metaFile -> setupAssetType(metaFile, asset));
     }
 
-    private static void setupAssetType(File metaFile, Asset asset) {
+    private static void setupAssetType(File metaFile, UnityAsset asset) {
         try {
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Asset {
+public class UnityAsset {
     private final HashMap<String, AssetType> assets = new HashMap<>();
 
     public void addAssetType(AssetType assetType) {

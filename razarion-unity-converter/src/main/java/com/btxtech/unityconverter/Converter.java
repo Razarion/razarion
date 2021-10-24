@@ -1,6 +1,6 @@
 package com.btxtech.unityconverter;
 
-import com.btxtech.unityconverter.unity.asset.Asset;
+import com.btxtech.unityconverter.unity.asset.UnityAsset;
 import com.btxtech.unityconverter.unity.asset.AssetReader;
 
 import java.util.logging.Level;
@@ -11,7 +11,7 @@ public class Converter {
 
     public static void main(String[] args) {
         try {
-            Asset asset = AssetReader.read("C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor");
+            UnityAsset asset = AssetReader.read("C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error Converter Asset", e);
         }
