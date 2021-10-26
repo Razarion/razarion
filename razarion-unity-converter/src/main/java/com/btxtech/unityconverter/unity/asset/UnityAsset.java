@@ -25,11 +25,11 @@ public class UnityAsset {
         return (Fbx) assetType;
     }
 
-    public List<MeshFilter> getMeshFilterPrefabs() {
+    public List<Prefab> getMeshFilterPrefabs() {
         return assets.values().stream()
                 .filter(assetType -> assetType.getClass().equals(Prefab.class))
                 .map(assetType -> (Prefab) assetType)
-                .flatMap(prefab -> prefab.getMeshFilters().stream())
+                .filter(prefab -> !prefab.getMeshFilters().isEmpty())
                 .collect(Collectors.toList());
     }
 }

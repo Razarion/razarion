@@ -1,6 +1,6 @@
 package com.btxtech.unityconverter.unity.asset.type;
 
-import com.btxtech.unityconverter.unity.asset.Meta;
+import com.btxtech.unityconverter.unity.asset.meta.Meta;
 import com.btxtech.unityconverter.unity.model.GameObject;
 import com.btxtech.unityconverter.unity.model.IgnoredAssetType;
 import com.btxtech.unityconverter.unity.model.MeshFilter;

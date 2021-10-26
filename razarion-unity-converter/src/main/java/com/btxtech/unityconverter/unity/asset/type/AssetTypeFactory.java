@@ -1,6 +1,6 @@
 package com.btxtech.unityconverter.unity.asset.type;
 
-import com.btxtech.unityconverter.unity.asset.Meta;
+import com.btxtech.unityconverter.unity.asset.meta.Meta;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -17,10 +17,14 @@ public class AssetTypeFactory {
         asstTypes.put("cs", Ignore.class);
         asstTypes.put("unity", Ignore.class);
         asstTypes.put("shadergraph", Ignore.class);
+        asstTypes.put("dae", Ignore.class);
     }
 
     public static AssetType create(Meta meta) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Class<? extends AssetType> assetTypeClass = asstTypes.get(meta.getFileExtension());
+        if(assetTypeClass == null) {
+            throw new IllegalAccessException("Unknown asst type: '" + meta.getFileExtension() + "' for meta: " + meta);
+        }
         return assetTypeClass.getDeclaredConstructor(Meta.class).newInstance(meta);
     }
 

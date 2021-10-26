@@ -1,5 +1,6 @@
 package com.btxtech.unityconverter.unity.asset;
 
+import com.btxtech.unityconverter.unity.asset.meta.Meta;
 import com.btxtech.unityconverter.unity.asset.type.AssetTypeFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

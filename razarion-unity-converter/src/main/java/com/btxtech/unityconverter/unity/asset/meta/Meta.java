@@ -1,4 +1,6 @@
-package com.btxtech.unityconverter.unity.asset;
+package com.btxtech.unityconverter.unity.asset.meta;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.File;
 
@@ -7,6 +9,8 @@ public class Meta {
     private File assetFile;
     private String guid;
     private Boolean folderAsset;
+    @JsonProperty("ModelImporter")
+    private ModelImporter modelImporter;
 
     public String getFileExtension() {
         return fileExtension;
@@ -38,6 +42,14 @@ public class Meta {
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+    public ModelImporter getModelImporter() {
+        return modelImporter;
+    }
+
+    public void setModelImporter(ModelImporter modelImporter) {
+        this.modelImporter = modelImporter;
     }
 
     @Override
