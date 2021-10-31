@@ -12,7 +12,7 @@ public class AssetTypeFactory {
     static {
         asstTypes.put("prefab", Prefab.class);
         asstTypes.put("fbx", Fbx.class);
-        asstTypes.put("mat", Material.class);
+        asstTypes.put("mat", MaterialAssetType.class);
         asstTypes.put("png", Image.class);
         asstTypes.put("cs", Ignore.class);
         asstTypes.put("unity", Ignore.class);

@@ -17,19 +17,19 @@ public class UnityAsset {
         assets.put(assetType.getGuid(), assetType);
     }
 
-    public Fbx getFbx(Reference reference) {
-        AssetType assetType = assets.get(reference.getGuid());
+    public <T extends AssetType> T getAssetType(Reference reference) {
+        T assetType = (T)assets.get(reference.getGuid());
         if (assetType == null) {
             throw new IllegalArgumentException("No AssetType found with Reference: " + reference);
         }
-        return (Fbx) assetType;
+        return (T) assetType;
     }
 
     public List<Prefab> getMeshFilterPrefabs() {
         return assets.values().stream()
                 .filter(assetType -> assetType.getClass().equals(Prefab.class))
                 .map(assetType -> (Prefab) assetType)
-                .filter(prefab -> !prefab.getMeshFilters().isEmpty())
+                .filter(prefab -> !prefab.getComponents(MeshFilter.class).isEmpty())
                 .collect(Collectors.toList());
     }
 }

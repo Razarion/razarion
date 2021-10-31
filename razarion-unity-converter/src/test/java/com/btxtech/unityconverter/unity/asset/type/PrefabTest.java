@@ -2,6 +2,7 @@ package com.btxtech.unityconverter.unity.asset.type;
 
 import com.btxtech.unityconverter.unity.asset.meta.Meta;
 import com.btxtech.unityconverter.unity.asset.TestHelper;
+import com.btxtech.unityconverter.unity.model.MeshFilter;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -57,8 +58,8 @@ class PrefabTest {
     @Test
     void getMeshFilters() {
         Prefab prefab = new Prefab(new Meta().assetFile(new File(TestHelper.BASE_DIR + "prefab\\prefab.yaml")));
-        prefab.getMeshFilters();
-        assertThat(prefab.getMeshFilters(),containsInAnyOrder(
+        prefab.getComponents(MeshFilter.class);
+        assertThat(prefab.getComponents(MeshFilter.class),containsInAnyOrder(
                 allOf(
                         hasProperty("m_Mesh",  allOf(
                                 hasProperty("fileID", equalTo("4300180")),

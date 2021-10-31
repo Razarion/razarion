@@ -1,6 +1,7 @@
 package com.btxtech.unityconverter.unity.asset.type;
 
 import com.btxtech.unityconverter.unity.asset.meta.Meta;
+import com.btxtech.unityconverter.unity.model.Component;
 import com.btxtech.unityconverter.unity.model.GameObject;
 import com.btxtech.unityconverter.unity.model.IgnoredAssetType;
 import com.btxtech.unityconverter.unity.model.MeshFilter;
@@ -28,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,7 +62,7 @@ public class Prefab extends AssetType {
             typeDescription = new TypeDescription(MeshRendererHolder.class, "tag:unity3d.com,2011:23");
             typeDescription.substituteProperty("MeshRenderer", MeshRenderer.class, "getObject", "setMeshRenderer");
             constructor.addTypeDescription(typeDescription);
-            // MeshRenderer
+            // Ignore
             typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:114");
             typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
             constructor.addTypeDescription(typeDescription);
@@ -100,11 +102,12 @@ public class Prefab extends AssetType {
         return gameObject;
     }
 
-    public List<MeshFilter> getMeshFilters() {
+    public <T extends Component> List<T> getComponents(Class<T> clazz) {
         return gameObject.getM_Component().stream()
                 .map(componentReference -> unityObjects.get(componentReference.getComponent().getFileID()))
-                .filter(unityObject -> unityObject instanceof MeshFilter)
-                .map(unityObject -> (MeshFilter) unityObject)
+                .filter(Objects::nonNull)
+                .filter(unityObject -> clazz.isAssignableFrom(unityObject.getClass()))
+                .map(unityObject ->  (T)unityObject)
                 .collect(Collectors.toList());
     }
 
