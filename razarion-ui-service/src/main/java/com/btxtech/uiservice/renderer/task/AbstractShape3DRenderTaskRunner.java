@@ -51,6 +51,27 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
         }
     }
 
+    protected void createMeshRenderTask(Shape3D shape3D, String element3DId, Function<Long, List<ModelMatrices>> modelMatricesSupplier, ProgressState progressState) {
+        Element3D element3D = shape3D.getElement3Ds().stream()
+                .filter(e3D -> e3D.getId().equals(element3DId))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+
+        Collection<ProgressAnimation> progressAnimations = setupProgressAnimation(element3D);
+        element3D.getVertexContainers().forEach(vertexContainer -> {
+            if (vertexContainer.getVertexContainerMaterial() == null) {
+                alarmService.riseAlarm(Alarm.Type.INVALID_SHAPE_3D, "No material for: " + vertexContainer.getKey(), shape3D.getId());
+                return;
+            }
+            createModelRenderTask(RenderTask.class,
+                    vertexContainer,
+                    modelMatricesSupplier,
+                    progressAnimations,
+                    vertexContainer.getShapeTransform(),
+                    (mrt) -> mrt.setProgressState(progressState != null ? progressState.fork(vertexContainer) : null));
+        });
+    }
+
     private Collection<ProgressAnimation> setupProgressAnimation(Element3D element3D) {
         if (element3D.getModelMatrixAnimations() == null) {
             return null;

@@ -30,6 +30,7 @@ public abstract class ItemType implements Config {
     private I18nString i18nDescription;
     @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer shape3DId;
+    private Integer meshId;
     private Integer thumbnail;
 
     @Override
@@ -77,6 +78,14 @@ public abstract class ItemType implements Config {
     public ItemType setShape3DId(Integer shape3DId) {
         this.shape3DId = shape3DId;
         return this;
+    }
+
+    public Integer getMeshId() {
+        return meshId;
+    }
+
+    public void setMeshId(Integer meshId) {
+        this.meshId = meshId;
     }
 
     public Integer getThumbnail() {
