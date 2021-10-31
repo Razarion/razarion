@@ -11,6 +11,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Dependent
 public class Branch extends AbstractPropertyModel {
@@ -38,7 +39,7 @@ public class Branch extends AbstractPropertyModel {
         if (propertyName != null) {
             return propertyName;
         } else if (propertyIndex != null) {
-            return "[" + propertyIndex + "]";
+            return "[" + propertyIndex + "]" + setupIdAndName();
         } else {
             throw new IllegalStateException();
         }
@@ -169,6 +170,13 @@ public class Branch extends AbstractPropertyModel {
         bindableListWrapper.add(listElement);
 
         return createAbstractPropertyModel(bindableListWrapper.size() - 1, listElement);
+    }
+
+    private String setupIdAndName() {
+        return hasProperties.getBeanProperties().keySet().stream()
+                .filter(propertyName -> propertyName.equals("id") || propertyName.equals("name"))
+                .map(propertyName -> " " + hasProperties.get(propertyName))
+                .collect(Collectors.joining());
     }
 
 }

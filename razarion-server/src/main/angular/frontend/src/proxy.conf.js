@@ -8,7 +8,7 @@ const PROXY_CONFIG = [
       "/systemconnection",
       "/gameconnection"
     ],
-    target: "http://localhost:32778",
+    target: "http://localhost:8080",
     secure: false,
     ws: true
   }
