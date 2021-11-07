@@ -6,6 +6,8 @@ import com.btxtech.unityconverter.unity.model.GameObject;
 import com.btxtech.unityconverter.unity.model.IgnoredAssetType;
 import com.btxtech.unityconverter.unity.model.MeshFilter;
 import com.btxtech.unityconverter.unity.model.MeshRenderer;
+import com.btxtech.unityconverter.unity.model.PrefabInstance;
+import com.btxtech.unityconverter.unity.model.Reference;
 import com.btxtech.unityconverter.unity.model.Transform;
 import com.btxtech.unityconverter.unity.model.UnityObject;
 import org.yaml.snakeyaml.DumperOptions;
@@ -26,18 +28,18 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Prefab extends AssetType {
     private static final Logger LOGGER = Logger.getLogger(Prefab.class.getName());
-    private final Map<String, UnityObject> unityObjects = new HashMap<>();
-    private GameObject gameObject;
+    private final Map<String, Component> components = new HashMap<>();
+    private List<GameObject> gameObjects = new ArrayList<>();
 
     public Prefab(Meta meta) {
         super(meta);
@@ -62,17 +64,20 @@ public class Prefab extends AssetType {
             typeDescription = new TypeDescription(MeshRendererHolder.class, "tag:unity3d.com,2011:23");
             typeDescription.substituteProperty("MeshRenderer", MeshRenderer.class, "getObject", "setMeshRenderer");
             constructor.addTypeDescription(typeDescription);
-            // Ignore
+            // PrefabInstance
+            typeDescription = new TypeDescription(PrefabInstanceHolder.class, "tag:unity3d.com,2011:1001");
+            typeDescription.substituteProperty("PrefabInstance", PrefabInstance.class, "getObject", "setPrefabInstance");
+            constructor.addTypeDescription(typeDescription);
+            // MonoBehaviour -> Ignore
             typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:114");
             typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
             constructor.addTypeDescription(typeDescription);
+            // BoxCollider -> Ignore
             typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:65");
             typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
             constructor.addTypeDescription(typeDescription);
+            // Rigidbody -> Ignore
             typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:54");
-            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
-            constructor.addTypeDescription(typeDescription);
-            typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:1001");
             typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
             constructor.addTypeDescription(typeDescription);
 
@@ -86,10 +91,11 @@ public class Prefab extends AssetType {
                 if (unityObject != null) {
                     unityObject.setObjectId(objectId);
 
-                    if (gameObject == null && unityObject instanceof GameObject) {
-                        gameObject = (GameObject) unityObject;
+                    if (unityObject instanceof GameObject) {
+                        gameObjects.add((GameObject) unityObject);
+                    } else {
+                        components.put(objectId, (Component) unityObject);
                     }
-                    unityObjects.put(objectId, unityObject);
                 }
             });
 
@@ -98,17 +104,31 @@ public class Prefab extends AssetType {
         }
     }
 
-    public GameObject getGameObject() {
-        return gameObject;
+    @Override
+    public String toString() {
+        return "Prefab " + getAssetFile();
     }
 
-    public <T extends Component> List<T> getComponents(Class<T> clazz) {
-        return gameObject.getM_Component().stream()
-                .map(componentReference -> unityObjects.get(componentReference.getComponent().getFileID()))
-                .filter(Objects::nonNull)
-                .filter(unityObject -> clazz.isAssignableFrom(unityObject.getClass()))
-                .map(unityObject ->  (T)unityObject)
-                .collect(Collectors.toList());
+    public List<GameObject> getGameObjects() {
+        return gameObjects;
+    }
+
+    public <T extends Component> T getComponent(Reference reference) {
+        if (reference.getGuid() != null && !reference.getGuid().equals(getGuid())) {
+            throw new IllegalArgumentException("Given GUID does not match this GUID. Given: " + reference.getGuid() + " This: " + getGuid());
+        }
+
+        return (T) components.get(reference.getFileID());
+    }
+
+    public MeshFilter getMeshFilter(GameObject gameObject) {
+        return gameObject.getM_Component()
+                .stream()
+                .map(componentReference -> getComponent(componentReference.getComponent()))
+                .filter(c -> c instanceof MeshFilter)
+                .map(c -> (MeshFilter)c)
+                .findFirst()
+                .orElse(null);
     }
 
     private InputStream removeUnityCrap(File assetFile) {
@@ -145,6 +165,7 @@ public class Prefab extends AssetType {
     public static class GameObjectHolder implements Holder<GameObject> {
         public GameObject gameObject;
 
+        @Override
         public GameObject getObject() {
             return gameObject;
         }
@@ -165,6 +186,7 @@ public class Prefab extends AssetType {
     public static class TransformHolder implements Holder<Transform> {
         public Transform transform;
 
+        @Override
         public Transform getObject() {
             return transform;
         }
@@ -185,6 +207,7 @@ public class Prefab extends AssetType {
     public static class MeshFilterHolder implements Holder<MeshFilter> {
         public MeshFilter meshFilter;
 
+        @Override
         public MeshFilter getObject() {
             return meshFilter;
         }
@@ -205,6 +228,7 @@ public class Prefab extends AssetType {
     public static class MeshRendererHolder implements Holder<MeshRenderer> {
         public MeshRenderer meshRenderer;
 
+        @Override
         public MeshRenderer getObject() {
             return meshRenderer;
         }
@@ -222,9 +246,31 @@ public class Prefab extends AssetType {
         }
     }
 
+    public static class PrefabInstanceHolder implements Holder<PrefabInstance> {
+        public PrefabInstance prefabInstance;
+
+        @Override
+        public PrefabInstance getObject() {
+            return prefabInstance;
+        }
+
+        @SuppressWarnings("unused")
+        public void setPrefabInstance(PrefabInstance prefabInstance) {
+            this.prefabInstance = prefabInstance;
+        }
+
+        @Override
+        public String toString() {
+            return "PrefabInstanceHolder{" +
+                    "prefabInstance=" + prefabInstance +
+                    '}';
+        }
+    }
+
     public static class IgnoredAssetTypeHolder implements Holder<IgnoredAssetType> {
         public IgnoredAssetType ignoredAssetType;
 
+        @Override
         public IgnoredAssetType getObject() {
             return ignoredAssetType;
         }

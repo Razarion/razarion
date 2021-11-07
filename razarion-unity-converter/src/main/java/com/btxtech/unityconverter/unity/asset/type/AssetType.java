@@ -22,11 +22,4 @@ public class AssetType {
     public File getAssetFile() {
         return meta.getAssetFile();
     }
-
-    @Override
-    public String toString() {
-        return "AssetType: Meta{" +
-                "meta='" + meta + '\'' +
-                '}';
-    }
 }

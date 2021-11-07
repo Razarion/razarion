@@ -18,18 +18,21 @@ public class UnityAsset {
     }
 
     public <T extends AssetType> T getAssetType(Reference reference) {
-        T assetType = (T)assets.get(reference.getGuid());
-        if (assetType == null) {
-            throw new IllegalArgumentException("No AssetType found with Reference: " + reference);
-        }
-        return (T) assetType;
+        return (T)assets.get(reference.getGuid());
     }
 
-    public List<Prefab> getMeshFilterPrefabs() {
+    public <T extends AssetType> List<T> getAssetTypes(Class<T> clazz) {
         return assets.values().stream()
-                .filter(assetType -> assetType.getClass().equals(Prefab.class))
-                .map(assetType -> (Prefab) assetType)
-                .filter(prefab -> !prefab.getComponents(MeshFilter.class).isEmpty())
+                .filter(assetType -> assetType.getClass().equals(clazz))
+                .map(assetType -> (T) assetType)
                 .collect(Collectors.toList());
     }
+
+//    public List<Prefab> getMeshFilterPrefabs() {
+//        return assets.values().stream()
+//                .filter(assetType -> assetType.getClass().equals(Prefab.class))
+//                .map(assetType -> (Prefab) assetType)
+//                .filter(prefab -> !prefab.getComponents(MeshFilter.class).isEmpty())
+//                .collect(Collectors.toList());
+//    }
 }

@@ -6,4 +6,9 @@ public class Ignore extends AssetType {
     public Ignore(Meta meta) {
         super(meta);
     }
+
+    @Override
+    public String toString() {
+        return "Ignore{}";
+    }
 }

@@ -14,4 +14,9 @@ public class Fbx extends AssetType {
         }
         return meshName;
     }
+
+    @Override
+    public String toString() {
+        return "Fbx: " + getAssetFile();
+    }
 }
