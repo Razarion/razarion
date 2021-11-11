@@ -1,9 +1,6 @@
 package com.btxtech.unityconverter.unity.asset;
 
 import com.btxtech.unityconverter.unity.asset.type.AssetType;
-import com.btxtech.unityconverter.unity.asset.type.Fbx;
-import com.btxtech.unityconverter.unity.asset.type.Prefab;
-import com.btxtech.unityconverter.unity.model.MeshFilter;
 import com.btxtech.unityconverter.unity.model.Reference;
 
 import java.util.HashMap;
@@ -11,7 +8,29 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UnityAsset {
+    private String guid;
+    private String name;
     private final HashMap<String, AssetType> assets = new HashMap<>();
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public HashMap<String, AssetType> getAssets() {
+        return assets;
+    }
 
     public void addAssetType(AssetType assetType) {
         assets.put(assetType.getGuid(), assetType);

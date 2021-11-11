@@ -1,8 +1,9 @@
 package com.btxtech.uiservice.renderer.task;
 
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.datatypes.asset.Mesh;
+import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
@@ -17,10 +18,13 @@ import com.btxtech.uiservice.renderer.task.progress.DemolitionState;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_BASE_ITEM;
 
@@ -40,31 +44,35 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     private AssetService mashService;
     @Inject
     private AlarmService alarmService;
-    private MapList<Mesh, BaseItemType> meshes;
 
     @PostConstruct
     public void postConstruct() {
-        meshes = new MapList<>();
-        baseItemUiService.getBaseItemTypes().forEach(this::setupBaseItemType);
+        Map<Shape3DElementKey, MapList<BaseItemType, ShapeTransform>> shape3DElements = new HashMap<>();
+        baseItemUiService.getBaseItemTypes().forEach(baseItemType -> setupBaseItemType(baseItemType, shape3DElements));
 
-        meshes.getMap().forEach((mesh, baseItemTypes) -> createMeshRenderTask(
-                shape3DUiService.getShape3D(mesh.getShape3DId()),
-                mesh.getElement3DId(),
-                getMeshModelMatrices(baseItemTypes),
+        shape3DElements.forEach((shape3DElement, baseItemTransformations) -> createMeshRenderTask(
+                shape3DUiService.getShape3D(shape3DElement.getShape3DId()),
+                shape3DElement.getElement3DId(),
+                createModelMatricesProvider(baseItemTransformations),
                 null));
     }
 
-    private Function<Long, List<ModelMatrices>> getMeshModelMatrices(List<BaseItemType> baseItemTypes) {
-        return (timestamp) -> baseItemTypes.stream()
-                .flatMap(baseItemType -> {
-                    List<ModelMatrices> modelMatrices = baseItemUiService.provideAliveModelMatrices(baseItemType);
-                    if (modelMatrices != null) {
-                        return modelMatrices.stream();
-                    } else {
-                        return null;
-                    }
-                })
-                .collect(Collectors.toList());
+    private Function<Long, List<ModelMatrices>> createModelMatricesProvider(MapList<BaseItemType, ShapeTransform> baseItemTransforms) {
+        return timestamp -> {
+            List<ModelMatrices> resultModelMatrices = new ArrayList<>();
+            baseItemTransforms.getMap().forEach((baseItemType, shapeTransforms) -> {
+                List<ModelMatrices> itemModelMatrices = baseItemUiService.provideAliveModelMatrices(baseItemType);
+                if (itemModelMatrices != null) {
+                    itemModelMatrices.forEach(baseItemModelMatrices -> {
+                        shapeTransforms.forEach(shapeTransform -> {
+                            resultModelMatrices.add(baseItemModelMatrices.multiplyShapeTransform(shapeTransform));
+                        });
+                    });
+                }
+
+            });
+            return resultModelMatrices;
+        };
     }
 
     @Override
@@ -77,10 +85,11 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
         postConstruct();
     }
 
-    private void setupBaseItemType(BaseItemType baseItemType) {
-        if (baseItemType.getShape3DId() != null || baseItemType.getMeshId() != null) {
-            if (baseItemType.getMeshId() != null) {
-                meshes.put(mashService.getMesh(baseItemType.getMeshId()), baseItemType);
+    private void setupBaseItemType(BaseItemType baseItemType, Map<Shape3DElementKey, MapList<BaseItemType, ShapeTransform>> shape3DElements) {
+        if (baseItemType.getShape3DId() != null || baseItemType.getMeshContainerId() != null) {
+            if (baseItemType.getMeshContainerId() != null) {
+                MeshContainer rootMeshContainer = mashService.getMeshContainer(baseItemType.getMeshContainerId());
+                recursiveFillBaseItemShape3DElements(baseItemType, rootMeshContainer, shape3DElements);
                 return;
             }
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
@@ -94,6 +103,29 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
         spawn(baseItemType);
         buildBeam(baseItemType);
         harvest(baseItemType);
+    }
+
+    private void recursiveFillBaseItemShape3DElements(BaseItemType baseItemType, MeshContainer meshContainer, Map<Shape3DElementKey, MapList<BaseItemType, ShapeTransform>> shape3DElements) {
+        if (meshContainer.getMesh() != null) {
+            Shape3DElementKey key = new Shape3DElementKey(meshContainer.getMesh().getShape3DId(), meshContainer.getMesh().getElement3DId());
+            MapList<BaseItemType, ShapeTransform> baseItemTransforms = shape3DElements.get(key);
+            if (baseItemTransforms == null) {
+                baseItemTransforms = new MapList<>();
+                shape3DElements.put(key, baseItemTransforms);
+            }
+            if(meshContainer.getMesh().getShapeTransform() != null) {
+                baseItemTransforms.put(baseItemType, meshContainer.getMesh().getShapeTransform());
+            } else {
+                ShapeTransform normTransform = new ShapeTransform();
+                normTransform.setScaleX(1);
+                normTransform.setScaleY(1);
+                normTransform.setScaleZ(1);
+                baseItemTransforms.put(baseItemType, normTransform);
+            }
+        }
+        if (meshContainer.getChildren() != null) {
+            meshContainer.getChildren().forEach(child -> recursiveFillBaseItemShape3DElements(baseItemType, child, shape3DElements));
+        }
     }
 
     private void spawn(BaseItemType baseItemType) {
@@ -192,5 +224,36 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
         return (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null)
                 ? baseItemType.getWeaponType().getTurretType().getShape3dMaterialId()
                 : null;
+    }
+
+    public static class Shape3DElementKey {
+        private final int shape3DId;
+        private final String element3DId;
+
+        public Shape3DElementKey(int shape3DId, String element3DId) {
+            this.shape3DId = shape3DId;
+            this.element3DId = element3DId;
+        }
+
+        public int getShape3DId() {
+            return shape3DId;
+        }
+
+        public String getElement3DId() {
+            return element3DId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Shape3DElementKey that = (Shape3DElementKey) o;
+            return shape3DId == that.shape3DId && element3DId.equals(that.element3DId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(shape3DId, element3DId);
+        }
     }
 }

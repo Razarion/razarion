@@ -1,10 +1,13 @@
 package com.btxtech.shared.datatypes.asset;
 
+import com.btxtech.shared.datatypes.shape.ShapeTransform;
+
 import java.util.Objects;
 
 public class Mesh {
     private Integer shape3DId;
     private String element3DId;
+    private ShapeTransform shapeTransform;
 
     public Integer getShape3DId() {
         return shape3DId;
@@ -20,6 +23,14 @@ public class Mesh {
 
     public void setElement3DId(String element3DId) {
         this.element3DId = element3DId;
+    }
+
+    public ShapeTransform getShapeTransform() {
+        return shapeTransform;
+    }
+
+    public void setShapeTransform(ShapeTransform shapeTransform) {
+        this.shapeTransform = shapeTransform;
     }
 
     @Override
@@ -46,6 +57,11 @@ public class Mesh {
 
     public Mesh element3DId(String element3DId) {
         setElement3DId(element3DId);
+        return this;
+    }
+
+    public Mesh transformation(ShapeTransform shapeTransform) {
+        setShapeTransform(shapeTransform);
         return this;
     }
 }

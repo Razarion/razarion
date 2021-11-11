@@ -23,14 +23,25 @@ import static com.btxtech.unityconverter.unity.asset.type.AssetTypeFactory.META;
 public class AssetReader {
     private static final Logger LOGGER = Logger.getLogger(AssetReader.class.getName());
 
-    public static UnityAsset read(String dirLocation) {
+    public static UnityAsset read(String assetMetaFile) {
         try {
-            UnityAsset asset = new UnityAsset();
-            processAssetFolder(new File(dirLocation), asset);
-            return asset;
+            return processAsset(assetMetaFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static UnityAsset processAsset(String assetMetaFile) throws IOException {
+        UnityAsset asset = new UnityAsset();
+        Meta assetMeta = setupMeta(new File(assetMetaFile));
+        if (null != assetMeta.getFolderAsset() && assetMeta.getFolderAsset()) {
+            asset.setGuid(assetMeta.getGuid());
+            asset.setName(assetMeta.getAssetFile().getName());
+            processAssetFolder(assetMeta.getAssetFile(), asset);
+        } else {
+            throw new IllegalArgumentException("Asset must be a folder. See meta file: " + assetMetaFile);
+        }
+        return asset;
     }
 
     private static void processAssetFolder(File assetFolder, UnityAsset asset) throws IOException {
@@ -45,7 +56,7 @@ public class AssetReader {
         metaFiles.forEach(metaFile -> setupAssetType(metaFile, asset));
     }
 
-    private static void setupAssetType(File metaFile, UnityAsset asset) {
+    private static Meta setupMeta(File metaFile) {
         try {
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -53,6 +64,16 @@ public class AssetReader {
             Meta meta = mapper.readValue(metaFile, Meta.class);
             meta.setAssetFile(readAssetFile(metaFile));
             meta.setFileExtension(findExtension(meta.getAssetFile().getName()).orElse(null));
+            return meta;
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error processing meta: " + metaFile, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void setupAssetType(File metaFile, UnityAsset asset) {
+        try {
+            Meta meta = setupMeta(metaFile);
             if (meta.getFolderAsset() != null && meta.getFolderAsset()) {
                 processAssetFolder(meta.getAssetFile(), asset);
             } else {
@@ -79,6 +100,5 @@ public class AssetReader {
         }
         return new File(metaFile.getPath().substring(0, lastIndex));
     }
-
 
 }

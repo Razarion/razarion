@@ -6,8 +6,9 @@ import java.util.List;
 
 public class Asset implements Config {
     private int id;
+    private String unityAssetGuid;
     private String internalName;
-    private List<Mesh> meshes;
+    private List<MeshContainer> meshContainers;
 
     @Override
     public int getId() {
@@ -28,11 +29,34 @@ public class Asset implements Config {
         this.internalName = internalName;
     }
 
-    public List<Mesh> getMeshes() {
-        return meshes;
+    public List<MeshContainer> getMeshContainers() {
+        return meshContainers;
     }
 
-    public void setMeshes(List<Mesh> meshes) {
-        this.meshes = meshes;
+    public void setMeshContainers(List<MeshContainer> meshContainers) {
+        this.meshContainers = meshContainers;
+    }
+
+    public String getUnityAssetGuid() {
+        return unityAssetGuid;
+    }
+
+    public void setUnityAssetGuid(String unityAssetGuid) {
+        this.unityAssetGuid = unityAssetGuid;
+    }
+
+    public Asset unityAssetGuid(String unityAssetGuid) {
+        setUnityAssetGuid(unityAssetGuid);
+        return this;
+    }
+
+    public Asset internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
+    }
+
+    public Asset meshes(List<MeshContainer> meshes) {
+        setMeshContainers(meshes);
+        return this;
     }
 }
