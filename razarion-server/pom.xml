@@ -34,6 +34,11 @@
             <artifactId>razarion-share</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-unity-converter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Used in GWT logging to deobfuscate the stack trace-->
         <dependency>
             <groupId>com.google.gwt</groupId>

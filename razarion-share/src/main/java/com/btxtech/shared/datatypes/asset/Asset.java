@@ -55,8 +55,8 @@ public class Asset implements Config {
         return this;
     }
 
-    public Asset meshes(List<MeshContainer> meshes) {
-        setMeshContainers(meshes);
+    public Asset meshContainers(List<MeshContainer> meshContainers) {
+        setMeshContainers(meshContainers);
         return this;
     }
 }

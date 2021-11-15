@@ -48,6 +48,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
+import com.btxtech.unityconverter.Converter;
 import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
@@ -158,6 +159,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             coldGameUiContext.levelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext, userContext.getLevelId()));
         }
         coldGameUiContext.shape3Ds(shape3DPersistence.getShape3Ds());
+        coldGameUiContext.meshContainers(Converter.readMeshContainers());
         coldGameUiContext.setParticleShapeConfigs(particleShapeCrudPersistence.read());
         coldGameUiContext.setParticleEmitterSequenceConfigs(particleEmitterSequenceCrudPersistence.read());
         coldGameUiContext.audioConfig(setupAudioConfig());

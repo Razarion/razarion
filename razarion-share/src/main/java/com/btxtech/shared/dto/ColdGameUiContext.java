@@ -1,6 +1,7 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.shared.datatypes.particle.ParticleShapeConfig;
 import com.btxtech.shared.datatypes.shape.Shape3D;
@@ -20,6 +21,7 @@ public class ColdGameUiContext {
     private List<LevelUnlockConfig> levelUnlockConfigs;
     private StaticGameConfig staticGameConfig;
     private List<Shape3D> shape3Ds;
+    private List<MeshContainer> meshContainers;
     private List<ParticleShapeConfig> particleShapeConfigs;
     private List<ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs;
     private AudioConfig audioConfig;
@@ -57,6 +59,14 @@ public class ColdGameUiContext {
 
     public void setShape3Ds(List<Shape3D> shape3Ds) {
         this.shape3Ds = shape3Ds;
+    }
+
+    public List<MeshContainer> getMeshContainers() {
+        return meshContainers;
+    }
+
+    public void setMeshContainers(List<MeshContainer> meshContainers) {
+        this.meshContainers = meshContainers;
     }
 
     public List<ParticleShapeConfig> getParticleShapeConfigs() {
@@ -124,6 +134,11 @@ public class ColdGameUiContext {
 
     public ColdGameUiContext shape3Ds(List<Shape3D> shape3Ds) {
         setShape3Ds(shape3Ds);
+        return this;
+    }
+
+    public ColdGameUiContext meshContainers(List<MeshContainer> meshContainers) {
+        setMeshContainers(meshContainers);
         return this;
     }
 
