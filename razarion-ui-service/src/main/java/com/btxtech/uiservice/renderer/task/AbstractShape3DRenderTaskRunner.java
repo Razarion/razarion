@@ -2,6 +2,7 @@ package com.btxtech.uiservice.renderer.task;
 
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -67,7 +68,10 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
                     vertexContainer,
                     modelMatricesSupplier,
                     progressAnimations,
-                    vertexContainer.getShapeTransform(),
+                    new ShapeTransform()
+                            .setScaleX(0.01)
+                            .setScaleY(0.01)
+                            .setScaleZ(0.01),
                     (mrt) -> mrt.setProgressState(progressState != null ? progressState.fork(vertexContainer) : null));
         });
     }

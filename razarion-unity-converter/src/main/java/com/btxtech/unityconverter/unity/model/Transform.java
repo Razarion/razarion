@@ -5,6 +5,10 @@ import java.util.List;
 public class Transform extends Component {
     private List<Reference> m_Children;
     private Reference m_CorrespondingSourceObject;
+    private Reference m_PrefabInstance;
+    private UnityVector m_LocalRotation;
+    private UnityVector m_LocalPosition;
+    private UnityVector m_LocalScale;
 
     public List<Reference> getM_Children() {
         return m_Children;
@@ -22,11 +26,47 @@ public class Transform extends Component {
         this.m_CorrespondingSourceObject = m_CorrespondingSourceObject;
     }
 
+    public Reference getM_PrefabInstance() {
+        return m_PrefabInstance;
+    }
+
+    public void setM_PrefabInstance(Reference m_PrefabInstance) {
+        this.m_PrefabInstance = m_PrefabInstance;
+    }
+
+    public UnityVector getM_LocalRotation() {
+        return m_LocalRotation;
+    }
+
+    public void setM_LocalRotation(UnityVector m_LocalRotation) {
+        this.m_LocalRotation = m_LocalRotation;
+    }
+
+    public UnityVector getM_LocalPosition() {
+        return m_LocalPosition;
+    }
+
+    public void setM_LocalPosition(UnityVector m_LocalPosition) {
+        this.m_LocalPosition = m_LocalPosition;
+    }
+
+    public UnityVector getM_LocalScale() {
+        return m_LocalScale;
+    }
+
+    public void setM_LocalScale(UnityVector m_LocalScale) {
+        this.m_LocalScale = m_LocalScale;
+    }
+
     @Override
     public String toString() {
         return "Transform{" +
                 "m_Children=" + m_Children +
                 ", m_CorrespondingSourceObject=" + m_CorrespondingSourceObject +
+                ", m_PrefabInstance=" + m_PrefabInstance +
+                ", m_LocalRotation=" + m_LocalRotation +
+                ", m_LocalPosition=" + m_LocalPosition +
+                ", m_LocalScale=" + m_LocalScale +
                 '}';
     }
 }

@@ -16,7 +16,7 @@ public class Shape3DManager {
     public Integer getShape3DId4Fbx(Fbx fbx) {
         Integer shape3DId = shape3Ds.get(fbx.getGuid());
         if (shape3DId == null) {
-            System.out.println("No Shape3D for '" + fbx.getGuid() + "' +  File: " + fbx);
+            throw new RuntimeException("No Shape3D for '" + fbx.getGuid() + "' +  File: " + fbx);
         }
         return shape3DId;
     }

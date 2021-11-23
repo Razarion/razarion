@@ -1,6 +1,7 @@
 package com.btxtech.unityconverter.unity.asset;
 
 import com.btxtech.unityconverter.unity.asset.type.AssetType;
+import com.btxtech.unityconverter.unity.asset.type.Prefab;
 import com.btxtech.unityconverter.unity.model.Reference;
 
 import java.util.HashMap;
@@ -45,6 +46,15 @@ public class UnityAsset {
                 .filter(assetType -> assetType.getClass().equals(clazz))
                 .map(assetType -> (T) assetType)
                 .collect(Collectors.toList());
+    }
+
+    public Prefab findPrefab(String name) {
+        return assets.values().stream()
+                .filter(assetType -> assetType.getClass().equals(Prefab.class))
+                .map(assetType -> (Prefab) assetType)
+                .filter(prefab -> prefab.getGameObjects().get(0).getM_Name().equals(name))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
 //    public List<Prefab> getMeshFilterPrefabs() {

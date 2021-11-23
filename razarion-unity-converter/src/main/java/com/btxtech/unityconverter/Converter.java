@@ -2,12 +2,16 @@ package com.btxtech.unityconverter;
 
 import com.btxtech.shared.datatypes.asset.Mesh;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
+import com.btxtech.shared.datatypes.shape.ShapeTransform;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.unityconverter.unity.asset.AssetReader;
 import com.btxtech.unityconverter.unity.asset.UnityAsset;
 import com.btxtech.unityconverter.unity.asset.type.Fbx;
 import com.btxtech.unityconverter.unity.asset.type.Prefab;
 import com.btxtech.unityconverter.unity.model.GameObject;
 import com.btxtech.unityconverter.unity.model.MeshFilter;
+import com.btxtech.unityconverter.unity.model.ModificationContainer;
+import com.btxtech.unityconverter.unity.model.PrefabInstance;
 import com.btxtech.unityconverter.unity.model.Transform;
 
 import java.util.ArrayList;
@@ -20,8 +24,9 @@ public class Converter {
     private static final Logger LOGGER = Logger.getLogger(Converter.class.getName());
 
     public static void main(String[] args) {
-        MeshContainer meshContainer = readMeshContainers().get(0);
-        meshContainer = meshContainer;
+        readMeshContainers();
+        // MeshContainer meshContainer = readMeshContainers().get(0);
+        // meshContainer = meshContainer;
     }
 
     public static List<MeshContainer> readMeshContainers() {
@@ -29,13 +34,21 @@ public class Converter {
         try {
             UnityAsset unityAsset = AssetReader.read("C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor.meta");
 
+            System.out.println("------------ Prefabs in Asset ------------");
+            unityAsset.getAssetTypes(Prefab.class).stream().forEach(prefab -> {
+                System.out.println(prefab.getGameObjects().get(0).getM_Name());
+            });
+            System.out.println("------------------------");
 
-            List<Prefab> prefabs = unityAsset.getAssetTypes(Prefab.class);
-            Prefab prefab = prefabs.get(2); // Vehicle_11
+            Prefab prefab = unityAsset.findPrefab("Simple01");
+            // Prefab prefab = unityAsset.findPrefab("Vehicle_11");
+            System.out.println("Prefab: " + prefab.getGameObjects().get(0).getM_Name());
 
             MeshContainer meshContainer = createMeshContainer(prefab, unityAsset);
             meshContainer.setId(1);
             meshContainers.add(meshContainer);
+
+            return meshContainers;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error Converter Asset", e);
         }
@@ -53,6 +66,17 @@ public class Converter {
                 .map(c -> (Transform) c)
                 .findFirst().orElseThrow(IllegalStateException::new);
 
+        ShapeTransform baseTransform = new ShapeTransform();
+        baseTransform.setTranslateX(transform.getM_LocalPosition().getX());
+        baseTransform.setTranslateY(transform.getM_LocalPosition().getY());
+        baseTransform.setTranslateZ(transform.getM_LocalPosition().getZ());
+        baseTransform.setRotateX(transform.getM_LocalRotation().getX());
+        baseTransform.setRotateY(transform.getM_LocalRotation().getY());
+        baseTransform.setRotateZ(transform.getM_LocalRotation().getZ());
+        baseTransform.setScaleX(transform.getM_LocalScale().getX());
+        baseTransform.setScaleY(transform.getM_LocalScale().getY());
+        baseTransform.setScaleZ(transform.getM_LocalScale().getZ());
+
         Shape3DManager shape3DManager = new Shape3DManager();
         List<MeshContainer> childMeshContainers = new ArrayList<>();
         transform.getM_Children()
@@ -60,9 +84,9 @@ public class Converter {
                 .map(prefab::getComponent)
                 .filter(Objects::nonNull)
                 .map(o -> (Transform) o)
-                .map(Transform::getM_CorrespondingSourceObject)
-                .forEach(reference -> {
-                    Prefab p = unityAsset.getAssetType(reference);
+                .forEach(childTransform -> {
+                    Prefab p = unityAsset.getAssetType(childTransform.getM_CorrespondingSourceObject());
+                    PrefabInstance prefabInstance = prefab.getComponent(childTransform.getM_PrefabInstance());
                     MeshContainer meshContainer = new MeshContainer();
                     childMeshContainers.add(meshContainer);
                     if (p != null) {
@@ -72,7 +96,10 @@ public class Converter {
                                 Fbx fbx = unityAsset.getAssetType(meshFilter.getM_Mesh());
                                 String meshName = fbx.getMeshName(meshFilter.getM_Mesh().getFileID());
                                 meshContainer.setName(gameObject.getM_Name());
-                                meshContainer.setMesh(new Mesh().shape3DId(shape3DManager.getShape3DId4Fbx(fbx)).element3DId(meshName));
+                                meshContainer.setMesh(new Mesh()
+                                        .shape3DId(shape3DManager.getShape3DId4Fbx(fbx))
+                                        .element3DId(meshName)
+                                        .transformation(setupShapeTransform(prefabInstance.getM_Modification(), baseTransform)));
                             } else {
                                 System.out.println("No MeshFilter: " + gameObject.getM_Name());
                             }
@@ -102,5 +129,50 @@ public class Converter {
         return new MeshContainer()
                 .name(mainGameObject.getM_Name())
                 .children(childMeshContainers);
+    }
+
+    private static ShapeTransform setupShapeTransform(ModificationContainer m_modification, ShapeTransform baseTransform) {
+        System.out.println("----- setupShapeTransform");
+        if (m_modification == null || m_modification.getM_Modifications() == null) {
+            return null;
+        }
+        ShapeTransform shapeTransform = new ShapeTransform();
+        m_modification.getM_Modifications().forEach(modification -> {
+            System.out.println("Read: " + modification.getPropertyPath().toLowerCase() + ": " + modification.getValue());
+            switch (modification.getPropertyPath().toLowerCase()) {
+                case ("m_localposition.x"):
+                    shapeTransform.setTranslateX(baseTransform.getTranslateX() + Double.parseDouble(modification.getValue()));
+                    break;
+                case ("m_localposition.y"):
+                    shapeTransform.setTranslateY(baseTransform.getTranslateY() + Double.parseDouble(modification.getValue()));
+                    break;
+                case ("m_localposition.z"):
+                    shapeTransform.setTranslateZ(baseTransform.getTranslateZ() + Double.parseDouble(modification.getValue()));
+                    break;
+                case ("m_localrotation.x"):
+                    shapeTransform.setRotateX(baseTransform.getRotateX() + Double.parseDouble(modification.getValue()));
+                    break;
+                case ("m_localrotation.y"):
+                    shapeTransform.setRotateY(baseTransform.getRotateY() + Double.parseDouble(modification.getValue()));
+                    break;
+                case ("m_localrotation.z"):
+                    shapeTransform.setRotateZ(baseTransform.getRotateZ() + Double.parseDouble(modification.getValue()));
+                    break;
+                case ("m_localscale.x"):
+                    shapeTransform.setScaleX(baseTransform.getScaleX() + Double.parseDouble(modification.getValue()));
+                    break;
+                case ("m_localscale.y"):
+                    shapeTransform.setScaleY(baseTransform.getScaleY() + Double.parseDouble(modification.getValue()));
+                    break;
+                case ("m_localscale.z"):
+                    shapeTransform.setScaleZ(baseTransform.getScaleZ() + Double.parseDouble(modification.getValue()));
+                    break;
+
+                default:
+                    System.out.println("Unknown transformation: " + modification.getPropertyPath().toLowerCase() + ": " + modification.getValue());
+            }
+        });
+        System.out.println(shapeTransform);
+        return shapeTransform;
     }
 }
