@@ -1,14 +1,17 @@
 package com.btxtech.uiservice.renderer.task;
 
 import com.btxtech.shared.datatypes.MapList;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
+import com.btxtech.shared.nativejs.NativeMatrix;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.alarm.AlarmService;
-import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
@@ -45,6 +48,8 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     private AssetService mashService;
     @Inject
     private AlarmService alarmService;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
 
     @PostConstruct
     public void postConstruct() {
@@ -59,6 +64,12 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     }
 
     private Function<Long, List<ModelMatrices>> createModelMatricesProvider(MapList<BaseItemType, ShapeTransform> baseItemTransforms) {
+        NativeMatrix unityShapeTransform = nativeMatrixFactory.createFromColumnMajorArray(Matrix4.createFromAxisAndTranslation(
+                new Vertex(0, -1, 0),
+                new Vertex(0, 0, 1),
+                new Vertex(1, 0, 0),
+                new Vertex(0, 0, 0)
+        ).toWebGlArray());
         return timestamp -> {
             List<ModelMatrices> resultModelMatrices = new ArrayList<>();
             baseItemTransforms.getMap().forEach((baseItemType, shapeTransforms) -> {
@@ -66,13 +77,7 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
                 if (itemModelMatrices != null) {
                     itemModelMatrices.forEach(baseItemModelMatrices -> {
                         shapeTransforms.forEach(shapeTransform -> {
-                            ShapeTransform unitsShapeTransform = new ShapeTransform()
-                                    .setRotateX(MathHelper.QUARTER_RADIANT)
-                                    .setRotateZ(MathHelper.QUARTER_RADIANT)
-                                    .setScaleX(1)
-                                    .setScaleY(1)
-                                    .setScaleZ(1);
-                            resultModelMatrices.add(baseItemModelMatrices.multiplyShapeTransform(unitsShapeTransform).multiplyShapeTransform(shapeTransform));
+                            resultModelMatrices.add(baseItemModelMatrices.multiplyStaticShapeTransform(unityShapeTransform).multiplyShapeTransform(shapeTransform));
                         });
                     });
                 }

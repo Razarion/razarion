@@ -3,7 +3,6 @@ package com.btxtech.unityconverter;
 import com.btxtech.shared.datatypes.asset.Mesh;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
-import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.unityconverter.unity.asset.AssetReader;
 import com.btxtech.unityconverter.unity.asset.UnityAsset;
 import com.btxtech.unityconverter.unity.asset.type.Fbx;
@@ -131,41 +130,41 @@ public class Converter {
                 .children(childMeshContainers);
     }
 
-    private static ShapeTransform setupShapeTransform(ModificationContainer m_modification, ShapeTransform baseTransform) {
+    private static ShapeTransform setupShapeTransform(ModificationContainer m_modification, ShapeTransform baseShapeTransform) {
         System.out.println("----- setupShapeTransform");
         if (m_modification == null || m_modification.getM_Modifications() == null) {
             return null;
         }
-        ShapeTransform shapeTransform = new ShapeTransform();
+        ShapeTransform shapeTransform = baseShapeTransform.copyTRS();
         m_modification.getM_Modifications().forEach(modification -> {
             System.out.println("Read: " + modification.getPropertyPath().toLowerCase() + ": " + modification.getValue());
             switch (modification.getPropertyPath().toLowerCase()) {
                 case ("m_localposition.x"):
-                    shapeTransform.setTranslateX(baseTransform.getTranslateX() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setTranslateX(shapeTransform.getTranslateX() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localposition.y"):
-                    shapeTransform.setTranslateY(baseTransform.getTranslateY() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setTranslateY(shapeTransform.getTranslateY() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localposition.z"):
-                    shapeTransform.setTranslateZ(baseTransform.getTranslateZ() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setTranslateZ(shapeTransform.getTranslateZ() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.x"):
-                    shapeTransform.setRotateX(baseTransform.getRotateX() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setRotateX(shapeTransform.getRotateX() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.y"):
-                    shapeTransform.setRotateY(baseTransform.getRotateY() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setRotateY(shapeTransform.getRotateY() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.z"):
-                    shapeTransform.setRotateZ(baseTransform.getRotateZ() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setRotateZ(shapeTransform.getRotateZ() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.x"):
-                    shapeTransform.setScaleX(baseTransform.getScaleX() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setScaleX(shapeTransform.getScaleX() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.y"):
-                    shapeTransform.setScaleY(baseTransform.getScaleY() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setScaleY(shapeTransform.getScaleY() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.z"):
-                    shapeTransform.setScaleZ(baseTransform.getScaleZ() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setScaleZ(shapeTransform.getScaleZ() + Double.parseDouble(modification.getValue()));
                     break;
 
                 default:
