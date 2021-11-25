@@ -47,8 +47,6 @@ public class ClientRenderServiceImpl extends RenderService {
     protected void prepare() {
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
         gameCanvas.getCtx3d().depthMask(true);
-        gameCanvas.getCtx3d().enable(WebGLRenderingContext.CULL_FACE);
-        gameCanvas.getCtx3d().cullFace(WebGLRenderingContext.BACK);
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
     }
 
