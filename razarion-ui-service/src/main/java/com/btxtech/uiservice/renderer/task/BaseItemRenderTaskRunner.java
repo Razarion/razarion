@@ -64,6 +64,7 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     }
 
     private Function<Long, List<ModelMatrices>> createModelMatricesProvider(MapList<BaseItemType, ShapeTransform> baseItemTransforms) {
+        // TODO Problem: this matrix change the triangle vertex order. Back cull removes the triangles. See AbstractWebGlRenderTask
         NativeMatrix unityShapeTransform = nativeMatrixFactory.createFromColumnMajorArray(Matrix4.createFromAxisAndTranslation(
                 new Vertex(0, -1, 0),
                 new Vertex(0, 0, 1),

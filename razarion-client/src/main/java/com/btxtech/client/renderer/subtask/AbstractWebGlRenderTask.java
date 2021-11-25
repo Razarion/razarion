@@ -313,8 +313,9 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
             // WebGl behaves strange if during depth buffer render depth mask is set to false
             webGlFacade.getCtx3d().depthMask(webGlFacadeConfig.isWriteDepthBuffer());
         }
-        webGlFacade.getCtx3d().enable(WebGLRenderingContext.CULL_FACE);
-        webGlFacade.getCtx3d().cullFace(WebGLRenderingContext.BACK);
+        // TODO Unity matrix change the triangle vertex order. See: BaseItemRenderTaskRunner
+        // TODO webGlFacade.getCtx3d().enable(WebGLRenderingContext.CULL_FACE);
+        // TODO webGlFacade.getCtx3d().cullFace(WebGLRenderingContext.BACK);
         if (webGlFacadeConfig.getBlend() != null) {
             webGlFacade.getCtx3d().enable(WebGLRenderingContext.BLEND);
             switch (webGlFacadeConfig.getBlend()) {
