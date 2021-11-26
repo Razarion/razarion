@@ -39,8 +39,8 @@ public class Converter {
             });
             System.out.println("------------------------");
 
-            Prefab prefab = unityAsset.findPrefab("Simple01");
-            // Prefab prefab = unityAsset.findPrefab("Vehicle_11");
+            // Prefab prefab = unityAsset.findPrefab("Simple01");
+            Prefab prefab = unityAsset.findPrefab("Vehicle_11");
             System.out.println("Prefab: " + prefab.getGameObjects().get(0).getM_Name());
 
             MeshContainer meshContainer = createMeshContainer(prefab, unityAsset);
@@ -148,14 +148,14 @@ public class Converter {
                 case ("m_localposition.z"):
                     shapeTransform.setTranslateZ(shapeTransform.getTranslateZ() + Double.parseDouble(modification.getValue()));
                     break;
-                case ("m_localrotation.x"):
-                    shapeTransform.setRotateX(shapeTransform.getRotateX() + Double.parseDouble(modification.getValue()));
+                case ("m_localeulerangleshint.x"): // m_LocalRotation: quaternions to Euler not working. See https://docs.unity3d.com/Manual/QuaternionAndEulerRotationsInUnity.html
+                    shapeTransform.setRotateX(shapeTransform.getRotateX() + Math.toRadians(Double.parseDouble(modification.getValue())));
                     break;
-                case ("m_localrotation.y"):
-                    shapeTransform.setRotateY(shapeTransform.getRotateY() + Double.parseDouble(modification.getValue()));
+                case ("m_localeulerangleshint.y"):  // m_LocalRotation: quaternions to Euler not working. See https://docs.unity3d.com/Manual/QuaternionAndEulerRotationsInUnity.html
+                    shapeTransform.setRotateY(shapeTransform.getRotateY() + Math.toRadians(Double.parseDouble(modification.getValue())));
                     break;
-                case ("m_localrotation.z"):
-                    shapeTransform.setRotateZ(shapeTransform.getRotateZ() + Double.parseDouble(modification.getValue()));
+                case ("m_localeulerangleshint.z"): // m_LocalRotation: quaternions to Euler not working. See https://docs.unity3d.com/Manual/QuaternionAndEulerRotationsInUnity.html
+                    shapeTransform.setRotateZ(shapeTransform.getRotateZ() + Math.toRadians(Double.parseDouble(modification.getValue())));
                     break;
                 case ("m_localscale.x"):
                     shapeTransform.setScaleX(shapeTransform.getScaleX() + Double.parseDouble(modification.getValue()));
@@ -166,7 +166,12 @@ public class Converter {
                 case ("m_localscale.z"):
                     shapeTransform.setScaleZ(shapeTransform.getScaleZ() + Double.parseDouble(modification.getValue()));
                     break;
-
+                case ("m_localrotation.x"):
+                case ("m_localrotation.y"):
+                case ("m_localrotation.z"):
+                case ("m_localrotation.w"):
+                    // Ignore
+                    break;
                 default:
                     System.out.println("Unknown transformation: " + modification.getPropertyPath().toLowerCase() + ": " + modification.getValue());
             }
