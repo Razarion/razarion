@@ -1,10 +1,10 @@
 package com.btxtech.server.systemtests.framework;
 
-import com.btxtech.test.JsonAssert;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.CrudController;
+import com.btxtech.test.JsonAssert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
     private List<ConfigModifier<ConfigObject>> configModifiers = new ArrayList<>();
     private RestConnection connection;
     private Controller crudToBeTested;
+    private boolean ignoreInternalName;
 
     public static class ConfigModifier<ConfigObject> {
         private Consumer<ConfigObject> configModifier;
@@ -62,6 +63,10 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
         configModifiers.add(new ConfigModifier<>(configModifier, idSuppressors));
     }
 
+    protected void enabledIgnoreInternalName() {
+        ignoreInternalName = true;
+    }
+
     @Test
     public void testCrud() {
         connection.loginAdmin();
@@ -78,14 +83,17 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
         // Read
         ConfigObject config2 = crudToBeTested.read(config1.getId());
         assertThat(config2, is(samePropertyValuesAs(config1)));
-        // Update internal name
-        config2.setInternalName("Internal 2");
-        crudToBeTested.update(config2);
-        ConfigObject config3 = crudToBeTested.read(config2.getId());
-        assertThat(config3, is(samePropertyValuesAs(config2)));
-        List<ConfigObject> configs = crudToBeTested.read();
-        assertEquals(1, configs.size());
-        assertThat(configs.get(0), is(samePropertyValuesAs(config3)));
+        ConfigObject config3 = config2;
+        if (!ignoreInternalName) {
+            // Update internal name
+            config2.setInternalName("Internal 2");
+            crudToBeTested.update(config2);
+            config3 = crudToBeTested.read(config2.getId());
+            assertThat(config3, is(samePropertyValuesAs(config2)));
+            List<ConfigObject> configs = crudToBeTested.read();
+            assertEquals(1, configs.size());
+            assertThat(configs.get(0), is(samePropertyValuesAs(config3)));
+        }
         // Additional Update
         setupUpdate();
         SingleHolder<ConfigObject> holder = new SingleHolder<>(config3);

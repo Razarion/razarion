@@ -273,6 +273,22 @@ public enum PropertyEditorSelector {
             return convertNullCollectionReferenceToAngular(CollectionReferenceType.SHAPE_3D);
         }
     },
+    MESH_CONTAINER("collection-reference-property-editor") {
+        @Override
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
+            return value.asInt();
+        }
+
+        @Override
+        public Any convertToAngular(Object object) {
+            return convertCollectionReferenceToAngular(CollectionReferenceType.MESH_CONTAINER, object);
+        }
+
+        @Override
+        public Any convertNullToAngular() {
+            return convertNullCollectionReferenceToAngular(CollectionReferenceType.MESH_CONTAINER);
+        }
+    },
     COLLADA_STRING("collada-string-property-editor") {
         @Override
         public Object convertFromAngular(Any value, Class<?> propertyClass) {

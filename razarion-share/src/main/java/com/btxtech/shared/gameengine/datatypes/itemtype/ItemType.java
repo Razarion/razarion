@@ -30,6 +30,7 @@ public abstract class ItemType implements Config {
     private I18nString i18nDescription;
     @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer shape3DId;
+    @CollectionReference(CollectionReferenceType.MESH_CONTAINER)
     private Integer meshContainerId;
     private Integer thumbnail;
 

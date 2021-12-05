@@ -26,7 +26,7 @@ public class RestConnection {
             this.password = password;
         }
     }
-    public static String URL = "http://localhost:32778";
+    public static String URL = "http://localhost:8080";
     public static String REST_URL = URL + "/rest/";
     private TestUser loggedIn = TestUser.NONE;
     private ResteasyWebTarget target;

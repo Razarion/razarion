@@ -1,10 +1,13 @@
 package com.btxtech.shared.datatypes.asset;
 
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 
 import java.util.Objects;
 
 public class Mesh {
+    @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer shape3DId;
     private String element3DId;
     private ShapeTransform shapeTransform;
@@ -33,6 +36,21 @@ public class Mesh {
         this.shapeTransform = shapeTransform;
     }
 
+    public Mesh shape3DId(Integer shape3DId) {
+        setShape3DId(shape3DId);
+        return this;
+    }
+
+    public Mesh element3DId(String element3DId) {
+        setElement3DId(element3DId);
+        return this;
+    }
+
+    public Mesh shapeTransform(ShapeTransform shapeTransform) {
+        setShapeTransform(shapeTransform);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -48,20 +66,5 @@ public class Mesh {
     @Override
     public int hashCode() {
         return Objects.hash(shape3DId, element3DId);
-    }
-
-    public Mesh shape3DId(Integer shape3DId) {
-        setShape3DId(shape3DId);
-        return this;
-    }
-
-    public Mesh element3DId(String element3DId) {
-        setElement3DId(element3DId);
-        return this;
-    }
-
-    public Mesh transformation(ShapeTransform shapeTransform) {
-        setShapeTransform(shapeTransform);
-        return this;
     }
 }

@@ -106,6 +106,13 @@ public interface PersistenceUtil {
         return output;
     }
 
+    static <C, E> C toConfig(E entity, Function<E, C> configProvider) {
+        if (entity == null) {
+            return null;
+        }
+        return configProvider.apply(entity);
+    }
+
     static <C, E> List<C> toConfigList(List<E> entities, Function<E, C> configProvider) {
         if (entities == null) {
             return Collections.emptyList();

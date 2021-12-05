@@ -2,6 +2,7 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.gameengine.ServerUnlockService;
+import com.btxtech.server.persistence.asset.AssetCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
@@ -94,6 +95,8 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     @Inject
     private ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence;
     @Inject
+    private AssetCrudPersistence assetCrudPersistence;
+    @Inject
     private DbPropertiesService dbPropertiesService;
     @Inject
     private TrackerPersistence trackerPersistence;
@@ -159,7 +162,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             coldGameUiContext.levelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext, userContext.getLevelId()));
         }
         coldGameUiContext.shape3Ds(shape3DPersistence.getShape3Ds());
-        coldGameUiContext.meshContainers(Converter.readMeshContainers());
+        coldGameUiContext.meshContainers(assetCrudPersistence.readMeshContainers());
         coldGameUiContext.setParticleShapeConfigs(particleShapeCrudPersistence.read());
         coldGameUiContext.setParticleEmitterSequenceConfigs(particleEmitterSequenceCrudPersistence.read());
         coldGameUiContext.audioConfig(setupAudioConfig());

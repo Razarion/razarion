@@ -108,6 +108,8 @@ public class Leaf extends AbstractPropertyModel {
                             return PropertyEditorSelector.RESOURCE_ITEM_REFERENCE;
                         case SHAPE_3D:
                             return PropertyEditorSelector.SHAPE_3D_REFERENCE;
+                        case MESH_CONTAINER:
+                            return PropertyEditorSelector.MESH_CONTAINER;
                         default:
                             throw new IllegalArgumentException("CollectionReferenceType unknown: " + collectionReferenceInfo.getType());
                     }

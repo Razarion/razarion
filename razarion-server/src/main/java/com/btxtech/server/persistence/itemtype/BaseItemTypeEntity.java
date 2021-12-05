@@ -5,6 +5,7 @@ import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.server.persistence.asset.MeshContainerEntity;
 import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
 import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -63,6 +64,9 @@ public class BaseItemTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity shape3DId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private MeshContainerEntity meshContainer;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity spawnShape3DId;
@@ -316,6 +320,10 @@ public class BaseItemTypeEntity {
 
     public void setShape3DId(ColladaEntity shape3DId) {
         this.shape3DId = shape3DId;
+    }
+
+    public void setMeshContainer(MeshContainerEntity meshContainer) {
+        this.meshContainer = meshContainer;
     }
 
     public void setSpawnShape3DId(ColladaEntity spawnShape3DId) {

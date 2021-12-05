@@ -1,27 +1,41 @@
 package com.btxtech.shared.datatypes.asset;
 
+import com.btxtech.shared.dto.Config;
+
 import java.util.List;
 
-public class MeshContainer {
-    private Integer id;
-    private String name;
+public class MeshContainer implements Config {
+    private int id;
+    private String internalName;
+    private String guid;
     private Mesh mesh;
     private List<MeshContainer> children;
 
-    public Integer getId() {
+    @Override
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public String getInternalName() {
+        return internalName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
     public Mesh getMesh() {
@@ -40,8 +54,18 @@ public class MeshContainer {
         this.children = children;
     }
 
-    public MeshContainer name(String name) {
-        setName(name);
+    public MeshContainer id(int id) {
+        setId(id);
+        return this;
+    }
+
+    public MeshContainer internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
+    }
+
+    public MeshContainer guid(String guid) {
+        setGuid(guid);
         return this;
     }
 

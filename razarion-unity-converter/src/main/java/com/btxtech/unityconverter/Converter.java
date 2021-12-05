@@ -23,18 +23,16 @@ public class Converter {
     private static final Logger LOGGER = Logger.getLogger(Converter.class.getName());
 
     public static void main(String[] args) {
-        readMeshContainers();
-        // MeshContainer meshContainer = readMeshContainers().get(0);
-        // meshContainer = meshContainer;
+        displayMeshContainers("C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor.meta");
     }
 
-    public static List<MeshContainer> readMeshContainers() {
+    public static void displayMeshContainers(String metaFilePath) {
         List<MeshContainer> meshContainers = new ArrayList<>();
         try {
-            UnityAsset unityAsset = AssetReader.read("C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor.meta");
+            UnityAsset unityAsset = AssetReader.read(metaFilePath);
 
             System.out.println("------------ Prefabs in Asset ------------");
-            unityAsset.getAssetTypes(Prefab.class).stream().forEach(prefab -> {
+            unityAsset.getAssetTypes(Prefab.class).forEach(prefab -> {
                 System.out.println(prefab.getGameObjects().get(0).getM_Name());
             });
             System.out.println("------------------------");
@@ -43,18 +41,20 @@ public class Converter {
             Prefab prefab = unityAsset.findPrefab("Vehicle_11");
             System.out.println("Prefab: " + prefab.getGameObjects().get(0).getM_Name());
 
-            MeshContainer meshContainer = createMeshContainer(prefab, unityAsset);
+            MeshContainer meshContainer = createMeshContainer(prefab, unityAsset, new AssetContext() {
+                @Override
+                public Integer getShape3DId4Fbx(Fbx fbx) {
+                    return -12345;
+                }
+            });
             meshContainer.setId(1);
             meshContainers.add(meshContainer);
-
-            return meshContainers;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error Converter Asset", e);
         }
-        return meshContainers;
     }
 
-    private static MeshContainer createMeshContainer(Prefab prefab, UnityAsset unityAsset) {
+    public static MeshContainer createMeshContainer(Prefab prefab, UnityAsset unityAsset, AssetContext assetContext) {
         List<GameObject> gameObjects = prefab.getGameObjects();
         GameObject mainGameObject = gameObjects.get(0);
 
@@ -76,7 +76,6 @@ public class Converter {
         baseTransform.setScaleY(transform.getM_LocalScale().getY());
         baseTransform.setScaleZ(transform.getM_LocalScale().getZ());
 
-        Shape3DManager shape3DManager = new Shape3DManager();
         List<MeshContainer> childMeshContainers = new ArrayList<>();
         transform.getM_Children()
                 .stream()
@@ -94,13 +93,13 @@ public class Converter {
                             if (meshFilter != null) {
                                 Fbx fbx = unityAsset.getAssetType(meshFilter.getM_Mesh());
                                 String meshName = fbx.getMeshName(meshFilter.getM_Mesh().getFileID());
-                                meshContainer.setName(gameObject.getM_Name());
+                                meshContainer.setInternalName(gameObject.getM_Name());
                                 meshContainer.setMesh(new Mesh()
-                                        .shape3DId(shape3DManager.getShape3DId4Fbx(fbx))
+                                        .shape3DId(assetContext.getShape3DId4Fbx(fbx))
                                         .element3DId(meshName)
-                                        .transformation(setupShapeTransform(prefabInstance.getM_Modification(), baseTransform)));
+                                        .shapeTransform(setupShapeTransform(prefabInstance, baseTransform)));
                             } else {
-                                System.out.println("No MeshFilter: " + gameObject.getM_Name());
+                                LOGGER.warning("No MeshFilter: " + gameObject.getM_Name());
                             }
                         });
                     }
@@ -108,10 +107,9 @@ public class Converter {
 
 
         // Errors ---
-        System.out.println("--------- ERRORS ---------");
         transform.getM_Children().forEach(reference -> {
             if (prefab.getComponent(reference) == null) {
-                System.out.println("Not found: " + reference);
+                LOGGER.warning("Not found: " + reference);
             }
         });
         transform.getM_Children().stream()
@@ -120,24 +118,27 @@ public class Converter {
                 .map(o -> (Transform) o)
                 .forEach(t -> {
                     if (unityAsset.getAssetType(t.getM_CorrespondingSourceObject()) == null) {
-                        System.out.println("Transformation Not found: " + t.getM_CorrespondingSourceObject());
+                        LOGGER.warning("Transformation Not found: " + t.getM_CorrespondingSourceObject());
                     }
                 });
         // Errors Ends ---
 
         return new MeshContainer()
-                .name(mainGameObject.getM_Name())
+                .internalName(mainGameObject.getM_Name())
+                .guid(prefab.getGuid())
                 .children(childMeshContainers);
     }
 
-    private static ShapeTransform setupShapeTransform(ModificationContainer m_modification, ShapeTransform baseShapeTransform) {
-        System.out.println("----- setupShapeTransform");
+    private static ShapeTransform setupShapeTransform(PrefabInstance prefabInstance, ShapeTransform baseShapeTransform) {
+        if (prefabInstance == null) {
+            return null;
+        }
+        ModificationContainer m_modification = prefabInstance.getM_Modification();
         if (m_modification == null || m_modification.getM_Modifications() == null) {
             return null;
         }
         ShapeTransform shapeTransform = baseShapeTransform.copyTRS();
         m_modification.getM_Modifications().forEach(modification -> {
-            System.out.println("Read: " + modification.getPropertyPath().toLowerCase() + ": " + modification.getValue());
             switch (modification.getPropertyPath().toLowerCase()) {
                 case ("m_localposition.x"):
                     shapeTransform.setTranslateX(shapeTransform.getTranslateX() + Double.parseDouble(modification.getValue()));
@@ -166,17 +167,18 @@ public class Converter {
                 case ("m_localscale.z"):
                     shapeTransform.setScaleZ(shapeTransform.getScaleZ() + Double.parseDouble(modification.getValue()));
                     break;
+                // Ignore
+                case ("m_name"):
+                case ("m_rootorder"):
                 case ("m_localrotation.x"):
                 case ("m_localrotation.y"):
                 case ("m_localrotation.z"):
                 case ("m_localrotation.w"):
-                    // Ignore
                     break;
                 default:
-                    System.out.println("Unknown transformation: " + modification.getPropertyPath().toLowerCase() + ": " + modification.getValue());
+                    LOGGER.warning("Unknown transformation: " + modification.getPropertyPath().toLowerCase() + ": " + modification.getValue());
             }
         });
-        System.out.println(shapeTransform);
         return shapeTransform;
     }
 }

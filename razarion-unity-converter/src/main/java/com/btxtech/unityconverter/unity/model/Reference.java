@@ -29,6 +29,21 @@ public class Reference {
         this.type = type;
     }
 
+    public Reference fileID(String fileID) {
+        setFileID(fileID);
+        return this;
+    }
+
+    public Reference guid(String guid) {
+        setGuid(guid);
+        return this;
+    }
+
+    public Reference type(String type) {
+        setType(type);
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Reference{" +

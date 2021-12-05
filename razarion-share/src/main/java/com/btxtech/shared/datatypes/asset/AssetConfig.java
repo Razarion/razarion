@@ -4,11 +4,12 @@ import com.btxtech.shared.dto.Config;
 
 import java.util.List;
 
-public class Asset implements Config {
-    private int id;
-    private String unityAssetGuid;
-    private String internalName;
-    private List<MeshContainer> meshContainers;
+public class AssetConfig implements Config {
+    private int id; // Readonly
+    private String unityAssetGuid; // Readonly
+    private String internalName; // Readonly
+    private String assetMetaFileHint;
+    private List<MeshContainer> meshContainers; // Readonly
 
     @Override
     public int getId() {
@@ -45,17 +46,35 @@ public class Asset implements Config {
         this.unityAssetGuid = unityAssetGuid;
     }
 
-    public Asset unityAssetGuid(String unityAssetGuid) {
+    public String getAssetMetaFileHint() {
+        return assetMetaFileHint;
+    }
+
+    public void setAssetMetaFileHint(String assetMetaFileHint) {
+        this.assetMetaFileHint = assetMetaFileHint;
+    }
+
+    public AssetConfig unityAssetGuid(String unityAssetGuid) {
         setUnityAssetGuid(unityAssetGuid);
         return this;
     }
 
-    public Asset internalName(String internalName) {
+    public AssetConfig id(int id) {
+        setId(id);
+        return this;
+    }
+
+    public AssetConfig internalName(String internalName) {
         setInternalName(internalName);
         return this;
     }
 
-    public Asset meshContainers(List<MeshContainer> meshContainers) {
+    public AssetConfig assetMetaFileHint(String assetMetaFileHint) {
+        setAssetMetaFileHint(assetMetaFileHint);
+        return this;
+    }
+
+    public AssetConfig meshContainers(List<MeshContainer> meshContainers) {
         setMeshContainers(meshContainers);
         return this;
     }

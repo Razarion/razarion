@@ -18,6 +18,10 @@ public class AssetService {
     }
 
     public MeshContainer getMeshContainer(int meshContainerId) {
-        return meshContainers.get(meshContainerId);
+        MeshContainer meshContainer = meshContainers.get(meshContainerId);
+        if (meshContainer == null) {
+            throw new IllegalArgumentException("No MeshContainer for id: " + meshContainerId);
+        }
+        return meshContainer;
     }
 }
