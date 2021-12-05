@@ -12,7 +12,6 @@ import com.btxtech.unityconverter.unity.asset.type.Prefab;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +52,7 @@ public class AssetCrudPersistence extends AbstractCrudPersistence<AssetConfig, A
 
             ServerAssetContext assetContext = new ServerAssetContext(shape3DCrudPersistence);
 
-            entity.setMeshContainers(toChildEntityList(
+            entity.setMeshContainers(toMeshContainers(
                     entity.getMeshContainers(),
                     unityAsset.getAssetTypes(Prefab.class).stream()
                             .map(prefab -> Converter.createMeshContainer(prefab, unityAsset, assetContext))
@@ -72,7 +71,7 @@ public class AssetCrudPersistence extends AbstractCrudPersistence<AssetConfig, A
                 .collect(Collectors.toList());
     }
 
-    private List<MeshContainerEntity> toChildEntityList(List<MeshContainerEntity> entityList, List<MeshContainer> configList) {
+    private List<MeshContainerEntity> toMeshContainers(List<MeshContainerEntity> entityList, List<MeshContainer> configList) {
         if (entityList == null) {
             entityList = new ArrayList<>();
         }

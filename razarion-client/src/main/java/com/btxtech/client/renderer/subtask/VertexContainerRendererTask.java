@@ -60,7 +60,7 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
         setupVec3Array(WebGlFacade.A_VERTEX_NORMAL, Js.uncheckedCast(shape3DUiService.getNormFloat32Array(vertexContainer)));
         setupVec2Array(WebGlFacade.A_VERTEX_UV, Js.uncheckedCast(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer)));
 
-        AlarmRaiser.onNull(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No Material in VertexContainer: " + vertexContainer.getVertexContainerMaterial().getMaterialName(), null);
+        AlarmRaiser.onNull(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No PhongMaterialConfig in VertexContainerMaterial: " + vertexContainer.getVertexContainerMaterial().getMaterialName(), null);
         setupPhongMaterial(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig(), "material");
 
         if (vertexContainer.getVertexContainerMaterial().getAlphaToCoverage() != null) {
