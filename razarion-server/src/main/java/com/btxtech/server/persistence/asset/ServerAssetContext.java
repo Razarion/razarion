@@ -1,6 +1,10 @@
 package com.btxtech.server.persistence.asset;
 
+import com.btxtech.server.collada.ColladaConverter;
+import com.btxtech.server.collada.ColladaConverterMapper;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.shared.datatypes.shape.AnimationTrigger;
+import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.unityconverter.AssetContext;
 import com.btxtech.unityconverter.unity.asset.type.Fbx;
@@ -39,18 +43,38 @@ public class ServerAssetContext implements AssetContext {
     }
 
     private Integer generateShape3D(Fbx fbx) {
-        StringBuilder contentBuilder = new StringBuilder();
+        try {
+            StringBuilder contentBuilder = new StringBuilder();
 
-        try (Stream<String> stream = Files.lines(Paths.get(fbx.getColladaFile().toURI()), StandardCharsets.UTF_8)) {
-            stream.forEach(s -> contentBuilder.append(s).append("\n"));
-        } catch (IOException e) {
-            throw new RuntimeException("Error generate Shape3D for FBX: " + fbx.getAssetFile(), e);
+            try (Stream<String> stream = Files.lines(Paths.get(fbx.getColladaFile().toURI()), StandardCharsets.UTF_8)) {
+                stream.forEach(s -> contentBuilder.append(s).append("\n"));
+            } catch (IOException e) {
+                throw new RuntimeException("Error generate Shape3D for FBX: " + fbx.getAssetFile(), e);
+            }
+            String colladaText = contentBuilder.toString();
+            Shape3DConfig shape3DConfig = shape3DCrudPersistence.create();
+            shape3DConfig.setColladaString(colladaText);
+            shape3DConfig.internalName(fbx.getGuid());
+            shape3DConfig.setShape3DElementConfigs(ColladaConverter.createShape3DBuilder(
+                    colladaText,
+                    new AssetColladaConverterMapper(), null).createShape3DConfig(shape3DConfig.getId()).getShape3DElementConfigs());
+            shape3DCrudPersistence.update(shape3DConfig);
+            return shape3DConfig.getId();
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
         }
-        Shape3DConfig shape3DConfig = shape3DCrudPersistence.create();
-        shape3DConfig.setColladaString(contentBuilder.toString());
-        shape3DConfig.internalName(fbx.getGuid());
-        shape3DCrudPersistence.update(shape3DConfig);
-        return shape3DConfig.getId();
+    }
+
+    private static class AssetColladaConverterMapper implements ColladaConverterMapper {
+        @Override
+        public VertexContainerMaterial toVertexContainerMaterial(String materialId) {
+            return null;
+        }
+
+        @Override
+        public AnimationTrigger getAnimationTrigger(String animationId) {
+            return null;
+        }
     }
 
 }
