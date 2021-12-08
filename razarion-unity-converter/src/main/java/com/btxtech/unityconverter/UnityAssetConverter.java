@@ -6,11 +6,15 @@ import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.unityconverter.unity.asset.AssetReader;
 import com.btxtech.unityconverter.unity.asset.UnityAsset;
 import com.btxtech.unityconverter.unity.asset.type.Fbx;
+import com.btxtech.unityconverter.unity.asset.type.MaterialAssetType;
 import com.btxtech.unityconverter.unity.asset.type.Prefab;
 import com.btxtech.unityconverter.unity.model.GameObject;
+import com.btxtech.unityconverter.unity.model.Material;
 import com.btxtech.unityconverter.unity.model.MeshFilter;
+import com.btxtech.unityconverter.unity.model.MeshRenderer;
 import com.btxtech.unityconverter.unity.model.ModificationContainer;
 import com.btxtech.unityconverter.unity.model.PrefabInstance;
+import com.btxtech.unityconverter.unity.model.Reference;
 import com.btxtech.unityconverter.unity.model.Transform;
 
 import java.util.ArrayList;
@@ -19,8 +23,8 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Converter {
-    private static final Logger LOGGER = Logger.getLogger(Converter.class.getName());
+public class UnityAssetConverter {
+    private static final Logger LOGGER = Logger.getLogger(UnityAssetConverter.class.getName());
 
     public static void main(String[] args) {
         displayMeshContainers("C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor.meta");
@@ -35,6 +39,10 @@ public class Converter {
             unityAsset.getAssetTypes(Prefab.class).forEach(prefab -> {
                 System.out.println(prefab.getGameObjects().get(0).getM_Name());
             });
+            System.out.println("------------ Materials in Asset ------------");
+            unityAsset.getAssetTypes(MaterialAssetType.class).forEach(materialAssetType -> {
+                System.out.println(materialAssetType);
+            });
             System.out.println("------------------------");
 
             // Prefab prefab = unityAsset.findPrefab("Simple01");
@@ -43,7 +51,7 @@ public class Converter {
 
             MeshContainer meshContainer = createMeshContainer(prefab, unityAsset, new AssetContext() {
                 @Override
-                public Integer getShape3DId4Fbx(Fbx fbx) {
+                public Integer getShape3DId4Fbx(Fbx fbx, Material material) {
                     return -12345;
                 }
             });
@@ -90,16 +98,47 @@ public class Converter {
                     if (p != null) {
                         p.getGameObjects().forEach(gameObject -> {
                             MeshFilter meshFilter = p.getMeshFilter(gameObject);
-                            if (meshFilter != null) {
+                            MeshRenderer meshRenderer = p.getMeshRenderer(gameObject);
+                            if (meshFilter != null && meshRenderer != null) {
+                                // Geometry
                                 Fbx fbx = unityAsset.getAssetType(meshFilter.getM_Mesh());
                                 String meshName = fbx.getMeshName(meshFilter.getM_Mesh().getFileID());
+                                // Materials
+                                Material material = null;
+                                if (meshRenderer.getM_Materials().size() == 0) {
+                                    LOGGER.warning("No material  for:  " + gameObject.getM_Name());
+                                } else {
+                                    if (meshRenderer.getM_Materials().size() > 1) {
+                                        LOGGER.warning("Unknown material  for:  " + gameObject.getM_Name() + " Last is taken. Material count:" + meshRenderer.getM_Materials().size());
+                                    }
+                                    Reference matReference = meshRenderer.getM_Materials().get(0);
+                                    MaterialAssetType materialAssetType = unityAsset.getAssetType(matReference);
+                                    if (materialAssetType == null) {
+                                        LOGGER.warning("No MaterialAssetType for reference:  " + matReference + " used in: " + gameObject.getM_Name());
+                                    }
+                                    material = materialAssetType.getMaterial();
+                                    if (material == null) {
+                                        LOGGER.warning("No Material in MaterialAssetType:  " + materialAssetType.getAssetFile());
+                                    }
+                                    LOGGER.info("---Material: " + gameObject.getM_Name());
+                                    LOGGER.info(material + "");
+                                    if (material != null && material.getSavedProperties() != null) {
+                                        material.getSavedProperties()
+                                                .getTexEnvs()
+                                                .forEach(stringTexture2DMap -> stringTexture2DMap.forEach((key, value) -> LOGGER.info(key + " -> " + key)));
+                                    }
+                                }
                                 meshContainer.setInternalName(gameObject.getM_Name());
                                 meshContainer.setMesh(new Mesh()
-                                        .shape3DId(assetContext.getShape3DId4Fbx(fbx))
+                                        .shape3DId(assetContext.getShape3DId4Fbx(fbx, material))
                                         .element3DId(meshName)
                                         .shapeTransform(setupShapeTransform(prefabInstance, baseTransform)));
+                            } else if (meshFilter == null && meshRenderer == null) {
+                                LOGGER.warning("No MeshFilter/MeshRenderer for: " + gameObject.getM_Name());
+                            } else if (meshFilter != null) {
+                                LOGGER.warning("No MeshFilter for: " + gameObject.getM_Name());
                             } else {
-                                LOGGER.warning("No MeshFilter: " + gameObject.getM_Name());
+                                LOGGER.warning("No MeshRenderer for: " + gameObject.getM_Name());
                             }
                         });
                     }

@@ -70,15 +70,15 @@ public class Prefab extends AssetType {
             constructor.addTypeDescription(typeDescription);
             // MonoBehaviour -> Ignore
             typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:114");
-            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
+            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setIgnoredAssetType");
             constructor.addTypeDescription(typeDescription);
             // BoxCollider -> Ignore
             typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:65");
-            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
+            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setIgnoredAssetType");
             constructor.addTypeDescription(typeDescription);
             // Rigidbody -> Ignore
             typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:54");
-            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setMeshRenderer");
+            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setIgnoredAssetType");
             constructor.addTypeDescription(typeDescription);
 
             Yaml yaml = new Yaml(constructor, representer, new DumperOptions());
@@ -131,35 +131,14 @@ public class Prefab extends AssetType {
                 .orElse(null);
     }
 
-    private InputStream removeUnityCrap(File assetFile) {
-        try (Stream<String> stream = Files.lines(Paths.get(assetFile.toURI()))) {
-            return new ByteArrayInputStream(stream.map(s -> {
-                if (s.startsWith("---") && s.endsWith(" stripped")) {
-                    return s.substring(0, s.length() - " stripped".length());
-                } else {
-                    return s;
-                }
-            }).collect(Collectors.joining("\n")).getBytes(StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            throw new RuntimeException("Error processing: " + assetFile, e);
-        }
-    }
-
-    private String readObjectId(String snippet) {
-        StringBuilder objectId = new StringBuilder();
-        int objectIdStart = snippet.indexOf('&') + 1;
-        for (int i = objectIdStart; i < snippet.length(); i++) {
-            if (Character.isWhitespace(snippet.charAt(i))) {
-                break;
-            } else {
-                objectId.append(snippet.charAt(i));
-            }
-        }
-        return objectId.toString();
-    }
-
-    public interface Holder<T extends UnityObject> {
-        T getObject();
+    public MeshRenderer getMeshRenderer(GameObject gameObject) {
+        return gameObject.getM_Component()
+                .stream()
+                .map(componentReference -> getComponent(componentReference.getComponent()))
+                .filter(c -> c instanceof MeshRenderer)
+                .map(c -> (MeshRenderer)c)
+                .findFirst()
+                .orElse(null);
     }
 
     public static class GameObjectHolder implements Holder<GameObject> {
@@ -263,27 +242,6 @@ public class Prefab extends AssetType {
         public String toString() {
             return "PrefabInstanceHolder{" +
                     "prefabInstance=" + prefabInstance +
-                    '}';
-        }
-    }
-
-    public static class IgnoredAssetTypeHolder implements Holder<IgnoredAssetType> {
-        public IgnoredAssetType ignoredAssetType;
-
-        @Override
-        public IgnoredAssetType getObject() {
-            return ignoredAssetType;
-        }
-
-        @SuppressWarnings("unused")
-        public void setIgnoredAssetType(IgnoredAssetType ignoredAssetType) {
-            this.ignoredAssetType = ignoredAssetType;
-        }
-
-        @Override
-        public String toString() {
-            return "MeshRendererHolder{" +
-                    "meshRenderer=" + ignoredAssetType +
                     '}';
         }
     }

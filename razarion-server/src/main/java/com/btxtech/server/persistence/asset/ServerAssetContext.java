@@ -6,18 +6,24 @@ import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.config.Shape3DElementConfig;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.unityconverter.AssetContext;
 import com.btxtech.unityconverter.unity.asset.type.Fbx;
+import com.btxtech.unityconverter.unity.model.Material;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class ServerAssetContext implements AssetContext {
+    private static final Logger LOGGER = Logger.getLogger(ServerAssetContext.class.getName());
     private final Map<String, Integer> fbxGuid2Shape3DIds = new HashMap<>();
     private final Shape3DCrudPersistence shape3DCrudPersistence;
 
@@ -26,7 +32,7 @@ public class ServerAssetContext implements AssetContext {
     }
 
     @Override
-    public Integer getShape3DId4Fbx(Fbx fbx) {
+    public Integer getShape3DId4Fbx(Fbx fbx, Material material) {
         String fbxGuidHint = fbx.getGuid();
         Integer shape3DId = fbxGuid2Shape3DIds.get(fbxGuidHint);
         if (shape3DId != null) {
@@ -37,12 +43,12 @@ public class ServerAssetContext implements AssetContext {
             fbxGuid2Shape3DIds.put(fbxGuidHint, shape3DId);
             return shape3DId;
         }
-        shape3DId = generateShape3D(fbx);
+        shape3DId = generateShape3D(fbx, material);
         fbxGuid2Shape3DIds.put(fbxGuidHint, shape3DId);
         return shape3DId;
     }
 
-    private Integer generateShape3D(Fbx fbx) {
+    private Integer generateShape3D(Fbx fbx, Material material) {
         try {
             StringBuilder contentBuilder = new StringBuilder();
 
@@ -53,16 +59,32 @@ public class ServerAssetContext implements AssetContext {
             }
             String colladaText = contentBuilder.toString();
             Shape3DConfig shape3DConfig = shape3DCrudPersistence.create();
+            List<Shape3DElementConfig> shape3DElementConfigs = ColladaConverter.createShape3DBuilder(
+                            colladaText,
+                            new AssetColladaConverterMapper(),
+                            null)
+                    .createShape3DConfig(shape3DConfig.getId())
+                    .getShape3DElementConfigs();
+            attachPhongMaterialConfig(shape3DElementConfigs, material);
             shape3DConfig.setColladaString(colladaText);
             shape3DConfig.internalName(fbx.getGuid());
-            shape3DConfig.setShape3DElementConfigs(ColladaConverter.createShape3DBuilder(
-                    colladaText,
-                    new AssetColladaConverterMapper(), null).createShape3DConfig(shape3DConfig.getId()).getShape3DElementConfigs());
+            shape3DConfig.setShape3DElementConfigs(shape3DElementConfigs);
             shape3DCrudPersistence.update(shape3DConfig);
             return shape3DConfig.getId();
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
+    }
+
+    private void attachPhongMaterialConfig(List<Shape3DElementConfig> shape3DElementConfigs, Material material) {
+        shape3DElementConfigs.stream()
+                .flatMap(shape3DElementConfig -> shape3DElementConfig.getVertexContainerMaterialConfigs().stream())
+                .forEach(vertexContainerMaterialConfig -> vertexContainerMaterialConfig.setPhongMaterialConfig(createPhongMaterialConfig(material)));
+    }
+
+    private PhongMaterialConfig createPhongMaterialConfig(Material material) {
+        material.getSavedProperties().getTexEnvs().forEach(stringTexture2DMap -> LOGGER.info(stringTexture2DMap.toString()));
+        return new PhongMaterialConfig().textureId(1);
     }
 
     private static class AssetColladaConverterMapper implements ColladaConverterMapper {

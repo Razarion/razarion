@@ -5,7 +5,7 @@ import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.unityconverter.Converter;
+import com.btxtech.unityconverter.UnityAssetConverter;
 import com.btxtech.unityconverter.unity.asset.AssetReader;
 import com.btxtech.unityconverter.unity.asset.UnityAsset;
 import com.btxtech.unityconverter.unity.asset.type.Prefab;
@@ -55,7 +55,7 @@ public class AssetCrudPersistence extends AbstractCrudPersistence<AssetConfig, A
             entity.setMeshContainers(toMeshContainers(
                     entity.getMeshContainers(),
                     unityAsset.getAssetTypes(Prefab.class).stream()
-                            .map(prefab -> Converter.createMeshContainer(prefab, unityAsset, assetContext))
+                            .map(prefab -> UnityAssetConverter.createMeshContainer(prefab, unityAsset, assetContext))
                             .collect(Collectors.toList())
             ));
         } catch (Throwable t) {
