@@ -2,6 +2,7 @@ package com.btxtech.server.systemtests.editors;
 
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.ColladaMaterialEntity;
+import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.asset.AssetConfigEntity;
 import com.btxtech.server.persistence.asset.MeshContainerEntity;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
@@ -29,6 +30,7 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
         cleanTableNative("COLLADA_ANIMATIONS");
         cleanTable(ColladaMaterialEntity.class);
         cleanTable(ColladaEntity.class);
+        cleanTable(ImageLibraryEntity.class);
     }
 
     @Test

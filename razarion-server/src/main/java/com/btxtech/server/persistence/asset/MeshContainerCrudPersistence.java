@@ -17,8 +17,8 @@ public class MeshContainerCrudPersistence extends AbstractCrudPersistence<MeshCo
 
     @Override
     protected MeshContainer toConfig(MeshContainerEntity entity) {
-        // Do not use this. MeshContainerCrudPersistence is only for select dialog in generic editor
-        throw new UnsupportedOperationException();
+        // Only used for getting the ObjectNames. MeshContainerCrudPersistence is only for select dialog in generic editor
+        return entity.toConfig();
     }
 
     @Override

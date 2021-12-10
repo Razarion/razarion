@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.asset;
 
 import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
@@ -27,6 +28,8 @@ public class AssetCrudPersistence extends AbstractCrudPersistence<AssetConfig, A
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
+    private ImagePersistence imagePersistence;
+    @Inject
     private Shape3DCrudPersistence shape3DCrudPersistence;
 
     public AssetCrudPersistence() {
@@ -50,7 +53,7 @@ public class AssetCrudPersistence extends AbstractCrudPersistence<AssetConfig, A
             entity.setUnityAssetGuid(unityAsset.getGuid());
             entity.setInternalName(unityAsset.getName());
 
-            ServerAssetContext assetContext = new ServerAssetContext(shape3DCrudPersistence);
+            ServerAssetContext assetContext = new ServerAssetContext(shape3DCrudPersistence, imagePersistence);
 
             entity.setMeshContainers(toMeshContainers(
                     entity.getMeshContainers(),

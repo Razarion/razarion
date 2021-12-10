@@ -174,7 +174,7 @@ public class Branch extends AbstractPropertyModel {
 
     private String setupIdAndName() {
         return hasProperties.getBeanProperties().keySet().stream()
-                .filter(propertyName -> propertyName.equals("id") || propertyName.equals("name"))
+                .filter(propertyName -> propertyName.equals("id") || propertyName.equals("name") || propertyName.equals("internalName"))
                 .map(propertyName -> " " + hasProperties.get(propertyName))
                 .collect(Collectors.joining());
     }

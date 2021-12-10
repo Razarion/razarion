@@ -56,12 +56,13 @@ public class ImagePersistence {
 
     @Transactional
     @SecurityCheck
-    public void createImage(byte[] imageData, String type) {
+    public ImageGalleryItem createImage(byte[] imageData, String type) {
         ImageLibraryEntity imageLibraryEntity = new ImageLibraryEntity();
         imageLibraryEntity.setType(type);
         imageLibraryEntity.setData(imageData);
         imageLibraryEntity.setSize(imageData.length);
         entityManager.persist(imageLibraryEntity);
+        return imageLibraryEntity.toImageGalleryItem();
     }
 
     @Transactional
@@ -71,6 +72,14 @@ public class ImagePersistence {
         imageLibraryEntity.setType(type);
         imageLibraryEntity.setData(imageData);
         imageLibraryEntity.setSize(imageData.length);
+        entityManager.persist(imageLibraryEntity);
+    }
+
+    @Transactional
+    @SecurityCheck
+    public void saveInternalName(int id, String internalName) {
+        ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, id);
+        imageLibraryEntity.setInternalName(internalName);
         entityManager.persist(imageLibraryEntity);
     }
 
@@ -99,6 +108,22 @@ public class ImagePersistence {
     public static Integer idOrNull(ImageLibraryEntity libraryEntity) {
         if (libraryEntity != null) {
             return libraryEntity.getId();
+        } else {
+            return null;
+        }
+    }
+
+    @Transactional
+    public Integer getImageId4InternalName(String internalName) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> userQuery = criteriaBuilder.createTupleQuery();
+        Root<ImageLibraryEntity> from = userQuery.from(ImageLibraryEntity.class);
+        userQuery.multiselect(from.get(ImageLibraryEntity_.id));
+        userQuery.where(criteriaBuilder.equal(from.get(ImageLibraryEntity_.internalName), internalName));
+
+        List<Tuple> tuples = entityManager.createQuery(userQuery).getResultList();
+        if (!tuples.isEmpty()) {
+            return (Integer) tuples.get(0).get(0);
         } else {
             return null;
         }

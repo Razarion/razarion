@@ -16,7 +16,7 @@ public class AssetTypeFactory {
         asstTypes.put("png", Image.class);
         asstTypes.put("cs", Ignore.class);
         asstTypes.put("unity", Ignore.class);
-        asstTypes.put("shadergraph", Ignore.class);
+        asstTypes.put("shadergraph", ShaderGraphAssetType.class);
         asstTypes.put("dae", Ignore.class);
     }
 

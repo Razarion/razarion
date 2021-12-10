@@ -2,19 +2,22 @@ package com.btxtech.server.persistence.asset;
 
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.server.collada.ColladaConverterMapper;
+import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DElementConfig;
+import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.unityconverter.AssetContext;
+import com.btxtech.unityconverter.MaterialContext;
 import com.btxtech.unityconverter.unity.asset.type.Fbx;
-import com.btxtech.unityconverter.unity.model.Material;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
@@ -26,13 +29,15 @@ public class ServerAssetContext implements AssetContext {
     private static final Logger LOGGER = Logger.getLogger(ServerAssetContext.class.getName());
     private final Map<String, Integer> fbxGuid2Shape3DIds = new HashMap<>();
     private final Shape3DCrudPersistence shape3DCrudPersistence;
+    private final ImagePersistence imagePersistence;
 
-    public ServerAssetContext(Shape3DCrudPersistence shape3DCrudPersistence) {
+    public ServerAssetContext(Shape3DCrudPersistence shape3DCrudPersistence, ImagePersistence imagePersistence) {
         this.shape3DCrudPersistence = shape3DCrudPersistence;
+        this.imagePersistence = imagePersistence;
     }
 
     @Override
-    public Integer getShape3DId4Fbx(Fbx fbx, Material material) {
+    public Integer getShape3DId4Fbx(Fbx fbx, MaterialContext materialContext) {
         String fbxGuidHint = fbx.getGuid();
         Integer shape3DId = fbxGuid2Shape3DIds.get(fbxGuidHint);
         if (shape3DId != null) {
@@ -43,12 +48,12 @@ public class ServerAssetContext implements AssetContext {
             fbxGuid2Shape3DIds.put(fbxGuidHint, shape3DId);
             return shape3DId;
         }
-        shape3DId = generateShape3D(fbx, material);
+        shape3DId = generateShape3D(fbx, materialContext);
         fbxGuid2Shape3DIds.put(fbxGuidHint, shape3DId);
         return shape3DId;
     }
 
-    private Integer generateShape3D(Fbx fbx, Material material) {
+    private Integer generateShape3D(Fbx fbx, MaterialContext materialContext) {
         try {
             StringBuilder contentBuilder = new StringBuilder();
 
@@ -65,7 +70,7 @@ public class ServerAssetContext implements AssetContext {
                             null)
                     .createShape3DConfig(shape3DConfig.getId())
                     .getShape3DElementConfigs();
-            attachPhongMaterialConfig(shape3DElementConfigs, material);
+            attachPhongMaterialConfigs(shape3DElementConfigs, materialContext);
             shape3DConfig.setColladaString(colladaText);
             shape3DConfig.internalName(fbx.getGuid());
             shape3DConfig.setShape3DElementConfigs(shape3DElementConfigs);
@@ -76,15 +81,32 @@ public class ServerAssetContext implements AssetContext {
         }
     }
 
-    private void attachPhongMaterialConfig(List<Shape3DElementConfig> shape3DElementConfigs, Material material) {
+    private void attachPhongMaterialConfigs(List<Shape3DElementConfig> shape3DElementConfigs, MaterialContext materialContext) {
         shape3DElementConfigs.stream()
                 .flatMap(shape3DElementConfig -> shape3DElementConfig.getVertexContainerMaterialConfigs().stream())
-                .forEach(vertexContainerMaterialConfig -> vertexContainerMaterialConfig.setPhongMaterialConfig(createPhongMaterialConfig(material)));
+                .forEach(vertexContainerMaterialConfig -> vertexContainerMaterialConfig.setPhongMaterialConfig(createPhongMaterialConfig(materialContext)));
     }
 
-    private PhongMaterialConfig createPhongMaterialConfig(Material material) {
-        material.getSavedProperties().getTexEnvs().forEach(stringTexture2DMap -> LOGGER.info(stringTexture2DMap.toString()));
-        return new PhongMaterialConfig().textureId(1);
+    private PhongMaterialConfig createPhongMaterialConfig(MaterialContext materialContext) {
+        if (materialContext.isValid()) {
+            try {
+                Integer imageId = imagePersistence.getImageId4InternalName(materialContext.getMainTextureGuid());
+                if (imageId == null) {
+                    Path path = Paths.get(materialContext.getMainTextureFile());
+                    byte[] data = Files.readAllBytes(path);
+                    String mimeType = Files.probeContentType(path);
+                    ImageGalleryItem imageGalleryItem = imagePersistence.createImage(data, mimeType);
+                    imagePersistence.saveInternalName(imageGalleryItem.getId(), materialContext.getMainTextureGuid());
+                    imageId = imageGalleryItem.getId();
+                }
+                return new PhongMaterialConfig().textureId(imageId).scale(1);
+            } catch (Throwable t) {
+                LOGGER.severe("Error creating PhongMaterialConfig");
+                return null;
+            }
+        } else {
+            return new PhongMaterialConfig().scale(1);
+        }
     }
 
     private static class AssetColladaConverterMapper implements ColladaConverterMapper {
