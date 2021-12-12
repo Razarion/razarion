@@ -111,7 +111,7 @@ public class UnityAssetConverter {
                     MeshContainer meshContainer = new MeshContainer();
                     if (childPrefab != null) {
                         childPrefab.getGameObjects().forEach(gameObject -> {
-                            meshContainer.setInternalName(gameObject.getM_Name());
+                            meshContainer.setInternalName("child: " + gameObject.getM_Name());
                             meshContainer.setMesh(setupMesh(childPrefab, prefabInstance, baseTransform, gameObject, unityAsset, assetContext));
                         });
                     }
