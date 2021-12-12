@@ -24,8 +24,10 @@ import com.btxtech.unityconverter.unity.model.Transform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class UnityAssetConverter {
     private static final Logger LOGGER = Logger.getLogger(UnityAssetConverter.class.getName());
@@ -35,9 +37,14 @@ public class UnityAssetConverter {
     }
 
     public static void displayMeshContainers(String metaFilePath) {
-        List<MeshContainer> meshContainers = new ArrayList<>();
         try {
             UnityAsset unityAsset = AssetReader.read(metaFilePath);
+
+            System.out.println("------------------------------------");
+            System.out.println("Id: " + unityAsset.getGuid());
+            System.out.println("UnityAssetGuid: " + unityAsset.getName());
+            System.out.println("MetaFilePath: " + metaFilePath);
+
 
 //            System.out.println("------------ Prefabs in Asset ------------");
 //            unityAsset.getAssetTypes(Prefab.class).forEach(prefab -> {
@@ -47,24 +54,24 @@ public class UnityAssetConverter {
 //            unityAsset.getAssetTypes(MaterialAssetType.class).forEach(materialAssetType -> {
 //                System.out.println(materialAssetType);
 //            });
-            System.out.println("------------ Shader Graphs in Asset ------------");
-            unityAsset.getAssetTypes(ShaderGraphAssetType.class).forEach(shaderGraphAssetType -> {
-                System.out.println(shaderGraphAssetType);
-            });
-            System.out.println("------------------------");
-
-            // Prefab prefab = unityAsset.findPrefab("Simple01");
-            Prefab prefab = unityAsset.findPrefab("Vehicle_11");
-            System.out.println("Prefab: " + prefab.getGameObjects().get(0).getM_Name());
-
-            MeshContainer meshContainer = createMeshContainer(prefab, unityAsset, new AssetContext() {
-                @Override
-                public Integer getShape3DId4Fbx(Fbx fbx, MaterialContext materialContext) {
-                    return -12345;
-                }
-            });
-            meshContainer.setId(1);
-            meshContainers.add(meshContainer);
+//            System.out.println("------------ Shader Graphs in Asset ------------");
+//            unityAsset.getAssetTypes(ShaderGraphAssetType.class).forEach(shaderGraphAssetType -> {
+//                System.out.println(shaderGraphAssetType);
+//            });
+            System.out.println("------------ Generated Mesh Containers ------------");
+            MockAssetContext mockAssetContext = new MockAssetContext();
+            dumpMeshContainers(
+                    unityAsset.getAssetTypes(Prefab.class).stream().map(prefab -> createMeshContainer(prefab, unityAsset, mockAssetContext)).collect(Collectors.toList())
+                    , "--");
+//            System.out.println("------------ Dump single prefab ------------");
+//            MockAssetContext mockAssetContext = new MockAssetContext();
+//            Prefab prefab = unityAsset.findPrefab("Flanc15");
+////            Prefab prefab = unityAsset.findPrefab("Simple01");
+////            Prefab prefab = unityAsset.findPrefab("Vehicle_11");
+//            System.out.println("Prefab AssetFile: " + prefab.getAssetFile());
+//            System.out.println("Prefab: " + prefab);
+//            dumpMeshContainer(createMeshContainer(prefab, unityAsset, mockAssetContext), "");
+////            System.out.println("Prefab: " + prefab.getGameObjects().get(0).getM_Name());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error Converter Asset", e);
         }
@@ -99,86 +106,17 @@ public class UnityAssetConverter {
                 .filter(Objects::nonNull)
                 .map(o -> (Transform) o)
                 .forEach(childTransform -> {
-                    Prefab p = unityAsset.getAssetType(childTransform.getM_CorrespondingSourceObject());
+                    Prefab childPrefab = unityAsset.getAssetType(childTransform.getM_CorrespondingSourceObject());
                     PrefabInstance prefabInstance = prefab.getComponent(childTransform.getM_PrefabInstance());
                     MeshContainer meshContainer = new MeshContainer();
-                    childMeshContainers.add(meshContainer);
-                    if (p != null) {
-                        p.getGameObjects().forEach(gameObject -> {
-                            MeshFilter meshFilter = p.getMeshFilter(gameObject);
-                            MeshRenderer meshRenderer = p.getMeshRenderer(gameObject);
-                            MaterialContext materialContext = new MaterialContext();
-                            if (meshFilter != null && meshRenderer != null) {
-                                // Geometry
-                                Fbx fbx = unityAsset.getAssetType(meshFilter.getM_Mesh());
-                                String meshName = fbx.getMeshName(meshFilter.getM_Mesh().getFileID());
-                                // Materials
-                                Material material = null;
-                                if (meshRenderer.getM_Materials().size() == 0) {
-                                    LOGGER.warning("No material  for:  " + gameObject.getM_Name());
-                                } else {
-                                    if (meshRenderer.getM_Materials().size() > 1) {
-                                        LOGGER.warning("Unknown material  for:  " + gameObject.getM_Name() + " Last is taken. Material count:" + meshRenderer.getM_Materials().size());
-                                    }
-                                    Reference matReference = meshRenderer.getM_Materials().get(0);
-                                    MaterialAssetType materialAssetType = unityAsset.getAssetType(matReference);
-                                    if (materialAssetType == null) {
-                                        LOGGER.warning("No MaterialAssetType for reference:  " + matReference + " used in: " + gameObject.getM_Name());
-                                    }
-                                    material = materialAssetType.getMaterial();
-                                    if (material == null) {
-                                        LOGGER.warning("No Material in MaterialAssetType:  " + materialAssetType.getAssetFile());
-                                    }
-                                    // LOGGER.info("---Material: " + gameObject.getM_Name());
-                                    // LOGGER.info("---Shader ref: " + material.getShader());
-
-                                    ShaderGraph shaderGraph = null;
-                                    if (material.getShader() != null) {
-                                        ShaderGraphAssetType shaderGraphAssetType = unityAsset.getAssetType(material.getShader());
-                                        // LOGGER.info("---Shader: " + shaderGraphAssetType);
-                                        shaderGraph = shaderGraphAssetType.getShaderGraph();
-                                    }
-
-                                    ShaderGraph finalShaderGraph = shaderGraph;
-
-                                    if (material != null && material.getSavedProperties() != null) {
-                                        material.getSavedProperties()
-                                                .getTexEnvs()
-                                                .forEach(stringTexture2DMap -> {
-                                                    stringTexture2DMap.forEach((key, value) -> {
-                                                        ShaderGraphData shaderGraphData = finalShaderGraph.findShaderGraphData4tReferenceName(key);
-                                                        if(shaderGraphData == null) {
-                                                            return;
-                                                        }
-                                                        if (shaderGraphData.getName().equalsIgnoreCase("albedo1")
-                                                                || shaderGraphData.getName().equalsIgnoreCase("albedo")) {
-                                                            AssetType assetType = unityAsset.getAssetType(value.getTexture());
-                                                            materialContext.setMainTextureFile(assetType.getAssetFile().getPath());
-                                                            materialContext.setMainTextureGuid(assetType.getGuid());
-                                                        }
-                                                    });
-                                                });
-                                    }
-                                }
-                                if(!materialContext.isValid()) {
-                                    LOGGER.warning("No valid material for: " + gameObject.getM_Name());
-                                }
-                                meshContainer.setInternalName(gameObject.getM_Name());
-                                meshContainer.setMesh(new Mesh()
-                                        .shape3DId(assetContext.getShape3DId4Fbx(fbx, materialContext))
-                                        .element3DId(meshName)
-                                        .shapeTransform(setupShapeTransform(prefabInstance, baseTransform)));
-                            } else if (meshFilter == null && meshRenderer == null) {
-                                LOGGER.warning("No MeshFilter/MeshRenderer for: " + gameObject.getM_Name());
-                            } else if (meshFilter != null) {
-                                LOGGER.warning("No MeshFilter for: " + gameObject.getM_Name());
-                            } else {
-                                LOGGER.warning("No MeshRenderer for: " + gameObject.getM_Name());
-                            }
+                    if (childPrefab != null) {
+                        childPrefab.getGameObjects().forEach(gameObject -> {
+                            meshContainer.setInternalName(gameObject.getM_Name());
+                            meshContainer.setMesh(setupMesh(childPrefab, prefabInstance, baseTransform, gameObject, unityAsset, assetContext));
                         });
                     }
+                    childMeshContainers.add(meshContainer);
                 });
-
 
         // Errors ---
         transform.getM_Children().forEach(reference -> {
@@ -200,7 +138,84 @@ public class UnityAssetConverter {
         return new MeshContainer()
                 .internalName(mainGameObject.getM_Name())
                 .guid(prefab.getGuid())
-                .children(childMeshContainers);
+                .children(childMeshContainers)
+                .mesh(setupMesh(prefab, null, baseTransform, mainGameObject, unityAsset, assetContext));
+    }
+
+    private static Mesh setupMesh(Prefab prefab, PrefabInstance prefabInstance, ShapeTransform baseTransform, GameObject gameObject, UnityAsset unityAsset, AssetContext assetContext) {
+        // Check if valid for Mesh creation
+        MeshFilter meshFilter = prefab.getMeshFilter(gameObject);
+        MeshRenderer meshRenderer = prefab.getMeshRenderer(gameObject);
+        MaterialContext materialContext = new MaterialContext();
+        if (meshFilter == null && meshRenderer == null) {
+            LOGGER.warning("No MeshFilter/MeshRenderer for: " + gameObject.getM_Name());
+            return null;
+        } else if (meshFilter == null) {
+            LOGGER.warning("No MeshFilter for: " + gameObject.getM_Name());
+            return null;
+        } else if (meshRenderer == null) {
+            LOGGER.warning("No MeshRenderer for: " + gameObject.getM_Name());
+            return null;
+        }
+
+        // Geometry
+        Fbx fbx = unityAsset.getAssetType(meshFilter.getM_Mesh());
+        String meshName = fbx.getMeshName(meshFilter.getM_Mesh().getFileID());
+        // Materials
+        Material material = null;
+        if (meshRenderer.getM_Materials().size() == 0) {
+            LOGGER.warning("No material  for:  " + gameObject.getM_Name());
+        } else {
+            if (meshRenderer.getM_Materials().size() > 1) {
+                LOGGER.warning("Unknown material  for:  " + gameObject.getM_Name() + " Last is taken. Material count:" + meshRenderer.getM_Materials().size());
+            }
+            Reference matReference = meshRenderer.getM_Materials().get(0);
+            MaterialAssetType materialAssetType = unityAsset.getAssetType(matReference);
+            if (materialAssetType == null) {
+                LOGGER.warning("No MaterialAssetType for reference:  " + matReference + " used in: " + gameObject.getM_Name());
+            }
+            material = materialAssetType.getMaterial();
+            if (material == null) {
+                LOGGER.warning("No Material in MaterialAssetType:  " + materialAssetType.getAssetFile());
+            }
+            // LOGGER.info("---Material: " + gameObject.getM_Name());
+            // LOGGER.info("---Shader ref: " + material.getShader());
+
+            ShaderGraph shaderGraph = null;
+            if (material.getShader() != null) {
+                ShaderGraphAssetType shaderGraphAssetType = unityAsset.getAssetType(material.getShader());
+                // LOGGER.info("---Shader: " + shaderGraphAssetType);
+                shaderGraph = shaderGraphAssetType.getShaderGraph();
+            }
+
+            ShaderGraph finalShaderGraph = shaderGraph;
+
+            if (material != null && material.getSavedProperties() != null) {
+                material.getSavedProperties()
+                        .getTexEnvs()
+                        .forEach(stringTexture2DMap -> {
+                            stringTexture2DMap.forEach((key, value) -> {
+                                ShaderGraphData shaderGraphData = finalShaderGraph.findShaderGraphData4tReferenceName(key);
+                                if (shaderGraphData == null) {
+                                    return;
+                                }
+                                if (shaderGraphData.getName().equalsIgnoreCase("albedo1")
+                                        || shaderGraphData.getName().equalsIgnoreCase("albedo")) {
+                                    AssetType assetType = unityAsset.getAssetType(value.getTexture());
+                                    materialContext.setMainTextureFile(assetType.getAssetFile().getPath());
+                                    materialContext.setMainTextureGuid(assetType.getGuid());
+                                }
+                            });
+                        });
+            }
+        }
+        if (!materialContext.isValid()) {
+            LOGGER.warning("No valid material for: " + gameObject.getM_Name());
+        }
+        return new Mesh()
+                .shape3DId(assetContext.getShape3DId4Fbx(fbx, materialContext))
+                .element3DId(meshName)
+                .shapeTransform(setupShapeTransform(prefabInstance, baseTransform));
     }
 
     private static ShapeTransform setupShapeTransform(PrefabInstance prefabInstance, ShapeTransform baseShapeTransform) {
@@ -254,5 +269,44 @@ public class UnityAssetConverter {
             }
         });
         return shapeTransform;
+    }
+
+    private static void dumpMeshContainers(List<MeshContainer> meshContainers, String space) {
+        meshContainers.forEach(meshContainer -> {
+            System.out.println("-------------------------------------");
+            dumpMeshContainer(meshContainer, space);
+        });
+    }
+
+    private static void dumpMeshContainer(MeshContainer meshContainer, String space) {
+        System.out.println(space + "InternalName: " + meshContainer.getInternalName());
+        System.out.println(space + "Guid: " + meshContainer.getGuid());
+        String meshString = "-";
+        if (meshContainer.getMesh() != null) {
+            meshString = "Shape3DId: " + meshContainer.getMesh().getShape3DId() + ", Element3DId: " + meshContainer.getMesh().getElement3DId();
+        }
+        System.out.println(space + "Mesh: " + meshString);
+        if (meshContainer.getChildren() != null) {
+            dumpMeshContainers(meshContainer.getChildren(), space + "--");
+        }
+    }
+
+    private void recursiveFillShape3DIds(List<MeshContainer> meshContainers, Set<Integer> shape3Ds) {
+        meshContainers.forEach(meshContainer -> {
+            if (meshContainer.getMesh() != null) {
+                shape3Ds.add(meshContainer.getMesh().getShape3DId());
+            }
+            if (meshContainer.getChildren() != null) {
+                recursiveFillShape3DIds(meshContainer.getChildren(), shape3Ds);
+            }
+        });
+    }
+
+    private static class MockAssetContext implements AssetContext {
+
+        @Override
+        public Integer getShape3DId4Fbx(Fbx fbx, MaterialContext materialContext) {
+            return 1234;
+        }
     }
 }

@@ -21,25 +21,16 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
 import org.yaml.snakeyaml.resolver.Resolver;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Prefab extends AssetType {
     private static final Logger LOGGER = Logger.getLogger(Prefab.class.getName());
+    private final List<GameObject> gameObjects = new ArrayList<>();
     private final Map<String, Component> components = new HashMap<>();
-    private List<GameObject> gameObjects = new ArrayList<>();
 
     public Prefab(Meta meta) {
         super(meta);
@@ -106,7 +97,10 @@ public class Prefab extends AssetType {
 
     @Override
     public String toString() {
-        return "Prefab " + getAssetFile();
+        return "Prefab{" +
+                "gameObjects=" + gameObjects +
+                ", components=" + components +
+                "}";
     }
 
     public List<GameObject> getGameObjects() {
@@ -245,4 +239,6 @@ public class Prefab extends AssetType {
                     '}';
         }
     }
+
+
 }
