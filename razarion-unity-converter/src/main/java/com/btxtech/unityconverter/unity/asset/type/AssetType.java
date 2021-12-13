@@ -33,6 +33,11 @@ public class AssetType {
         return meta.getAssetFile();
     }
 
+    public String getName() {
+        String fileName = getAssetFile().getName();
+        return fileName.substring(0, fileName.length() - meta.getFileExtension().length() - 1);
+    }
+
     public static class IgnoredAssetTypeHolder implements Holder<IgnoredAssetType> {
         public IgnoredAssetType ignoredAssetType;
 

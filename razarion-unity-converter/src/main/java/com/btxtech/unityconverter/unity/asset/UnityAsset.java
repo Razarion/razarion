@@ -52,16 +52,8 @@ public class UnityAsset {
         return assets.values().stream()
                 .filter(assetType -> assetType.getClass().equals(Prefab.class))
                 .map(assetType -> (Prefab) assetType)
-                .filter(prefab -> prefab.getGameObjects().get(0).getM_Name().equals(name))
+                .filter(prefab -> prefab.getName().equals(name))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("No Prefab for: " + name));
     }
-
-//    public List<Prefab> getMeshFilterPrefabs() {
-//        return assets.values().stream()
-//                .filter(assetType -> assetType.getClass().equals(Prefab.class))
-//                .map(assetType -> (Prefab) assetType)
-//                .filter(prefab -> !prefab.getComponents(MeshFilter.class).isEmpty())
-//                .collect(Collectors.toList());
-//    }
 }

@@ -18,8 +18,7 @@ public class Fbx extends AssetType {
     }
 
     public File getColladaFile() {
-        String fileName = getAssetFile().getName();
-        return new File(getAssetFile().getParentFile(), fileName.substring(0, fileName.length() - 3) + "dae");
+        return new File(getAssetFile().getParentFile(), getName() + ".dae");
     }
 
     @Override

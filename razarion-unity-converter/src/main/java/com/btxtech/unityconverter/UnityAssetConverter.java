@@ -41,15 +41,15 @@ public class UnityAssetConverter {
             UnityAsset unityAsset = AssetReader.read(metaFilePath);
 
             System.out.println("------------------------------------");
-            System.out.println("Id: " + unityAsset.getGuid());
-            System.out.println("UnityAssetGuid: " + unityAsset.getName());
+            System.out.println("Unity Asset Guid: " + unityAsset.getGuid());
+            System.out.println("Unity Asset Name: " + unityAsset.getName());
             System.out.println("MetaFilePath: " + metaFilePath);
 
 
-//            System.out.println("------------ Prefabs in Asset ------------");
-//            unityAsset.getAssetTypes(Prefab.class).forEach(prefab -> {
-//                System.out.println(prefab.getGameObjects().get(0).getM_Name());
-//            });
+            System.out.println("------------ Prefabs in Asset ------------");
+            unityAsset.getAssetTypes(Prefab.class).forEach(prefab -> {
+                System.out.println(prefab.getName());
+            });
 //            System.out.println("------------ Materials in Asset ------------");
 //            unityAsset.getAssetTypes(MaterialAssetType.class).forEach(materialAssetType -> {
 //                System.out.println(materialAssetType);
@@ -58,20 +58,21 @@ public class UnityAssetConverter {
 //            unityAsset.getAssetTypes(ShaderGraphAssetType.class).forEach(shaderGraphAssetType -> {
 //                System.out.println(shaderGraphAssetType);
 //            });
-            System.out.println("------------ Generated Mesh Containers ------------");
-            MockAssetContext mockAssetContext = new MockAssetContext();
-            dumpMeshContainers(
-                    unityAsset.getAssetTypes(Prefab.class).stream().map(prefab -> createMeshContainer(prefab, unityAsset, mockAssetContext)).collect(Collectors.toList())
-                    , "--");
-//            System.out.println("------------ Dump single prefab ------------");
+//            System.out.println("------------ Generated Mesh Containers ------------");
 //            MockAssetContext mockAssetContext = new MockAssetContext();
+//            dumpMeshContainers(
+//                    unityAsset.getAssetTypes(Prefab.class).stream().map(prefab -> createMeshContainer(prefab, unityAsset, mockAssetContext)).collect(Collectors.toList())
+//                    , "--");
+            System.out.println("------------ Dump single prefab ------------");
+            MockAssetContext mockAssetContext = new MockAssetContext();
 //            Prefab prefab = unityAsset.findPrefab("Flanc15");
-////            Prefab prefab = unityAsset.findPrefab("Simple01");
-////            Prefab prefab = unityAsset.findPrefab("Vehicle_11");
-//            System.out.println("Prefab AssetFile: " + prefab.getAssetFile());
-//            System.out.println("Prefab: " + prefab);
-//            dumpMeshContainer(createMeshContainer(prefab, unityAsset, mockAssetContext), "");
-////            System.out.println("Prefab: " + prefab.getGameObjects().get(0).getM_Name());
+            Prefab prefab = unityAsset.findPrefab("Vehicle_00");
+//            Prefab prefab = unityAsset.findPrefab("Simple01");
+//            Prefab prefab = unityAsset.findPrefab("Vehicle_11");
+            System.out.println("Prefab AssetFile: " + prefab.getAssetFile());
+            System.out.println("Prefab: " + prefab);
+            dumpMeshContainer(createMeshContainer(prefab, unityAsset, mockAssetContext), "");
+//            System.out.println("Prefab: " + prefab.getGameObjects().get(0).getM_Name());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error Converter Asset", e);
         }
@@ -111,7 +112,7 @@ public class UnityAssetConverter {
                     MeshContainer meshContainer = new MeshContainer();
                     if (childPrefab != null) {
                         childPrefab.getGameObjects().forEach(gameObject -> {
-                            meshContainer.setInternalName("child: " + gameObject.getM_Name());
+                            meshContainer.setInternalName("child: " + childPrefab.getName());
                             meshContainer.setMesh(setupMesh(childPrefab, prefabInstance, baseTransform, gameObject, unityAsset, assetContext));
                         });
                     }
@@ -136,7 +137,7 @@ public class UnityAssetConverter {
         // Errors Ends ---
 
         return new MeshContainer()
-                .internalName(mainGameObject.getM_Name())
+                .internalName(prefab.getName())
                 .guid(prefab.getGuid())
                 .children(childMeshContainers)
                 .mesh(setupMesh(prefab, null, baseTransform, mainGameObject, unityAsset, assetContext));
@@ -148,13 +149,13 @@ public class UnityAssetConverter {
         MeshRenderer meshRenderer = prefab.getMeshRenderer(gameObject);
         MaterialContext materialContext = new MaterialContext();
         if (meshFilter == null && meshRenderer == null) {
-            LOGGER.warning("No MeshFilter/MeshRenderer for: " + gameObject.getM_Name());
+            LOGGER.warning("No MeshFilter/MeshRenderer for: " + prefab.getName());
             return null;
         } else if (meshFilter == null) {
-            LOGGER.warning("No MeshFilter for: " + gameObject.getM_Name());
+            LOGGER.warning("No MeshFilter for: " + prefab.getName());
             return null;
         } else if (meshRenderer == null) {
-            LOGGER.warning("No MeshRenderer for: " + gameObject.getM_Name());
+            LOGGER.warning("No MeshRenderer for: " + prefab.getName());
             return null;
         }
 
