@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static com.btxtech.unityconverter.unity.asset.type.UnityYamlScanner.readAllYamlDocuments;
+
 public class Prefab extends AssetType {
     private static final Logger LOGGER = Logger.getLogger(Prefab.class.getName());
     private final List<GameObject> gameObjects = new ArrayList<>();
@@ -35,7 +37,11 @@ public class Prefab extends AssetType {
     public Prefab(Meta meta) {
         super(meta);
         try {
-            LOGGER.fine("readGameObjects: " + getMeta());
+            LOGGER.fine("readPrefab: " + getMeta());
+            readAllYamlDocuments(getAssetFile()).forEach(yamlDocument -> {
+                System.out.println("Scanner: yamlDocument: " + yamlDocument);
+            });
+            ////////////////// OLD --------------
             Representer representer = new Representer();
             representer.getPropertyUtils().setSkipMissingProperties(true);
             Constructor constructor = new Constructor();
@@ -78,6 +84,11 @@ public class Prefab extends AssetType {
             yaml.composeAll(new UnicodeReader(removeUnityCrap(getAssetFile()))).forEach(node -> {
                 String snippet = node.getStartMark().get_snippet();
                 String objectId = readObjectId(snippet);
+                System.out.println("objectId: " + objectId);
+                if(objectId.equals("850589")) {
+                    System.out.println("found!");
+                    String snippet2= node.getStartMark().get_snippet();
+                }
                 UnityObject unityObject = ((Holder<?>) constructor.getData()).getObject();
                 if (unityObject != null) {
                     unityObject.setObjectId(objectId);
