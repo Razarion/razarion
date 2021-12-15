@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 public class UnityYamlScanner {
     private static final Logger LOGGER = Logger.getLogger(UnityYamlScanner.class.getName());
     private static final String SEPARATOR_DELIMITER = "---";
+    private static final String DIRECTIVE_YAML = "%YAML";
+    private static final String DIRECTIVE_TAG = "%TAG";
 
     static public List<YamlDocument> readAllYamlDocuments(File unityYamlFile) {
         List<YamlDocument> yamlDocuments = new ArrayList<>();
@@ -56,6 +58,13 @@ public class UnityYamlScanner {
             this.mayBeStripped = mayBeStripped;
         }
 
+        public void appendLine(String line) {
+            if(line.startsWith(DIRECTIVE_YAML) || line.startsWith(DIRECTIVE_TAG)) {
+                return;
+            }
+            content = content + line + "\n";
+        }
+
         public String getTag() {
             return tag;
         }
@@ -68,8 +77,12 @@ public class UnityYamlScanner {
             return mayBeStripped;
         }
 
-        public void appendLine(String line) {
-            content = content + line + "\n";
+        public String getContent() {
+            return content;
+        }
+
+        public boolean hasContent() {
+            return !content.trim().isEmpty();
         }
 
         @Override

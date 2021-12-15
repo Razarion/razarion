@@ -10,19 +10,14 @@ import com.btxtech.unityconverter.unity.model.PrefabInstance;
 import com.btxtech.unityconverter.unity.model.Reference;
 import com.btxtech.unityconverter.unity.model.Transform;
 import com.btxtech.unityconverter.unity.model.UnityObject;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.TypeDescription;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.composer.Composer;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.parser.ParserImpl;
-import org.yaml.snakeyaml.reader.StreamReader;
-import org.yaml.snakeyaml.reader.UnicodeReader;
-import org.yaml.snakeyaml.representer.Representer;
-import org.yaml.snakeyaml.resolver.Resolver;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -31,76 +26,54 @@ import static com.btxtech.unityconverter.unity.asset.type.UnityYamlScanner.readA
 
 public class Prefab extends AssetType {
     private static final Logger LOGGER = Logger.getLogger(Prefab.class.getName());
+    private static final Map<String, Class<? extends UnityObject>> TAG_2_CLASS = new HashMap<>();
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final Map<String, Component> components = new HashMap<>();
+
+    static {
+        TAG_2_CLASS.put("!u!1", GameObject.class);
+        TAG_2_CLASS.put("!u!4", Transform.class);
+        TAG_2_CLASS.put("!u!33", MeshFilter.class);
+        TAG_2_CLASS.put("!u!23", MeshRenderer.class);
+        TAG_2_CLASS.put("!u!1001", PrefabInstance.class);
+        TAG_2_CLASS.put("!u!114", IgnoredAssetType.class); // MonoBehaviour -> Ignore
+        TAG_2_CLASS.put("!u!65", IgnoredAssetType.class); // BoxCollider -> Ignore
+        TAG_2_CLASS.put("!u!54", IgnoredAssetType.class); // Rigidbody -> Ignore
+    }
 
     public Prefab(Meta meta) {
         super(meta);
         try {
             LOGGER.fine("readPrefab: " + getMeta());
-            readAllYamlDocuments(getAssetFile()).forEach(yamlDocument -> {
-                System.out.println("Scanner: yamlDocument: " + yamlDocument);
-            });
-            ////////////////// OLD --------------
-            Representer representer = new Representer();
-            representer.getPropertyUtils().setSkipMissingProperties(true);
-            Constructor constructor = new Constructor();
-            // GameObject
-            TypeDescription typeDescription = new TypeDescription(GameObjectHolder.class, "tag:unity3d.com,2011:1");
-            typeDescription.substituteProperty("GameObject", GameObject.class, "getObject", "setGameObject");
-            constructor.addTypeDescription(typeDescription);
-            // Transform
-            typeDescription = new TypeDescription(TransformHolder.class, "tag:unity3d.com,2011:4");
-            typeDescription.substituteProperty("Transform", Transform.class, "getObject", "setTransform");
-            constructor.addTypeDescription(typeDescription);
-            // MeshFilter
-            typeDescription = new TypeDescription(MeshFilterHolder.class, "tag:unity3d.com,2011:33");
-            typeDescription.substituteProperty("MeshFilter", MeshFilter.class, "getObject", "setMeshFilter");
-            constructor.addTypeDescription(typeDescription);
-            // MeshRenderer
-            typeDescription = new TypeDescription(MeshRendererHolder.class, "tag:unity3d.com,2011:23");
-            typeDescription.substituteProperty("MeshRenderer", MeshRenderer.class, "getObject", "setMeshRenderer");
-            constructor.addTypeDescription(typeDescription);
-            // PrefabInstance
-            typeDescription = new TypeDescription(PrefabInstanceHolder.class, "tag:unity3d.com,2011:1001");
-            typeDescription.substituteProperty("PrefabInstance", PrefabInstance.class, "getObject", "setPrefabInstance");
-            constructor.addTypeDescription(typeDescription);
-            // MonoBehaviour -> Ignore
-            typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:114");
-            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setIgnoredAssetType");
-            constructor.addTypeDescription(typeDescription);
-            // BoxCollider -> Ignore
-            typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:65");
-            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setIgnoredAssetType");
-            constructor.addTypeDescription(typeDescription);
-            // Rigidbody -> Ignore
-            typeDescription = new TypeDescription(IgnoredAssetTypeHolder.class, "tag:unity3d.com,2011:54");
-            typeDescription.substituteProperty("MeshRenderer", IgnoredAssetType.class, "getObject", "setIgnoredAssetType");
-            constructor.addTypeDescription(typeDescription);
+            readAllYamlDocuments(getAssetFile()).stream()
+                    .filter(UnityYamlScanner.YamlDocument::hasContent)
+                    .forEach(yamlDocument -> {
+                        try {
+                            Class<? extends UnityObject> unityObjectClass = TAG_2_CLASS.get(yamlDocument.getTag());
+                            if (unityObjectClass != null) {
+                                ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+                                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                                Map<String, ?> map = mapper.readValue(yamlDocument.getContent(), Map.class);
+                                if (map.size() != 1) {
+                                    LOGGER.warning("Unknown UnityObject: " + yamlDocument.getContent());
+                                }
+                                LinkedHashMap<String, ?> unityObjectMap = (LinkedHashMap) map.values().stream().findFirst().orElseThrow(IllegalStateException::new);
+                                UnityObject unityObject = mapper.convertValue(unityObjectMap, unityObjectClass);
+                                unityObject.setObjectId(yamlDocument.getObjectId());
+                                if (unityObject instanceof GameObject) {
+                                    gameObjects.add((GameObject) unityObject);
+                                } else {
+                                    components.put(yamlDocument.getObjectId(), (Component) unityObject);
+                                }
+                            } else {
+                                LOGGER.warning("Unknown Tag for UnityObject: " + yamlDocument.getTag());
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
 
-            Yaml yaml = new Yaml(constructor, representer, new DumperOptions());
 
-            constructor.setComposer(new Composer(new ParserImpl(new StreamReader(new UnicodeReader(removeUnityCrap(getAssetFile())))), new Resolver()));
-            yaml.composeAll(new UnicodeReader(removeUnityCrap(getAssetFile()))).forEach(node -> {
-                String snippet = node.getStartMark().get_snippet();
-                String objectId = readObjectId(snippet);
-                System.out.println("objectId: " + objectId);
-                if(objectId.equals("850589")) {
-                    System.out.println("found!");
-                    String snippet2= node.getStartMark().get_snippet();
-                }
-                UnityObject unityObject = ((Holder<?>) constructor.getData()).getObject();
-                if (unityObject != null) {
-                    unityObject.setObjectId(objectId);
-
-                    if (unityObject instanceof GameObject) {
-                        gameObjects.add((GameObject) unityObject);
-                    } else {
-                        components.put(objectId, (Component) unityObject);
-                    }
-                }
-            });
-
+                    });
         } catch (Exception e) {
             throw new RuntimeException(meta.toString(), e);
         }
