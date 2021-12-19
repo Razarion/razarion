@@ -64,7 +64,7 @@ public class UnityAssetConverter {
 //                    unityAsset.getAssetTypes(Prefab.class).stream().map(prefab -> createMeshContainer(prefab, unityAsset, mockAssetContext)).collect(Collectors.toList())
 //                    , "--");
             System.out.println("------------ Dump single prefab ------------");
-            Prefab prefab = unityAsset.findPrefab("Vehicle_00");
+            Prefab prefab = unityAsset.findPrefab("Aaa");
             System.out.println("Prefab AssetFile: " + prefab.getAssetFile());
             System.out.println("Prefab: " + prefab);
             dumpMeshContainer(createMeshContainer(prefab, unityAsset, mockAssetContext), "");
@@ -103,9 +103,9 @@ public class UnityAssetConverter {
         baseTransform.setTranslateX(transform.getM_LocalPosition().getX());
         baseTransform.setTranslateY(transform.getM_LocalPosition().getY());
         baseTransform.setTranslateZ(transform.getM_LocalPosition().getZ());
-        baseTransform.setRotateX(transform.getM_LocalRotation().getX());
-        baseTransform.setRotateY(transform.getM_LocalRotation().getY());
-        baseTransform.setRotateZ(transform.getM_LocalRotation().getZ());
+        baseTransform.setRotateX(Math.toRadians(transform.getM_LocalEulerAnglesHint().getX()));
+        baseTransform.setRotateY(Math.toRadians(transform.getM_LocalEulerAnglesHint().getY()));
+        baseTransform.setRotateZ(Math.toRadians(transform.getM_LocalEulerAnglesHint().getZ()));
         baseTransform.setScaleX(transform.getM_LocalScale().getX());
         baseTransform.setScaleY(transform.getM_LocalScale().getY());
         baseTransform.setScaleZ(transform.getM_LocalScale().getZ());
@@ -231,11 +231,11 @@ public class UnityAssetConverter {
 
     private static ShapeTransform setupShapeTransform(PrefabInstance prefabInstance, ShapeTransform baseShapeTransform) {
         if (prefabInstance == null) {
-            return null;
+            return baseShapeTransform;
         }
         ModificationContainer m_modification = prefabInstance.getM_Modification();
         if (m_modification == null || m_modification.getM_Modifications() == null) {
-            return null;
+            return baseShapeTransform;
         }
         ShapeTransform shapeTransform = baseShapeTransform.copyTRS();
         m_modification.getM_Modifications().forEach(modification -> {
@@ -259,13 +259,13 @@ public class UnityAssetConverter {
                     shapeTransform.setRotateZ(shapeTransform.getRotateZ() + Math.toRadians(Double.parseDouble(modification.getValue())));
                     break;
                 case ("m_localscale.x"):
-                    shapeTransform.setScaleX(shapeTransform.getScaleX() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setScaleX(shapeTransform.getScaleX() * Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.y"):
-                    shapeTransform.setScaleY(shapeTransform.getScaleY() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setScaleY(shapeTransform.getScaleY() * Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.z"):
-                    shapeTransform.setScaleZ(shapeTransform.getScaleZ() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setScaleZ(shapeTransform.getScaleZ() * Double.parseDouble(modification.getValue()));
                     break;
                 // Ignore
                 case ("m_name"):

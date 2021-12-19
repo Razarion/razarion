@@ -6,7 +6,7 @@ public class Transform extends Component {
     private List<Reference> m_Children;
     private Reference m_CorrespondingSourceObject;
     private Reference m_PrefabInstance;
-    private UnityVector m_LocalRotation;
+    private UnityVector m_LocalEulerAnglesHint;
     private UnityVector m_LocalPosition;
     private UnityVector m_LocalScale;
 
@@ -34,12 +34,12 @@ public class Transform extends Component {
         this.m_PrefabInstance = m_PrefabInstance;
     }
 
-    public UnityVector getM_LocalRotation() {
-        return m_LocalRotation;
+    public UnityVector getM_LocalEulerAnglesHint() {
+        return m_LocalEulerAnglesHint;
     }
 
-    public void setM_LocalRotation(UnityVector m_LocalRotation) {
-        this.m_LocalRotation = m_LocalRotation;
+    public void setM_LocalEulerAnglesHint(UnityVector m_LocalEulerAnglesHint) {
+        this.m_LocalEulerAnglesHint = m_LocalEulerAnglesHint;
     }
 
     public UnityVector getM_LocalPosition() {
@@ -64,7 +64,7 @@ public class Transform extends Component {
                 "m_Children=" + m_Children +
                 ", m_CorrespondingSourceObject=" + m_CorrespondingSourceObject +
                 ", m_PrefabInstance=" + m_PrefabInstance +
-                ", m_LocalRotation=" + m_LocalRotation +
+                ", m_LocalEulerAnglesHint=" + m_LocalEulerAnglesHint +
                 ", m_LocalPosition=" + m_LocalPosition +
                 ", m_LocalScale=" + m_LocalScale +
                 '}';
