@@ -1,5 +1,6 @@
 package com.btxtech.unityconverter;
 
+import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.Mesh;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
@@ -36,7 +37,7 @@ public class UnityAssetConverter {
         displayMeshContainers("C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor.meta");
     }
 
-    public static void displayMeshContainers(String metaFilePath) {
+    private static void displayMeshContainers(String metaFilePath) {
         try {
             UnityAsset unityAsset = AssetReader.read(metaFilePath);
             MockAssetContext mockAssetContext = new MockAssetContext();
@@ -73,7 +74,19 @@ public class UnityAssetConverter {
         }
     }
 
-    public static MeshContainer createMeshContainer(Prefab prefab, UnityAsset unityAsset, AssetContext assetContext) {
+    public static AssetConfig createAssetConfig(String assetMetaFile, AssetContext assetContext) {
+        UnityAsset unityAsset = AssetReader.read(assetMetaFile);
+
+        return new AssetConfig()
+                .unityAssetGuid(unityAsset.getGuid())
+                .internalName(unityAsset.getName())
+                .assetMetaFileHint(assetMetaFile)
+                .meshContainers(unityAsset.getAssetTypes(Prefab.class).stream()
+                        .map(prefab -> UnityAssetConverter.createMeshContainer(prefab, unityAsset, assetContext))
+                        .collect(Collectors.toList()));
+    }
+
+    private static MeshContainer createMeshContainer(Prefab prefab, UnityAsset unityAsset, AssetContext assetContext) {
         List<GameObject> gameObjects = prefab.getGameObjects();
         if (gameObjects.size() == 1) {
             return createMeshContainer(prefab.getName(), prefab.getGuid(), gameObjects.get(0), prefab, unityAsset, assetContext);
@@ -91,7 +104,7 @@ public class UnityAssetConverter {
         }
     }
 
-    public static MeshContainer createMeshContainer(String name, String guid, GameObject gameObjects, Prefab prefab, UnityAsset unityAsset, AssetContext assetContext) {
+    private static MeshContainer createMeshContainer(String name, String guid, GameObject gameObjects, Prefab prefab, UnityAsset unityAsset, AssetContext assetContext) {
         Transform transform = gameObjects.getM_Component()
                 .stream()
                 .map(componentReference -> prefab.getComponent(componentReference.getComponent()))
@@ -195,7 +208,9 @@ public class UnityAssetConverter {
             ShaderGraph shaderGraph = null;
             if (material.getShader() != null) {
                 ShaderGraphAssetType shaderGraphAssetType = unityAsset.getAssetType(material.getShader());
-                // LOGGER.info("---Shader: " + shaderGraphAssetType);
+                if (shaderGraphAssetType == null) {
+                    LOGGER.warning("No ShaderGraphAssetType for reference:  " + material.getShader() + " used in: " + gameObject.getM_Name());
+                }
                 shaderGraph = shaderGraphAssetType.getShaderGraph();
             }
 

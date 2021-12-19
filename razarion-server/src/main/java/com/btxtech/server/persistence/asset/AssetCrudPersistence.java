@@ -7,9 +7,6 @@ import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.unityconverter.UnityAssetConverter;
-import com.btxtech.unityconverter.unity.asset.AssetReader;
-import com.btxtech.unityconverter.unity.asset.UnityAsset;
-import com.btxtech.unityconverter.unity.asset.type.Prefab;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -47,20 +44,12 @@ public class AssetCrudPersistence extends AbstractCrudPersistence<AssetConfig, A
             if (config.getAssetMetaFileHint() == null) {
                 throw new IllegalArgumentException("Asset meta file hint is not set");
             }
+            config = UnityAssetConverter.createAssetConfig(config.getAssetMetaFileHint(), new ServerAssetContext(shape3DCrudPersistence, imagePersistence));
+
             entity.setAssetMetaFileHint(config.getAssetMetaFileHint());
-
-            UnityAsset unityAsset = AssetReader.read(config.getAssetMetaFileHint());
-            entity.setUnityAssetGuid(unityAsset.getGuid());
-            entity.setInternalName(unityAsset.getName());
-
-            ServerAssetContext assetContext = new ServerAssetContext(shape3DCrudPersistence, imagePersistence);
-
-            entity.setMeshContainers(toMeshContainers(
-                    entity.getMeshContainers(),
-                    unityAsset.getAssetTypes(Prefab.class).stream()
-                            .map(prefab -> UnityAssetConverter.createMeshContainer(prefab, unityAsset, assetContext))
-                            .collect(Collectors.toList())
-            ));
+            entity.setUnityAssetGuid(config.getUnityAssetGuid());
+            entity.setInternalName(config.getInternalName());
+            entity.setMeshContainers(toMeshContainers(entity.getMeshContainers(), config.getMeshContainers()));
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

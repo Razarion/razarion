@@ -10,6 +10,9 @@ public class Fbx extends AssetType {
     }
 
     public String getMeshName(String filedId) {
+        if (getMeta().getModelImporter().getFileIDToRecycleName() == null) {
+            throw new IllegalStateException("Fbx meta does not the fileIDToRecycleName: " + getAssetFile());
+        }
         String meshName = getMeta().getModelImporter().getFileIDToRecycleName().get(filedId);
         if (meshName == null) {
             throw new IllegalArgumentException("No mesh name for fileId: " + filedId);
