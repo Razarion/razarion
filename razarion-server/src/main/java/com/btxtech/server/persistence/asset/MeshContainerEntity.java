@@ -29,7 +29,7 @@ public class MeshContainerEntity {
     @OneToOne
     @JoinColumn(name = "parent_id")
     private MeshContainerEntity parent;
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MeshContainerEntity> children;
     @Embedded
     private MeshEmbeddable mesh;

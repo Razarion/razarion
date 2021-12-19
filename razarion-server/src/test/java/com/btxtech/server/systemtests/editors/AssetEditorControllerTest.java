@@ -11,6 +11,8 @@ import com.btxtech.server.systemtests.framework.RestConnection;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.rest.AssetEditorController;
+import com.btxtech.shared.rest.MeshContainerEditorController;
+import com.btxtech.test.JsonAssert;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,16 +34,30 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
 
     @Test
     public void crud() {
-        RestConnection restConnection = new RestConnection(new ObjectMapperResolver(() -> AssetConfig.class));
-        restConnection.loginAdmin();
-        AssetEditorController underTest = restConnection.proxy(AssetEditorController.class);
+        RestConnection assetRestConnection = new RestConnection(new ObjectMapperResolver(() -> AssetConfig.class));
+        assetRestConnection.loginAdmin();
+        AssetEditorController underTest = assetRestConnection.proxy(AssetEditorController.class);
+
+        RestConnection meshContainerRestConnection = new RestConnection(new ObjectMapperResolver(() -> MeshContainer.class));
+        meshContainerRestConnection.loginAdmin();
+        MeshContainerEditorController meshContainerEditorController = meshContainerRestConnection.proxy(MeshContainerEditorController.class);
+
         Assert.assertTrue(underTest.getObjectNameIds().isEmpty());
         // Create
         AssetConfig assetConfig = underTest.create();
+        Assert.assertEquals(0, meshContainerEditorController.getObjectNameIds().size());
         // Update
         assetConfig.assetMetaFileHint("C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor.meta");
         underTest.update(assetConfig);
         assetConfig = underTest.read(assetConfig.getId());
+        int meshControllerCount1 = meshContainerEditorController.getObjectNameIds().size();
+        underTest.update(assetConfig);
+        AssetConfig assetConfig2 = underTest.read(assetConfig.getId());
+        int meshControllerCount2 = meshContainerEditorController.getObjectNameIds().size();
+        Assert.assertEquals(meshControllerCount1, meshControllerCount2);
+        JsonAssert.assertViaJson(assetConfig, assetConfig2, null);
+
+
 //        JsonAssert.assertViaJson("TestAsset1.json",
 //                null,
 //                new JsonAssert.IdSuppressor[]{
@@ -53,7 +69,7 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
 //                assetConfig,
 //                true);
 //        // Check Shape3D controller
-//        Shape3DEditorController shape3DEditorController = restConnection.proxy(Shape3DEditorController.class);
+//        Shape3DEditorController shape3DEditorController = assetRestConnection.proxy(Shape3DEditorController.class);
 //
 //        Set<Integer> shape3Ds = new HashSet<>();
 //
