@@ -1,6 +1,6 @@
 package com.btxtech.unityconverter;
 
-public class MaterialContext {
+public class MaterialInfo {
     private String mainTextureGuid;
     private String mainTextureFile;
 
@@ -22,5 +22,15 @@ public class MaterialContext {
 
     public boolean isValid() {
         return mainTextureFile != null;
+    }
+
+    public MaterialInfo mainTextureGuid(String mainTextureGuid) {
+        setMainTextureGuid(mainTextureGuid);
+        return this;
+    }
+
+    public MaterialInfo mainTextureFile(String mainTextureFile) {
+        setMainTextureFile(mainTextureFile);
+        return this;
     }
 }

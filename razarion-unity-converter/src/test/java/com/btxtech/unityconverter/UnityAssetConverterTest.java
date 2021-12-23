@@ -16,6 +16,6 @@ class UnityAssetConverterTest {
     void createAssetConfig() throws URISyntaxException {
         URL url =  UnityAssetConverterTest.class.getClassLoader().getResource("Assets/Asset 1.meta");
         assertNotNull(url);
-        AssetConfig assetConfig = UnityAssetConverter.createAssetConfig(Paths.get(url.toURI()).toString(), (fbx, materialContext) -> -123);
+        AssetConfig assetConfig = UnityAssetConverter.createAssetConfig(Paths.get(url.toURI()).toString(), (fbx, materialInfo) -> -123);
     }
 }

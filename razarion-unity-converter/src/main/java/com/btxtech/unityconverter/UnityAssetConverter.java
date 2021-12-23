@@ -25,7 +25,6 @@ import com.btxtech.unityconverter.unity.model.Transform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -170,7 +169,6 @@ public class UnityAssetConverter {
         // Check if valid for Mesh creation
         MeshFilter meshFilter = prefab.getMeshFilter(gameObject);
         MeshRenderer meshRenderer = prefab.getMeshRenderer(gameObject);
-        MaterialContext materialContext = new MaterialContext();
         if (meshFilter == null && meshRenderer == null) {
             LOGGER.warning("No MeshFilter/MeshRenderer for: " + prefab.getName());
             return null;
@@ -182,64 +180,11 @@ public class UnityAssetConverter {
             return null;
         }
 
-        // Geometry
         Fbx fbx = unityAsset.getAssetType(meshFilter.getM_Mesh());
         String meshName = fbx.getMeshName(meshFilter.getM_Mesh().getFileID());
-        // Materials
-        Material material = null;
-        if (meshRenderer.getM_Materials().size() == 0) {
-            LOGGER.warning("No material  for:  " + gameObject.getM_Name());
-        } else {
-            if (meshRenderer.getM_Materials().size() > 1) {
-                LOGGER.warning("Unknown material  for:  " + gameObject.getM_Name() + " Last is taken. Material count:" + meshRenderer.getM_Materials().size());
-            }
-            Reference matReference = meshRenderer.getM_Materials().get(0);
-            MaterialAssetType materialAssetType = unityAsset.getAssetType(matReference);
-            if (materialAssetType == null) {
-                LOGGER.warning("No MaterialAssetType for reference:  " + matReference + " used in: " + gameObject.getM_Name());
-            }
-            material = materialAssetType.getMaterial();
-            if (material == null) {
-                LOGGER.warning("No Material in MaterialAssetType:  " + materialAssetType.getAssetFile());
-            }
-            // LOGGER.info("---Material: " + gameObject.getM_Name());
-            // LOGGER.info("---Shader ref: " + material.getShader());
-
-            ShaderGraph shaderGraph = null;
-            if (material.getShader() != null) {
-                ShaderGraphAssetType shaderGraphAssetType = unityAsset.getAssetType(material.getShader());
-                if (shaderGraphAssetType == null) {
-                    LOGGER.warning("No ShaderGraphAssetType for reference:  " + material.getShader() + " used in: " + gameObject.getM_Name());
-                }
-                shaderGraph = shaderGraphAssetType.getShaderGraph();
-            }
-
-            ShaderGraph finalShaderGraph = shaderGraph;
-
-            if (material != null && material.getSavedProperties() != null) {
-                material.getSavedProperties()
-                        .getTexEnvs()
-                        .forEach(stringTexture2DMap -> {
-                            stringTexture2DMap.forEach((key, value) -> {
-                                ShaderGraphData shaderGraphData = finalShaderGraph.findShaderGraphData4tReferenceName(key);
-                                if (shaderGraphData == null) {
-                                    return;
-                                }
-                                if (shaderGraphData.getName().equalsIgnoreCase("albedo1")
-                                        || shaderGraphData.getName().equalsIgnoreCase("albedo")) {
-                                    AssetType assetType = unityAsset.getAssetType(value.getTexture());
-                                    materialContext.setMainTextureFile(assetType.getAssetFile().getPath());
-                                    materialContext.setMainTextureGuid(assetType.getGuid());
-                                }
-                            });
-                        });
-            }
-        }
-        if (!materialContext.isValid()) {
-            LOGGER.warning("No valid material for: " + gameObject.getM_Name());
-        }
+        MaterialInfo materialInfo = setupMaterialInfo(meshRenderer, gameObject, unityAsset);
         return new Mesh()
-                .shape3DId(assetContext.getShape3DId4Fbx(fbx, materialContext))
+                .shape3DId(assetContext.getShape3DId4Fbx(fbx, materialInfo))
                 .element3DId(meshName)
                 .shapeTransform(setupShapeTransform(prefabInstance, baseTransform));
     }
@@ -297,6 +242,65 @@ public class UnityAssetConverter {
         return shapeTransform;
     }
 
+    private static MaterialInfo setupMaterialInfo(MeshRenderer meshRenderer, GameObject gameObject, UnityAsset unityAsset) {
+        MaterialInfo materialContext = new MaterialInfo();
+        if (meshRenderer.getM_Materials().size() == 0) {
+            LOGGER.warning("No material  for:  " + gameObject.getM_Name());
+        } else {
+            if (meshRenderer.getM_Materials().size() > 1) {
+                LOGGER.warning("Unknown material  for:  " + gameObject.getM_Name() + " Last is taken. Material count:" + meshRenderer.getM_Materials().size());
+            }
+            Reference matReference = meshRenderer.getM_Materials().get(0);
+            MaterialAssetType materialAssetType = unityAsset.getAssetType(matReference);
+            System.out.println("materialAssetType: " + materialAssetType);
+            if (materialAssetType == null) {
+                LOGGER.warning("No MaterialAssetType for reference:  " + matReference + " used in: " + gameObject.getM_Name());
+            }
+            Material material = materialAssetType.getMaterial();
+            if (material == null) {
+                LOGGER.warning("No Material in MaterialAssetType:  " + materialAssetType.getAssetFile());
+            }
+            // LOGGER.info("---Material: " + gameObject.getM_Name());
+            // LOGGER.info("---Shader ref: " + material.getShader());
+
+            ShaderGraph shaderGraph = null;
+            if (material.getShader() != null) {
+                ShaderGraphAssetType shaderGraphAssetType = unityAsset.getAssetType(material.getShader());
+                if (shaderGraphAssetType == null) {
+                    LOGGER.warning("No ShaderGraphAssetType for reference:  " + material.getShader() + " used in: " + gameObject.getM_Name());
+                }
+                shaderGraph = shaderGraphAssetType.getShaderGraph();
+            }
+
+            ShaderGraph finalShaderGraph = shaderGraph;
+
+            if (material != null && material.getSavedProperties() != null) {
+                material.getSavedProperties()
+                        .getTexEnvs()
+                        .forEach(stringTexture2DMap -> {
+                            stringTexture2DMap.forEach((key, value) -> {
+                                ShaderGraphData shaderGraphData = finalShaderGraph.findShaderGraphData4tReferenceName(key);
+                                if (shaderGraphData == null) {
+                                    return;
+                                }
+                                System.out.println("shaderGraphData.getName(): " + shaderGraphData.getName() + ": " + unityAsset.getAssetType(value.getTexture()).getAssetFile().getPath());
+
+                                if (shaderGraphData.getName().equalsIgnoreCase("albedo1")
+                                        || shaderGraphData.getName().equalsIgnoreCase("albedo")) {
+                                    AssetType assetType = unityAsset.getAssetType(value.getTexture());
+                                    materialContext.setMainTextureFile(assetType.getAssetFile().getPath());
+                                    materialContext.setMainTextureGuid(assetType.getGuid());
+                                }
+                            });
+                        });
+            }
+        }
+        if (!materialContext.isValid()) {
+            LOGGER.warning("No valid material for: " + gameObject.getM_Name());
+        }
+        return materialContext;
+    }
+
     private static void dumpMeshContainers(List<MeshContainer> meshContainers, String space) {
         meshContainers.forEach(meshContainer -> {
             System.out.println("-------------------------------------");
@@ -317,21 +321,10 @@ public class UnityAssetConverter {
         }
     }
 
-    private void recursiveFillShape3DIds(List<MeshContainer> meshContainers, Set<Integer> shape3Ds) {
-        meshContainers.forEach(meshContainer -> {
-            if (meshContainer.getMesh() != null) {
-                shape3Ds.add(meshContainer.getMesh().getShape3DId());
-            }
-            if (meshContainer.getChildren() != null) {
-                recursiveFillShape3DIds(meshContainer.getChildren(), shape3Ds);
-            }
-        });
-    }
-
     private static class MockAssetContext implements AssetContext {
 
         @Override
-        public Integer getShape3DId4Fbx(Fbx fbx, MaterialContext materialContext) {
+        public Integer getShape3DId4Fbx(Fbx fbx, MaterialInfo materialInfo) {
             return 1234;
         }
     }

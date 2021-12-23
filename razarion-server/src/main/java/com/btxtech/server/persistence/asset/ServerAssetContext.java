@@ -11,7 +11,7 @@ import com.btxtech.shared.datatypes.shape.config.Shape3DElementConfig;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.unityconverter.AssetContext;
-import com.btxtech.unityconverter.MaterialContext;
+import com.btxtech.unityconverter.MaterialInfo;
 import com.btxtech.unityconverter.unity.asset.type.Fbx;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class ServerAssetContext implements AssetContext {
     }
 
     @Override
-    public Integer getShape3DId4Fbx(Fbx fbx, MaterialContext materialContext) {
+    public Integer getShape3DId4Fbx(Fbx fbx, MaterialInfo materialInfo) {
         String fbxGuidHint = fbx.getGuid();
         Integer shape3DId = fbxGuid2Shape3DIds.get(fbxGuidHint);
         if (shape3DId != null) {
@@ -48,12 +48,12 @@ public class ServerAssetContext implements AssetContext {
             fbxGuid2Shape3DIds.put(fbxGuidHint, shape3DId);
             return shape3DId;
         }
-        shape3DId = generateShape3D(fbx, materialContext);
+        shape3DId = generateShape3D(fbx, materialInfo);
         fbxGuid2Shape3DIds.put(fbxGuidHint, shape3DId);
         return shape3DId;
     }
 
-    private Integer generateShape3D(Fbx fbx, MaterialContext materialContext) {
+    private Integer generateShape3D(Fbx fbx, MaterialInfo materialInfo) {
         try {
             StringBuilder contentBuilder = new StringBuilder();
 
@@ -70,7 +70,7 @@ public class ServerAssetContext implements AssetContext {
                             null)
                     .createShape3DConfig(shape3DConfig.getId())
                     .getShape3DElementConfigs();
-            attachPhongMaterialConfigs(shape3DElementConfigs, materialContext);
+            attachPhongMaterialConfigs(shape3DElementConfigs, materialInfo);
             shape3DConfig.setColladaString(colladaText);
             shape3DConfig.internalName(fbx.getGuid());
             shape3DConfig.setShape3DElementConfigs(shape3DElementConfigs);
@@ -81,22 +81,22 @@ public class ServerAssetContext implements AssetContext {
         }
     }
 
-    private void attachPhongMaterialConfigs(List<Shape3DElementConfig> shape3DElementConfigs, MaterialContext materialContext) {
+    private void attachPhongMaterialConfigs(List<Shape3DElementConfig> shape3DElementConfigs, MaterialInfo materialInfo) {
         shape3DElementConfigs.stream()
                 .flatMap(shape3DElementConfig -> shape3DElementConfig.getVertexContainerMaterialConfigs().stream())
-                .forEach(vertexContainerMaterialConfig -> vertexContainerMaterialConfig.setPhongMaterialConfig(createPhongMaterialConfig(materialContext)));
+                .forEach(vertexContainerMaterialConfig -> vertexContainerMaterialConfig.setPhongMaterialConfig(createPhongMaterialConfig(materialInfo)));
     }
 
-    private PhongMaterialConfig createPhongMaterialConfig(MaterialContext materialContext) {
-        if (materialContext.isValid()) {
+    private PhongMaterialConfig createPhongMaterialConfig(MaterialInfo materialInfo) {
+        if (materialInfo.isValid()) {
             try {
-                Integer imageId = imagePersistence.getImageId4InternalName(materialContext.getMainTextureGuid());
+                Integer imageId = imagePersistence.getImageId4InternalName(materialInfo.getMainTextureGuid());
                 if (imageId == null) {
-                    Path path = Paths.get(materialContext.getMainTextureFile());
+                    Path path = Paths.get(materialInfo.getMainTextureFile());
                     byte[] data = Files.readAllBytes(path);
                     String mimeType = Files.probeContentType(path);
                     ImageGalleryItem imageGalleryItem = imagePersistence.createImage(data, mimeType);
-                    imagePersistence.saveInternalName(imageGalleryItem.getId(), materialContext.getMainTextureGuid());
+                    imagePersistence.saveInternalName(imageGalleryItem.getId(), materialInfo.getMainTextureGuid());
                     imageId = imageGalleryItem.getId();
                 }
                 return new PhongMaterialConfig().textureId(imageId).scale(1);
