@@ -1,6 +1,15 @@
+//-$$$-CHUNK attributes BEGIN
+#ifdef TWO_PHONGS
+attribute float vertexColorAttribute;
+#endif
+//-$$$-CHUNK attributes END
+
 //-$$$-CHUNK varyings BEGIN
 #ifdef BUILDUP_STATE
 varying float buildupZ;
+#endif
+#ifdef TWO_PHONGS
+varying float vertexColorVarying;
 #endif
 //-$$$-CHUNK varyings END
 
@@ -15,6 +24,9 @@ uniform highp mat4 buildupMatrix;
 //-$$$-CHUNK main-code-vertex BEGIN
 #ifdef BUILDUP_STATE
 buildupZ = (buildupMatrix * vec4(position, 1.0)).z;
+#endif
+#ifdef TWO_PHONGS
+vertexColorVarying = vertexColorAttribute;
 #endif
 //-$$$-CHUNK main-code-vertex END
 
@@ -37,7 +49,9 @@ const float DELTA_HEALTH = 0.75;
 #ifdef CHARACTER_REPRESENTING
 uniform vec3 characterRepresentingColor;
 #endif
-
+#ifdef TWO_PHONGS
+uniform PhongMaterial material2;
+#endif
 //-$$$-CHUNK uniforms-fragment END
 
 //-$$$-CHUNK main-code-fragment BEGIN
@@ -49,6 +63,9 @@ uniform vec3 characterRepresentingColor;
     #endif
 
     vec4 rgba = phongAlpha(material, vUv);
+    #ifdef TWO_PHONGS
+    rgba = mix(phongAlpha(material2, vUv), rgba, vertexColorVarying);
+    #endif
 
     #ifdef HEALTH_STATE
     vec4 cuttingColor = texture2D(uDemolitionSampler, vUv);

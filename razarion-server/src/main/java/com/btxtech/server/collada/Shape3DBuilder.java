@@ -96,6 +96,7 @@ public class Shape3DBuilder {
                                                     .materialId(vertexContainer.getVertexContainerMaterial().getMaterialId())
                                                     .materialName(vertexContainer.getVertexContainerMaterial().getMaterialName())
                                                     .phongMaterialConfig(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig())
+                                                    .phongMaterial2Config(vertexContainer.getVertexContainerMaterial().getPhongMaterial2Config())
                                                     .characterRepresenting(vertexContainer.getVertexContainerMaterial().isCharacterRepresenting())
                                                     .alphaToCoverage(vertexContainer.getVertexContainerMaterial().getAlphaToCoverage()))
                                     .collect(Collectors.toList()))

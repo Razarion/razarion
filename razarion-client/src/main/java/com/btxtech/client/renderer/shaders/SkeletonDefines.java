@@ -9,4 +9,5 @@ public abstract class SkeletonDefines {
     public static final String BUILDUP_STATE = "BUILDUP_STATE";
     public static final String HEALTH_STATE = "HEALTH_STATE";
     public static final String CHARACTER_REPRESENTING = "CHARACTER_REPRESENTING";
+    public static final String TWO_PHONGS = "TWO_PHONGS";
 }

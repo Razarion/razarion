@@ -169,11 +169,17 @@ public class GenericEditorFrontendProvider {
                             double[] vertexData = Js.uncheckedCast(vertexContainerMap.get("vertexData"));
                             double[] normData = Js.uncheckedCast(vertexContainerMap.get("normData"));
                             double[] textureCoordinate = Js.uncheckedCast(vertexContainerMap.get("textureCoordinate"));
+                            double[] vertexColor = Js.uncheckedCast(vertexContainerMap.get("vertexColor"));
+                            Float32Array vertexColorArray = null;
+                            if(vertexColor != null) {
+                                vertexColorArray = new Float32Array(vertexColor);
+                            }
                             newShape3DBuffers.put(vertexContainerMap.getAny("key").asString(),
                                     new Shape3DBuffer(
                                             new Float32Array(vertexData),
                                             new Float32Array(normData),
-                                            new Float32Array(textureCoordinate)));
+                                            new Float32Array(textureCoordinate),
+                                            vertexColorArray));
                         });
                         Shape3DConfig newShape3DConfig = MarshallingWrapper.fromJSON(Global.JSON.stringify(mapOfAny.getAny("shape3DConfig")), Shape3DConfig.class);
                         Shape3D newShape3D = MarshallingWrapper.fromJSON(Global.JSON.stringify(mapOfAny.getAny("shape3D")), Shape3D.class);

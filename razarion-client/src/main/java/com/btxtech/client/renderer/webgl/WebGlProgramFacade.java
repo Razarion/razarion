@@ -19,7 +19,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.RENDER_ENGINE_UNIFORM;
  */
 @Dependent
 public class WebGlProgramFacade {
-    // private Logger logger = Logger.getLogger(WebGlProgram.class.getName());
+    // private Logger logger = Logger.getLogger(WebGlProgramFacade.class.getName());
     private WebGLProgram program;
     private WebGLShader vs;
     private WebGLShader fs;

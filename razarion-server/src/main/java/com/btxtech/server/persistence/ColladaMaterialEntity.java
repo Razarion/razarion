@@ -43,6 +43,20 @@ public class ColladaMaterialEntity {
     })
     @Embedded
     private PhongMaterialConfigEmbeddable phongMaterial;
+    @AssociationOverrides({
+            @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "phong2TextureId")),
+            @AssociationOverride(name = "normalMap", joinColumns = @JoinColumn(name = "phong2NormalMapId")),
+            @AssociationOverride(name = "bumpMap", joinColumns = @JoinColumn(name = "phong2BumpMapId"))
+    })
+    @AttributeOverrides({
+            @AttributeOverride(name = "scale", column = @Column(name = "phong2Scale")),
+            @AttributeOverride(name = "normalMapDepth", column = @Column(name = "phong2NormalMapDepth")),
+            @AttributeOverride(name = "bumpMapDepth", column = @Column(name = "phong2BumpMapDepth")),
+            @AttributeOverride(name = "shininess", column = @Column(name = "phong2Shininess")),
+            @AttributeOverride(name = "specularStrength", column = @Column(name = "phong2SpecularStrength")),
+    })
+    @Embedded
+    private PhongMaterialConfigEmbeddable phongMaterial2;
 
     public String getMaterialId() {
         return materialId;
@@ -54,7 +68,8 @@ public class ColladaMaterialEntity {
                 .materialName(materialName)
                 .alphaToCoverage(alphaToCoverage)
                 .characterRepresenting(characterRepresenting)
-                .phongMaterialConfig(phongMaterial != null ? phongMaterial.to() : null);
+                .phongMaterialConfig(PersistenceUtil.toConfig(phongMaterial, PhongMaterialConfigEmbeddable::to))
+                .phongMaterial2Config(PersistenceUtil.toConfig(phongMaterial2, PhongMaterialConfigEmbeddable::to));
     }
 
     public ColladaMaterialEntity from(VertexContainerMaterialConfig vertexContainerMaterialConfig, ImagePersistence imagePersistence) {
@@ -63,6 +78,7 @@ public class ColladaMaterialEntity {
         alphaToCoverage = vertexContainerMaterialConfig.getAlphaToCoverage();
         characterRepresenting = vertexContainerMaterialConfig.isCharacterRepresenting();
         phongMaterial = factorize(vertexContainerMaterialConfig.getPhongMaterialConfig(), imagePersistence);
+        phongMaterial2 = factorize(vertexContainerMaterialConfig.getPhongMaterial2Config(), imagePersistence);
         return this;
     }
 

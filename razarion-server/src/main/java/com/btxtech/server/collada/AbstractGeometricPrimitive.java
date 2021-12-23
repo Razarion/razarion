@@ -64,7 +64,7 @@ public class AbstractGeometricPrimitive extends ColladaXml{
         List<Vertex> vertices = sources.get(positionVertex.getInput().getSourceId()).setupVertices();
         List<Vertex> norms = sources.get(normInput.getSourceId()).setupVertices();
         List<TextureCoordinate> textureCoordinates = null;
-        List<Color> colors = null;
+        List<Color> vertexColors = null;
 
         int step = 2;
         int textureOffset = 0;
@@ -75,7 +75,7 @@ public class AbstractGeometricPrimitive extends ColladaXml{
             textureOffset = textCoordInput.getOffset();
         }
         if (colorInput != null) {
-            colors = sources.get(colorInput.getSourceId()).setupColors();
+            vertexColors = sources.get(colorInput.getSourceId()).setupColors();
             step++;
             colorOffset = colorInput.getOffset();
         }
@@ -83,7 +83,7 @@ public class AbstractGeometricPrimitive extends ColladaXml{
         List<Float> verticesDest = new ArrayList<>();
         List<Float> normsDest = new ArrayList<>();
         List<Float> textureCoordinatesDest = new ArrayList<>();
-        List<Float> colorDest = new ArrayList<>();
+        List<Float> vertexColorDest = new ArrayList<>();
         for (int i = 0; i < primitiveIndices.size() / step; i++) {
             try {
                 int baseIndex = i * step;
@@ -100,12 +100,12 @@ public class AbstractGeometricPrimitive extends ColladaXml{
                     textureCoordinatesDest.add((float) textureCoordinate.getS());
                     textureCoordinatesDest.add((float) textureCoordinate.getT());
                 }
-                if (colors != null) {
-                    Color color = colors.get(primitiveIndices.get(baseIndex + colorOffset));
-                    colorDest.add((float) color.getR());
-                    colorDest.add((float) color.getB());
-                    colorDest.add((float) color.getG());
-                    colorDest.add((float) color.getA());
+                if (vertexColors != null) {
+                    Color vertexColor = vertexColors.get(primitiveIndices.get(baseIndex + colorOffset));
+                    vertexColorDest.add((float) vertexColor.getR());
+                    vertexColorDest.add((float) vertexColor.getB());
+                    vertexColorDest.add((float) vertexColor.getG());
+                    vertexColorDest.add((float) vertexColor.getA());
                 }
             } catch (Throwable throwable) {
                 LOGGER.log(Level.WARNING, throwable.getMessage(), throwable);
@@ -118,6 +118,9 @@ public class AbstractGeometricPrimitive extends ColladaXml{
 
         if (!textureCoordinatesDest.isEmpty()) {
             vertexContainerBuffer.setTextureCoordinate(textureCoordinatesDest);
+        }
+        if(!vertexColorDest.isEmpty()) {
+            vertexContainerBuffer.setVertexColor(vertexColorDest);
         }
         return vertexContainerBuffer;
     }

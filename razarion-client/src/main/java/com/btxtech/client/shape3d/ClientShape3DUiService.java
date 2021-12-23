@@ -27,7 +27,7 @@ public class ClientShape3DUiService extends Shape3DUiService {
     // private Logger logger = Logger.getLogger(ClientShape3DUiService.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
-    private Map<String, Shape3DBuffer> buffer = new HashMap<>();
+    private final Map<String, Shape3DBuffer> buffer = new HashMap<>();
 
     public Float32Array getVertexFloat32Array(VertexContainer vertexContainer) {
         return getShape3DBuffer(vertexContainer).getVertex();
@@ -39,6 +39,10 @@ public class ClientShape3DUiService extends Shape3DUiService {
 
     public Float32Array getTextureCoordinateFloat32Array(VertexContainer vertexContainer) {
         return getShape3DBuffer(vertexContainer).getTextureCoordinate();
+    }
+
+    public Float32Array getVertexColorFloat32Array(VertexContainer vertexContainer) {
+        return getShape3DBuffer(vertexContainer).getVertexColor();
     }
 
     private Shape3DBuffer getShape3DBuffer(VertexContainer vertexContainer) {
@@ -60,17 +64,27 @@ public class ClientShape3DUiService extends Shape3DUiService {
                 if (xmlHttpRequest.readyState == 4 && xmlHttpRequest.status == 200) {
                     buffer.clear();
                     JsPropertyMapOfAny[] vertexContainerBuffers = Js.cast(xmlHttpRequest.response);
+                    if (vertexContainerBuffers == null) {
+                        deferredStartup.failed("Shape3DEditorController no buffer returned");
+                        return;
+                    }
                     Arrays.stream(vertexContainerBuffers).forEach(vertexContainerBuffer -> {
                         // GWT compiler issue. Can not be inlined. Must be double[] explicit declaration.
                         double[] vertexData = Js.uncheckedCast(vertexContainerBuffer.get("vertexData"));
                         double[] normData = Js.uncheckedCast(vertexContainerBuffer.get("normData"));
                         double[] textureCoordinate = Js.uncheckedCast(vertexContainerBuffer.get("textureCoordinate"));
+                        double[] vertexColor = Js.uncheckedCast(vertexContainerBuffer.get("vertexColor"));
+                        Float32Array vertexColorArray = null;
+                        if (vertexColor != null) {
+                            vertexColorArray = new Float32Array(vertexColor);
+                        }
                         buffer.put(
                                 vertexContainerBuffer.getAny("key").asString(),
                                 new Shape3DBuffer(
                                         new Float32Array(vertexData),
                                         new Float32Array(normData),
-                                        new Float32Array(textureCoordinate)));
+                                        new Float32Array(textureCoordinate),
+                                        vertexColorArray));
                     });
                     deferredStartup.finished();
                 } else {

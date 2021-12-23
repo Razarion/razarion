@@ -7,6 +7,7 @@ public class VertexContainerMaterialConfig {
     private String materialId;
     private String materialName;
     private PhongMaterialConfig phongMaterialConfig;
+    private PhongMaterialConfig phongMaterial2Config;
     private boolean characterRepresenting;
     private Double alphaToCoverage;
 
@@ -32,6 +33,14 @@ public class VertexContainerMaterialConfig {
 
     public void setPhongMaterialConfig(PhongMaterialConfig phongMaterialConfig) {
         this.phongMaterialConfig = phongMaterialConfig;
+    }
+
+    public PhongMaterialConfig getPhongMaterial2Config() {
+        return phongMaterial2Config;
+    }
+
+    public void setPhongMaterial2Config(PhongMaterialConfig phongMaterial2Config) {
+        this.phongMaterial2Config = phongMaterial2Config;
     }
 
     public boolean isCharacterRepresenting() {
@@ -65,6 +74,11 @@ public class VertexContainerMaterialConfig {
         return this;
     }
 
+    public VertexContainerMaterialConfig phongMaterial2Config(PhongMaterialConfig phongMaterial2Config) {
+        setPhongMaterial2Config(phongMaterial2Config);
+        return this;
+    }
+
     public VertexContainerMaterialConfig characterRepresenting(boolean characterRepresenting) {
         setCharacterRepresenting(characterRepresenting);
         return this;
@@ -81,6 +95,7 @@ public class VertexContainerMaterialConfig {
                 .materialName(materialName)
                 .alphaToCoverage(alphaToCoverage)
                 .characterRepresenting(characterRepresenting)
-                .phongMaterialConfig(phongMaterialConfig);
+                .phongMaterialConfig(phongMaterialConfig)
+                .phongMaterial2Config(phongMaterial2Config);
     }
 }

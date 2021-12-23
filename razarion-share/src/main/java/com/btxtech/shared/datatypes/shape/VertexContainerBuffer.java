@@ -13,6 +13,7 @@ public class VertexContainerBuffer {
     private List<Float> vertexData;
     private List<Float> normData;
     private List<Float> textureCoordinate;
+    private List<Float> vertexColor;
 
     public String getKey() {
         return key;
@@ -44,6 +45,14 @@ public class VertexContainerBuffer {
 
     public void setTextureCoordinate(List<Float> textureCoordinate) {
         this.textureCoordinate = textureCoordinate;
+    }
+
+    public List<Float> getVertexColor() {
+        return vertexColor;
+    }
+
+    public void setVertexColor(List<Float> vertexColor) {
+        this.vertexColor = vertexColor;
     }
 
     public int calculateVertexCount() {

@@ -10,11 +10,13 @@ public class Shape3DBuffer {
     private Float32Array vertex;
     private Float32Array norm;
     private Float32Array textureCoordinate;
+    private Float32Array vertexColor;
 
-    public Shape3DBuffer(Float32Array vertex, Float32Array norm, Float32Array textureCoordinate) {
+    public Shape3DBuffer(Float32Array vertex, Float32Array norm, Float32Array textureCoordinate, Float32Array vertexColor) {
         this.vertex = vertex;
         this.norm = norm;
         this.textureCoordinate = textureCoordinate;
+        this.vertexColor = vertexColor;
     }
 
     public Float32Array getVertex() {
@@ -27,5 +29,9 @@ public class Shape3DBuffer {
 
     public Float32Array getTextureCoordinate() {
         return textureCoordinate;
+    }
+
+    public Float32Array getVertexColor() {
+        return vertexColor;
     }
 }

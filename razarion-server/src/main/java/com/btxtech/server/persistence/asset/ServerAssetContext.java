@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.config.Shape3DElementConfig;
+import com.btxtech.shared.datatypes.shape.config.VertexContainerMaterialConfig;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.unityconverter.AssetContext;
@@ -22,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -70,7 +72,7 @@ public class ServerAssetContext implements AssetContext {
                             null)
                     .createShape3DConfig(shape3DConfig.getId())
                     .getShape3DElementConfigs();
-            attachPhongMaterialConfigs(shape3DElementConfigs, materialInfo);
+            enrichVertexContainerMaterialConfigs(shape3DElementConfigs, materialInfo);
             shape3DConfig.setColladaString(colladaText);
             shape3DConfig.internalName(fbx.getGuid());
             shape3DConfig.setShape3DElementConfigs(shape3DElementConfigs);
@@ -81,31 +83,53 @@ public class ServerAssetContext implements AssetContext {
         }
     }
 
-    private void attachPhongMaterialConfigs(List<Shape3DElementConfig> shape3DElementConfigs, MaterialInfo materialInfo) {
+    private void enrichVertexContainerMaterialConfigs(List<Shape3DElementConfig> shape3DElementConfigs, MaterialInfo materialInfo) {
         shape3DElementConfigs.stream()
                 .flatMap(shape3DElementConfig -> shape3DElementConfig.getVertexContainerMaterialConfigs().stream())
-                .forEach(vertexContainerMaterialConfig -> vertexContainerMaterialConfig.setPhongMaterialConfig(createPhongMaterialConfig(materialInfo)));
+                .forEach(vertexContainerMaterialConfig -> enrichVertexContainerMaterialConfig(vertexContainerMaterialConfig, materialInfo));
     }
 
-    private PhongMaterialConfig createPhongMaterialConfig(MaterialInfo materialInfo) {
-        if (materialInfo.isValid()) {
-            try {
-                Integer imageId = imagePersistence.getImageId4InternalName(materialInfo.getMainTextureGuid());
-                if (imageId == null) {
-                    Path path = Paths.get(materialInfo.getMainTextureFile());
-                    byte[] data = Files.readAllBytes(path);
-                    String mimeType = Files.probeContentType(path);
-                    ImageGalleryItem imageGalleryItem = imagePersistence.createImage(data, mimeType);
-                    imagePersistence.saveInternalName(imageGalleryItem.getId(), materialInfo.getMainTextureGuid());
-                    imageId = imageGalleryItem.getId();
-                }
-                return new PhongMaterialConfig().textureId(imageId).scale(1);
-            } catch (Throwable t) {
-                LOGGER.severe("Error creating PhongMaterialConfig");
+    private void enrichVertexContainerMaterialConfig(VertexContainerMaterialConfig vertexContainerMaterialConfig, MaterialInfo materialInfo) {
+        vertexContainerMaterialConfig.setPhongMaterialConfig(createPhongMaterialConfig(materialInfo, false));
+        vertexContainerMaterialConfig.setPhongMaterial2Config(createPhongMaterialConfig(materialInfo, true));
+    }
+
+    private PhongMaterialConfig createPhongMaterialConfig(MaterialInfo materialInfo, boolean alternative) {
+        if (materialInfo == null) {
+            if (alternative) {
                 return null;
+            } else {
+                return new PhongMaterialConfig().scale(1);
             }
+        }
+        if (!alternative && materialInfo.getMainTexture() != null) {
+            return new PhongMaterialConfig().textureId(getOrCreateImage(materialInfo.getMainTexture())).scale(1);
+        } else if (alternative && materialInfo.getMain2Texture() != null) {
+            return new PhongMaterialConfig().textureId(getOrCreateImage(materialInfo.getMain2Texture())).scale(1);
         } else {
-            return new PhongMaterialConfig().scale(1);
+            if (alternative) {
+                return null;
+            } else {
+                return new PhongMaterialConfig().scale(1);
+            }
+        }
+    }
+
+    private Integer getOrCreateImage(MaterialInfo.GuidFile guidFile) {
+        Integer imageId = imagePersistence.getImageId4InternalName(guidFile.getGuid());
+        if (imageId != null) {
+            return imageId;
+        }
+        Path path = Paths.get(guidFile.getFile());
+        try {
+            byte[] data = Files.readAllBytes(path);
+            String mimeType = Files.probeContentType(path);
+            ImageGalleryItem imageGalleryItem = imagePersistence.createImage(data, mimeType);
+            imagePersistence.saveInternalName(imageGalleryItem.getId(), guidFile.getGuid());
+            return imageGalleryItem.getId();
+        } catch (Throwable t) {
+            LOGGER.log(Level.SEVERE, "Error creating Image", t);
+            return null;
         }
     }
 

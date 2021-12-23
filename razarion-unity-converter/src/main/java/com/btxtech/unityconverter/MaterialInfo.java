@@ -1,36 +1,63 @@
 package com.btxtech.unityconverter;
 
 public class MaterialInfo {
-    private String mainTextureGuid;
-    private String mainTextureFile;
+    private GuidFile mainTexture;
+    private GuidFile main2Texture;
 
-    public String getMainTextureGuid() {
-        return mainTextureGuid;
+    public GuidFile getMainTexture() {
+        return mainTexture;
     }
 
-    public String getMainTextureFile() {
-        return mainTextureFile;
+    public void setMainTexture(GuidFile mainTexture) {
+        this.mainTexture = mainTexture;
     }
 
-    public void setMainTextureGuid(String mainTextureGuid) {
-        this.mainTextureGuid = mainTextureGuid;
+    public GuidFile getMain2Texture() {
+        return main2Texture;
     }
 
-    public void setMainTextureFile(String mainTextureFile) {
-        this.mainTextureFile = mainTextureFile;
+    public void setMain2Texture(GuidFile main2Texture) {
+        this.main2Texture = main2Texture;
     }
 
-    public boolean isValid() {
-        return mainTextureFile != null;
-    }
-
-    public MaterialInfo mainTextureGuid(String mainTextureGuid) {
-        setMainTextureGuid(mainTextureGuid);
+    public MaterialInfo mainTexture(GuidFile mainTextureGuid) {
+        setMainTexture(mainTextureGuid);
         return this;
     }
 
-    public MaterialInfo mainTextureFile(String mainTextureFile) {
-        setMainTextureFile(mainTextureFile);
+    public MaterialInfo main2Texture(GuidFile main2TextureGuid) {
+        setMain2Texture(main2TextureGuid);
         return this;
+    }
+
+    public static class GuidFile {
+        private String guid;
+        private String file;
+
+        public String getGuid() {
+            return guid;
+        }
+
+        public void setGuid(String guid) {
+            this.guid = guid;
+        }
+
+        public String getFile() {
+            return file;
+        }
+
+        public void setFile(String file) {
+            this.file = file;
+        }
+
+        public GuidFile guid(String guid) {
+            setGuid(guid);
+            return this;
+        }
+
+        public GuidFile file(String file) {
+            setFile(file);
+            return this;
+        }
     }
 }

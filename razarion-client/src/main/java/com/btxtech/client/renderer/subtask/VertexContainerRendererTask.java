@@ -23,6 +23,7 @@ import static com.btxtech.client.renderer.shaders.SkeletonDefines.ALPHA_TO_COVER
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.BUILDUP_STATE;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.CHARACTER_REPRESENTING;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.HEALTH_STATE;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.TWO_PHONGS;
 import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
 
 /**
@@ -62,24 +63,27 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
 
         AlarmRaiser.onNull(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No PhongMaterialConfig in VertexContainerMaterial: " + vertexContainer.getVertexContainerMaterial().getMaterialName(), null);
         setupPhongMaterial(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig(), "material");
-
+        if (vertexContainer.getVertexContainerMaterial().getPhongMaterial2Config() != null) {
+            setupVec4Array("vertexColorAttribute", Js.uncheckedCast(shape3DUiService.getVertexColorFloat32Array(vertexContainer)));
+            setupPhongMaterial(vertexContainer.getVertexContainerMaterial().getPhongMaterial2Config(), "material2");
+        }
         if (vertexContainer.getVertexContainerMaterial().getAlphaToCoverage() != null) {
             alphaToCoverage = true;
             setupUniform("alphaToCoverage", UniformLocation.Type.F, () -> vertexContainer.getVertexContainerMaterial().getAlphaToCoverage());
         }
 
-        if(progressState != null) {
-            if(progressState instanceof BuildupState) {
+        if (progressState != null) {
+            if (progressState instanceof BuildupState) {
                 setupProgressUniforms("progressZ", "uBuildupTextureSampler");
-                setupUniform("buildupMatrix", UniformLocation.Type.MATRIX_4, () -> ((BuildupState)progressState).getBuildupMatrix());
-            } else if(progressState instanceof DemolitionState) {
+                setupUniform("buildupMatrix", UniformLocation.Type.MATRIX_4, () -> ((BuildupState) progressState).getBuildupMatrix());
+            } else if (progressState instanceof DemolitionState) {
                 setupProgressUniforms("uHealth", "uDemolitionSampler");
             } else {
                 throw new IllegalArgumentException("Unknown progressState: " + progressState);
             }
         }
 
-        if(vertexContainer.getVertexContainerMaterial().isCharacterRepresenting()) {
+        if (vertexContainer.getVertexContainerMaterial().isCharacterRepresenting()) {
             setupModelMatrixUniform("characterRepresentingColor", UniformLocation.Type.COLOR_RGB, ModelMatrices::getColor);
         }
     }
@@ -95,6 +99,9 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
         if(progressState != null) {
             defines.add(BUILDUP_STATE);
         }
+        if (vertexContainer.getVertexContainerMaterial().getPhongMaterial2Config() != null) {
+            defines.add(TWO_PHONGS);
+        }
     }
 
     @Override
@@ -103,13 +110,16 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
         if (vertexContainer.getVertexContainerMaterial().getAlphaToCoverage() != null) {
             defines.add(ALPHA_TO_COVERAGE);
         }
-        if(progressState instanceof BuildupState) {
+        if (progressState instanceof BuildupState) {
             defines.add(BUILDUP_STATE);
-        } else if(progressState instanceof DemolitionState) {
+        } else if (progressState instanceof DemolitionState) {
             defines.add(HEALTH_STATE);
         }
-        if(vertexContainer.getVertexContainerMaterial().isCharacterRepresenting()) {
+        if (vertexContainer.getVertexContainerMaterial().isCharacterRepresenting()) {
             defines.add(CHARACTER_REPRESENTING);
+        }
+        if (vertexContainer.getVertexContainerMaterial().getPhongMaterial2Config() != null) {
+            defines.add(TWO_PHONGS);
         }
     }
 

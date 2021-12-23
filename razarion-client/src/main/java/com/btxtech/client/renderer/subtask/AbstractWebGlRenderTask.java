@@ -13,6 +13,7 @@ import com.btxtech.client.renderer.engine.shaderattribute.DecimalPositionShaderA
 import com.btxtech.client.renderer.engine.shaderattribute.Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.Vec4Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
@@ -186,6 +187,12 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
 
     public void setupVec2Array(String name, Float32ArrayEmu float32ArrayEmu) {
         Vec2Float32ArrayShaderAttribute array = webGlFacade.createVec2Float32ArrayShaderAttribute(name);
+        array.fillFloat32Array(Js.uncheckedCast(float32ArrayEmu));
+        arrays.add(array);
+    }
+
+    public void setupVec4Array(String name, Float32ArrayEmu float32ArrayEmu) {
+        Vec4Float32ArrayShaderAttribute array = webGlFacade.createVec4Float32ArrayShaderAttribute(name);
         array.fillFloat32Array(Js.uncheckedCast(float32ArrayEmu));
         arrays.add(array);
     }
