@@ -31,7 +31,9 @@ import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +52,7 @@ import static com.btxtech.shared.utils.MathHelper.clamp;
  * 28.12.2015.
  * *
  */
-@ApplicationScoped
+@Singleton // This may leads to Errai problems
 public class BaseItemUiService {
     private Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
     @Inject
@@ -60,7 +62,7 @@ public class BaseItemUiService {
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private GameUiControl gameUiControl;
+    private Instance<GameUiControl> gameUiControl;
     @Inject
     private MainCockpitService cockpitService;
     @Inject
@@ -272,7 +274,7 @@ public class BaseItemUiService {
         }
         if (hasRadar != radar) {
             hasRadar = radar;
-            gameUiControl.onRadarStateChanged(hasRadar);
+            gameUiControl.get().onRadarStateChanged(hasRadar);
         }
     }
 
@@ -293,7 +295,7 @@ public class BaseItemUiService {
             }
             if (playerBase.getUserId() != null && playerBase.getUserId().equals(userUiService.getUserContext().getUserId())) {
                 myBase = playerBase;
-                gameUiControl.onOwnBaseCreated();
+                gameUiControl.get().onOwnBaseCreated();
             }
         }
     }
@@ -312,7 +314,7 @@ public class BaseItemUiService {
         if (wasMyBase) {
             selectionHandler.onMyBaseRemoved();
             modalDialogManager.onShowBaseLost();
-            gameUiControl.onBaseLost();
+            gameUiControl.get().onBaseLost();
         }
     }
 
@@ -436,7 +438,7 @@ public class BaseItemUiService {
     }
 
     public boolean isMyLevelLimitation4ItemTypeExceeded(BaseItemType toBeBuiltType, int itemCount2Add) {
-        return getMyItemCount(toBeBuiltType.getId()) + itemCount2Add > gameUiControl.getMyLimitation4ItemType(toBeBuiltType.getId());
+        return getMyItemCount(toBeBuiltType.getId()) + itemCount2Add > gameUiControl.get().getMyLimitation4ItemType(toBeBuiltType.getId());
     }
 
     public boolean isMyHouseSpaceExceeded(BaseItemType toBeBuiltType, int itemCount2Add) {
@@ -444,7 +446,7 @@ public class BaseItemUiService {
     }
 
     public int getMyTotalHouseSpace() {
-        return houseSpace + gameUiControl.getPlanetConfig().getHouseSpace();
+        return houseSpace + gameUiControl.get().getPlanetConfig().getHouseSpace();
     }
 
     public double setupInterpolationFactor(long timeStamp) {

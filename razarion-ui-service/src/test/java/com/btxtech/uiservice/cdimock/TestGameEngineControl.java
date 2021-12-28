@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.uiservice.control.GameEngineControl;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -13,34 +14,38 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class TestGameEngineControl extends GameEngineControl {
+    private final Logger logger = Logger.getLogger(TestGameEngineControl.class.getName());
 
     @Override
     public boolean isStarted() {
-        throw new UnsupportedOperationException();
+        logger.fine("isStarted()");
+        return true;
     }
 
     @Override
     protected void sendToWorker(GameEngineControlPackage.Command command, Object... data) {
-        throw new UnsupportedOperationException();
+        logger.fine("sendToWorker()");
     }
 
     @Override
     protected void onLoaded() {
-        throw new UnsupportedOperationException();
+        logger.fine("onLoaded()");
     }
 
     @Override
     protected NativeTickInfo castToNativeTickInfo(Object javaScriptObject) {
-        throw new UnsupportedOperationException();
+        logger.fine("castToNativeTickInfo()");
+        return (NativeTickInfo) javaScriptObject;
     }
 
     @Override
     protected NativeSyncBaseItemTickInfo castToNativeSyncBaseItemTickInfo(Object singleData) {
-        throw new UnsupportedOperationException();
+        logger.fine("castToNativeSyncBaseItemTickInfo()");
+        return (NativeSyncBaseItemTickInfo) singleData;
     }
 
     @Override
     protected void onConnectionLost() {
-        throw new UnsupportedOperationException();
+        logger.fine("onConnectionLost()");
     }
 }

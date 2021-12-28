@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.test.shared.SharedTestHelper;
-import com.btxtech.uiservice.WeldUiBaseTest;
+import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ import java.util.Arrays;
  * Created by Beat
  * on 06.12.2018.
  */
-public class ProjectionTransformationTest extends WeldUiBaseTest {
+public class ProjectionTransformationTest extends WeldUiBaseIntegrationTest {
 
     @Test
     public void cameraTopView() {

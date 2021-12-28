@@ -346,7 +346,9 @@ public class AbstractIntegrationTest {
 
     public void exportTriangles(String directorname, Index... terrainTileIndices) {
         // Export TerrainTile
-        AssertTerrainTile.saveTerrainTiles(Arrays.stream(terrainTileIndices).map(terrainTileIndex -> getTerrainService().generateTerrainTile(terrainTileIndex)).collect(Collectors.toList()),
+        AssertTerrainTile.saveTerrainTiles(Arrays.stream(terrainTileIndices)
+                        .map(terrainTileIndex -> getTerrainService().generateTerrainTile(terrainTileIndex))
+                        .collect(Collectors.toList()),
                 "terrain-tiles.json", directorname);
         // Export StaticGameConfig
         try {

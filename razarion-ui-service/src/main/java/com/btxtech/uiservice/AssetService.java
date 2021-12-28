@@ -14,7 +14,9 @@ public class AssetService {
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
         meshContainers.clear();
-        gameUiControlInitEvent.getColdGameUiContext().getMeshContainers().forEach(meshContainer -> meshContainers.put(meshContainer.getId(), meshContainer));
+        if (gameUiControlInitEvent.getColdGameUiContext().getMeshContainers() != null) {
+            gameUiControlInitEvent.getColdGameUiContext().getMeshContainers().forEach(meshContainer -> meshContainers.put(meshContainer.getId(), meshContainer));
+        }
     }
 
     public MeshContainer getMeshContainer(int meshContainerId) {

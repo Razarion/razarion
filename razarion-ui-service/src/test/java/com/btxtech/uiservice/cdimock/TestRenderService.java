@@ -3,6 +3,7 @@ package com.btxtech.uiservice.cdimock;
 import com.btxtech.uiservice.renderer.RenderService;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -10,23 +11,25 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class TestRenderService extends RenderService {
+    private Logger logger = Logger.getLogger(TestRenderService.class.getName());
+
     @Override
     protected void internalSetup() {
-        throw new UnsupportedOperationException();
+        logger.fine("internalSetup()");
     }
 
     @Override
     protected void prepareMainRendering() {
-        throw new UnsupportedOperationException();
+        logger.fine("prepareMainRendering()");
     }
 
     @Override
     protected void prepareDepthBufferRendering() {
-        throw new UnsupportedOperationException();
+        logger.fine("prepareDepthBufferRendering()");
     }
 
     @Override
     protected void prepare() {
-        throw new UnsupportedOperationException();
+        logger.fine("prepare()");
     }
 }

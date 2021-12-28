@@ -8,6 +8,7 @@ import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -16,18 +17,20 @@ import org.jboss.weld.environment.se.WeldContainer;
  * Created by Beat
  * on 23.08.2017.
  */
-public class WeldUiBaseTest {
+public class WeldUiBaseIntegrationTest {
     // ... work in progress ...
     private WeldContainer weldContainer;
 
-    protected void setupUiEnvironment(PlanetVisualConfig planetVisualConfig) {
+    protected void setupUiEnvironment(ColdGameUiContext coldGameUiContext) {
         // Init weld
         Weld weld = new Weld();
         weldContainer = weld.initialize();
 
-        weldContainer.getBeanManager().fireEvent(new GameUiControlInitEvent(new ColdGameUiContext().warmGameUiContext(new WarmGameUiContext().setPlanetVisualConfig(planetVisualConfig))));
+        weldContainer.getBeanManager().fireEvent(new GameUiControlInitEvent(coldGameUiContext));
+    }
 
-        // getWeldBean(Event.class).fire(new WeldUiBaseTest());
+    protected void setupUiEnvironment(PlanetVisualConfig planetVisualConfig) {
+        setupUiEnvironment(new ColdGameUiContext().warmGameUiContext(new WarmGameUiContext().setPlanetVisualConfig(planetVisualConfig)));
     }
 
     protected <T> T getWeldBean(Class<T> clazz) {
@@ -43,6 +46,7 @@ public class WeldUiBaseTest {
         Camera camera = getWeldBean(Camera.class);
         camera.setTranslateXY(translateX, translateY);
         camera.setRotateX(rotateX);
+        getWeldBean(ViewService.class).onViewChanged();
     }
 
     protected void setCamera(double translateX, double translateY, double translateZ, double rotateX, double rotateZ) {

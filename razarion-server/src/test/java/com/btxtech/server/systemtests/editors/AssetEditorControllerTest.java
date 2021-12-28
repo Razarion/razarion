@@ -10,13 +10,21 @@ import com.btxtech.server.systemtests.framework.ObjectMapperResolver;
 import com.btxtech.server.systemtests.framework.RestConnection;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
+import com.btxtech.shared.dto.ColdGameUiContext;
+import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.AssetEditorController;
+import com.btxtech.shared.rest.GameUiContextController;
 import com.btxtech.shared.rest.MeshContainerEditorController;
+import com.btxtech.shared.rest.Shape3DController;
 import com.btxtech.test.JsonAssert;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -55,6 +63,14 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
         AssetConfig assetConfig2 = underTest.read(assetConfig.getId());
         int meshControllerCount2 = meshContainerEditorController.getObjectNameIds().size();
         Assert.assertEquals(meshControllerCount1, meshControllerCount2);
+//        // -----------------------------------------
+        try {
+            writeJsonFiles("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-ui-service\\src\\test\\resources\\", assetConfig);
+            writeJsonFiles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\mesh_container\\", assetConfig);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+//        // -----------------------------------------
         JsonAssert.assertViaJson(assetConfig, assetConfig2, null);
 
 
@@ -84,6 +100,25 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
         dumpMeshContainer(assetConfig.getMeshContainers(), "--");
         System.out.println("------------------------------------");
 
+    }
+
+    private void writeJsonFiles(String path, AssetConfig assetConfig) throws IOException {
+        // AssetConfig
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path, "assetConfig.json"),
+                assetConfig);
+        // Shape3D
+        GameUiContextController gameUiContextController = setupRestAccess(GameUiContextController.class);
+        ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
+        mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path, "shape3Ds.json"),
+                coldGameUiContext.getShape3Ds());
+        // VertexContainerBuffer
+        RestConnection shape3DControllerRestConnection = new RestConnection(new ObjectMapperResolver(() -> MeshContainer.class));
+        shape3DControllerRestConnection.loginAdmin();
+        Shape3DController shape3DController = shape3DControllerRestConnection.proxy(Shape3DController.class);
+        List<VertexContainerBuffer> vertexContainerBuffers = shape3DController.getVertexBuffer();
+        mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path, "vertexContainerBuffers.json"),
+                vertexContainerBuffers);
     }
 
     private void dumpMeshContainer(List<MeshContainer> meshContainers, String space) {

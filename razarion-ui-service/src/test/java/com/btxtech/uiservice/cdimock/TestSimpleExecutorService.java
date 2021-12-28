@@ -4,6 +4,7 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -11,13 +12,17 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class TestSimpleExecutorService implements SimpleExecutorService {
+    private final Logger logger = Logger.getLogger(TestSimpleExecutorService.class.getName());
+
     @Override
     public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {
-        throw new UnsupportedOperationException();
+        logger.fine("schedule()");
+        return null;
     }
 
     @Override
     public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable, Type type) {
-        throw new UnsupportedOperationException();
+        logger.fine("scheduleAtFixedRate()");
+        return null;
     }
 }

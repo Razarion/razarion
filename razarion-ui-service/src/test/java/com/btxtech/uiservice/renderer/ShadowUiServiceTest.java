@@ -5,14 +5,14 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.uiservice.AssertHelper;
-import com.btxtech.uiservice.WeldUiBaseTest;
+import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
 import org.junit.Test;
 
 /**
  * Created by Beat
  * on 29.11.2018.
  */
-public class ShadowUiServiceTest extends WeldUiBaseTest {
+public class ShadowUiServiceTest extends WeldUiBaseIntegrationTest {
 
     @Test
     public void testPerpendicular() {

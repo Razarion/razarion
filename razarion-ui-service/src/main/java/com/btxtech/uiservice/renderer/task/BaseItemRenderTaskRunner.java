@@ -2,7 +2,6 @@ package com.btxtech.uiservice.renderer.task;
 
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
@@ -12,6 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.alarm.AlarmService;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
@@ -56,30 +56,26 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
         Map<Shape3DElementKey, MapList<BaseItemType, ShapeTransform>> baseItemsTransforms = new HashMap<>();
         baseItemUiService.getBaseItemTypes().forEach(baseItemType -> setupBaseItemType(baseItemType, baseItemsTransforms));
 
-        baseItemsTransforms.forEach((shape3DElement, baseItemTransformations) -> createMeshRenderTask(
-                shape3DUiService.getShape3D(shape3DElement.getShape3DId()),
-                shape3DElement.getElement3DId(),
-                createModelMatricesProvider(baseItemTransformations),
-                null));
+        baseItemsTransforms.forEach((shape3DElement, baseItemTransformations) ->
+                createMeshRenderTask(
+                        shape3DUiService.getShape3D(shape3DElement.getShape3DId()),
+                        shape3DElement.getElement3DId(),
+                        createModelMatricesProvider(baseItemTransformations),
+                        null));
     }
 
     private Function<Long, List<ModelMatrices>> createModelMatricesProvider(MapList<BaseItemType, ShapeTransform> baseItemTransforms) {
-        NativeMatrix unityShapeTransform = nativeMatrixFactory.createFromColumnMajorArray(Matrix4.createFromAxisAndTranslation(
-                new Vertex(0, 1, 0),
-                new Vertex(0, 0, 1),
-                new Vertex(1, 0, 0),
-                new Vertex(0, 0, 0)
-        ).toWebGlArray());
+        NativeMatrix unityShapeTransform = nativeMatrixFactory.createFromColumnMajorArray(
+                Matrix4.createYRotation(MathHelper.QUARTER_RADIANT)
+                        .multiply(Matrix4.createXRotation(-MathHelper.QUARTER_RADIANT))
+                        .multiply(Matrix4.createZRotation(MathHelper.HALF_RADIANT)).toWebGlArray());
         return timestamp -> {
             List<ModelMatrices> resultModelMatrices = new ArrayList<>();
             baseItemTransforms.getMap().forEach((baseItemType, shapeTransforms) -> {
                 List<ModelMatrices> itemModelMatrices = baseItemUiService.provideAliveModelMatrices(baseItemType);
                 if (itemModelMatrices != null) {
-                    itemModelMatrices.forEach(baseItemModelMatrices -> {
-                        shapeTransforms.forEach(shapeTransform -> {
-                            resultModelMatrices.add(baseItemModelMatrices.multiplyStaticShapeTransform(unityShapeTransform).multiplyShapeTransform(shapeTransform));
-                        });
-                    });
+                    itemModelMatrices.forEach(baseItemModelMatrices -> shapeTransforms.forEach(
+                            shapeTransform -> resultModelMatrices.add(baseItemModelMatrices.multiplyStaticShapeTransform(unityShapeTransform).multiplyShapeTransform(shapeTransform))));
                 }
 
             });

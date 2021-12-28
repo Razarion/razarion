@@ -1,11 +1,12 @@
 package com.btxtech.shared.system.alarm;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@ApplicationScoped
+@Singleton
 public class AlarmService {
     private List<Alarm> alarms = new ArrayList<>();
     private List<AlarmServiceListener> listeners = new ArrayList<>();

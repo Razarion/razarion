@@ -111,6 +111,7 @@ public final class FallbackConfig {
 
     public static void setupBuilder(List<BaseItemType> baseItemTypes) {
         BaseItemType bulldozer = new BaseItemType();
+        bulldozer.setMeshContainerId(1);
         bulldozer.setHealth(40).setBoxPickupRange(1).setId(BUILDER_ITEM_TYPE_ID).setInternalName("Builder test");
         bulldozer.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(1.0).angularVelocity(Math.toRadians(30)).radius(3).speed(20.0));
         bulldozer.setBuilderType(new BuilderType().ableToBuildIds(Arrays.asList(FACTORY_ITEM_TYPE_ID, GENERATOR_ITEM_TYPE_ID, CONSUMER_ITEM_TYPE_ID, HARBOUR_ITEM_TYPE_ID)).animationOrigin(new Vertex(3, 5, 17)).progress(5).range(10));
@@ -185,7 +186,7 @@ public final class FallbackConfig {
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(10).setBuildup(5).setId(SHIP_HARVESTER_ITEM_TYPE_ID).setInternalName("Ship harvester test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).acceleration(1.5).angularVelocity(Math.toRadians(20)).radius(2.5).speed(15.0));
-        attacker.setHarvesterType(new HarvesterType().setRange(10).setProgress(2.0).setAnimationOrigin(new Vertex(1, 0, 0)).setAnimationShape3dId(1));
+        attacker.setHarvesterType(new HarvesterType().setRange(10).setProgress(2.0).setAnimationOrigin(new Vertex(1, 0, 0)).setAnimationShape3dId(999111));
         baseItemTypes.add(attacker);
     }
 

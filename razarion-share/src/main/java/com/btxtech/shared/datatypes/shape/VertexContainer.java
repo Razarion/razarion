@@ -57,7 +57,7 @@ public class VertexContainer {
         return this;
     }
 
-    public VertexContainer shape3DMaterial(VertexContainerMaterial shape3DMaterial) {
+    public VertexContainer vertexContainerMaterial(VertexContainerMaterial shape3DMaterial) {
         setVertexContainerMaterial(shape3DMaterial);
         return this;
     }
