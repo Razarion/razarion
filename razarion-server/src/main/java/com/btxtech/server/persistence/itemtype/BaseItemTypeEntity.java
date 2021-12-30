@@ -144,6 +144,9 @@ public class BaseItemTypeEntity {
         if (shape3DId != null) {
             baseItemType.setShape3DId(shape3DId.getId());
         }
+        if (meshContainer != null) {
+            baseItemType.setMeshContainerId(meshContainer.getId());
+        }
         if (spawnShape3DId != null) {
             baseItemType.setSpawnShape3DId(spawnShape3DId.getId());
         }
