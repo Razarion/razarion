@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.Mesh;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.unityconverter.unity.asset.AssetReader;
 import com.btxtech.unityconverter.unity.asset.UnityAsset;
 import com.btxtech.unityconverter.unity.asset.type.AssetType;
@@ -109,11 +110,11 @@ public class UnityAssetConverter {
                 .findFirst().orElseThrow(IllegalStateException::new);
 
         ShapeTransform baseTransform = new ShapeTransform();
-        baseTransform.setTranslateX(transform.getM_LocalPosition().getX());
-        baseTransform.setTranslateY(transform.getM_LocalPosition().getY());
-        baseTransform.setTranslateZ(transform.getM_LocalPosition().getZ());
-        baseTransform.setRotateX(Math.toRadians(transform.getM_LocalEulerAnglesHint().getX()));
-        baseTransform.setRotateY(Math.toRadians(transform.getM_LocalEulerAnglesHint().getY()));
+        baseTransform.setTranslateX(transform.getM_LocalPosition().getZ());
+        baseTransform.setTranslateY(-transform.getM_LocalPosition().getX());
+        baseTransform.setTranslateZ(transform.getM_LocalPosition().getY());
+        baseTransform.setRotateX(MathHelper.QUARTER_RADIANT + Math.toRadians(transform.getM_LocalEulerAnglesHint().getX()));
+        baseTransform.setRotateY(MathHelper.QUARTER_RADIANT - Math.toRadians(transform.getM_LocalEulerAnglesHint().getY()));
         baseTransform.setRotateZ(Math.toRadians(transform.getM_LocalEulerAnglesHint().getZ()));
         baseTransform.setScaleX(transform.getM_LocalScale().getX());
         baseTransform.setScaleY(transform.getM_LocalScale().getY());
@@ -197,20 +198,20 @@ public class UnityAssetConverter {
         ShapeTransform shapeTransform = baseShapeTransform.copyTRS();
         m_modification.getM_Modifications().forEach(modification -> {
             switch (modification.getPropertyPath().toLowerCase()) {
-                case ("m_localposition.x"):
+                case ("m_localposition.z"):
                     shapeTransform.setTranslateX(shapeTransform.getTranslateX() + Double.parseDouble(modification.getValue()));
                     break;
-                case ("m_localposition.y"):
-                    shapeTransform.setTranslateY(shapeTransform.getTranslateY() + Double.parseDouble(modification.getValue()));
+                case ("m_localposition.x"):
+                    shapeTransform.setTranslateY(shapeTransform.getTranslateY() - Double.parseDouble(modification.getValue()));
                     break;
-                case ("m_localposition.z"):
+                case ("m_localposition.y"):
                     shapeTransform.setTranslateZ(shapeTransform.getTranslateZ() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localeulerangleshint.x"): // m_LocalRotation: quaternions to Euler not working. See https://docs.unity3d.com/Manual/QuaternionAndEulerRotationsInUnity.html
                     shapeTransform.setRotateX(shapeTransform.getRotateX() + Math.toRadians(Double.parseDouble(modification.getValue())));
                     break;
                 case ("m_localeulerangleshint.y"):  // m_LocalRotation: quaternions to Euler not working. See https://docs.unity3d.com/Manual/QuaternionAndEulerRotationsInUnity.html
-                    shapeTransform.setRotateY(shapeTransform.getRotateY() + Math.toRadians(Double.parseDouble(modification.getValue())));
+                    shapeTransform.setRotateY(shapeTransform.getRotateY() - Math.toRadians(Double.parseDouble(modification.getValue())));
                     break;
                 case ("m_localeulerangleshint.z"): // m_LocalRotation: quaternions to Euler not working. See https://docs.unity3d.com/Manual/QuaternionAndEulerRotationsInUnity.html
                     shapeTransform.setRotateZ(shapeTransform.getRotateZ() + Math.toRadians(Double.parseDouble(modification.getValue())));

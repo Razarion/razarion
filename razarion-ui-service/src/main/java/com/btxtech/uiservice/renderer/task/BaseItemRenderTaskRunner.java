@@ -65,17 +65,13 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     }
 
     private Function<Long, List<ModelMatrices>> createModelMatricesProvider(MapList<BaseItemType, ShapeTransform> baseItemTransforms) {
-        NativeMatrix unityShapeTransform = nativeMatrixFactory.createFromColumnMajorArray(
-                Matrix4.createYRotation(MathHelper.QUARTER_RADIANT)
-                        .multiply(Matrix4.createXRotation(-MathHelper.QUARTER_RADIANT))
-                        .multiply(Matrix4.createZRotation(MathHelper.HALF_RADIANT)).toWebGlArray());
         return timestamp -> {
             List<ModelMatrices> resultModelMatrices = new ArrayList<>();
             baseItemTransforms.getMap().forEach((baseItemType, shapeTransforms) -> {
                 List<ModelMatrices> itemModelMatrices = baseItemUiService.provideAliveModelMatrices(baseItemType);
                 if (itemModelMatrices != null) {
                     itemModelMatrices.forEach(baseItemModelMatrices -> shapeTransforms.forEach(
-                            shapeTransform -> resultModelMatrices.add(baseItemModelMatrices.multiplyStaticShapeTransform(unityShapeTransform).multiplyShapeTransform(shapeTransform))));
+                            shapeTransform -> resultModelMatrices.add(baseItemModelMatrices.multiplyShapeTransform(shapeTransform))));
                 }
 
             });
