@@ -56,7 +56,7 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
         Element3D element3D = shape3D.getElement3Ds().stream()
                 .filter(e3D -> e3D.getId().equals(element3DId))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("No Element3D int Shape3D '" + shape3D.getId() + "' for element3DId: " + element3DId));
 
         Collection<ProgressAnimation> progressAnimations = setupProgressAnimation(element3D);
         element3D.getVertexContainers().forEach(vertexContainer -> {

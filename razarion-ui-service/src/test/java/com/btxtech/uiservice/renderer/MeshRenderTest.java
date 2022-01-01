@@ -63,7 +63,7 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
 
         // Runtime
         NativeMatrixDto nativeMatrixDto = new NativeMatrixDto();
-        nativeMatrixDto.numbers = Matrix4.createTranslation(270, 100, 10).toArray();
+        nativeMatrixDto.numbers = Matrix4.createTranslation(274, 100, 0).toArray();
         NativeSyncBaseItemTickInfo info = new NativeSyncBaseItemTickInfo();
         info.id = 1;
         info.baseId = 21;

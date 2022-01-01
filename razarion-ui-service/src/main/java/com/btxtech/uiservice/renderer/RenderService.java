@@ -55,13 +55,13 @@ public abstract class RenderService {
         addRenderTaskRunner(SlopeRenderTaskRunner.class, "Slope");
         addRenderTaskRunner(BaseItemPlacerRenderTaskRunner.class, "Base Item Placer");
         addRenderTaskRunner(TerrainObjectRenderTaskRunner.class, "Terrain Object");
-// TODO        addRenderTaskRunner(ItemMarkerRenderTaskRunner.class, "Item Marker");
+        addRenderTaskRunner(ItemMarkerRenderTaskRunner.class, "Item Marker");
         addRenderTaskRunner(BaseItemRenderTaskRunner.class, "Base Item");
         addRenderTaskRunner(TrailRenderTaskRunner.class, "Trail");
         addRenderTaskRunner(ResourceItemRenderTaskRunner.class, "Resource");
 // TODO       addRenderTaskRunner(BoxItemRenderTask.class, "Box");
         addRenderTaskRunner(WaterRenderTaskRunner.class, "Water");
-// TODO        addRenderTaskRunner(StatusBarRenderTaskRunner.class, "Status Bar");
+        addRenderTaskRunner(StatusBarRenderTaskRunner.class, "Status Bar");
         addRenderTaskRunner(ProjectileRenderTaskRunner.class, "Projectile");
         addRenderTaskRunner(SelectionFrameRenderTaskRunner.class, "Selection Frame");
 // TODO       addRenderTaskRunner(ItemVisualizationRenderTask.class, "Tip");
