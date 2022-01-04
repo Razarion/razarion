@@ -12,6 +12,7 @@ public class ShapeTransformEmbeddable {
     private Double rotateX;
     private Double rotateY;
     private Double rotateZ;
+    private Double rotateW;
     private Double scaleX;
     private Double scaleY;
     private Double scaleZ;
@@ -25,6 +26,7 @@ public class ShapeTransformEmbeddable {
                 .setRotateX(rotateX)
                 .setRotateY(rotateY)
                 .setRotateZ(rotateZ)
+                .setRotateW(rotateW)
                 .setScaleX(scaleX)
                 .setScaleY(scaleY)
                 .setScaleZ(scaleZ);
@@ -37,6 +39,7 @@ public class ShapeTransformEmbeddable {
         rotateX = shapeTransform.getRotateX();
         rotateY = shapeTransform.getRotateY();
         rotateZ = shapeTransform.getRotateZ();
+        rotateW = shapeTransform.getRotateW();
         scaleX = shapeTransform.getScaleX();
         scaleY = shapeTransform.getScaleY();
         scaleZ = shapeTransform.getScaleZ();

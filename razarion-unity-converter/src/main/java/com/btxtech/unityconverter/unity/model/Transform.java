@@ -9,6 +9,7 @@ public class Transform extends Component {
     private UnityVector m_LocalEulerAnglesHint;
     private UnityVector m_LocalPosition;
     private UnityVector m_LocalScale;
+    private UnityVector m_LocalRotation;
 
     public List<Reference> getM_Children() {
         return m_Children;
@@ -58,6 +59,14 @@ public class Transform extends Component {
         this.m_LocalScale = m_LocalScale;
     }
 
+    public UnityVector getM_LocalRotation() {
+        return m_LocalRotation;
+    }
+
+    public void setM_LocalRotation(UnityVector m_LocalRotation) {
+        this.m_LocalRotation = m_LocalRotation;
+    }
+
     @Override
     public String toString() {
         return "Transform{" +
@@ -67,6 +76,7 @@ public class Transform extends Component {
                 ", m_LocalEulerAnglesHint=" + m_LocalEulerAnglesHint +
                 ", m_LocalPosition=" + m_LocalPosition +
                 ", m_LocalScale=" + m_LocalScale +
+                ", m_LocalRotation=" + m_LocalRotation +
                 '}';
     }
 }

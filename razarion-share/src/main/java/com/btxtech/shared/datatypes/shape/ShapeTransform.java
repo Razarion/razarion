@@ -14,6 +14,7 @@ public class ShapeTransform {
     private double rotateX;
     private double rotateY;
     private double rotateZ;
+    private double rotateW;
     private double scaleX;
     private double scaleY;
     private double scaleZ;
@@ -42,6 +43,7 @@ public class ShapeTransform {
         shapeTransform.rotateX = rotateX;
         shapeTransform.rotateY = rotateY;
         shapeTransform.rotateZ = rotateZ;
+        shapeTransform.rotateW = rotateW;
         shapeTransform.scaleX = scaleX;
         shapeTransform.scaleY = scaleY;
         shapeTransform.scaleZ = scaleZ;
@@ -84,6 +86,11 @@ public class ShapeTransform {
         return this;
     }
 
+    public ShapeTransform setRotateW(double rotateW) {
+        this.rotateW = rotateW;
+        return this;
+    }
+
     public ShapeTransform setScaleX(double scaleX) {
         this.scaleX = scaleX;
         return this;
@@ -123,6 +130,10 @@ public class ShapeTransform {
         return rotateZ;
     }
 
+    public double getRotateW() {
+        return rotateW;
+    }
+
     public double getScaleX() {
         return scaleX;
     }
@@ -148,6 +159,7 @@ public class ShapeTransform {
                 ", rotateX=" + rotateX +
                 ", rotateY=" + rotateY +
                 ", rotateZ=" + rotateZ +
+                ", rotateW=" + rotateW +
                 ", scaleX=" + scaleX +
                 ", scaleY=" + scaleY +
                 ", scaleZ=" + scaleZ +

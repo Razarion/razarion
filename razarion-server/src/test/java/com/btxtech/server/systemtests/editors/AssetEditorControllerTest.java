@@ -11,12 +11,14 @@ import com.btxtech.server.systemtests.framework.RestConnection;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
+import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.AssetEditorController;
 import com.btxtech.shared.rest.GameUiContextController;
 import com.btxtech.shared.rest.MeshContainerEditorController;
 import com.btxtech.shared.rest.Shape3DController;
+import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.test.JsonAssert;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
@@ -25,7 +27,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class AssetEditorControllerTest extends AbstractSystemTest {
@@ -112,6 +116,14 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
         ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
         mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path, "shape3Ds.json"),
                 coldGameUiContext.getShape3Ds());
+        // Fbx GUID to Shape3D
+        Map<String, Integer> guid2Shape3DId = new HashMap<>();
+        RestConnection shape3DEditorControllerRestConnection = new RestConnection(new ObjectMapperResolver(() -> Shape3DConfig.class));
+        Shape3DEditorController shape3DEditorController = shape3DEditorControllerRestConnection.proxy(Shape3DEditorController.class);
+        shape3DEditorController.getObjectNameIds().stream()
+                .filter(objectNameId -> objectNameId.getInternalName() != null && !objectNameId.getInternalName().trim().isEmpty())
+                .forEach(objectNameId -> guid2Shape3DId.put(objectNameId.getInternalName(), objectNameId.getId()));
+        mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path, "guid2Shape3DId.json"), guid2Shape3DId);
         // VertexContainerBuffer
         RestConnection shape3DControllerRestConnection = new RestConnection(new ObjectMapperResolver(() -> MeshContainer.class));
         shape3DControllerRestConnection.loginAdmin();

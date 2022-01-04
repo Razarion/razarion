@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.Mesh;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
-import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.unityconverter.unity.asset.AssetReader;
 import com.btxtech.unityconverter.unity.asset.UnityAsset;
 import com.btxtech.unityconverter.unity.asset.type.AssetType;
@@ -109,16 +108,18 @@ public class UnityAssetConverter {
                 .map(c -> (Transform) c)
                 .findFirst().orElseThrow(IllegalStateException::new);
 
-        ShapeTransform baseTransform = new ShapeTransform();
-        baseTransform.setTranslateX(transform.getM_LocalPosition().getZ());
-        baseTransform.setTranslateY(-transform.getM_LocalPosition().getX());
-        baseTransform.setTranslateZ(transform.getM_LocalPosition().getY());
-        baseTransform.setRotateX(MathHelper.QUARTER_RADIANT + Math.toRadians(transform.getM_LocalEulerAnglesHint().getX()));
-        baseTransform.setRotateY(MathHelper.QUARTER_RADIANT - Math.toRadians(transform.getM_LocalEulerAnglesHint().getY()));
-        baseTransform.setRotateZ(Math.toRadians(transform.getM_LocalEulerAnglesHint().getZ()));
-        baseTransform.setScaleX(transform.getM_LocalScale().getX());
-        baseTransform.setScaleY(transform.getM_LocalScale().getY());
-        baseTransform.setScaleZ(transform.getM_LocalScale().getZ());
+        ShapeTransform baseTransform = new ShapeTransform().setScaleX(1).setScaleY(1).setScaleZ(1);
+
+//        baseTransform.setTranslateX(transform.getM_LocalPosition().getZ());
+//        baseTransform.setTranslateY(-transform.getM_LocalPosition().getX());
+//        baseTransform.setTranslateZ(transform.getM_LocalPosition().getY());
+//        baseTransform.setRotateX(transform.getM_LocalRotation().getX());
+//        baseTransform.setRotateY(transform.getM_LocalRotation().getY());
+//        baseTransform.setRotateZ(transform.getM_LocalRotation().getZ());
+//        baseTransform.setRotateW(transform.getM_LocalRotation().getW());
+//        baseTransform.setScaleX(transform.getM_LocalScale().getX());
+//        baseTransform.setScaleY(transform.getM_LocalScale().getY());
+//        baseTransform.setScaleZ(transform.getM_LocalScale().getZ());
 
         List<MeshContainer> childMeshContainers = new ArrayList<>();
         transform.getM_Children()
@@ -207,14 +208,17 @@ public class UnityAssetConverter {
                 case ("m_localposition.y"):
                     shapeTransform.setTranslateZ(shapeTransform.getTranslateZ() + Double.parseDouble(modification.getValue()));
                     break;
-                case ("m_localeulerangleshint.x"): // m_LocalRotation: quaternions to Euler not working. See https://docs.unity3d.com/Manual/QuaternionAndEulerRotationsInUnity.html
-                    shapeTransform.setRotateX(shapeTransform.getRotateX() + Math.toRadians(Double.parseDouble(modification.getValue())));
+                case ("m_localrotation.x"):
+                    shapeTransform.setRotateX(shapeTransform.getRotateX() + Double.parseDouble(modification.getValue()));
                     break;
-                case ("m_localeulerangleshint.y"):  // m_LocalRotation: quaternions to Euler not working. See https://docs.unity3d.com/Manual/QuaternionAndEulerRotationsInUnity.html
-                    shapeTransform.setRotateY(shapeTransform.getRotateY() - Math.toRadians(Double.parseDouble(modification.getValue())));
+                case ("m_localrotation.y"):
+                    shapeTransform.setRotateY(shapeTransform.getRotateY() + Double.parseDouble(modification.getValue()));
                     break;
-                case ("m_localeulerangleshint.z"): // m_LocalRotation: quaternions to Euler not working. See https://docs.unity3d.com/Manual/QuaternionAndEulerRotationsInUnity.html
-                    shapeTransform.setRotateZ(shapeTransform.getRotateZ() + Math.toRadians(Double.parseDouble(modification.getValue())));
+                case ("m_localrotation.z"):
+                    shapeTransform.setRotateZ(shapeTransform.getRotateZ() + Double.parseDouble(modification.getValue()));
+                    break;
+                case ("m_localrotation.w"):
+                    shapeTransform.setRotateW(shapeTransform.getRotateW() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.x"):
                     shapeTransform.setScaleX(shapeTransform.getScaleX() * Double.parseDouble(modification.getValue()));
@@ -228,11 +232,9 @@ public class UnityAssetConverter {
                 // Ignore
                 case ("m_name"):
                 case ("m_rootorder"):
-                case ("m_localrotation.x"):
-                case ("m_localrotation.y"):
-                case ("m_localrotation.z"):
-                case ("m_localrotation.w"):
-                    break;
+                case ("m_localeulerangleshint.x"):
+                case ("m_localeulerangleshint.y"):
+                case ("m_localeulerangleshint.z"):
                 default:
                     LOGGER.warning("Unknown transformation: " + modification.getPropertyPath().toLowerCase() + ": " + modification.getValue());
             }
