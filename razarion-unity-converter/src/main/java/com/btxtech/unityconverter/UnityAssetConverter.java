@@ -209,7 +209,7 @@ public class UnityAssetConverter {
                     shapeTransform.setTranslateZ(shapeTransform.getTranslateZ() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.x"):
-                    shapeTransform.setRotateX(shapeTransform.getRotateX() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setRotateX(shapeTransform.getRotateX() - Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.y"):
                     shapeTransform.setRotateY(shapeTransform.getRotateY() + Double.parseDouble(modification.getValue()));
@@ -218,7 +218,7 @@ public class UnityAssetConverter {
                     shapeTransform.setRotateZ(shapeTransform.getRotateZ() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.w"):
-                    shapeTransform.setRotateW(shapeTransform.getRotateW() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setRotateW(shapeTransform.getRotateW() - Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.x"):
                     shapeTransform.setScaleX(shapeTransform.getScaleX() * Double.parseDouble(modification.getValue()));
