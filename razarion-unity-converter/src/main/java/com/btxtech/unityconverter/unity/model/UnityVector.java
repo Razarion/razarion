@@ -1,5 +1,7 @@
 package com.btxtech.unityconverter.unity.model;
 
+import com.btxtech.shared.datatypes.Vertex;
+
 public class UnityVector {
     /**
      * https://www.javatips.net/api/robotutils-master/src/main/java/robotutils/Quaternion.java
@@ -84,11 +86,40 @@ public class UnityVector {
         return normalisedVector;
     }
 
+    public static UnityVector createFromAxisAngle(Vertex normalizedAxis, double angle) {
+        double halfAngle = angle / 2;
+        double s = Math.sin(halfAngle);
+
+        UnityVector unityVector = new UnityVector();
+        unityVector.x = normalizedAxis.getX() * s;
+        unityVector.y = normalizedAxis.getY() * s;
+        unityVector.z = normalizedAxis.getZ() * s;
+        unityVector.w = Math.cos(halfAngle);
+        return unityVector;
+    }
+
+    public void quaternionMultiply(UnityVector b) {
+        double ax = x;
+        double ay = y;
+        double az = z;
+        double aw = w;
+        double bx = b.x;
+        double by = b.y;
+        double bz = b.z;
+        double bw = b.w;
+
+        this.x = ax * bw + aw * bx + ay * bz - az * by;
+        this.y = ay * bw + aw * by + az * bx - ax * bz;
+        this.z = az * bw + aw * bz + ax * by - ay * bx;
+        this.w = aw * bw - ax * bx - ay * by - az * bz;
+    }
+
     /**
      * https://www.javatips.net/api/robotutils-master/src/main/java/robotutils/Quaternion.java
-     *
+     * <p>
      * Returns the roll component of the quaternion if it is represented
      * as standard roll-pitch-yaw Euler angles.
+     *
      * @return the roll (x-axis rotation) of the robot.
      */
     public double toRoll() {

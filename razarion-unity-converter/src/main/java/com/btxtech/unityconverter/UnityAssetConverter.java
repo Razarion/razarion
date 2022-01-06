@@ -1,5 +1,7 @@
 package com.btxtech.unityconverter;
 
+import com.btxtech.shared.datatypes.SingleHolder;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.Mesh;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
@@ -21,6 +23,7 @@ import com.btxtech.unityconverter.unity.model.Reference;
 import com.btxtech.unityconverter.unity.model.ShaderGraph;
 import com.btxtech.unityconverter.unity.model.ShaderGraphData;
 import com.btxtech.unityconverter.unity.model.Transform;
+import com.btxtech.unityconverter.unity.model.UnityVector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,19 +111,6 @@ public class UnityAssetConverter {
                 .map(c -> (Transform) c)
                 .findFirst().orElseThrow(IllegalStateException::new);
 
-        ShapeTransform baseTransform = new ShapeTransform().setScaleX(1).setScaleY(1).setScaleZ(1);
-
-//        baseTransform.setTranslateX(transform.getM_LocalPosition().getZ());
-//        baseTransform.setTranslateY(-transform.getM_LocalPosition().getX());
-//        baseTransform.setTranslateZ(transform.getM_LocalPosition().getY());
-//        baseTransform.setRotateX(transform.getM_LocalRotation().getX());
-//        baseTransform.setRotateY(transform.getM_LocalRotation().getY());
-//        baseTransform.setRotateZ(transform.getM_LocalRotation().getZ());
-//        baseTransform.setRotateW(transform.getM_LocalRotation().getW());
-//        baseTransform.setScaleX(transform.getM_LocalScale().getX());
-//        baseTransform.setScaleY(transform.getM_LocalScale().getY());
-//        baseTransform.setScaleZ(transform.getM_LocalScale().getZ());
-
         List<MeshContainer> childMeshContainers = new ArrayList<>();
         transform.getM_Children()
                 .stream()
@@ -134,7 +124,7 @@ public class UnityAssetConverter {
                     if (childPrefab != null) {
                         childPrefab.getGameObjects().forEach(gameObject -> {
                             meshContainer.setInternalName("child: " + childPrefab.getName());
-                            meshContainer.setMesh(setupMesh(childPrefab, prefabInstance, baseTransform, gameObject, unityAsset, assetContext));
+                            meshContainer.setMesh(setupMesh(childPrefab, prefabInstance, gameObject, unityAsset, assetContext));
                         });
                     }
                     childMeshContainers.add(meshContainer);
@@ -161,10 +151,10 @@ public class UnityAssetConverter {
                 .internalName(name)
                 .guid(guid)
                 .children(childMeshContainers)
-                .mesh(setupMesh(prefab, null, baseTransform, gameObjects, unityAsset, assetContext));
+                .mesh(setupMesh(prefab, null, gameObjects, unityAsset, assetContext));
     }
 
-    private static Mesh setupMesh(Prefab prefab, PrefabInstance prefabInstance, ShapeTransform baseTransform, GameObject gameObject, UnityAsset unityAsset, AssetContext assetContext) {
+    private static Mesh setupMesh(Prefab prefab, PrefabInstance prefabInstance, GameObject gameObject, UnityAsset unityAsset, AssetContext assetContext) {
         // Check if valid for Mesh creation
         MeshFilter meshFilter = prefab.getMeshFilter(gameObject);
         MeshRenderer meshRenderer = prefab.getMeshRenderer(gameObject);
@@ -185,49 +175,64 @@ public class UnityAssetConverter {
         return new Mesh()
                 .shape3DId(assetContext.getShape3DId4Fbx(fbx, materialInfo))
                 .element3DId(meshName)
-                .shapeTransform(setupShapeTransform(prefabInstance, baseTransform));
+                .shapeTransform(setupShapeTransform(prefabInstance));
     }
 
-    private static ShapeTransform setupShapeTransform(PrefabInstance prefabInstance, ShapeTransform baseShapeTransform) {
+    private static ShapeTransform setupShapeTransform(PrefabInstance prefabInstance) {
         if (prefabInstance == null) {
-            return baseShapeTransform;
+            return new ShapeTransform().setScaleX(1).setScaleY(1).setScaleZ(1);
         }
         ModificationContainer m_modification = prefabInstance.getM_Modification();
         if (m_modification == null || m_modification.getM_Modifications() == null) {
-            return baseShapeTransform;
+            return new ShapeTransform().setScaleX(1).setScaleY(1).setScaleZ(1);
         }
-        ShapeTransform shapeTransform = baseShapeTransform.copyTRS();
+        ShapeTransform shapeTransform = new ShapeTransform();
+        final SingleHolder<UnityVector> quaternion = new SingleHolder<>();
+        UnityVector scale = new UnityVector().x(1).y(1).z(1);
+
         m_modification.getM_Modifications().forEach(modification -> {
             switch (modification.getPropertyPath().toLowerCase()) {
                 case ("m_localposition.z"):
-                    shapeTransform.setTranslateX(shapeTransform.getTranslateX() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setTranslateX(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localposition.x"):
-                    shapeTransform.setTranslateY(shapeTransform.getTranslateY() - Double.parseDouble(modification.getValue()));
+                    shapeTransform.setTranslateY(-Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localposition.y"):
-                    shapeTransform.setTranslateZ(shapeTransform.getTranslateZ() + Double.parseDouble(modification.getValue()));
+                    shapeTransform.setTranslateZ(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.x"):
-                    shapeTransform.setRotateX(shapeTransform.getRotateX() - Double.parseDouble(modification.getValue()));
+                    if (quaternion.isEmpty()) {
+                        quaternion.setO(new UnityVector());
+                    }
+                    quaternion.getO().setX(-Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.y"):
-                    shapeTransform.setRotateY(shapeTransform.getRotateY() + Double.parseDouble(modification.getValue()));
+                    if (quaternion.isEmpty()) {
+                        quaternion.setO(new UnityVector());
+                    }
+                    quaternion.getO().setY(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.z"):
-                    shapeTransform.setRotateZ(shapeTransform.getRotateZ() + Double.parseDouble(modification.getValue()));
+                    if (quaternion.isEmpty()) {
+                        quaternion.setO(new UnityVector());
+                    }
+                    quaternion.getO().setZ(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.w"):
-                    shapeTransform.setRotateW(shapeTransform.getRotateW() - Double.parseDouble(modification.getValue()));
+                    if (quaternion.isEmpty()) {
+                        quaternion.setO(new UnityVector());
+                    }
+                    quaternion.getO().setW(-Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.x"):
-                    shapeTransform.setScaleX(shapeTransform.getScaleX() * Double.parseDouble(modification.getValue()));
+                    scale.setX(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.y"):
-                    shapeTransform.setScaleY(shapeTransform.getScaleY() * Double.parseDouble(modification.getValue()));
+                    scale.setY(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.z"):
-                    shapeTransform.setScaleZ(shapeTransform.getScaleZ() * Double.parseDouble(modification.getValue()));
+                    scale.setZ(Double.parseDouble(modification.getValue()));
                     break;
                 // Ignore
                 case ("m_name"):
@@ -239,6 +244,24 @@ public class UnityAssetConverter {
                     LOGGER.warning("Unknown transformation: " + modification.getPropertyPath().toLowerCase() + ": " + modification.getValue());
             }
         });
+
+        shapeTransform.setScaleX(scale.getX());
+        shapeTransform.setScaleY(scale.getY());
+        shapeTransform.setScaleZ(scale.getZ());
+
+        UnityVector quaternion2 = UnityVector.createFromAxisAngle(Vertex.Z_NORM, Math.PI / 2);
+        UnityVector quaternion3 = UnityVector.createFromAxisAngle(Vertex.Y_NORM, Math.PI / 2);
+
+        quaternion3.quaternionMultiply(quaternion2);
+        if (!quaternion.isEmpty()) {
+            quaternion3.quaternionMultiply(quaternion.getO());
+        }
+
+        shapeTransform.setRotateX(quaternion3.getX());
+        shapeTransform.setRotateY(quaternion3.getY());
+        shapeTransform.setRotateZ(quaternion3.getZ());
+        shapeTransform.setRotateW(quaternion3.getW());
+
         return shapeTransform;
     }
 
