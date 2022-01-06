@@ -69,7 +69,7 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
         info.baseId = 21;
         info.itemTypeId = BUILDER_ITEM_TYPE_ID;
         info.x = 100; // TODO ???
-        info.y = 100;
+        info.y = 100; // TODO ???
         info.model = nativeMatrixDto;
         info.spawning = 1;
         info.health = 1;
