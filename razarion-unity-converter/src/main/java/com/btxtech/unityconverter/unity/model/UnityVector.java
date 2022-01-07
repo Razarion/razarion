@@ -1,24 +1,9 @@
 package com.btxtech.unityconverter.unity.model;
 
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.utils.MathHelper;
 
 public class UnityVector {
-    /**
-     * https://www.javatips.net/api/robotutils-master/src/main/java/robotutils/Quaternion.java
-     *
-     * This defines the north pole singularity cutoff when converting
-     * from quaternions to Euler angles.
-     */
-    public static final double SINGULARITY_NORTH_POLE = 0.49999;
-
-    /**
-     * https://www.javatips.net/api/robotutils-master/src/main/java/robotutils/Quaternion.java
-     *
-     * This defines the south pole singularity cutoff when converting
-     * from quaternions to Euler angles.
-     */
-    public static final double SINGULARITY_SOUTH_POLE = -0.49999;
-
     private double x;
     private double y;
     private double z;
@@ -114,79 +99,34 @@ public class UnityVector {
         this.w = aw * bw - ax * bx - ay * by - az * bz;
     }
 
-    /**
-     * https://www.javatips.net/api/robotutils-master/src/main/java/robotutils/Quaternion.java
-     * <p>
-     * Returns the roll component of the quaternion if it is represented
-     * as standard roll-pitch-yaw Euler angles.
-     *
-     * @return the roll (x-axis rotation) of the robot.
-     */
-    public double toRoll() {
-        // This is a test for singularities
-        double test = x*y + z*w;
+    public Vertex quaternion2Angles() {
+        double yaw;
+        double roll;
+        double pitch;
 
-        // Special case for north pole
-        if (test > SINGULARITY_NORTH_POLE)
-            return 0;
+        double sqw = w * w;
+        double sqx = x * x;
+        double sqy = y * y;
+        double sqz = z * z;
+        double unit = sqx + sqy + sqz + sqw; // if normalized is one, otherwise
+        double test = x * y + z * w; // is correction factor
 
-        // Special case for south pole
-        if (test < SINGULARITY_SOUTH_POLE)
-            return 0;
-
-        return Math.atan2(
-                2*x*w - 2*y*z,
-                1 - 2*x*x - 2*z*z
-        );
+        if (test > 0.499 * unit) { // singularity at North Pole
+            roll = 2 * Math.atan2(x, w);
+            pitch = MathHelper.QUARTER_RADIANT;
+            yaw = 0;
+        } else if (test < -0.499 * unit) { // singularity at South Pole
+            roll = -2 * Math.atan2(x, w);
+            pitch = -MathHelper.QUARTER_RADIANT;
+            yaw = 0;
+        } else {
+            roll = Math.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw); // roll or heading
+            pitch = Math.asin(2 * test / unit); // pitch or attitude
+            yaw = Math.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
+        }
+        return new Vertex(yaw, roll, pitch);
     }
 
-    /**
-     * https://www.javatips.net/api/robotutils-master/src/main/java/robotutils/Quaternion.java
-     *
-     * Returns the pitch component of the quaternion if it is represented
-     * as standard roll-pitch-yaw Euler angles.
-     * @return the pitch (y-axis rotation) of the robot.
-     */
-    public double toPitch() {
-        // This is a test for singularities
-        double test = x*y + z*w;
-
-        // Special case for north pole
-        if (test > SINGULARITY_NORTH_POLE)
-            return Math.PI/2;
-
-        // Special case for south pole
-        if (test < SINGULARITY_SOUTH_POLE)
-            return -Math.PI/2;
-
-        return Math.asin(2*test);
-    }
-
-    /**
-     * https://www.javatips.net/api/robotutils-master/src/main/java/robotutils/Quaternion.java
-     *
-     * Returns the yaw component of the quaternion if it is represented
-     * as standard roll-pitch-yaw Euler angles.
-     * @return the yaw (z-axis rotation) of the robot.
-     */
-    public double toYaw() {
-        // This is a test for singularities
-        double test = x*y + z*w;
-
-        // Special case for north pole
-        if (test > SINGULARITY_NORTH_POLE)
-            return 2 * Math.atan2(x, w);
-
-        // Special case for south pole
-        if (test < SINGULARITY_SOUTH_POLE)
-            return -2 * Math.atan2(x, w);
-
-        return Math.atan2(
-                2*y*w - 2*x*z,
-                1 - 2*y*y - 2*z*z
-        );
-
-    }
 
     @Override
     public String toString() {

@@ -257,10 +257,10 @@ public class UnityAssetConverter {
             quaternion3.quaternionMultiply(quaternion.getO());
         }
 
-        shapeTransform.setRotateX(quaternion3.getX());
-        shapeTransform.setRotateY(quaternion3.getY());
-        shapeTransform.setRotateZ(quaternion3.getZ());
-        shapeTransform.setRotateW(quaternion3.getW());
+        Vertex angles = quaternion3.quaternion2Angles();
+        shapeTransform.setRotateX(angles.getX());
+        shapeTransform.setRotateY(angles.getY());
+        shapeTransform.setRotateZ(angles.getZ());
 
         return shapeTransform;
     }
