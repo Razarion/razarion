@@ -42,9 +42,7 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
         coldGameUiContext.setMeshContainers(loadMeshContainers());
         List<Shape3D> shape3ds = new ArrayList<>(loadShape3Ds());
         shape3ds.add(new Shape3D().id(999111).element3Ds(Collections.singletonList(new Element3D().id("element-1").vertexContainers(Collections.emptyList())))); // TODO remove
-        shape3ds.add(new Shape3D().id(1).element3Ds(Collections.singletonList(new Element3D().id("element-1").vertexContainers(Collections.emptyList())))); // TODO remove
         coldGameUiContext.setShape3Ds(shape3ds);
-        // setMeshContainerId(coldGameUiContext, BUILDER_ITEM_TYPE_ID, "Aaa");
         setMeshContainerId(coldGameUiContext, BUILDER_ITEM_TYPE_ID, "Vehicle_11");
         setupUiEnvironment(coldGameUiContext);
         AlarmService alarmService = getWeldBean(AlarmService.class);
@@ -56,20 +54,21 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
 
         getWeldBean(TerrainUiService.class).setLoaded();
 
-        setCamera(100, 100, 0);
+        setCamera(274, 100, 0);
 
         RenderService renderService = getWeldBean(RenderService.class);
         renderService.setup();
 
         // Runtime
         NativeMatrixDto nativeMatrixDto = new NativeMatrixDto();
-        nativeMatrixDto.numbers = Matrix4.createTranslation(274, 100, 0).toArray();
         NativeSyncBaseItemTickInfo info = new NativeSyncBaseItemTickInfo();
         info.id = 1;
         info.baseId = 21;
         info.itemTypeId = BUILDER_ITEM_TYPE_ID;
-        info.x = 100; // TODO ???
-        info.y = 100; // TODO ???
+        info.x = 274;
+        info.y = 100;
+        info.z = 0;
+        nativeMatrixDto.numbers = Matrix4.createTranslation(info.x, info.y, info.z).toArray();
         info.model = nativeMatrixDto;
         info.spawning = 1;
         info.health = 1;
@@ -101,8 +100,13 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
     private List<MeshContainer> loadMeshContainers() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            AssetConfig assetConfig = mapper.readValue(new File("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-ui-service\\src\\test\\resources\\assetConfig.json"),
+            AssetConfig assetConfig = mapper.readValue(new File("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\mesh_container\\unityAssetConverterTestAssetConfig.json"),
                     AssetConfig.class);
+
+            int meshContainerId = 0;
+            for (MeshContainer meshContainer : assetConfig.getMeshContainers()) {
+                meshContainer.setId(meshContainerId++);
+            }
             return assetConfig.getMeshContainers();
         } catch (IOException e) {
             throw new RuntimeException(e);

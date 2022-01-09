@@ -170,8 +170,8 @@ public class ModelMatrices {
 
     public ModelMatrices multiplyShapeTransform(ShapeTransform shapeTransform) {
         NativeMatrix newMatrix = matrix.multiply(matrix.getNativeMatrixFactory().createTranslation(shapeTransform.getTranslateX(), shapeTransform.getTranslateY(), shapeTransform.getTranslateZ()));
-        newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createXRotation(shapeTransform.getRotateX()));
         newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createYRotation(shapeTransform.getRotateY()));
+        newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createXRotation(shapeTransform.getRotateX()));
         newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createZRotation(shapeTransform.getRotateZ()));
         newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createScale(shapeTransform.getScaleX(), shapeTransform.getScaleY(), shapeTransform.getScaleZ()));
 

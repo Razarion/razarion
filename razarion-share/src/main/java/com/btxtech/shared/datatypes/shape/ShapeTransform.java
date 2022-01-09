@@ -14,6 +14,7 @@ public class ShapeTransform {
     private double rotateX;
     private double rotateY;
     private double rotateZ;
+    @Deprecated
     private double rotateW;
     private double scaleX;
     private double scaleY;
@@ -86,6 +87,7 @@ public class ShapeTransform {
         return this;
     }
 
+    @Deprecated
     public ShapeTransform setRotateW(double rotateW) {
         this.rotateW = rotateW;
         return this;
@@ -130,6 +132,7 @@ public class ShapeTransform {
         return rotateZ;
     }
 
+    @Deprecated
     public double getRotateW() {
         return rotateW;
     }
