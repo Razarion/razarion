@@ -25,10 +25,13 @@ import com.btxtech.unityconverter.unity.model.ShaderGraphData;
 import com.btxtech.unityconverter.unity.model.Transform;
 import com.btxtech.unityconverter.unity.model.UnityVector;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,13 @@ public class UnityAssetConverter {
     private static final Logger LOGGER = Logger.getLogger(UnityAssetConverter.class.getName());
 
     public static void main(String[] args) {
+        try (InputStream is = UnityAssetConverter.class.getClassLoader().
+                getResourceAsStream("logging.properties")) {
+            LogManager.getLogManager().readConfiguration(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         String metaFilePath = "C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor.meta";
         try {
             UnityAsset unityAsset = AssetReader.read(metaFilePath);
@@ -240,6 +250,7 @@ public class UnityAssetConverter {
                 case ("m_localeulerangleshint.x"):
                 case ("m_localeulerangleshint.y"):
                 case ("m_localeulerangleshint.z"):
+                    break;
                 default:
                     LOGGER.warning("Unknown transformation: " + modification.getPropertyPath().toLowerCase() + ": " + modification.getValue());
             }

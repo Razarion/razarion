@@ -7,12 +7,19 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 import java.util.Map;
+import java.util.logging.LogManager;
 
 class UnityAssetConverterTest {
     @Test
     void createAssetConfig() throws IOException {
+        try (InputStream is = UnityAssetConverter.class.getClassLoader().
+                getResourceAsStream("logging.properties")) {
+            LogManager.getLogManager().readConfiguration(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         AssetConfig assetConfig = UnityAssetConverter.createAssetConfig("C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor.meta", createAssetContext());
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(new File("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\mesh_container\\unityAssetConverterTestAssetConfig.json"), assetConfig);
