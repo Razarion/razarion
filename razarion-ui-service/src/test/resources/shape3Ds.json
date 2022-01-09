@@ -1,15 +1,15 @@
 [ {
-  "id" : 161,
+  "id" : 1,
   "element3Ds" : [ {
     "id" : "Turret08",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret08",
+      "key" : "1-Turret08",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -19,7 +19,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -42,7 +42,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -52,12 +51,12 @@
     "id" : "Turret09",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret09",
+      "key" : "1-Turret09",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -67,7 +66,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -90,7 +89,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -100,12 +98,12 @@
     "id" : "Turret02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret02",
+      "key" : "1-Turret02",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -115,7 +113,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -138,7 +136,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -148,12 +145,12 @@
     "id" : "Turret03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret03",
+      "key" : "1-Turret03",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -163,7 +160,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -186,7 +183,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -196,12 +192,12 @@
     "id" : "Turret00",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret00",
+      "key" : "1-Turret00",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -211,7 +207,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -234,7 +230,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -244,12 +239,12 @@
     "id" : "Turret01",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret01",
+      "key" : "1-Turret01",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -259,7 +254,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -282,7 +277,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -292,12 +286,12 @@
     "id" : "Turret06",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret06",
+      "key" : "1-Turret06",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -307,7 +301,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -330,7 +324,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -340,12 +333,12 @@
     "id" : "Turret07",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret07",
+      "key" : "1-Turret07",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -355,7 +348,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -378,7 +371,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -388,12 +380,12 @@
     "id" : "Turret04",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret04",
+      "key" : "1-Turret04",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -403,7 +395,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -426,7 +418,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -436,12 +427,12 @@
     "id" : "Turret05",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret05",
+      "key" : "1-Turret05",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -451,7 +442,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -474,7 +465,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -484,12 +474,12 @@
     "id" : "Turret10",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret10",
+      "key" : "1-Turret10",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -499,7 +489,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -522,7 +512,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -532,12 +521,12 @@
     "id" : "Turret01b",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Turret01b",
+      "key" : "1-Turret01b",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -547,7 +536,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -570,7 +559,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -580,12 +568,12 @@
     "id" : "Beam09",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam09",
+      "key" : "1-Beam09",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -595,7 +583,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -618,7 +606,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -628,12 +615,12 @@
     "id" : "Beam05",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam05",
+      "key" : "1-Beam05",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -643,7 +630,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -666,7 +653,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -676,12 +662,12 @@
     "id" : "Beam06",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam06",
+      "key" : "1-Beam06",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -691,7 +677,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -714,7 +700,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -724,12 +709,12 @@
     "id" : "Beam07",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam07",
+      "key" : "1-Beam07",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -739,7 +724,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -762,7 +747,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -772,12 +756,12 @@
     "id" : "Beam08",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam08",
+      "key" : "1-Beam08",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -787,7 +771,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -810,7 +794,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -820,12 +803,12 @@
     "id" : "Beam01",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam01",
+      "key" : "1-Beam01",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -835,7 +818,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -858,7 +841,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -868,12 +850,12 @@
     "id" : "Beam02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam02",
+      "key" : "1-Beam02",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -883,7 +865,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -906,7 +888,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -916,12 +897,12 @@
     "id" : "Beam03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam03",
+      "key" : "1-Beam03",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -931,7 +912,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -954,7 +935,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -964,12 +944,12 @@
     "id" : "Beam04",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam04",
+      "key" : "1-Beam04",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -979,7 +959,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1002,7 +982,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1012,12 +991,12 @@
     "id" : "Beam00",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam00",
+      "key" : "1-Beam00",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1027,7 +1006,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1050,7 +1029,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1060,12 +1038,12 @@
     "id" : "Beam12",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam12",
+      "key" : "1-Beam12",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1075,7 +1053,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1098,7 +1076,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1108,12 +1085,12 @@
     "id" : "Beam13",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam13",
+      "key" : "1-Beam13",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1123,7 +1100,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1146,7 +1123,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1156,12 +1132,12 @@
     "id" : "Beam14",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam14",
+      "key" : "1-Beam14",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1171,7 +1147,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1194,7 +1170,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1204,12 +1179,12 @@
     "id" : "Beam10",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam10",
+      "key" : "1-Beam10",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1219,7 +1194,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1242,7 +1217,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1252,12 +1226,12 @@
     "id" : "Beam11",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Beam11",
+      "key" : "1-Beam11",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1267,7 +1241,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1290,7 +1264,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1300,12 +1273,12 @@
     "id" : "Flanc10",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc10",
+      "key" : "1-Flanc10",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1315,7 +1288,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1338,7 +1311,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1348,12 +1320,12 @@
     "id" : "Body12",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body12",
+      "key" : "1-Body12",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1363,7 +1335,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1386,7 +1358,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1396,12 +1367,12 @@
     "id" : "Body11",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body11",
+      "key" : "1-Body11",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1411,7 +1382,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1434,7 +1405,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1444,12 +1414,12 @@
     "id" : "Body10",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body10",
+      "key" : "1-Body10",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1459,7 +1429,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1482,7 +1452,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1492,12 +1461,12 @@
     "id" : "Cannon04b",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon04b",
+      "key" : "1-Cannon04b",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1507,7 +1476,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1530,7 +1499,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1540,12 +1508,12 @@
     "id" : "Flanc19",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc19",
+      "key" : "1-Flanc19",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1555,7 +1523,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1578,7 +1546,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1588,12 +1555,12 @@
     "id" : "Base07",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base07",
+      "key" : "1-Base07",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1603,7 +1570,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1626,7 +1593,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1636,12 +1602,12 @@
     "id" : "Base08",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base08",
+      "key" : "1-Base08",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1651,7 +1617,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1674,7 +1640,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1684,12 +1649,12 @@
     "id" : "Base09",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base09",
+      "key" : "1-Base09",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1699,7 +1664,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1722,7 +1687,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1732,12 +1696,12 @@
     "id" : "Flanc12",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc12",
+      "key" : "1-Flanc12",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1747,7 +1711,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1770,7 +1734,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1780,12 +1743,12 @@
     "id" : "Base03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base03",
+      "key" : "1-Base03",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1795,7 +1758,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1818,7 +1781,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1828,12 +1790,12 @@
     "id" : "Flanc11",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc11",
+      "key" : "1-Flanc11",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1843,7 +1805,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1866,7 +1828,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1876,12 +1837,12 @@
     "id" : "Base04",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base04",
+      "key" : "1-Base04",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1891,7 +1852,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1914,7 +1875,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1924,12 +1884,12 @@
     "id" : "Flanc14",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc14",
+      "key" : "1-Flanc14",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1939,7 +1899,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1962,7 +1922,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -1972,12 +1931,12 @@
     "id" : "Base05",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base05",
+      "key" : "1-Base05",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -1987,7 +1946,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2010,7 +1969,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2020,12 +1978,12 @@
     "id" : "Flanc13",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc13",
+      "key" : "1-Flanc13",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2035,7 +1993,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2058,7 +2016,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2068,12 +2025,12 @@
     "id" : "Base06",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base06",
+      "key" : "1-Base06",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2083,7 +2040,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2106,7 +2063,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2116,12 +2072,12 @@
     "id" : "Flanc16",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc16",
+      "key" : "1-Flanc16",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2131,7 +2087,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2154,7 +2110,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2164,12 +2119,12 @@
     "id" : "Flanc15",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc15",
+      "key" : "1-Flanc15",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2179,7 +2134,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2202,7 +2157,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2212,12 +2166,12 @@
     "id" : "Base00",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base00",
+      "key" : "1-Base00",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2227,7 +2181,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2250,7 +2204,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2260,12 +2213,12 @@
     "id" : "Flanc18",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc18",
+      "key" : "1-Flanc18",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2275,7 +2228,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2298,7 +2251,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2308,12 +2260,12 @@
     "id" : "Base01",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base01",
+      "key" : "1-Base01",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2323,7 +2275,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2346,7 +2298,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2356,12 +2307,12 @@
     "id" : "Flanc17",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc17",
+      "key" : "1-Flanc17",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2371,7 +2322,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2394,7 +2345,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2404,12 +2354,12 @@
     "id" : "Base02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base02",
+      "key" : "1-Base02",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2419,7 +2369,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2442,7 +2392,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2452,12 +2401,12 @@
     "id" : "Body09",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body09",
+      "key" : "1-Body09",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2467,7 +2416,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2490,7 +2439,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2500,12 +2448,12 @@
     "id" : "Body08",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body08",
+      "key" : "1-Body08",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2515,7 +2463,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2538,7 +2486,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2548,12 +2495,12 @@
     "id" : "Body07",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body07",
+      "key" : "1-Body07",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2563,7 +2510,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2586,7 +2533,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2596,12 +2542,12 @@
     "id" : "Body06",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body06",
+      "key" : "1-Body06",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2611,7 +2557,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2634,7 +2580,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2644,12 +2589,12 @@
     "id" : "Flanc21",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc21",
+      "key" : "1-Flanc21",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2659,7 +2604,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2682,7 +2627,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2692,12 +2636,12 @@
     "id" : "Flanc20",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc20",
+      "key" : "1-Flanc20",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2707,7 +2651,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2730,7 +2674,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2740,12 +2683,12 @@
     "id" : "Body01",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body01",
+      "key" : "1-Body01",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2755,7 +2698,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2778,7 +2721,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2788,12 +2730,12 @@
     "id" : "Body00",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body00",
+      "key" : "1-Body00",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2803,7 +2745,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2826,7 +2768,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2836,12 +2777,12 @@
     "id" : "Base08a",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base08a",
+      "key" : "1-Base08a",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2851,7 +2792,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2874,7 +2815,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2884,12 +2824,12 @@
     "id" : "ArmoredCabin06",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-ArmoredCabin06",
+      "key" : "1-ArmoredCabin06",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2899,7 +2839,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2922,7 +2862,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2932,12 +2871,12 @@
     "id" : "Body05",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body05",
+      "key" : "1-Body05",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2947,7 +2886,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2970,7 +2909,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -2980,12 +2918,12 @@
     "id" : "Base08b",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base08b",
+      "key" : "1-Base08b",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -2995,7 +2933,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3018,7 +2956,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3028,12 +2965,12 @@
     "id" : "ArmoredCabin05",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-ArmoredCabin05",
+      "key" : "1-ArmoredCabin05",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3043,7 +2980,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3066,7 +3003,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3076,12 +3012,12 @@
     "id" : "Body04",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body04",
+      "key" : "1-Body04",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3091,7 +3027,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3114,7 +3050,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3124,12 +3059,12 @@
     "id" : "Cannon03b",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon03b",
+      "key" : "1-Cannon03b",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3139,7 +3074,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3162,7 +3097,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3172,12 +3106,12 @@
     "id" : "ArmoredCabin08",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-ArmoredCabin08",
+      "key" : "1-ArmoredCabin08",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3187,7 +3121,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3210,7 +3144,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3220,12 +3153,12 @@
     "id" : "Body03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body03",
+      "key" : "1-Body03",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3235,7 +3168,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3258,7 +3191,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3268,12 +3200,12 @@
     "id" : "ArmoredCabin07",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-ArmoredCabin07",
+      "key" : "1-ArmoredCabin07",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3283,7 +3215,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3306,7 +3238,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3316,12 +3247,12 @@
     "id" : "Body02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Body02",
+      "key" : "1-Body02",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3331,7 +3262,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3354,7 +3285,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3364,12 +3294,12 @@
     "id" : "ArmoredCabin02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-ArmoredCabin02",
+      "key" : "1-ArmoredCabin02",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3379,7 +3309,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3402,7 +3332,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3412,12 +3341,12 @@
     "id" : "ArmoredCabin01",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-ArmoredCabin01",
+      "key" : "1-ArmoredCabin01",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3427,7 +3356,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3450,7 +3379,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3460,12 +3388,12 @@
     "id" : "ArmoredCabin04",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-ArmoredCabin04",
+      "key" : "1-ArmoredCabin04",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3475,7 +3403,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3498,7 +3426,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3508,12 +3435,12 @@
     "id" : "ArmoredCabin03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-ArmoredCabin03",
+      "key" : "1-ArmoredCabin03",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3523,7 +3450,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3546,7 +3473,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3556,12 +3482,12 @@
     "id" : "ArmoredCabin00",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-ArmoredCabin00",
+      "key" : "1-ArmoredCabin00",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3571,7 +3497,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3594,7 +3520,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3604,12 +3529,12 @@
     "id" : "Flanc23",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc23",
+      "key" : "1-Flanc23",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3619,7 +3544,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3642,7 +3567,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3652,12 +3576,12 @@
     "id" : "Flanc22",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc22",
+      "key" : "1-Flanc22",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3667,7 +3591,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3690,7 +3614,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3700,12 +3623,12 @@
     "id" : "Flanc24",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc24",
+      "key" : "1-Flanc24",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3715,7 +3638,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3738,7 +3661,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3748,12 +3670,12 @@
     "id" : "Cannon05",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon05",
+      "key" : "1-Cannon05",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3763,7 +3685,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3786,7 +3708,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3796,12 +3717,12 @@
     "id" : "Cannon06",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon06",
+      "key" : "1-Cannon06",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3811,7 +3732,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3834,7 +3755,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3844,12 +3764,12 @@
     "id" : "Cannon03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon03",
+      "key" : "1-Cannon03",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3859,7 +3779,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3882,7 +3802,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3892,12 +3811,12 @@
     "id" : "Cannon04",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon04",
+      "key" : "1-Cannon04",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3907,7 +3826,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3930,7 +3849,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3940,12 +3858,12 @@
     "id" : "Cannon09",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon09",
+      "key" : "1-Cannon09",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3955,7 +3873,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -3978,7 +3896,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -3988,12 +3905,12 @@
     "id" : "Cannon07",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon07",
+      "key" : "1-Cannon07",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4003,7 +3920,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4026,7 +3943,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4036,12 +3952,12 @@
     "id" : "Cannon08",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon08",
+      "key" : "1-Cannon08",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4051,7 +3967,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4074,7 +3990,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4084,12 +3999,12 @@
     "id" : "Cabin08",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cabin08",
+      "key" : "1-Cabin08",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4099,7 +4014,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4122,7 +4037,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4132,12 +4046,12 @@
     "id" : "Cabin07",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cabin07",
+      "key" : "1-Cabin07",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4147,7 +4061,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4170,7 +4084,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4180,12 +4093,12 @@
     "id" : "Cabin09",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cabin09",
+      "key" : "1-Cabin09",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4195,7 +4108,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4218,7 +4131,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4228,12 +4140,12 @@
     "id" : "Cabin04",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cabin04",
+      "key" : "1-Cabin04",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4243,7 +4155,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4266,7 +4178,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4276,12 +4187,12 @@
     "id" : "Cabin03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cabin03",
+      "key" : "1-Cabin03",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4291,7 +4202,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4314,7 +4225,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4324,12 +4234,12 @@
     "id" : "Cannon07b",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon07b",
+      "key" : "1-Cannon07b",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4339,7 +4249,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4362,7 +4272,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4372,12 +4281,12 @@
     "id" : "Cabin06",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cabin06",
+      "key" : "1-Cabin06",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4387,7 +4296,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4410,7 +4319,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4420,12 +4328,12 @@
     "id" : "Cabin05",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cabin05",
+      "key" : "1-Cabin05",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4435,7 +4343,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4458,7 +4366,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4468,12 +4375,12 @@
     "id" : "Cabin00",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cabin00",
+      "key" : "1-Cabin00",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4483,7 +4390,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4506,7 +4413,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4516,12 +4422,12 @@
     "id" : "Cabin02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cabin02",
+      "key" : "1-Cabin02",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4531,7 +4437,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4554,7 +4460,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4564,12 +4469,12 @@
     "id" : "Flanc09",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc09",
+      "key" : "1-Flanc09",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4579,7 +4484,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4602,7 +4507,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4612,12 +4516,12 @@
     "id" : "Flanc08",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc08",
+      "key" : "1-Flanc08",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4627,7 +4531,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4650,7 +4554,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4660,12 +4563,12 @@
     "id" : "Cannon06b",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon06b",
+      "key" : "1-Cannon06b",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4675,7 +4578,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4698,7 +4601,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4708,12 +4610,12 @@
     "id" : "Flanc01",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc01",
+      "key" : "1-Flanc01",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4723,7 +4625,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4746,7 +4648,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4756,12 +4657,12 @@
     "id" : "Base14",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base14",
+      "key" : "1-Base14",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4771,7 +4672,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4794,7 +4695,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4804,12 +4704,12 @@
     "id" : "Flanc00",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc00",
+      "key" : "1-Flanc00",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4819,7 +4719,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4842,7 +4742,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4852,12 +4751,12 @@
     "id" : "Flanc03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc03",
+      "key" : "1-Flanc03",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4867,7 +4766,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4890,7 +4789,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4900,12 +4798,12 @@
     "id" : "Flanc02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc02",
+      "key" : "1-Flanc02",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4915,7 +4813,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4938,7 +4836,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4948,12 +4845,12 @@
     "id" : "Cannon01",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon01",
+      "key" : "1-Cannon01",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4963,7 +4860,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -4986,7 +4883,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -4996,12 +4892,12 @@
     "id" : "Flanc05",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc05",
+      "key" : "1-Flanc05",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5011,7 +4907,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5034,7 +4930,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5044,12 +4939,12 @@
     "id" : "Base10",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base10",
+      "key" : "1-Base10",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5059,7 +4954,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5082,7 +4977,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5092,12 +4986,12 @@
     "id" : "Cannon02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon02",
+      "key" : "1-Cannon02",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5107,7 +5001,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5130,7 +5024,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5140,12 +5033,12 @@
     "id" : "Flanc04",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc04",
+      "key" : "1-Flanc04",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5155,7 +5048,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5178,7 +5071,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5188,12 +5080,12 @@
     "id" : "Base11",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base11",
+      "key" : "1-Base11",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5203,7 +5095,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5226,7 +5118,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5236,12 +5127,12 @@
     "id" : "Flanc07",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc07",
+      "key" : "1-Flanc07",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5251,7 +5142,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5274,7 +5165,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5284,12 +5174,12 @@
     "id" : "Base12",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base12",
+      "key" : "1-Base12",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5299,7 +5189,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5322,7 +5212,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5332,12 +5221,12 @@
     "id" : "Cannon00",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Cannon00",
+      "key" : "1-Cannon00",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5347,7 +5236,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5370,7 +5259,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5380,12 +5268,12 @@
     "id" : "Flanc06",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Flanc06",
+      "key" : "1-Flanc06",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5395,7 +5283,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5418,7 +5306,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5428,12 +5315,12 @@
     "id" : "Base13",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "161-Base13",
+      "key" : "1-Base13",
       "vertexContainerMaterial" : {
         "materialId" : "Vehicles_main-material",
         "materialName" : "Vehicles_main",
         "phongMaterialConfig" : {
-          "textureId" : 97,
+          "textureId" : 1,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5443,7 +5330,7 @@
           "specularStrength" : null
         },
         "phongMaterial2Config" : {
-          "textureId" : 98,
+          "textureId" : 2,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -5466,7 +5353,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5474,12 +5360,12 @@
     } ]
   } ]
 }, {
-  "id" : 162,
+  "id" : 2,
   "element3Ds" : [ {
     "id" : "WheelW01",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "162-WheelW01",
+      "key" : "2-WheelW01",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -5508,7 +5394,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5518,7 +5403,7 @@
     "id" : "WheelW00",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "162-WheelW00",
+      "key" : "2-WheelW00",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -5547,7 +5432,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5557,7 +5441,7 @@
     "id" : "WheelW03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "162-WheelW03",
+      "key" : "2-WheelW03",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -5586,7 +5470,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5596,7 +5479,7 @@
     "id" : "WheelW02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "162-WheelW02",
+      "key" : "2-WheelW02",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -5625,7 +5508,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5633,12 +5515,12 @@
     } ]
   } ]
 }, {
-  "id" : 163,
+  "id" : 3,
   "element3Ds" : [ {
     "id" : "Bumper20",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper20",
+      "key" : "3-Bumper20",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -5667,7 +5549,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5677,7 +5558,7 @@
     "id" : "Bumper10",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper10",
+      "key" : "3-Bumper10",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -5706,7 +5587,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5716,7 +5596,7 @@
     "id" : "Bumper11",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper11",
+      "key" : "3-Bumper11",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -5745,7 +5625,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5755,7 +5634,7 @@
     "id" : "Bumper01",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper01",
+      "key" : "3-Bumper01",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -5784,7 +5663,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5794,7 +5672,7 @@
     "id" : "Bumper12",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper12",
+      "key" : "3-Bumper12",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -5823,7 +5701,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5833,7 +5710,7 @@
     "id" : "Bumper02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper02",
+      "key" : "3-Bumper02",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -5862,7 +5739,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5872,7 +5748,7 @@
     "id" : "Bumper13",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper13",
+      "key" : "3-Bumper13",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -5901,7 +5777,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5911,7 +5786,7 @@
     "id" : "Bumper14",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper14",
+      "key" : "3-Bumper14",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -5940,7 +5815,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5950,7 +5824,7 @@
     "id" : "Bumper03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper03",
+      "key" : "3-Bumper03",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -5979,7 +5853,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -5989,7 +5862,7 @@
     "id" : "Bumper04",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper04",
+      "key" : "3-Bumper04",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6018,7 +5891,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6028,7 +5900,7 @@
     "id" : "Bumper15",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper15",
+      "key" : "3-Bumper15",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6057,7 +5929,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6067,7 +5938,7 @@
     "id" : "Bumper05",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper05",
+      "key" : "3-Bumper05",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6096,7 +5967,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6106,7 +5976,7 @@
     "id" : "Bumper16",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper16",
+      "key" : "3-Bumper16",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6135,7 +6005,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6145,7 +6014,7 @@
     "id" : "Bumper06",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper06",
+      "key" : "3-Bumper06",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6174,7 +6043,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6184,7 +6052,7 @@
     "id" : "Bumper17",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper17",
+      "key" : "3-Bumper17",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6213,7 +6081,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6223,7 +6090,7 @@
     "id" : "Bumper07",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper07",
+      "key" : "3-Bumper07",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6252,7 +6119,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6262,7 +6128,7 @@
     "id" : "Bumper18",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper18",
+      "key" : "3-Bumper18",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6291,7 +6157,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6301,7 +6166,7 @@
     "id" : "Bumper19",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper19",
+      "key" : "3-Bumper19",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6330,7 +6195,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6340,7 +6204,7 @@
     "id" : "Bumper08",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper08",
+      "key" : "3-Bumper08",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6369,7 +6233,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6379,7 +6242,7 @@
     "id" : "Bumper09",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper09",
+      "key" : "3-Bumper09",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6408,7 +6271,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6418,7 +6280,7 @@
     "id" : "Bumper_holder",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "163-Bumper_holder",
+      "key" : "3-Bumper_holder",
       "vertexContainerMaterial" : {
         "materialId" : "Bumpers-material",
         "materialName" : "Bumpers",
@@ -6447,7 +6309,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6455,12 +6316,12 @@
     } ]
   } ]
 }, {
-  "id" : 164,
+  "id" : 4,
   "element3Ds" : [ {
     "id" : "Wheel7",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-Wheel7",
+      "key" : "4-Wheel7",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6489,7 +6350,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6499,7 +6359,7 @@
     "id" : "Wheel8",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-Wheel8",
+      "key" : "4-Wheel8",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6528,7 +6388,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6538,7 +6397,7 @@
     "id" : "Wheel5",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-Wheel5",
+      "key" : "4-Wheel5",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6567,7 +6426,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6577,7 +6435,7 @@
     "id" : "Wheel6",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-Wheel6",
+      "key" : "4-Wheel6",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6606,7 +6464,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6616,7 +6473,7 @@
     "id" : "Wheel3",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-Wheel3",
+      "key" : "4-Wheel3",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6645,7 +6502,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6655,7 +6511,7 @@
     "id" : "Wheel4",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-Wheel4",
+      "key" : "4-Wheel4",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6684,7 +6540,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6694,7 +6549,7 @@
     "id" : "Wheel1",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-Wheel1",
+      "key" : "4-Wheel1",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6723,7 +6578,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6733,7 +6587,7 @@
     "id" : "WheelT5",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-WheelT5",
+      "key" : "4-WheelT5",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6762,7 +6616,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6772,7 +6625,7 @@
     "id" : "Wheel2",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-Wheel2",
+      "key" : "4-Wheel2",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6801,7 +6654,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6811,7 +6663,7 @@
     "id" : "WheelT6",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-WheelT6",
+      "key" : "4-WheelT6",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6840,7 +6692,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6850,7 +6701,7 @@
     "id" : "WheelT7",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-WheelT7",
+      "key" : "4-WheelT7",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6879,7 +6730,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6889,7 +6739,7 @@
     "id" : "WheelT8",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-WheelT8",
+      "key" : "4-WheelT8",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6918,7 +6768,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6928,7 +6777,7 @@
     "id" : "WheelT1",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-WheelT1",
+      "key" : "4-WheelT1",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6957,7 +6806,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -6967,7 +6815,7 @@
     "id" : "WheelT2",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-WheelT2",
+      "key" : "4-WheelT2",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -6996,7 +6844,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7006,7 +6853,7 @@
     "id" : "WheelT3",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-WheelT3",
+      "key" : "4-WheelT3",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -7035,7 +6882,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7045,7 +6891,7 @@
     "id" : "WheelT4",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "164-WheelT4",
+      "key" : "4-WheelT4",
       "vertexContainerMaterial" : {
         "materialId" : "Wheels-material",
         "materialName" : "Wheels",
@@ -7074,7 +6920,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7082,17 +6927,17 @@
     } ]
   } ]
 }, {
-  "id" : 165,
+  "id" : 5,
   "element3Ds" : [ {
     "id" : "Track11",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track11",
+      "key" : "5-Track11",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7116,7 +6961,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7126,12 +6970,12 @@
     "id" : "Track10",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track10",
+      "key" : "5-Track10",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7155,7 +6999,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7165,12 +7008,12 @@
     "id" : "Track02",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track02",
+      "key" : "5-Track02",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7194,7 +7037,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7204,12 +7046,12 @@
     "id" : "Track01",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track01",
+      "key" : "5-Track01",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7233,7 +7075,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7243,12 +7084,12 @@
     "id" : "Track12",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track12",
+      "key" : "5-Track12",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7272,7 +7113,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7282,12 +7122,12 @@
     "id" : "Track04",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track04",
+      "key" : "5-Track04",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7311,7 +7151,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7321,12 +7160,12 @@
     "id" : "Track03",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track03",
+      "key" : "5-Track03",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7350,7 +7189,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7360,12 +7198,12 @@
     "id" : "Track06",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track06",
+      "key" : "5-Track06",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7389,7 +7227,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7399,12 +7236,12 @@
     "id" : "Track05",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track05",
+      "key" : "5-Track05",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7428,7 +7265,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7438,12 +7274,12 @@
     "id" : "Track08",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track08",
+      "key" : "5-Track08",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7467,7 +7303,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7477,12 +7312,12 @@
     "id" : "Track07",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track07",
+      "key" : "5-Track07",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7506,7 +7341,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
@@ -7516,12 +7350,12 @@
     "id" : "Track09",
     "modelMatrixAnimations" : null,
     "vertexContainers" : [ {
-      "key" : "165-Track09",
+      "key" : "5-Track09",
       "vertexContainerMaterial" : {
         "materialId" : "Tracks1-material",
         "materialName" : "Tracks1",
         "phongMaterialConfig" : {
-          "textureId" : 99,
+          "textureId" : 3,
           "scale" : 1.0,
           "normalMapId" : null,
           "normalMapDepth" : null,
@@ -7545,7 +7379,6 @@
         "rotateX" : 0.0,
         "rotateY" : 0.0,
         "rotateZ" : 0.0,
-        "rotateW" : 0.0,
         "scaleX" : 0.0,
         "scaleY" : 0.0,
         "scaleZ" : 0.0
