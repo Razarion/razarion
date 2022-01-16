@@ -1,5 +1,7 @@
 package com.btxtech.unityconverter.unity.model;
 
+import java.util.Objects;
+
 public class Reference {
     private String fileID;
     private String guid;
@@ -42,6 +44,23 @@ public class Reference {
     public Reference type(String type) {
         setType(type);
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Reference reference = (Reference) o;
+        return Objects.equals(fileID, reference.fileID) && Objects.equals(guid, reference.guid) && Objects.equals(type, reference.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fileID, guid, type);
     }
 
     @Override

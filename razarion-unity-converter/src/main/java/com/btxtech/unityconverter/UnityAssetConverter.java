@@ -1,6 +1,5 @@
 package com.btxtech.unityconverter;
 
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.Mesh;
@@ -13,7 +12,9 @@ import com.btxtech.unityconverter.unity.asset.type.Fbx;
 import com.btxtech.unityconverter.unity.asset.type.MaterialAssetType;
 import com.btxtech.unityconverter.unity.asset.type.Prefab;
 import com.btxtech.unityconverter.unity.asset.type.ShaderGraphAssetType;
+import com.btxtech.unityconverter.unity.model.Component;
 import com.btxtech.unityconverter.unity.model.GameObject;
+import com.btxtech.unityconverter.unity.model.IgnoredAssetType;
 import com.btxtech.unityconverter.unity.model.Material;
 import com.btxtech.unityconverter.unity.model.MeshFilter;
 import com.btxtech.unityconverter.unity.model.MeshRenderer;
@@ -28,9 +29,10 @@ import com.btxtech.unityconverter.unity.model.UnityVector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -69,17 +71,17 @@ public class UnityAssetConverter {
 //            unityAsset.getAssetTypes(ShaderGraphAssetType.class).forEach(shaderGraphAssetType -> {
 //                System.out.println(shaderGraphAssetType);
 //            });
-            System.out.println("------------ Generated Mesh Containers ------------");
-            dumpMeshContainers(
-                    unityAsset.getAssetTypes(Prefab.class).stream().map(prefab -> createMeshContainer(prefab, unityAsset, mockAssetContext)).collect(Collectors.toList())
-                    , "--");
-//            System.out.println("------------ Dump single prefab ------------");
-//            Prefab prefab = unityAsset.findPrefab("Aaa");
-//            System.out.println("Prefab AssetFile: " + prefab.getAssetFile());
-//            System.out.println("Prefab: " + prefab);
-//            dumpMeshContainer(createMeshContainer(prefab, unityAsset, mockAssetContext), "");
+//            System.out.println("------------ Generated Mesh Containers ------------");
+//            dumpMeshContainers(
+//                    unityAsset.getAssetTypes(Prefab.class).stream().map(prefab -> createMeshContainer(prefab, unityAsset, mockAssetContext)).collect(Collectors.toList())
+//                    , "--");
+            System.out.println("------------ Dump single prefab ------------");
+            Prefab prefab = unityAsset.findPrefab("Aaa");
+            System.out.println("Prefab AssetFile: " + prefab.getAssetFile());
+            System.out.println("Prefab: " + prefab);
+            dumpMeshContainer(createRootMeshContainer(prefab, unityAsset, mockAssetContext), "");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error Converter Asset", e);
+            e.printStackTrace();
         }
     }
 
@@ -91,21 +93,25 @@ public class UnityAssetConverter {
                 .internalName(unityAsset.getName())
                 .assetMetaFileHint(assetMetaFile)
                 .meshContainers(unityAsset.getAssetTypes(Prefab.class).stream()
-                        .map(prefab -> UnityAssetConverter.createMeshContainer(prefab, unityAsset, assetContext))
+                        .map(prefab -> createRootMeshContainer(prefab, unityAsset, assetContext))
                         .collect(Collectors.toList()));
     }
 
-    private static MeshContainer createMeshContainer(Prefab prefab, UnityAsset unityAsset, AssetContext assetContext) {
+    private static MeshContainer createRootMeshContainer(Prefab prefab, UnityAsset unityAsset, AssetContext assetContext) {
+        return createMeshContainer(prefab, null, unityAsset, assetContext);
+    }
+
+    private static MeshContainer createMeshContainer(Prefab prefab, ShapeTransform shapeTransform, UnityAsset unityAsset, AssetContext assetContext) {
         List<GameObject> gameObjects = prefab.getGameObjects();
         if (gameObjects.size() == 1) {
-            return createMeshContainer(prefab.getName(), prefab.getGuid(), gameObjects.get(0), prefab, unityAsset, assetContext);
+            return createMeshContainerFromGameObject(prefab.getName(), prefab.getGuid(), gameObjects.get(0), prefab, shapeTransform, unityAsset, assetContext);
         } else if (gameObjects.size() > 1) {
             return new MeshContainer()
                     .guid(prefab.getGuid())
                     .internalName(prefab.getName())
                     .children(gameObjects.stream()
                             .filter(gameObject -> gameObject.getM_Component() != null)
-                            .map(gameObject -> createMeshContainer("child: " + gameObject.getM_Name(), null, gameObject, prefab, unityAsset, assetContext))
+                            .map(gameObject -> createMeshContainerFromGameObject("child: " + gameObject.getM_Name(), null, gameObject, prefab, shapeTransform, unityAsset, assetContext))
                             .collect(Collectors.toList()));
         } else {
             LOGGER.warning("No MeshContainer in prefab: " + prefab);
@@ -113,7 +119,7 @@ public class UnityAssetConverter {
         }
     }
 
-    private static MeshContainer createMeshContainer(String name, String guid, GameObject gameObjects, Prefab prefab, UnityAsset unityAsset, AssetContext assetContext) {
+    private static MeshContainer createMeshContainerFromGameObject(String name, String guid, GameObject gameObjects, Prefab prefab, ShapeTransform shapeTransform, UnityAsset unityAsset, AssetContext assetContext) {
         Transform transform = gameObjects.getM_Component()
                 .stream()
                 .map(componentReference -> prefab.getComponent(componentReference.getComponent()))
@@ -121,6 +127,16 @@ public class UnityAssetConverter {
                 .map(c -> (Transform) c)
                 .findFirst().orElseThrow(IllegalStateException::new);
 
+        dumpErrors(prefab, unityAsset, transform);
+
+        return new MeshContainer()
+                .internalName(name)
+                .guid(guid)
+                .children(setupChildMeshContainers(prefab, unityAsset, assetContext, transform))
+                .mesh(setupMesh(prefab, shapeTransform, gameObjects, unityAsset, assetContext));
+    }
+
+    private static List<MeshContainer> setupChildMeshContainers(Prefab prefab, UnityAsset unityAsset, AssetContext assetContext, Transform transform) {
         List<MeshContainer> childMeshContainers = new ArrayList<>();
         transform.getM_Children()
                 .stream()
@@ -129,47 +145,19 @@ public class UnityAssetConverter {
                 .map(o -> (Transform) o)
                 .forEach(childTransform -> {
                     Prefab childPrefab = unityAsset.getAssetType(childTransform.getM_CorrespondingSourceObject());
-                    PrefabInstance prefabInstance = prefab.getComponent(childTransform.getM_PrefabInstance());
-                    MeshContainer meshContainer = new MeshContainer();
                     if (childPrefab != null) {
-                        childPrefab.getGameObjects().forEach(gameObject -> {
-                            meshContainer.setInternalName("child: " + childPrefab.getName());
-                            meshContainer.setMesh(setupMesh(childPrefab, prefabInstance, gameObject, unityAsset, assetContext));
-                        });
-                    }
-                    childMeshContainers.add(meshContainer);
-                });
-
-        // Errors ---
-        transform.getM_Children().forEach(reference -> {
-            if (prefab.getComponent(reference) == null) {
-                LOGGER.warning("Not found: " + reference);
-            }
-        });
-        transform.getM_Children().stream()
-                .map(prefab::getComponent)
-                .filter(Objects::nonNull)
-                .map(o -> (Transform) o)
-                .forEach(t -> {
-                    if (unityAsset.getAssetType(t.getM_CorrespondingSourceObject()) == null) {
-                        LOGGER.warning("Transformation Not found: " + t.getM_CorrespondingSourceObject());
+                        ShapeTransform shapeTransform = setupShapeTransform(prefab.getComponent(childTransform.getM_PrefabInstance()), unityAsset);
+                        childMeshContainers.add(createMeshContainer(childPrefab, shapeTransform, unityAsset, assetContext));
                     }
                 });
-        // Errors Ends ---
-
-        return new MeshContainer()
-                .internalName(name)
-                .guid(guid)
-                .children(childMeshContainers)
-                .mesh(setupMesh(prefab, null, gameObjects, unityAsset, assetContext));
+        return childMeshContainers;
     }
 
-    private static Mesh setupMesh(Prefab prefab, PrefabInstance prefabInstance, GameObject gameObject, UnityAsset unityAsset, AssetContext assetContext) {
+    private static Mesh setupMesh(Prefab prefab, ShapeTransform shapeTransform, GameObject gameObject, UnityAsset unityAsset, AssetContext assetContext) {
         // Check if valid for Mesh creation
         MeshFilter meshFilter = prefab.getMeshFilter(gameObject);
         MeshRenderer meshRenderer = prefab.getMeshRenderer(gameObject);
         if (meshFilter == null && meshRenderer == null) {
-            LOGGER.warning("No MeshFilter/MeshRenderer for: " + prefab.getName());
             return null;
         } else if (meshFilter == null) {
             LOGGER.warning("No MeshFilter for: " + prefab.getName());
@@ -185,10 +173,10 @@ public class UnityAssetConverter {
         return new Mesh()
                 .shape3DId(assetContext.getShape3DId4Fbx(fbx, materialInfo))
                 .element3DId(meshName)
-                .shapeTransform(setupShapeTransform(prefabInstance));
+                .shapeTransform(shapeTransform);
     }
 
-    private static ShapeTransform setupShapeTransform(PrefabInstance prefabInstance) {
+    private static ShapeTransform setupShapeTransform(PrefabInstance prefabInstance, UnityAsset unityAsset) {
         if (prefabInstance == null) {
             return new ShapeTransform().setScaleX(1).setScaleY(1).setScaleZ(1);
         }
@@ -197,52 +185,53 @@ public class UnityAssetConverter {
             return new ShapeTransform().setScaleX(1).setScaleY(1).setScaleZ(1);
         }
         ShapeTransform shapeTransform = new ShapeTransform();
-        final SingleHolder<UnityVector> quaternion = new SingleHolder<>();
+        final Map<Reference, UnityVector> quaternions = new HashMap<>();
+        final Map<Reference, UnityVector> targetQuaternions = new HashMap<>();
         UnityVector scale = new UnityVector().x(1).y(1).z(1);
 
+        System.out.println("---setupShapeTransform--------------------------");
         m_modification.getM_Modifications().forEach(modification -> {
+            // System.out.println(modification.getPropertyPath() + "=" + modification.getValue());
+            System.out.println(modification.getPropertyPath() + "=" + modification.getValue() + " ||| " + modification.getTarget() + " : " + unityAsset.getAssetType(modification.getTarget()).getAssetFile());
+            Prefab targetPrefab = unityAsset.getAssetType(modification.getTarget());
+            Transform targetTransform = createTransform(targetPrefab.getComponent(modification.getTarget()), targetPrefab);
+            if (targetTransform != null) {
+                targetQuaternions.put(modification.getTarget(), targetTransform.getM_LocalRotation());
+            } else {
+                targetTransform = new Transform();
+                targetTransform.setM_LocalPosition(new UnityVector());
+                targetTransform.setM_LocalScale(new UnityVector().x(1).y(1).z(1));
+            }
             switch (modification.getPropertyPath().toLowerCase()) {
                 case ("m_localposition.z"):
-                    shapeTransform.setTranslateX(Double.parseDouble(modification.getValue()));
+                    shapeTransform.setTranslateX(targetTransform.getM_LocalPosition().getZ() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localposition.x"):
-                    shapeTransform.setTranslateY(-Double.parseDouble(modification.getValue()));
+                    shapeTransform.setTranslateY(-targetTransform.getM_LocalPosition().getX() - Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localposition.y"):
-                    shapeTransform.setTranslateZ(Double.parseDouble(modification.getValue()));
+                    shapeTransform.setTranslateZ(targetTransform.getM_LocalPosition().getY() + Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.x"):
-                    if (quaternion.isEmpty()) {
-                        quaternion.setO(new UnityVector());
-                    }
-                    quaternion.getO().setX(-Double.parseDouble(modification.getValue()));
+                    quaternions.computeIfAbsent(modification.getTarget(), reference -> new UnityVector()).setX(-Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.y"):
-                    if (quaternion.isEmpty()) {
-                        quaternion.setO(new UnityVector());
-                    }
-                    quaternion.getO().setY(Double.parseDouble(modification.getValue()));
+                    quaternions.computeIfAbsent(modification.getTarget(), reference -> new UnityVector()).setY(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.z"):
-                    if (quaternion.isEmpty()) {
-                        quaternion.setO(new UnityVector());
-                    }
-                    quaternion.getO().setZ(Double.parseDouble(modification.getValue()));
+                    quaternions.computeIfAbsent(modification.getTarget(), reference -> new UnityVector()).setZ(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.w"):
-                    if (quaternion.isEmpty()) {
-                        quaternion.setO(new UnityVector());
-                    }
-                    quaternion.getO().setW(-Double.parseDouble(modification.getValue()));
+                    quaternions.computeIfAbsent(modification.getTarget(), reference -> new UnityVector()).setW(-Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.x"):
-                    scale.setX(Double.parseDouble(modification.getValue()));
+                    scale.setX(targetTransform.getM_LocalScale().getX() * Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.y"):
-                    scale.setY(Double.parseDouble(modification.getValue()));
+                    scale.setY(targetTransform.getM_LocalScale().getY() * Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.z"):
-                    scale.setZ(Double.parseDouble(modification.getValue()));
+                    scale.setZ(targetTransform.getM_LocalScale().getZ() * Double.parseDouble(modification.getValue()));
                     break;
                 // Ignore
                 case ("m_name"):
@@ -264,8 +253,12 @@ public class UnityAssetConverter {
         UnityVector quaternion3 = UnityVector.createFromAxisAngle(Vertex.Y_NORM, Math.PI / 2);
 
         quaternion3.quaternionMultiply(quaternion2);
-        if (!quaternion.isEmpty()) {
-            quaternion3.quaternionMultiply(quaternion.getO());
+        if (!quaternions.isEmpty()) {
+            quaternions.forEach((reference, quaternion) -> {
+                UnityVector targetQuaternion = targetQuaternions.get(reference);
+                targetQuaternion.quaternionMultiply(quaternion);
+                quaternion3.quaternionMultiply(targetQuaternion);
+            });
         }
 
         Vertex angles = quaternion3.quaternion2Angles();
@@ -274,6 +267,24 @@ public class UnityAssetConverter {
         shapeTransform.setRotateZ(angles.getZ());
 
         return shapeTransform;
+    }
+
+    private static Transform createTransform(Component transformComponent, Prefab prefab) {
+        if (transformComponent instanceof Transform) {
+            Transform transform = (Transform) transformComponent;
+            Transform resultTransform = Transform.copyTransforms(transform);
+
+            for (Reference childReference : transform.getM_Children()) {
+                Transform childTransform = createTransform(prefab.getComponent(childReference), prefab);
+                if (childTransform != null) {
+                    resultTransform = Transform.sumTransforms(resultTransform, childTransform);
+                }
+            }
+            return resultTransform;
+        } else if (!(transformComponent instanceof IgnoredAssetType) && transformComponent != null) {
+            LOGGER.warning("Unknown target Component: " + transformComponent);
+        }
+        return null;
     }
 
     private static MaterialInfo setupMaterialInfo(MeshRenderer meshRenderer, GameObject gameObject, UnityAsset unityAsset) {
@@ -347,6 +358,23 @@ public class UnityAssetConverter {
         }
     }
 
+    private static void dumpErrors(Prefab prefab, UnityAsset unityAsset, Transform transform) {
+        transform.getM_Children().forEach(reference -> {
+            if (prefab.getComponent(reference) == null) {
+                LOGGER.warning("Not found: " + reference);
+            }
+        });
+        transform.getM_Children().stream()
+                .map(prefab::getComponent)
+                .filter(Objects::nonNull)
+                .map(o -> (Transform) o)
+                .forEach(t -> {
+                    if (unityAsset.getAssetType(t.getM_CorrespondingSourceObject()) == null) {
+                        LOGGER.warning("Transformation Not found: " + t.getM_CorrespondingSourceObject());
+                    }
+                });
+    }
+
     private static void dumpMeshContainers(List<MeshContainer> meshContainers, String space) {
         meshContainers.forEach(meshContainer -> {
             System.out.println("-------------------------------------");
@@ -364,6 +392,7 @@ public class UnityAssetConverter {
         String meshString = "-";
         if (meshContainer.getMesh() != null) {
             meshString = "Shape3DId: " + meshContainer.getMesh().getShape3DId() + ", Element3DId: " + meshContainer.getMesh().getElement3DId();
+            meshString += " ShapeTransform: " + meshContainer.getMesh().getShapeTransform();
         }
         System.out.println(space + "Mesh: " + meshString);
         if (meshContainer.getChildren() != null) {
