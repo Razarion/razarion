@@ -1,10 +1,13 @@
 package com.btxtech.unityconverter;
 
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.Mesh;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.unityconverter.unity.asset.AssetReader;
 import com.btxtech.unityconverter.unity.asset.UnityAsset;
 import com.btxtech.unityconverter.unity.asset.type.AssetType;
@@ -24,7 +27,6 @@ import com.btxtech.unityconverter.unity.model.Reference;
 import com.btxtech.unityconverter.unity.model.ShaderGraph;
 import com.btxtech.unityconverter.unity.model.ShaderGraphData;
 import com.btxtech.unityconverter.unity.model.Transform;
-import com.btxtech.unityconverter.unity.model.UnityVector;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -184,55 +186,52 @@ public class UnityAssetConverter {
         if (m_modification == null || m_modification.getM_Modifications() == null) {
             return new ShapeTransform().setScaleX(1).setScaleY(1).setScaleZ(1);
         }
-        ShapeTransform shapeTransform = new ShapeTransform();
-        final Map<Reference, UnityVector> quaternions = new HashMap<>();
-        final Map<Reference, UnityVector> targetQuaternions = new HashMap<>();
-        UnityVector scale = new UnityVector().x(1).y(1).z(1);
 
-        System.out.println("---setupShapeTransform--------------------------");
+        Map<Reference, Transform> transforms = new HashMap<>();
         m_modification.getM_Modifications().forEach(modification -> {
             // System.out.println(modification.getPropertyPath() + "=" + modification.getValue());
-            System.out.println(modification.getPropertyPath() + "=" + modification.getValue() + " ||| " + modification.getTarget() + " : " + unityAsset.getAssetType(modification.getTarget()).getAssetFile());
-            Prefab targetPrefab = unityAsset.getAssetType(modification.getTarget());
-            Transform targetTransform = createTransform(targetPrefab.getComponent(modification.getTarget()), targetPrefab);
-            if (targetTransform != null) {
-                targetQuaternions.put(modification.getTarget(), targetTransform.getM_LocalRotation());
-            } else {
-                targetTransform = new Transform();
-                targetTransform.setM_LocalPosition(new UnityVector());
-                targetTransform.setM_LocalScale(new UnityVector().x(1).y(1).z(1));
+            // System.out.println(modification.getPropertyPath() + "=" + modification.getValue() + " ||| " + modification.getTarget() + " : " + unityAsset.getAssetType(modification.getTarget()).getAssetFile());
+            Transform transform = transforms.get(modification.getTarget());
+            if (transform == null) {
+                Prefab targetPrefab = unityAsset.getAssetType(modification.getTarget());
+                transform = createTransform(targetPrefab.getComponent(modification.getTarget()), targetPrefab);
+                if (transform == null) {
+                    return;
+                }
+                transforms.put(modification.getTarget(), transform);
             }
             switch (modification.getPropertyPath().toLowerCase()) {
-                case ("m_localposition.z"):
-                    shapeTransform.setTranslateX(targetTransform.getM_LocalPosition().getZ() + Double.parseDouble(modification.getValue()));
-                    break;
                 case ("m_localposition.x"):
-                    shapeTransform.setTranslateY(-targetTransform.getM_LocalPosition().getX() - Double.parseDouble(modification.getValue()));
+                    transform.getM_LocalPosition().setX(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localposition.y"):
-                    shapeTransform.setTranslateZ(targetTransform.getM_LocalPosition().getY() + Double.parseDouble(modification.getValue()));
+                    transform.getM_LocalPosition().setY(Double.parseDouble(modification.getValue()));
+                    break;
+                case ("m_localposition.z"):
+                    transform.getM_LocalPosition().setZ(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.x"):
-                    quaternions.computeIfAbsent(modification.getTarget(), reference -> new UnityVector()).setX(-Double.parseDouble(modification.getValue()));
+                    transform.getM_LocalRotation().setX(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.y"):
-                    quaternions.computeIfAbsent(modification.getTarget(), reference -> new UnityVector()).setY(Double.parseDouble(modification.getValue()));
+                    transform.getM_LocalRotation().setY(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.z"):
-                    quaternions.computeIfAbsent(modification.getTarget(), reference -> new UnityVector()).setZ(Double.parseDouble(modification.getValue()));
+                    transform.getM_LocalRotation().setZ(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localrotation.w"):
-                    quaternions.computeIfAbsent(modification.getTarget(), reference -> new UnityVector()).setW(-Double.parseDouble(modification.getValue()));
+                    transform.getM_LocalRotation().setW(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.x"):
-                    scale.setX(targetTransform.getM_LocalScale().getX() * Double.parseDouble(modification.getValue()));
+                    transform.getM_LocalScale().setX(Double.parseDouble(modification.getValue()));
                     break;
                 case ("m_localscale.y"):
-                    scale.setY(targetTransform.getM_LocalScale().getY() * Double.parseDouble(modification.getValue()));
+                    transform.getM_LocalScale().setY(Double.parseDouble(modification.getValue()));
                     break;
-                case ("m_localscale.z"):
-                    scale.setZ(targetTransform.getM_LocalScale().getZ() * Double.parseDouble(modification.getValue()));
+                case ("m_localscale.z"): {
+                    transform.getM_LocalScale().setZ(Double.parseDouble(modification.getValue()));
                     break;
+                }
                 // Ignore
                 case ("m_name"):
                 case ("m_rootorder"):
@@ -245,27 +244,29 @@ public class UnityAssetConverter {
             }
         });
 
-        shapeTransform.setScaleX(scale.getX());
-        shapeTransform.setScaleY(scale.getY());
-        shapeTransform.setScaleZ(scale.getZ());
+        SingleHolder<Matrix4> matrix = new SingleHolder<>(Matrix4.createIdentity());
 
-        UnityVector quaternion2 = UnityVector.createFromAxisAngle(Vertex.Z_NORM, Math.PI / 2);
-        UnityVector quaternion3 = UnityVector.createFromAxisAngle(Vertex.Y_NORM, Math.PI / 2);
+        // ---- game engine position
+        matrix.setO(matrix.getO().multiply(Matrix4.createTranslation(274, 100, 3)));
+        // ---- game engine position ends
 
-        quaternion3.quaternionMultiply(quaternion2);
-        if (!quaternions.isEmpty()) {
-            quaternions.forEach((reference, quaternion) -> {
-                UnityVector targetQuaternion = targetQuaternions.get(reference);
-                targetQuaternion.quaternionMultiply(quaternion);
-                quaternion3.quaternionMultiply(targetQuaternion);
-            });
-        }
+        matrix.setO(matrix.getO().multiply(Matrix4.createXRotation(MathHelper.QUARTER_RADIANT)));
+        matrix.setO(matrix.getO().multiply(Matrix4.createYRotation(MathHelper.QUARTER_RADIANT)));
 
-        Vertex angles = quaternion3.quaternion2Angles();
-        shapeTransform.setRotateX(angles.getX());
-        shapeTransform.setRotateY(angles.getY());
-        shapeTransform.setRotateZ(angles.getZ());
 
+        transforms.values().forEach(transform -> {
+            Matrix4 newMatrix = Matrix4.createTranslation(-transform.getM_LocalPosition().getX(), transform.getM_LocalPosition().getY(), transform.getM_LocalPosition().getZ());
+            Vertex angles = transform.getM_LocalRotation().quaternion2Angles();
+            newMatrix = newMatrix.multiply(Matrix4.createYRotation(-angles.getY()));
+            newMatrix = newMatrix.multiply(Matrix4.createXRotation(angles.getX()));
+            newMatrix = newMatrix.multiply(Matrix4.createZRotation(-angles.getZ()));
+            newMatrix = newMatrix.multiply(Matrix4.createScale(transform.getM_LocalScale().getX(), transform.getM_LocalScale().getY(), transform.getM_LocalScale().getZ()));
+            matrix.setO(matrix.getO().multiply(newMatrix));
+        });
+
+
+        ShapeTransform shapeTransform = new ShapeTransform();
+        shapeTransform.setStaticMatrix(matrix.getO());
         return shapeTransform;
     }
 
