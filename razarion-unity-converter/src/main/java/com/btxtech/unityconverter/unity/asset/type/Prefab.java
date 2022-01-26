@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static com.btxtech.unityconverter.unity.asset.type.UnityYamlScanner.readAllYamlDocuments;
 
@@ -114,8 +115,19 @@ public class Prefab extends AssetType {
                 .stream()
                 .map(componentReference -> getComponent(componentReference.getComponent()))
                 .filter(c -> c instanceof MeshRenderer)
-                .map(c -> (MeshRenderer)c)
+                .map(c -> (MeshRenderer) c)
                 .findFirst()
                 .orElse(null);
+    }
+
+    public List<Transform> findTransform4Father(String fatherTransformReference) {
+        return components.values()
+                .stream()
+                .filter(c -> c instanceof Transform)
+                .map(c -> (Transform) c)
+                .filter(transform -> transform.getM_Father() != null)
+                .filter(transform -> transform.getM_Father().isNotNull())
+                .filter(transform -> transform.getM_Father().getFileID().equals(fatherTransformReference))
+                .collect(Collectors.toList());
     }
 }

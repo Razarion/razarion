@@ -31,6 +31,7 @@ import com.btxtech.unityconverter.unity.model.Transform;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class UnityAssetConverter {
 //                    unityAsset.getAssetTypes(Prefab.class).stream().map(prefab -> createMeshContainer(prefab, unityAsset, mockAssetContext)).collect(Collectors.toList())
 //                    , "--");
             System.out.println("------------ Dump single prefab ------------");
-            Prefab prefab = unityAsset.findPrefab("Aaa");
+            Prefab prefab = unityAsset.findPrefab("Aaa 1");
             System.out.println("Prefab AssetFile: " + prefab.getAssetFile());
             System.out.println("Prefab: " + prefab);
             dumpMeshContainer(createRootMeshContainer(prefab, unityAsset, mockAssetContext), "");
@@ -121,8 +122,8 @@ public class UnityAssetConverter {
         }
     }
 
-    private static MeshContainer createMeshContainerFromGameObject(String name, String guid, GameObject gameObjects, Prefab prefab, ShapeTransform shapeTransform, UnityAsset unityAsset, AssetContext assetContext) {
-        Transform transform = gameObjects.getM_Component()
+    private static MeshContainer createMeshContainerFromGameObject(String name, String guid, GameObject gameObject, Prefab prefab, ShapeTransform shapeTransform, UnityAsset unityAsset, AssetContext assetContext) {
+        Transform transform = gameObject.getM_Component()
                 .stream()
                 .map(componentReference -> prefab.getComponent(componentReference.getComponent()))
                 .filter(c -> c instanceof Transform)
@@ -135,7 +136,7 @@ public class UnityAssetConverter {
                 .internalName(name)
                 .guid(guid)
                 .children(setupChildMeshContainers(prefab, unityAsset, assetContext, transform))
-                .mesh(setupMesh(prefab, shapeTransform, gameObjects, unityAsset, assetContext));
+                .mesh(setupMesh(prefab, shapeTransform, gameObject, unityAsset, assetContext));
     }
 
     private static List<MeshContainer> setupChildMeshContainers(Prefab prefab, UnityAsset unityAsset, AssetContext assetContext, Transform transform) {
@@ -189,8 +190,6 @@ public class UnityAssetConverter {
 
         Map<Reference, Transform> transforms = new HashMap<>();
         m_modification.getM_Modifications().forEach(modification -> {
-            // System.out.println(modification.getPropertyPath() + "=" + modification.getValue());
-            // System.out.println(modification.getPropertyPath() + "=" + modification.getValue() + " ||| " + modification.getTarget() + " : " + unityAsset.getAssetType(modification.getTarget()).getAssetFile());
             Transform transform = transforms.get(modification.getTarget());
             if (transform == null) {
                 Prefab targetPrefab = unityAsset.getAssetType(modification.getTarget());
@@ -199,6 +198,13 @@ public class UnityAssetConverter {
                     return;
                 }
                 transforms.put(modification.getTarget(), transform);
+                List<Transform> children = targetPrefab.findTransform4Father(modification.getTarget().getFileID());
+                children.forEach(child -> {
+                    Reference childReference = new Reference().fileID(child.getObjectId()).guid(targetPrefab.getGuid()).type("3");
+                    if (!transforms.containsKey(childReference)) {
+                        transforms.put(childReference, Transform.copyTransforms(child));
+                    }
+                });
             }
             switch (modification.getPropertyPath().toLowerCase()) {
                 case ("m_localposition.x"):
@@ -244,44 +250,38 @@ public class UnityAssetConverter {
             }
         });
 
-        SingleHolder<Matrix4> matrix = new SingleHolder<>(Matrix4.createIdentity());
+        Matrix4 matrix = Matrix4.createIdentity();
 
         // ---- game engine position
-        matrix.setO(matrix.getO().multiply(Matrix4.createTranslation(274, 100, 3)));
+        matrix = matrix.multiply(Matrix4.createTranslation(274, 100, 3));
         // ---- game engine position ends
 
-        matrix.setO(matrix.getO().multiply(Matrix4.createXRotation(MathHelper.QUARTER_RADIANT)));
-        matrix.setO(matrix.getO().multiply(Matrix4.createYRotation(MathHelper.QUARTER_RADIANT)));
+        Matrix4 unityConversationMatrix = Matrix4.createXRotation(MathHelper.QUARTER_RADIANT);
+        unityConversationMatrix = unityConversationMatrix.multiply(Matrix4.createYRotation(MathHelper.QUARTER_RADIANT));
+        SingleHolder<Matrix4> transformMatrix = new SingleHolder<>(unityConversationMatrix);
+        List<Transform> transformOrdered = new ArrayList<>(transforms.values());
+        Collections.reverse(transformOrdered);
 
-
-        transforms.values().forEach(transform -> {
+        transformOrdered.forEach(transform -> {
             Matrix4 newMatrix = Matrix4.createTranslation(-transform.getM_LocalPosition().getX(), transform.getM_LocalPosition().getY(), transform.getM_LocalPosition().getZ());
             Vertex angles = transform.getM_LocalRotation().quaternion2Angles();
             newMatrix = newMatrix.multiply(Matrix4.createYRotation(-angles.getY()));
             newMatrix = newMatrix.multiply(Matrix4.createXRotation(angles.getX()));
             newMatrix = newMatrix.multiply(Matrix4.createZRotation(-angles.getZ()));
             newMatrix = newMatrix.multiply(Matrix4.createScale(transform.getM_LocalScale().getX(), transform.getM_LocalScale().getY(), transform.getM_LocalScale().getZ()));
-            matrix.setO(matrix.getO().multiply(newMatrix));
+            transformMatrix.setO(transformMatrix.getO().multiply(newMatrix));
         });
 
+        matrix = matrix.multiply(transformMatrix.getO());
 
         ShapeTransform shapeTransform = new ShapeTransform();
-        shapeTransform.setStaticMatrix(matrix.getO());
+        shapeTransform.setStaticMatrix(matrix);
         return shapeTransform;
     }
 
     private static Transform createTransform(Component transformComponent, Prefab prefab) {
         if (transformComponent instanceof Transform) {
-            Transform transform = (Transform) transformComponent;
-            Transform resultTransform = Transform.copyTransforms(transform);
-
-            for (Reference childReference : transform.getM_Children()) {
-                Transform childTransform = createTransform(prefab.getComponent(childReference), prefab);
-                if (childTransform != null) {
-                    resultTransform = Transform.sumTransforms(resultTransform, childTransform);
-                }
-            }
-            return resultTransform;
+            return Transform.copyTransforms((Transform) transformComponent);
         } else if (!(transformComponent instanceof IgnoredAssetType) && transformComponent != null) {
             LOGGER.warning("Unknown target Component: " + transformComponent);
         }

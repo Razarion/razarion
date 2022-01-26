@@ -71,4 +71,8 @@ public class Reference {
                 ", type='" + type + '\'' +
                 '}';
     }
+
+    public boolean isNotNull() {
+        return !(fileID.equals("0") && guid == null && type == null);
+    }
 }

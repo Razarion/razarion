@@ -6,6 +6,7 @@ public class Transform extends Component {
     private List<Reference> m_Children;
     private Reference m_CorrespondingSourceObject;
     private Reference m_PrefabInstance;
+    private Reference m_Father;
     private UnityVector m_LocalEulerAnglesHint;
     private UnityVector m_LocalPosition;
     private UnityVector m_LocalScale;
@@ -33,6 +34,10 @@ public class Transform extends Component {
 
     public void setM_PrefabInstance(Reference m_PrefabInstance) {
         this.m_PrefabInstance = m_PrefabInstance;
+    }
+
+    public Reference getM_Father() {
+        return m_Father;
     }
 
     public UnityVector getM_LocalEulerAnglesHint() {
@@ -67,8 +72,14 @@ public class Transform extends Component {
         this.m_LocalRotation = m_LocalRotation;
     }
 
+    public void setM_Father(Reference m_Father) {
+        this.m_Father = m_Father;
+    }
+
     public static Transform copyTransforms(Transform source) {
         Transform result = new Transform();
+        result.setObjectId(source.getObjectId());
+        result.setM_Father(source.getM_Father());
         result.setM_LocalPosition(new UnityVector()
                 .x(source.m_LocalPosition.getX())
                 .y(source.m_LocalPosition.getY())
@@ -88,35 +99,13 @@ public class Transform extends Component {
         return result;
     }
 
-    public static Transform sumTransforms(Transform t1, Transform t2) {
-        Transform result = new Transform();
-        result.setM_LocalPosition(new UnityVector()
-                .x(t1.m_LocalPosition.getX() + t2.m_LocalPosition.getX())
-                .y(t1.m_LocalPosition.getY() + t2.m_LocalPosition.getY())
-                .z(t1.m_LocalPosition.getZ() + t2.m_LocalPosition.getZ()));
-
-        UnityVector baseQuaternion = new UnityVector()
-                .x(t1.m_LocalRotation.getX())
-                .y(t1.m_LocalRotation.getY())
-                .z(t1.m_LocalRotation.getZ())
-                .w(t1.m_LocalRotation.getW());
-        baseQuaternion.quaternionMultiply(t2.m_LocalRotation);
-        result.setM_LocalRotation(baseQuaternion);
-
-        result.setM_LocalScale(new UnityVector()
-                .x(t1.m_LocalScale.getX() * t2.m_LocalScale.getX())
-                .y(t1.m_LocalScale.getY() * t2.m_LocalScale.getY())
-                .z(t1.m_LocalScale.getZ() * t2.m_LocalScale.getZ()));
-
-        return result;
-    }
-
     @Override
     public String toString() {
         return "Transform{" +
                 "m_Children=" + m_Children +
                 ", m_CorrespondingSourceObject=" + m_CorrespondingSourceObject +
                 ", m_PrefabInstance=" + m_PrefabInstance +
+                ", m_Father=" + m_Father +
                 ", m_LocalEulerAnglesHint=" + m_LocalEulerAnglesHint +
                 ", m_LocalPosition=" + m_LocalPosition +
                 ", m_LocalScale=" + m_LocalScale +
