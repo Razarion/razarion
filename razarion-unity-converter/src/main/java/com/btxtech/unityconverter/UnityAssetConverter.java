@@ -33,9 +33,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -189,6 +191,7 @@ public class UnityAssetConverter {
         }
 
         Map<Reference, Transform> transforms = new HashMap<>();
+        Set<Reference> childReferences = new HashSet<>();
         m_modification.getM_Modifications().forEach(modification -> {
             Transform transform = transforms.get(modification.getTarget());
             if (transform == null) {
@@ -201,6 +204,7 @@ public class UnityAssetConverter {
                 List<Transform> children = targetPrefab.findTransform4Father(modification.getTarget().getFileID());
                 children.forEach(child -> {
                     Reference childReference = new Reference().fileID(child.getObjectId()).guid(targetPrefab.getGuid()).type("3");
+                    childReferences.add(childReference);
                     if (!transforms.containsKey(childReference)) {
                         transforms.put(childReference, Transform.copyTransforms(child));
                     }
@@ -259,7 +263,12 @@ public class UnityAssetConverter {
         Matrix4 unityConversationMatrix = Matrix4.createXRotation(MathHelper.QUARTER_RADIANT);
         unityConversationMatrix = unityConversationMatrix.multiply(Matrix4.createYRotation(MathHelper.QUARTER_RADIANT));
         SingleHolder<Matrix4> transformMatrix = new SingleHolder<>(unityConversationMatrix);
-        List<Transform> transformOrdered = new ArrayList<>(transforms.values());
+
+        List<Transform> transformOrdered = childReferences.stream()
+                .map(transforms::remove)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        transformOrdered.addAll(transforms.values());
         Collections.reverse(transformOrdered);
 
         transformOrdered.forEach(transform -> {
