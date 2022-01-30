@@ -181,10 +181,8 @@ public class ModelMatrices {
 
     public ModelMatrices multiplyShapeTransform(Matrix4 matrix4) {
         NativeMatrix otherMatrix = matrix.getNativeMatrixFactory().createFromColumnMajorArray(matrix4.toWebGlArray());
-        // ModelMatrices modelMatrices = new ModelMatrices(otherMatrix.multiply(matrix));
-        ModelMatrices modelMatrices = new ModelMatrices(otherMatrix);
-        // ModelMatrices modelMatrices = new ModelMatrices(matrix);
-        return fillModelMatrices(modelMatrices);
+        return fillModelMatrices(
+                new ModelMatrices(matrix.multiply(otherMatrix)));
     }
 
     public NativeMatrix getNorm() {
