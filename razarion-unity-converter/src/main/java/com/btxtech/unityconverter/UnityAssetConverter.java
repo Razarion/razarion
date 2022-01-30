@@ -275,8 +275,11 @@ public class UnityAssetConverter {
             transformMatrix.setO(transformMatrix.getO().multiply(newMatrix));
         });
 
+        // Empirical value
+        Matrix4 unityScale = Matrix4.createScale(0.01, 0.01, 0.01);
+
         ShapeTransform shapeTransform = new ShapeTransform();
-        shapeTransform.setStaticMatrix(transformMatrix.getO());
+        shapeTransform.setStaticMatrix(transformMatrix.getO().multiply(unityScale));
         return shapeTransform;
     }
 
