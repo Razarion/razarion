@@ -71,7 +71,7 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
                 List<ModelMatrices> itemModelMatrices = baseItemUiService.provideAliveModelMatrices(baseItemType);
                 if (itemModelMatrices != null) {
                     itemModelMatrices.forEach(baseItemModelMatrices -> shapeTransforms.forEach(
-                            shapeTransform -> resultModelMatrices.add(baseItemModelMatrices.multiplyShapeTransform(shapeTransform))));
+                            shapeTransform -> resultModelMatrices.add(baseItemModelMatrices.multiplyShapeTransform(shapeTransform.getStaticMatrix()))));
                 }
 
             });

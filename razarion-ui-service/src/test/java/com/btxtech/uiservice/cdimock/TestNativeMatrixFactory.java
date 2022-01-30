@@ -24,7 +24,7 @@ public class TestNativeMatrixFactory extends NativeMatrixFactory {
 
     @Override
     public NativeMatrix createFromColumnMajorArray(double[] array) {
-        return new TestNativeMatrix(new Matrix4(array));
+        return new TestNativeMatrix(Matrix4.fromColumnMajorOrder(array));
     }
 
     @Override

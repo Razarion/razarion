@@ -25,7 +25,7 @@ public abstract class NativeMatrixFactory {
 
     public native NativeMatrix createFromNativeMatrixDto(NativeMatrixDto nativeMatrixDto);
 
-    public native NativeMatrixDto createNativeMatrixDtoColumnMajorArray(double array[]);
+    public native NativeMatrixDto createNativeMatrixDtoColumnMajorArray(double[] array);
 
     public native int[] intArrayConverter(int[] ints);
 }

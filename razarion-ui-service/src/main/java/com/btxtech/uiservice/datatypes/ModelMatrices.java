@@ -179,6 +179,14 @@ public class ModelMatrices {
         return fillModelMatrices(modelMatrices);
     }
 
+    public ModelMatrices multiplyShapeTransform(Matrix4 matrix4) {
+        NativeMatrix otherMatrix = matrix.getNativeMatrixFactory().createFromColumnMajorArray(matrix4.toWebGlArray());
+        // ModelMatrices modelMatrices = new ModelMatrices(otherMatrix.multiply(matrix));
+        ModelMatrices modelMatrices = new ModelMatrices(otherMatrix);
+        // ModelMatrices modelMatrices = new ModelMatrices(matrix);
+        return fillModelMatrices(modelMatrices);
+    }
+
     public NativeMatrix getNorm() {
         if (norm == null) {
             NativeMatrix inverse = matrix.invert();

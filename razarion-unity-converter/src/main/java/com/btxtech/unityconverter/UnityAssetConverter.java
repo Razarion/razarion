@@ -254,15 +254,8 @@ public class UnityAssetConverter {
             }
         });
 
-        Matrix4 matrix = Matrix4.createIdentity();
-
-        // ---- game engine position
-        matrix = matrix.multiply(Matrix4.createTranslation(274, 100, 3));
-        // ---- game engine position ends
-
         Matrix4 unityConversationMatrix = Matrix4.createXRotation(MathHelper.QUARTER_RADIANT);
         unityConversationMatrix = unityConversationMatrix.multiply(Matrix4.createYRotation(MathHelper.QUARTER_RADIANT));
-        SingleHolder<Matrix4> transformMatrix = new SingleHolder<>(unityConversationMatrix);
 
         List<Transform> transformOrdered = childReferences.stream()
                 .map(transforms::remove)
@@ -271,6 +264,7 @@ public class UnityAssetConverter {
         transformOrdered.addAll(transforms.values());
         Collections.reverse(transformOrdered);
 
+        SingleHolder<Matrix4> transformMatrix = new SingleHolder<>(unityConversationMatrix);
         transformOrdered.forEach(transform -> {
             Matrix4 newMatrix = Matrix4.createTranslation(-transform.getM_LocalPosition().getX(), transform.getM_LocalPosition().getY(), transform.getM_LocalPosition().getZ());
             Vertex angles = transform.getM_LocalRotation().quaternion2Angles();
@@ -281,10 +275,8 @@ public class UnityAssetConverter {
             transformMatrix.setO(transformMatrix.getO().multiply(newMatrix));
         });
 
-        matrix = matrix.multiply(transformMatrix.getO());
-
         ShapeTransform shapeTransform = new ShapeTransform();
-        shapeTransform.setStaticMatrix(matrix);
+        shapeTransform.setStaticMatrix(transformMatrix.getO());
         return shapeTransform;
     }
 

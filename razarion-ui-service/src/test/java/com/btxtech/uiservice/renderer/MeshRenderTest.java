@@ -67,7 +67,7 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
         info.itemTypeId = BUILDER_ITEM_TYPE_ID;
         info.x = 274;
         info.y = 100;
-        info.z = 0;
+        info.z = 2;
         nativeMatrixDto.numbers = Matrix4.createTranslation(info.x, info.y, info.z).toArray();
         info.model = nativeMatrixDto;
         info.spawning = 1;
