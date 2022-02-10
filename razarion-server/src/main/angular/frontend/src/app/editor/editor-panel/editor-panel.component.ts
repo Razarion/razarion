@@ -42,7 +42,7 @@ export class EditorPanelComponent implements AfterViewInit {
         this.messageService.add({
           severity: 'error',
           summary: `Can not open editor: ${this.editorModel.name}`,
-          detail: error,
+          detail: "" + error,
           sticky: true
         });
         console.error(error);

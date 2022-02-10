@@ -33,7 +33,7 @@ export class PropertyTableComponent extends EditorPanel {
       this.messageService.add({
         severity: 'error',
         summary: `Can not read ObjectNameId: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
-        detail: error,
+        detail: "" + error,
         sticky: true
       });
       console.error(error);

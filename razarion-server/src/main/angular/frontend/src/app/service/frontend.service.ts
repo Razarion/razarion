@@ -78,7 +78,7 @@ export class FrontendService {
         }
         body = body.set(`error`, errorMessage);
       } catch (innerErr) {
-        body = body.set(`error`, "Error handling error: '" + innerErr.toString() + "' Original error '" + error.toString() + "'");
+        body = body.set(`error`, "Error handling error: '" + "" + innerErr + "' Original error '" + error.toString() + "'");
       }
     }
     this.http.post<void>(URL_FRONTEND + '/log', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe();
