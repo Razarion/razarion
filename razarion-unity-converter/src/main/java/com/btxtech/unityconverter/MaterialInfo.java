@@ -3,6 +3,9 @@ package com.btxtech.unityconverter;
 public class MaterialInfo {
     private GuidFile mainTexture;
     private GuidFile main2Texture;
+    private GuidFile normMap;
+    private GuidFile norm2Map;
+
 
     public GuidFile getMainTexture() {
         return mainTexture;
@@ -20,6 +23,22 @@ public class MaterialInfo {
         this.main2Texture = main2Texture;
     }
 
+    public GuidFile getNormMap() {
+        return normMap;
+    }
+
+    public void setNormMap(GuidFile normMap) {
+        this.normMap = normMap;
+    }
+
+    public GuidFile getNorm2Map() {
+        return norm2Map;
+    }
+
+    public void setNorm2Map(GuidFile norm2Map) {
+        this.norm2Map = norm2Map;
+    }
+
     public MaterialInfo mainTexture(GuidFile mainTextureGuid) {
         setMainTexture(mainTextureGuid);
         return this;
@@ -28,6 +47,26 @@ public class MaterialInfo {
     public MaterialInfo main2Texture(GuidFile main2TextureGuid) {
         setMain2Texture(main2TextureGuid);
         return this;
+    }
+
+    public MaterialInfo normMap(GuidFile normMap) {
+        setNormMap(normMap);
+        return this;
+    }
+
+    public MaterialInfo norm2Map(GuidFile norm2Map) {
+        setNorm2Map(norm2Map);
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "MaterialInfo{" +
+                "mainTexture=" + mainTexture +
+                ", main2Texture=" + main2Texture +
+                ", normMap=" + normMap +
+                ", norm2Map=" + norm2Map +
+                '}';
     }
 
     public static class GuidFile {
@@ -58,6 +97,14 @@ public class MaterialInfo {
         public GuidFile file(String file) {
             setFile(file);
             return this;
+        }
+
+        @Override
+        public String toString() {
+            return "GuidFile{" +
+                    "guid='" + guid + '\'' +
+                    ", file='" + file + '\'' +
+                    '}';
         }
     }
 }

@@ -24,14 +24,14 @@ class AssetReaderTest {
         System.out.println(mainGameObject.getM_Name());
         Transform transform = mainGameObject.getM_Component()
                 .stream()
-                .map(componentReference -> prefab.getComponent(componentReference.getComponent()))
+                .map(componentReference -> prefab.getUnityObject(componentReference.getComponent()))
                 .filter(c -> c instanceof Transform)
                 .map(c -> (Transform) c)
                 .findFirst().orElseThrow(IllegalStateException::new);
 
         transform.getM_Children()
                 .stream()
-                .map(prefab::getComponent)
+                .map(prefab::getUnityObject)
                 .filter(Objects::nonNull)
                 .map(o -> (Transform) o)
                 .map(Transform::getM_CorrespondingSourceObject)
@@ -55,12 +55,12 @@ class AssetReaderTest {
 
         // Errors ---
         transform.getM_Children().forEach(reference -> {
-            if (prefab.getComponent(reference) == null) {
+            if (prefab.getUnityObject(reference) == null) {
                 System.out.println("Not found: " + reference);
             }
         });
         transform.getM_Children().stream()
-                .map(prefab::getComponent)
+                .map(prefab::getUnityObject)
                 .filter(Objects::nonNull)
                 .map(o -> (Transform) o)
                 .forEach(t -> {

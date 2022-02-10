@@ -103,9 +103,21 @@ public class ServerAssetContext implements AssetContext {
             }
         }
         if (!alternative && materialInfo.getMainTexture() != null) {
-            return new PhongMaterialConfig().textureId(getOrCreateImage(materialInfo.getMainTexture())).scale(1);
+            return new PhongMaterialConfig()
+                    .textureId(getOrCreateImage(materialInfo.getMainTexture()))
+                    .normalMapDepth(0.5)
+                    .normalMapId(getOrCreateImage(materialInfo.getNormMap()))
+                    .scale(1)
+                    .shininess(30.0)
+                    .specularStrength(0.7);
         } else if (alternative && materialInfo.getMain2Texture() != null) {
-            return new PhongMaterialConfig().textureId(getOrCreateImage(materialInfo.getMain2Texture())).scale(1);
+            return new PhongMaterialConfig()
+                    .textureId(getOrCreateImage(materialInfo.getMain2Texture()))
+                    .normalMapDepth(0.5)
+                    .normalMapId(getOrCreateImage(materialInfo.getNorm2Map()))
+                    .scale(1)
+                    .shininess(30.0)
+                    .specularStrength(0.7);
         } else {
             if (alternative) {
                 return null;

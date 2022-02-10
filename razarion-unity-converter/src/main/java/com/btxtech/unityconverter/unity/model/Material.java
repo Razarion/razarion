@@ -2,7 +2,7 @@ package com.btxtech.unityconverter.unity.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Material extends Component{
+public class Material extends Component {
     @JsonProperty("m_SavedProperties")
     private SavedProperties savedProperties;
     @JsonProperty("m_Shader")

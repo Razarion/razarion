@@ -15,7 +15,6 @@ import com.btxtech.unityconverter.unity.asset.type.Fbx;
 import com.btxtech.unityconverter.unity.asset.type.MaterialAssetType;
 import com.btxtech.unityconverter.unity.asset.type.Prefab;
 import com.btxtech.unityconverter.unity.asset.type.ShaderGraphAssetType;
-import com.btxtech.unityconverter.unity.model.Component;
 import com.btxtech.unityconverter.unity.model.GameObject;
 import com.btxtech.unityconverter.unity.model.IgnoredAssetType;
 import com.btxtech.unityconverter.unity.model.Material;
@@ -27,6 +26,7 @@ import com.btxtech.unityconverter.unity.model.Reference;
 import com.btxtech.unityconverter.unity.model.ShaderGraph;
 import com.btxtech.unityconverter.unity.model.ShaderGraphData;
 import com.btxtech.unityconverter.unity.model.Transform;
+import com.btxtech.unityconverter.unity.model.UnityObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,7 +81,7 @@ public class UnityAssetConverter {
 //                    unityAsset.getAssetTypes(Prefab.class).stream().map(prefab -> createMeshContainer(prefab, unityAsset, mockAssetContext)).collect(Collectors.toList())
 //                    , "--");
             System.out.println("------------ Dump single prefab ------------");
-            Prefab prefab = unityAsset.findPrefab("Aaa 1");
+            Prefab prefab = unityAsset.findPrefab("Bbb");
             System.out.println("Prefab AssetFile: " + prefab.getAssetFile());
             System.out.println("Prefab: " + prefab);
             dumpMeshContainer(createRootMeshContainer(prefab, unityAsset, mockAssetContext), "");
@@ -127,7 +127,7 @@ public class UnityAssetConverter {
     private static MeshContainer createMeshContainerFromGameObject(String name, String guid, GameObject gameObject, Prefab prefab, ShapeTransform shapeTransform, UnityAsset unityAsset, AssetContext assetContext) {
         Transform transform = gameObject.getM_Component()
                 .stream()
-                .map(componentReference -> prefab.getComponent(componentReference.getComponent()))
+                .map(componentReference -> prefab.getUnityObject(componentReference.getComponent()))
                 .filter(c -> c instanceof Transform)
                 .map(c -> (Transform) c)
                 .findFirst().orElseThrow(IllegalStateException::new);
@@ -145,13 +145,13 @@ public class UnityAssetConverter {
         List<MeshContainer> childMeshContainers = new ArrayList<>();
         transform.getM_Children()
                 .stream()
-                .map(prefab::getComponent)
+                .map(prefab::getUnityObject)
                 .filter(Objects::nonNull)
                 .map(o -> (Transform) o)
                 .forEach(childTransform -> {
                     Prefab childPrefab = unityAsset.getAssetType(childTransform.getM_CorrespondingSourceObject());
                     if (childPrefab != null) {
-                        ShapeTransform shapeTransform = setupShapeTransform(prefab.getComponent(childTransform.getM_PrefabInstance()), unityAsset);
+                        ShapeTransform shapeTransform = setupShapeTransform(prefab.getUnityObject(childTransform.getM_PrefabInstance()), unityAsset);
                         childMeshContainers.add(createMeshContainer(childPrefab, shapeTransform, unityAsset, assetContext));
                     }
                 });
@@ -196,7 +196,7 @@ public class UnityAssetConverter {
             Transform transform = transforms.get(modification.getTarget());
             if (transform == null) {
                 Prefab targetPrefab = unityAsset.getAssetType(modification.getTarget());
-                transform = createTransform(targetPrefab.getComponent(modification.getTarget()), targetPrefab);
+                transform = createTransform(targetPrefab.getUnityObject(modification.getTarget()));
                 if (transform == null) {
                     return;
                 }
@@ -275,12 +275,15 @@ public class UnityAssetConverter {
             transformMatrix.setO(transformMatrix.getO().multiply(newMatrix));
         });
 
+        // Empirical value
+        Matrix4 unityScale = Matrix4.createScale(0.01, 0.01, 0.01);
+
         ShapeTransform shapeTransform = new ShapeTransform();
-        shapeTransform.setStaticMatrix(transformMatrix.getO());
+        shapeTransform.setStaticMatrix(transformMatrix.getO().multiply(unityScale));
         return shapeTransform;
     }
 
-    private static Transform createTransform(Component transformComponent, Prefab prefab) {
+    private static Transform createTransform(UnityObject transformComponent) {
         if (transformComponent instanceof Transform) {
             return Transform.copyTransforms((Transform) transformComponent);
         } else if (!(transformComponent instanceof IgnoredAssetType) && transformComponent != null) {
@@ -310,7 +313,7 @@ public class UnityAssetConverter {
         }
 
         Reference shaderReference = material.getShader();
-        if(shaderReference == null) {
+        if (shaderReference == null) {
             LOGGER.warning("No Shader Reference in Material: " + material + " used in: " + gameObject.getM_Name());
             return null;
         }
@@ -330,6 +333,7 @@ public class UnityAssetConverter {
             return null;
         }
         List<MaterialInfo.GuidFile> mainTextures = new ArrayList<>();
+        List<MaterialInfo.GuidFile> normTextures = new ArrayList<>();
         material.getSavedProperties().getTexEnvs()
                 .forEach(stringTexture2DMap -> stringTexture2DMap.forEach((key, value) -> {
                     ShaderGraphData shaderGraphData = shaderGraph.findShaderGraphData4tReferenceName(key);
@@ -346,6 +350,8 @@ public class UnityAssetConverter {
                             .guid(assetType.getGuid());
                     if (name.startsWith("albedo")) {
                         mainTextures.add(guidFile);
+                    } else if(name.startsWith("normalmap")) {
+                        normTextures.add(guidFile);
                     }
                 }));
         if (mainTextures.size() == 0) {
@@ -354,20 +360,26 @@ public class UnityAssetConverter {
         }
 
         if (mainTextures.size() == 1) {
-            return new MaterialInfo().mainTexture(mainTextures.get(0));
+            return new MaterialInfo()
+                    .mainTexture(mainTextures.get(0))
+                    .normMap(normTextures.get(0));
         } else {
-            return new MaterialInfo().mainTexture(mainTextures.get(0)).main2Texture(mainTextures.get(1));
+            return new MaterialInfo()
+                    .mainTexture(mainTextures.get(0))
+                    .main2Texture(mainTextures.get(1))
+                    .normMap(normTextures.get(0))
+                    .norm2Map(normTextures.get(1));
         }
     }
 
     private static void dumpErrors(Prefab prefab, UnityAsset unityAsset, Transform transform) {
         transform.getM_Children().forEach(reference -> {
-            if (prefab.getComponent(reference) == null) {
+            if (prefab.getUnityObject(reference) == null) {
                 LOGGER.warning("Not found: " + reference);
             }
         });
         transform.getM_Children().stream()
-                .map(prefab::getComponent)
+                .map(prefab::getUnityObject)
                 .filter(Objects::nonNull)
                 .map(o -> (Transform) o)
                 .forEach(t -> {
@@ -406,6 +418,9 @@ public class UnityAssetConverter {
 
         @Override
         public Integer getShape3DId4Fbx(Fbx fbx, MaterialInfo materialInfo) {
+            System.out.println("------------------------------------");
+            System.out.println("Fbx: " + fbx);
+            System.out.println("MaterialInfo: " + materialInfo);
             return 1234;
         }
     }
