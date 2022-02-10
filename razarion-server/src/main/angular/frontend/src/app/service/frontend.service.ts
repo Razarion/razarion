@@ -29,6 +29,24 @@ export class FrontendService {
     }
   }
 
+  static validateEmail(email: any) {
+    if (email == null || email == "") {
+      return false;
+    }
+    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+
+  static onFbScriptLoaded(frontendService: FrontendService) {
+    for (let i = 0; i < frontendService.fbScriptLoadedCallbacks.length; i++) {
+      try {
+        frontendService.fbScriptLoadedCallbacks[i]();
+      } catch (err) {
+        frontendService.log("rontendService.fbScriptLoadedCallbacks failed", err);
+      }
+    }
+  }
+
   isCookieAllowed(): boolean {
     return this.cookieAllowed;
   }
@@ -41,13 +59,19 @@ export class FrontendService {
       this.resolve = resolve;
       this.http.get<FrontendLoginState>(URL_FRONTEND + '/isloggedin').toPromise().then(loginState => {
         try {
-          this.language = loginState.language;
-          if (loginState.loggedIn) {
-            this.loggedIn = true;
-            resolve(true);
+          if (loginState !== undefined) {
+            this.language = loginState.language;
+            if (loginState.loggedIn) {
+              this.loggedIn = true;
+              resolve(true);
+            } else {
+              this.fbTimerId = window.setTimeout(() => this.onFbTimeout(), FB_TIMEOUT);
+              this.fbScriptLoaded().then(() => this.checkFbLoginState());
+            }
           } else {
-            this.fbTimerId = window.setTimeout(() => this.onFbTimeout(), FB_TIMEOUT);
-            this.fbScriptLoaded().then(() => this.checkFbLoginState());
+            this.log("loginState === undefined", null);
+            this.loggedIn = false;
+            resolve(false);
           }
         } catch (err) {
           this.log("Handle isloggedin response", err);
@@ -99,14 +123,6 @@ export class FrontendService {
 
   getLanguage(): string {
     return this.language;
-  }
-
-  static validateEmail(email: any) {
-    if (email == null || email == "") {
-      return false;
-    }
-    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
   }
 
   onFbAuthorized(authResponse: any): Promise<boolean> {
@@ -173,22 +189,6 @@ export class FrontendService {
         this.fbScriptLoadedCallbacks.push(resolve);
       });
     }
-  }
-
-  static onFbScriptLoaded(frontendService: FrontendService) {
-    for (let i = 0; i < frontendService.fbScriptLoadedCallbacks.length; i++) {
-      try {
-        frontendService.fbScriptLoadedCallbacks[i]();
-      } catch (err) {
-        frontendService.log("rontendService.fbScriptLoadedCallbacks failed", err);
-      }
-    }
-  }
-
-  private onFbTimeout() {
-    this.log("Facebook timed out", null);
-    this.loggedIn = false;
-    this.resolve(false);
   }
 
   login(email: string, password: string, rememberMe: boolean): Promise<LoginResult> {
@@ -313,6 +313,12 @@ export class FrontendService {
         this.log("verifyemaillink catch", error);
       }
     );
+  }
+
+  private onFbTimeout() {
+    this.log("Facebook timed out", null);
+    this.loggedIn = false;
+    this.resolve(false);
   }
 
   private checkFbLoginState() {

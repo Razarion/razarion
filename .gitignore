@@ -26,3 +26,5 @@ razarion-client-common/razarion-client-common.iml
 razarion-unity-converter/razarion-unity-converter.iml
 
 
+/razarion-server/src/main/angular/frontend/dist/
+/razarion-server/src/main/angular/frontend/.angular/
