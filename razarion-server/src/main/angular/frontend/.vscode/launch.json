@@ -1,14 +1,21 @@
-// https://code.visualstudio.com/docs/nodejs/angular-tutorial
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "type": "chrome",
-        "request": "launch",
-        "name": "Razarion Chrome 4200",
-        "url": "http://localhost:4200",
-        "webRoot": "${workspaceFolder}"
-      }
-    ]
-  }
-  
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Razarion fake server",
+      "program": "${workspaceFolder}/razarion-fake-server.js",
+      "request": "launch",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Razarion Chrome 4200",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
+}
