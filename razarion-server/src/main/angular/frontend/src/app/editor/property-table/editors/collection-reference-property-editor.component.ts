@@ -32,7 +32,7 @@ import {getImageUrl, URL_IMAGE} from "../../../common";
       <p-dialog header="Choose Image" [(visible)]="showImageGallery" (onShow)="onShowImageGallery()">
         <p-dataView [value]="imageGalleryItems" [layout]="'grid'">
           <ng-template let-imageGalleryItem pTemplate="gridItem">
-            <div class="p-col-fixed"
+            <div class="col-fixed"
                  style="background-color: #304562; margin: 1px; cursor: pointer"
                  (click)="onImageGalleryItemClicked(imageGalleryItem)">
               <image-gallery-item [image-gallery-item]="imageGalleryItem"></image-gallery-item>
@@ -62,7 +62,7 @@ import {getImageUrl, URL_IMAGE} from "../../../common";
                 (onShow)="onShowCollectionGallery()">
         <p-dataView [value]="objectNameIds" [sortField]="sortField" [sortOrder]="sortOrder">
           <ng-template let-objectNameId pTemplate="listItem">
-            <div class="p-col-12" style="cursor: pointer" (click)="onObjectNameIdClicked(objectNameId)">
+            <div class="col-12" style="cursor: pointer" (click)="onObjectNameIdClicked(objectNameId)">
               {{objectNameId.internalName}} ({{objectNameId.id}})
             </div>
           </ng-template>

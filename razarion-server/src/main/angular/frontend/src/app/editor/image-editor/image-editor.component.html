@@ -5,15 +5,15 @@
               url="{{getUploadUrl()}}"
               (onError)="onUploadError($event)"
               (onUpload)="requestAllImages()"></p-fileUpload>
-<div class="p-grid" style="width:620px">
-  <div class="p-col-fixed"  style="border: 1px solid #64b5f6" *ngFor="let imageGalleryItem of imageGalleryItems">
+<div class="grid" style="width:620px">
+  <div class="col-fixed"  style="border: 1px solid #64b5f6" *ngFor="let imageGalleryItem of imageGalleryItems">
     <image-gallery-item [image-gallery-item]="imageGalleryItem"></image-gallery-item>
-    <div class="p-d-inline-flex">
-      <p-button class="p-mr-2" icon="pi pi-times"
+    <div class="inline-flex">
+      <p-button class="mr-2" icon="pi pi-times"
                 styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
                 (onClick)="onDeleteImage(imageGalleryItem)">
       </p-button>
-      <p-fileUpload class="p-mr-2"
+      <p-fileUpload class="mr-2"
                     chooseIcon="pi pi-upload"
                     mode="basic"
                     accept="image/*"

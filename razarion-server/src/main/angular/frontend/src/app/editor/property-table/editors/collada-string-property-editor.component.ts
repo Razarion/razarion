@@ -7,8 +7,8 @@ import {MessageService} from "primeng/api";
 @Component({
   selector: 'collada-string-property-editor',
   template: `
-    <div class="p-d-flex p-flex-column">
-      <div class="p-mb-2">
+    <div class="flex flex-column">
+      <div class="mb-2">
         <p-fileUpload #fileUploadElement
                       chooseIcon="pi pi-folder-open"
                       mode="basic"
@@ -17,13 +17,13 @@ import {MessageService} from "primeng/api";
                       (uploadHandler)="onUpload($event)">
         </p-fileUpload>
       </div>
-      <div *ngIf="state !== undefined" class="p-mb-2" style="color: #ff00b6">
+      <div *ngIf="state !== undefined" class="mb-2" style="color: #ff00b6">
         {{state}}
       </div>
-      <div *ngIf="lastLoadedDate !== undefined" class="p-mb-2" style="white-space: nowrap">
+      <div *ngIf="lastLoadedDate !== undefined" class="mb-2" style="white-space: nowrap">
         File loaded: {{lastLoadedDate | date:'dd.MM.yyyy HH:mm:ss'}}
       </div>
-      <div *ngIf="lastModifiedDate !== undefined" class="p-mb-2" style="white-space: nowrap">
+      <div *ngIf="lastModifiedDate !== undefined" class="mb-2" style="white-space: nowrap">
         File date:   {{lastModifiedDate | date:'dd.MM.yyyy HH:mm:ss'}}
       </div>
     </div>

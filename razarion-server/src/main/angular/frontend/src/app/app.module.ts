@@ -58,7 +58,7 @@ import {PerfmonComponent} from "./editor/render-engine/perfmon.component";
 import {RadioButtonModule} from 'primeng/radiobutton';
 import {CrashPanelComponent} from "./editor/crash-panel/crash-panel.component";
 import {TableModule} from 'primeng/table';
-import {DatePipe} from "@angular/common";
+import {CommonModule, DatePipe} from "@angular/common";
 import {ServerPanelComponent} from "./editor/server-panel/server-panel.component";
 import {Polygon2dEditorComponent} from "./editor/common/polygon-2d-editor.component";
 import {BackupRestoreComponent} from "./editor/backup-restore/backup-restore.component";
@@ -144,7 +144,8 @@ import {RadToDegreePipe} from "./common/rad-to-degree-pipe";
     CheckboxModule,
     SliderModule,
     DataViewModule,
-    FileUploadModule
+    FileUploadModule,
+    CommonModule
   ],
   providers: [
     FrontendService, {

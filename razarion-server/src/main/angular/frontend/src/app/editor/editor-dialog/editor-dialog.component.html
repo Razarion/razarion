@@ -1,36 +1,36 @@
-﻿<div class="p-d-flex">
-  <div class="p-mr-2 editor-category">
-    <div class="p-d-flex p-flex-column">
-      <div class="p-mb-2">
+﻿<div class="flex">
+  <div class="mr-2 editor-category">
+    <div class="flex flex-column">
+      <div class="mb-2">
         <h3>Administration</h3>
       </div>
-      <div class="p-mb-2" *ngFor="let editor of editors | keyvalue">
+      <div class="mb-2" *ngFor="let editor of editors | keyvalue">
         <p-button type="button" label="{{editor.key}}" icon="pi pi-cog" styleClass="p-button-sm"
                   (onClick)="openAdministrationEditor(editor.key, editor.value)"></p-button>
       </div>
     </div>
   </div>
-  <div class="p-mr-2 editor-category">
-    <div class="p-d-flex p-flex-column">
-      <div class="p-mb-2">
+  <div class="mr-2 editor-category">
+    <div class="flex flex-column">
+      <div class="mb-2">
         <h3>Configuration</h3>
       </div>
-      <div class="p-mb-2" *ngFor="let collectionName of collectionNames;">
+      <div class="mb-2" *ngFor="let collectionName of collectionNames;">
         <p-button type="button" label="{{collectionName}}" icon="pi pi-cog" styleClass="p-button-sm"
                   (onClick)="openConfigurationEditor(collectionName)"></p-button>
       </div>
-      <div class="p-mb-2">
+      <div class="mb-2">
         <p-button type="button" label="Image" icon="pi pi-cog" styleClass="p-button-sm"
                   (onClick)="openImageEditor()"></p-button>
       </div>
     </div>
   </div>
-  <div class="p-mr-2 editor-category">
-    <div class="p-d-flex p-flex-column">
-      <div class="p-mb-2">
+  <div class="mr-2 editor-category">
+    <div class="flex flex-column">
+      <div class="mb-2">
         <h3>Current Planet</h3>
       </div>
-      <div class="p-mb-2">
+      <div class="mb-2">
         <p-button type="button" label="Terrain Editor" icon="pi pi-cog" styleClass="p-button-sm"
                   (onClick)="openTerrainEditor()"></p-button>
       </div>

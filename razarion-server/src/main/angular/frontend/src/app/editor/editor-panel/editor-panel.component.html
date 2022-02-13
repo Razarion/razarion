@@ -1,10 +1,10 @@
-<div class="p-d-flex p-flex-column" [style]="{height:'100%', overflowY:'auto'}">
-  <div class="p-mb-0 p-d-flex" [style]="{backgroundColor: '#304562'}">
+<div class="flex flex-column" [style]="{height:'100%', overflowY:'auto'}">
+  <div class="mb-0 flex" [style]="{backgroundColor: '#304562'}">
     <div class="p-ml-2" style="font-size: large">{{editorModel.name}}</div>
     <p-button icon="pi pi-times" (onClick)="onClose()" class="p-ml-auto"
               styleClass="p-button-rounded p-button-danger p-button-text p-button-plain"></p-button>
   </div>
-  <div class="p-mb-0 p-ai-strech">
+  <div class="mb-0 align-items-stretch">
     <ng-template #editorContainer></ng-template>
   </div>
 </div>

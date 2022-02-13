@@ -5,22 +5,22 @@ import {PolygonCallback} from "../../gwtangular/GwtAngularFacade";
 @Component({
   selector: 'polygon-2d-editor',
   template: `
-    <div class="p-d-inline-flex">
-      <div class="p-mr-2">
+    <div class="inline-flex">
+      <div class="mr-2">
         <p-button icon="pi pi-map-marker"
                   title="Show"
                   styleClass="p-button-rounded p-button-text p-button-sm p-button-warning"
                   (onClick)="onShow()"
                   [disabled]="disabled || polygon === undefined || polygon === null"></p-button>
       </div>
-      <div class="p-mr-2">
+      <div class="mr-2">
         <p-button icon="pi pi-pencil"
                   title="Edit"
                   styleClass="p-button-rounded p-button-text p-button-sm p-button-warning"
                   (onClick)="onActivateCursor()"
                   [disabled]="disabled"></p-button>
       </div>
-      <div class="p-mr-2">
+      <div class="mr-2">
         <p-button icon="pi pi-times"
                   title="Delete"
                   styleClass="p-button-rounded p-button-text p-button-sm p-button-warning"

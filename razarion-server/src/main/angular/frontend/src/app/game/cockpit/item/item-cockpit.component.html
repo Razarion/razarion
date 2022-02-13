@@ -1,34 +1,34 @@
-﻿<div class="p-d-flex p-flex-column" *ngIf="ownItemCockpit">
-  <div class="p-d-flex">
-    <div class="p-mr-2">
+﻿<div class="flex flex-column" *ngIf="ownItemCockpit">
+  <div class="flex">
+    <div class="mr-2">
       <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
     </div>
-    <div class="p-mr-2">
-      <div class="p-d-flex p-flex-column" *ngIf="ownItemCockpit">
-        <div class="p-mb-2" [style]="{fontSize: 'larger', color: '#64B5F6'}">
+    <div class="mr-2">
+      <div class="flex flex-column" *ngIf="ownItemCockpit">
+        <div class="mb-2" [style]="{fontSize: 'larger', color: '#64B5F6'}">
           {{ownItemCockpit.itemTypeName}}
         </div>
-        <div class="p-mb-2">
+        <div class="mb-2">
           {{ownItemCockpit.itemTypeDescr}}
         </div>
-        <div class="p-mb-2">
+        <div class="mb-2">
           <div *ngIf="count && count > 1">
             {{count}}
           </div>
         </div>
       </div>
     </div>
-    <div class="p-mr-2" *ngIf="ownItemCockpit.sellHandler">
+    <div class="mr-2" *ngIf="ownItemCockpit.sellHandler">
       <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (onClick)="ownItemCockpit.sellHandler()"></p-button>
     </div>
   </div>
-  <div class="p-mb-2" *ngIf="ownItemCockpit.buildupItemInfos">
+  <div class="mb-2" *ngIf="ownItemCockpit.buildupItemInfos">
     <hr>
     <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="3" [numScroll]="1"
                 styleClass="buildup-carousel">
       <ng-template let-buildupItemCockpit pTemplate="item">
-        <div class="p-d-flex p-flex-column" [style]="{padding: '0 1px 0 1px'}">
-          <div class="p-d-flex">
+        <div class="flex flex-column" [style]="{padding: '0 1px 0 1px'}">
+          <div class="flex">
             <button class='item-cockpit-buildup-button'
                     (click)="buildupItemCockpit.onBuild()"
                     title="{{buildupItemCockpit.tooltip}}"
@@ -43,7 +43,7 @@
               </span>
             </button>
           </div>
-          <div class="p-d-flex">
+          <div class="flex">
             {{buildupItemCockpit.price}}
           </div>
         </div>
@@ -55,8 +55,8 @@
 <p-carousel *ngIf="ownMultipleIteCockpits" [value]="ownMultipleIteCockpits" [numVisible]="3" [numScroll]="1"
             styleClass="multiple-item-carousel">
   <ng-template let-ownMultipleIteCockpit pTemplate="item">
-    <div class="p-d-flex p-flex-column" [style]="{padding: '0 1px 0 1px'}">
-      <div class="p-d-flex">
+    <div class="flex flex-column" [style]="{padding: '0 1px 0 1px'}">
+      <div class="flex">
         <button class="item-cockpit-multiple-button"
                   (click)="ownMultipleIteCockpit.onSelect()"
                   title="{{ownMultipleIteCockpit.tooltip}}">
@@ -65,30 +65,30 @@
                alt="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}">
         </button>
       </div>
-      <div class="p-d-flex">
+      <div class="flex">
         {{ownMultipleIteCockpit.count}}
       </div>
     </div>
   </ng-template>
 </p-carousel>
 
-<div class="p-d-flex p-flex-column" *ngIf="otherItemCockpit">
-  <div class="p-mb-2">
+<div class="flex flex-column" *ngIf="otherItemCockpit">
+  <div class="mb-2">
     <img src="{{otherItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{otherItemCockpit.itemTypeName}}">
   </div>
-  <div class="p-mb-2">
+  <div class="mb-2">
     Name: {{otherItemCockpit.itemTypeName}}
   </div>
-  <div class="p-mb-2">
+  <div class="mb-2">
     Descr: {{otherItemCockpit.itemTypeDescr}}
   </div>
-  <div class="p-mb-2" *ngIf="otherItemCockpit.baseName">
+  <div class="mb-2" *ngIf="otherItemCockpit.baseName">
     Base: {{otherItemCockpit.baseName}}
   </div>
-  <div class="p-mb-2" *ngIf="otherItemCockpit.baseName">
+  <div class="mb-2" *ngIf="otherItemCockpit.baseName">
     Type: {{otherItemCockpit.type}}
   </div>
-  <div class="p-mb-2" *ngIf="otherItemCockpit.baseName">
+  <div class="mb-2" *ngIf="otherItemCockpit.baseName">
     Friend: {{otherItemCockpit.friend}}
   </div>
 </div>

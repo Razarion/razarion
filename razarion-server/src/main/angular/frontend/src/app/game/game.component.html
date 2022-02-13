@@ -1,8 +1,8 @@
-﻿<div class="p-grid" [style]="{height:'100%', margin: 0}">
-  <div #canvasDiv class="p-col" style="height: 100%; position: relative; margin: 0; padding: 0">
+﻿<div class="grid" [style]="{height:'100%', margin: 0}">
+  <div #canvasDiv class="col" style="height: 100%; position: relative; margin: 0; padding: 0">
     <canvas #canvas></canvas>
   </div>
-  <div class="p-col-fixed" *ngFor="let editorModel of editorModels" style="height: 100%">
+  <div class="col-fixed" *ngFor="let editorModel of editorModels" style="height: 100%">
     <app-editor-panel [editorModel]="editorModel" [gameComponent]="getGameComponent()" [mainCockpitComponent]="mainCockpit"></app-editor-panel>
   </div>
 </div>

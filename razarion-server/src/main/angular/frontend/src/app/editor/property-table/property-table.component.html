@@ -1,6 +1,6 @@
-<div class="p-d-flex p-flex-column">
-  <p-menubar class="p-mb-0" [model]="items"></p-menubar>
-  <div class="p-mb-0">
+<div class="flex flex-column">
+  <p-menubar class="mb-0" [model]="items"></p-menubar>
+  <div class="mb-0">
     <p-treeTable *ngIf="gwtAngularPropertyTable" [value]="gwtAngularPropertyTable.rootTreeNodes"
                  [columns]="cols" sortField="name" (sortFunction)="sortPropertyNames($event)" [customSort]="true"
                  [tableStyle]="{width:'auto'}" [autoLayout]="true">

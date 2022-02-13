@@ -5,41 +5,41 @@ import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
 @Component({
   selector: 'place-config-property-editor',
   template: `
-    <div class="p-d-flex p-flex-column">
-      <div class="p-mb-2">
-        <div class="p-d-inline-flex">
-          <div class="p-mr-2">
+    <div class="flex flex-column">
+      <div class="mb-2">
+        <div class="inline-flex">
+          <div class="mr-2">
             <p-radioButton name="radio-button" value="position" [(ngModel)]="selected"></p-radioButton>
           </div>
-          <div class="p-mr-2">
+          <div class="mr-2">
             <p-inputNumber [ngModel]="x" prefix="x: " [minFractionDigits]="1"
                            [size]=5
                            [maxFractionDigits]="6" (onInput)="onChangeX($event)"
                            [disabled]="selected !== 'position'">
             </p-inputNumber>
           </div>
-          <div class="p-mr-2">
+          <div class="mr-2">
             <p-inputNumber [ngModel]="y" prefix="y: " [minFractionDigits]="1"
                            [size]=5
                            [maxFractionDigits]="6" (onInput)="onChangeY($event)"
                            [disabled]="selected !== 'position'">
             </p-inputNumber>
           </div>
-          <div class="p-mr-2">
+          <div class="mr-2">
             <p-inputNumber [ngModel]="r" prefix="r: " [minFractionDigits]="1"
                            [size]=5
                            [maxFractionDigits]="6" (onInput)="onChangeR($event)"
                            [disabled]="selected !== 'position'">
             </p-inputNumber>
           </div>
-          <div class="p-mr-2">
+          <div class="mr-2">
             <p-button icon="pi pi-map-marker"
                       title="Show"
                       styleClass="p-button-rounded p-button-text p-button-sm p-button-warning"
                       (onClick)="onShowPosition()"
                       [disabled]="selected !== 'position'"></p-button>
           </div>
-          <div class="p-mr-2">
+          <div class="mr-2">
             <p-button icon="pi pi-pencil"
                       title="Edit"
                       styleClass="p-button-rounded p-button-text p-button-sm p-button-warning"
@@ -48,13 +48,13 @@ import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
           </div>
         </div>
       </div>
-      <div class="p-mb-2">
-        <div class="p-mb-2">
-          <div class="p-d-inline-flex">
-            <div class="p-mr-2">
+      <div class="mb-2">
+        <div class="mb-2">
+          <div class="inline-flex">
+            <div class="mr-2">
               <p-radioButton name="radio-button" value="polygon" [(ngModel)]="selected"></p-radioButton>
             </div>
-            <div class="p-mr-2">
+            <div class="mr-2">
               <polygon-2d-editor [polygon]="polygon" (change)="onPolygon($event)"
                                  [disabled]="selected !== 'polygon'"></polygon-2d-editor>
             </div>

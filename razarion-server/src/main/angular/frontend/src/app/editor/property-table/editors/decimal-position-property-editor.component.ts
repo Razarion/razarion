@@ -4,14 +4,14 @@ import {AngularTreeNodeData} from "../../../gwtangular/GwtAngularFacade";
 @Component({
   selector: 'decimal-position-property-editor',
   template: `
-    <div class="p-d-inline-flex">
-      <div class="p-mr-2">
+    <div class="inline-flex">
+      <div class="mr-2">
         <p-inputNumber [ngModel]="x" prefix="x: " [minFractionDigits]="1"
                        [size]=5
                        [maxFractionDigits]="6" (onInput)="onChangeX($event)">
         </p-inputNumber>
       </div>
-      <div class="p-mr-2">
+      <div class="mr-2">
         <p-inputNumber [ngModel]="y" prefix="y: " [minFractionDigits]="1"
                        [size]=5
                        [maxFractionDigits]="6" (onInput)="onChangeY($event)">

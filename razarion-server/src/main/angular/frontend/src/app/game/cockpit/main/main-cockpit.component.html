@@ -1,29 +1,29 @@
-﻿<div class="p-d-flex p-flex-column">
-  <div class="p-mb-2">
+﻿<div class="flex flex-column">
+  <div class="mb-2">
     Level: {{levelNumber}}
   </div>
-  <div class="p-mb-2">
+  <div class="mb-2">
     XP: {{xp}}
   </div>
-  <div class="p-mb-2">
+  <div class="mb-2">
     XP 2 Level Up: {{xp2LevelUp}}
   </div>
-  <div class="p-mb-2">
+  <div class="mb-2">
     Resources: {{resources}}
   </div>
-  <div class="p-mb-2">
+  <div class="mb-2">
     Item Count: {{itemCount}}
   </div>
-  <div class="p-mb-2">
+  <div class="mb-2">
     House Space: {{houseSpace}}
   </div>
-  <div class="p-mb-2" *ngIf="consuming && generating">
+  <div class="mb-2" *ngIf="consuming && generating">
     Energy: {{consuming}}/{{generating}}
   </div>
-  <div class="p-mb-2" *ngIf="radarState">
+  <div class="mb-2" *ngIf="radarState">
     Radar State: {{radarState}}
   </div>
-  <div class="p-mb-2">
+  <div class="mb-2">
     <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
               (onClick)="this.editorDialog = true"></p-button>
   </div>
