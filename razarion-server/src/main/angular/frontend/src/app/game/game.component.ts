@@ -1,11 +1,12 @@
-﻿import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {FrontendService} from "../service/frontend.service";
-import {NavigationStart, Router} from "@angular/router";
-import {GwtAngularService} from "../gwtangular/GwtAngularService";
-import {EditorModel} from "../editor/editor-model";
-import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
-import {MainCockpitComponent} from "./cockpit/main/main-cockpit.component";
-import {CrashPanelComponent} from "../editor/crash-panel/crash-panel.component";
+﻿import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FrontendService } from "../service/frontend.service";
+import { NavigationStart, Router } from "@angular/router";
+import { GwtAngularService } from "../gwtangular/GwtAngularService";
+import { EditorModel } from "../editor/editor-model";
+import { ItemCockpitComponent } from "./cockpit/item/item-cockpit.component";
+import { MainCockpitComponent } from "./cockpit/main/main-cockpit.component";
+import { CrashPanelComponent } from "../editor/crash-panel/crash-panel.component";
+import { RenderService } from './renderer/render.service';
 
 
 @Component({
@@ -13,17 +14,20 @@ import {CrashPanelComponent} from "../editor/crash-panel/crash-panel.component";
   styleUrls: ['game.component.scss']
 })
 export class GameComponent implements OnInit {
-  @ViewChild('canvas', {static: true})
+  @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('mainCockpit', {static: true})
+  @ViewChild('mainCockpit', { static: true })
   mainCockpitComponent!: MainCockpitComponent;
-  @ViewChild('itemCockpitContainer', {static: true})
+  @ViewChild('itemCockpitContainer', { static: true })
   itemCockpitContainer!: ItemCockpitComponent;
   // TODO @ViewChild('loadingCover', {static: true})
   // TODO loadingCover?: OverlayPanel;
   editorModels: EditorModel[] = [];
 
-  constructor(private frontendService: FrontendService, private router: Router, private gwtAngularService: GwtAngularService) {
+  constructor(private frontendService: FrontendService,
+    private router: Router,
+    private gwtAngularService: GwtAngularService,
+    private renderService: RenderService) {
   }
 
   ngOnInit(): void {
@@ -45,6 +49,7 @@ export class GameComponent implements OnInit {
     });
     resizeObserver.observe(this.canvas.nativeElement);
 
+    this.renderService.init(this.canvas.nativeElement);
 
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game
@@ -58,7 +63,7 @@ export class GameComponent implements OnInit {
     //   return;
     // }
     this.frontendService.autoLogin().then(loggedIn => {
-      this.startGame();
+      // TODO this.startGame();
     });
     // TODO remove
     // let ownItemCockpit: OwnItemCockpit = {

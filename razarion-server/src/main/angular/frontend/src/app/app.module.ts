@@ -72,6 +72,7 @@ import {ImageEditorComponent} from './editor/image-editor/image-editor.component
 import {ImageGalleryItemComponent, ImageTypePipe} from "./editor/image-editor/image-gallery-item.component";
 import {FileUploadModule} from 'primeng/fileupload';
 import {RadToDegreePipe} from "./common/rad-to-degree-pipe";
+import {RenderService} from './game/renderer/render.service';
 
 @NgModule({
   declarations: [
@@ -155,7 +156,8 @@ import {RadToDegreePipe} from "./common/rad-to-degree-pipe";
     GwtAngularService,
     MessageService,
     EditorService,
-    DatePipe
+    DatePipe,
+    RenderService
   ],
   bootstrap: [AppComponent]
 })
