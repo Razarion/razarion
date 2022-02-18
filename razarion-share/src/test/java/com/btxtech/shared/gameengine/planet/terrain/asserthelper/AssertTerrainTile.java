@@ -155,27 +155,6 @@ public class AssertTerrainTile {
         }
     }
 
-
-    @Deprecated
-    public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName, String directoryName) {
-        try {
-            createObjectMapper().writeValue(new File(directoryName, fileName), terrainTiles);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Deprecated
-    public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName) {
-        saveTerrainTiles(terrainTiles, fileName, SAVE_DIRECTORY);
-    }
-
-    @Deprecated
-    public static void saveTerrainTile(TerrainTile terrainTile, String fileName) {
-        saveTerrainTiles(Collections.singletonList(terrainTile), fileName);
-    }
-
-
     private static ObjectMapper createObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

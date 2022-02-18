@@ -1,4 +1,4 @@
-import {TreeNode} from "primeng/api";
+import { TreeNode } from "primeng/api";
 
 // ---------- Common ----------
 export abstract class GwtAngularFacade {
@@ -40,8 +40,15 @@ export interface Alarm {
   getId(): number;
 }
 
-// ---------- Item Cockpit ----------
 
+// ---------- Renderer ----------
+export interface TerrainTile {
+  index: any;
+
+  groundPositions: any;
+}
+
+// ---------- Item Cockpit ----------
 export enum RadarState {
   NONE,
   NO_POWER,

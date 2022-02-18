@@ -28,7 +28,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -60,6 +60,14 @@ public class AbstractIntegrationTest {
     private StaticGameConfig staticGameConfig;
     private PlanetService planetService;
     private AlarmService alarmService;
+
+    public static void assertContainingSyncItemIds(Collection<? extends SyncItem> expected, int... actualIds) {
+        List<Integer> expectedIds = expected.stream().map(SyncItem::getId).collect(Collectors.toList());
+        for (Integer actualId : actualIds) {
+            Assert.assertTrue("Item does not exist: " + actualId, expectedIds.remove(actualId));
+        }
+        Assert.assertTrue("There are remaining items: " + expectedIds, expectedIds.isEmpty());
+    }
 
     protected void setupEnvironment(StaticGameConfig staticGameConfig, PlanetConfig planetConfig) {
         this.staticGameConfig = staticGameConfig;
@@ -323,14 +331,6 @@ public class AbstractIntegrationTest {
         Assert.assertTrue("There are remianing items: " + expectedCopy.size(), expectedCopy.isEmpty());
     }
 
-    public static void assertContainingSyncItemIds(Collection<? extends SyncItem> expected, int... actualIds) {
-        List<Integer> expectedIds = expected.stream().map(SyncItem::getId).collect(Collectors.toList());
-        for (Integer actualId : actualIds) {
-            Assert.assertTrue("Item does not exist: " + actualId, expectedIds.remove(actualId));
-        }
-        Assert.assertTrue("There are remaining items: " + expectedIds, expectedIds.isEmpty());
-    }
-
     public void printAllSyncItems() {
         System.out.println("---printAllSyncItems-------------------------------------------");
         getSyncItemContainerService().iterateOverItems(true, true, null, syncItem -> {
@@ -344,21 +344,33 @@ public class AbstractIntegrationTest {
         getWeldBean(WeldDisplay.class).show(userObject);
     }
 
-    public void exportTriangles(String directorname, Index... terrainTileIndices) {
-        // Export TerrainTile
-        AssertTerrainTile.saveTerrainTiles(Arrays.stream(terrainTileIndices)
-                        .map(terrainTileIndex -> getTerrainService().generateTerrainTile(terrainTileIndex))
-                        .collect(Collectors.toList()),
-                "terrain-tiles.json", directorname);
-        // Export StaticGameConfig
+    public void exportTriangles(String director, Index... terrainTileIndices) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            objectMapper.writeValue(new File(directorname, "static-game-config.json"), getStaticGameConfig());
+
+            // Export TerrainTile
+            List<TerrainTile> terrainTiles = Arrays.stream(terrainTileIndices)
+                    .map(terrainTileIndex -> getTerrainService().generateTerrainTile(terrainTileIndex))
+                    .peek(terrainTile -> {
+                        if (terrainTile.getGroundPositions().containsKey(null)) {
+                            terrainTile.getGroundPositions().put(-1, terrainTile.getGroundPositions().get(null));
+                            terrainTile.getGroundPositions().remove(null);
+                        }
+                        if (terrainTile.getGroundNorms().containsKey(null)) {
+                            terrainTile.getGroundNorms().put(-1, terrainTile.getGroundNorms().get(null));
+                            terrainTile.getGroundNorms().remove(null);
+                        }
+                    })
+                    .collect(Collectors.toList());
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(director, "terrain-tiles.json"), terrainTiles);
+
+            // Export StaticGameConfig
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(director, "static-game-config.json"), getStaticGameConfig());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("exportTriangles(): " + new File(directorname));
+        System.out.println("exportTriangles(): " + new File(director));
     }
 
 }

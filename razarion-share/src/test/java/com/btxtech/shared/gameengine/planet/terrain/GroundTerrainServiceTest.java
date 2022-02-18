@@ -25,6 +25,9 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         AssertTerrainShape.assertTerrainShape(getClass(), "testGroundShapeGeneration1.json", getTerrainShape());
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testGroundShapeHNT1.json");
         AssertTerrainTile.assertTerrainTile(getClass(), "testGroundTileGeneration1.json", generateTerrainTiles(new Index(0, 0)));
+
+//        exportTriangles("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\src\\app\\game\\renderer\\razarion_generated",
+//                new Index(0, 0));
     }
 
     @Test
