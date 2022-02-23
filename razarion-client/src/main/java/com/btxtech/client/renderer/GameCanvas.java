@@ -40,6 +40,7 @@ import static elemental2.dom.DomGlobal.RequestAnimationFrameCallbackFn;
  * Created by Beat
  * 12.07.2015.
  */
+@Deprecated
 @ApplicationScoped
 public class GameCanvas {
     // @Inject does not work

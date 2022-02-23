@@ -34,7 +34,6 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.unlock.UnlockUiService;
@@ -103,8 +102,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private ProjectionTransformation projectionTransformation;
     @Inject
     private UnlockUiService unlockUiService;
-    @Inject
-    private RenderService renderService;
     private ColdGameUiContext coldGameUiContext;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -119,17 +116,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private Collection<SyncBaseItemSimpleDto> visitedHomeItems = new ArrayList<>();
     private QuestConfig serverQuest;
     private QuestProgressInfo serverQuestProgress;
-
-    public void setColdGameUiContext(ColdGameUiContext coldGameUiContext) {
-        this.coldGameUiContext = coldGameUiContext;
-        userUiService.init(coldGameUiContext.getUserContext());
-        unlockUiService.setLevelUnlockConfigs(coldGameUiContext.getLevelUnlockConfigs());
-
-        AlarmRaiser.onNull(coldGameUiContext.getWarmGameUiContext(), Alarm.Type.NO_WARM_GAME_UI_CONTEXT);
-        gameEngineMode = coldGameUiContext.getWarmGameUiContext().getGameEngineMode();
-        AlarmRaiser.onNull(gameEngineMode, Alarm.Type.INVALID_GAME_UI_CONTEXT, "No engine mode", coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
-        initServerQuest(coldGameUiContext.getWarmGameUiContext().getSlaveQuestInfo());
-    }
 
     public void onWarmGameConfigLoaded(WarmGameUiContext warmGameUiContext) {
         this.coldGameUiContext.warmGameUiContext(warmGameUiContext);
@@ -250,6 +236,17 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public ColdGameUiContext getColdGameUiContext() {
         return coldGameUiContext;
+    }
+
+    public void setColdGameUiContext(ColdGameUiContext coldGameUiContext) {
+        this.coldGameUiContext = coldGameUiContext;
+        userUiService.init(coldGameUiContext.getUserContext());
+        unlockUiService.setLevelUnlockConfigs(coldGameUiContext.getLevelUnlockConfigs());
+
+        AlarmRaiser.onNull(coldGameUiContext.getWarmGameUiContext(), Alarm.Type.NO_WARM_GAME_UI_CONTEXT);
+        gameEngineMode = coldGameUiContext.getWarmGameUiContext().getGameEngineMode();
+        AlarmRaiser.onNull(gameEngineMode, Alarm.Type.INVALID_GAME_UI_CONTEXT, "No engine mode", coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
+        initServerQuest(coldGameUiContext.getWarmGameUiContext().getSlaveQuestInfo());
     }
 
     public PlanetConfig getPlanetConfig() {
@@ -484,12 +481,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         visitedHomeItems.add(itemToScrollTo);
     }
 
-    public enum RadarState {
-        NONE,
-        NO_POWER,
-        WORKING
-    }
-
     public GameEngineMode getGameEngineMode() {
         return gameEngineMode;
     }
@@ -514,5 +505,11 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public QuestProgressInfo getServerQuestProgress() {
         return serverQuestProgress;
+    }
+
+    public enum RadarState {
+        NONE,
+        NO_POWER,
+        WORKING
     }
 }

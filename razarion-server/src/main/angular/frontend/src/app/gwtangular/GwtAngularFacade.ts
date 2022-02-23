@@ -8,6 +8,7 @@ export abstract class GwtAngularFacade {
   editorFrontendProvider!: EditorFrontendProvider;
   canvasResizeCallback!: Callback;
   statusProvider!: StatusProvider;
+  threeJsRendererService!: ThreeJsRendererService;
 
   abstract onCrash(): void;
 }
@@ -42,10 +43,30 @@ export interface Alarm {
 
 
 // ---------- Renderer ----------
-export interface TerrainTile {
-  index: any;
+export interface ThreeJsRendererService {
+  init(): void;
 
-  groundPositions: any;
+  startRenderLoop(): void;
+
+  // Content
+  createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile;
+
+}
+
+export interface TerrainTile {
+   getGroundTerrainTiles(): GroundTerrainTile[];
+}
+
+export interface GroundTerrainTile {
+  groundConfigId: number;
+  positions: Float32Array;
+  norms: Float32Array;
+}
+
+export interface ThreeJsTerrainTile {
+  addToScene(): void;
+
+  removeFromScene(): void;
 }
 
 // ---------- Item Cockpit ----------

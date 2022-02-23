@@ -16,6 +16,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 23.06.2015.
  */
+@Deprecated
 @ApplicationScoped
 public class ShadowUiService {
     private static final double Z_NEAR = 10;

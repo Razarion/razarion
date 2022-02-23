@@ -20,6 +20,7 @@ import static com.btxtech.client.renderer.shaders.SkeletonDefines.WORLD_VERTEX_P
  * Created by Beat
  * 01.05.2015.
  */
+@Deprecated
 @Dependent
 public class GroundRenderTask extends AbstractWebGlRenderTask<UiTerrainGroundTile> implements GroundRenderTaskRunner.RenderTask {
     // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());

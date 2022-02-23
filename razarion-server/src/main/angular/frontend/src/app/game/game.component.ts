@@ -6,7 +6,9 @@ import { EditorModel } from "../editor/editor-model";
 import { ItemCockpitComponent } from "./cockpit/item/item-cockpit.component";
 import { MainCockpitComponent } from "./cockpit/main/main-cockpit.component";
 import { CrashPanelComponent } from "../editor/crash-panel/crash-panel.component";
-import { RenderService } from './renderer/render.service';
+import { ThreeJsRendererServiceImpl } from './renderer/three-js-renderer-service.impl';
+import { GroundTerrainTile, TerrainTile, ThreeJsTerrainTile } from '../gwtangular/GwtAngularFacade';
+import terrainTileJsonArray from "./renderer/razarion_generated/terrain-tiles.json";
 
 
 @Component({
@@ -27,7 +29,7 @@ export class GameComponent implements OnInit {
   constructor(private frontendService: FrontendService,
     private router: Router,
     private gwtAngularService: GwtAngularService,
-    private renderService: RenderService) {
+    private renderService: ThreeJsRendererServiceImpl) {
   }
 
   ngOnInit(): void {
@@ -49,7 +51,14 @@ export class GameComponent implements OnInit {
     });
     resizeObserver.observe(this.canvas.nativeElement);
 
-    this.renderService.init(this.canvas.nativeElement);
+    this.renderService.setup(this.canvas.nativeElement);
+    // ------------ Mock ------------
+    this.getMockTerrainTiles().forEach(terrainTile => {
+      const threeJsTerrainTile: ThreeJsTerrainTile = this.renderService.createTerrainTile(terrainTile);
+      threeJsTerrainTile.addToScene();
+    });
+    // ------------ Mock End ------------
+    this.gwtAngularService.gwtAngularFacade.threeJsRendererService = this.renderService;
 
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game
@@ -133,4 +142,29 @@ export class GameComponent implements OnInit {
   removeEditorModel(editorModel: EditorModel) {
     this.editorModels.splice(this.editorModels.indexOf(editorModel), 1);
   }
+
+  private getMockTerrainTiles(): TerrainTile[] {
+    const terrainTiles: TerrainTile[] = [];
+
+    for (let i in terrainTileJsonArray) {
+      let terrainTileJson: any = terrainTileJsonArray[i];
+      terrainTiles.push(new class implements TerrainTile {
+        getGroundTerrainTiles(): GroundTerrainTile[] {
+          const groundTerrainTiles: GroundTerrainTile[] = [];
+          for (const [key, value] of Object.entries(terrainTileJson.groundTerrainTiles)) {
+            groundTerrainTiles.push(new class implements GroundTerrainTile {
+              groundConfigId: number = <number>(<any>value)["groundConfigId"];
+              positions: Float32Array = new Float32Array(<number>(<any>value)["positions"].doubles);
+              norms: Float32Array = new Float32Array(<number>(<any>value)["norms"].doubles);
+            });
+          }
+          return groundTerrainTiles;
+        };
+      });
+
+    }
+    return terrainTiles;
+  }
+
 }
+

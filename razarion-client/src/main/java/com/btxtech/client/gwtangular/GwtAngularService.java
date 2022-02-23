@@ -3,6 +3,7 @@ package com.btxtech.client.gwtangular;
 import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
+import com.btxtech.uiservice.renderer.ThreeJsRendererService;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLCanvasElement;
 import jsinterop.base.Js;
@@ -10,6 +11,7 @@ import jsinterop.base.JsPropertyMapOfAny;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.Produces;
 
 @ApplicationScoped
 public class GwtAngularService {
@@ -31,6 +33,7 @@ public class GwtAngularService {
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
     }
 
+    @Deprecated
     public HTMLCanvasElement getCanvasElement() {
         return gwtAngularFacade.canvasElement;
     }
@@ -42,4 +45,10 @@ public class GwtAngularService {
     public void onCrash() {
         gwtAngularFacade.onCrash();
     }
+
+    @Produces
+    public ThreeJsRendererService threeJsRendererService() {
+        return gwtAngularFacade.threeJsRendererService;
+    }
+
 }

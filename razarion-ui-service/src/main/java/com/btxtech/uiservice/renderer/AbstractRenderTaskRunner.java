@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
+@Deprecated
 public abstract class AbstractRenderTaskRunner {
     @Inject
     private Instance<WebGlRenderTask<?>> instance;

@@ -27,6 +27,7 @@ import java.util.List;
  * Created by Beat
  * 12.07.2016.
  */
+@Deprecated
 public abstract class RenderService {
     // private Logger logger = Logger.getLogger(RenderService.class.getName());
     @Inject

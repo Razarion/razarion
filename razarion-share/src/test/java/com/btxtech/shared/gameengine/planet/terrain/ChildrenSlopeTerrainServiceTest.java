@@ -70,9 +70,13 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         setup(parent);
         // showDisplay();
 
+        exportTriangles("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\src\\app\\game\\renderer\\razarion_generated",
+                new Index(0, 0), new Index(1, 0), new Index(0, 1), new Index(1, 1));
+
         AssertTerrainShape.assertTerrainShape(getClass(), "testSingleChildDrivewayShape1.json", getTerrainShape());
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(240, 240), getClass(), "testSingleChildDrivewayShapeHNT1.json");
         AssertTerrainTile.assertTerrainTile(getClass(), "testSingleChildDrivewayTile1.json", generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)));
+
     }
 
     @Test

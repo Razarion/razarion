@@ -16,6 +16,7 @@ import javax.inject.Inject;
  * 04.04.2017.
  */
 @Dependent
+@Deprecated
 public class UiTerrainWaterTile {
     @Inject
     private WaterRenderTaskRunner waterRenderTaskRunner;

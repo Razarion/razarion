@@ -46,8 +46,6 @@ public class TerrainUiService {
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
-    private Shape3DUiService shape3DUiService;
-    @Inject
     private GameEngineControl gameEngineControl;
     @Inject
     private Instance<UiTerrainTile> uiTerrainTileInstance;
@@ -83,8 +81,8 @@ public class TerrainUiService {
         cacheTerrainTiles.clear();
     }
 
-    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
-        Collection<Index> display = GeometricUtil.rasterizeTerrainViewField(absAabbRect, viewField.toPolygon());
+    public void onViewChanged(ViewField viewField) {
+        Collection<Index> display = GeometricUtil.rasterizeTerrainViewField(viewField.calculateAabbRectangle(), viewField.toPolygon());
 
         Map<Index, UiTerrainTile> newDisplayTerrainTiles = new HashMap<>();
         for (Index index : display) {

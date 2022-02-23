@@ -1,8 +1,8 @@
 package com.btxtech.client.system.boot;
 
-import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.renderer.webgl.WebGLTextureContainer;
-import com.btxtech.uiservice.renderer.RenderService;
+import com.btxtech.uiservice.renderer.ThreeJsRendererService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
@@ -18,14 +18,11 @@ public class InitRendererTask extends AbstractStartupTask {
     @Inject
     private WebGLTextureContainer textureContainer;
     @Inject
-    private RenderService renderService;
-    @Inject
-    private GameCanvas gameCanvas;
+    private ThreeJsRendererService threeJsRendererService;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        gameCanvas.init();
         textureContainer.setupTextures();
-        renderService.setup();
+        threeJsRendererService.init();
     }
 }

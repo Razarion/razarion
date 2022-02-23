@@ -1,12 +1,17 @@
 package com.btxtech.uiservice.cdimock;
 
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.control.GameEngineControl;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.logging.Logger;
+
+import static com.btxtech.shared.gameengine.GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST;
+import static com.btxtech.shared.gameengine.GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE;
 
 /**
  * Created by Beat
@@ -24,7 +29,12 @@ public class TestGameEngineControl extends GameEngineControl {
 
     @Override
     protected void sendToWorker(GameEngineControlPackage.Command command, Object... data) {
-        logger.fine("sendToWorker()");
+        logger.info("sendToWorker(): " + command + " data: " + data);
+        if(command == TERRAIN_TILE_REQUEST) {
+            TerrainTile terrainTile = new TerrainTile();
+            terrainTile.setIndex((Index) data[0]);
+            dispatch(new GameEngineControlPackage(TERRAIN_TILE_RESPONSE, terrainTile));
+        }
     }
 
     @Override

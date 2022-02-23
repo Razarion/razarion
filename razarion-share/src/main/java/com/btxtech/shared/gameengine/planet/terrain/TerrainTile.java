@@ -2,6 +2,8 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,9 +13,13 @@ import java.util.Map;
  * Created by Beat
  * 28.03.2017.
  */
+@JsType
 public class TerrainTile {
+    private GroundTerrainTile[] groundTerrainTiles;
     private Index index;
+    @Deprecated
     private Map<Integer, Float32ArrayEmu> groundPositions;
+    @Deprecated
     private Map<Integer, Float32ArrayEmu> groundNorms;
     private Collection<TerrainWaterTile> terrainWaterTiles;
     private List<TerrainSlopeTile> terrainSlopeTiles;
@@ -22,29 +28,63 @@ public class TerrainTile {
     private double height;
     private List<TerrainTileObjectList> terrainTileObjectLists;
 
-
-    public void setIndex(Index index) {
-        this.index = index;
+    public static GroundTerrainTile[] createGroundTerrainTiles(Map<Integer, Float32ArrayEmu> groundPositions, Map<Integer, Float32ArrayEmu> groundNorms) {
+        if (groundPositions == null) {
+            return null;
+        }
+        return groundPositions.entrySet().stream()
+                .map((entry) -> {
+                    GroundTerrainTile groundTerrainTile = new GroundTerrainTile();
+                    groundTerrainTile.groundConfigId = entry.getKey();
+                    groundTerrainTile.positions = entry.getValue();
+                    if (groundNorms != null) {
+                        groundTerrainTile.norms = groundNorms.get(entry.getKey());
+                    }
+                    return groundTerrainTile;
+                })
+                .toArray(GroundTerrainTile[]::new);
     }
 
+    @JsIgnore
     public Index getIndex() {
         return index;
     }
 
+    @JsIgnore
+    public void setIndex(Index index) {
+        this.index = index;
+    }
+
+    @JsIgnore
+    @Deprecated
     public Map<Integer, Float32ArrayEmu> getGroundPositions() {
         return groundPositions;
     }
 
+    @JsIgnore
+    @Deprecated
     public void setGroundPositions(Map<Integer, Float32ArrayEmu> groundPositions) {
         this.groundPositions = groundPositions;
     }
 
+    @JsIgnore
+    @Deprecated
     public Map<Integer, Float32ArrayEmu> getGroundNorms() {
         return groundNorms;
     }
 
+    @JsIgnore
+    @Deprecated
     public void setGroundNorms(Map<Integer, Float32ArrayEmu> groundNorms) {
         this.groundNorms = groundNorms;
+    }
+
+    public GroundTerrainTile[] getGroundTerrainTiles() {
+        return groundTerrainTiles;
+    }
+
+    public void setGroundTerrainTiles(GroundTerrainTile[] groundTerrainTiles) {
+        this.groundTerrainTiles = groundTerrainTiles;
     }
 
     public List<TerrainSlopeTile> getTerrainSlopeTiles() {
@@ -55,12 +95,12 @@ public class TerrainTile {
         this.terrainSlopeTiles = terrainSlopeTiles;
     }
 
-    public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles) {
-        this.terrainWaterTiles = terrainWaterTiles;
-    }
-
     public Collection<TerrainWaterTile> getTerrainWaterTiles() {
         return terrainWaterTiles;
+    }
+
+    public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles) {
+        this.terrainWaterTiles = terrainWaterTiles;
     }
 
     public double getLandWaterProportion() {
@@ -87,12 +127,12 @@ public class TerrainTile {
         this.terrainNodes = terrainNodes;
     }
 
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
     public double getHeight() {
         return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 
     public List<TerrainTileObjectList> getTerrainTileObjectLists() {

@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
+@Deprecated
 public interface WebGlRenderTask<T> {
     void init(T t);
 

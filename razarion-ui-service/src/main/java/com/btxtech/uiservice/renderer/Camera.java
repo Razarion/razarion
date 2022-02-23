@@ -14,6 +14,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 25.04.2015.
  */
+@Deprecated
 @ApplicationScoped
 public class Camera {
     private Logger logger = Logger.getLogger(Camera.class.getName());

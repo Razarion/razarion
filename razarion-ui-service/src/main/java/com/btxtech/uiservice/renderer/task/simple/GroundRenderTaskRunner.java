@@ -10,6 +10,7 @@ import javax.inject.Singleton;
  * Created by Beat
  * 31.08.2016.
  */
+@Deprecated
 @Singleton
 public class GroundRenderTaskRunner extends AbstractRenderTaskRunner {
     public interface RenderTask extends WebGlRenderTask<UiTerrainGroundTile> {

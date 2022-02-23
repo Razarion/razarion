@@ -15,6 +15,7 @@ import java.util.Collection;
  * Created by Beat
  * 25.03.2017.
  */
+@Deprecated
 @ApplicationScoped
 public class ViewService {
     public interface ViewFieldListener {
@@ -58,7 +59,7 @@ public class ViewService {
             return;
         }
         updateTransformationMatrices();
-        terrainUiService.onViewChanged(currentViewField, currentAabb);
+        terrainUiService.onViewChanged(currentViewField);
         // Prevent concurrent exception with scene, tip etc
         new ArrayList<>(viewFieldListeners).forEach(viewFieldListener -> {
             try {
