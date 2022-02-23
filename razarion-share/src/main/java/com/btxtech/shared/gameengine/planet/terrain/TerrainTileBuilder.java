@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainTile.createGroundTerrainTiles;
+
 /**
  * Created by Beat
  * 03.04.2017.
@@ -73,12 +75,14 @@ public class TerrainTileBuilder {
         groundPositions.getMap().forEach((slopeId, vertices) -> terrainTileGroundPositions.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
         if (!terrainTileGroundPositions.isEmpty()) {
             terrainTile.setGroundPositions(terrainTileGroundPositions);
+            terrainTile.setGroundTerrainTiles(createGroundTerrainTiles(terrainTile.getGroundPositions(),terrainTile.getGroundNorms()));
         }
         Map<Integer, Float32ArrayEmu> terrainTileGroundNorms = new HashMap<>();
         groundNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
         if (!terrainTileGroundNorms.isEmpty()) {
             terrainTile.setGroundNorms(terrainTileGroundNorms);
         }
+        terrainTile.setGroundTerrainTiles(createGroundTerrainTiles(terrainTile.getGroundPositions(),terrainTile.getGroundNorms()));
 
         if (terrainSlopeTileBuilders != null && !terrainSlopeTileBuilders.isEmpty()) {
             terrainTile.setTerrainSlopeTiles(terrainSlopeTileBuilders.stream().map(TerrainSlopeTileBuilder::generate).collect(Collectors.toList()));

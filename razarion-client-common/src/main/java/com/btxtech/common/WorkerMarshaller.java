@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainTile.createGroundTerrainTiles;
 import static jsinterop.base.Js.castToDouble;
 import static jsinterop.base.Js.uncheckedCast;
 
@@ -568,6 +569,7 @@ public class WorkerMarshaller {
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
         terrainTile.setGroundPositions(demarshallFloat32ArrayMap(array[1]));
         terrainTile.setGroundNorms(demarshallFloat32ArrayMap(array[2]));
+        terrainTile.setGroundTerrainTiles(createGroundTerrainTiles(terrainTile.getGroundPositions(),terrainTile.getGroundNorms()));
         terrainTile.setTerrainSlopeTiles(demarshallTerrainSlopeTiles(array[3]));
         terrainTile.setTerrainWaterTiles(demarshallTerrainWaterTiles(array[4]));
         terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[5], nativeMatrixFactory));
