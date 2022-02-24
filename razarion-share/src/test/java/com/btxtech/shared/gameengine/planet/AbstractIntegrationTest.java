@@ -29,10 +29,13 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.mocks.TestFloat32Array;
+import com.btxtech.shared.mocks.TestFloat32ArraySerializer;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.Assert;
@@ -347,6 +350,9 @@ public class AbstractIntegrationTest {
     public void exportTriangles(String director, Index... terrainTileIndices) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            SimpleModule module = new SimpleModule();
+            module.addSerializer(TestFloat32Array.class, new TestFloat32ArraySerializer());
+            objectMapper.registerModule(module);
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
             // Export TerrainTile

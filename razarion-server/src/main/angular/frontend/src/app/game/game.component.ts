@@ -154,8 +154,8 @@ export class GameComponent implements OnInit {
           for (const [key, value] of Object.entries(terrainTileJson.groundTerrainTiles)) {
             groundTerrainTiles.push(new class implements GroundTerrainTile {
               groundConfigId: number = <number>(<any>value)["groundConfigId"];
-              positions: Float32Array = new Float32Array(<number>(<any>value)["positions"].doubles);
-              norms: Float32Array = new Float32Array(<number>(<any>value)["norms"].doubles);
+              positions: Float32Array = new Float32Array(<number>(<any>value)["positions"]);
+              norms: Float32Array = new Float32Array(<number>(<any>value)["norms"]);
             });
           }
           return groundTerrainTiles;
