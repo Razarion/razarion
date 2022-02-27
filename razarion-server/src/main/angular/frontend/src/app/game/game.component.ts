@@ -8,7 +8,7 @@ import { MainCockpitComponent } from "./cockpit/main/main-cockpit.component";
 import { CrashPanelComponent } from "../editor/crash-panel/crash-panel.component";
 import { ThreeJsRendererServiceImpl } from './renderer/three-js-renderer-service.impl';
 import { GroundTerrainTile, TerrainTile, ThreeJsTerrainTile } from '../gwtangular/GwtAngularFacade';
-import terrainTileJsonArray from "./renderer/razarion_generated/terrain-tiles.json";
+// import terrainTileJsonArray from "./renderer/razarion_generated/terrain-tiles.json";
 
 
 @Component({
@@ -29,7 +29,7 @@ export class GameComponent implements OnInit {
   constructor(private frontendService: FrontendService,
     private router: Router,
     private gwtAngularService: GwtAngularService,
-    private renderService: ThreeJsRendererServiceImpl) {
+    private threeJsRendererService: ThreeJsRendererServiceImpl) {
   }
 
   ngOnInit(): void {
@@ -51,14 +51,14 @@ export class GameComponent implements OnInit {
     });
     resizeObserver.observe(this.canvas.nativeElement);
 
-    this.renderService.setup(this.canvas.nativeElement);
+    this.threeJsRendererService.setup(this.canvas.nativeElement);
     // ------------ Mock ------------
-    this.getMockTerrainTiles().forEach(terrainTile => {
-      const threeJsTerrainTile: ThreeJsTerrainTile = this.renderService.createTerrainTile(terrainTile);
-      threeJsTerrainTile.addToScene();
-    });
+    // this.getMockTerrainTiles().forEach(terrainTile => {
+    //   const threeJsTerrainTile: ThreeJsTerrainTile = this.renderService.createTerrainTile(terrainTile);
+    //   threeJsTerrainTile.addToScene();
+    // });
     // ------------ Mock End ------------
-    this.gwtAngularService.gwtAngularFacade.threeJsRendererService = this.renderService;
+    this.gwtAngularService.gwtAngularFacade.threeJsRendererService = this.threeJsRendererService;
 
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game
@@ -72,7 +72,7 @@ export class GameComponent implements OnInit {
     //   return;
     // }
     this.frontendService.autoLogin().then(loggedIn => {
-      // TODO this.startGame();
+      this.startGame();
     });
     // TODO remove
     // let ownItemCockpit: OwnItemCockpit = {
@@ -145,7 +145,7 @@ export class GameComponent implements OnInit {
 
   private getMockTerrainTiles(): TerrainTile[] {
     const terrainTiles: TerrainTile[] = [];
-
+/*
     for (let i in terrainTileJsonArray) {
       let terrainTileJson: any = terrainTileJsonArray[i];
       terrainTiles.push(new class implements TerrainTile {
@@ -163,6 +163,7 @@ export class GameComponent implements OnInit {
       });
 
     }
+    */
     return terrainTiles;
   }
 

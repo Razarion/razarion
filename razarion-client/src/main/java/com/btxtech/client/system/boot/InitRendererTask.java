@@ -16,13 +16,11 @@ import javax.inject.Inject;
 @Dependent
 public class InitRendererTask extends AbstractStartupTask {
     @Inject
-    private WebGLTextureContainer textureContainer;
-    @Inject
-    private ThreeJsRendererService threeJsRendererService;
+    private GwtAngularService gwtAngularService;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        textureContainer.setupTextures();
-        threeJsRendererService.init();
+        // Injection does not work here
+        //gwtAngularService.getThreeJsRendererService().init();
     }
 }

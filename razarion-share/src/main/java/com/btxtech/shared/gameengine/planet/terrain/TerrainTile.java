@@ -28,23 +28,6 @@ public class TerrainTile {
     private double height;
     private List<TerrainTileObjectList> terrainTileObjectLists;
 
-    public static GroundTerrainTile[] createGroundTerrainTiles(Map<Integer, Float32ArrayEmu> groundPositions, Map<Integer, Float32ArrayEmu> groundNorms) {
-        if (groundPositions == null) {
-            return null;
-        }
-        return groundPositions.entrySet().stream()
-                .map((entry) -> {
-                    GroundTerrainTile groundTerrainTile = new GroundTerrainTile();
-                    groundTerrainTile.groundConfigId = entry.getKey();
-                    groundTerrainTile.positions = entry.getValue();
-                    if (groundNorms != null) {
-                        groundTerrainTile.norms = groundNorms.get(entry.getKey());
-                    }
-                    return groundTerrainTile;
-                })
-                .toArray(GroundTerrainTile[]::new);
-    }
-
     @JsIgnore
     public Index getIndex() {
         return index;

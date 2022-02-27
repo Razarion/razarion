@@ -3,20 +3,27 @@ import {
     MathUtils,
     PerspectiveCamera,
     Clock,
-    Camera
+    Camera,
+    Raycaster,
+    Vector2
 } from "three";
 import { WebGLRenderer } from "three/src/renderers/WebGLRenderer";
 import { Mesh } from "three/src/objects/Mesh";
 import { Scene } from "three/src/scenes/Scene";
 import { TerrainTile, ThreeJsRendererService, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { ThreeJsTerrainTileImpl } from "./three-js-rendererservice.impl";
+import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 
 
 @Injectable()
 export class ThreeJsRendererServiceImpl implements ThreeJsRendererService {
     private scene = new Scene();
     private keyPressed: Map<string, number> = new Map();
+    private camera: Camera = new PerspectiveCamera;
 
+    constructor(private gwtAngularService: GwtAngularService) {
+    }
+  
     init(): void {
     }
 
@@ -38,7 +45,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererService {
     internalSetup(htmlCanvasElement: HTMLCanvasElement) {
         let clock = new Clock();
 
-        const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
         let renderer = new WebGLRenderer({
             antialias: true,
@@ -61,31 +68,32 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererService {
             delta = delta / 240;
             delta = -delta;
             if (delta <= 0) {
-                delta -= camera.position.z * 0.1;
+                delta -= self.camera.position.z * 0.1;
             } else {
-                delta += camera.position.z * 0.1;
+                delta += self.camera.position.z * 0.1;
             }
-            if (camera.position.z + delta > 1 && camera.position.z + delta < 200) {
-                camera.translateZ(delta);
+            if (self.camera.position.z + delta > 1 && self.camera.position.z + delta < 200) {
+                self.camera.translateZ(delta);
             }
         }, true);
         // Camera
-        camera.position.x = 0;
-        camera.position.y = 0;
-        camera.position.z = 40;
-        camera.rotation.x = MathUtils.degToRad(30);
+        this.camera.position.x = 0;
+        this.camera.position.y = 0;
+        this.camera.position.z = 40;
+        this.camera.rotation.x = MathUtils.degToRad(30);
 
         function animate() {
             const delta = clock.getDelta();
 
             requestAnimationFrame(animate);
-            self.scrollCamera(delta, camera);
-            renderer.render(self.scene, camera);
+            self.scrollCamera(delta, self.camera);
+            renderer.render(self.scene, self.camera);
         }
         animate();
     }
 
     scrollCamera(delta: number, camera: Camera) {
+        let hasChanged = false;
         for (let [key, start] of this.keyPressed) {
             const duration = new Date().getTime() - start;
 
@@ -96,13 +104,52 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererService {
             distance = distance + camera.position.z * 0.02;
 
             switch (key) {
-                case 'ArrowUp': camera.position.y += distance; break;
-                case 'ArrowDown': camera.position.y -= distance; break;
-                case 'ArrowRight': camera.position.x += distance; break;
-                case 'ArrowLeft': camera.position.x -= distance; break;
+                case 'ArrowUp': {
+                    hasChanged = true;
+                    camera.position.y += distance;
+                    break;
+                }
+                case 'ArrowDown': {
+                    hasChanged = true;
+                    camera.position.y -= distance;
+                    break;
+                }
+                case 'ArrowRight': {
+                    hasChanged = true;
+                    camera.position.x += distance;
+                    break;
+                }
+                case 'ArrowLeft': {
+                    hasChanged = true;
+                    camera.position.x -= distance;
+                    break;
+                }
                 default:
             }
         };
+        if (hasChanged) {
+            let bottomLeft = this.setupGroundPosition(-1, -1);
+            let bottomRight = this.setupGroundPosition(1, -1);
+            let topRight = this.setupGroundPosition(1, 1);
+            let topLeft = this.setupGroundPosition(-1, 1);
+
+            this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
+                bottomLeft.x, bottomLeft.y,
+                bottomRight.x, bottomRight.y,
+                topRight.x, topRight.y,
+                topLeft.x, topLeft.y
+                
+            );
+        }
+    }
+
+    private setupGroundPosition(x: number, y: number): Vector2 {
+        let raycaster = new Raycaster();
+        raycaster.setFromCamera({ x: x, y: y }, this.camera);
+        let factor = this.camera.position.z / -raycaster.ray.direction.z;
+        let pointOnGround = raycaster.ray.direction.clone().setLength(factor);
+        pointOnGround.add(this.camera.position);
+        return new Vector2(pointOnGround.x, pointOnGround.y);
     }
 
 }

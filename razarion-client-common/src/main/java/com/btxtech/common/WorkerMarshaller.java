@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.GroundTerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
@@ -49,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.btxtech.shared.gameengine.planet.terrain.TerrainTile.createGroundTerrainTiles;
 import static jsinterop.base.Js.castToDouble;
 import static jsinterop.base.Js.uncheckedCast;
 
@@ -544,7 +544,7 @@ public class WorkerMarshaller {
                         if (terrainSubNode.getHeight() != null) {
                             terrainNodeArray.push(castToDouble(terrainSubNode.getHeight()));
                         } else {
-                            terrainNodeArray.push((Object)null);
+                            terrainNodeArray.push((Object) null);
                         }
                         terrainNodeArray.push(Any.of(terrainSubNode.getTerrainType()).asDouble()); // Int does not work here -> {a: -1}
                         if (terrainSubNode.getTerrainSubNodes() != null) {
@@ -569,7 +569,7 @@ public class WorkerMarshaller {
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
         terrainTile.setGroundPositions(demarshallFloat32ArrayMap(array[1]));
         terrainTile.setGroundNorms(demarshallFloat32ArrayMap(array[2]));
-        terrainTile.setGroundTerrainTiles(createGroundTerrainTiles(terrainTile.getGroundPositions(),terrainTile.getGroundNorms()));
+        terrainTile.setGroundTerrainTiles(createGroundTerrainTiles(terrainTile.getGroundPositions(), terrainTile.getGroundNorms()));
         terrainTile.setTerrainSlopeTiles(demarshallTerrainSlopeTiles(array[3]));
         terrainTile.setTerrainWaterTiles(demarshallTerrainWaterTiles(array[4]));
         terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[5], nativeMatrixFactory));
@@ -577,6 +577,23 @@ public class WorkerMarshaller {
         terrainTile.setLandWaterProportion(array[7].asDouble());
         terrainTile.setTerrainNodes(demarshallTerrainNodes(array[8]));
         return terrainTile;
+    }
+
+    private static GroundTerrainTile[] createGroundTerrainTiles(Map<Integer, Float32ArrayEmu> groundPositions, Map<Integer, Float32ArrayEmu> groundNorms) {
+        if (groundPositions == null) {
+            return null;
+        }
+        return groundPositions.entrySet().stream()
+                .map((entry) -> {
+                    GroundTerrainTile groundTerrainTile = new GroundTerrainTile();
+                    groundTerrainTile.groundConfigId = entry.getKey();
+                    groundTerrainTile.positions = Js.uncheckedCast(entry.getValue());
+                    if (groundNorms != null) {
+                        groundTerrainTile.norms = Js.uncheckedCast(groundNorms.get(entry.getKey()));
+                    }
+                    return groundTerrainTile;
+                })
+                .toArray(GroundTerrainTile[]::new);
     }
 
     private static Map<Integer, Float32ArrayEmu> demarshallFloat32ArrayMap(Any any) {

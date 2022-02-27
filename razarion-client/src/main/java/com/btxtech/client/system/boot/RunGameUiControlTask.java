@@ -1,10 +1,10 @@
 package com.btxtech.client.system.boot;
 
+import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.renderer.ThreeJsRendererService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -21,7 +21,7 @@ import javax.inject.Inject;
 public class RunGameUiControlTask extends AbstractStartupTask {
     // private Logger logger = Logger.getLogger(RunGameUiControlTask.class.getName());
     @Inject
-    private ThreeJsRendererService threeJsRendererService;
+    private GwtAngularService gwtAngularService;
     @Inject
     private Boot boot;
     @Inject
@@ -40,7 +40,8 @@ public class RunGameUiControlTask extends AbstractStartupTask {
         gameEngineControl.start();
         // gameEngineControl.enableTracking();
         gameUiControl.start();
-        threeJsRendererService.startRenderLoop();
+        // Injection does not work here
+        gwtAngularService.getThreeJsRendererService().startRenderLoop();
         perfmonService.start(boot.getGameSessionUuid());
         clientPerformanceTrackerService.start();
         userUiService.start();

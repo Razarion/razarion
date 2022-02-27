@@ -28,6 +28,7 @@ import java.util.function.IntConsumer;
  * Created by Beat
  * 25.01.2017.
  */
+@Deprecated
 @ApplicationScoped
 public class WebGLTextureContainer {
     // private Logger logger = Logger.getLogger(WebGLTextureContainer.class.getName());

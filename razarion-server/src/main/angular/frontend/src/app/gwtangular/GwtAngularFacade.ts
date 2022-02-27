@@ -9,6 +9,7 @@ export abstract class GwtAngularFacade {
   canvasResizeCallback!: Callback;
   statusProvider!: StatusProvider;
   threeJsRendererService!: ThreeJsRendererService;
+  inputService!: InputService;
 
   abstract onCrash(): void;
 }
@@ -41,6 +42,13 @@ export interface Alarm {
   getId(): number;
 }
 
+export interface InputService {
+  onViewFieldChanged(
+    bottomLeftX: number, bottomLeftY: number,
+    bottomRightX: number, bottomRightY: number,
+    topRightX: number, topRightY: number,
+    topLeftX: number, topLeftY: number): void;
+}
 
 // ---------- Renderer ----------
 export interface ThreeJsRendererService {
@@ -54,7 +62,7 @@ export interface ThreeJsRendererService {
 }
 
 export interface TerrainTile {
-   getGroundTerrainTiles(): GroundTerrainTile[];
+  getGroundTerrainTiles(): GroundTerrainTile[];
 }
 
 export interface GroundTerrainTile {

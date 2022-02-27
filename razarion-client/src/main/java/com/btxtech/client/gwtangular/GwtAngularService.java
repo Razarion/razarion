@@ -4,14 +4,15 @@ import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.renderer.ThreeJsRendererService;
+import com.btxtech.uiservice.terrain.InputService;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLCanvasElement;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMapOfAny;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.ws.rs.Produces;
 
 @ApplicationScoped
 public class GwtAngularService {
@@ -23,12 +24,15 @@ public class GwtAngularService {
     private ItemCockpitService itemCockpitService;
     @Inject
     private StatusProvider statusProvider;
+    @Inject
+    private InputService inputService;
     private GwtAngularFacade gwtAngularFacade;
 
     public void init() {
         gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMapOfAny>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
         gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
         gwtAngularFacade.statusProvider = statusProvider;
+        gwtAngularFacade.inputService = inputService;
         cockpitService.init(gwtAngularFacade.mainCockpit);
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
     }
@@ -44,6 +48,10 @@ public class GwtAngularService {
 
     public void onCrash() {
         gwtAngularFacade.onCrash();
+    }
+
+    public ThreeJsRendererService getThreeJsRendererService() {
+        return gwtAngularFacade.threeJsRendererService;
     }
 
     @Produces

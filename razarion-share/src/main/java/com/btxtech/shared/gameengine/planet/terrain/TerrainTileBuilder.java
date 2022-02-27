@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.btxtech.shared.gameengine.planet.terrain.TerrainTile.createGroundTerrainTiles;
-
 /**
  * Created by Beat
  * 03.04.2017.
@@ -72,17 +70,28 @@ public class TerrainTileBuilder {
         terrainTile.setTerrainWaterTiles(terrainWaterTileBuilder.generate());
 
         Map<Integer, Float32ArrayEmu> terrainTileGroundPositions = new HashMap<>();
-        groundPositions.getMap().forEach((slopeId, vertices) -> terrainTileGroundPositions.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
+        Map<Integer, GroundTerrainTile> groundTerrainTiles = new HashMap<>();
+        groundPositions.getMap().forEach((groundConfigId, vertices) -> {
+            Float32ArrayEmu positions = jsInteropObjectFactory.newFloat32Array4Vertices(vertices);
+            terrainTileGroundPositions.put(groundConfigId, positions);
+            GroundTerrainTile terrainTile = new GroundTerrainTile();
+            terrainTile.groundConfigId = groundConfigId;
+            terrainTile.positions = positions;
+            groundTerrainTiles.put(groundConfigId, terrainTile);
+        });
         if (!terrainTileGroundPositions.isEmpty()) {
             terrainTile.setGroundPositions(terrainTileGroundPositions);
-            terrainTile.setGroundTerrainTiles(createGroundTerrainTiles(terrainTile.getGroundPositions(),terrainTile.getGroundNorms()));
         }
         Map<Integer, Float32ArrayEmu> terrainTileGroundNorms = new HashMap<>();
-        groundNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, jsInteropObjectFactory.newFloat32Array4Vertices(vertices)));
+        groundNorms.getMap().forEach((groundConfigId, vertices) -> {
+            Float32ArrayEmu norms = jsInteropObjectFactory.newFloat32Array4Vertices(vertices);
+            terrainTileGroundNorms.put(groundConfigId, norms);
+            groundTerrainTiles.get(groundConfigId).norms = norms;
+        });
         if (!terrainTileGroundNorms.isEmpty()) {
             terrainTile.setGroundNorms(terrainTileGroundNorms);
         }
-        terrainTile.setGroundTerrainTiles(createGroundTerrainTiles(terrainTile.getGroundPositions(),terrainTile.getGroundNorms()));
+        terrainTile.setGroundTerrainTiles(groundTerrainTiles.values().toArray(new GroundTerrainTile[groundTerrainTiles.values().size()]));
 
         if (terrainSlopeTileBuilders != null && !terrainSlopeTileBuilders.isEmpty()) {
             terrainTile.setTerrainSlopeTiles(terrainSlopeTileBuilders.stream().map(TerrainSlopeTileBuilder::generate).collect(Collectors.toList()));
