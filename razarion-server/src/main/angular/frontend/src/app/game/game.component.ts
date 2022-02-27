@@ -58,7 +58,7 @@ export class GameComponent implements OnInit {
     //   threeJsTerrainTile.addToScene();
     // });
     // ------------ Mock End ------------
-    this.gwtAngularService.gwtAngularFacade.threeJsRendererService = this.threeJsRendererService;
+    this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
 
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game

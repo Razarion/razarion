@@ -1,4 +1,4 @@
-import { TreeNode } from "primeng/api";
+import {TreeNode} from "primeng/api";
 
 // ---------- Common ----------
 export abstract class GwtAngularFacade {
@@ -8,7 +8,7 @@ export abstract class GwtAngularFacade {
   editorFrontendProvider!: EditorFrontendProvider;
   canvasResizeCallback!: Callback;
   statusProvider!: StatusProvider;
-  threeJsRendererService!: ThreeJsRendererService;
+  threeJsRendererServiceAccess!: ThreeJsRendererServiceAccess;
   inputService!: InputService;
 
   abstract onCrash(): void;
@@ -51,14 +51,10 @@ export interface InputService {
 }
 
 // ---------- Renderer ----------
-export interface ThreeJsRendererService {
-  init(): void;
-
-  startRenderLoop(): void;
-
-  // Content
+export interface ThreeJsRendererServiceAccess {
   createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile;
 
+  setViewFieldCenter(x: number, y: number): void;
 }
 
 export interface TerrainTile {

@@ -20,6 +20,7 @@ import java.util.Optional;
  * Time: 12:58
  */
 @Singleton
+@Deprecated
 public class TerrainScrollHandler {
     public enum ScrollDirection {
         TOP,

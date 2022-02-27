@@ -3,7 +3,7 @@ package com.btxtech.client.gwtangular;
 import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
-import com.btxtech.uiservice.renderer.ThreeJsRendererService;
+import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
 import com.btxtech.uiservice.terrain.InputService;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLCanvasElement;
@@ -50,13 +50,9 @@ public class GwtAngularService {
         gwtAngularFacade.onCrash();
     }
 
-    public ThreeJsRendererService getThreeJsRendererService() {
-        return gwtAngularFacade.threeJsRendererService;
-    }
-
     @Produces
-    public ThreeJsRendererService threeJsRendererService() {
-        return gwtAngularFacade.threeJsRendererService;
+    public ThreeJsRendererServiceAccess threeJsRendererServiceAccess() {
+        return gwtAngularFacade.threeJsRendererServiceAccess;
     }
 
 }

@@ -17,9 +17,9 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
+import com.btxtech.uiservice.renderer.ThreeJsRendererService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.user.UserUiService;
 
@@ -41,7 +41,7 @@ public class Scene implements ViewService.ViewFieldListener {
     @Inject
     private ScreenCover screenCover;
     @Inject
-    private TerrainScrollHandler terrainScrollHandler;
+    private ThreeJsRendererService threeJsRendererService;
     @Inject
     private ViewService viewService;
     @Inject
@@ -198,7 +198,7 @@ public class Scene implements ViewService.ViewFieldListener {
             hasCompletionCallback = true;
             completionCallbackCount++;
         }
-        terrainScrollHandler.executeViewFieldConfig(viewFieldConfig, Optional.of(this::onComplete));
+        threeJsRendererService.executeViewFieldConfig(viewFieldConfig, Optional.of(this::onComplete));
     }
 
     @Override

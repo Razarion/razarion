@@ -3,7 +3,7 @@ package com.btxtech.client.gwtangular;
 import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitFrontend;
-import com.btxtech.uiservice.renderer.ThreeJsRendererService;
+import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
 import com.btxtech.uiservice.terrain.InputService;
 import elemental2.dom.HTMLCanvasElement;
 import jsinterop.annotations.JsType;
@@ -21,7 +21,7 @@ public abstract class GwtAngularFacade {
     public ItemCockpitFrontend itemCockpitFrontend; // Initialized by Angular
     public EditorFrontendProvider editorFrontendProvider;  // Initialized by GWT
     public StatusProvider statusProvider; // Initialized by GWT
-    public ThreeJsRendererService threeJsRendererService; // Initialized by Angular
+    public ThreeJsRendererServiceAccess threeJsRendererServiceAccess; // Initialized by Angular
     public InputService inputService; // Initialized by GWT
 
     public abstract void onCrash();

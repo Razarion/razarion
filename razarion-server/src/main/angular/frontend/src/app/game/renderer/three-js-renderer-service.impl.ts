@@ -10,28 +10,31 @@ import {
 import { WebGLRenderer } from "three/src/renderers/WebGLRenderer";
 import { Mesh } from "three/src/objects/Mesh";
 import { Scene } from "three/src/scenes/Scene";
-import { TerrainTile, ThreeJsRendererService, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
-import { ThreeJsTerrainTileImpl } from "./three-js-rendererservice.impl";
+import { TerrainTile, ThreeJsRendererServiceAccess, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
+import { ThreeJsTerrainTileImpl } from "./three-js-terrain-tile.impl";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 
 
 @Injectable()
-export class ThreeJsRendererServiceImpl implements ThreeJsRendererService {
+export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
     private scene = new Scene();
     private keyPressed: Map<string, number> = new Map();
     private camera: Camera = new PerspectiveCamera;
 
     constructor(private gwtAngularService: GwtAngularService) {
     }
-  
-    init(): void {
-    }
-
-    startRenderLoop(): void {
-    }
 
     createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile {
         return new ThreeJsTerrainTileImpl(terrainTile, this.scene);
+    }
+
+    setViewFieldCenter(x: number, y: number): void {
+        let currentViewFieldCenter = this.setupGroundPosition(0, 0);
+        let newFiledCenter = new Vector2(x, y);
+        let delta = newFiledCenter.sub(currentViewFieldCenter);
+        this.camera.position.x += delta.x;
+        this.camera.position.y += delta.y;
+        this.onViewFieldChanged();
     }
 
     setup(htmlCanvasElement: HTMLCanvasElement) {
@@ -128,24 +131,27 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererService {
             }
         };
         if (hasChanged) {
-            let bottomLeft = this.setupGroundPosition(-1, -1);
-            let bottomRight = this.setupGroundPosition(1, -1);
-            let topRight = this.setupGroundPosition(1, 1);
-            let topLeft = this.setupGroundPosition(-1, 1);
-
-            this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
-                bottomLeft.x, bottomLeft.y,
-                bottomRight.x, bottomRight.y,
-                topRight.x, topRight.y,
-                topLeft.x, topLeft.y
-                
-            );
+            this.onViewFieldChanged();
         }
     }
 
-    private setupGroundPosition(x: number, y: number): Vector2 {
+    private onViewFieldChanged() {
+        let bottomLeft = this.setupGroundPosition(-1, -1);
+        let bottomRight = this.setupGroundPosition(1, -1);
+        let topRight = this.setupGroundPosition(1, 1);
+        let topLeft = this.setupGroundPosition(-1, 1);
+
+        this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
+            bottomLeft.x, bottomLeft.y,
+            bottomRight.x, bottomRight.y,
+            topRight.x, topRight.y,
+            topLeft.x, topLeft.y
+        );
+    }
+
+    private setupGroundPosition(ndcX: number, ndcY: number): Vector2 {
         let raycaster = new Raycaster();
-        raycaster.setFromCamera({ x: x, y: y }, this.camera);
+        raycaster.setFromCamera({ x: ndcX, y: ndcY }, this.camera);
         let factor = this.camera.position.z / -raycaster.ray.direction.z;
         let pointOnGround = raycaster.ray.direction.clone().setLength(factor);
         pointOnGround.add(this.camera.position);
