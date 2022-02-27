@@ -73,6 +73,7 @@ import {ImageGalleryItemComponent, ImageTypePipe} from "./editor/image-editor/im
 import {FileUploadModule} from 'primeng/fileupload';
 import {RadToDegreePipe} from "./common/rad-to-degree-pipe";
 import {ThreeJsRendererServiceImpl} from './game/renderer/three-js-renderer-service.impl';
+import { GameMockService } from './game/renderer/game-mock.service';
 
 @NgModule({
   declarations: [
@@ -157,7 +158,8 @@ import {ThreeJsRendererServiceImpl} from './game/renderer/three-js-renderer-serv
     MessageService,
     EditorService,
     DatePipe,
-    ThreeJsRendererServiceImpl
+    ThreeJsRendererServiceImpl,
+    GameMockService
   ],
   bootstrap: [AppComponent]
 })

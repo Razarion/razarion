@@ -7,8 +7,8 @@ import { ItemCockpitComponent } from "./cockpit/item/item-cockpit.component";
 import { MainCockpitComponent } from "./cockpit/main/main-cockpit.component";
 import { CrashPanelComponent } from "../editor/crash-panel/crash-panel.component";
 import { ThreeJsRendererServiceImpl } from './renderer/three-js-renderer-service.impl';
-import { GroundTerrainTile, TerrainTile, ThreeJsTerrainTile } from '../gwtangular/GwtAngularFacade';
-// import terrainTileJsonArray from "./renderer/razarion_generated/terrain-tiles.json";
+import { environment } from 'src/environments/environment';
+import { GameMockService } from './renderer/game-mock.service';
 
 
 @Component({
@@ -29,7 +29,8 @@ export class GameComponent implements OnInit {
   constructor(private frontendService: FrontendService,
     private router: Router,
     private gwtAngularService: GwtAngularService,
-    private threeJsRendererService: ThreeJsRendererServiceImpl) {
+    private threeJsRendererService: ThreeJsRendererServiceImpl,
+    private gameMockService: GameMockService) {
   }
 
   ngOnInit(): void {
@@ -52,13 +53,12 @@ export class GameComponent implements OnInit {
     resizeObserver.observe(this.canvas.nativeElement);
 
     this.threeJsRendererService.setup(this.canvas.nativeElement);
-    // ------------ Mock ------------
-    // this.getMockTerrainTiles().forEach(terrainTile => {
-    //   const threeJsTerrainTile: ThreeJsTerrainTile = this.renderService.createTerrainTile(terrainTile);
-    //   threeJsTerrainTile.addToScene();
-    // });
-    // ------------ Mock End ------------
-    this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
+    if (environment.gwtMock) {
+      this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
+      this.gameMockService.mockTerrainTile(this.threeJsRendererService);
+    } else {
+      this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
+    }
 
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game
@@ -141,30 +141,6 @@ export class GameComponent implements OnInit {
 
   removeEditorModel(editorModel: EditorModel) {
     this.editorModels.splice(this.editorModels.indexOf(editorModel), 1);
-  }
-
-  private getMockTerrainTiles(): TerrainTile[] {
-    const terrainTiles: TerrainTile[] = [];
-/*
-    for (let i in terrainTileJsonArray) {
-      let terrainTileJson: any = terrainTileJsonArray[i];
-      terrainTiles.push(new class implements TerrainTile {
-        getGroundTerrainTiles(): GroundTerrainTile[] {
-          const groundTerrainTiles: GroundTerrainTile[] = [];
-          for (const [key, value] of Object.entries(terrainTileJson.groundTerrainTiles)) {
-            groundTerrainTiles.push(new class implements GroundTerrainTile {
-              groundConfigId: number = <number>(<any>value)["groundConfigId"];
-              positions: Float32Array = new Float32Array(<number>(<any>value)["positions"]);
-              norms: Float32Array = new Float32Array(<number>(<any>value)["norms"]);
-            });
-          }
-          return groundTerrainTiles;
-        };
-      });
-
-    }
-    */
-    return terrainTiles;
   }
 
 }

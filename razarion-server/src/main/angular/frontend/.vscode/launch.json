@@ -13,9 +13,18 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Razarion Chrome 4200",
+      "name": "Chrome 4200",
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "GWT Mock Server",
+      "program": "${workspaceFolder}/gwt-mock-server.js",
+      "request": "launch",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node"
     }
   ]
 }

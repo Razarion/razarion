@@ -73,6 +73,14 @@
                   "maximumError": "4kb"
                 }
               ]
+            },
+            "gwtMock": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.gwtmock.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": ""
@@ -86,6 +94,9 @@
           "configurations": {
             "production": {
               "browserTarget": "frontend:build:production"
+            },
+            "gwtMock": {
+              "browserTarget": "frontend:build:gwtMock"
             }
           }
         },
