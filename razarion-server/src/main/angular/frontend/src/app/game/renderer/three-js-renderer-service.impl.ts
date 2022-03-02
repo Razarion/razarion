@@ -25,7 +25,12 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
 
     createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile {
-        return new ThreeJsTerrainTileImpl(terrainTile, this.scene);
+        try {
+            return new ThreeJsTerrainTileImpl(terrainTile, this.scene);
+        } catch (e) {
+            console.error(e);
+            throw e;
+        }
     }
 
     setViewFieldCenter(x: number, y: number): void {

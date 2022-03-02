@@ -1,4 +1,4 @@
-import {TreeNode} from "primeng/api";
+import { TreeNode } from "primeng/api";
 
 // ---------- Common ----------
 export abstract class GwtAngularFacade {
@@ -59,12 +59,28 @@ export interface ThreeJsRendererServiceAccess {
 
 export interface TerrainTile {
   getGroundTerrainTiles(): GroundTerrainTile[];
+
+  getTerrainSlopeTiles(): TerrainSlopeTile[];
 }
 
 export interface GroundTerrainTile {
   groundConfigId: number;
   positions: Float32Array;
   norms: Float32Array;
+}
+
+export interface TerrainSlopeTile {
+  slopeConfigId: number;
+  outerSlopeGeometry: SlopeGeometry | null;
+  centerSlopeGeometry: SlopeGeometry | null;
+  innerSlopeGeometry: SlopeGeometry | null;
+}
+
+export interface SlopeGeometry {
+  positions: Float32Array;
+  norms: Float32Array;
+  uvs: Float32Array;
+  slopeFactors: Float32Array;
 }
 
 export interface ThreeJsTerrainTile {

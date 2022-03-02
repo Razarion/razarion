@@ -434,7 +434,7 @@ public class WorkerMarshaller {
         return groundSlopePositions;
     }
 
-    private static Array<JsPropertyMapOfAny> marshallTerrainSlopeTiles(List<TerrainSlopeTile> terrainSlopeTiles) {
+    private static Array<JsPropertyMapOfAny> marshallTerrainSlopeTiles(TerrainSlopeTile[] terrainSlopeTiles) {
         Array<JsPropertyMapOfAny> result = new Array<>();
         if (terrainSlopeTiles != null) {
             for (TerrainSlopeTile terrainSlopeTile : terrainSlopeTiles) {
@@ -613,7 +613,7 @@ public class WorkerMarshaller {
         return float32ArrayMap;
     }
 
-    private static List<TerrainSlopeTile> demarshallTerrainSlopeTiles(Any any) {
+    private static TerrainSlopeTile[] demarshallTerrainSlopeTiles(Any any) {
         JsPropertyMapOfAny[] array = Js.cast(any);
         if (array.length == 0) {
             return null;
@@ -625,7 +625,7 @@ public class WorkerMarshaller {
             terrainSlopeTile.setCenterSlopeGeometry(demarshallSlopeGeometry(((Any) anyTerrainSlopeTile.get("centerSlopeGeometry")).asArray()));
             terrainSlopeTile.setInnerSlopeGeometry(demarshallSlopeGeometry(((Any) anyTerrainSlopeTile.get("innerSlopeGeometry")).asArray()));
             return terrainSlopeTile;
-        }).collect(Collectors.toList());
+        }).toArray(TerrainSlopeTile[]::new);
     }
 
     private static SlopeGeometry demarshallSlopeGeometry(Any[] slopeGeometryAnyArray) {

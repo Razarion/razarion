@@ -1,12 +1,14 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
+import jsinterop.annotations.JsType;
 
+@JsType
 public class SlopeGeometry {
-    private Float32ArrayEmu positions;
-    private Float32ArrayEmu norms;
-    private Float32ArrayEmu uvs;
-    private Float32ArrayEmu slopeFactors;
+    public Float32ArrayEmu positions;
+    public Float32ArrayEmu norms;
+    public Float32ArrayEmu uvs;
+    public Float32ArrayEmu slopeFactors;
 
     public Float32ArrayEmu getPositions() {
         return positions;

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { GroundTerrainTile, InputService, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
+import { GroundTerrainTile, InputService, SlopeGeometry, TerrainSlopeTile, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { ThreeJsRendererServiceImpl } from "./three-js-renderer-service.impl";
 import { HttpClient } from "@angular/common/http";
 
@@ -16,6 +16,7 @@ export class GameMockService {
     }
 
     mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl) {
+        const self = this;
         this.http.get<TerrainTile[]>("/gwt-mock/terrain-tiles").subscribe((terrainTileJsonArray: any[]) => {
             for (let i in terrainTileJsonArray) {
                 let terrainTileJson: any = terrainTileJsonArray[i];
@@ -31,10 +32,38 @@ export class GameMockService {
                         }
                         return groundTerrainTiles;
                     };
+                    getTerrainSlopeTiles(): TerrainSlopeTile[] {
+                        const terrainSlopeTiles: TerrainSlopeTile[] = [];
+                        for (const [key, terrainSlopeTileJson] of Object.entries(terrainTileJson.terrainSlopeTiles)) {
+                            terrainSlopeTiles.push(new class implements TerrainSlopeTile {
+                                slopeConfigId: number = <number>(<any>terrainSlopeTileJson)["slopeConfigId"];
+                                outerSlopeGeometry: SlopeGeometry | null = self.setupGeometry("outerSlopeGeometry", <any>terrainSlopeTileJson);
+                                centerSlopeGeometry: SlopeGeometry | null = self.setupGeometry("centerSlopeGeometry", <any>terrainSlopeTileJson);
+                                innerSlopeGeometry: SlopeGeometry | null = self.setupGeometry("innerSlopeGeometry", <any>terrainSlopeTileJson);
+                            });
+                        }
+                        return terrainSlopeTiles;
+                    }
                 };
                 const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
                 threeJsTerrainTile.addToScene();
             }
         });
     }
+
+    private setupGeometry(slopeGeometryName: string, terrainSlopeTileJson: any): SlopeGeometry | null {
+        if (slopeGeometryName in terrainSlopeTileJson) {
+            let slopeGeometry = terrainSlopeTileJson[slopeGeometryName];
+            return new class implements SlopeGeometry {
+                positions: Float32Array = new Float32Array(slopeGeometry["positions"]);
+                norms: Float32Array = new Float32Array(slopeGeometry["norms"]);
+                uvs: Float32Array = new Float32Array(slopeGeometry["uvs"]);
+                slopeFactors: Float32Array = new Float32Array(slopeGeometry["slopeFactors"]);
+            };
+        } else {
+            return null;
+        }
+
+    }
+
 }

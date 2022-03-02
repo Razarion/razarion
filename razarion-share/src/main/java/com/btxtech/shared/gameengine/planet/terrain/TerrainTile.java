@@ -22,7 +22,7 @@ public class TerrainTile {
     @Deprecated
     private Map<Integer, Float32ArrayEmu> groundNorms;
     private Collection<TerrainWaterTile> terrainWaterTiles;
-    private List<TerrainSlopeTile> terrainSlopeTiles;
+    private TerrainSlopeTile[] terrainSlopeTiles;
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
     private double height;
@@ -70,11 +70,11 @@ public class TerrainTile {
         this.groundTerrainTiles = groundTerrainTiles;
     }
 
-    public List<TerrainSlopeTile> getTerrainSlopeTiles() {
+    public TerrainSlopeTile[] getTerrainSlopeTiles() {
         return terrainSlopeTiles;
     }
 
-    public void setTerrainSlopeTiles(List<TerrainSlopeTile> terrainSlopeTiles) {
+    public void setTerrainSlopeTiles(TerrainSlopeTile[] terrainSlopeTiles) {
         this.terrainSlopeTiles = terrainSlopeTiles;
     }
 

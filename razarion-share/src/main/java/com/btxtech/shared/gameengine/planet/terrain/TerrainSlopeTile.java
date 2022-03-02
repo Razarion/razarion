@@ -1,16 +1,18 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 03.04.2017.
  */
+@JsType
 public class TerrainSlopeTile {
-    private int slopeConfigId;
-    private SlopeGeometry outerSlopeGeometry;
-    private SlopeGeometry centerSlopeGeometry;
-    private SlopeGeometry innerSlopeGeometry;
+    public int slopeConfigId;
+    public SlopeGeometry outerSlopeGeometry;
+    public SlopeGeometry centerSlopeGeometry;
+    public SlopeGeometry innerSlopeGeometry;
 
     public int getSlopeConfigId() {
         return slopeConfigId;
