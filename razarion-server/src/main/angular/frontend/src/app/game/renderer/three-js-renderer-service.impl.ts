@@ -8,7 +8,6 @@ import {
     Vector2
 } from "three";
 import { WebGLRenderer } from "three/src/renderers/WebGLRenderer";
-import { Mesh } from "three/src/objects/Mesh";
 import { Scene } from "three/src/scenes/Scene";
 import { TerrainTile, ThreeJsRendererServiceAccess, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { ThreeJsTerrainTileImpl } from "./three-js-terrain-tile.impl";
@@ -19,7 +18,9 @@ import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
     private scene = new Scene();
     private keyPressed: Map<string, number> = new Map();
-    private camera: Camera = new PerspectiveCamera;
+    private camera: PerspectiveCamera = new PerspectiveCamera;
+    private canvasDiv!: HTMLDivElement;
+    private renderer!: WebGLRenderer
 
     constructor(private gwtAngularService: GwtAngularService) {
     }
@@ -42,7 +43,15 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         this.onViewFieldChanged();
     }
 
-    setup(htmlCanvasElement: HTMLCanvasElement) {
+    onResize() {
+        this.renderer.setSize(this.canvasDiv.offsetWidth, this.canvasDiv.offsetHeight);
+        this.camera.aspect = this.canvasDiv.offsetWidth / this.canvasDiv.offsetHeight;
+        this.camera.updateProjectionMatrix();
+        this.onViewFieldChanged();
+    }
+
+    setup(htmlCanvasElement: HTMLCanvasElement, canvasDiv: HTMLDivElement) {
+        this.canvasDiv = canvasDiv;
         try {
             this.internalSetup(htmlCanvasElement);
         } catch (err) {
@@ -53,13 +62,13 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     internalSetup(htmlCanvasElement: HTMLCanvasElement) {
         let clock = new Clock();
 
-        this.camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera = new PerspectiveCamera(75, htmlCanvasElement.offsetWidth / htmlCanvasElement.offsetHeight, 0.1, 1000);
 
-        let renderer = new WebGLRenderer({
+        this.renderer = new WebGLRenderer({
             antialias: true,
             canvas: htmlCanvasElement
         });
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setSize(htmlCanvasElement.offsetWidth, htmlCanvasElement.offsetHeight);
 
         const self = this;
         // Scroll
@@ -76,12 +85,13 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             delta = delta / 240;
             delta = -delta;
             if (delta <= 0) {
-                delta -= self.camera.position.z * 0.1;
-            } else {
                 delta += self.camera.position.z * 0.1;
+            } else {
+                delta -= self.camera.position.z * 0.1;
             }
             if (self.camera.position.z + delta > 1 && self.camera.position.z + delta < 200) {
                 self.camera.translateZ(delta);
+                this.onViewFieldChanged();
             }
         }, true);
         // Camera
@@ -95,7 +105,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
             requestAnimationFrame(animate);
             self.scrollCamera(delta, self.camera);
-            renderer.render(self.scene, self.camera);
+            self.renderer.render(self.scene, self.camera);
         }
         animate();
     }

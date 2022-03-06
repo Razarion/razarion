@@ -18,6 +18,8 @@ import { GameMockService } from './renderer/game-mock.service';
 export class GameComponent implements OnInit {
   @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('canvasDiv', { static: true })
+  canvasDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('mainCockpit', { static: true })
   mainCockpitComponent!: MainCockpitComponent;
   @ViewChild('itemCockpitContainer', { static: true })
@@ -34,7 +36,6 @@ export class GameComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.gwtAngularService.gwtAngularFacade.canvasElement = this.canvas.nativeElement;
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
 
@@ -43,16 +44,14 @@ export class GameComponent implements OnInit {
     // @ts-ignore
     const resizeObserver = new ResizeObserver(entries => {
       for (let entry of entries) {
-        if (this.canvas.nativeElement == entry.target) {
-          if (this.gwtAngularService.gwtAngularFacade.canvasResizeCallback != undefined) {
-            this.gwtAngularService.gwtAngularFacade.canvasResizeCallback.onCallback();
-          }
+        if (this.canvasDiv.nativeElement == entry.target) {
+          this.threeJsRendererService.onResize();
         }
       }
     });
-    resizeObserver.observe(this.canvas.nativeElement);
+    resizeObserver.observe(this.canvasDiv.nativeElement);
 
-    this.threeJsRendererService.setup(this.canvas.nativeElement);
+    this.threeJsRendererService.setup(this.canvas.nativeElement, this.canvasDiv.nativeElement);
     if (environment.gwtMock) {
       this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
       this.gameMockService.mockTerrainTile(this.threeJsRendererService);
@@ -71,9 +70,11 @@ export class GameComponent implements OnInit {
     //   this.router.navigate(['/nocookies']);
     //   return;
     // }
-    this.frontendService.autoLogin().then(loggedIn => {
-      this.startGame();
-    });
+    if (!environment.gwtMock) {
+      this.frontendService.autoLogin().then(loggedIn => {
+        this.startGame();
+      });
+    }
     // TODO remove
     // let ownItemCockpit: OwnItemCockpit = {
     //   buildupItemInfos: null,
