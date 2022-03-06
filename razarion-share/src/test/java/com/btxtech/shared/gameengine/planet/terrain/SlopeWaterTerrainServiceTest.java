@@ -103,6 +103,9 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         setupTerrainTypeService(slopeConfigs, null, waterConfigs, null, null, terrainSlopePositions, null, null);
 
         // showDisplay();
+        exportTriangles("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain",
+                new Index(0, 0), new Index(1, 0), new Index(0, 1), new Index(1, 1));
+
 
         AssertTerrainShape.assertTerrainShape(getClass(), "testWaterShape2.json", getTerrainShape());
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testWaterShapeHNT2.json");

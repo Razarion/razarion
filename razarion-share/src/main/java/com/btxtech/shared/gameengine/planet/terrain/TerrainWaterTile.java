@@ -1,16 +1,18 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 10.04.2017.
  */
+@JsType
 public class TerrainWaterTile {
-    private int slopeConfigId;
-    private Float32ArrayEmu positions;
-    private Float32ArrayEmu shallowPositions;
-    private Float32ArrayEmu shallowUvs;
+    public int slopeConfigId;
+    public Float32ArrayEmu positions;
+    public Float32ArrayEmu shallowPositions;
+    public Float32ArrayEmu shallowUvs;
     private boolean positionsSet; // positions == null not working -> Float32ArrayEmu to Float32Array problem
     private boolean shallowPositionsSet; // shallowPositions == null not working -> Float32ArrayEmu to Float32Array problem
 

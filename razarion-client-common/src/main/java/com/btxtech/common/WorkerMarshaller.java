@@ -462,7 +462,7 @@ public class WorkerMarshaller {
         }
     }
 
-    private static Object marshallTerrainWaterTiles(Collection<TerrainWaterTile> terrainWaterTiles) {
+    private static Object marshallTerrainWaterTiles(TerrainWaterTile[] terrainWaterTiles) {
         Array<JsPropertyMapOfAny> result = new Array<>();
         if (terrainWaterTiles != null) {
             for (TerrainWaterTile terrainWaterTile : terrainWaterTiles) {
@@ -640,7 +640,7 @@ public class WorkerMarshaller {
         return slopeGeometry;
     }
 
-    private static List<TerrainWaterTile> demarshallTerrainWaterTiles(Any any) {
+    private static TerrainWaterTile[] demarshallTerrainWaterTiles(Any any) {
         JsPropertyMapOfAny[] array = Js.cast(any);
         if (array.length == 0) {
             return null;
@@ -657,7 +657,7 @@ public class WorkerMarshaller {
                 terrainWaterTile.setShallowUvs(Js.uncheckedCast((anyTerrainWaterTile.get("shallowUvs"))));
             }
             return terrainWaterTile;
-        }).collect(Collectors.toList());
+        }).toArray(TerrainWaterTile[]::new);
     }
 
     private static List<TerrainTileObjectList> demarshallTerrainTileObjectLists(Any any, NativeMatrixFactory nativeMatrixFactory) {

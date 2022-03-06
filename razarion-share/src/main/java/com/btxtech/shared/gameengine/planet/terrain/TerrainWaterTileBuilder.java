@@ -67,7 +67,7 @@ public class TerrainWaterTileBuilder {
         trianglePositions.put(slopeId, vertexC);
     }
 
-    public List<TerrainWaterTile> generate() {
+    public TerrainWaterTile[] generate() {
         if (trianglePositions.isEmpty() && shallowTrianglePositions.isEmpty()) {
             return null;
         }
@@ -89,7 +89,7 @@ public class TerrainWaterTileBuilder {
             }
             terrainWaterTiles.add(terrainWaterTile);
         });
-        return terrainWaterTiles;
+        return terrainWaterTiles.toArray(new TerrainWaterTile[0]);
     }
 
     public void startWaterMesh() {

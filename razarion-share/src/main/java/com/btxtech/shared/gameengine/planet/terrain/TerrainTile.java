@@ -21,7 +21,7 @@ public class TerrainTile {
     private Map<Integer, Float32ArrayEmu> groundPositions;
     @Deprecated
     private Map<Integer, Float32ArrayEmu> groundNorms;
-    private Collection<TerrainWaterTile> terrainWaterTiles;
+    private TerrainWaterTile[] terrainWaterTiles;
     private TerrainSlopeTile[] terrainSlopeTiles;
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
@@ -78,11 +78,11 @@ public class TerrainTile {
         this.terrainSlopeTiles = terrainSlopeTiles;
     }
 
-    public Collection<TerrainWaterTile> getTerrainWaterTiles() {
+    public TerrainWaterTile[] getTerrainWaterTiles() {
         return terrainWaterTiles;
     }
 
-    public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles) {
+    public void setTerrainWaterTiles(TerrainWaterTile[] terrainWaterTiles) {
         this.terrainWaterTiles = terrainWaterTiles;
     }
 

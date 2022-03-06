@@ -29,6 +29,16 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                 }
             });
         }
+        if (terrainTile.getTerrainWaterTiles() !== null) {
+            terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile => {
+                if (terrainWaterTile.positions !== null && terrainWaterTile.positions !== undefined) {
+                    this.setupWater(terrainWaterTile.positions);
+                }
+                if (terrainWaterTile.shallowPositions !== null && terrainWaterTile.shallowPositions !== undefined) {
+                    this.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs);
+                }
+            });
+        }
     }
 
     private setupSlopeGeometry(slopeGeometry: SlopeGeometry): void {
@@ -39,6 +49,25 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         geometry.setAttribute('slopeFactors', new BufferAttribute(slopeGeometry.slopeFactors, 3));
 
         const material = new MeshBasicMaterial({ color: 0xAAAAAA });
+        material.wireframe = true;
+        const cube = new Mesh(geometry, material);
+        this.scene.add(cube);
+    }
+
+    private setupWater(positions: Float32Array) {
+        let geometry = new BufferGeometry();
+        geometry.setAttribute('position', new BufferAttribute(positions, 3));
+        const material = new MeshBasicMaterial({ color: 0x0000ff });
+        material.wireframe = true;
+        const cube = new Mesh(geometry, material);
+        this.scene.add(cube);
+    }
+
+    private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array) {
+        let geometry = new BufferGeometry();
+        geometry.setAttribute('position', new BufferAttribute(shallowPositions, 3));
+        geometry.setAttribute('uvs', new BufferAttribute(shallowUvs, 3));
+        const material = new MeshBasicMaterial({ color: 0x5555ff });
         material.wireframe = true;
         const cube = new Mesh(geometry, material);
         this.scene.add(cube);

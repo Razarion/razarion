@@ -417,14 +417,14 @@ public class WeldTestRenderer {
             if (terrainTile.getTerrainWaterTiles() != null) {
                 gc.setLineWidth(LINE_WIDTH);
                 gc.setStroke(Color.BLUE);
-                terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile -> {
-                    if (terrainWaterTile.getPositions() != null) {
-                        drawTriangles(terrainWaterTile.getPositions());
-                    }
-                    if (terrainWaterTile.getShallowPositions() != null) {
-                        drawTriangles(terrainWaterTile.getShallowPositions());
-                    }
-                });
+//                terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile -> {
+//                    if (terrainWaterTile.getPositions() != null) {
+//                        drawTriangles(terrainWaterTile.getPositions());
+//                    }
+//                    if (terrainWaterTile.getShallowPositions() != null) {
+//                        drawTriangles(terrainWaterTile.getShallowPositions());
+//                    }
+//                });
             }
         }
         if (weldTestController.renderTerrainTileGround()) {

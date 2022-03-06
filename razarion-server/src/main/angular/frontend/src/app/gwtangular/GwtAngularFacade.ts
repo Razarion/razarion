@@ -61,6 +61,8 @@ export interface TerrainTile {
   getGroundTerrainTiles(): GroundTerrainTile[];
 
   getTerrainSlopeTiles(): TerrainSlopeTile[];
+
+  getTerrainWaterTiles(): TerrainWaterTile[];
 }
 
 export interface GroundTerrainTile {
@@ -81,6 +83,13 @@ export interface SlopeGeometry {
   norms: Float32Array;
   uvs: Float32Array;
   slopeFactors: Float32Array;
+}
+
+export interface TerrainWaterTile {
+  slopeConfigId: number;
+  positions: Float32Array;
+  shallowPositions: Float32Array;
+  shallowUvs: Float32Array;
 }
 
 export interface ThreeJsTerrainTile {

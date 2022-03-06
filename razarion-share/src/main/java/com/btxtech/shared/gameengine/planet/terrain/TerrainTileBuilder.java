@@ -91,7 +91,7 @@ public class TerrainTileBuilder {
         if (!terrainTileGroundNorms.isEmpty()) {
             terrainTile.setGroundNorms(terrainTileGroundNorms);
         }
-        terrainTile.setGroundTerrainTiles(groundTerrainTiles.values().toArray(new GroundTerrainTile[groundTerrainTiles.values().size()]));
+        terrainTile.setGroundTerrainTiles(groundTerrainTiles.values().toArray(new GroundTerrainTile[0]));
 
         if (terrainSlopeTileBuilders != null && !terrainSlopeTileBuilders.isEmpty()) {
             terrainTile.setTerrainSlopeTiles(terrainSlopeTileBuilders.stream().map(TerrainSlopeTileBuilder::generate).toArray(TerrainSlopeTile[]::new));

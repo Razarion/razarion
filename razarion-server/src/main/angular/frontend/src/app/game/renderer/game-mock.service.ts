@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { GroundTerrainTile, InputService, SlopeGeometry, TerrainSlopeTile, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
+import { GroundTerrainTile, InputService, SlopeGeometry, TerrainSlopeTile, TerrainTile, TerrainWaterTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { ThreeJsRendererServiceImpl } from "./three-js-renderer-service.impl";
 import { HttpClient } from "@angular/common/http";
 
@@ -23,6 +23,9 @@ export class GameMockService {
                 const terrainTile = new class implements TerrainTile {
                     getGroundTerrainTiles(): GroundTerrainTile[] {
                         const groundTerrainTiles: GroundTerrainTile[] = [];
+                        if (terrainTileJson.groundTerrainTiles === undefined || terrainTileJson.groundTerrainTiles === null) {
+                            return groundTerrainTiles;
+                        }
                         for (const [key, value] of Object.entries(terrainTileJson.groundTerrainTiles)) {
                             groundTerrainTiles.push(new class implements GroundTerrainTile {
                                 groundConfigId: number = <number>(<any>value)["groundConfigId"];
@@ -34,6 +37,9 @@ export class GameMockService {
                     };
                     getTerrainSlopeTiles(): TerrainSlopeTile[] {
                         const terrainSlopeTiles: TerrainSlopeTile[] = [];
+                        if (terrainTileJson.terrainSlopeTiles === undefined || terrainTileJson.terrainSlopeTiles === null) {
+                            return terrainSlopeTiles;
+                        }
                         for (const [key, terrainSlopeTileJson] of Object.entries(terrainTileJson.terrainSlopeTiles)) {
                             terrainSlopeTiles.push(new class implements TerrainSlopeTile {
                                 slopeConfigId: number = <number>(<any>terrainSlopeTileJson)["slopeConfigId"];
@@ -44,6 +50,22 @@ export class GameMockService {
                         }
                         return terrainSlopeTiles;
                     }
+                    getTerrainWaterTiles(): TerrainWaterTile[] {
+                        const terrainWaterTiles: TerrainWaterTile[] = [];
+                        if (terrainTileJson.terrainWaterTiles === undefined || terrainTileJson.terrainWaterTiles === null) {
+                            return terrainWaterTiles;
+                        }
+                        for (const [key, terrainWaterTileJson] of Object.entries(terrainTileJson.terrainWaterTiles)) {
+                            terrainWaterTiles.push(new class implements TerrainWaterTile {
+                                slopeConfigId: number = <number>(<any>terrainWaterTileJson)["slopeConfigId"];
+                                positions: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["positions"]);
+                                shallowPositions: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["shallowPositions"]);
+                                shallowUvs: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["shallowUvs"]);
+                            });
+                        }
+                        return terrainWaterTiles;
+                    }
+
                 };
                 const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
                 threeJsTerrainTile.addToScene();
