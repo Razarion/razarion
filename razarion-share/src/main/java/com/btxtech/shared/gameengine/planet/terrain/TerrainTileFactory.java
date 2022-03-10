@@ -397,7 +397,7 @@ public class TerrainTileFactory {
                     exceptionHandler.handleException(t);
                 }
             });
-            terrainTileObjectList.setModel(models);
+            terrainTileObjectList.setModel(models.toArray(new NativeMatrix[0]));
             terrainTileBuilder.addTerrainTileObjectList(terrainTileObjectList);
         });
     }

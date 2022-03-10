@@ -9,13 +9,12 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_TERRAIN_OBJECT;
-
 /**
  * Created by Beat
  * 31.08.2016.
  */
 @Singleton
+@Deprecated
 public class TerrainObjectRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     // private Logger logger = Logger.getLogger(TerrainObjectRenderTask.class.getName());
     @Inject
@@ -38,14 +37,14 @@ public class TerrainObjectRenderTaskRunner extends AbstractShape3DRenderTaskRunn
     }
 
     private void setupTerrainObject() {
-        terrainTypeService.getTerrainObjectConfigs().forEach(terrainObjectConfig -> {
-            if (terrainObjectConfig.getShape3DId() != null) {
-                createShape3DRenderTasks(shape3DUiService.getShape3D(terrainObjectConfig.getShape3DId()),
-                        timeStamp -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig.getId()));
-            } else {
-                alarmService.riseAlarm(INVALID_TERRAIN_OBJECT, "No shape3DId", terrainObjectConfig.getId());
-            }
-        });
+//        terrainTypeService.getTerrainObjectConfigs().forEach(terrainObjectConfig -> {
+//            if (terrainObjectConfig.getShape3DId() != null) {
+//                createShape3DRenderTasks(shape3DUiService.getShape3D(terrainObjectConfig.getShape3DId()),
+//                        timeStamp -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig.getId()));
+//            } else {
+//                alarmService.riseAlarm(INVALID_TERRAIN_OBJECT, "No shape3DId", terrainObjectConfig.getId());
+//            }
+//        });
     }
 
 }

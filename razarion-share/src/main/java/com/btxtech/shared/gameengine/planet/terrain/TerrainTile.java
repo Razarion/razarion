@@ -5,8 +5,6 @@ import com.btxtech.shared.datatypes.Index;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,7 +24,7 @@ public class TerrainTile {
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
     private double height;
-    private List<TerrainTileObjectList> terrainTileObjectLists;
+    private TerrainTileObjectList[] terrainTileObjectLists;
 
     @JsIgnore
     public Index getIndex() {
@@ -118,11 +116,11 @@ public class TerrainTile {
         this.height = height;
     }
 
-    public List<TerrainTileObjectList> getTerrainTileObjectLists() {
+    public TerrainTileObjectList[] getTerrainTileObjectLists() {
         return terrainTileObjectLists;
     }
 
-    public void setTerrainTileObjectLists(List<TerrainTileObjectList> terrainTileObjectLists) {
+    public void setTerrainTileObjectLists(TerrainTileObjectList[] terrainTileObjectLists) {
         this.terrainTileObjectLists = terrainTileObjectLists;
     }
 }

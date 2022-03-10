@@ -51,7 +51,6 @@ public class TerrainUiService {
     private Instance<UiTerrainTile> uiTerrainTileInstance;
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
-    private MapList<Integer, ModelMatrices> terrainObjectConfigModelMatrices = new MapList<>();
     private MapCollection<DecimalPosition, BiConsumer<DecimalPosition, Double>> terrainZConsumers = new MapCollection<>();
     private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
     private Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
@@ -65,7 +64,6 @@ public class TerrainUiService {
 
     public void clear() {
         loaded = false;
-        terrainObjectConfigModelMatrices.clear();
         terrainZConsumers.clear();
         clearTerrainTiles();
     }
@@ -109,21 +107,6 @@ public class TerrainUiService {
             cacheTerrainTiles.put(hidden.getKey(), hidden.getValue());
         }
         displayTerrainTiles = newDisplayTerrainTiles;
-        onViewChangedTerrainObjects();
-    }
-
-    private void onViewChangedTerrainObjects() {
-        terrainObjectConfigModelMatrices.clear();
-        displayTerrainTiles.values().forEach(uiTerrainTile -> {
-            MapList<Integer, ModelMatrices> terrainObjectModelMatrices = uiTerrainTile.getTerrainObjectModelMatrices();
-            if (terrainObjectModelMatrices != null) {
-                terrainObjectConfigModelMatrices.putAll(terrainObjectModelMatrices);
-            }
-        });
-    }
-
-    public void onTerrainObjectModelMatrices(MapList<Integer, ModelMatrices> terrainObjects) {
-        terrainObjectConfigModelMatrices.putAll(terrainObjects);
     }
 
     public double getHighestPointInView() {
@@ -132,15 +115,6 @@ public class TerrainUiService {
 
     public double getLowestPointInView() {
         return lowestPointInView;
-    }
-
-    public List<ModelMatrices> provideTerrainObjectModelMatrices(int terrainObjectConfigId) {
-        List<ModelMatrices> modelMatrices = terrainObjectConfigModelMatrices.get(terrainObjectConfigId);
-        if (modelMatrices != null) {
-            return modelMatrices;
-        } else {
-            return Collections.emptyList();
-        }
     }
 
     public double calculateLandWaterProportion() {
@@ -271,8 +245,8 @@ public class TerrainUiService {
         onEditorTerrainChanged();
     }
 
+    @Deprecated
     public void onEditorTerrainChanged() {
-        terrainObjectConfigModelMatrices.clear();
         clearTerrainTiles();
     }
 

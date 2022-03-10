@@ -13,6 +13,7 @@ razarion-server/src/main/webapp/debug
 razarion-server/src/main/webapp/WEB-INF/deploy
 razarion-server/src/main/angular/backend/node_modules/
 razarion-server/src/main/angular/frontend/node_modules/
+razarion-server/src/main/angular/frontend/three/
 razarion-server/src/main/webapp/marketinghist/node_modules/
 razarion-server/src/main/gwt-unitCache
 razarion-share/razarion-share.iml

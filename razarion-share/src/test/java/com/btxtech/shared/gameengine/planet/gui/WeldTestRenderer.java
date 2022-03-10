@@ -450,10 +450,10 @@ public class WeldTestRenderer {
         if (weldTestController.renderTerrainTileTerrainObject()) {
             if (terrainTile.getTerrainTileObjectLists() != null) {
                 gc.setFill(Color.BROWN);
-                terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList -> {
+                Arrays.stream(terrainTile.getTerrainTileObjectLists()).forEach(terrainTileObjectList -> {
                     if (terrainTileObjectList.getModels() != null) {
                         TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.getTerrainObjectConfigId());
-                        terrainTileObjectList.getModels().forEach(nativeMatrix -> {
+                        Arrays.stream(terrainTileObjectList.getModels()).forEach(nativeMatrix -> {
                             NativeVertexDto br = nativeMatrix.multiplyVertex(NativeUtil.toNativeVertex(-terrainObjectConfig.getRadius(), -terrainObjectConfig.getRadius(), 0), 1.0);
                             NativeVertexDto tl = nativeMatrix.multiplyVertex(NativeUtil.toNativeVertex(terrainObjectConfig.getRadius(), terrainObjectConfig.getRadius(), 0), 1.0);
                             Rectangle2D rect = Rectangle2D.generateRectangleFromAnyPoints(new DecimalPosition(br.x, br.y), new DecimalPosition(tl.x, tl.y)); // If rotated, it is may upside down

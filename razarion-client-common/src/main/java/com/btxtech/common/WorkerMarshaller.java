@@ -44,11 +44,9 @@ import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static jsinterop.base.Js.castToDouble;
 import static jsinterop.base.Js.uncheckedCast;
@@ -481,24 +479,24 @@ public class WorkerMarshaller {
         return result;
     }
 
-    private static Object marshallTerrainTileObjectList(List<TerrainTileObjectList> terrainTileObjectLists) {
+    private static Object marshallTerrainTileObjectList(TerrainTileObjectList[] terrainTileObjectLists) {
         Array<JsPropertyMapOfAny> result = new Array<>();
         if (terrainTileObjectLists != null) {
-            terrainTileObjectLists.forEach(terrainTileObjectList -> {
+            for (TerrainTileObjectList terrainTileObjectList : terrainTileObjectLists) {
                 JsPropertyMapOfAny mapOfTerrainTileObjectList = JsPropertyMap.of();
                 mapOfTerrainTileObjectList.set("terrainObjectConfigId", terrainTileObjectList.getTerrainObjectConfigId());
                 mapOfTerrainTileObjectList.set("models", marshallNativeMatrices(terrainTileObjectList.getModels()));
                 result.push(mapOfTerrainTileObjectList);
-            });
+            }
         }
         return result;
     }
 
-    private static elemental2.core.Map<Integer, Float32Array> marshallNativeMatrices(List<NativeMatrix> nativeMatrices) {
+    private static elemental2.core.Map<Integer, Float32Array> marshallNativeMatrices(NativeMatrix[] nativeMatrices) {
         elemental2.core.Map<Integer, Float32Array> result = new elemental2.core.Map<>();
         if (nativeMatrices != null) {
-            for (int i = 0; i < nativeMatrices.size(); i++) {
-                result.set(i, Js.uncheckedCast(nativeMatrices.get(i).getColumnMajorFloat32Array()));
+            for (int i = 0; i < nativeMatrices.length; i++) {
+                result.set(i, Js.uncheckedCast(nativeMatrices[i].getColumnMajorFloat32Array()));
             }
         }
         return result;
@@ -660,7 +658,7 @@ public class WorkerMarshaller {
         }).toArray(TerrainWaterTile[]::new);
     }
 
-    private static List<TerrainTileObjectList> demarshallTerrainTileObjectLists(Any any, NativeMatrixFactory nativeMatrixFactory) {
+    private static TerrainTileObjectList[] demarshallTerrainTileObjectLists(Any any, NativeMatrixFactory nativeMatrixFactory) {
         JsPropertyMapOfAny[] array = Js.cast(any);
         if (array.length == 0) {
             return null;
@@ -670,10 +668,10 @@ public class WorkerMarshaller {
             terrainTileObjectList.setTerrainObjectConfigId(((Any) Js.uncheckedCast(anyTerrainTileObjectList.get("terrainObjectConfigId"))).asInt());
             terrainTileObjectList.setModel(demarshallNativeMatrices(Js.uncheckedCast(anyTerrainTileObjectList.get("models")), nativeMatrixFactory));
             return terrainTileObjectList;
-        }).collect(Collectors.toList());
+        }).toArray(TerrainTileObjectList[]::new);
     }
 
-    private static List<NativeMatrix> demarshallNativeMatrices(Any any, NativeMatrixFactory nativeMatrixFactory) {
+    private static NativeMatrix[] demarshallNativeMatrices(Any any, NativeMatrixFactory nativeMatrixFactory) {
         elemental2.core.Map<Integer, Float32Array> map = uncheckedCast(any);
         if (map.size == 0) {
             return null;
@@ -684,7 +682,7 @@ public class WorkerMarshaller {
             return null;
         });
 
-        return nativeMatrices;
+        return nativeMatrices.toArray(new NativeMatrix[0]);
 
     }
 

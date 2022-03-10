@@ -24,7 +24,7 @@ export class EditorDialogComponent {
   mainCockpitComponent!: MainCockpitComponent;
 
   constructor(private gwtAngularService: GwtAngularService) {
-    this.editors.set("Render Engine", RenderEngineComponent)
+    this.editors.set("Three.js", RenderEngineComponent)
     this.editors.set("Server Control", ServerPanelComponent)
     this.editors.set("Backup Restore", BackupRestoreComponent)
   }

@@ -56,18 +56,21 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
                 new TerrainObjectPosition().id(1).terrainObjectId(1).position(new DecimalPosition(50, 40)).scale(new Vertex(10, 10, 10)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(1).terrainObjectId(1).position(new DecimalPosition(100, 80)).scale(new Vertex(10, 10, 10)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(2).terrainObjectId(1).position(new DecimalPosition(150, 120)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(2).terrainObjectId(2).position(new DecimalPosition(200, 160)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(1).terrainObjectId(3).position(new DecimalPosition(250, 200)).scale(new Vertex(0.2, 0.2, 0.2)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(2).terrainObjectId(3).position(new DecimalPosition(300, 240)).scale(new Vertex(0.5, 0.5, 0.5)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(1).terrainObjectId(3).position(new DecimalPosition(50, 280)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
-                new TerrainObjectPosition().id(2).terrainObjectId(3).position(new DecimalPosition(100, 40)).scale(new Vertex(2, 2, 2)).rotation(new Vertex(0, 0, 0)));
+                new TerrainObjectPosition().id(2).terrainObjectId(1).position(new DecimalPosition(100, 80)).scale(new Vertex(10, 10, 10)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(3).terrainObjectId(1).position(new DecimalPosition(150, 120)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(4).terrainObjectId(2).position(new DecimalPosition(200, 160)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(5).terrainObjectId(3).position(new DecimalPosition(250, 200)).scale(new Vertex(0.2, 0.2, 0.2)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(6).terrainObjectId(3).position(new DecimalPosition(300, 240)).scale(new Vertex(0.5, 0.5, 0.5)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(7).terrainObjectId(3).position(new DecimalPosition(50, 280)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
+                new TerrainObjectPosition().id(8).terrainObjectId(3).position(new DecimalPosition(100, 40)).scale(new Vertex(2, 2, 2)).rotation(new Vertex(0, 0, 0)));
 
 
         setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);
 
         // showDisplay();
+
+        exportTriangles("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain",
+                new Index(0, 0), new Index(1, 0), new Index(0, 1), new Index(1, 1));
 
         AssertTerrainShape.assertTerrainShape(getClass(), "testTerrainObjectTileGeneration4TilesShape1.json", getTerrainShape());
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testTerrainObjectTileGeneration4TilesHNT1.json");

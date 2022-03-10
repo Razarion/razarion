@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -97,7 +96,7 @@ public class TerrainTileBuilder {
             terrainTile.setTerrainSlopeTiles(terrainSlopeTileBuilders.stream().map(TerrainSlopeTileBuilder::generate).toArray(TerrainSlopeTile[]::new));
         }
         if (!terrainTileObjectLists.isEmpty()) {
-            terrainTile.setTerrainTileObjectLists(terrainTileObjectLists);
+            terrainTile.setTerrainTileObjectLists(terrainTileObjectLists.toArray(new TerrainTileObjectList[0]));
         }
         return terrainTile;
     }

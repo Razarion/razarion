@@ -1,15 +1,81 @@
 import { Injectable } from "@angular/core";
-import { GroundTerrainTile, InputService, SlopeGeometry, TerrainSlopeTile, TerrainTile, TerrainWaterTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
+import { Alarm, EditorFrontendProvider, GenericEditorFrontendProvider, GroundTerrainTile, GwtAngularPropertyTable, InputService, NativeMatrix, ObjectNameId, PerfmonStatistic, RendererEditorService, RenderTaskRunnerControl, SlopeGeometry, StatusProvider, TerrainEditorService, TerrainMarkerService, TerrainSlopeTile, TerrainTile, TerrainTileObjectList, TerrainWaterTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { ThreeJsRendererServiceImpl } from "./three-js-renderer-service.impl";
 import { HttpClient } from "@angular/common/http";
+import * as Stats from 'stats.js';
 
 @Injectable()
 export class GameMockService {
-
     inputService: InputService = new class implements InputService {
         onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
             console.info("onViewFieldChanged()");
         }
+    };
+
+    statusProvider: StatusProvider = new class implements StatusProvider {
+        stats : Stats| null = null;
+        
+        getClientAlarms(): Alarm[] {
+            return [];
+        }
+        requestServerAlarms(): Promise<Alarm[]> {
+            throw new Error("Method not implemented.");
+        }
+        setStats(stats: Stats | null): void {
+            this.stats = stats;
+        }
+        getStats(): Stats | null{
+            return this.stats;
+        }
+
+    };
+
+    editorFrontendProvider: EditorFrontendProvider = new class implements EditorFrontendProvider {
+        getGenericEditorFrontendProvider(): GenericEditorFrontendProvider {
+            return new class implements GenericEditorFrontendProvider {
+                collectionNames(): string[] {
+                    return [];
+                }
+                requestObjectNameIds(collectionName: string): Promise<ObjectNameId[]> {
+                    throw new Error("Method not implemented.");
+                }
+                requestObjectNameId(collectionName: string, configId: number): Promise<ObjectNameId> {
+                    throw new Error("Method not implemented.");
+                }
+                createConfig(collectionName: string): Promise<GwtAngularPropertyTable> {
+                    throw new Error("Method not implemented.");
+                }
+                readConfig(collectionName: string, configId: number): Promise<GwtAngularPropertyTable> {
+                    throw new Error("Method not implemented.");
+                }
+                updateConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void> {
+                    throw new Error("Method not implemented.");
+                }
+                deleteConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void> {
+                    throw new Error("Method not implemented.");
+                }
+                colladaConvert(gwtAngularPropertyTable: GwtAngularPropertyTable, colladaString: string): Promise<void> {
+                    throw new Error("Method not implemented.");
+                }
+
+            };
+        }
+        getClientPerfmonStatistics(): PerfmonStatistic[] {
+            throw new Error("Method not implemented.");
+        }
+        getWorkerPerfmonStatistics(): Promise<PerfmonStatistic[]> {
+            throw new Error("Method not implemented.");
+        }
+        getTerrainMarkerService(): TerrainMarkerService {
+            throw new Error("Method not implemented.");
+        }
+        getTerrainEditorService(): TerrainEditorService {
+            throw new Error("Method not implemented.");
+        }
+        getCameraFrontendService(): RendererEditorService {
+            throw new Error("Method not implemented.");
+        }
+
     };
 
     constructor(private http: HttpClient) {
@@ -65,7 +131,18 @@ export class GameMockService {
                         }
                         return terrainWaterTiles;
                     }
-
+                    getTerrainTileObjectLists(): TerrainTileObjectList[] {
+                        const terrainTileObjectLists: TerrainTileObjectList[] = [];
+                        if (terrainTileJson.terrainTileObjectLists === undefined || terrainTileJson.terrainTileObjectLists === null) {
+                            return terrainTileObjectLists;
+                        }
+                        for (const [key, terrainTileObjectListJson] of Object.entries(terrainTileJson.terrainTileObjectLists)) {
+                            terrainTileObjectLists.push(new class implements TerrainTileObjectList {
+                                models: NativeMatrix[] = self.setupNativeMatrix((<any>terrainTileObjectListJson)["models"]);
+                            });
+                        }
+                        return terrainTileObjectLists;
+                    }
                 };
                 const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
                 threeJsTerrainTile.addToScene();
@@ -86,6 +163,68 @@ export class GameMockService {
             return null;
         }
 
+    }
+
+    private setupNativeMatrix(nativeMatricesJson: any): NativeMatrix[] {
+        let nativeMatrix: NativeMatrix[] = [];
+        nativeMatricesJson.forEach((nativeMatrixJson: any) => {
+            nativeMatrix.push(new class implements NativeMatrix {
+                getColumnMajorFloat32Array(): Float32Array {
+                    return new Float32Array(nativeMatrixJson.columnMajorFloat32Array);
+                }
+
+            });
+        });
+        return nativeMatrix;
+    }
+
+    setupRendererEditorService(): RendererEditorService {
+        return new class implements RendererEditorService {
+            isRenderInterpolation(): boolean {
+                return false;
+            }
+            setRenderInterpolation(value: boolean): void {
+            }
+            isCallGetError(): boolean {
+                return false;
+            }
+            setCallGetError(callGetError: boolean): void {
+            }
+            getCameraXPosition(): number {
+                return 0;
+            }
+            setCameraXPosition(x: number): void {
+            }
+            getCameraYPosition(): number {
+                return 0;
+            }
+            setCameraYPosition(y: number): void {
+            }
+            getCameraZPosition(): number {
+                return 0;
+            }
+            setCameraZPosition(z: number): void {
+            }
+            getCameraXRotation(): number {
+                return 0;
+            }
+            setCameraXRotation(x: number): void {
+            }
+            getCameraZRotation(): number {
+                return 0;
+            }
+            setCameraZRotation(z: number): void {
+            }
+            getCameraOpeningAngleY(): number {
+                return 0;
+            }
+            setCameraOpeningAngleY(y: number): void {
+            }
+            getRenderTaskRunnerControls(): RenderTaskRunnerControl[] {
+                return [];
+            }
+
+        };
     }
 
 }

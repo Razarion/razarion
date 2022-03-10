@@ -1,8 +1,7 @@
-﻿<div class="grid" [style]="{height:'100%', margin: 0}">
-  <div #canvasDiv class="col" style="height: 100%; width: 100%; position: relative; margin: 0; padding: 0">
-    <canvas #canvas></canvas>
+﻿<div class="flex card-container blue-container overflow-hidden align-items-stretch" [style]="{height:'100%', margin: 0}">
+  <div #canvasDiv class="flex-grow-1 flex-shrink-1 flex align-items-center justify-content-center bg-blue-500 font-bold text-white m-2 px-5 py-3 border-round">
   </div>
-  <div class="col-fixed" *ngFor="let editorModel of editorModels" style="height: 100%">
+  <div class="flex-none flex align-items-center justify-content-center bg-blue-500 font-bold text-white m-2 px-5 py-3 border-round" *ngFor="let editorModel of editorModels">
     <app-editor-panel [editorModel]="editorModel" [gameComponent]="getGameComponent()" [mainCockpitComponent]="mainCockpit"></app-editor-panel>
   </div>
 </div>

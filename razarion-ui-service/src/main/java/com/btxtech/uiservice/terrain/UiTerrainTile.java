@@ -2,9 +2,6 @@ package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
@@ -13,15 +10,11 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ThreeJsRendererService;
 import com.btxtech.uiservice.renderer.ThreeJsTerrainTile;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,18 +27,13 @@ public class UiTerrainTile {
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private TerrainTypeService terrainTypeService;
-    @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
-    private GameUiControl gameUiControl;
     @Inject
     private ThreeJsRendererService threeJsRendererService;
     private Index index;
     private TerrainTile terrainTile;
     private ThreeJsTerrainTile threeJsTerrainTile;
     private boolean active;
-    private MapList<Integer, ModelMatrices> terrainObjectModelMatrices;
     // private GroundConfig defaultGroundConfig;
 
     public void init(Index index) {
@@ -71,36 +59,12 @@ public class UiTerrainTile {
         threeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
 
         if (active) {
-            MapList<Integer, ModelMatrices> terrainObjects = getTerrainObjectModelMatrices();
-            if (terrainObjects != null) {
-                terrainUiService.onTerrainObjectModelMatrices(terrainObjects);
-            }
             threeJsTerrainTile.addToScene();
         }
     }
 
     public TerrainTile getTerrainTile() {
         return terrainTile;
-    }
-
-    public MapList<Integer, ModelMatrices> getTerrainObjectModelMatrices() {
-        if (terrainObjectModelMatrices != null) {
-            return terrainObjectModelMatrices;
-        }
-        if (terrainTile == null) {
-            return null;
-        }
-        if (terrainTile.getTerrainTileObjectLists() == null) {
-            return null;
-        }
-        terrainObjectModelMatrices = new MapList<>();
-        terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList -> {
-            List<ModelMatrices> modelMatrices = new ArrayList<>();
-            terrainTileObjectList.getModels().forEach(nativeMatrix -> modelMatrices.add(new ModelMatrices(nativeMatrix)));
-            terrainObjectModelMatrices.putAll(terrainTileObjectList.getTerrainObjectConfigId(), modelMatrices);
-        });
-
-        return terrainObjectModelMatrices;
     }
 
     public void dispose() {

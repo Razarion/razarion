@@ -5,7 +5,8 @@ import {
     Clock,
     Camera,
     Raycaster,
-    Vector2
+    Vector2,
+    MeshBasicMaterial
 } from "three";
 import { WebGLRenderer } from "three/src/renderers/WebGLRenderer";
 import { Scene } from "three/src/scenes/Scene";
@@ -44,31 +45,29 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
 
     onResize() {
-        this.renderer.setSize(this.canvasDiv.offsetWidth, this.canvasDiv.offsetHeight);
+        this.renderer.setSize(this.canvasDiv.offsetWidth - 100, this.canvasDiv.offsetHeight - 100); // TODO -> -100 prevent starnge loop 
         this.camera.aspect = this.canvasDiv.offsetWidth / this.canvasDiv.offsetHeight;
         this.camera.updateProjectionMatrix();
         this.onViewFieldChanged();
     }
 
-    setup(htmlCanvasElement: HTMLCanvasElement, canvasDiv: HTMLDivElement) {
-        this.canvasDiv = canvasDiv;
+    setup(canvasHolder: HTMLDivElement) {
+        this.canvasDiv = canvasHolder;
         try {
-            this.internalSetup(htmlCanvasElement);
+            this.internalSetup(canvasHolder);
         } catch (err) {
             console.error(err);
         }
     }
 
-    internalSetup(htmlCanvasElement: HTMLCanvasElement) {
+    internalSetup(canvasHolder: HTMLDivElement) {
         let clock = new Clock();
 
-        this.camera = new PerspectiveCamera(75, htmlCanvasElement.offsetWidth / htmlCanvasElement.offsetHeight, 0.1, 1000);
+        this.camera = new PerspectiveCamera(75, canvasHolder.offsetWidth / canvasHolder.offsetHeight, 0.1, 1000);
 
-        this.renderer = new WebGLRenderer({
-            antialias: true,
-            canvas: htmlCanvasElement
-        });
-        this.renderer.setSize(htmlCanvasElement.offsetWidth, htmlCanvasElement.offsetHeight);
+        this.renderer = new WebGLRenderer({ antialias: true });
+        this.renderer.setSize(canvasHolder.offsetWidth, canvasHolder.offsetHeight);
+        canvasHolder.appendChild(this.renderer.domElement);
 
         const self = this;
         // Scroll
@@ -148,6 +147,19 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         if (hasChanged) {
             this.onViewFieldChanged();
         }
+    }
+
+    public addToSceneEditor(scene: Scene) {
+        scene.traverse(function (object: any) {
+            if (object.material !== undefined) {
+                const material = new MeshBasicMaterial({ color: 0xff0000 });
+                material.wireframe = true;
+
+                object.material = material
+            }
+        });
+
+        this.scene.add(scene);
     }
 
     private onViewFieldChanged() {

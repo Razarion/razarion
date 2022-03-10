@@ -1,14 +1,18 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {EditorPanel} from "../editor-model";
-import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { EditorPanel } from "../editor-model";
+import { GwtAngularService } from "../../gwtangular/GwtAngularService";
 import {
   PerfmonEnum,
   PerfmonStatistic,
   RendererEditorService,
   RenderTaskRunnerControl
 } from "../../gwtangular/GwtAngularFacade";
-import {PerfmonComponent} from "./perfmon.component";
+import { PerfmonComponent } from "./perfmon.component";
 import * as Stats from 'stats.js';
+import { environment } from 'src/environments/environment';
+import { GameMockService } from 'src/app/game/renderer/game-mock.service';
+import { Loader } from 'three/editor/js/Loader';
+import { ThreeJsRendererServiceImpl } from 'src/app/game/renderer/three-js-renderer-service.impl';
 
 @Component({
   selector: 'render-engine',
@@ -30,16 +34,23 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   rendererEditorService: RendererEditorService;
   renderTaskRunnerControls: RenderTaskRunnerControl[];
 
-  constructor(public gwtAngularService: GwtAngularService) {
+  constructor(private gwtAngularService: GwtAngularService, private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl, private gameMockService: GameMockService) {
     super();
-    this.rendererEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getCameraFrontendService();
-    this.renderTaskRunnerControls = this.rendererEditorService.getRenderTaskRunnerControls()
+    if (environment.gwtMock) {
+      this.rendererEditorService = gameMockService.setupRendererEditorService();
+      this.renderTaskRunnerControls = []
+    } else {
+      this.rendererEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getCameraFrontendService();
+      this.renderTaskRunnerControls = this.rendererEditorService.getRenderTaskRunnerControls();
+    }
   }
 
   ngOnInit(): void {
-    this.refresher = setInterval(() => {
-      this.refresh();
-    }, 1000);
+    if (!environment.gwtMock) {
+      this.refresher = setInterval(() => {
+        this.refresh();
+      }, 1000);
+    }
   }
 
   ngOnDestroy(): void {
@@ -52,9 +63,9 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
       || this.gwtAngularService.gwtAngularFacade.statusProvider.getStats() === null) {
       this.gwtAngularService.gwtAngularFacade.statusProvider.setStats(new Stats());
     }
-    this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().dom.style.cssText = '';
-    (<HTMLDivElement>this.statsContainer.nativeElement).appendChild(this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().dom)
-    this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().showPanel(0);
+    // this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().dom.style.cssText = '';
+    // (<HTMLDivElement>this.statsContainer.nativeElement).appendChild(this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().dom)
+    // this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().showPanel(0);
   }
 
   refresh(): void {
@@ -81,5 +92,19 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
 
   onRenderTaskRunnerControl(event: any) {
     console.info(event)
+  }
+
+  uploadThreejsModel(event: any) {
+    console.info("Uploading Thrr.js model");
+
+    let self = this;
+    let callback = {
+      execute(arg: any) {
+        self.threeJsRendererServiceImpl.addToSceneEditor(arg.object);
+      }
+    }
+
+    let loader = new Loader(callback);
+    loader.loadFiles(event.files);
   }
 }

@@ -16,8 +16,6 @@ import { GameMockService } from './renderer/game-mock.service';
   styleUrls: ['game.component.scss']
 })
 export class GameComponent implements OnInit {
-  @ViewChild('canvas', { static: true })
-  canvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasDiv', { static: true })
   canvasDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('mainCockpit', { static: true })
@@ -36,10 +34,9 @@ export class GameComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
-    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
-
     this.gwtAngularService.crashListener = () => this.addEditorModel(new EditorModel("Crash Information Panel", CrashPanelComponent));
+
+    this.threeJsRendererService.setup(this.canvasDiv.nativeElement);
 
     // @ts-ignore
     const resizeObserver = new ResizeObserver(entries => {
@@ -51,12 +48,16 @@ export class GameComponent implements OnInit {
     });
     resizeObserver.observe(this.canvasDiv.nativeElement);
 
-    this.threeJsRendererService.setup(this.canvas.nativeElement, this.canvasDiv.nativeElement);
     if (environment.gwtMock) {
       this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
+      this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
+      this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
       this.gameMockService.mockTerrainTile(this.threeJsRendererService);
+      this.mainCockpitComponent.show();
     } else {
       this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
+      this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
+      this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
     }
 
     // Prevent running game in the background if someone press the browser history navigation button

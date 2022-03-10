@@ -21,7 +21,7 @@ export interface StatusProvider {
 
   setStats(stats: Stats | null): void;
 
-  getStats(): Stats;
+  getStats(): Stats | null;
 }
 
 export interface Callback {
@@ -30,6 +30,10 @@ export interface Callback {
 
 export interface Rectangle {
 
+}
+
+export interface NativeMatrix {
+  getColumnMajorFloat32Array(): Float32Array;
 }
 
 export interface Alarm {
@@ -63,6 +67,8 @@ export interface TerrainTile {
   getTerrainSlopeTiles(): TerrainSlopeTile[];
 
   getTerrainWaterTiles(): TerrainWaterTile[];
+
+  getTerrainTileObjectLists(): TerrainTileObjectList[];
 }
 
 export interface GroundTerrainTile {
@@ -90,6 +96,10 @@ export interface TerrainWaterTile {
   positions: Float32Array;
   shallowPositions: Float32Array;
   shallowUvs: Float32Array;
+}
+
+export interface TerrainTileObjectList {
+  models: NativeMatrix[];
 }
 
 export interface ThreeJsTerrainTile {
