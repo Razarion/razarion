@@ -10,11 +10,8 @@ import { environment } from 'src/environments/environment';
 import { GameMockService } from 'src/app/game/renderer/game-mock.service';
 import { Loader } from 'three/editor/js/Loader';
 import { ThreeJsRendererServiceImpl } from 'src/app/game/renderer/three-js-renderer-service.impl';
-import { Config } from 'three/editor/js/Config';
-import { Strings } from 'three/editor/js/Strings';
 import { Sidebar } from 'three/editor/js/Sidebar';
-import { History } from 'three/editor/js/History';
-import signals from 'signals';
+import { Editor } from 'three/editor/js/Editor';
 
 @Component({
   selector: 'render-engine',
@@ -58,114 +55,9 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
       return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     };
 
-    let config = Config();
-    let strings = Strings(config);
-
-    let signalsEditor = {
-
-      // script
-
-      editScript: new signals.Signal(),
-
-      // player
-
-      startPlayer: new signals.Signal(),
-      stopPlayer: new signals.Signal(),
-
-      // vr
-
-      toggleVR: new signals.Signal(),
-      exitedVR: new signals.Signal(),
-
-      // notifications
-
-      editorCleared: new signals.Signal(),
-
-      savingStarted: new signals.Signal(),
-      savingFinished: new signals.Signal(),
-
-      transformModeChanged: new signals.Signal(),
-      snapChanged: new signals.Signal(),
-      spaceChanged: new signals.Signal(),
-      rendererCreated: new signals.Signal(),
-      rendererUpdated: new signals.Signal(),
-
-      sceneBackgroundChanged: new signals.Signal(),
-      sceneEnvironmentChanged: new signals.Signal(),
-      sceneFogChanged: new signals.Signal(),
-      sceneFogSettingsChanged: new signals.Signal(),
-      sceneGraphChanged: new signals.Signal(),
-      sceneRendered: new signals.Signal(),
-
-      cameraChanged: new signals.Signal(),
-      cameraResetted: new signals.Signal(),
-
-      geometryChanged: new signals.Signal(),
-
-      objectSelected: new signals.Signal(),
-      objectFocused: new signals.Signal(),
-
-      objectAdded: new signals.Signal(),
-      objectChanged: new signals.Signal(),
-      objectRemoved: new signals.Signal(),
-
-      cameraAdded: new signals.Signal(),
-      cameraRemoved: new signals.Signal(),
-
-      helperAdded: new signals.Signal(),
-      helperRemoved: new signals.Signal(),
-
-      materialAdded: new signals.Signal(),
-      materialChanged: new signals.Signal(),
-      materialRemoved: new signals.Signal(),
-
-      scriptAdded: new signals.Signal(),
-      scriptChanged: new signals.Signal(),
-      scriptRemoved: new signals.Signal(),
-
-      windowResize: new signals.Signal(),
-
-      showGridChanged: new signals.Signal(),
-      showHelpersChanged: new signals.Signal(),
-      refreshSidebarObject3D: new signals.Signal(),
-      historyChanged: new signals.Signal(),
-
-      viewportCameraChanged: new signals.Signal(),
-
-      animationStopped: new signals.Signal()
-    };
-
-
-    let editor: any = {
-      strings: strings,
-      config: config,
-      camera: this.threeJsRendererServiceImpl.camera,
-      scene: this.threeJsRendererServiceImpl.scene,
-      scripts: [],
-      selected: null,
-      signals: signalsEditor,
-      history: new History({ config: config, signals: signalsEditor })
-    }
-    editor.selectById = function (id: any) {
-      let selection: any = null;
-      if (this.camera.id === id) {
-        selection = this.camera;
-      } else {
-        selection = this.scene.getObjectById(id)
-      }
-      signalsEditor.objectSelected.dispatch(selection);
-    };
-    editor.getObjectMaterial = function (object: any, slot: any) {
-      var material = object.material;
-      if (Array.isArray(material) && slot !== undefined) {
-        material = material[slot];
-      }
-      return material;
-    };
-    editor.execute = function (cmd: any, optionalName: any) {
-      this.history.execute(cmd, optionalName);
-    };
-
+    let editor = new Editor();
+    editor.scene = this.threeJsRendererServiceImpl.scene;
+    editor.camera = this.threeJsRendererServiceImpl.camera;
     let sidebar = Sidebar(editor);
     this.threeJsScene.nativeElement.appendChild(sidebar.dom);
   }
