@@ -6,7 +6,8 @@ import {
     Camera,
     Raycaster,
     Vector2,
-    MeshBasicMaterial
+    AmbientLight,
+    DirectionalLight
 } from "three";
 import { WebGLRenderer } from "three/src/renderers/WebGLRenderer";
 import { Scene } from "three/src/scenes/Scene";
@@ -71,8 +72,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         this.renderer.setSize(canvasHolder.offsetWidth, canvasHolder.offsetHeight);
         canvasHolder.appendChild(this.renderer.domElement);
 
+        // ----- Scroll -----
         const self = this;
-        // Scroll
         window.addEventListener("keydown", e => {
             if (!self.keyPressed.has(e.key)) {
                 self.keyPressed.set(e.key, Date.now());
@@ -95,12 +96,34 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
                 this.onViewFieldChanged();
             }
         }, true);
-        // Camera
+
+        // -----  Camera -----
         this.camera.position.x = 0;
         this.camera.position.y = 0;
         this.camera.position.z = 40;
         this.camera.rotation.x = MathUtils.degToRad(30);
 
+        // ----- Light -----
+        let ambientLight = new AmbientLight(0x808080, 0.05);
+        ambientLight.name = "Ambient Light"
+        this.scene.add(ambientLight);
+
+        let directionalLight = new DirectionalLight(0xffffff, 0.25);
+        directionalLight.name = "Directional Light"
+        directionalLight.position.set(70, 30, 50);
+        directionalLight.target.position.set(50, 50, 0);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 1024;
+        directionalLight.shadow.mapSize.height = 1024;
+        directionalLight.shadow.camera.left = -50;
+        directionalLight.shadow.camera.bottom = -50;
+        directionalLight.shadow.camera.top = 50;
+        directionalLight.shadow.camera.right = 50;
+        directionalLight.shadow.camera.near = 0.5;
+        directionalLight.shadow.camera.far = 100;
+        this.scene.add(directionalLight);
+
+        // ----- Render loop -----
         function animate() {
             const delta = clock.getDelta();
 
@@ -152,15 +175,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
 
     public addToSceneEditor(scene: Scene) {
-        scene.traverse(function (object: any) {
-            if (object.material !== undefined) {
-                const material = new MeshBasicMaterial({ color: 0xff0000 });
-                material.wireframe = true;
-
-                object.material = material
-            }
-        });
-
         this.scene.add(scene);
     }
 
