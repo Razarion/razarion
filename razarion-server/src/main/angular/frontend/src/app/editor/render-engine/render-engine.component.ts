@@ -54,6 +54,10 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     // this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().showPanel(0);
 
     // ----- setup scene property editor -----
+    (<any>Number.prototype).format = function () {
+      return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    };
+
     let config = Config();
     let strings = Strings(config);
 
@@ -143,15 +147,30 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
       history: new History({ config: config, signals: signalsEditor })
     }
     editor.selectById = function (id: any) {
-      console.info("selectById: " + id);
+      let selection: any = null;
+      if (this.camera.id === id) {
+        selection = this.camera;
+      } else {
+        selection = this.scene.getObjectById(id)
+      }
+      signalsEditor.objectSelected.dispatch(selection);
     };
+    editor.getObjectMaterial = function (object: any, slot: any) {
+      var material = object.material;
+      if (Array.isArray(material) && slot !== undefined) {
+        material = material[slot];
+      }
+      return material;
+    };
+    editor.execute = function (cmd: any, optionalName: any) {
+      this.history.execute(cmd, optionalName);
+    };
+
     let sidebar = Sidebar(editor);
     this.threeJsScene.nativeElement.appendChild(sidebar.dom);
   }
 
   uploadThreejsModel(event: any) {
-    console.info("Uploading Thrr.js model");
-
     let self = this;
     let callback = {
       execute(arg: any) {
