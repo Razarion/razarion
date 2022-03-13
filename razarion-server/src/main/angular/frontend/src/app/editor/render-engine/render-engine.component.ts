@@ -132,7 +132,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     };
 
 
-    let editor = {
+    let editor: any = {
       strings: strings,
       config: config,
       camera: this.threeJsRendererServiceImpl.camera,
@@ -142,6 +142,9 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
       signals: signalsEditor,
       history: new History({ config: config, signals: signalsEditor })
     }
+    editor.selectById = function (id: any) {
+      console.info("selectById: " + id);
+    };
     let sidebar = Sidebar(editor);
     this.threeJsScene.nativeElement.appendChild(sidebar.dom);
   }

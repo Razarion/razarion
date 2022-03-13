@@ -54,7 +54,6 @@ import {ItemCockpitComponent} from "./game/cockpit/item/item-cockpit.component";
 import {MainCockpitComponent} from "./game/cockpit/main/main-cockpit.component";
 import {RenderEngineComponent} from "./editor/render-engine/render-engine.component";
 import {ChartModule} from 'primeng/chart';
-import {PerfmonComponent} from "./editor/render-engine/perfmon.component";
 import {RadioButtonModule} from 'primeng/radiobutton';
 import {CrashPanelComponent} from "./editor/crash-panel/crash-panel.component";
 import {TableModule} from 'primeng/table';
@@ -110,7 +109,6 @@ import { GameMockService } from './game/renderer/game-mock.service';
     ItemCockpitComponent,
     MainCockpitComponent,
     RenderEngineComponent,
-    PerfmonComponent,
     CrashPanelComponent,
     ServerPanelComponent,
     Polygon2dEditorComponent,
