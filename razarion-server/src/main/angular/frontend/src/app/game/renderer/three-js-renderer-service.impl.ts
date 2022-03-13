@@ -17,9 +17,9 @@ import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 
 @Injectable()
 export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
-    private scene = new Scene();
+    scene = new Scene();
     private keyPressed: Map<string, number> = new Map();
-    private camera: PerspectiveCamera = new PerspectiveCamera;
+    camera: PerspectiveCamera = new PerspectiveCamera;
     private canvasDiv!: HTMLDivElement;
     private renderer!: WebGLRenderer
 

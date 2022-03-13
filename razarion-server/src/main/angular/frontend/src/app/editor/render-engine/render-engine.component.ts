@@ -2,35 +2,27 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } fr
 import { EditorPanel } from "../editor-model";
 import { GwtAngularService } from "../../gwtangular/GwtAngularService";
 import {
-  PerfmonEnum,
-  PerfmonStatistic,
   RendererEditorService,
   RenderTaskRunnerControl
 } from "../../gwtangular/GwtAngularFacade";
-import { PerfmonComponent } from "./perfmon.component";
 import * as Stats from 'stats.js';
 import { environment } from 'src/environments/environment';
 import { GameMockService } from 'src/app/game/renderer/game-mock.service';
 import { Loader } from 'three/editor/js/Loader';
 import { ThreeJsRendererServiceImpl } from 'src/app/game/renderer/three-js-renderer-service.impl';
+import { Config } from 'three/editor/js/Config';
+import { Strings } from 'three/editor/js/Strings';
+import { Sidebar } from 'three/editor/js/Sidebar';
+import { History } from 'three/editor/js/History';
+import signals from 'signals';
 
 @Component({
   selector: 'render-engine',
   templateUrl: './render-engine.component.html'
 })
 export class RenderEngineComponent extends EditorPanel implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('statsContainer')
-  statsContainer!: ElementRef;
-  rendererPerfmonType: PerfmonEnum = PerfmonEnum.RENDERER;
-  @ViewChild("rendererPerfmon")
-  rendererPerfmonComponent!: PerfmonComponent;
-  updatePerfmonType: PerfmonEnum = PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE;
-  @ViewChild("updatePerfmon")
-  updatePerfmonComponent!: PerfmonComponent;
-  gameEnginePerfmonType: PerfmonEnum = PerfmonEnum.GAME_ENGINE;
-  @ViewChild("gameEnginePerfmon")
-  gameEnginePerfmonComponent!: PerfmonComponent;
-  refresher: any;
+  @ViewChild('threeJsScene')
+  threeJsScene!: ElementRef;
   rendererEditorService: RendererEditorService;
   renderTaskRunnerControls: RenderTaskRunnerControl[];
 
@@ -46,15 +38,9 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   }
 
   ngOnInit(): void {
-    if (!environment.gwtMock) {
-      this.refresher = setInterval(() => {
-        this.refresh();
-      }, 1000);
-    }
   }
 
   ngOnDestroy(): void {
-    clearInterval(this.refresher);
     this.gwtAngularService.gwtAngularFacade.statusProvider.setStats(null);
   }
 
@@ -66,32 +52,98 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     // this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().dom.style.cssText = '';
     // (<HTMLDivElement>this.statsContainer.nativeElement).appendChild(this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().dom)
     // this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().showPanel(0);
-  }
 
-  refresh(): void {
-    const perfmonStatistics = this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getClientPerfmonStatistics();
-    this.display(perfmonStatistics);
-    this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getWorkerPerfmonStatistics().then(perfmonStatistics => {
-      this.display(perfmonStatistics);
-    });
-  }
+    // ----- setup scene property editor -----
+    let config = Config();
+    let strings = Strings(config);
 
-  private display(perfmonStatistics: PerfmonStatistic[]): void {
-    try {
-      this.rendererPerfmonComponent.display(perfmonStatistics);
-      this.updatePerfmonComponent.display(perfmonStatistics);
-      this.gameEnginePerfmonComponent.display(perfmonStatistics);
-    } catch (error) {
-      console.error(error);
+    let signalsEditor = {
+
+      // script
+
+      editScript: new signals.Signal(),
+
+      // player
+
+      startPlayer: new signals.Signal(),
+      stopPlayer: new signals.Signal(),
+
+      // vr
+
+      toggleVR: new signals.Signal(),
+      exitedVR: new signals.Signal(),
+
+      // notifications
+
+      editorCleared: new signals.Signal(),
+
+      savingStarted: new signals.Signal(),
+      savingFinished: new signals.Signal(),
+
+      transformModeChanged: new signals.Signal(),
+      snapChanged: new signals.Signal(),
+      spaceChanged: new signals.Signal(),
+      rendererCreated: new signals.Signal(),
+      rendererUpdated: new signals.Signal(),
+
+      sceneBackgroundChanged: new signals.Signal(),
+      sceneEnvironmentChanged: new signals.Signal(),
+      sceneFogChanged: new signals.Signal(),
+      sceneFogSettingsChanged: new signals.Signal(),
+      sceneGraphChanged: new signals.Signal(),
+      sceneRendered: new signals.Signal(),
+
+      cameraChanged: new signals.Signal(),
+      cameraResetted: new signals.Signal(),
+
+      geometryChanged: new signals.Signal(),
+
+      objectSelected: new signals.Signal(),
+      objectFocused: new signals.Signal(),
+
+      objectAdded: new signals.Signal(),
+      objectChanged: new signals.Signal(),
+      objectRemoved: new signals.Signal(),
+
+      cameraAdded: new signals.Signal(),
+      cameraRemoved: new signals.Signal(),
+
+      helperAdded: new signals.Signal(),
+      helperRemoved: new signals.Signal(),
+
+      materialAdded: new signals.Signal(),
+      materialChanged: new signals.Signal(),
+      materialRemoved: new signals.Signal(),
+
+      scriptAdded: new signals.Signal(),
+      scriptChanged: new signals.Signal(),
+      scriptRemoved: new signals.Signal(),
+
+      windowResize: new signals.Signal(),
+
+      showGridChanged: new signals.Signal(),
+      showHelpersChanged: new signals.Signal(),
+      refreshSidebarObject3D: new signals.Signal(),
+      historyChanged: new signals.Signal(),
+
+      viewportCameraChanged: new signals.Signal(),
+
+      animationStopped: new signals.Signal()
+    };
+
+
+    let editor = {
+      strings: strings,
+      config: config,
+      camera: this.threeJsRendererServiceImpl.camera,
+      scene: this.threeJsRendererServiceImpl.scene,
+      scripts: [],
+      selected: null,
+      signals: signalsEditor,
+      history: new History({ config: config, signals: signalsEditor })
     }
-  }
-
-  toRad(degree: number) {
-    return degree * Math.PI / 180;
-  }
-
-  onRenderTaskRunnerControl(event: any) {
-    console.info(event)
+    let sidebar = Sidebar(editor);
+    this.threeJsScene.nativeElement.appendChild(sidebar.dom);
   }
 
   uploadThreejsModel(event: any) {
