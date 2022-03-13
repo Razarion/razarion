@@ -24,6 +24,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     private renderer!: WebGLRenderer
 
     constructor(private gwtAngularService: GwtAngularService) {
+        this.scene.name = "Main Scene"
     }
 
     createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile {
@@ -45,7 +46,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
 
     onResize() {
-        this.renderer.setSize(this.canvasDiv.offsetWidth - 100, this.canvasDiv.offsetHeight - 100); // TODO -> -100 prevent starnge loop 
+        this.renderer.setSize(this.canvasDiv.offsetWidth - 100, this.canvasDiv.offsetHeight - 100); // TODO -> -100 prevent starnge loop
         this.camera.aspect = this.canvasDiv.offsetWidth / this.canvasDiv.offsetHeight;
         this.camera.updateProjectionMatrix();
         this.onViewFieldChanged();
@@ -64,6 +65,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         let clock = new Clock();
 
         this.camera = new PerspectiveCamera(75, canvasHolder.offsetWidth / canvasHolder.offsetHeight, 0.1, 1000);
+        this.camera.name = "Camera";
 
         this.renderer = new WebGLRenderer({ antialias: true });
         this.renderer.setSize(canvasHolder.offsetWidth, canvasHolder.offsetHeight);

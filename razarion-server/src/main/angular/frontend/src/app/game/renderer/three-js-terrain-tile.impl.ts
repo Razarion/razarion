@@ -5,6 +5,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     private scene = new Scene();
 
     constructor(terrainTile: TerrainTile, private parentScene: Scene) {
+        this.scene.name = "TerrainTile";
         if (terrainTile.getGroundTerrainTiles() !== null) {
             terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
                 let geometry = new BufferGeometry();
@@ -13,6 +14,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                 const material = new MeshBasicMaterial({ color: 0x00ff00 });
                 material.wireframe = true;
                 const cube = new Mesh(geometry, material);
+                cube.name = "Ground"
                 this.scene.add(cube);
             });
         }
@@ -56,6 +58,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                     const material = new MeshBasicMaterial({ color: 0xff0000 });
                     material.wireframe = true;
                     const cube = new Mesh(new BoxGeometry( 1, 1, 8 ), material);
+                    cube.name = "Terrain Object"
                     cube.applyMatrix4(matrix4);
                     this.scene.add(cube);
                 });
@@ -73,6 +76,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         const material = new MeshBasicMaterial({ color: 0xAAAAAA });
         material.wireframe = true;
         const cube = new Mesh(geometry, material);
+        cube.name = "Slope";
         this.scene.add(cube);
     }
 
@@ -82,6 +86,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         const material = new MeshBasicMaterial({ color: 0x0000ff });
         material.wireframe = true;
         const cube = new Mesh(geometry, material);
+        cube.name = "Water";
         this.scene.add(cube);
     }
 
@@ -92,6 +97,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         const material = new MeshBasicMaterial({ color: 0x5555ff });
         material.wireframe = true;
         const cube = new Mesh(geometry, material);
+        cube.name = "Shallow Water";
         this.scene.add(cube);
     }
 
