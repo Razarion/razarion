@@ -7,7 +7,8 @@ import {
     Raycaster,
     Vector2,
     AmbientLight,
-    DirectionalLight
+    DirectionalLight,
+    ObjectLoader
 } from "three";
 import { WebGLRenderer } from "three/src/renderers/WebGLRenderer";
 import { Scene } from "three/src/scenes/Scene";
@@ -122,6 +123,14 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         directionalLight.shadow.camera.near = 0.5;
         directionalLight.shadow.camera.far = 100;
         this.scene.add(directionalLight);
+
+        var loader = new ObjectLoader();
+
+        loader.load("/rest/model",
+            function (scene) {
+                self.scene.add(scene);
+            });
+
 
         // ----- Render loop -----
         function animate() {

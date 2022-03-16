@@ -60,6 +60,11 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     editor.camera = this.threeJsRendererServiceImpl.camera;
     let sidebar = Sidebar(editor);
     this.threeJsScene.nativeElement.appendChild(sidebar.dom);
+
+    editor.signals.objectSelected.add(function (selection: any) {
+      let json = selection.toJSON();
+      console.info(JSON.stringify(json));
+    });
   }
 
   uploadThreejsModel(event: any) {

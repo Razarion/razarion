@@ -1,4 +1,6 @@
 var ServerMock = require("mock-http-server");
+var fs = require('fs');
+const path = require("path");
 
 const PORT = 8080;
 
@@ -24,6 +26,20 @@ server.on({
     },
     reply: {
         status: 200
+    }
+});
+
+function loadModel() {
+    return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\", "threejs-scene.json"));
+}
+
+server.on({
+    method: 'GET',
+    path: '/rest/model',
+    reply: {
+        status: 200,
+        headers: { "content-type": "application/json" },
+        body: loadModel
     }
 });
 
