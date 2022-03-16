@@ -9,6 +9,7 @@ import { CrashPanelComponent } from "../editor/crash-panel/crash-panel.component
 import { ThreeJsRendererServiceImpl } from './renderer/three-js-renderer-service.impl';
 import { environment } from 'src/environments/environment';
 import { GameMockService } from './renderer/game-mock.service';
+import { ObjectLoader } from 'three';
 
 
 @Component({
@@ -52,7 +53,14 @@ export class GameComponent implements OnInit {
       this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
       this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
       this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
-      this.gameMockService.mockTerrainTile(this.threeJsRendererService);
+      // load Three Object3D
+      let _this = this;
+      var loader = new ObjectLoader();
+      loader.load("/rest/model",
+        function (threejsObject3D) {
+          _this.gameMockService.mockTerrainTile(_this.threeJsRendererService, threejsObject3D);
+        });
+
       this.mainCockpitComponent.show();
     } else {
       this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;

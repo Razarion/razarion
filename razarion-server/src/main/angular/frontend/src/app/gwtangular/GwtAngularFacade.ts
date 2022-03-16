@@ -56,7 +56,7 @@ export interface InputService {
 
 // ---------- Renderer ----------
 export interface ThreeJsRendererServiceAccess {
-  createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile;
+  createTerrainTile(terrainTile: TerrainTile, threejsObject3D: any): ThreeJsTerrainTile;
 
   setViewFieldCenter(x: number, y: number): void;
 }

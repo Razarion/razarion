@@ -3,6 +3,7 @@ import { Alarm, EditorFrontendProvider, GenericEditorFrontendProvider, GroundTer
 import { ThreeJsRendererServiceImpl } from "./three-js-renderer-service.impl";
 import { HttpClient } from "@angular/common/http";
 import * as Stats from 'stats.js';
+import { Object3D } from "three";
 
 @Injectable()
 export class GameMockService {
@@ -81,7 +82,7 @@ export class GameMockService {
     constructor(private http: HttpClient) {
     }
 
-    mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl) {
+    mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl, threejsObject3D: Object3D) {
         const self = this;
         this.http.get<TerrainTile[]>("/gwt-mock/terrain-tiles").subscribe((terrainTileJsonArray: any[]) => {
             for (let i in terrainTileJsonArray) {
@@ -144,7 +145,7 @@ export class GameMockService {
                         return terrainTileObjectLists;
                     }
                 };
-                const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
+                const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, threejsObject3D);
                 threeJsTerrainTile.addToScene();
             }
         });

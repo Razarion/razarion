@@ -1,10 +1,10 @@
 import { SlopeGeometry, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
-import { BoxGeometry, BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, Scene } from "three";
+import { BoxGeometry, BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, Object3D, Scene } from "three";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     private scene = new Scene();
 
-    constructor(terrainTile: TerrainTile, private parentScene: Scene) {
+    constructor(terrainTile: TerrainTile, private parentScene: Scene, threejsObject3D: Object3D) {
         this.scene.name = "TerrainTile";
         if (terrainTile.getGroundTerrainTiles() !== null) {
             terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
@@ -52,15 +52,10 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                         m[2], m[6], m[10], m[14],
                         m[3], m[7], m[11], m[15]
                     );
-                    // let geometry = new BufferGeometry();
-                    // geometry.setAttribute('position', new BufferAttribute(groundTerrainTile.positions, 3));
-                    // geometry.setAttribute('norm', new BufferAttribute(groundTerrainTile.norms, 3));
-                    const material = new MeshBasicMaterial({ color: 0xff0000 });
-                    material.wireframe = true;
-                    const cube = new Mesh(new BoxGeometry( 1, 1, 8 ), material);
-                    cube.name = "Terrain Object"
-                    cube.applyMatrix4(matrix4);
-                    this.scene.add(cube);
+                    let object3D = threejsObject3D.clone();
+                    object3D.name = "Terrain Object"
+                    object3D.applyMatrix4(matrix4);
+                    this.scene.add(object3D);
                 });
             });
         }
