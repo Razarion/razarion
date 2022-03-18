@@ -20,13 +20,18 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                 }
                 geometry.setAttribute('uv', new BufferAttribute(uvs, 2));
                 // Material
-                const scale = 8;
+                const scale = 50;
                 const repeat = 1 / scale;
                 const material = new MeshStandardMaterial();
-                material.map = new TextureLoader().load("image/1");
+                material.map = new TextureLoader().load("image/GroundTop.png");
                 material.map.wrapS = RepeatWrapping;
                 material.map.wrapT = RepeatWrapping;
-                material.map.repeat.set(repeat, repeat)
+                material.map.repeat.set(repeat, repeat);
+                material.bumpMap = new TextureLoader().load("image/GroundTopBm.png");
+                material.bumpMap.wrapS = RepeatWrapping;
+                material.bumpMap.wrapT = RepeatWrapping;
+                material.bumpMap.repeat.set(repeat, repeat);
+                material.bumpScale = 0.3;
                 //Mesh
                 const cube = new Mesh(geometry, material);
                 cube.name = "Ground"

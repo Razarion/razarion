@@ -8,7 +8,6 @@ import {
     Vector2,
     AmbientLight,
     DirectionalLight,
-    ObjectLoader,
     Object3D
 } from "three";
 import { WebGLRenderer } from "three/src/renderers/WebGLRenderer";
@@ -106,11 +105,11 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         this.camera.rotation.x = MathUtils.degToRad(30);
 
         // ----- Light -----
-        let ambientLight = new AmbientLight(0x808080, 0.05);
+        let ambientLight = new AmbientLight(0x808080, 0.70);
         ambientLight.name = "Ambient Light"
         this.scene.add(ambientLight);
 
-        let directionalLight = new DirectionalLight(0xffffff, 0.25);
+        let directionalLight = new DirectionalLight(0xffffff, 0.80);
         directionalLight.name = "Directional Light"
         directionalLight.position.set(70, 30, 50);
         directionalLight.target.position.set(50, 50, 0);

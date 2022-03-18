@@ -43,8 +43,9 @@ server.on({
     }
 });
 
-function loadImage() {
-    return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\razarion-media\\gimp\\helpers\\", "TextureHelpers512.png"));
+function loadImage(req) {
+    let imageToLoad = req.url.substring("/images/".length - 1, req.url.length);
+    return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\textures", imageToLoad));
 }
 
 server.on({
