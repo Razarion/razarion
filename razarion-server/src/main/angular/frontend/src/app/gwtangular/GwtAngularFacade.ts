@@ -74,7 +74,7 @@ export interface TerrainTile {
 export interface GroundTerrainTile {
   groundConfigId: number;
   positions: Float32Array;
-  norms: Float32Array;
+  norms: Float32Array
 }
 
 export interface TerrainSlopeTile {

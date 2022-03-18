@@ -1,5 +1,5 @@
 import { SlopeGeometry, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
-import { BoxGeometry, BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, Object3D, Scene } from "three";
+import { BoxGeometry, BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, RepeatWrapping, Scene, TextureLoader } from "three";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     private scene = new Scene();
@@ -8,11 +8,26 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         this.scene.name = "TerrainTile";
         if (terrainTile.getGroundTerrainTiles() !== null) {
             terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
+                // Geometry
                 let geometry = new BufferGeometry();
                 geometry.setAttribute('position', new BufferAttribute(groundTerrainTile.positions, 3));
-                geometry.setAttribute('norm', new BufferAttribute(groundTerrainTile.norms, 3));
-                const material = new MeshBasicMaterial({ color: 0x00ff00 });
-                material.wireframe = true;
+                geometry.setAttribute('normal', new BufferAttribute(groundTerrainTile.norms, 3));
+                let uvs = new Float32Array(groundTerrainTile.positions.length * 2 / 3);
+                let uvCount = uvs.length / 2;
+                for (let uvIndex = 0; uvIndex < uvCount; uvIndex++) {
+                    uvs[uvIndex * 2] = groundTerrainTile.positions[uvIndex * 3];
+                    uvs[uvIndex * 2 + 1] = groundTerrainTile.positions[uvIndex * 3 + 1];
+                }
+                geometry.setAttribute('uv', new BufferAttribute(uvs, 2));
+                // Material
+                const scale = 8;
+                const repeat = 1 / scale;
+                const material = new MeshStandardMaterial();
+                material.map = new TextureLoader().load("image/1");
+                material.map.wrapS = RepeatWrapping;
+                material.map.wrapT = RepeatWrapping;
+                material.map.repeat.set(repeat, repeat)
+                //Mesh
                 const cube = new Mesh(geometry, material);
                 cube.name = "Ground"
                 this.scene.add(cube);

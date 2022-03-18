@@ -43,15 +43,22 @@ server.on({
     }
 });
 
-// server.on({
-//     method: '*',
-//     path: '*',
-//     filter: function (req) {
-//         console.log(req.url);
-//         return true;
-//     },
-// });
+function loadImage() {
+    return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\razarion-media\\gimp\\helpers\\", "TextureHelpers512.png"));
+}
 
+server.on({
+    method: 'GET',
+    path: '*',
+    filter: function (req) {
+        return req.url.startsWith("/image/")
+    },
+    reply: {
+        status: 200,
+        headers: { "content-type": "image/png" },
+        body: loadImage
+    }
+});
 
 server.start(function () {
     console.info("Razarion fake server is running on port: " + PORT);

@@ -4,7 +4,7 @@ const PROXY_CONFIG = [
       "/razarion_client",
       "/NativeRazarion.js",
       "/rest",
-      "/images",
+      "/image",
       "/systemconnection",
       "/gameconnection"
     ],
