@@ -48,8 +48,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
 
     onResize() {
-        this.renderer.setSize(this.canvasDiv.offsetWidth - 100, this.canvasDiv.offsetHeight - 100); // TODO -> -100 prevent starnge loop
-        this.camera.aspect = this.canvasDiv.offsetWidth / this.canvasDiv.offsetHeight;
+        this.renderer.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent starnge loop
+        this.camera.aspect = (this.canvasDiv.clientWidth - 5) /  this.canvasDiv.clientHeight;
         this.camera.updateProjectionMatrix();
         this.onViewFieldChanged();
     }
