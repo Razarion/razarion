@@ -81,7 +81,7 @@ public final class FallbackConfig {
 
     public static StaticGameConfig setupStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setGroundConfigs(Collections.singletonList(new GroundConfig().id(GROUND_CONFIG_ID)));
+        staticGameConfig.setGroundConfigs(Collections.singletonList(new GroundConfig().id(GROUND_CONFIG_ID).topMaterial(new PhongMaterialConfig().textureId(9991).bumpMapId(9992).scale(50).bumpMapDepth(0.5))));
         staticGameConfig.setLevelConfigs(setupLevelConfigs());
         staticGameConfig.setBaseItemTypes(setupBaseItemType());
         staticGameConfig.setResourceItemTypes(setupResourceItemType());
@@ -319,6 +319,7 @@ public final class FallbackConfig {
         planetConfig.setItemTypeLimitation(setupPlanetItemTypeLimitations());
         planetConfig.setSize(new DecimalPosition(960, 960));
         planetConfig.setStartBaseItemTypeId(BUILDER_ITEM_TYPE_ID);
+        planetConfig.setGroundConfigId(GROUND_CONFIG_ID);
         return planetConfig;
     }
 

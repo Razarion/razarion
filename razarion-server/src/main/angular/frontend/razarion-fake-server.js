@@ -44,7 +44,15 @@ server.on({
 });
 
 function loadImage(req) {
-    let imageToLoad = req.url.substring("/images/".length - 1, req.url.length);
+    let imageToLoad = req.url.substring("/rest/images/".length - 1, req.url.length);
+    switch (imageToLoad) {
+        case '9991':
+            imageToLoad = "GroundTop.png";
+            break;
+        case '9992':
+            imageToLoad = "GroundTopBm.png";
+            break;
+    }
     return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\textures", imageToLoad));
 }
 
@@ -52,7 +60,7 @@ server.on({
     method: 'GET',
     path: '*',
     filter: function (req) {
-        return req.url.startsWith("/image/")
+        return req.url.startsWith("/rest/image/")
     },
     reply: {
         status: 200,

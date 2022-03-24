@@ -10,6 +10,7 @@ export abstract class GwtAngularFacade {
   statusProvider!: StatusProvider;
   threeJsRendererServiceAccess!: ThreeJsRendererServiceAccess;
   inputService!: InputService;
+  terrainTypeService!: TerrainTypeService;
 
   abstract onCrash(): void;
 }
@@ -52,6 +53,54 @@ export interface InputService {
     bottomRightX: number, bottomRightY: number,
     topRightX: number, topRightY: number,
     topLeftX: number, topLeftY: number): void;
+}
+
+export interface TerrainTypeService {
+  getTerrainObjectConfig(id: number): TerrainObjectConfig;
+
+  getSlopeConfig(id: number): SlopeConfig;
+
+  getDrivewayConfig(drivewayConfigId: number): DrivewayConfig;
+
+  getGroundConfig(groundConfigId: number): GroundConfig;
+
+}
+
+// ---------- Configs ----------
+export interface TerrainObjectConfig {
+}
+
+export interface SlopeConfig {
+}
+
+export interface DrivewayConfig {
+}
+
+export interface GroundConfig {
+  getId(): number;
+  getInternalName(): string;
+  getTopMaterial(): PhongMaterialConfig;
+  getBottomMaterial(): PhongMaterialConfig | null;
+  getSplatting(): GroundSplattingConfig | null;
+}
+
+export interface PhongMaterialConfig {
+  getTextureId(): number;
+  getScale(): number;
+  getNormalMapId(): number;
+  getNormalMapDepth(): number;
+  getBumpMapId(): number;
+  getBumpMapDepth(): number;
+  getShininess(): number;
+  getSpecularStrength(): number;
+}
+
+export interface GroundSplattingConfig {
+  getTextureId(): number;
+  getScale1(): number;
+  getScale2(): number;
+  getBlur(): number;
+  getOffset(): number;
 }
 
 // ---------- Renderer ----------

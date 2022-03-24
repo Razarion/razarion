@@ -31,7 +31,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
     createTerrainTile(terrainTile: TerrainTile, threejsObject3D: Object3D): ThreeJsTerrainTile {
         try {
-            return new ThreeJsTerrainTileImpl(terrainTile, this.scene, threejsObject3D);
+            return new ThreeJsTerrainTileImpl(terrainTile, this.scene, threejsObject3D, this.gwtAngularService);
         } catch (e) {
             console.error(e);
             throw e;

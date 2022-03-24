@@ -1,13 +1,15 @@
 import { SlopeGeometry, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
-import { BoxGeometry, BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, RepeatWrapping, Scene, TextureLoader } from "three";
+import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
+import { BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, RepeatWrapping, Scene, TextureLoader } from "three";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     private scene = new Scene();
 
-    constructor(terrainTile: TerrainTile, private parentScene: Scene, threejsObject3D: Object3D) {
+    constructor(terrainTile: TerrainTile, private parentScene: Scene, threejsObject3D: Object3D, gwtAngularService: GwtAngularService) {
         this.scene.name = "TerrainTile";
         if (terrainTile.getGroundTerrainTiles() !== null) {
             terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
+                let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
                 // Geometry
                 let geometry = new BufferGeometry();
                 geometry.setAttribute('position', new BufferAttribute(groundTerrainTile.positions, 3));
@@ -20,19 +22,18 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                 }
                 geometry.setAttribute('uv', new BufferAttribute(uvs, 2));
                 // Material
-                const scale = 50;
-                const repeat = 1 / scale;
+                const repeat = 1 / groundConfig.getTopMaterial().getScale();
                 const material = new MeshStandardMaterial();
-                material.map = new TextureLoader().load("image/GroundTop.png");
+                material.map = new TextureLoader().load(`rest/image/${groundConfig.getTopMaterial().getTextureId()}`);
                 material.map.wrapS = RepeatWrapping;
                 material.map.wrapT = RepeatWrapping;
                 material.map.repeat.set(repeat, repeat);
-                material.bumpMap = new TextureLoader().load("image/GroundTopBm.png");
+                material.bumpMap = new TextureLoader().load(`rest/image/${groundConfig.getTopMaterial().getBumpMapId()}`);
                 material.bumpMap.wrapS = RepeatWrapping;
                 material.bumpMap.wrapT = RepeatWrapping;
                 material.bumpMap.repeat.set(repeat, repeat);
-                material.bumpScale = 0.3;
-                //Mesh
+                material.bumpScale = groundConfig.getTopMaterial().getBumpMapDepth();
+                // Mesh
                 const cube = new Mesh(geometry, material);
                 cube.name = "Ground"
                 this.scene.add(cube);
@@ -72,6 +73,10 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                         m[2], m[6], m[10], m[14],
                         m[3], m[7], m[11], m[15]
                     );
+                    if(threejsObject3D == null) {
+                        console.warn("Can not render terrain object: threejsObject3D == null");
+                        return;
+                    }
                     let object3D = threejsObject3D.clone();
                     object3D.name = "Terrain Object"
                     object3D.applyMatrix4(matrix4);

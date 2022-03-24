@@ -33,7 +33,7 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs, List<DrivewayConfig> drivewayConfigs, List<WaterConfig> waterConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundConfig groundConfig) {
         StaticGameConfig staticGameConfig = FallbackConfig.setupStaticGameConfig();
         if (groundConfig == null) {
-            groundConfig = new GroundConfig();
+            groundConfig = staticGameConfig.getGroundConfigs().get(0);
         }
         staticGameConfig.setGroundConfigs(Collections.singletonList(groundConfig));
         staticGameConfig.setSlopeConfigs(slopeConfigs);

@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import jsinterop.annotations.JsType;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
@@ -17,6 +18,7 @@ import java.util.Map;
  * Created by Beat
  * 19.07.2016.
  */
+@JsType
 @Singleton
 public class TerrainTypeService {
     private Map<Integer, SlopeConfig> slopeConfigs = new HashMap<>();
@@ -124,9 +126,6 @@ public class TerrainTypeService {
     }
 
     public GroundConfig getGroundConfig(Integer groundConfigId) {
-        if(groundConfigId == null) {
-            return null;
-        }
         GroundConfig groundConfig = groundConfigs.get(groundConfigId);
         if (groundConfig == null) {
             throw new IllegalArgumentException("No GroundConfig for groundConfigId: " + groundConfigId);

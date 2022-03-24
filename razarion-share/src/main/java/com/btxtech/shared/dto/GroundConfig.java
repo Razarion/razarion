@@ -1,11 +1,14 @@
 package com.btxtech.shared.dto;
 
+import jsinterop.annotations.JsType;
+
 import java.util.Objects;
 
 /**
  * Created by Beat
  * 07.05.2016.
  */
+@JsType
 public class GroundConfig implements Config {
     private int id;
     private String internalName;

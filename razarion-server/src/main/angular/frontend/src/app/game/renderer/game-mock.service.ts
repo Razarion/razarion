@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Alarm, EditorFrontendProvider, GenericEditorFrontendProvider, GroundTerrainTile, GwtAngularPropertyTable, InputService, NativeMatrix, ObjectNameId, PerfmonStatistic, RendererEditorService, RenderTaskRunnerControl, SlopeGeometry, StatusProvider, TerrainEditorService, TerrainMarkerService, TerrainSlopeTile, TerrainTile, TerrainTileObjectList, TerrainWaterTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
+import { Alarm, DrivewayConfig, EditorFrontendProvider, GenericEditorFrontendProvider, GroundConfig, GroundSplattingConfig, GroundTerrainTile, GwtAngularPropertyTable, InputService, NativeMatrix, ObjectNameId, PerfmonStatistic, PhongMaterialConfig, RendererEditorService, RenderTaskRunnerControl, SlopeConfig, SlopeGeometry, StatusProvider, TerrainEditorService, TerrainMarkerService, TerrainObjectConfig, TerrainSlopeTile, TerrainTile, TerrainTileObjectList, TerrainTypeService, TerrainWaterTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { ThreeJsRendererServiceImpl } from "./three-js-renderer-service.impl";
 import { HttpClient } from "@angular/common/http";
 import * as Stats from 'stats.js';
@@ -7,6 +7,8 @@ import { Object3D } from "three";
 
 @Injectable()
 export class GameMockService {
+    staticGameGonfigJson: any | null = null;
+
     inputService: InputService = new class implements InputService {
         onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
             console.info("onViewFieldChanged()");
@@ -14,8 +16,8 @@ export class GameMockService {
     };
 
     statusProvider: StatusProvider = new class implements StatusProvider {
-        stats : Stats| null = null;
-        
+        stats: Stats | null = null;
+
         getClientAlarms(): Alarm[] {
             return [];
         }
@@ -25,7 +27,7 @@ export class GameMockService {
         setStats(stats: Stats | null): void {
             this.stats = stats;
         }
-        getStats(): Stats | null{
+        getStats(): Stats | null {
             return this.stats;
         }
 
@@ -82,8 +84,60 @@ export class GameMockService {
     constructor(private http: HttpClient) {
     }
 
+    loadMockStaticGameConfig(): Promise<void> {
+        let promise = new Promise<void>((resolve, reject) => {
+            this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((staticGameGonfigJson: any) => {
+                this.staticGameGonfigJson = staticGameGonfigJson;
+                resolve();
+            });
+        })
+        return promise;
+    }
+
+    mockTerrainTypeService(): TerrainTypeService {
+        let _this = this;
+        return new class implements TerrainTypeService {
+            terrainTypeService = this;
+
+            getTerrainObjectConfig(id: number): TerrainObjectConfig {
+                throw new Error("Method not implemented.");
+            }
+            getSlopeConfig(id: number): SlopeConfig {
+                throw new Error("Method not implemented.");
+            }
+            getDrivewayConfig(drivewayConfigId: number): DrivewayConfig {
+                throw new Error("Method not implemented.");
+            }
+
+            getGroundConfig(groundConfigId: number): GroundConfig {
+                let groundConfig: GroundConfig | null = null;
+                _this.staticGameGonfigJson.groundConfigs.forEach((groundConfigJson: any) => {
+                    if (groundConfigJson.id != groundConfigId) {
+                        return;
+                    }
+                    groundConfig = new class implements GroundConfig {
+                        _groundConfigJson: any = groundConfigJson;
+                        getId(): number { return this._groundConfigJson.id };
+                        getInternalName(): string { return this._groundConfigJson.internalName };
+                        getTopMaterial(): PhongMaterialConfig {
+                            return createPhongMaterialConfig(this._groundConfigJson.topMaterial);
+                        }
+                        getBottomMaterial(): PhongMaterialConfig { return this._groundConfigJson.bottomMaterial };
+                        getSplatting(): GroundSplattingConfig { return this._groundConfigJson.splatting };
+                    }
+                    return
+                });
+                if (groundConfig !== null) {
+                    return groundConfig;
+                } else {
+                    throw new Error(`No GroundConfig for id ${groundConfigId}`);
+                }
+            }
+        };
+    }
+
     mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl, threejsObject3D: Object3D) {
-        const self = this;
+        const _this = this;
         this.http.get<TerrainTile[]>("/gwt-mock/terrain-tiles").subscribe((terrainTileJsonArray: any[]) => {
             for (let i in terrainTileJsonArray) {
                 let terrainTileJson: any = terrainTileJsonArray[i];
@@ -110,9 +164,9 @@ export class GameMockService {
                         for (const [key, terrainSlopeTileJson] of Object.entries(terrainTileJson.terrainSlopeTiles)) {
                             terrainSlopeTiles.push(new class implements TerrainSlopeTile {
                                 slopeConfigId: number = <number>(<any>terrainSlopeTileJson)["slopeConfigId"];
-                                outerSlopeGeometry: SlopeGeometry | null = self.setupGeometry("outerSlopeGeometry", <any>terrainSlopeTileJson);
-                                centerSlopeGeometry: SlopeGeometry | null = self.setupGeometry("centerSlopeGeometry", <any>terrainSlopeTileJson);
-                                innerSlopeGeometry: SlopeGeometry | null = self.setupGeometry("innerSlopeGeometry", <any>terrainSlopeTileJson);
+                                outerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("outerSlopeGeometry", <any>terrainSlopeTileJson);
+                                centerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("centerSlopeGeometry", <any>terrainSlopeTileJson);
+                                innerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("innerSlopeGeometry", <any>terrainSlopeTileJson);
                             });
                         }
                         return terrainSlopeTiles;
@@ -139,7 +193,7 @@ export class GameMockService {
                         }
                         for (const [key, terrainTileObjectListJson] of Object.entries(terrainTileJson.terrainTileObjectLists)) {
                             terrainTileObjectLists.push(new class implements TerrainTileObjectList {
-                                models: NativeMatrix[] = self.setupNativeMatrix((<any>terrainTileObjectListJson)["models"]);
+                                models: NativeMatrix[] = _this.setupNativeMatrix((<any>terrainTileObjectListJson)["models"]);
                             });
                         }
                         return terrainTileObjectLists;
@@ -229,3 +283,33 @@ export class GameMockService {
     }
 
 }
+function createPhongMaterialConfig(material: any): PhongMaterialConfig {
+    let _material: any = material;
+    return new class implements PhongMaterialConfig {
+        getTextureId(): number {
+            return _material.textureId;
+        }
+        getScale(): number {
+            return _material.scale;
+        }
+        getNormalMapId(): number {
+            return _material.normalMapId;
+        }
+        getNormalMapDepth(): number {
+            return _material.normalMapDepth;
+        }
+        getBumpMapId(): number {
+            return _material.bumpMapId;
+        }
+        getBumpMapDepth(): number {
+            return _material.bumpMapDepth;
+        }
+        getShininess(): number {
+            return _material.shininess;
+        }
+        getSpecularStrength(): number {
+            return _material.specularStrength;
+        }
+    }
+}
+

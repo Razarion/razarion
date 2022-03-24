@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.slope.CalculatedSlopeData;
@@ -65,27 +66,29 @@ public class TerrainTileBuilder {
         }
     }
 
-    public TerrainTile generate() {
+    public TerrainTile generate(PlanetConfig planetConfig) {
         terrainTile.setTerrainWaterTiles(terrainWaterTileBuilder.generate());
 
         Map<Integer, Float32ArrayEmu> terrainTileGroundPositions = new HashMap<>();
         Map<Integer, GroundTerrainTile> groundTerrainTiles = new HashMap<>();
         groundPositions.getMap().forEach((groundConfigId, vertices) -> {
+            int correctedGroundConfigId = groundConfigId != null ? groundConfigId : planetConfig.getGroundConfigId();
             Float32ArrayEmu positions = jsInteropObjectFactory.newFloat32Array4Vertices(vertices);
-            terrainTileGroundPositions.put(groundConfigId, positions);
-            GroundTerrainTile terrainTile = new GroundTerrainTile();
-            terrainTile.groundConfigId = groundConfigId;
-            terrainTile.positions = positions;
-            groundTerrainTiles.put(groundConfigId, terrainTile);
+            terrainTileGroundPositions.put(correctedGroundConfigId, positions);
+            GroundTerrainTile groundTerrainTile = new GroundTerrainTile();
+            groundTerrainTile.groundConfigId = correctedGroundConfigId;
+            groundTerrainTile.positions = positions;
+            groundTerrainTiles.put(correctedGroundConfigId, groundTerrainTile);
         });
         if (!terrainTileGroundPositions.isEmpty()) {
             terrainTile.setGroundPositions(terrainTileGroundPositions);
         }
         Map<Integer, Float32ArrayEmu> terrainTileGroundNorms = new HashMap<>();
         groundNorms.getMap().forEach((groundConfigId, vertices) -> {
+            int correctedGroundConfigId = groundConfigId != null ? groundConfigId : planetConfig.getGroundConfigId();
             Float32ArrayEmu norms = jsInteropObjectFactory.newFloat32Array4Vertices(vertices);
-            terrainTileGroundNorms.put(groundConfigId, norms);
-            groundTerrainTiles.get(groundConfigId).norms = norms;
+            terrainTileGroundNorms.put(correctedGroundConfigId, norms);
+            groundTerrainTiles.get(correctedGroundConfigId).norms = norms;
         });
         if (!terrainTileGroundNorms.isEmpty()) {
             terrainTile.setGroundNorms(terrainTileGroundNorms);

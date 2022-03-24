@@ -53,15 +53,18 @@ export class GameComponent implements OnInit {
       this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
       this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
       this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
-      // load Three Object3D
-      let _this = this;
-      var loader = new ObjectLoader();
-      loader.load("/rest/model",
-        function (threejsObject3D) {
-          _this.gameMockService.mockTerrainTile(_this.threeJsRendererService, threejsObject3D);
-        });
+      this.gameMockService.loadMockStaticGameConfig().then(() => {
+        this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
+        // load Three Object3D
+        let _this = this;
+        var loader = new ObjectLoader();
+        loader.load("/rest/model",
+          function (threejsObject3D) {
+            _this.gameMockService.mockTerrainTile(_this.threeJsRendererService, threejsObject3D);
+          });
 
-      this.mainCockpitComponent.show();
+        this.mainCockpitComponent.show();
+      });
     } else {
       this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
       this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;

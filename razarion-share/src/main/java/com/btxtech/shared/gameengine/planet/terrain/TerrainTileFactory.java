@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
@@ -55,7 +56,7 @@ public class TerrainTileFactory {
     private NativeMatrixFactory nativeMatrixFactory;
 
 
-    public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShapeManager terrainShape) {
+    public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShapeManager terrainShape, PlanetConfig planetConfig) {
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
         TerrainTileBuilder terrainTileBuilder = terrainTileBuilderInstance.get();
         terrainTileBuilder.init(terrainTileIndex, terrainShapeTile, terrainShape.getPlayGround());
@@ -65,7 +66,7 @@ public class TerrainTileFactory {
         insertWaterPart(terrainTileBuilder, terrainShapeTile);
         insertHeightAndType(terrainTileBuilder, terrainShapeTile);
         insertTerrainObjects(terrainTileBuilder, terrainShapeTile);
-        return terrainTileBuilder.generate();
+        return terrainTileBuilder.generate(planetConfig);
     }
 
     private void insertGroundPart(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
