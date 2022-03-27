@@ -16,6 +16,8 @@ import {LogoutComponent} from "./logout/logout.component";
 import {ChangePasswordComponent} from "./resetpassword/change-password.component";
 import {AppRoutingModule} from "./app-routing.module";
 import {TreeTableModule} from "primeng/treetable";
+import {CardModule} from 'primeng/card';
+import {PanelModule} from 'primeng/panel';
 import {ButtonModule} from "primeng/button";
 import {GwtAngularService} from "./gwtangular/GwtAngularService";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -145,7 +147,9 @@ import { GameMockService } from './game/renderer/game-mock.service';
     SliderModule,
     DataViewModule,
     FileUploadModule,
-    CommonModule
+    CommonModule,
+    CardModule,
+    PanelModule
   ],
   providers: [
     FrontendService, {

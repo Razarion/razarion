@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } fr
 import { EditorPanel } from "../editor-model";
 import { GwtAngularService } from "../../gwtangular/GwtAngularService";
 import {
+  ObjectNameId,
   RendererEditorService,
   RenderTaskRunnerControl
 } from "../../gwtangular/GwtAngularFacade";
@@ -12,6 +13,7 @@ import { Loader } from 'three/editor/js/Loader';
 import { ThreeJsRendererServiceImpl } from 'src/app/game/renderer/three-js-renderer-service.impl';
 import { Sidebar } from 'three/editor/js/Sidebar';
 import { Editor } from 'three/editor/js/Editor';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'render-engine',
@@ -20,17 +22,51 @@ import { Editor } from 'three/editor/js/Editor';
 export class RenderEngineComponent extends EditorPanel implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('threeJsScene')
   threeJsScene!: ElementRef;
+  @ViewChild('selectedDiv')
+  selectedDiv!: ElementRef;
+  threeJsModels: any[] = [];
+  selectedThreeJsName: string | null = null;
+  selectedThreeJsType: string | null = null;
   rendererEditorService: RendererEditorService;
+  selectedThreeJsModel: any = null;
   renderTaskRunnerControls: RenderTaskRunnerControl[];
 
-  constructor(private gwtAngularService: GwtAngularService, private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl, private gameMockService: GameMockService) {
+  constructor(private gwtAngularService: GwtAngularService,
+    private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl,
+    gameMockService: GameMockService,
+    private messageService: MessageService) {
     super();
     if (environment.gwtMock) {
       this.rendererEditorService = gameMockService.setupRendererEditorService();
-      this.renderTaskRunnerControls = []
+      this.renderTaskRunnerControls = [];
+      this.threeJsModels = gameMockService.threeJsModels;
+      this.threeJsModels = [new class implements ObjectNameId {
+        id = 1;
+        internalName = "3D Model Palm Tree";
+        toString(): string {
+          return "3D Model Palm Tree (1)"
+        }
+      }, new class implements ObjectNameId {
+        id = 2;
+        internalName = "Rock Pack 3D";
+        toString(): string {
+          return "Rock Pack 3D (2)"
+        }
+      }];
     } else {
       this.rendererEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getCameraFrontendService();
       this.renderTaskRunnerControls = this.rendererEditorService.getRenderTaskRunnerControls();
+      gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().requestObjectNameIds("THREE_JS_MODEL")
+        .then(value => this.threeJsModels = value,
+          reason => {
+            this.messageService.add({
+              severity: 'error',
+              summary: `Can not load THREE_JS_MODEL configs`,
+              detail: reason,
+              sticky: true
+            });
+            console.error(reason);
+          });
     }
   }
 
@@ -61,9 +97,12 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     let sidebar = Sidebar(editor);
     this.threeJsScene.nativeElement.appendChild(sidebar.dom);
 
+    let _this = this;
     editor.signals.objectSelected.add(function (selection: any) {
+      _this.selectedThreeJsName = selection.name;
+      _this.selectedThreeJsType = selection.type;
       let json = selection.toJSON();
-      console.info(JSON.stringify(json));
+      console.info(selection);
     });
   }
 
@@ -77,5 +116,9 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
 
     let loader = new Loader(callback);
     loader.loadFiles(event.files);
+  }
+
+  onUpload() {
+    console.log("onUpload()");
   }
 }
