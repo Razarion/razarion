@@ -1,3 +1,4 @@
+import { URL_IMAGE } from "src/app/common";
 import { SlopeGeometry, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 import { BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, RepeatWrapping, Scene, TextureLoader } from "three";
@@ -24,11 +25,11 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                 // Material
                 const repeat = 1 / groundConfig.getTopMaterial().getScale();
                 const material = new MeshStandardMaterial();
-                material.map = new TextureLoader().load(`rest/image/${groundConfig.getTopMaterial().getTextureId()}`);
+                material.map = new TextureLoader().load(`${URL_IMAGE}/${groundConfig.getTopMaterial().getTextureId()}`);
                 material.map.wrapS = RepeatWrapping;
                 material.map.wrapT = RepeatWrapping;
                 material.map.repeat.set(repeat, repeat);
-                material.bumpMap = new TextureLoader().load(`rest/image/${groundConfig.getTopMaterial().getBumpMapId()}`);
+                material.bumpMap = new TextureLoader().load(`${URL_IMAGE}/${groundConfig.getTopMaterial().getBumpMapId()}`);
                 material.bumpMap.wrapS = RepeatWrapping;
                 material.bumpMap.wrapT = RepeatWrapping;
                 material.bumpMap.repeat.set(repeat, repeat);

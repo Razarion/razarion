@@ -2,10 +2,13 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 /**
@@ -19,6 +22,9 @@ public class ThreeJsModelConfigEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String internalName;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] data;
 
     public ThreeJsModelConfig toConfig() {
         return new ThreeJsModelConfig().id(id).internalName(internalName);
@@ -26,6 +32,10 @@ public class ThreeJsModelConfigEntity {
 
     public void from(ThreeJsModelConfig config) {
         this.internalName = config.getInternalName();
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     @Override

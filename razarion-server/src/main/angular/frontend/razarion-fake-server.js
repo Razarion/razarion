@@ -69,6 +69,16 @@ server.on({
     }
 });
 
+server.on({
+    method: 'PUT',
+    path: '/rest/editor/three-js-model/upload/1',
+    reply: {
+        status: 200,
+        headers: { "content-type": "image/png" },
+        body: '"OK"'
+    }
+});
+
 server.start(function () {
     console.info("Razarion fake server is running on port: " + PORT);
 });

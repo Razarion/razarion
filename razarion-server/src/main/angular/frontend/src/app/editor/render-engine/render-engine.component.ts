@@ -9,11 +9,14 @@ import {
 import * as Stats from 'stats.js';
 import { environment } from 'src/environments/environment';
 import { GameMockService } from 'src/app/game/renderer/game-mock.service';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { Loader } from 'three/editor/js/Loader';
 import { ThreeJsRendererServiceImpl } from 'src/app/game/renderer/three-js-renderer-service.impl';
 import { Sidebar } from 'three/editor/js/Sidebar';
 import { Editor } from 'three/editor/js/Editor';
 import { MessageService } from 'primeng/api';
+import { HttpClient } from '@angular/common/http';
+import { URL_THREE_JS_MODEL } from 'src/app/common';
 
 @Component({
   selector: 'render-engine',
@@ -25,16 +28,18 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   @ViewChild('selectedDiv')
   selectedDiv!: ElementRef;
   threeJsModels: any[] = [];
+  selectedThreeJsModel: any = null;
   selectedThreeJsName: string | null = null;
   selectedThreeJsType: string | null = null;
+  selectedThreeJsObject: any | null = null;
   rendererEditorService: RendererEditorService;
-  selectedThreeJsModel: any = null;
   renderTaskRunnerControls: RenderTaskRunnerControl[];
 
   constructor(private gwtAngularService: GwtAngularService,
     private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl,
-    gameMockService: GameMockService,
-    private messageService: MessageService) {
+    private gameMockService: GameMockService,
+    private messageService: MessageService,
+    private http: HttpClient) {
     super();
     if (environment.gwtMock) {
       this.rendererEditorService = gameMockService.setupRendererEditorService();
@@ -56,7 +61,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     } else {
       this.rendererEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getCameraFrontendService();
       this.renderTaskRunnerControls = this.rendererEditorService.getRenderTaskRunnerControls();
-      gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().requestObjectNameIds("THREE_JS_MODEL")
+      gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().requestObjectNameIds("Three.js Model")
         .then(value => this.threeJsModels = value,
           reason => {
             this.messageService.add({
@@ -99,10 +104,9 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
 
     let _this = this;
     editor.signals.objectSelected.add(function (selection: any) {
+      _this.selectedThreeJsObject = selection;
       _this.selectedThreeJsName = selection.name;
       _this.selectedThreeJsType = selection.type;
-      let json = selection.toJSON();
-      console.info(selection);
     });
   }
 
@@ -119,6 +123,19 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   }
 
   onUpload() {
-    console.log("onUpload()");
+    let _this = this;
+    const exporter = new GLTFExporter();
+    const exporterAny: any = exporter;
+    exporterAny.parse(this.selectedThreeJsObject,
+      function (gltf: any) {
+        var formData: any = new FormData();
+        formData.append("http_form_data_model", gltf);
+        _this.http.put(`${URL_THREE_JS_MODEL}/upload/${_this.selectedThreeJsModel.id}`, formData).subscribe();
+      },
+      function (error: any) {
+        console.warn(`Fail to generate GLTF ${error}`);
+        console.warn(error);
+      },
+      { binary: true });
   }
 }

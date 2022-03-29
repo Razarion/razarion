@@ -134,4 +134,7 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
         return list;
     }
 
+    public Controller getCrudToBeTested() {
+        return crudToBeTested;
+    }
 }

@@ -10,6 +10,7 @@ import { ThreeJsRendererServiceImpl } from './renderer/three-js-renderer-service
 import { environment } from 'src/environments/environment';
 import { GameMockService } from './renderer/game-mock.service';
 import { ObjectLoader } from 'three';
+import { URL_MODEL } from '../common';
 
 
 @Component({
@@ -58,7 +59,7 @@ export class GameComponent implements OnInit {
         // load Three Object3D
         let _this = this;
         var loader = new ObjectLoader();
-        loader.load("/rest/model",
+        loader.load(URL_MODEL,
           function (threejsObject3D) {
             _this.gameMockService.mockTerrainTile(_this.threeJsRendererService, threejsObject3D);
           });

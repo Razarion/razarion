@@ -132,7 +132,7 @@ public class ImageProviderImpl implements ImageProvider {
         }
     }
 
-    private byte[] inputStreamToArray(InputStream initialStream) throws IOException {
+    public static byte[] inputStreamToArray(InputStream initialStream) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
         byte[] data = new byte[1024];

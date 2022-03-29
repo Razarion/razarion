@@ -1,9 +1,12 @@
 export const APPLICATION_PATH = '/rest';
+export const EDITOR_PATH = APPLICATION_PATH + '/editor';
 export const URL_FRONTEND = APPLICATION_PATH + '/frontend';
 export const SERVER_GAME_ENGINE_PATH = APPLICATION_PATH + '/server-game-engine';
 export const URL_BACKEND_PROVIDER = APPLICATION_PATH + '/backend';
 export const URL_PLANET_MGMT = APPLICATION_PATH + '/servergameenginemgmt';
 export const URL_IMAGE = APPLICATION_PATH + '/image';
+export const URL_MODEL = APPLICATION_PATH + '/model';
+export const URL_THREE_JS_MODEL = EDITOR_PATH + '/three-js-model';
 
 export interface FrontendLoginState {
   loggedIn: boolean;
