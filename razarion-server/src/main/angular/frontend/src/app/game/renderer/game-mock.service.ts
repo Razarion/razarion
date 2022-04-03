@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Alarm, DrivewayConfig, EditorFrontendProvider, GenericEditorFrontendProvider, GroundConfig, GroundSplattingConfig, GroundTerrainTile, GwtAngularPropertyTable, InputService, NativeMatrix, ObjectNameId, PerfmonStatistic, PhongMaterialConfig, RendererEditorService, RenderTaskRunnerControl, SlopeConfig, SlopeGeometry, StatusProvider, TerrainEditorService, TerrainMarkerService, TerrainObjectConfig, TerrainSlopeTile, TerrainTile, TerrainTileObjectList, TerrainTypeService, TerrainWaterTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
+import { Alarm, DrivewayConfig, EditorFrontendProvider, GenericEditorFrontendProvider, GroundConfig, GroundSplattingConfig, GroundTerrainTile, GwtAngularPropertyTable, InputService, NativeMatrix, ObjectNameId, PerfmonStatistic, PhongMaterialConfig, RendererEditorService, RenderTaskRunnerControl, SlopeConfig, SlopeGeometry, StatusProvider, TerrainEditorService, TerrainMarkerService, TerrainObjectConfig, TerrainSlopeTile, TerrainTile, TerrainTileObjectList, TerrainTypeService, TerrainWaterTile, ThreeJsModelConfig, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { ThreeJsRendererServiceImpl } from "./three-js-renderer-service.impl";
 import { HttpClient } from "@angular/common/http";
 import * as Stats from 'stats.js';
@@ -102,7 +102,7 @@ export class GameMockService {
         let promise = new Promise<void>((resolve, reject) => {
             this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((staticGameGonfigJson: any) => {
                 this.staticGameGonfigJson = staticGameGonfigJson;
-                resolve();
+                resolve(staticGameGonfigJson);
             });
         })
         return promise;
@@ -113,8 +113,22 @@ export class GameMockService {
         return new class implements TerrainTypeService {
             terrainTypeService = this;
 
-            getTerrainObjectConfig(id: number): TerrainObjectConfig {
-                throw new Error("Method not implemented.");
+            getTerrainObjectConfig(terrainObjectConfigId: number): TerrainObjectConfig {
+                let terrainObjectConfig: TerrainObjectConfig | null = null;
+                _this.staticGameGonfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
+                    if (terrainObjectConfigJson.id != terrainObjectConfigId) {
+                        return;
+                    }
+                    terrainObjectConfig = new class implements TerrainObjectConfig {
+                        threeJsUuid: string = terrainObjectConfigJson.threeJsUuid;
+                    }
+                    return
+                });
+                if (terrainObjectConfig !== null) {
+                    return terrainObjectConfig;
+                } else {
+                    throw new Error(`No TerrainObjectConfig for id ${terrainObjectConfigId}`);
+                }
             }
             getSlopeConfig(id: number): SlopeConfig {
                 throw new Error("Method not implemented.");
@@ -150,7 +164,7 @@ export class GameMockService {
         };
     }
 
-    mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl, threejsObject3D: Object3D) {
+    mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl) {
         const _this = this;
         this.http.get<TerrainTile[]>("/gwt-mock/terrain-tiles").subscribe((terrainTileJsonArray: any[]) => {
             for (let i in terrainTileJsonArray) {
@@ -208,12 +222,13 @@ export class GameMockService {
                         for (const [key, terrainTileObjectListJson] of Object.entries(terrainTileJson.terrainTileObjectLists)) {
                             terrainTileObjectLists.push(new class implements TerrainTileObjectList {
                                 models: NativeMatrix[] = _this.setupNativeMatrix((<any>terrainTileObjectListJson)["models"]);
+                                terrainObjectConfigId = (<any>terrainTileObjectListJson)["terrainObjectConfigId"];
                             });
                         }
                         return terrainTileObjectLists;
                     }
                 };
-                const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, threejsObject3D);
+                const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
                 threeJsTerrainTile.addToScene();
             }
         });
@@ -294,6 +309,22 @@ export class GameMockService {
             }
 
         };
+    }
+
+    mockThreeJsModelConfigs(): ThreeJsModelConfig[] {
+        let threeJsModelConfigs: ThreeJsModelConfig[] = [];
+        this.staticGameGonfigJson.threeJsModelConfigs.forEach((threeJsModelConfigJson: any) => {
+            threeJsModelConfigs.push(new class implements ThreeJsModelConfig {
+                getId(): number {
+                    return threeJsModelConfigJson.id;
+                }
+                getInternalName(): string {
+                    return threeJsModelConfigJson.internalName;
+                }
+
+            });
+        })
+        return threeJsModelConfigs;
     }
 
 }

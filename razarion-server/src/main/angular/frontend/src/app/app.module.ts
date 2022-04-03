@@ -75,6 +75,7 @@ import {FileUploadModule} from 'primeng/fileupload';
 import {RadToDegreePipe} from "./common/rad-to-degree-pipe";
 import {ThreeJsRendererServiceImpl} from './game/renderer/three-js-renderer-service.impl';
 import { GameMockService } from './game/renderer/game-mock.service';
+import { ThreeJsModelService } from './game/renderer/three-js-model.service';
 
 @NgModule({
   declarations: [
@@ -161,7 +162,8 @@ import { GameMockService } from './game/renderer/game-mock.service';
     EditorService,
     DatePipe,
     ThreeJsRendererServiceImpl,
-    GameMockService
+    GameMockService,
+    ThreeJsModelService
   ],
   bootstrap: [AppComponent]
 })

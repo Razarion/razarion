@@ -81,7 +81,7 @@ public class BaseItemServiceBase {
         SimpleTestEnvironment.injectService("syncItemContainerService", baseItemService, syncItemContainerService);
         // Level
         LevelService levelService = new LevelService();
-        levelService.init(new StaticGameConfig().setLevelConfigs(FallbackConfig.setupLevelConfigs()));
+        levelService.init(new StaticGameConfig().levelConfigs(FallbackConfig.setupLevelConfigs()));
         SimpleTestEnvironment.injectService("levelService", baseItemService, levelService);
 
         GameLogicService gameLogicServiceMock = EasyMock.createNiceMock(GameLogicService.class);

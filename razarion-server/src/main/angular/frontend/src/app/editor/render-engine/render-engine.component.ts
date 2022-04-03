@@ -15,7 +15,7 @@ import { ThreeJsRendererServiceImpl } from 'src/app/game/renderer/three-js-rende
 import { Sidebar } from 'three/editor/js/Sidebar';
 import { Editor } from 'three/editor/js/Editor';
 import { MessageService } from 'primeng/api';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { URL_THREE_JS_MODEL } from 'src/app/common';
 
 @Component({
@@ -110,7 +110,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     });
   }
 
-  uploadThreejsModel(event: any) {
+  onImport(event: any) {
     let self = this;
     let callback = {
       execute(arg: any) {
@@ -128,9 +128,12 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     const exporterAny: any = exporter;
     exporterAny.parse(this.selectedThreeJsObject,
       function (gltf: any) {
-        var formData: any = new FormData();
-        formData.append("http_form_data_model", gltf);
-        _this.http.put(`${URL_THREE_JS_MODEL}/upload/${_this.selectedThreeJsModel.id}`, formData).subscribe();
+        const httpOptions = {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/octet-stream'
+          })
+        };
+        _this.http.put(`${URL_THREE_JS_MODEL}/upload/${_this.selectedThreeJsModel.id}`, new Blob([gltf]), httpOptions).subscribe();
       },
       function (error: any) {
         console.warn(`Fail to generate GLTF ${error}`);

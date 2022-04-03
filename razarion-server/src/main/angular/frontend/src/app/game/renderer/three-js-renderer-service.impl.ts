@@ -15,6 +15,7 @@ import { Scene } from "three/src/scenes/Scene";
 import { TerrainTile, ThreeJsRendererServiceAccess, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { ThreeJsTerrainTileImpl } from "./three-js-terrain-tile.impl";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
+import { ThreeJsModelService } from "./three-js-model.service";
 
 
 @Injectable()
@@ -25,13 +26,13 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     private canvasDiv!: HTMLDivElement;
     private renderer!: WebGLRenderer
 
-    constructor(private gwtAngularService: GwtAngularService) {
+    constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService) {
         this.scene.name = "Main Scene"
     }
 
-    createTerrainTile(terrainTile: TerrainTile, threejsObject3D: Object3D): ThreeJsTerrainTile {
+    createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile {
         try {
-            return new ThreeJsTerrainTileImpl(terrainTile, this.scene, threejsObject3D, this.gwtAngularService);
+            return new ThreeJsTerrainTileImpl(terrainTile, this.scene, this.gwtAngularService, this.threeJsModelService);
         } catch (e) {
             console.error(e);
             throw e;

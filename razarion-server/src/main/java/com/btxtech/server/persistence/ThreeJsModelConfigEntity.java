@@ -34,6 +34,10 @@ public class ThreeJsModelConfigEntity {
         this.internalName = config.getInternalName();
     }
 
+    public byte[] getData() {
+        return data;
+    }
+
     public void setData(byte[] data) {
         this.data = data;
     }

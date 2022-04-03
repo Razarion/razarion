@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 import { GameMockService } from './renderer/game-mock.service';
 import { ObjectLoader } from 'three';
 import { URL_MODEL } from '../common';
+import { ThreeJsModelService } from './renderer/three-js-model.service';
 
 
 @Component({
@@ -32,6 +33,7 @@ export class GameComponent implements OnInit {
     private router: Router,
     private gwtAngularService: GwtAngularService,
     private threeJsRendererService: ThreeJsRendererServiceImpl,
+    private threeJsModelService: ThreeJsModelService,
     private gameMockService: GameMockService) {
   }
 
@@ -55,16 +57,11 @@ export class GameComponent implements OnInit {
       this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
       this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
       this.gameMockService.loadMockStaticGameConfig().then(() => {
-        this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
-        // load Three Object3D
-        let _this = this;
-        var loader = new ObjectLoader();
-        loader.load(URL_MODEL,
-          function (threejsObject3D) {
-            _this.gameMockService.mockTerrainTile(_this.threeJsRendererService, threejsObject3D);
-          });
-
-        this.mainCockpitComponent.show();
+        this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs()).then(() => {
+          this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
+          this.gameMockService.mockTerrainTile(this.threeJsRendererService);
+          this.mainCockpitComponent.show();  
+        });
       });
     } else {
       this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;

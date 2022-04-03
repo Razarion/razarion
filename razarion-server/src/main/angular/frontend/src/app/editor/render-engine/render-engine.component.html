@@ -1,7 +1,7 @@
 <div class="flex flex-column">
   <div class="mr-2">
-    <p-fileUpload chooseLabel="Upload" name="myfile[]" [auto]=true [customUpload]=true
-      (uploadHandler)="uploadThreejsModel($event)"></p-fileUpload>
+    <p-fileUpload chooseLabel="Import" name="myfile[]" [auto]=true [customUpload]=true
+      (uploadHandler)="onImport($event)"></p-fileUpload>
   </div>
   <div class="mr-2">
     <p-card>

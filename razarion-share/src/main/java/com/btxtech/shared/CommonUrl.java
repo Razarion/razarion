@@ -28,6 +28,7 @@ public class CommonUrl {
     public static final String LOGGING_JSON = "json";
     public static final String LOGGING_JSON_DEBUG_DB = "debugdb";
     public static final String IMAGE_SERVICE_PATH = "image";
+    public static final String THREE_JS_MODEL_PATH = G_ZIPPED +"/three-js-model";
     public static final String PLANET_MINI_MAP_PATH = "minimap";
     public static final String AUDIO_SERVICE_PATH = "audio";
     public static final String ALARM_SERVICE_PATH = "alarm-service";

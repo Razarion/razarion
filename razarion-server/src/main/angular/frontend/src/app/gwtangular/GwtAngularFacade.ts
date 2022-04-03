@@ -68,6 +68,7 @@ export interface TerrainTypeService {
 
 // ---------- Configs ----------
 export interface TerrainObjectConfig {
+  threeJsUuid: string;
 }
 
 export interface SlopeConfig {
@@ -101,6 +102,11 @@ export interface GroundSplattingConfig {
   getScale2(): number;
   getBlur(): number;
   getOffset(): number;
+}
+
+export interface ThreeJsModelConfig {
+  getId(): number;
+  getInternalName(): string;
 }
 
 // ---------- Renderer ----------
@@ -149,6 +155,7 @@ export interface TerrainWaterTile {
 
 export interface TerrainTileObjectList {
   models: NativeMatrix[];
+  terrainObjectConfigId: number;
 }
 
 export interface ThreeJsTerrainTile {

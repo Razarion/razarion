@@ -29,19 +29,33 @@ server.on({
     }
 });
 
-function loadModel() {
-    return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\", "threejs-scene.json"));
+function loadThreeJsModel(req) {
+    let threeJsModelToLoad = req.url.substring("/gz/three-js-model/".length, req.url.length);
+    switch (threeJsModelToLoad) {
+        case '8881':
+            threeJsModelToLoad = "three-js-model_8881.bin";
+            break;
+        case '8882':
+            threeJsModelToLoad = "three-js-model_8881.bin";
+            break;
+    }
+    return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\threejs-models", threeJsModelToLoad));
 }
 
 server.on({
     method: 'GET',
-    path: '/rest/model',
+    path: '*',
+    filter: function (req) {
+        return req.url.startsWith("/gz/three-js-model/")
+    },
     reply: {
         status: 200,
         headers: { "content-type": "application/json" },
-        body: loadModel
+        body: loadThreeJsModel
     }
 });
+
+
 
 function loadImage(req) {
     let imageToLoad = req.url.substring("/rest/images/".length - 1, req.url.length);
@@ -82,4 +96,3 @@ server.on({
 server.start(function () {
     console.info("Razarion fake server is running on port: " + PORT);
 });
-

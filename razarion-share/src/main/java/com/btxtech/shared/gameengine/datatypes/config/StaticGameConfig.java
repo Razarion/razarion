@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -26,14 +27,14 @@ public class StaticGameConfig {
     private List<LevelConfig> levelConfigs;
     private List<InventoryItem> inventoryItems;
     private List<DrivewayConfig> drivewayConfigs;
+    private List<ThreeJsModelConfig> threeJsModelConfigs;
 
     public List<GroundConfig> getGroundConfigs() {
         return groundConfigs;
     }
 
-    public StaticGameConfig setGroundConfigs(List<GroundConfig> groundConfigs) {
+    public void setGroundConfigs(List<GroundConfig> groundConfigs) {
         this.groundConfigs = groundConfigs;
-        return this;
     }
 
     public List<WaterConfig> getWaterConfigs() {
@@ -48,71 +49,126 @@ public class StaticGameConfig {
         return slopeConfigs;
     }
 
-    public StaticGameConfig setSlopeConfigs(List<SlopeConfig> slopeConfigs) {
+    public void setSlopeConfigs(List<SlopeConfig> slopeConfigs) {
         this.slopeConfigs = slopeConfigs;
-        return this;
     }
 
     public List<TerrainObjectConfig> getTerrainObjectConfigs() {
         return terrainObjectConfigs;
     }
 
-    public StaticGameConfig setTerrainObjectConfigs(List<TerrainObjectConfig> terrainObjectConfigs) {
+    public void setTerrainObjectConfigs(List<TerrainObjectConfig> terrainObjectConfigs) {
         this.terrainObjectConfigs = terrainObjectConfigs;
-        return this;
     }
 
     public List<BaseItemType> getBaseItemTypes() {
         return baseItemTypes;
     }
 
-    public StaticGameConfig setBaseItemTypes(List<BaseItemType> baseItemTypes) {
+    public void setBaseItemTypes(List<BaseItemType> baseItemTypes) {
         this.baseItemTypes = baseItemTypes;
-        return this;
     }
 
     public List<ResourceItemType> getResourceItemTypes() {
         return resourceItemTypes;
     }
 
-    public StaticGameConfig setResourceItemTypes(List<ResourceItemType> resourceItemTypes) {
+    public void setResourceItemTypes(List<ResourceItemType> resourceItemTypes) {
         this.resourceItemTypes = resourceItemTypes;
-        return this;
     }
 
     public List<LevelConfig> getLevelConfigs() {
         return levelConfigs;
     }
 
-    public StaticGameConfig setLevelConfigs(List<LevelConfig> levelConfigs) {
+    public void setLevelConfigs(List<LevelConfig> levelConfigs) {
         this.levelConfigs = levelConfigs;
-        return this;
     }
 
     public List<BoxItemType> getBoxItemTypes() {
         return boxItemTypes;
     }
 
-    public StaticGameConfig setBoxItemTypes(List<BoxItemType> boxItemTypes) {
+    public void setBoxItemTypes(List<BoxItemType> boxItemTypes) {
         this.boxItemTypes = boxItemTypes;
-        return this;
     }
 
     public List<InventoryItem> getInventoryItems() {
         return inventoryItems;
     }
 
-    public StaticGameConfig setInventoryItems(List<InventoryItem> inventoryItems) {
+    public void setInventoryItems(List<InventoryItem> inventoryItems) {
         this.inventoryItems = inventoryItems;
-        return this;
     }
 
     public List<DrivewayConfig> getDrivewayConfigs() {
         return drivewayConfigs;
     }
 
-    public StaticGameConfig setDrivewayConfigs(List<DrivewayConfig> drivewayConfigs) {
+    public void setDrivewayConfigs(List<DrivewayConfig> drivewayConfigs) {
         this.drivewayConfigs = drivewayConfigs;
+    }
+
+    public List<ThreeJsModelConfig> getThreeJsModelConfigs() {
+        return threeJsModelConfigs;
+    }
+
+    public void setThreeJsModelConfigs(List<ThreeJsModelConfig> threeJsModelConfigs) {
+        this.threeJsModelConfigs = threeJsModelConfigs;
+    }
+
+    public StaticGameConfig groundConfigs(List<GroundConfig> groundConfigs) {
+        setGroundConfigs(groundConfigs);
+        return this;
+    }
+
+    public StaticGameConfig waterConfigs(List<WaterConfig> waterConfigs) {
+        setWaterConfigs(waterConfigs);
+        return this;
+    }
+
+    public StaticGameConfig slopeConfigs(List<SlopeConfig> slopeConfigs) {
+        setSlopeConfigs(slopeConfigs);
+        return this;
+    }
+
+    public StaticGameConfig terrainObjectConfigs(List<TerrainObjectConfig> terrainObjectConfigs) {
+        setTerrainObjectConfigs(terrainObjectConfigs);
+        return this;
+    }
+
+    public StaticGameConfig baseItemTypes(List<BaseItemType> baseItemTypes) {
+        setBaseItemTypes(baseItemTypes);
+        return this;
+    }
+
+    public StaticGameConfig resourceItemTypes(List<ResourceItemType> resourceItemTypes) {
+        setResourceItemTypes(resourceItemTypes);
+        return this;
+    }
+
+    public StaticGameConfig boxItemTypes(List<BoxItemType> boxItemTypes) {
+        setBoxItemTypes(boxItemTypes);
+        return this;
+    }
+
+    public StaticGameConfig levelConfigs(List<LevelConfig> levelConfigs) {
+        setLevelConfigs(levelConfigs);
+        return this;
+    }
+
+    public StaticGameConfig inventoryItems(List<InventoryItem> inventoryItems) {
+        setInventoryItems(inventoryItems);
+        return this;
+    }
+
+    public StaticGameConfig drivewayConfigs(List<DrivewayConfig> drivewayConfigs) {
+        setDrivewayConfigs(drivewayConfigs);
+        return this;
+    }
+
+    public StaticGameConfig threeJsModelConfigs(List<ThreeJsModelConfig> threeJsModelConfigs) {
+        setThreeJsModelConfigs(threeJsModelConfigs);
         return this;
     }
 }

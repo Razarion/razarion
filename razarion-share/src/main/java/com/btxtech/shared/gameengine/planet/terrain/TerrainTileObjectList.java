@@ -12,7 +12,7 @@ import java.util.List;
 @JsType
 public class TerrainTileObjectList {
     @Deprecated
-    private int terrainObjectConfigId;
+    public int terrainObjectConfigId;
     public NativeMatrix[] models;
 
     public int getTerrainObjectConfigId() {

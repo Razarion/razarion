@@ -29,7 +29,7 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(5120, 512));
 
-        setupTerrainTypeService(slopeConfigs, null, null, null, planetConfig, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, null, null, planetConfig, terrainSlopePositions, null, null, null);
 
     }
 
@@ -84,7 +84,7 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
                         GameTestHelper.createTerrainSlopeCorner(248.01029680117085, 372.0660880233647, 31),
                         GameTestHelper.createTerrainSlopeCorner(254.9955059204925, 365.0808789040431, 31),
                         GameTestHelper.createTerrainSlopeCorner(255.0424455596303, 365.1278185431809, 31))));
-        setupTerrainTypeService(slopeConfigs, drivewayConfigs, null, null, null, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, drivewayConfigs, null, null, null, terrainSlopePositions, null, null, null);
         showDisplay();
     }
 

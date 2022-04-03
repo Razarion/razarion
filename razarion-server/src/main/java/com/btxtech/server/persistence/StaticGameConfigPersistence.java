@@ -36,6 +36,8 @@ public class StaticGameConfigPersistence {
     private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private InventoryPersistence inventoryPersistence;
+    @Inject
+    private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
 
     public StaticGameConfig loadStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
@@ -49,6 +51,7 @@ public class StaticGameConfigPersistence {
         staticGameConfig.setBoxItemTypes(itemTypePersistence.readBoxItemTypes());
         staticGameConfig.setLevelConfigs(levelCrudPersistence.read());
         staticGameConfig.setInventoryItems(inventoryPersistence.readInventoryItems());
+        staticGameConfig.setThreeJsModelConfigs(threeJsModelCrudPersistence.read());
         return staticGameConfig;
     }
 }

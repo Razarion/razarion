@@ -2,11 +2,13 @@ import { URL_IMAGE } from "src/app/common";
 import { SlopeGeometry, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 import { BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, RepeatWrapping, Scene, TextureLoader } from "three";
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { ThreeJsModelService } from "./three-js-model.service";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     private scene = new Scene();
 
-    constructor(terrainTile: TerrainTile, private parentScene: Scene, threejsObject3D: Object3D, gwtAngularService: GwtAngularService) {
+    constructor(terrainTile: TerrainTile, private parentScene: Scene, gwtAngularService: GwtAngularService, threeJsModelService: ThreeJsModelService) {
         this.scene.name = "TerrainTile";
         if (terrainTile.getGroundTerrainTiles() !== null) {
             terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
@@ -64,25 +66,27 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
             });
         }
         if (terrainTile.getTerrainTileObjectLists() !== null) {
+            const _this = this;
             terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
-                terrainTileObjectList.models.forEach(model => {
-                    let m = model.getColumnMajorFloat32Array();
-                    let matrix4 = new Matrix4();
-                    matrix4.set(
-                        m[0], m[4], m[8], m[12],
-                        m[1], m[5], m[9], m[13],
-                        m[2], m[6], m[10], m[14],
-                        m[3], m[7], m[11], m[15]
-                    );
-                    if(threejsObject3D == null) {
-                        console.warn("Can not render terrain object: threejsObject3D == null");
-                        return;
-                    }
-                    let object3D = threejsObject3D.clone();
-                    object3D.name = "Terrain Object"
-                    object3D.applyMatrix4(matrix4);
-                    this.scene.add(object3D);
-                });
+                try {
+                    let terrainObjectConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
+                    let object3D = threeJsModelService.cloneObject3D(terrainObjectConfig.threeJsUuid);
+
+                    terrainTileObjectList.models.forEach(model => {
+                        let m = model.getColumnMajorFloat32Array();
+                        let matrix4 = new Matrix4();
+                        matrix4.set(
+                            m[0], m[4], m[8], m[12],
+                            m[1], m[5], m[9], m[13],
+                            m[2], m[6], m[10], m[14],
+                            m[3], m[7], m[11], m[15]
+                        );
+                        object3D.applyMatrix4(matrix4);
+                        _this.scene.add(object3D);
+                    });
+                } catch (error) {
+                    console.error(error);
+                }
             });
         }
     }

@@ -32,4 +32,9 @@ public class ThreeJsModelCrudPersistence extends AbstractCrudPersistence<ThreeJs
         threeJsModelConfig.setData(bytes);
         entityManager.merge(threeJsModelConfig);
     }
+
+    @Transactional
+    public byte[] getThreeJsModel(int id) {
+        return getEntity(id).getData();
+    }
 }

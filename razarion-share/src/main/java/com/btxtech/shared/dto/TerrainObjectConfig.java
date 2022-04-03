@@ -2,17 +2,20 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 10.05.2016.
  */
+@JsType
 public class TerrainObjectConfig implements Config {
     private int id;
     private String internalName;
     @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer shape3DId;
     private double radius;
+    private String threeJsUuid;
 
     @Override
     public int getId() {
@@ -43,6 +46,14 @@ public class TerrainObjectConfig implements Config {
 
     public void setRadius(double radius) {
         this.radius = radius;
+    }
+
+    public String getThreeJsUuid() {
+        return threeJsUuid;
+    }
+
+    public void setThreeJsUuid(String threeJsUuid) {
+        this.threeJsUuid = threeJsUuid;
     }
 
     @Override
@@ -80,6 +91,11 @@ public class TerrainObjectConfig implements Config {
 
     public TerrainObjectConfig radius(double radius) {
         setRadius(radius);
+        return this;
+    }
+
+    public TerrainObjectConfig threeJsUuid(String threeJsUuid) {
+        setThreeJsUuid(threeJsUuid);
         return this;
     }
 }

@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -50,9 +51,9 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         terrainSlopePositions.add(terrainSlopePosition);
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
-        terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1));
-        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5));
-        terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1).threeJsUuid("TEST_threeJsUuid_1"));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5).threeJsUuid("TEST_threeJsUuid_2"));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10).threeJsUuid("TEST_threeJsUuid_3"));
 
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
                 new TerrainObjectPosition().id(1).terrainObjectId(1).position(new DecimalPosition(50, 40)).scale(new Vertex(1.1, 1.1, 1.1)).rotation(new Vertex(0, 0, 0)),
@@ -64,8 +65,12 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 new TerrainObjectPosition().id(7).terrainObjectId(3).position(new DecimalPosition(50, 280)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
                 new TerrainObjectPosition().id(8).terrainObjectId(3).position(new DecimalPosition(100, 40)).scale(new Vertex(0.9, 0.9, 0.9)).rotation(new Vertex(0, 0, 0)));
 
+        List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
+                new ThreeJsModelConfig().id(8881),
+                new ThreeJsModelConfig().id(8882)
+        );
 
-        setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null, threeJsModelConfigs);
 
         // showDisplay();
 
