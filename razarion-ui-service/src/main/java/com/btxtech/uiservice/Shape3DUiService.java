@@ -12,6 +12,7 @@ import java.util.Map;
  * Created by Beat
  * 16.08.2016.
  */
+@Deprecated // Use ThreeJsModel
 public abstract class Shape3DUiService {
     // private Logger logger = Logger.getLogger(Shape3DUiService.class.getName());
     private Map<Integer, Shape3D> shape3Ds = new HashMap<>();

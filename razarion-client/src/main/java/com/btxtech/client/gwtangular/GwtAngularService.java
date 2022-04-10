@@ -5,9 +5,9 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
+import com.btxtech.uiservice.system.boot.GwtAngularBoot;
 import com.btxtech.uiservice.terrain.InputService;
 import elemental2.dom.DomGlobal;
-import elemental2.dom.HTMLCanvasElement;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMapOfAny;
 
@@ -41,17 +41,12 @@ public class GwtAngularService {
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
     }
 
-    @Deprecated
-    public HTMLCanvasElement getCanvasElement() {
-        return gwtAngularFacade.canvasElement;
-    }
-
-    public void setCanvasResizeListener(Callback callback) {
-        gwtAngularFacade.canvasResizeCallback = callback;
-    }
-
     public void onCrash() {
         gwtAngularFacade.onCrash();
+    }
+
+    public GwtAngularBoot getGwtAngularBoot() {
+        return gwtAngularFacade.gwtAngularBoot;
     }
 
     @Produces

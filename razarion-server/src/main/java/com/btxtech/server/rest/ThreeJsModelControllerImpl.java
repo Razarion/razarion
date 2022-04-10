@@ -5,6 +5,7 @@ import com.btxtech.shared.rest.ThreeJsModelController;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 
@@ -22,7 +23,7 @@ public class ThreeJsModelControllerImpl implements ThreeJsModelController {
     public Response getThreeJsModel(int id) {
         try {
             byte[] threeJsModel = threeJsModelCrudPersistence.getThreeJsModel(id);
-            return Response.ok(threeJsModel).lastModified(new Date()).build();
+            return Response.ok(threeJsModel, MediaType.APPLICATION_OCTET_STREAM).lastModified(new Date()).build();
         } catch (Throwable e) {
             exceptionHandler.handleException("Can not load ThreeJsModel for id: " + id, e);
             throw e;

@@ -1,5 +1,35 @@
 import { Injectable } from "@angular/core";
-import { Alarm, DrivewayConfig, EditorFrontendProvider, GenericEditorFrontendProvider, GroundConfig, GroundSplattingConfig, GroundTerrainTile, GwtAngularPropertyTable, InputService, NativeMatrix, ObjectNameId, PerfmonStatistic, PhongMaterialConfig, RendererEditorService, RenderTaskRunnerControl, SlopeConfig, SlopeGeometry, StatusProvider, TerrainEditorService, TerrainMarkerService, TerrainObjectConfig, TerrainSlopeTile, TerrainTile, TerrainTileObjectList, TerrainTypeService, TerrainWaterTile, ThreeJsModelConfig, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
+import {
+  Alarm,
+  DrivewayConfig,
+  EditorFrontendProvider,
+  GenericEditorFrontendProvider,
+  GroundConfig,
+  GroundSplattingConfig,
+  GroundTerrainTile,
+  GwtAngularPropertyTable,
+  Index,
+  InputService,
+  NativeMatrix,
+  ObjectNameId,
+  PerfmonStatistic,
+  PhongMaterialConfig,
+  RendererEditorService,
+  RenderTaskRunnerControl,
+  SlopeConfig,
+  SlopeGeometry,
+  StatusProvider,
+  TerrainEditorService,
+  TerrainMarkerService,
+  TerrainObjectConfig,
+  TerrainSlopeTile,
+  TerrainTile,
+  TerrainTileObjectList,
+  TerrainTypeService,
+  TerrainWaterTile,
+  ThreeJsModelConfig,
+  ThreeJsTerrainTile
+} from "src/app/gwtangular/GwtAngularFacade";
 import { ThreeJsRendererServiceImpl } from "./three-js-renderer-service.impl";
 import { HttpClient } from "@angular/common/http";
 import * as Stats from 'stats.js';
@@ -120,7 +150,9 @@ export class GameMockService {
                         return;
                     }
                     terrainObjectConfig = new class implements TerrainObjectConfig {
-                        threeJsUuid: string = terrainObjectConfigJson.threeJsUuid;
+                        getThreeJsUuid(): string {
+                             return terrainObjectConfigJson.threeJsUuid;
+                        }
                     }
                     return
                 });
@@ -226,6 +258,13 @@ export class GameMockService {
                             });
                         }
                         return terrainTileObjectLists;
+                    }
+                    getIndex(): Index {
+                      return new class implements Index {
+                         toString(): string {
+                             return "TerrainTile.getIndex() MOCK";
+                         }
+                      }
                     }
                 };
                 const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);

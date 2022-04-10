@@ -6,6 +6,7 @@ import java.util.List;
  * Created by Beat
  * 28.07.2016.
  */
+@Deprecated // Use ThreeJsModel
 public class Shape3D {
     private int id;
     private List<Element3D> element3Ds;

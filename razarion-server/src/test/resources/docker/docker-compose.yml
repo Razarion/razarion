@@ -22,6 +22,7 @@ services:
       - "32788:3306"
     command: [
         '--wait_timeout=28800',
+        '--max_allowed_packet=200000000'
       ]
   mongo:
     image: mongo

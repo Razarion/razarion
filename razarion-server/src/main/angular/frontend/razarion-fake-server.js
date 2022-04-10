@@ -30,13 +30,13 @@ server.on({
 });
 
 function loadThreeJsModel(req) {
-    let threeJsModelToLoad = req.url.substring("/gz/three-js-model/".length, req.url.length);
+    let threeJsModelToLoad = req.url.substring("/rest/gz/three-js-model/".length, req.url.length);
     switch (threeJsModelToLoad) {
         case '8881':
             threeJsModelToLoad = "three-js-model_8881.bin";
             break;
         case '8882':
-            threeJsModelToLoad = "three-js-model_8881.bin";
+            threeJsModelToLoad = "three-js-model_8882.bin";
             break;
     }
     return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\threejs-models", threeJsModelToLoad));
@@ -46,7 +46,7 @@ server.on({
     method: 'GET',
     path: '*',
     filter: function (req) {
-        return req.url.startsWith("/gz/three-js-model/")
+        return req.url.startsWith("/rest/gz/three-js-model/")
     },
     reply: {
         status: 200,

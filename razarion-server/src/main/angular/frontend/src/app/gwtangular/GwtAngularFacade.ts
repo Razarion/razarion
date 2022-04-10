@@ -1,18 +1,30 @@
-import { TreeNode } from "primeng/api";
+import {TreeNode} from "primeng/api";
 
-// ---------- Common ----------
+// ---------- Root ----------
+
 export abstract class GwtAngularFacade {
-  canvasElement!: HTMLCanvasElement;
+  gwtAngularBoot!: GwtAngularBoot;
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
   editorFrontendProvider!: EditorFrontendProvider;
-  canvasResizeCallback!: Callback;
   statusProvider!: StatusProvider;
   threeJsRendererServiceAccess!: ThreeJsRendererServiceAccess;
   inputService!: InputService;
   terrainTypeService!: TerrainTypeService;
 
   abstract onCrash(): void;
+}
+
+// ---------- Boot ----------
+
+export interface GwtAngularBoot {
+   loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[]): Promise<void>;
+}
+
+// ---------- Common ----------
+
+export interface Index {
+    toString(): string;
 }
 
 export interface StatusProvider {
@@ -68,7 +80,8 @@ export interface TerrainTypeService {
 
 // ---------- Configs ----------
 export interface TerrainObjectConfig {
-  threeJsUuid: string;
+  getThreeJsUuid(): string;
+  toString(): string;
 }
 
 export interface SlopeConfig {
@@ -79,33 +92,49 @@ export interface DrivewayConfig {
 
 export interface GroundConfig {
   getId(): number;
+
   getInternalName(): string;
+
   getTopMaterial(): PhongMaterialConfig;
+
   getBottomMaterial(): PhongMaterialConfig | null;
+
   getSplatting(): GroundSplattingConfig | null;
 }
 
 export interface PhongMaterialConfig {
   getTextureId(): number;
+
   getScale(): number;
+
   getNormalMapId(): number;
+
   getNormalMapDepth(): number;
+
   getBumpMapId(): number;
+
   getBumpMapDepth(): number;
+
   getShininess(): number;
+
   getSpecularStrength(): number;
 }
 
 export interface GroundSplattingConfig {
   getTextureId(): number;
+
   getScale1(): number;
+
   getScale2(): number;
+
   getBlur(): number;
+
   getOffset(): number;
 }
 
 export interface ThreeJsModelConfig {
   getId(): number;
+
   getInternalName(): string;
 }
 
@@ -124,6 +153,8 @@ export interface TerrainTile {
   getTerrainWaterTiles(): TerrainWaterTile[];
 
   getTerrainTileObjectLists(): TerrainTileObjectList[];
+
+  getIndex(): Index;
 }
 
 export interface GroundTerrainTile {

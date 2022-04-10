@@ -26,7 +26,6 @@ public class TerrainTile {
     private double height;
     private TerrainTileObjectList[] terrainTileObjectLists;
 
-    @JsIgnore
     public Index getIndex() {
         return index;
     }

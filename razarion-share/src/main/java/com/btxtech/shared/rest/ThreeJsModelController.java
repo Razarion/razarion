@@ -17,6 +17,6 @@ import java.util.Map;
 public interface ThreeJsModelController {
     @GET
     @Path("{id}")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     Response getThreeJsModel(@PathParam("id") int id);
 }

@@ -1,7 +1,9 @@
 package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.dto.Config;
+import jsinterop.annotations.JsType;
 
+@JsType
 public class ThreeJsModelConfig implements Config {
     private int id;
     private String internalName;

@@ -14,6 +14,8 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
 
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ import java.util.List;
  * Time: 11:56:58 AM
  */
 @Embeddable
+@JsType
 public class Index {
     public static final Index ZERO = new Index(0, 0);
 
@@ -48,9 +51,11 @@ public class Index {
     /**
      * Used by GWT
      */
+    @JsIgnore
     public Index() {
     }
 
+    @JsIgnore
     public Index(int x, int y) {
         this.x = x;
         this.y = y;
@@ -216,6 +221,7 @@ public class Index {
         return MathHelper.normaliseAngle(endAngle - startAngle);
     }
 
+    @JsIgnore
     public Index getPointFromAngleRound(double angle, int radius) {
         int gk = (int) Math.round(Math.sin(angle) * (double) radius);
         int ak = (int) Math.round(Math.cos(angle) * (double) radius);
@@ -265,6 +271,7 @@ public class Index {
         return new Index(largestX, largestY);
     }
 
+    @JsIgnore
     public Index scale(double scale) {
         return new Index((int) (x * scale), (int) (y * scale));
     }
@@ -285,6 +292,7 @@ public class Index {
         return new DecimalPosition(x * factor, y * factor);
     }
 
+    @JsIgnore
     public Index add(Index point) {
         return new Index(x + point.x, y + point.y);
     }
@@ -293,6 +301,7 @@ public class Index {
         return new Index(x + deltaX, y + deltaY);
     }
 
+    @JsIgnore
     public Index sub(Index point) {
         return new Index(x - point.x, y - point.y);
     }
@@ -321,6 +330,7 @@ public class Index {
         return new Index(center.x + newX, center.y + newY);
     }
 
+    @JsIgnore
     public Index rotateCounterClock(Index center, double angel) {
         double sinus = Math.sin(angel);
         double cosines = Math.cos(angel);
@@ -399,6 +409,7 @@ public class Index {
         return new Index(x, y);
     }
 
+    @JsIgnore
     public static Index createSaveIndex(Index index) {
         return createSaveIndex(index.getX(), index.getY());
     }

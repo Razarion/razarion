@@ -74,19 +74,19 @@ public class GameCanvas {
 //    }
 
     public void init() {
-        canvasElement = gwtAngularService.getCanvasElement();
-        if (canvasElement == null) {
-            throw new IllegalStateException("Canvas is not supported");
-        }
-
-        initCanvas();
-
-        setupAnimationCallback();
-
-        gwtAngularService.setCanvasResizeListener(this::onWindowResized);
-
-        initMouseHandler();
-        keyboardEventHandler.init();
+//        canvasElement = gwtAngularService.getCanvasElement();
+//        if (canvasElement == null) {
+//            throw new IllegalStateException("Canvas is not supported");
+//        }
+//
+//        initCanvas();
+//
+//        setupAnimationCallback();
+//
+//        gwtAngularService.setCanvasResizeListener(this::onWindowResized);
+//
+//        initMouseHandler();
+//        keyboardEventHandler.init();
     }
 
     private void onWindowResized() {

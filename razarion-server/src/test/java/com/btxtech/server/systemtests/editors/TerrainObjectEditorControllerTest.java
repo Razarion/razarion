@@ -24,7 +24,7 @@ public class TerrainObjectEditorControllerTest extends AbstractCrudTest<TerrainO
 
     @Override
     protected void setupUpdate() {
-        registerUpdate(slopeConfig -> slopeConfig.shape3DId(SHAPE_3D_1_ID).radius(10));
+        registerUpdate(slopeConfig -> slopeConfig.shape3DId(SHAPE_3D_1_ID).radius(10).threeJsUuid("efdsafseagwer"));
         registerUpdate(slopeConfig -> slopeConfig.shape3DId(SHAPE_3D_2_ID).radius(2.2));
     }
 }

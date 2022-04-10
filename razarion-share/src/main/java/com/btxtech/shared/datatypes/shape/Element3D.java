@@ -7,6 +7,7 @@ import java.util.Objects;
  * Created by Beat
  * 28.07.2016.
  */
+@Deprecated // Use ThreeJsModel
 public class Element3D {
     private String id;
     private List<ModelMatrixAnimation> modelMatrixAnimations;

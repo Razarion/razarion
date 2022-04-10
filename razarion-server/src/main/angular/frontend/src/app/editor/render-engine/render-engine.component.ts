@@ -9,14 +9,14 @@ import {
 import * as Stats from 'stats.js';
 import { environment } from 'src/environments/environment';
 import { GameMockService } from 'src/app/game/renderer/game-mock.service';
-import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
+import { GLTFExporter, GLTFExporterOptions } from 'three/examples/jsm/exporters/GLTFExporter';
 import { Loader } from 'three/editor/js/Loader';
 import { ThreeJsRendererServiceImpl } from 'src/app/game/renderer/three-js-renderer-service.impl';
 import { Sidebar } from 'three/editor/js/Sidebar';
 import { Editor } from 'three/editor/js/Editor';
 import { MessageService } from 'primeng/api';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { URL_THREE_JS_MODEL } from 'src/app/common';
+import { URL_THREE_JS_MODEL_EDITOR } from 'src/app/common';
 
 @Component({
   selector: 'render-engine',
@@ -37,7 +37,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
 
   constructor(private gwtAngularService: GwtAngularService,
     private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl,
-    private gameMockService: GameMockService,
+    gameMockService: GameMockService,
     private messageService: MessageService,
     private http: HttpClient) {
     super();
@@ -45,32 +45,19 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
       this.rendererEditorService = gameMockService.setupRendererEditorService();
       this.renderTaskRunnerControls = [];
       this.threeJsModels = gameMockService.threeJsModels;
-      this.threeJsModels = [new class implements ObjectNameId {
-        id = 1;
-        internalName = "3D Model Palm Tree";
-        toString(): string {
-          return "3D Model Palm Tree (1)"
-        }
-      }, new class implements ObjectNameId {
-        id = 2;
-        internalName = "Rock Pack 3D";
-        toString(): string {
-          return "Rock Pack 3D (2)"
-        }
-      }];
     } else {
       this.rendererEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getCameraFrontendService();
       this.renderTaskRunnerControls = this.rendererEditorService.getRenderTaskRunnerControls();
       gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().requestObjectNameIds("Three.js Model")
-        .then(value => this.threeJsModels = value,
-          reason => {
+        .then((value: any) => this.threeJsModels = value,
+          (reason: any) => {
+            console.error(reason);
             this.messageService.add({
               severity: 'error',
               summary: `Can not load THREE_JS_MODEL configs`,
               detail: reason,
               sticky: true
             });
-            console.error(reason);
           });
     }
   }
@@ -125,20 +112,36 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   onUpload() {
     let _this = this;
     const exporter = new GLTFExporter();
-    const exporterAny: any = exporter;
-    exporterAny.parse(this.selectedThreeJsObject,
-      function (gltf: any) {
-        const httpOptions = {
-          headers: new HttpHeaders({
-            'Content-Type': 'application/octet-stream'
-          })
-        };
-        _this.http.put(`${URL_THREE_JS_MODEL}/upload/${_this.selectedThreeJsModel.id}`, new Blob([gltf]), httpOptions).subscribe();
-      },
-      function (error: any) {
-        console.warn(`Fail to generate GLTF ${error}`);
-        console.warn(error);
-      },
-      { binary: true });
+    try {
+      const exporterAny: any = exporter;
+      exporterAny.parse(this.selectedThreeJsObject,
+        function (gltf: any) {
+          console.log(gltf);
+          const httpOptions = {
+            headers: new HttpHeaders({
+              'Content-Type': 'application/octet-stream'
+            })
+          };
+          _this.http.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${_this.selectedThreeJsModel.id}`, new Blob([gltf]), httpOptions).subscribe();
+        },
+        function (error: any) {
+          console.warn(error);
+          _this.messageService.add({
+            severity: 'error',
+            summary: `Can not export GLTF`,
+            detail: String(error),
+            sticky: true
+          });
+        },
+        { binary: true });
+    } catch (error) {
+      console.warn(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not export GLTF`,
+        detail: String(error),
+        sticky: true
+      });
+    }
   }
 }

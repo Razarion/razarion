@@ -2,14 +2,13 @@ import { URL_IMAGE } from "src/app/common";
 import { SlopeGeometry, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 import { BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, RepeatWrapping, Scene, TextureLoader } from "three";
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ThreeJsModelService } from "./three-js-model.service";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     private scene = new Scene();
 
     constructor(terrainTile: TerrainTile, private parentScene: Scene, gwtAngularService: GwtAngularService, threeJsModelService: ThreeJsModelService) {
-        this.scene.name = "TerrainTile";
+        this.scene.name = `TerrainTile ${terrainTile.getIndex().toString()}`;
         if (terrainTile.getGroundTerrainTiles() !== null) {
             terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
                 let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
@@ -70,8 +69,9 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
             terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
                 try {
                     let terrainObjectConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
-                    let object3D = threeJsModelService.cloneObject3D(terrainObjectConfig.threeJsUuid);
-
+                    if (terrainObjectConfig.getThreeJsUuid() === undefined) {
+                        throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
+                    }
                     terrainTileObjectList.models.forEach(model => {
                         let m = model.getColumnMajorFloat32Array();
                         let matrix4 = new Matrix4();
@@ -81,10 +81,33 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                             m[2], m[6], m[10], m[14],
                             m[3], m[7], m[11], m[15]
                         );
-                        object3D.applyMatrix4(matrix4);
-                        _this.scene.add(object3D);
+                        let threeJsModel = threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
+                        threeJsModel.applyMatrix4(matrix4);
+                        // threeJsModel.position.x = 100;
+
+                        // object3D.traverse((innerObject3D: Object3D) => {
+                            // innerObject3D.matrixAutoUpdate = true;
+                        // });
+                        // object3D.traverse((innerObject3D: Object3D) => {
+                        //     if (innerObject3D.type === 'SkinnedMesh') {
+                        //         console.info(innerObject3D.type)
+                        //         // object3D.position.x = 10;
+                        //         // object3D.position.y = 20;
+                        //         innerObject3D.scale.x = 10;
+                        //         innerObject3D.scale.y = 10;
+                        //         innerObject3D.scale.z = 10;
+                        //         innerObject3D.translateX(20);
+                        //         innerObject3D.updateMatrix();
+                        //         innerObject3D.updateWorldMatrix(true, true);
+                        //         // innerObject3D.applyMatrix4(matrix4);
+                        //     }
+                        // });
+
+                        _this.scene.add(threeJsModel);
                     });
                 } catch (error) {
+                    // hrow new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
+                    console.error(terrainTileObjectList);
                     console.error(error);
                 }
             });

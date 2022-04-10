@@ -34,6 +34,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         try {
             return new ThreeJsTerrainTileImpl(terrainTile, this.scene, this.gwtAngularService, this.threeJsModelService);
         } catch (e) {
+            console.error(`Error createTerrainTile() with index ${terrainTile.getIndex()}`)
             console.error(e);
             throw e;
         }
@@ -181,6 +182,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
 
     private onViewFieldChanged() {
+        if(this.gwtAngularService.gwtAngularFacade.inputService === undefined) {
+            return;
+        }
         let bottomLeft = this.setupGroundPosition(-1, -1);
         let bottomRight = this.setupGroundPosition(1, -1);
         let topRight = this.setupGroundPosition(1, 1);

@@ -12,6 +12,7 @@ import jsinterop.annotations.JsType;
 public class TerrainObjectConfig implements Config {
     private int id;
     private String internalName;
+    @Deprecated
     @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer shape3DId;
     private double radius;
@@ -97,5 +98,16 @@ public class TerrainObjectConfig implements Config {
     public TerrainObjectConfig threeJsUuid(String threeJsUuid) {
         setThreeJsUuid(threeJsUuid);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "TerrainObjectConfig{" +
+                "id=" + id +
+                ", internalName='" + internalName + '\'' +
+                ", shape3DId=" + shape3DId +
+                ", radius=" + radius +
+                ", threeJsUuid='" + threeJsUuid + '\'' +
+                '}';
     }
 }

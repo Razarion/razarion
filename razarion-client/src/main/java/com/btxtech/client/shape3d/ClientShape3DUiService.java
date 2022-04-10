@@ -23,6 +23,7 @@ import java.util.Map;
  * 07.03.2017.
  */
 @ApplicationScoped
+@Deprecated // Use ThreeJsModel
 public class ClientShape3DUiService extends Shape3DUiService {
     // private Logger logger = Logger.getLogger(ClientShape3DUiService.class.getName());
     @Inject

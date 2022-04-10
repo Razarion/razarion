@@ -4,6 +4,7 @@ package com.btxtech.shared.datatypes.shape;
  * Created by Beat
  * 14.05.2016.
  */
+@Deprecated // Use ThreeJsModel
 public class VertexContainer {
     private String key;
     private VertexContainerMaterial vertexContainerMaterial;

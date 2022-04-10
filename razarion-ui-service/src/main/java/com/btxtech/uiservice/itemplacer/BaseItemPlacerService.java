@@ -22,8 +22,6 @@ public class BaseItemPlacerService {
     @Inject
     private Instance<BaseItemPlacer> instance;
     @Inject
-    private BaseItemPlacerRenderTaskRunner baseItemPlacerRenderTask;
-    @Inject
     private CursorService cursorService;
     private boolean canBeCanceled;
     private BaseItemPlacer baseItemPlacer;
@@ -35,7 +33,7 @@ public class BaseItemPlacerService {
         this.canBeCanceled = canBeCanceled;
         this.executionCallback = executionCallback;
         baseItemPlacer = instance.get().init(baseItemPlacerConfig);
-        baseItemPlacerRenderTask.activate(baseItemPlacer);
+        // TODO baseItemPlacerRenderTask.activate(baseItemPlacer);
         new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.activatePlacer(baseItemPlacer));
     }
 
@@ -85,7 +83,7 @@ public class BaseItemPlacerService {
 
     private void deactivateInternal(boolean canceled) {
         baseItemPlacer = null;
-        baseItemPlacerRenderTask.deactivate();
+        // TODO baseItemPlacerRenderTask.deactivate();
         new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.deactivatePlacer(canceled));
     }
 }

@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.ThreeJsModelConfigEntity;
 import com.btxtech.server.systemtests.framework.AbstractCrudTest;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
+import com.btxtech.shared.rest.ThreeJsModelController;
 import com.btxtech.shared.rest.ThreeJsModelEditorController;
 import org.junit.After;
 import org.junit.Assert;
@@ -45,5 +46,10 @@ public class ThreeJsModelEditorControllerTest extends AbstractCrudTest<ThreeJsMo
                 .put(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
 
         Assert.assertEquals(204, response.getStatus());
+
+        Response response1 = getDefaultRestConnection().getTarget().proxy(ThreeJsModelController.class).getThreeJsModel(threeJsModelConfig.getId());
+        Assert.assertEquals(200, response1.getStatus());
+        Assert.fail("Verify content of response1");
+
     }
 }

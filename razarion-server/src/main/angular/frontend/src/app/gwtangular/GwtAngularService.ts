@@ -1,5 +1,6 @@
-import {Injectable, NgZone} from "@angular/core";
-import {GwtAngularFacade} from "./GwtAngularFacade";
+import { Injectable, NgZone } from "@angular/core";
+import { ThreeJsModelService } from "../game/renderer/three-js-model.service";
+import { GwtAngularBoot, GwtAngularFacade, ThreeJsModelConfig } from "./GwtAngularFacade";
 
 declare global {
   interface Window {
@@ -12,7 +13,7 @@ export class GwtAngularService {
   gwtAngularFacade!: GwtAngularFacade;
   crashListener!: () => void;
 
-  constructor(private zone: NgZone) {
+  constructor(private zone: NgZone, threeJsModelService: ThreeJsModelService) {
     const self = this;
     this.gwtAngularFacade = new class extends GwtAngularFacade {
       onCrash(): void {
@@ -21,6 +22,11 @@ export class GwtAngularService {
         });
       }
     };
+    this.gwtAngularFacade.gwtAngularBoot = new class implements GwtAngularBoot {
+      loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[]) {
+        return threeJsModelService.init(threeJsModelConfigs);
+      };
+    }
     window.gwtAngularFacade = this.gwtAngularFacade;
   }
 }

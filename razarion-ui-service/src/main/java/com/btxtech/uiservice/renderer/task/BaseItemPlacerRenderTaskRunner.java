@@ -15,6 +15,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_BASE_ITEM;
  * 05.09.2016.
  */
 @ApplicationScoped
+@Deprecated
 public class BaseItemPlacerRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     public interface Circle extends WebGlRenderTask<BaseItemPlacer> {
     }

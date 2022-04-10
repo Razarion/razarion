@@ -25,8 +25,10 @@ public class TerrainObjectEntity {
     private String internalName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    @Deprecated
     private ColladaEntity colladaEntity;
     private double radius;
+    private String threeJsUuid;
 
     public Integer getId() {
         return id;
@@ -36,7 +38,8 @@ public class TerrainObjectEntity {
         TerrainObjectConfig terrainObjectConfig = new TerrainObjectConfig()
                 .id(id)
                 .internalName(internalName)
-                .radius(radius);
+                .radius(radius)
+                .threeJsUuid(threeJsUuid);
         if (colladaEntity != null) {
             terrainObjectConfig.setShape3DId(colladaEntity.getId());
         }
@@ -47,6 +50,7 @@ public class TerrainObjectEntity {
         this.internalName = terrainObjectConfig.getInternalName();
         this.colladaEntity = colladaEntity;
         radius = terrainObjectConfig.getRadius();
+        threeJsUuid = terrainObjectConfig.getThreeJsUuid();
     }
 
     @Override
