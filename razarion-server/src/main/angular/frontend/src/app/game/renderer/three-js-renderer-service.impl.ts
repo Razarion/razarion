@@ -30,41 +30,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         this.scene.name = "Main Scene"
     }
 
-    createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile {
-        try {
-            return new ThreeJsTerrainTileImpl(terrainTile, this.scene, this.gwtAngularService, this.threeJsModelService);
-        } catch (e) {
-            console.error(`Error createTerrainTile() with index ${terrainTile.getIndex()}`)
-            console.error(e);
-            throw e;
-        }
-    }
-
-    setViewFieldCenter(x: number, y: number): void {
-        let currentViewFieldCenter = this.setupGroundPosition(0, 0);
-        let newFiledCenter = new Vector2(x, y);
-        let delta = newFiledCenter.sub(currentViewFieldCenter);
-        this.camera.position.x += delta.x;
-        this.camera.position.y += delta.y;
-        this.onViewFieldChanged();
-    }
-
-    onResize() {
-        this.renderer.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent starnge loop
-        this.camera.aspect = (this.canvasDiv.clientWidth - 5) /  this.canvasDiv.clientHeight;
-        this.camera.updateProjectionMatrix();
-        this.onViewFieldChanged();
-    }
-
-    setup(canvasHolder: HTMLDivElement) {
-        this.canvasDiv = canvasHolder;
-        try {
-            this.internalSetup(canvasHolder);
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
     internalSetup(canvasHolder: HTMLDivElement) {
         let clock = new Clock();
 
@@ -135,6 +100,41 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             self.renderer.render(self.scene, self.camera);
         }
         animate();
+    }
+
+    createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile {
+        try {
+            return new ThreeJsTerrainTileImpl(terrainTile, this.scene, this.gwtAngularService, this.threeJsModelService);
+        } catch (e) {
+            console.error(`Error createTerrainTile() with index ${terrainTile.getIndex()}`)
+            console.error(e);
+            throw e;
+        }
+    }
+
+    setViewFieldCenter(x: number, y: number): void {
+        let currentViewFieldCenter = this.setupGroundPosition(0, 0);
+        let newFiledCenter = new Vector2(x, y);
+        let delta = newFiledCenter.sub(currentViewFieldCenter);
+        this.camera.position.x += delta.x;
+        this.camera.position.y += delta.y;
+        this.onViewFieldChanged();
+    }
+
+    onResize() {
+        this.renderer.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent starnge loop
+        this.camera.aspect = (this.canvasDiv.clientWidth - 5) /  this.canvasDiv.clientHeight;
+        this.camera.updateProjectionMatrix();
+        this.onViewFieldChanged();
+    }
+
+    setup(canvasHolder: HTMLDivElement) {
+        this.canvasDiv = canvasHolder;
+        try {
+            this.internalSetup(canvasHolder);
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     scrollCamera(delta: number, camera: Camera) {
