@@ -38,6 +38,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                 // Mesh
                 const cube = new Mesh(geometry, material);
                 cube.name = "Ground"
+                cube.receiveShadow = true;
                 this.scene.add(cube);
             });
         }

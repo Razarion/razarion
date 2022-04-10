@@ -8,7 +8,9 @@ import {
     Vector2,
     AmbientLight,
     DirectionalLight,
-    Object3D
+    Object3D,
+    PCFSoftShadowMap,
+    Light
 } from "three";
 import { WebGLRenderer } from "three/src/renderers/WebGLRenderer";
 import { Scene } from "three/src/scenes/Scene";
@@ -16,6 +18,7 @@ import { TerrainTile, ThreeJsRendererServiceAccess, ThreeJsTerrainTile } from "s
 import { ThreeJsTerrainTileImpl } from "./three-js-terrain-tile.impl";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 import { ThreeJsModelService } from "./three-js-model.service";
+import { ShadowMapViewer } from 'three/examples/jsm/utils/ShadowMapViewer';
 
 
 @Injectable()
@@ -25,6 +28,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     camera: PerspectiveCamera = new PerspectiveCamera;
     private canvasDiv!: HTMLDivElement;
     private renderer!: WebGLRenderer
+    private directionalLight!: DirectionalLight
 
     constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService) {
         this.scene.name = "Main Scene"
@@ -67,29 +71,35 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
         // -----  Camera -----
         this.camera.position.x = 0;
-        this.camera.position.y = 0;
-        this.camera.position.z = 40;
-        this.camera.rotation.x = MathUtils.degToRad(30);
+        this.camera.position.y = -10;
+        this.camera.position.z = 20;
+        this.camera.rotation.x = MathUtils.degToRad(45);
 
         // ----- Light -----
         let ambientLight = new AmbientLight(0x808080, 0.70);
         ambientLight.name = "Ambient Light"
         this.scene.add(ambientLight);
 
-        let directionalLight = new DirectionalLight(0xffffff, 0.80);
-        directionalLight.name = "Directional Light"
-        directionalLight.position.set(70, 30, 50);
-        directionalLight.target.position.set(50, 50, 0);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 1024;
-        directionalLight.shadow.mapSize.height = 1024;
-        directionalLight.shadow.camera.left = -50;
-        directionalLight.shadow.camera.bottom = -50;
-        directionalLight.shadow.camera.top = 50;
-        directionalLight.shadow.camera.right = 50;
-        directionalLight.shadow.camera.near = 0.5;
-        directionalLight.shadow.camera.far = 100;
-        this.scene.add(directionalLight);
+        this.directionalLight = new DirectionalLight(0xffffff, 0.80);
+        this.directionalLight.name = "Directional Light"
+        this.directionalLight.position.set(50, -50, 100);
+        this.directionalLight.target.position.set(0, 0, -100);
+
+        // ----- Shadow -----
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
+        this.directionalLight.castShadow = true;
+        this.directionalLight.shadow.mapSize.width = 2048; // default
+        this.directionalLight.shadow.mapSize.height = 2048; // default
+        this.directionalLight.shadow.camera.near = 0.5; // default
+        this.directionalLight.shadow.camera.far = 500; // default
+        this.directionalLight.shadow.camera.left = -50;
+        this.directionalLight.shadow.camera.bottom = -50;
+        this.directionalLight.shadow.camera.top = 150;
+        this.directionalLight.shadow.camera.right = 150;
+        let lightShadowMapViewer = this.createHUD(this.directionalLight);
+
+        this.scene.add(this.directionalLight);
 
         // ----- Render loop -----
         function animate() {
@@ -98,8 +108,19 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             requestAnimationFrame(animate);
             self.scrollCamera(delta, self.camera);
             self.renderer.render(self.scene, self.camera);
+            lightShadowMapViewer.render(self.renderer);
         }
         animate();
+    }
+
+    private createHUD(light: Light): ShadowMapViewer {
+        let lightShadowMapViewer = new ShadowMapViewer(light);
+        lightShadowMapViewer.position.x = 10;
+        lightShadowMapViewer.position.y = 500;
+        lightShadowMapViewer.size.width = 256;
+        lightShadowMapViewer.size.height = 256;
+        lightShadowMapViewer.update();
+        return lightShadowMapViewer;
     }
 
     createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile {
@@ -123,7 +144,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
     onResize() {
         this.renderer.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent starnge loop
-        this.camera.aspect = (this.canvasDiv.clientWidth - 5) /  this.canvasDiv.clientHeight;
+        this.camera.aspect = (this.canvasDiv.clientWidth - 5) / this.canvasDiv.clientHeight;
         this.camera.updateProjectionMatrix();
         this.onViewFieldChanged();
     }
@@ -182,13 +203,20 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
 
     private onViewFieldChanged() {
-        if(this.gwtAngularService.gwtAngularFacade.inputService === undefined) {
+        if (this.gwtAngularService.gwtAngularFacade.inputService === undefined) {
             return;
         }
         let bottomLeft = this.setupGroundPosition(-1, -1);
         let bottomRight = this.setupGroundPosition(1, -1);
         let topRight = this.setupGroundPosition(1, 1);
         let topLeft = this.setupGroundPosition(-1, 1);
+
+        this.directionalLight.shadow.camera.left = topLeft.x;
+        this.directionalLight.shadow.camera.bottom = bottomLeft.y;
+        this.directionalLight.shadow.camera.top = topLeft.y;
+        this.directionalLight.shadow.camera.right = topRight.x;
+        this.directionalLight.shadow.camera.updateMatrix();
+        this.directionalLight.shadow.camera.updateProjectionMatrix();
 
         this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
             bottomLeft.x, bottomLeft.y,

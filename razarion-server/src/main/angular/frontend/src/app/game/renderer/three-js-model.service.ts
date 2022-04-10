@@ -54,7 +54,7 @@ export class ThreeJsModelService {
             found = this.findInObject3D(threeJsUuid, object3D);
         }
         if (found != null) {
-            return this.createThrreJsModel(found, threeJsUuid);
+            return this.createThreeJsModel(found, threeJsUuid);
         }
 
         let _this = this;
@@ -69,43 +69,23 @@ export class ThreeJsModelService {
         throw new Error(`No Object3D for threeJsUuid '${threeJsUuid}'. Available threeJsUuids in Object3Ds userData.name [${gatherThreeJsUserDataNames()}]`);
     }
 
-    createThrreJsModel(input: Object3D, name: string): Object3D {
+    createThreeJsModel(input: Object3D, name: string): Object3D {
         let clone = input.clone();
-        // clone.updateMatrix();
-        // clone.updateMatrixWorld(true);
-        // clone.updateWorldMatrix(true, true);
+        clone.name = name;
+        this.deepSetup(clone);
         return clone;
-
-        // let group = new Group();
-        // group.name = name;
-        // this.deepClone(input, group);
-        // return group;
     }
 
-    private deepClone(input: Object3D, output: Group) {
-        if (input === undefined) {
+    private deepSetup(object3D: Object3D) {
+        if (object3D === undefined) {
             return;
         }
 
-        output.add(input.clone());
-        // let filteredInput = null;
-        // if (input.type === 'Mesh') {
-        //     filteredInput = input;
-        // } else if (input.type === 'SkinnedMesh') {
-        //     filteredInput = input;
-        // } else if (input.type === 'Bone') {
-        //     filteredInput = input;
-        // } else  {
-        //     console.warn(`Ignored ${input.name} '${input.type}'`);
-        // }
+        object3D.castShadow = true;
 
-        // if(filteredInput != null) {
-        //     output.add(input);
-        // }
-
-        const children = input.children;
+        const children = object3D.children;
         for (let i = 0, l = children.length; i < l; i++) {
-            this.deepClone(children[i], output);
+            this.deepSetup(children[i]);
         }
     }
 
