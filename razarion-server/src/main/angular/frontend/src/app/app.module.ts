@@ -15,6 +15,7 @@ import {ResetPasswordComponent} from "./resetpassword/reset-password.component";
 import {LogoutComponent} from "./logout/logout.component";
 import {ChangePasswordComponent} from "./resetpassword/change-password.component";
 import {AppRoutingModule} from "./app-routing.module";
+import {TreeModule} from "primeng/tree";
 import {TreeTableModule} from "primeng/treetable";
 import {CardModule} from 'primeng/card';
 import {PanelModule} from 'primeng/panel';
@@ -150,7 +151,8 @@ import { ThreeJsModelService } from './game/renderer/three-js-model.service';
     FileUploadModule,
     CommonModule,
     CardModule,
-    PanelModule
+    PanelModule,
+    TreeModule,
   ],
   providers: [
     FrontendService, {

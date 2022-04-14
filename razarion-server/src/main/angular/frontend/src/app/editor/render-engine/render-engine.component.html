@@ -1,5 +1,13 @@
 <div class="flex flex-column">
   <div class="mr-2">
+    <p-card>
+      <ng-template pTemplate="header">
+        Render Engine
+      </ng-template>
+      <p-tree [value]="renderEngineDisplayTree"></p-tree>
+    </p-card>
+  </div>
+  <div class="mr-2">
     <p-fileUpload chooseLabel="Import" name="myfile[]" [auto]=true [customUpload]=true
       (uploadHandler)="onImport($event)"></p-fileUpload>
   </div>

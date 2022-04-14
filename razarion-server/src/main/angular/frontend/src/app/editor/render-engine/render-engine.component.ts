@@ -9,20 +9,22 @@ import {
 import * as Stats from 'stats.js';
 import { environment } from 'src/environments/environment';
 import { GameMockService } from 'src/app/game/renderer/game-mock.service';
-import { GLTFExporter, GLTFExporterOptions } from 'three/examples/jsm/exporters/GLTFExporter';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { Loader } from 'three/editor/js/Loader';
 import { ThreeJsRendererServiceImpl } from 'src/app/game/renderer/three-js-renderer-service.impl';
 import { Sidebar } from 'three/editor/js/Sidebar';
 import { Editor } from 'three/editor/js/Editor';
-import { MessageService } from 'primeng/api';
+import { MessageService, TreeNode } from 'primeng/api';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { URL_THREE_JS_MODEL_EDITOR } from 'src/app/common';
+import { Object3D } from 'three';
 
 @Component({
   selector: 'render-engine',
   templateUrl: './render-engine.component.html'
 })
 export class RenderEngineComponent extends EditorPanel implements OnInit, OnDestroy, AfterViewInit {
+  renderEngineDisplayTree: TreeNode[] = [];
   @ViewChild('threeJsScene')
   threeJsScene!: ElementRef;
   @ViewChild('selectedDiv')
@@ -70,6 +72,8 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   }
 
   ngAfterViewInit(): void {
+    this.initRenderEngineDisplayTree();
+
     if (this.gwtAngularService.gwtAngularFacade.statusProvider.getStats() === undefined
       || this.gwtAngularService.gwtAngularFacade.statusProvider.getStats() === null) {
       this.gwtAngularService.gwtAngularFacade.statusProvider.setStats(new Stats());
@@ -96,6 +100,32 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
       _this.selectedThreeJsType = selection.type;
     });
   }
+
+  private initRenderEngineDisplayTree() {
+    let camera =  this.threeJsRendererServiceImpl.camera.name;
+    this.renderEngineDisplayTree.push(new class implements TreeNode {
+      label = camera;
+      icon = 'pi pi-video';
+    });
+    this.renderEngineDisplayTree.push(this.recursivelyAddTreeNodes(this.threeJsRendererServiceImpl.scene));
+  }
+
+  private recursivelyAddTreeNodes(object3D: Object3D): TreeNode {
+    let children:TreeNode[] = [];
+
+    for (let i = 0, l = object3D.children.length; i < l; i++) {
+        const child = object3D.children[i];
+        children.push(this.recursivelyAddTreeNodes(child));
+    }
+
+    let name = object3D.name;
+    let treeNode = new class implements TreeNode {
+      label = name;
+      icon = 'pi pi-globe';
+      children = children;
+    };
+    return treeNode;
+}
 
   onImport(event: any) {
     let self = this;
