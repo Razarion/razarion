@@ -128,6 +128,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
       if (typeof property === "object") {
         if (property && (property.length === undefined || property.length > 0)) {
           const folder = gui.addFolder(`${key}`);
+          folder.add({ "jsclass": property.constructor.name }, "jsclass").name("class").enable(false);
           _this.recursivelyAddProperty(property, folder);
           folder.open(false);
         } else {
