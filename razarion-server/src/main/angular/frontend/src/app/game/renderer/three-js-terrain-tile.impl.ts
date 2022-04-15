@@ -1,14 +1,14 @@
 import { URL_IMAGE } from "src/app/common";
 import { SlopeGeometry, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
-import { BufferAttribute, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, RepeatWrapping, Scene, TextureLoader } from "three";
+import { BufferAttribute, BufferGeometry, Group, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, RepeatWrapping, Scene, TextureLoader } from "three";
 import { ThreeJsModelService } from "./three-js-model.service";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
-    private scene = new Scene();
+    private group = new Group();
 
     constructor(terrainTile: TerrainTile, private parentScene: Scene, gwtAngularService: GwtAngularService, threeJsModelService: ThreeJsModelService) {
-        this.scene.name = `TerrainTile ${terrainTile.getIndex().toString()}`;
+        this.group.name = `TerrainTile ${terrainTile.getIndex().toString()}`;
         if (terrainTile.getGroundTerrainTiles() !== null) {
             terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
                 let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
@@ -39,7 +39,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                 const cube = new Mesh(geometry, material);
                 cube.name = "Ground"
                 cube.receiveShadow = true;
-                this.scene.add(cube);
+                this.group.add(cube);
             });
         }
         if (terrainTile.getTerrainSlopeTiles() !== null) {
@@ -104,7 +104,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                         //     }
                         // });
 
-                        _this.scene.add(threeJsModel);
+                        _this.group.add(threeJsModel);
                     });
                 } catch (error) {
                     // hrow new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
@@ -126,7 +126,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         material.wireframe = true;
         const cube = new Mesh(geometry, material);
         cube.name = "Slope";
-        this.scene.add(cube);
+        this.group.add(cube);
     }
 
     private setupWater(positions: Float32Array) {
@@ -136,7 +136,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         material.wireframe = true;
         const cube = new Mesh(geometry, material);
         cube.name = "Water";
-        this.scene.add(cube);
+        this.group.add(cube);
     }
 
     private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array) {
@@ -147,15 +147,15 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         material.wireframe = true;
         const cube = new Mesh(geometry, material);
         cube.name = "Shallow Water";
-        this.scene.add(cube);
+        this.group.add(cube);
     }
 
     addToScene(): void {
-        this.parentScene.add(this.scene);
+        this.parentScene.add(this.group);
     }
 
     removeFromScene(): void {
-        this.parentScene.remove(this.scene);
+        this.parentScene.remove(this.group);
     }
 
 }

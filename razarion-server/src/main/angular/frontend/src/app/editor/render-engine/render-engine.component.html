@@ -1,11 +1,10 @@
 <div class="flex flex-column">
   <div class="mr-2">
-    <p-card>
-      <ng-template pTemplate="header">
-        Render Engine
-      </ng-template>
-      <p-tree [value]="renderEngineDisplayTree"></p-tree>
-    </p-card>
+    <p-panel header="Render Engine">
+      <p-tree [value]="renderEngineDisplayTree" selectionMode="single" (onNodeSelect)="onTreeSelectionChanged($event)">
+      </p-tree>
+      <div #object3DDisplayELement></div>
+    </p-panel>
   </div>
   <div class="mr-2">
     <p-fileUpload chooseLabel="Import" name="myfile[]" [auto]=true [customUpload]=true

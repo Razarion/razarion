@@ -18,6 +18,11 @@ import { MessageService, TreeNode } from 'primeng/api';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { URL_THREE_JS_MODEL_EDITOR } from 'src/app/common';
 import { Object3D } from 'three';
+import GUI from 'lil-gui';
+
+const IGNORED_THREE_JS_OBJECT_PROPERTIES: string[] = ["parent", "children", "up", "_listeners", "_onChangeCallback"];
+const READONLY_THREE_JS_OBJECT_PROPERTIES: string[] = ["uuid", "type"];
+let _this: any = null;
 
 @Component({
   selector: 'render-engine',
@@ -25,6 +30,8 @@ import { Object3D } from 'three';
 })
 export class RenderEngineComponent extends EditorPanel implements OnInit, OnDestroy, AfterViewInit {
   renderEngineDisplayTree: TreeNode[] = [];
+  @ViewChild('object3DDisplayELement')
+  object3DDisplayELement!: ElementRef;
   @ViewChild('threeJsScene')
   threeJsScene!: ElementRef;
   @ViewChild('selectedDiv')
@@ -43,6 +50,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     private messageService: MessageService,
     private http: HttpClient) {
     super();
+    _this = this;
     if (environment.gwtMock) {
       this.rendererEditorService = gameMockService.setupRendererEditorService();
       this.renderTaskRunnerControls = [];
@@ -101,31 +109,63 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     });
   }
 
+  onTreeSelectionChanged(event: any) {
+    this.object3DDisplayELement.nativeElement.innerHTML = '';
+    let object3D = event.node.data;
+    let gui = new GUI({
+      container: this.object3DDisplayELement.nativeElement,
+      title: object3D.name
+    });
+    this.recursivelyAddProperty(object3D, gui);
+  }
+
+  private recursivelyAddProperty(object3D: Object3D, gui: GUI) {
+    Object.keys(object3D).forEach(function (key, index) {
+      if (IGNORED_THREE_JS_OBJECT_PROPERTIES.includes(key)) {
+        return;
+      }
+      const property = (<any>object3D)[key];
+      if (typeof property === "object") {
+        if (property && (property.length === undefined || property.length > 0)) {
+          const folder = gui.addFolder(`${key}`);
+          _this.recursivelyAddProperty(property, folder);
+          folder.open(false);
+        } else {
+          gui.add({ "null": "-" }, "null").name(key).enable(false);
+        }
+      } else {
+        gui.add(object3D, key).enable(!READONLY_THREE_JS_OBJECT_PROPERTIES.includes(key));
+      }
+    });
+  }
+
   private initRenderEngineDisplayTree() {
-    let camera =  this.threeJsRendererServiceImpl.camera.name;
+    let camera = this.threeJsRendererServiceImpl.camera;
     this.renderEngineDisplayTree.push(new class implements TreeNode {
-      label = camera;
+      label = camera.name;
       icon = 'pi pi-video';
+      data = camera;
     });
     this.renderEngineDisplayTree.push(this.recursivelyAddTreeNodes(this.threeJsRendererServiceImpl.scene));
   }
 
-  private recursivelyAddTreeNodes(object3D: Object3D): TreeNode {
-    let children:TreeNode[] = [];
+  private recursivelyAddTreeNodes(object3D: Object3D): TreeNode<Object3D> {
+    let children: TreeNode<Object3D>[] = [];
 
     for (let i = 0, l = object3D.children.length; i < l; i++) {
-        const child = object3D.children[i];
-        children.push(this.recursivelyAddTreeNodes(child));
+      const child = object3D.children[i];
+      children.push(this.recursivelyAddTreeNodes(child));
     }
 
     let name = object3D.name;
-    let treeNode = new class implements TreeNode {
+    let treeNode = new class implements TreeNode<Object3D> {
       label = name;
       icon = 'pi pi-globe';
       children = children;
+      data = object3D;
     };
     return treeNode;
-}
+  }
 
   onImport(event: any) {
     let self = this;
