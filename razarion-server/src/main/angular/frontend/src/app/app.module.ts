@@ -77,6 +77,7 @@ import {RadToDegreePipe} from "./common/rad-to-degree-pipe";
 import {ThreeJsRendererServiceImpl} from './game/renderer/three-js-renderer-service.impl';
 import { GameMockService } from './game/renderer/game-mock.service';
 import { ThreeJsModelService } from './game/renderer/three-js-model.service';
+import {CollectionSelectorComponent} from "./editor/property-table/collection-selector.component";
 
 @NgModule({
   declarations: [
@@ -122,7 +123,8 @@ import { ThreeJsModelService } from './game/renderer/three-js-model.service';
     FormatFileSizePipe,
     RadToDegreePipe,
     ImageEditorComponent,
-    ImageGalleryItemComponent
+    ImageGalleryItemComponent,
+    CollectionSelectorComponent
   ],
   imports: [
     BrowserModule,
