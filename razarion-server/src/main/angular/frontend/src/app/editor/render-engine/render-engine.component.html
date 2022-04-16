@@ -3,12 +3,13 @@
     <p-panel header="Render Engine">
       <p-tree [value]="renderEngineDisplayTree" selectionMode="single" (onNodeSelect)="onTreeSelectionChanged($event)">
       </p-tree>
+      <property-table [angular-tree-node-data]=gwtAngularPropertyTable></property-table>
       <div #object3DDisplayELement></div>
     </p-panel>
   </div>
   <div class="mr-2">
     <p-fileUpload chooseLabel="Import" name="myfile[]" [auto]=true [customUpload]=true
-      (uploadHandler)="onImport($event)"></p-fileUpload>
+                  (uploadHandler)="onImport($event)"></p-fileUpload>
   </div>
   <div class="mr-2">
     <p-card>
@@ -22,8 +23,8 @@
       </p-dropdown>
       <ng-template pTemplate="footer">
         <p-button type="button" label="Upload" icon="pi pi-save" styleClass="p-button-sm"
-          [disabled]="selectedThreeJsModel == null || selectedThreeJsType == null"
-          (onClick)="onUpload()"></p-button>
+                  [disabled]="selectedThreeJsModel == null || selectedThreeJsType == null"
+                  (onClick)="onUpload()"></p-button>
       </ng-template>
     </p-card>
   </div>
