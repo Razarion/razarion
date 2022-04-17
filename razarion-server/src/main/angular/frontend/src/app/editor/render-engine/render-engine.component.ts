@@ -74,6 +74,14 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     }
   }
 
+  private static getSpecialSelector(property: any): string | null {
+    switch (property.constructor.name) {
+      case 'HTMLImageElement':
+        return 'image-property-editor';
+    }
+    return null;
+  }
+
   ngOnInit(): void {
   }
 
@@ -149,7 +157,6 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
       const exporterAny: any = exporter;
       exporterAny.parse(this.selectedThreeJsObject,
         function (gltf: any) {
-          console.log(gltf);
           const httpOptions = {
             headers: new HttpHeaders({
               'Content-Type': 'application/octet-stream'
@@ -186,31 +193,57 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
       const property = (<any>object3D)[key];
       if (typeof property === "object") {
         if (property && (property.length === undefined || property.length > 0)) {
-          const childTreeNodes: TreeNode[] = [];
-          _this.recursivelyAddProperty(property, childTreeNodes);
-          treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
-            children = childTreeNodes;
-            data = new class implements AngularTreeNodeData {
-              canHaveChildren: boolean = true;
-              createAllowed: boolean = false;
-              deleteAllowed: boolean = false;
-              name: string = key;
-              nullable: boolean = false;
-              options: string[] = [];
-              propertyEditorSelector: string = '';
-              value: any;
+          let specialSelector = RenderEngineComponent.getSpecialSelector(property);
+          if (specialSelector != null) {
+            treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
+              data = new class implements AngularTreeNodeData {
+                canHaveChildren: boolean = false;
+                createAllowed: boolean = false;
+                deleteAllowed: boolean = false;
+                name: string = key;
+                nullable: boolean = false;
+                options: string[] = [];
+                propertyEditorSelector: string = specialSelector != null ? specialSelector : 'Stupid typescript case';
+                value: any = property;
 
-              onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
+                onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
+                }
+
+                onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
+                }
+
+                setValue(value: any): void {
+                }
+
               }
+            });
+          } else {
+            const childTreeNodes: TreeNode[] = [];
+            _this.recursivelyAddProperty(property, childTreeNodes);
+            treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
+              children = childTreeNodes;
+              data = new class implements AngularTreeNodeData {
+                canHaveChildren: boolean = true;
+                createAllowed: boolean = false;
+                deleteAllowed: boolean = false;
+                name: string = key;
+                nullable: boolean = false;
+                options: string[] = [];
+                propertyEditorSelector: string = '';
+                value: any;
 
-              onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
+                onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
+                }
+
+                onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
+                }
+
+                setValue(value: any): void {
+                }
+
               }
-
-              setValue(value: any): void {
-              }
-
-            }
-          });
+            });
+          }
         } else {
           treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
             data = new class implements AngularTreeNodeData {
@@ -264,7 +297,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     });
   }
 
-  private setupPropertyEditorSelector(property: any) {
+  private setupPropertyEditorSelector(property: any): string {
     if (property == null) {
       return ''
     }
@@ -278,7 +311,6 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     }
     return ''
   }
-
 
   private _recursivelyAddProperty(object3D: Object3D, gui: GUI) {
     Object.keys(object3D).forEach(function (key, index) {

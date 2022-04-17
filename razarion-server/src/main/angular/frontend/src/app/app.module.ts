@@ -78,6 +78,7 @@ import {ThreeJsRendererServiceImpl} from './game/renderer/three-js-renderer-serv
 import { GameMockService } from './game/renderer/game-mock.service';
 import { ThreeJsModelService } from './game/renderer/three-js-model.service';
 import {CollectionSelectorComponent} from "./editor/property-table/collection-selector.component";
+import {ImagePropertyEditorComponent} from "./editor/property-table/editors/image-property-editor.component";
 
 @NgModule({
   declarations: [
@@ -111,6 +112,7 @@ import {CollectionSelectorComponent} from "./editor/property-table/collection-se
     ColladaStringPropertyEditorComponent,
     I18nStringPropertyEditorComponent,
     Polygon2dPropertyEditorComponent,
+    ImagePropertyEditorComponent,
     ItemCockpitComponent,
     MainCockpitComponent,
     RenderEngineComponent,

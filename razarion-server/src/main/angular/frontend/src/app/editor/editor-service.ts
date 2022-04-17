@@ -15,6 +15,7 @@ import {IndexPropertyEditorComponent} from "./property-table/editors/index-prope
 import {ColladaStringPropertyEditorComponent} from "./property-table/editors/collada-string-property-editor.component";
 import {I18nStringPropertyEditorComponent} from "./property-table/editors/i18n-string-property-editor.component";
 import {Polygon2dPropertyEditorComponent} from "./property-table/editors/polygon-2d-property-editor.component";
+import {ImagePropertyEditorComponent} from "./property-table/editors/image-property-editor.component";
 
 @Injectable()
 export class EditorService {
@@ -37,7 +38,8 @@ export class EditorService {
       VertexPropertyEditorComponent,
       ColladaStringPropertyEditorComponent,
       I18nStringPropertyEditorComponent,
-      Polygon2dPropertyEditorComponent]);
+      Polygon2dPropertyEditorComponent,
+      ImagePropertyEditorComponent]);
   }
 
   getPropertyEditorComponent<T>(selector: string): Type<T> {
