@@ -123,7 +123,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     let object3D = event.node.data;
 
     let rootTreeNodes: TreeNode<AngularTreeNodeData>[] = [];
-    this.recursivelyAddProperty(object3D, rootTreeNodes)
+    this.recursivelyAddProperty(object3D, null, null, rootTreeNodes)
 
     this.gwtAngularPropertyTable = new class implements GwtAngularPropertyTable {
       configId: number = -999888777;
@@ -185,14 +185,14 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     }
   }
 
-  private recursivelyAddProperty(object3D: Object3D, treeNodes: TreeNode[]) {
+  private recursivelyAddProperty(object3D: Object3D, parent: Object3D | null, parentKey: string | null, treeNodes: TreeNode[]) {
     Object.keys(object3D).forEach(function (key, index) {
       if (IGNORED_THREE_JS_OBJECT_PROPERTIES.includes(key)) {
         return;
       }
       const property = (<any>object3D)[key];
       if (typeof property === "object") {
-        if (property && (property.length === undefined || property.length > 0)) {
+        if (property && (!Array.isArray(property) || property.length > 0)) {
           let specialSelector = RenderEngineComponent.getSpecialSelector(property);
           if (specialSelector != null) {
             treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
@@ -213,13 +213,23 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
                 }
 
                 setValue(value: any): void {
+                  if(object3D.constructor.name === "Texture" ) {
+                    let image = new Image();
+                    image.src = value;
+                    const texture = (<any>object3D).clone();
+                    texture.image = image;
+                    texture.needsUpdate = true;
+                    (<any>parent)[<string>parentKey] = texture;
+                  } else {
+                    (<any>object3D)[key] = value;
+                  }
                 }
 
               }
             });
           } else {
             const childTreeNodes: TreeNode[] = [];
-            _this.recursivelyAddProperty(property, childTreeNodes);
+            _this.recursivelyAddProperty(property, object3D, key, childTreeNodes);
             treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
               children = childTreeNodes;
               data = new class implements AngularTreeNodeData {
