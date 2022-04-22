@@ -1,5 +1,5 @@
 export const environment = {
-  production: true,
+  production: false,
   facebookAppId: '195335357236873',
   gwtMock: true
 };

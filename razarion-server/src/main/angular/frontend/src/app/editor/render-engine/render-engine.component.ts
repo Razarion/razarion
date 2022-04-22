@@ -18,7 +18,7 @@ import {Editor} from 'three/editor/js/Editor';
 import {MessageService, TreeNode} from 'primeng/api';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {URL_THREE_JS_MODEL_EDITOR} from 'src/app/common';
-import {Object3D} from 'three';
+import {BufferAttribute, BufferGeometry, Mesh, Object3D} from 'three';
 import GUI from 'lil-gui';
 
 const IGNORED_THREE_JS_OBJECT_PROPERTIES: string[] = ["parent", "children", "up", "_listeners", "_onChangeCallback"];
@@ -29,7 +29,7 @@ let _this: any = null;
   selector: 'render-engine',
   templateUrl: './render-engine.component.html'
 })
-export class RenderEngineComponent extends EditorPanel implements OnInit, OnDestroy, AfterViewInit {
+export class RenderEngineComponent extends EditorPanel implements OnDestroy, AfterViewInit {
   renderEngineDisplayTree: TreeNode[] = [];
   gwtAngularPropertyTable: GwtAngularPropertyTable | null = null;
   @ViewChild('object3DDisplayELement')
@@ -41,8 +41,8 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
   threeJsModels: any[] = [];
   selectedThreeJsModel: any = null;
   selectedThreeJsName: string | null = null;
-  selectedThreeJsType: string | null = null;
   selectedThreeJsObject: any | null = null;
+  exportMaterialOnly: boolean = false;
   rendererEditorService: RendererEditorService;
   renderTaskRunnerControls: RenderTaskRunnerControl[];
 
@@ -72,6 +72,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
             });
           });
     }
+    this.initRenderEngineDisplayTree();
   }
 
   private static getSpecialSelector(property: any): string | null {
@@ -82,16 +83,11 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     return null;
   }
 
-  ngOnInit(): void {
-  }
-
   ngOnDestroy(): void {
     this.gwtAngularService.gwtAngularFacade.statusProvider.setStats(null);
   }
 
   ngAfterViewInit(): void {
-    this.initRenderEngineDisplayTree();
-
     if (this.gwtAngularService.gwtAngularFacade.statusProvider.getStats() === undefined
       || this.gwtAngularService.gwtAngularFacade.statusProvider.getStats() === null) {
       this.gwtAngularService.gwtAngularFacade.statusProvider.setStats(new Stats());
@@ -115,7 +111,6 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     editor.signals.objectSelected.add(function (selection: any) {
       _this.selectedThreeJsObject = selection;
       _this.selectedThreeJsName = selection.name;
-      _this.selectedThreeJsType = selection.type;
     });
   }
 
@@ -124,6 +119,10 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
 
     let rootTreeNodes: TreeNode<AngularTreeNodeData>[] = [];
     this.recursivelyAddProperty(object3D, null, null, rootTreeNodes)
+
+    this.selectedThreeJsObject = object3D;
+    this.selectedThreeJsName = object3D.name;
+    this.exportMaterialOnly = false;
 
     this.gwtAngularPropertyTable = new class implements GwtAngularPropertyTable {
       configId: number = -999888777;
@@ -154,8 +153,15 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
     let _this = this;
     const exporter = new GLTFExporter();
     try {
+      let uploadObject = this.selectedThreeJsObject;
+      if (this.exportMaterialOnly) {
+        let geometry = new BufferGeometry();
+        geometry.setAttribute('position', new BufferAttribute(new Float32Array([0,0,0,0,0,1,0,1,0]), 3));
+        uploadObject = new Mesh(geometry, this.selectedThreeJsObject.material);
+        uploadObject.name = "Fake Mesh for Material"
+      }
       const exporterAny: any = exporter;
-      exporterAny.parse(this.selectedThreeJsObject,
+      exporterAny.parse(uploadObject,
         function (gltf: any) {
           const httpOptions = {
             headers: new HttpHeaders({
@@ -213,7 +219,7 @@ export class RenderEngineComponent extends EditorPanel implements OnInit, OnDest
                 }
 
                 setValue(value: any): void {
-                  if(object3D.constructor.name === "Texture" ) {
+                  if (object3D.constructor.name === "Texture") {
                     let image = new Image();
                     image.src = value;
                     const texture = (<any>object3D).clone();
