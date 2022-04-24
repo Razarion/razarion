@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
+import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.btxtech.shared.dto.FallbackConfig.GROUND_CONFIG_ID;
+
 /**
  * Created by Beat
  * 03.04.2017.
@@ -27,6 +30,8 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testTerrainObjectTileGeneration4Tiles() {
+        GroundConfig groundConfig = new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(8883);
+
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
@@ -68,10 +73,11 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
                 // new ThreeJsModelConfig().id(8881),
-                new ThreeJsModelConfig().id(8882)
+                new ThreeJsModelConfig().id(8882),
+                new ThreeJsModelConfig().id(8883)
         );
 
-        setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null, threeJsModelConfigs);
+        setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, groundConfig, threeJsModelConfigs);
 
         // showDisplay();
 

@@ -156,7 +156,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
       let uploadObject = this.selectedThreeJsObject;
       if (this.exportMaterialOnly) {
         let geometry = new BufferGeometry();
-        geometry.setAttribute('position', new BufferAttribute(new Float32Array([0,0,0,0,0,1,0,1,0]), 3));
+        geometry.setAttribute('position', new BufferAttribute(new Float32Array([-1,-1,0, 1,-1,0, -1,1,0]), 3));
         uploadObject = new Mesh(geometry, this.selectedThreeJsObject.material);
         uploadObject.name = "Fake Mesh for Material"
       }

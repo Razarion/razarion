@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import {Injectable} from "@angular/core";
 import {
   Alarm,
   DrivewayConfig,
@@ -30,14 +30,13 @@ import {
   ThreeJsModelConfig,
   ThreeJsTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
-import { ThreeJsRendererServiceImpl } from "./three-js-renderer-service.impl";
-import { HttpClient } from "@angular/common/http";
+import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
+import {HttpClient} from "@angular/common/http";
 import * as Stats from 'stats.js';
-import { Object3D } from "three";
 
 @Injectable()
 export class GameMockService {
-    staticGameGonfigJson: any | null = null;
+    staticGameConfigJson: any | null = null;
 
     inputService: InputService = new class implements InputService {
         onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
@@ -129,13 +128,12 @@ export class GameMockService {
     }
 
     loadMockStaticGameConfig(): Promise<void> {
-        let promise = new Promise<void>((resolve, reject) => {
-            this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((staticGameGonfigJson: any) => {
-                this.staticGameGonfigJson = staticGameGonfigJson;
-                resolve(staticGameGonfigJson);
-            });
-        })
-        return promise;
+      return new Promise<void>((resolve, reject) => {
+          this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((staticGameConfigJson: any) => {
+            this.staticGameConfigJson = staticGameConfigJson;
+            resolve(staticGameConfigJson);
+          });
+        });
     }
 
     mockTerrainTypeService(): TerrainTypeService {
@@ -145,7 +143,7 @@ export class GameMockService {
 
             getTerrainObjectConfig(terrainObjectConfigId: number): TerrainObjectConfig {
                 let terrainObjectConfig: TerrainObjectConfig | null = null;
-                _this.staticGameGonfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
+                _this.staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
                     if (terrainObjectConfigJson.id != terrainObjectConfigId) {
                         return;
                     }
@@ -171,7 +169,7 @@ export class GameMockService {
 
             getGroundConfig(groundConfigId: number): GroundConfig {
                 let groundConfig: GroundConfig | null = null;
-                _this.staticGameGonfigJson.groundConfigs.forEach((groundConfigJson: any) => {
+                _this.staticGameConfigJson.groundConfigs.forEach((groundConfigJson: any) => {
                     if (groundConfigJson.id != groundConfigId) {
                         return;
                     }
@@ -184,6 +182,8 @@ export class GameMockService {
                         }
                         getBottomMaterial(): PhongMaterialConfig { return this._groundConfigJson.bottomMaterial };
                         getSplatting(): GroundSplattingConfig { return this._groundConfigJson.splatting };
+                        getTopThreeJsMaterial(): number { return this._groundConfigJson.topThreeJsMaterial; };
+
                     }
                     return
                 });
@@ -352,7 +352,7 @@ export class GameMockService {
 
     mockThreeJsModelConfigs(): ThreeJsModelConfig[] {
         let threeJsModelConfigs: ThreeJsModelConfig[] = [];
-        this.staticGameGonfigJson.threeJsModelConfigs.forEach((threeJsModelConfigJson: any) => {
+        this.staticGameConfigJson.threeJsModelConfigs.forEach((threeJsModelConfigJson: any) => {
             threeJsModelConfigs.push(new class implements ThreeJsModelConfig {
                 getId(): number {
                     return threeJsModelConfigJson.id;

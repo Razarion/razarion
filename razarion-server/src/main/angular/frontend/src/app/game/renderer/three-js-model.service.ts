@@ -1,18 +1,19 @@
 import { Injectable } from "@angular/core";
 import { URL_THREE_JS_MODEL } from "src/app/common";
 import { ThreeJsModelConfig } from "src/app/gwtangular/GwtAngularFacade";
-import { Group, Object3D } from "three";
+import {Group, Material, Mesh, Object3D} from "three";
 import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 @Injectable()
 export class ThreeJsModelService {
     private object3Ds: Object3D[] = [];
+    private object3DMap: Map<number, any> = new Map();
 
     init(threeJsModelConfigs: ThreeJsModelConfig[]): Promise<void> {
-        const _this = this;
+      const _this = this;
 
-        let promise = new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
             try {
                 const loader = new GLTFLoader();
                 let loadingCount = threeJsModelConfigs.length;
@@ -26,6 +27,7 @@ export class ThreeJsModelService {
                     loader.load(`${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`,
                         (gltf: GLTF) => {
                             _this.object3Ds.push(gltf.scene);
+                            _this.object3DMap.set(threeJsModelConfig.getId(), gltf.scene);
                             handleResolve();
                         },
                         (progressEvent: ProgressEvent) => {
@@ -41,7 +43,6 @@ export class ThreeJsModelService {
                 reject(error);
             }
         });
-        return promise;
     }
 
     cloneObject3D(threeJsUuid: string): Object3D {
@@ -111,6 +112,34 @@ export class ThreeJsModelService {
             const child = children[i];
             return this.iterateOverObject3D4Names(child, userDataName);
         }
+    }
+
+    getMaterial(threeJsModelId: number): Material {
+        let threeJsObject = this.object3DMap.get(threeJsModelId);
+        if(threeJsObject === undefined) {
+            throw new Error(`No Material for threeJsModelId '${threeJsModelId}'.`);
+        }
+
+      let material:Material | undefined = this.findMaterialRecursively(threeJsObject);
+        if(material === undefined) {
+            throw new Error(`No material found in threeJsModelId '${threeJsModelId}' does not have a material.`);
+        }
+        return material;
+    }
+
+    private findMaterialRecursively(threeJsObject: any): Material | undefined {
+        if(threeJsObject.material !== undefined) {
+            return threeJsObject.material;
+        }
+
+        if(threeJsObject.children !== undefined) {
+          const length = threeJsObject.children.length;
+          for (let i = 0; i < length; i++) {
+            return this.findMaterialRecursively(threeJsObject.children[i]);
+          }
+        }
+
+        return undefined;
     }
 
 }

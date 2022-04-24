@@ -95,6 +95,8 @@ export interface GroundConfig {
 
   getInternalName(): string;
 
+  getTopThreeJsMaterial(): number;
+
   getTopMaterial(): PhongMaterialConfig;
 
   getBottomMaterial(): PhongMaterialConfig | null;

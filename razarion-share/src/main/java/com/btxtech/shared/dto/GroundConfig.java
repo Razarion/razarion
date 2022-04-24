@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import jsinterop.annotations.JsType;
 
 import java.util.Objects;
@@ -12,6 +14,8 @@ import java.util.Objects;
 public class GroundConfig implements Config {
     private int id;
     private String internalName;
+    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
+    private Integer topThreeJsMaterial;
     private PhongMaterialConfig topMaterial;
     private PhongMaterialConfig bottomMaterial;
     private GroundSplattingConfig splatting;
@@ -26,6 +30,14 @@ public class GroundConfig implements Config {
 
     public void setInternalName(String internalName) {
         this.internalName = internalName;
+    }
+
+    public Integer getTopThreeJsMaterial() {
+        return topThreeJsMaterial;
+    }
+
+    public void setTopThreeJsMaterial(Integer topThreeJsMaterial) {
+        this.topThreeJsMaterial = topThreeJsMaterial;
     }
 
     public PhongMaterialConfig getTopMaterial() {
@@ -59,6 +71,11 @@ public class GroundConfig implements Config {
 
     public GroundConfig internalName(String internalName) {
         setInternalName(internalName);
+        return this;
+    }
+
+    public GroundConfig topThreeJsMaterial(Integer topThreeJsMaterial) {
+        setTopThreeJsMaterial(topThreeJsMaterial);
         return this;
     }
 

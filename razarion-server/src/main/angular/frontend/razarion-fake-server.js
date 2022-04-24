@@ -38,6 +38,9 @@ function loadThreeJsModel(req) {
         case '8882':
             threeJsModelToLoad = "three-js-model_8882.bin";
             break;
+        case '8883':
+            threeJsModelToLoad = "three-js-model_material.bin";
+            break;
     }
     return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\threejs-models", threeJsModelToLoad));
 }
