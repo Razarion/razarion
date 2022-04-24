@@ -63,8 +63,8 @@ public class GroundRenderTask extends AbstractWebGlRenderTask<UiTerrainGroundTil
     @Override
     protected void glslFragmentCustomDefines(List<String> defines, UiTerrainGroundTile uiTerrainGroundTile) {
         defines.add(WORLD_VERTEX_POSITION);
-        if (uiTerrainGroundTile.getGroundConfig().getBottomMaterial() != null && uiTerrainGroundTile.getGroundConfig().getSplatting() != null) {
-            defines.add("RENDER_GROUND_BOTTOM_TEXTURE");
-        }
+//        if (uiTerrainGroundTile.getGroundConfig().getBottomMaterial() != null && uiTerrainGroundTile.getGroundConfig().getSplatting() != null) {
+//            defines.add("RENDER_GROUND_BOTTOM_TEXTURE");
+//        }
     }
 }

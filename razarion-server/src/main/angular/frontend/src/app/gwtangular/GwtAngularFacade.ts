@@ -97,9 +97,7 @@ export interface GroundConfig {
 
   getTopThreeJsMaterial(): number;
 
-  getTopMaterial(): PhongMaterialConfig;
-
-  getBottomMaterial(): PhongMaterialConfig | null;
+  getBottomThreeJsMaterial(): number;
 
   getSplatting(): GroundSplattingConfig | null;
 }

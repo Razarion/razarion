@@ -16,8 +16,8 @@ public class GroundConfig implements Config {
     private String internalName;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
     private Integer topThreeJsMaterial;
-    private PhongMaterialConfig topMaterial;
-    private PhongMaterialConfig bottomMaterial;
+    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
+    private Integer bottomThreeJsMaterial;
     private GroundSplattingConfig splatting;
 
     public int getId() {
@@ -40,20 +40,12 @@ public class GroundConfig implements Config {
         this.topThreeJsMaterial = topThreeJsMaterial;
     }
 
-    public PhongMaterialConfig getTopMaterial() {
-        return topMaterial;
+    public Integer getBottomThreeJsMaterial() {
+        return bottomThreeJsMaterial;
     }
 
-    public void setTopMaterial(PhongMaterialConfig topMaterial) {
-        this.topMaterial = topMaterial;
-    }
-
-    public PhongMaterialConfig getBottomMaterial() {
-        return bottomMaterial;
-    }
-
-    public void setBottomMaterial(PhongMaterialConfig bottomMaterial) {
-        this.bottomMaterial = bottomMaterial;
+    public void setBottomThreeJsMaterial(Integer bottomThreeJsMaterial) {
+        this.bottomThreeJsMaterial = bottomThreeJsMaterial;
     }
 
     public GroundSplattingConfig getSplatting() {
@@ -79,13 +71,8 @@ public class GroundConfig implements Config {
         return this;
     }
 
-    public GroundConfig topMaterial(PhongMaterialConfig topMaterial) {
-        setTopMaterial(topMaterial);
-        return this;
-    }
-
-    public GroundConfig bottomMaterial(PhongMaterialConfig bottomMaterial) {
-        setBottomMaterial(bottomMaterial);
+    public GroundConfig bottomThreeJsMaterial(Integer bottomThreeJsMaterial) {
+        setBottomThreeJsMaterial(bottomThreeJsMaterial);
         return this;
     }
 

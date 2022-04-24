@@ -115,9 +115,19 @@ export class ThreeJsModelService {
     }
 
     getMaterial(threeJsModelId: number): Material {
-        let threeJsObject = this.object3DMap.get(threeJsModelId);
+        if(threeJsModelId === undefined) {
+          throw new Error(`Material undefined`);
+        }
+
+        let gwtIssueNumber = threeJsModelId;
+        if(typeof threeJsModelId  !== 'number') {
+            gwtIssueNumber = (<any>threeJsModelId).a; // GWT rubbish
+        }
+
+        let threeJsObject = this.object3DMap.get(gwtIssueNumber);
         if(threeJsObject === undefined) {
-            throw new Error(`No Material for threeJsModelId '${threeJsModelId}'.`);
+          console.error(threeJsModelId)
+          throw new Error(`No Material for threeJsModelId '${gwtIssueNumber}'.`);
         }
 
       let material:Material | undefined = this.findMaterialRecursively(threeJsObject);

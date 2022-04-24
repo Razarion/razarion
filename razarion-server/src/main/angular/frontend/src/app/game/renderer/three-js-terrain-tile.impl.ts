@@ -22,7 +22,14 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                     uvs[uvIndex * 2 + 1] = groundTerrainTile.positions[uvIndex * 3 + 1];
                 }
                 geometry.setAttribute('uv', new BufferAttribute(uvs, 2));
-                const material = threeJsModelService.getMaterial(groundConfig.getTopThreeJsMaterial());
+                let material;
+                if (groundConfig.getTopThreeJsMaterial() === undefined || groundConfig.getTopThreeJsMaterial() == null) {
+                  material = new MeshBasicMaterial({ color: 0x11EE11 });
+                  material.wireframe = true;
+                  console.warn(`No top material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
+                } else {
+                  material = threeJsModelService.getMaterial(groundConfig.getTopThreeJsMaterial());
+                }
                 const cube = new Mesh(geometry, material);
                 cube.name = "Ground"
                 cube.receiveShadow = true;

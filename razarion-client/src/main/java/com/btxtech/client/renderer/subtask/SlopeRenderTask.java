@@ -20,6 +20,7 @@ import static com.btxtech.client.renderer.shaders.SkeletonDefines.WORLD_VERTEX_P
  * 24.01.2016.
  */
 @Dependent
+@Deprecated
 public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile> implements SlopeRenderTaskRunner.RenderTask {
     // private static Logger logger = Logger.getLogger(ClientSlopeRendererUnit.class.getName());
 
@@ -63,9 +64,9 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
         defines.add(UV);
         if (uiTerrainSlopeTile.getGroundConfig() != null) {
             defines.add("RENDER_GROUND_TEXTURE");
-            if (uiTerrainSlopeTile.getGroundConfig().getBottomMaterial() != null && uiTerrainSlopeTile.getGroundConfig().getSplatting() != null) {
-                defines.add("RENDER_GROUND_BOTTOM_TEXTURE");
-            }
+//            if (uiTerrainSlopeTile.getGroundConfig().getBottomMaterial() != null && uiTerrainSlopeTile.getGroundConfig().getSplatting() != null) {
+//                defines.add("RENDER_GROUND_BOTTOM_TEXTURE");
+//            }
             if (uiTerrainSlopeTile.getSlopeSplattingConfig() != null) {
                 defines.add("RENDER_SPLATTING");
             }

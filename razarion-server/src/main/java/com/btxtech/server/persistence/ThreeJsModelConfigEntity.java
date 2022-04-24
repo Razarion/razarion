@@ -3,7 +3,6 @@ package com.btxtech.server.persistence;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,6 +25,10 @@ public class ThreeJsModelConfigEntity {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] data;
+
+    public Integer getId() {
+        return id;
+    }
 
     public ThreeJsModelConfig toConfig() {
         return new ThreeJsModelConfig().id(id).internalName(internalName);

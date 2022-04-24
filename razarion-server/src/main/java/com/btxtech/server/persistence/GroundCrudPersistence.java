@@ -11,10 +11,10 @@ import javax.persistence.PersistenceContext;
 
 @Singleton
 public class GroundCrudPersistence extends AbstractCrudPersistence<GroundConfig, GroundConfigEntity> {
-    @PersistenceContext
-    private EntityManager entityManager;
     @Inject
     private ImagePersistence imagePersistence;
+    @Inject
+    private  ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
 
     public GroundCrudPersistence() {
         super(GroundConfigEntity.class, GroundConfigEntity_.id, GroundConfigEntity_.internalName);
@@ -27,6 +27,6 @@ public class GroundCrudPersistence extends AbstractCrudPersistence<GroundConfig,
 
     @Override
     protected void fromConfig(GroundConfig config, GroundConfigEntity entity) {
-        entity.fromGroundConfig(config, imagePersistence);
+        entity.fromGroundConfig(config, imagePersistence, threeJsModelCrudPersistence);
     }
 }

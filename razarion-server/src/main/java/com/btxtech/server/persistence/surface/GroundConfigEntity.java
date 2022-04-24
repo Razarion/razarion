@@ -1,22 +1,24 @@
 package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.ImagePersistence;
+import com.btxtech.server.persistence.PersistenceUtil;
+import com.btxtech.server.persistence.ThreeJsModelConfigEntity;
+import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
 import com.btxtech.shared.dto.GroundConfig;
 
 import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import static com.btxtech.server.persistence.surface.PhongMaterialConfigEmbeddable.factorize;
 
 /**
  * Created by Beat
@@ -29,34 +31,12 @@ public class GroundConfigEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String internalName;
-    @AssociationOverrides({
-            @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "topTextureId")),
-            @AssociationOverride(name = "normalMap", joinColumns = @JoinColumn(name = "topNormalMapId")),
-            @AssociationOverride(name = "bumpMap", joinColumns = @JoinColumn(name = "topBumpMapId"))
-    })
-    @AttributeOverrides({
-            @AttributeOverride(name = "scale", column = @Column(name = "topScale")),
-            @AttributeOverride(name = "normalMapDepth", column = @Column(name = "topNormalMapDepth")),
-            @AttributeOverride(name = "bumpMapDepth", column = @Column(name = "topBumpMapDepth")),
-            @AttributeOverride(name = "shininess", column = @Column(name = "topShininess")),
-            @AttributeOverride(name = "specularStrength", column = @Column(name = "topSpecularStrength")),
-    })
-    @Embedded
-    private PhongMaterialConfigEmbeddable topMaterial;
-    @AssociationOverrides({
-            @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "bottomTextureId")),
-            @AssociationOverride(name = "normalMap", joinColumns = @JoinColumn(name = "bottomNormalMapId")),
-            @AssociationOverride(name = "bumpMap", joinColumns = @JoinColumn(name = "bottomBumpMapId"))
-    })
-    @AttributeOverrides({
-            @AttributeOverride(name = "scale", column = @Column(name = "bottomScale")),
-            @AttributeOverride(name = "normalMapDepth", column = @Column(name = "bottomNormalMapDepth")),
-            @AttributeOverride(name = "bumpMapDepth", column = @Column(name = "bottomBumpMapDepth")),
-            @AttributeOverride(name = "shininess", column = @Column(name = "bottomShininess")),
-            @AttributeOverride(name = "specularStrength", column = @Column(name = "bottomSpecularStrength")),
-    })
-    @Embedded
-    private PhongMaterialConfigEmbeddable bottomMaterial;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelConfigEntity topMaterial;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelConfigEntity bottomMaterial;
     @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "splattingTextureId"))
     @AttributeOverrides({
             @AttributeOverride(name = "scale1", column = @Column(name = "splattingScale1")),
@@ -72,24 +52,18 @@ public class GroundConfigEntity {
     }
 
     public GroundConfig toConfig() {
-        GroundConfig groundConfig = new GroundConfig();
-        groundConfig.id(id).internalName(internalName);
-        if (topMaterial != null) {
-            groundConfig.setTopMaterial(topMaterial.to());
-        }
-        if (bottomMaterial != null) {
-            groundConfig.setBottomMaterial(bottomMaterial.to());
-        }
-        if (splatting != null) {
-            groundConfig.setSplatting(splatting.to());
-        }
-        return groundConfig;
+        return new GroundConfig()
+                .id(id)
+                .internalName(internalName)
+                .topThreeJsMaterial(PersistenceUtil.extractId(topMaterial, ThreeJsModelConfigEntity::getId))
+                .bottomThreeJsMaterial(PersistenceUtil.extractId(bottomMaterial, ThreeJsModelConfigEntity::getId))
+                .splatting(PersistenceUtil.toConfig(splatting, GroundSplattingConfigEmbeddable::to));
     }
 
-    public void fromGroundConfig(GroundConfig config, ImagePersistence imagePersistence) {
+    public void fromGroundConfig(GroundConfig config, ImagePersistence imagePersistence, ThreeJsModelCrudPersistence threeJsModelCrudPersistence) {
         internalName = config.getInternalName();
-        topMaterial = factorize(config.getTopMaterial(), imagePersistence);
-        bottomMaterial = factorize(config.getBottomMaterial(), imagePersistence);
+        topMaterial = threeJsModelCrudPersistence.getEntity(config.getTopThreeJsMaterial());
+        bottomMaterial = threeJsModelCrudPersistence.getEntity(config.getBottomThreeJsMaterial());
         if (config.getSplatting() != null) {
             splatting = new GroundSplattingConfigEmbeddable();
             splatting.from(config.getSplatting(), imagePersistence);

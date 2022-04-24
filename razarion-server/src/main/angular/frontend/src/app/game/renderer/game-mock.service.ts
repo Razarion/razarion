@@ -177,13 +177,9 @@ export class GameMockService {
                         _groundConfigJson: any = groundConfigJson;
                         getId(): number { return this._groundConfigJson.id };
                         getInternalName(): string { return this._groundConfigJson.internalName };
-                        getTopMaterial(): PhongMaterialConfig {
-                            return createPhongMaterialConfig(this._groundConfigJson.topMaterial);
-                        }
-                        getBottomMaterial(): PhongMaterialConfig { return this._groundConfigJson.bottomMaterial };
-                        getSplatting(): GroundSplattingConfig { return this._groundConfigJson.splatting };
                         getTopThreeJsMaterial(): number { return this._groundConfigJson.topThreeJsMaterial; };
-
+                        getBottomThreeJsMaterial(): number { return this._groundConfigJson.bottomThreeJsMaterial; };
+                        getSplatting(): GroundSplattingConfig { return this._groundConfigJson.splatting };
                     }
                     return
                 });

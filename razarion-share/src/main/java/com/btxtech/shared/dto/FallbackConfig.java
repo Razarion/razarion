@@ -81,7 +81,7 @@ public final class FallbackConfig {
 
     public static StaticGameConfig setupStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setGroundConfigs(Collections.singletonList(new GroundConfig().id(GROUND_CONFIG_ID).topMaterial(new PhongMaterialConfig().textureId(9991).bumpMapId(9992).scale(50).bumpMapDepth(0.5))));
+        staticGameConfig.setGroundConfigs(Collections.singletonList(new GroundConfig().id(GROUND_CONFIG_ID)));
         staticGameConfig.setLevelConfigs(setupLevelConfigs());
         staticGameConfig.setBaseItemTypes(setupBaseItemType());
         staticGameConfig.setResourceItemTypes(setupResourceItemType());
