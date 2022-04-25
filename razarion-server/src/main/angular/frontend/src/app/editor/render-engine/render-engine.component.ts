@@ -78,6 +78,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   private static getSpecialSelector(property: any): string | null {
     switch (property.constructor.name) {
       case 'HTMLImageElement':
+      case 'ImageBitmap':
         return 'image-property-editor';
     }
     return null;
@@ -219,7 +220,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
                 }
 
                 setValue(value: any): void {
-                  if (object3D.constructor.name === "Texture") {
+                  if ((<any>object3D).isTexture) {
                     let image = new Image();
                     image.src = value;
                     const texture = (<any>object3D).clone();
