@@ -3,23 +3,28 @@
     <p-treeTable *ngIf="gwtAngularPropertyTable" [value]="gwtAngularPropertyTable.rootTreeNodes"
                  [columns]="cols" sortField="name" (sortFunction)="sortPropertyNames($event)" [customSort]="true"
                  [tableStyle]="{width:'auto'}" [autoLayout]="true">
-      <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+      <ng-template pTemplate="body" let-rowNode let-angularTreeNodeData="rowData">
         <tr [ttRow]="rowNode">
           <td style="white-space: nowrap">
             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-            {{rowData.name}}
-            <p-button *ngIf="rowData.deleteAllowed" icon="pi pi-times"
+            {{angularTreeNodeData.name}}
+            <p-button *ngIf="angularTreeNodeData.deleteAllowed" icon="pi pi-times"
                       styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                      (onClick)="rowData.onDelete(this.gwtAngularPropertyTable)">
+                      (onClick)="angularTreeNodeData.onDelete(this.gwtAngularPropertyTable)">
             </p-button>
-            <p-button *ngIf="rowData.createAllowed" icon="pi pi-sun"
+            <p-button *ngIf="angularTreeNodeData.createAllowed" icon="pi pi-sun"
                       styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
-                      (onClick)="rowData.onCreate(this.gwtAngularPropertyTable)">
+                      (onClick)="angularTreeNodeData.createOptions ? createChoice.show($event) : angularTreeNodeData.onCreate(this.gwtAngularPropertyTable)">
             </p-button>
+            <p-overlayPanel #createChoice [dismissable]="true" [showCloseIcon]="true">
+              <ng-template pTemplate>
+                <p-listbox [options]="angularTreeNodeData.createOptions" (onChange)="angularTreeNodeData.onCreate(this.gwtAngularPropertyTable, $event.value); createChoice.hide()"></p-listbox>
+              </ng-template>
+            </p-overlayPanel>
           </td>
           <td>
-            <property-editor *ngIf="rowData.propertyEditorSelector"
-                             [angular-tree-node-data]="rowData"
+            <property-editor *ngIf="angularTreeNodeData.propertyEditorSelector"
+                             [angular-tree-node-data]="angularTreeNodeData"
                              [property-table]="gwtAngularPropertyTable"></property-editor>
           </td>
         </tr>

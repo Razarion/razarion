@@ -75,10 +75,13 @@ import {ImageGalleryItemComponent, ImageTypePipe} from "./editor/image-editor/im
 import {FileUploadModule} from 'primeng/fileupload';
 import {RadToDegreePipe} from "./common/rad-to-degree-pipe";
 import {ThreeJsRendererServiceImpl} from './game/renderer/three-js-renderer-service.impl';
-import { GameMockService } from './game/renderer/game-mock.service';
-import { ThreeJsModelService } from './game/renderer/three-js-model.service';
+import {GameMockService} from './game/renderer/game-mock.service';
+import {ThreeJsModelService} from './game/renderer/three-js-model.service';
 import {CollectionSelectorComponent} from "./editor/property-table/collection-selector.component";
 import {ImagePropertyEditorComponent} from "./editor/property-table/editors/image-property-editor.component";
+import {OverlayPanelModule} from "primeng/overlaypanel";
+import {ListboxModule} from "primeng/listbox";
+import {ToolbarModule} from "primeng/toolbar";
 
 @NgModule({
   declarations: [
@@ -157,6 +160,9 @@ import {ImagePropertyEditorComponent} from "./editor/property-table/editors/imag
     CardModule,
     PanelModule,
     TreeModule,
+    OverlayPanelModule,
+    ListboxModule,
+    ToolbarModule
   ],
   providers: [
     FrontendService, {

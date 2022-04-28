@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {
@@ -13,17 +13,22 @@ import {GameMockService} from 'src/app/game/renderer/game-mock.service';
 import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
 import {Loader} from 'three/editor/js/Loader';
 import {ThreeJsRendererServiceImpl} from 'src/app/game/renderer/three-js-renderer-service.impl';
-import {Sidebar} from 'three/editor/js/Sidebar';
-import {Editor} from 'three/editor/js/Editor';
 import {MessageService, TreeNode} from 'primeng/api';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {URL_THREE_JS_MODEL_EDITOR} from 'src/app/common';
-import {BufferAttribute, BufferGeometry, Mesh, Object3D} from 'three';
-import GUI from 'lil-gui';
+import {BufferAttribute, BufferGeometry, Group, Mesh, Object3D, Scene, Texture} from 'three';
 
 const IGNORED_THREE_JS_OBJECT_PROPERTIES: string[] = ["parent", "children", "up", "_listeners", "_onChangeCallback"];
 const READONLY_THREE_JS_OBJECT_PROPERTIES: string[] = ["uuid", "type"];
 let _this: any = null;
+
+function setupCreateOptionLabels(createOptions: any[]) {
+  let createOptionLabels = []
+  for (let i = 0; i < createOptions.length; i++) {
+    createOptionLabels.push({"label": createOptions[i].name, "value": i});
+  }
+  return createOptionLabels;
+}
 
 @Component({
   selector: 'render-engine',
@@ -32,10 +37,6 @@ let _this: any = null;
 export class RenderEngineComponent extends EditorPanel implements OnDestroy, AfterViewInit {
   renderEngineDisplayTree: TreeNode[] = [];
   gwtAngularPropertyTable: GwtAngularPropertyTable | null = null;
-  @ViewChild('object3DDisplayELement')
-  object3DDisplayELement!: ElementRef;
-  @ViewChild('threeJsScene')
-  threeJsScene!: ElementRef;
   @ViewChild('selectedDiv')
   selectedDiv!: ElementRef;
   threeJsModels: any[] = [];
@@ -45,6 +46,25 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   exportMaterialOnly: boolean = false;
   rendererEditorService: RendererEditorService;
   renderTaskRunnerControls: RenderTaskRunnerControl[];
+
+  createOptions = [
+    {
+      name: 'Texture',
+      exec(): any {
+        let texture = new Texture();
+        texture.image = new Image();
+        return texture
+      }
+    },
+    {
+      name: 'Group',
+      exec(): any {
+        return new Group();
+      }
+    }
+  ]
+
+  createOptionLabels = setupCreateOptionLabels(this.createOptions);
 
   constructor(private gwtAngularService: GwtAngularService,
               private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl,
@@ -101,18 +121,6 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     (<any>Number.prototype).format = function () {
       return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     };
-
-    let editor = new Editor();
-    editor.scene = this.threeJsRendererServiceImpl.scene;
-    editor.camera = this.threeJsRendererServiceImpl.camera;
-    let sidebar = Sidebar(editor);
-    this.threeJsScene.nativeElement.appendChild(sidebar.dom);
-
-    let _this = this;
-    editor.signals.objectSelected.add(function (selection: any) {
-      _this.selectedThreeJsObject = selection;
-      _this.selectedThreeJsName = selection.name;
-    });
   }
 
   onTreeSelectionChanged(event: any) {
@@ -129,13 +137,6 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
       configId: number = -999888777;
       rootTreeNodes: TreeNode<AngularTreeNodeData>[] = rootTreeNodes;
     }
-    // --- old
-    this.object3DDisplayELement.nativeElement.innerHTML = '';
-    let gui = new GUI({
-      container: this.object3DDisplayELement.nativeElement,
-      title: object3D.name
-    });
-    this._recursivelyAddProperty(object3D, gui);
   }
 
   onImport(event: any) {
@@ -150,14 +151,52 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     loader.loadFiles(event.files);
   }
 
-  onUpload() {
+  onDump() {
+    const exporter = new GLTFExporter();
+    try {
+      const exporterAny: any = exporter;
+      const exportScene = new Scene()
+      exportScene.name = "Razarion";
+      exportScene.add(this.threeJsRendererServiceImpl.camera)
+      exportScene.add(this.threeJsRendererServiceImpl.scene)
+      exporterAny.parse(exportScene,
+        function (gltf: any) {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(new Blob([gltf]));
+          link.setAttribute("download", "main-scene.gltf");
+          link.click();
+        },
+        function (error: any) {
+          console.warn(error);
+          _this.messageService.add({
+            severity: 'error',
+            summary: `Can not export GLTF`,
+            detail: String(error),
+            sticky: true
+          });
+        },
+        {binary: true});
+    } catch (error) {
+      console.warn(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not export GLTF`,
+        detail: String(error),
+        sticky: true
+      });
+    }
+
+
+  }
+
+  onSave() {
     let _this = this;
     const exporter = new GLTFExporter();
     try {
       let uploadObject = this.selectedThreeJsObject;
       if (this.exportMaterialOnly) {
         let geometry = new BufferGeometry();
-        geometry.setAttribute('position', new BufferAttribute(new Float32Array([-1,-1,0, 1,-1,0, -1,1,0]), 3));
+        geometry.setAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 0, 1, -1, 0, -1, 1, 0]), 3));
         uploadObject = new Mesh(geometry, this.selectedThreeJsObject.material);
         uploadObject.name = "Fake Mesh for Material"
       }
@@ -193,6 +232,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   }
 
   private recursivelyAddProperty(object3D: Object3D, parent: Object3D | null, parentKey: string | null, treeNodes: TreeNode[]) {
+    const _this = this;
     Object.keys(object3D).forEach(function (key, index) {
       if (IGNORED_THREE_JS_OBJECT_PROPERTIES.includes(key)) {
         return;
@@ -213,7 +253,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
                 propertyEditorSelector: string = specialSelector != null ? specialSelector : 'Stupid typescript case';
                 value: any = property;
 
-                onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
+                onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void {
                 }
 
                 onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
@@ -249,7 +289,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
                 propertyEditorSelector: string = '';
                 value: any;
 
-                onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
+                onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void {
                 }
 
                 onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
@@ -264,16 +304,18 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
         } else {
           treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
             data = new class implements AngularTreeNodeData {
-              canHaveChildren: boolean = false;
-              createAllowed: boolean = false;
-              deleteAllowed: boolean = false;
+              canHaveChildren: boolean = true;
+              createAllowed: boolean = true;
+              deleteAllowed: boolean = true;
               name: string = key;
               nullable: boolean = false;
               options: string[] = [];
               propertyEditorSelector: string = '';
-              value: any = "?????????";
+              value: any;
+              createOptions: any = _this.createOptionLabels;
 
-              onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
+              onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void {
+                (<any>object3D)[key] = _this.createOptions[createOption].exec();
               }
 
               onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
@@ -294,10 +336,10 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
             name: string = key;
             nullable: boolean = false;
             options: string[] = [];
-            propertyEditorSelector: string = _this.setupPropertyEditorSelector(property);
+            propertyEditorSelector: string = RenderEngineComponent.setupPropertyEditorSelector(property);
             value: any = property;
 
-            onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
+            onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void {
             }
 
             onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
@@ -309,12 +351,12 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
 
           }
         });
-        // gui.add(object3D, key).enable(!READONLY_THREE_JS_OBJECT_PROPERTIES.includes(key));
+        // TODO gui.add(object3D, key).enable(!READONLY_THREE_JS_OBJECT_PROPERTIES.includes(key));
       }
     });
   }
 
-  private setupPropertyEditorSelector(property: any): string {
+  private static setupPropertyEditorSelector(property: any): string {
     if (property == null) {
       return ''
     }
@@ -327,27 +369,6 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
         return 'string-property-editor';
     }
     return ''
-  }
-
-  private _recursivelyAddProperty(object3D: Object3D, gui: GUI) {
-    Object.keys(object3D).forEach(function (key, index) {
-      if (IGNORED_THREE_JS_OBJECT_PROPERTIES.includes(key)) {
-        return;
-      }
-      const property = (<any>object3D)[key];
-      if (typeof property === "object") {
-        if (property && (property.length === undefined || property.length > 0)) {
-          const folder = gui.addFolder(`${key}`);
-          folder.add({"jsclass": property.constructor.name}, "jsclass").name("class").enable(false);
-          _this._recursivelyAddProperty(property, folder);
-          folder.open(false);
-        } else {
-          gui.add({"null": "-"}, "null").name(key).enable(false);
-        }
-      } else {
-        gui.add(object3D, key).enable(!READONLY_THREE_JS_OBJECT_PROPERTIES.includes(key));
-      }
-    });
   }
 
   private initRenderEngineDisplayTree() {
@@ -369,12 +390,11 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     }
 
     let name = object3D.name;
-    let treeNode = new class implements TreeNode<Object3D> {
+    return new class implements TreeNode<Object3D> {
       label = name;
       icon = 'pi pi-globe';
       children = children;
       data = object3D;
     };
-    return treeNode;
   }
 }

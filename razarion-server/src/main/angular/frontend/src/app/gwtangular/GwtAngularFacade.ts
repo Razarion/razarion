@@ -18,13 +18,13 @@ export abstract class GwtAngularFacade {
 // ---------- Boot ----------
 
 export interface GwtAngularBoot {
-   loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[]): Promise<void>;
+  loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[]): Promise<void>;
 }
 
 // ---------- Common ----------
 
 export interface Index {
-    toString(): string;
+  toString(): string;
 }
 
 export interface StatusProvider {
@@ -81,6 +81,7 @@ export interface TerrainTypeService {
 // ---------- Configs ----------
 export interface TerrainObjectConfig {
   getThreeJsUuid(): string;
+
   toString(): string;
 }
 
@@ -352,7 +353,7 @@ export interface AngularTreeNodeData {
   createAllowed: boolean;
   canHaveChildren: boolean;
 
-  onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable): void;
+  onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void;
 
   onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void;
 

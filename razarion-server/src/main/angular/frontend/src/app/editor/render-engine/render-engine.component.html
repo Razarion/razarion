@@ -1,8 +1,26 @@
 <div class="flex flex-column">
+  <div class="mr-2">
+      <p-toolbar>
+        <div class="p-toolbar-group-left">
+          <p-fileUpload chooseLabel="Import"
+                        chooseIcon="pi pi-folder-open"
+                        mode="basic"
+                        styleClass="p-button-sm"
+                        [auto]=true
+                        [customUpload]=true
+                        (uploadHandler)="onImport($event)">
+          </p-fileUpload>
+          <i>&nbsp;</i>
+          <p-button label="Dump"
+                    icon="pi pi-save"
+                    styleClass="p-button-sm"
+                    (onClick)="onDump()"></p-button>
+        </div>
+      </p-toolbar>
+  </div>
 
   <div class="mr-2">
-    <div class="card">
-      <h5>Selected Three.js model</h5>
+    <p-panel header="Save Selected">
       <div class="field grid">
         <label for="name" class="col-fixed" style="width:100px">Name</label>
         <div class="col">
@@ -12,7 +30,8 @@
       <div class="field grid">
         <label for="Export" class="col-fixed" style="width:100px">Material only</label>
         <div class="col">
-          <p-checkbox id="Export" [(ngModel)]="exportMaterialOnly" [binary]="true" [disabled]="selectedThreeJsObject == null || !selectedThreeJsObject.material"></p-checkbox>
+          <p-checkbox id="Export" [(ngModel)]="exportMaterialOnly" [binary]="true"
+                      [disabled]="selectedThreeJsObject == null || !selectedThreeJsObject.material"></p-checkbox>
         </div>
       </div>
       <div class="field grid">
@@ -23,27 +42,20 @@
         </div>
       </div>
       <div class="field grid">
-        <label for="upload" class="col-fixed" style="width:100px">Upload</label>
-        <div class="col">
-          <p-button id="upload" type="button" label="Upload" icon="pi pi-save" styleClass="p-button-sm"
-                    [disabled]="selectedThreeJsModel == null"
-                    (onClick)="onUpload()"></p-button>
-        </div>
+        <p-button id="upload" type="button" label="Save" icon="pi pi-cloud-upload" styleClass="p-button-sm"
+                  [disabled]="selectedThreeJsModel == null"
+                  (onClick)="onSave()"></p-button>
       </div>
-    </div>
+    </p-panel>
   </div>
 
   <div class="mr-2">
     <p-panel header="Render Engine">
       <p-tree [value]="renderEngineDisplayTree" selectionMode="single" (onNodeSelect)="onTreeSelectionChanged($event)">
       </p-tree>
+    </p-panel>
+    <p-panel [toggleable]="true" header="Render Engine Details">
       <property-table [angular-tree-node-data]=gwtAngularPropertyTable></property-table>
-      <div #object3DDisplayELement></div>
     </p-panel>
   </div>
-  <div class="mr-2">
-    <p-fileUpload chooseLabel="Import" name="myfile[]" [auto]=true [customUpload]=true
-                  (uploadHandler)="onImport($event)"></p-fileUpload>
-  </div>
-  <div #threeJsScene></div>
 </div>

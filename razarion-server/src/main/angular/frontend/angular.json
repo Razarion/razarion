@@ -31,7 +31,6 @@
             ],
             "styles": [
               "src/styles.scss",
-              "src/threejs-editor.css",
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeng/resources/themes/vela-blue/theme.css",
               "node_modules/primeng/resources/primeng.min.css",
@@ -119,8 +118,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "src/threejs-editor.css"
+              "src/styles.scss"
             ],
             "scripts": []
           }

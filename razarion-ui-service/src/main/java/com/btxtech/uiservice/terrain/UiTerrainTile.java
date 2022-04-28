@@ -68,7 +68,7 @@ public class UiTerrainTile {
     }
 
     public void dispose() {
-        // TODO check for resource which must be released
+        // TODO check for three.js resource which must be released
     }
 
     public double interpolateDisplayHeight(DecimalPosition terrainPosition) {
