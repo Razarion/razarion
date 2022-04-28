@@ -1,30 +1,34 @@
 <div class="flex flex-column">
   <div class="mr-2">
-      <p-toolbar>
-        <div class="p-toolbar-group-left">
-          <p-fileUpload chooseLabel="Import"
-                        chooseIcon="pi pi-folder-open"
-                        mode="basic"
-                        styleClass="p-button-sm"
-                        [auto]=true
-                        [customUpload]=true
-                        (uploadHandler)="onImport($event)">
-          </p-fileUpload>
-          <i>&nbsp;</i>
-          <p-button label="Dump"
-                    icon="pi pi-save"
-                    styleClass="p-button-sm"
-                    (onClick)="onDump()"></p-button>
-        </div>
-      </p-toolbar>
+    <p-toolbar>
+      <div class="p-toolbar-group-left">
+        <p-fileUpload chooseLabel="Import"
+                      chooseIcon="pi pi-folder-open"
+                      mode="basic"
+                      styleClass="p-button-sm"
+                      [auto]=true
+                      [customUpload]=true
+                      (uploadHandler)="onImport($event)">
+        </p-fileUpload>
+        <i>&nbsp;</i>
+        <p-button label="Dump"
+                  icon="pi pi-save"
+                  styleClass="p-button-sm"
+                  (onClick)="onDump()"></p-button>
+      </div>
+    </p-toolbar>
   </div>
 
   <div class="mr-2">
     <p-panel header="Save Selected">
       <div class="field grid">
-        <label for="name" class="col-fixed" style="width:100px">Name</label>
-        <div class="col">
-          <input pInputText id="name" [value]="selectedThreeJsName" [disabled]="selectedThreeJsName == null"/>
+        <span class="col-fixed" style="width:100px">Name</span>
+        <div *ngIf="selectedThreeJsName" style="border: 1px solid #304562;
+                     background: #17212f;
+                     border-radius: 3px;
+                     padding: 0.5rem 0.5rem;
+                     width: 10em;">
+          {{selectedThreeJsName}}
         </div>
       </div>
       <div class="field grid">

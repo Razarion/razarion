@@ -3,7 +3,12 @@ import {AngularTreeNodeData} from "../../../gwtangular/GwtAngularFacade";
 
 @Component({
   selector: 'boolean-property-editor',
-  template: '<p-inputSwitch [ngModel]="angularTreeNodeData.value" (onChange)="onChange($event)"></p-inputSwitch>'
+  template: `
+    <p-checkbox [ngModel]="angularTreeNodeData.value"
+                (onChange)="onChange($event)"
+                [binary]="true">
+    </p-checkbox>
+  `
 })
 export class BooleanPropertyEditorComponent {
   angularTreeNodeData!: AngularTreeNodeData;

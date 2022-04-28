@@ -208,7 +208,21 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
               'Content-Type': 'application/octet-stream'
             })
           };
-          _this.http.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${_this.selectedThreeJsModel.id}`, new Blob([gltf]), httpOptions).subscribe();
+          _this.http.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${_this.selectedThreeJsModel.id}`, new Blob([gltf]), httpOptions)
+            .subscribe({
+              complete: () => _this.messageService.add({
+                severity: 'success',
+                summary: 'Save successful'
+              }),
+              error: (error: any) => {
+                _this.messageService.add({
+                  severity: 'error',
+                  summary: `Save failed`,
+                  detail: String(error),
+                  sticky: true
+                });
+              }
+            })
         },
         function (error: any) {
           console.warn(error);
