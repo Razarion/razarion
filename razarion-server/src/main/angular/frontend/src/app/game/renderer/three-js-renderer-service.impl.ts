@@ -76,11 +76,11 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         this.camera.rotation.x = MathUtils.degToRad(45);
 
         // ----- Light -----
-        let ambientLight = new AmbientLight(0x808080, 0.70);
+        let ambientLight = new AmbientLight(0xFFFFFF, 0.70);
         ambientLight.name = "Ambient Light"
         this.scene.add(ambientLight);
 
-        this.directionalLight = new DirectionalLight(0xffffff, 0.80);
+        this.directionalLight = new DirectionalLight(0xFFFFFF, 0.80);
         this.directionalLight.name = "Directional Light"
         this.directionalLight.position.set(50, -50, 100);
         this.directionalLight.target.position.set(0, 0, -100);

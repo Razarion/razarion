@@ -16,7 +16,7 @@ import {ThreeJsRendererServiceImpl} from 'src/app/game/renderer/three-js-rendere
 import {MessageService, TreeNode} from 'primeng/api';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {URL_THREE_JS_MODEL_EDITOR} from 'src/app/common';
-import {BufferAttribute, BufferGeometry, Group, Mesh, Object3D, Scene, Texture} from 'three';
+import {BufferAttribute, BufferGeometry, Group, Mesh, Object3D, RepeatWrapping, Scene, Texture} from 'three';
 
 const IGNORED_THREE_JS_OBJECT_PROPERTIES: string[] = ["parent", "children", "up", "_listeners", "_onChangeCallback"];
 const READONLY_THREE_JS_OBJECT_PROPERTIES: string[] = ["uuid", "type"];
@@ -53,6 +53,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
       exec(): any {
         let texture = new Texture();
         texture.image = new Image();
+        texture.wrapS = RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
         return texture
       }
     },
