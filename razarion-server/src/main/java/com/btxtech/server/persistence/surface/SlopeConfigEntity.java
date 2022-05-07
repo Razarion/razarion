@@ -1,29 +1,16 @@
 package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.ImagePersistence;
+import com.btxtech.server.persistence.ThreeJsModelConfigEntity;
+import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 import static com.btxtech.server.persistence.surface.PhongMaterialConfigEmbeddable.factorize;
 
 /**
@@ -48,20 +35,9 @@ public class SlopeConfigEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private WaterConfigEntity waterConfig;
-    @AssociationOverrides({
-            @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "materialTextureId")),
-            @AssociationOverride(name = "normalMap", joinColumns = @JoinColumn(name = "materialNormalMapId")),
-            @AssociationOverride(name = "bumpMap", joinColumns = @JoinColumn(name = "materialBumpMapId"))
-    })
-    @AttributeOverrides({
-            @AttributeOverride(name = "scale", column = @Column(name = "materialScale")),
-            @AttributeOverride(name = "normalMapDepth", column = @Column(name = "materialNormalMapDepth")),
-            @AttributeOverride(name = "bumpMapDepth", column = @Column(name = "materialBumpMapDepth")),
-            @AttributeOverride(name = "shininess", column = @Column(name = "materialShininess")),
-            @AttributeOverride(name = "specularStrength", column = @Column(name = "materialSpecularStrength")),
-    })
-    @Embedded
-    private PhongMaterialConfigEmbeddable material;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelConfigEntity threeJsMaterial;
     @AssociationOverrides({
             @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "shallowWaterTextureId")),
             @AssociationOverride(name = "distortion", joinColumns = @JoinColumn(name = "shallowWaterDistortionId")),
@@ -112,7 +88,8 @@ public class SlopeConfigEntity {
                 .coastDelimiterLineGameEngine(coastDelimiterLineGameEngine)
                 .shallowWaterConfig(ShallowWaterConfigEmbeddable.to(shallowWaterConfig))
                 .outerSlopeSplattingConfig(SlopeSplattingConfigEmbeddable.to(outerSplatting))
-                .innerSlopeSplattingConfig(SlopeSplattingConfigEmbeddable.to(innerSplatting));
+                .innerSlopeSplattingConfig(SlopeSplattingConfigEmbeddable.to(innerSplatting))
+                .threeJsMaterial(extractId(threeJsMaterial, ThreeJsModelConfigEntity::getId));
         if (groundConfig != null) {
             slopeConfig.setGroundConfigId(groundConfig.getId());
         }
@@ -122,13 +99,10 @@ public class SlopeConfigEntity {
         if (shape != null && !shape.isEmpty()) {
             slopeConfig.setSlopeShapes(shape.stream().map(SlopeShapeEntity::toSlopeShape).collect(Collectors.toList()));
         }
-        if (material != null) {
-            slopeConfig.setMaterial(material.to());
-        }
         return slopeConfig;
     }
 
-    public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence, GroundConfigEntity groundConfigEntity, WaterConfigEntity waterConfigEntity) {
+    public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence, GroundConfigEntity groundConfigEntity, WaterConfigEntity waterConfigEntity, ThreeJsModelCrudPersistence threeJsModelCrudPersistence) {
         internalName = slopeConfig.getInternalName();
         innerLineGameEngine = slopeConfig.getInnerLineGameEngine();
         coastDelimiterLineGameEngine = slopeConfig.getCoastDelimiterLineGameEngine();
@@ -148,7 +122,7 @@ public class SlopeConfigEntity {
         interpolateNorm = slopeConfig.isInterpolateNorm();
         horizontalSpace = slopeConfig.getHorizontalSpace();
         waterConfig = waterConfigEntity;
-        material = factorize(slopeConfig.getMaterial(), imagePersistence);
+        threeJsMaterial = threeJsModelCrudPersistence.getEntity(slopeConfig.getThreeJsMaterial());
         shallowWaterConfig = ShallowWaterConfigEmbeddable.factorize(slopeConfig.getShallowWaterConfig(), imagePersistence);
         outerSplatting = SlopeSplattingConfigEmbeddable.factorize(slopeConfig.getOuterSlopeSplattingConfig(), imagePersistence);
         innerSplatting = SlopeSplattingConfigEmbeddable.factorize(slopeConfig.getInnerSlopeSplattingConfig(), imagePersistence);

@@ -1,12 +1,12 @@
 import { SlopeGeometry, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
-import { BufferAttribute, BufferGeometry, Group, Matrix4, Mesh, MeshBasicMaterial, Scene } from "three";
+import {BufferAttribute, BufferGeometry, Group, Material, Matrix4, Mesh, MeshBasicMaterial, Scene} from "three";
 import { ThreeJsModelService } from "./three-js-model.service";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     private group = new Group();
 
-    constructor(terrainTile: TerrainTile, private parentScene: Scene, gwtAngularService: GwtAngularService, threeJsModelService: ThreeJsModelService) {
+    constructor(terrainTile: TerrainTile, private parentScene: Scene, private gwtAngularService: GwtAngularService, threeJsModelService: ThreeJsModelService) {
         this.group.name = `TerrainTile ${terrainTile.getIndex().toString()}`;
         if (terrainTile.getGroundTerrainTiles() !== null) {
             terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
@@ -38,14 +38,24 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         }
         if (terrainTile.getTerrainSlopeTiles() !== null) {
             terrainTile.getTerrainSlopeTiles().forEach(terrainSlopeTile => {
-                if (terrainSlopeTile.outerSlopeGeometry !== null && terrainSlopeTile.outerSlopeGeometry !== undefined) {
-                    this.setupSlopeGeometry(terrainSlopeTile.outerSlopeGeometry);
-                }
-                if (terrainSlopeTile.centerSlopeGeometry !== null && terrainSlopeTile.centerSlopeGeometry !== undefined) {
-                    this.setupSlopeGeometry(terrainSlopeTile.centerSlopeGeometry);
-                }
-                if (terrainSlopeTile.innerSlopeGeometry !== null && terrainSlopeTile.innerSlopeGeometry !== undefined) {
-                    this.setupSlopeGeometry(terrainSlopeTile.innerSlopeGeometry);
+                try {
+                    let slopeConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getSlopeConfig(terrainSlopeTile.slopeConfigId);
+                    if (slopeConfig.getThreeJsMaterial() === undefined) {
+                      throw new Error(`SlopeConfig has no threeJsMaterial: ${slopeConfig.toString()}`);
+                    }
+                    let material = threeJsModelService.getMaterial(slopeConfig.getThreeJsMaterial());
+                    if (terrainSlopeTile.outerSlopeGeometry !== null && terrainSlopeTile.outerSlopeGeometry !== undefined) {
+                        this.setupSlopeGeometry(terrainSlopeTile.outerSlopeGeometry, material);
+                    }
+                    if (terrainSlopeTile.centerSlopeGeometry !== null && terrainSlopeTile.centerSlopeGeometry !== undefined) {
+                        this.setupSlopeGeometry(terrainSlopeTile.centerSlopeGeometry, material);
+                    }
+                    if (terrainSlopeTile.innerSlopeGeometry !== null && terrainSlopeTile.innerSlopeGeometry !== undefined) {
+                        this.setupSlopeGeometry(terrainSlopeTile.innerSlopeGeometry, material);
+                    }
+                } catch (error) {
+                  // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
+                  console.error(error);
                 }
             });
         }
@@ -101,7 +111,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
                         _this.group.add(threeJsModel);
                     });
                 } catch (error) {
-                    // hrow new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
+                    // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
                     console.error(terrainTileObjectList);
                     console.error(error);
                 }
@@ -109,15 +119,13 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         }
     }
 
-    private setupSlopeGeometry(slopeGeometry: SlopeGeometry): void {
+    private setupSlopeGeometry(slopeGeometry: SlopeGeometry, material: Material): void {
         let geometry = new BufferGeometry();
         geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
         geometry.setAttribute('norm', new BufferAttribute(slopeGeometry.norms, 3));
         geometry.setAttribute('uvs', new BufferAttribute(slopeGeometry.uvs, 2));
         geometry.setAttribute('slopeFactors', new BufferAttribute(slopeGeometry.slopeFactors, 3));
 
-        const material = new MeshBasicMaterial({ color: 0xAAAAAA });
-        material.wireframe = true;
         const cube = new Mesh(geometry, material);
         cube.name = "Slope";
         this.group.add(cube);

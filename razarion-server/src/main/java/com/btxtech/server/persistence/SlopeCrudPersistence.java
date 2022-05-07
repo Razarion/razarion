@@ -15,6 +15,8 @@ public class SlopeCrudPersistence extends AbstractCrudPersistence<SlopeConfig, S
     private GroundCrudPersistence groundCrudPersistence;
     @Inject
     private WaterCrudPersistence waterCrudPersistence;
+    @Inject
+    private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
 
     public SlopeCrudPersistence() {
         super(SlopeConfigEntity.class, SlopeConfigEntity_.id, SlopeConfigEntity_.internalName);
@@ -30,6 +32,7 @@ public class SlopeCrudPersistence extends AbstractCrudPersistence<SlopeConfig, S
         entity.fromSlopeConfig(config,
                 imagePersistence,
                 groundCrudPersistence.getEntity(config.getGroundConfigId()),
-                waterCrudPersistence.getEntity(config.getWaterConfigId()));
+                waterCrudPersistence.getEntity(config.getWaterConfigId()),
+                threeJsModelCrudPersistence);
     }
 }

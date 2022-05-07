@@ -4,6 +4,9 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SlopeShape;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import jsinterop.annotations.JsType;
 
 import java.util.List;
 
@@ -11,6 +14,7 @@ import java.util.List;
  * Created by Beat
  * 08.05.2016.
  */
+@JsType
 public class SlopeConfig implements Config {
     private int id;
     private String internalName;
@@ -22,7 +26,8 @@ public class SlopeConfig implements Config {
     private Integer groundConfigId;
     private Integer waterConfigId;
     private boolean interpolateNorm;
-    private PhongMaterialConfig material;
+    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
+    private Integer threeJsMaterial;
     private ShallowWaterConfig shallowWaterConfig;
     private SlopeSplattingConfig outerSlopeSplattingConfig;
     private SlopeSplattingConfig innerSlopeSplattingConfig;
@@ -51,12 +56,12 @@ public class SlopeConfig implements Config {
         this.slopeShapes = slopeShapes;
     }
 
-    public PhongMaterialConfig getMaterial() {
-        return material;
+    public Integer getThreeJsMaterial() {
+        return threeJsMaterial;
     }
 
-    public void setMaterial(PhongMaterialConfig material) {
-        this.material = material;
+    public void setThreeJsMaterial(Integer threeJsMaterial) {
+        this.threeJsMaterial = threeJsMaterial;
     }
 
     public double getOuterLineGameEngine() {
@@ -189,8 +194,8 @@ public class SlopeConfig implements Config {
         return this;
     }
 
-    public SlopeConfig material(PhongMaterialConfig material) {
-        this.material = material;
+    public SlopeConfig threeJsMaterial(Integer threeJsMaterial) {
+        setThreeJsMaterial(threeJsMaterial);
         return this;
     }
 

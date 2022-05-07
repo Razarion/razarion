@@ -41,8 +41,8 @@ public class SlopeRenderTask extends AbstractWebGlRenderTask<UiTerrainSlopeTile>
         setupVec2Array(WebGlFacade.A_VERTEX_UV, uiTerrainSlopeTile.getSlopeGeometry().getUvs());
         setupVec1Array("slopeFactor", uiTerrainSlopeTile.getSlopeGeometry().getSlopeFactors());
 
-        AlarmRaiser.onNull(uiTerrainSlopeTile.getSlopeConfig().getMaterial(), Alarm.Type.INVALID_SLOPE_CONFIG, "No Material in SlopeConfig: ", uiTerrainSlopeTile.getSlopeConfig().getId());
-        setupPhongMaterial(uiTerrainSlopeTile.getSlopeConfig().getMaterial(), "material");
+        // AlarmRaiser.onNull(uiTerrainSlopeTile.getSlopeConfig().getMaterial(), Alarm.Type.INVALID_SLOPE_CONFIG, "No Material in SlopeConfig: ", uiTerrainSlopeTile.getSlopeConfig().getId());
+        // setupPhongMaterial(uiTerrainSlopeTile.getSlopeConfig().getMaterial(), "material");
 
         if (uiTerrainSlopeTile.getGroundConfig() != null) {
             setupGroundMaterial(uiTerrainSlopeTile.getGroundConfig());

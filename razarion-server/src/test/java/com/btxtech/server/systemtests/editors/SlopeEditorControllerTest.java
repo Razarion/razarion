@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.rest.SlopeEditorController;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 
 import java.util.Arrays;
@@ -37,8 +38,8 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
     protected void setupUpdate() {
         registerUpdate(slopeConfig -> slopeConfig.coastDelimiterLineGameEngine(10).outerLineGameEngine(5).innerLineGameEngine(20).horizontalSpace(5).interpolateNorm(true));
         registerUpdate(slopeConfig -> slopeConfig.coastDelimiterLineGameEngine(20).outerLineGameEngine(27).innerLineGameEngine(50).horizontalSpace(25).groundConfigId(GROUND_1_ID));
-        registerUpdate(slopeConfig -> slopeConfig.material(new PhongMaterialConfig().textureId(IMAGE_2_ID).scale(2.1).bumpMapId(IMAGE_3_ID).bumpMapDepth(0.5).shininess(80.0).specularStrength(0.4)).interpolateNorm(false));
-        registerUpdate(slopeConfig -> slopeConfig.material(null));
+        // TODO registerUpdate(slopeConfig -> slopeConfig.material(new PhongMaterialConfig().textureId(IMAGE_2_ID).scale(2.1).bumpMapId(IMAGE_3_ID).bumpMapDepth(0.5).shininess(80.0).specularStrength(0.4)).interpolateNorm(false));
+        // TODO registerUpdate(slopeConfig -> slopeConfig.material(null));
         registerUpdate(slopeConfig -> slopeConfig.groundConfigId(null));
         registerUpdate(slopeConfig -> slopeConfig.waterConfigId(WATER_1_ID));
         registerUpdate(slopeConfig -> slopeConfig.waterConfigId(WATER_2_ID));
@@ -62,5 +63,6 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
         registerUpdate(slopeConfig -> slopeConfig.setOuterSlopeSplattingConfig(null));
         registerUpdate(slopeConfig -> slopeConfig.setInnerSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_1_ID).scale(4.7).impact(9.6).blur(0.2).offset(122)));
         registerUpdate(slopeConfig -> slopeConfig.setInnerSlopeSplattingConfig(null));
+        Assert.fail("Fix Material see TODOs");
     }
 }

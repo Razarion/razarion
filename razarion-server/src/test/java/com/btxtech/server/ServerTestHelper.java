@@ -1,29 +1,8 @@
 package com.btxtech.server;
 
-import com.btxtech.server.persistence.AudioLibraryEntity;
-import com.btxtech.server.persistence.ColladaEntity;
-import com.btxtech.server.persistence.GameUiContextEntity;
-import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.PlanetEntity;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
-import com.btxtech.server.persistence.TerrainObjectCrudPersistence;
+import com.btxtech.server.persistence.*;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
-import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
-import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
-import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
-import com.btxtech.server.persistence.itemtype.BuilderTypeEntity;
-import com.btxtech.server.persistence.itemtype.ConsumerTypeEntity;
-import com.btxtech.server.persistence.itemtype.DemolitionStepEffectEntity;
-import com.btxtech.server.persistence.itemtype.DemolitionStepEffectParticleEntity;
-import com.btxtech.server.persistence.itemtype.FactoryTypeEntity;
-import com.btxtech.server.persistence.itemtype.HarvesterTypeEntity;
-import com.btxtech.server.persistence.itemtype.HouseTypeEntity;
-import com.btxtech.server.persistence.itemtype.ItemContainerTypeEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
-import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
-import com.btxtech.server.persistence.itemtype.TurretTypeEntity;
-import com.btxtech.server.persistence.itemtype.WeaponTypeEntity;
+import com.btxtech.server.persistence.itemtype.*;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.object.TerrainObjectEntity;
@@ -37,47 +16,22 @@ import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.scene.SceneEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
-import com.btxtech.server.persistence.surface.DrivewayConfigEntity;
-import com.btxtech.server.persistence.surface.GroundConfigEntity;
-import com.btxtech.server.persistence.surface.SlopeConfigEntity;
-import com.btxtech.server.persistence.surface.SlopeShapeEntity;
-import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
-import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
-import com.btxtech.server.persistence.surface.WaterConfigEntity;
+import com.btxtech.server.persistence.surface.*;
 import com.btxtech.server.systemtests.framework.CleanupAfterTest;
 import com.btxtech.server.user.ForgotPasswordEntity;
 import com.btxtech.server.user.LoginCookieEntity;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.util.DateUtil;
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.FbAuthResponse;
-import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.datatypes.SingleHolder;
-import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.DrivewayConfig;
-import com.btxtech.shared.dto.GameUiContextConfig;
-import com.btxtech.shared.dto.RegisterResult;
-import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopeCorner;
-import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.datatypes.*;
+import com.btxtech.shared.dto.*;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.*;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -98,26 +52,14 @@ import org.junit.Before;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -140,10 +82,10 @@ public class ServerTestHelper {
     public static final String ADMIN_USER_EMAIL = "admin@admin.com";
     public static final String ADMIN_USER_PASSWORD = "1234";
     public static final String ADMIN_USER_PASSWORD_HASH = "qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==";
-    public static int ADMIN_USER_ID;
     public static final String NORMAL_USER_EMAIL = "user@user.com";
     public static final String NORMAL_USER_PASSWORD = "1234";
     public static final String NORMAL_USER_PASSWORD_HASH = "qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==";
+    public static int ADMIN_USER_ID;
     public static int NORMAL_USER_ID;
     // Images
     public static int IMAGE_1_ID;
@@ -323,8 +265,11 @@ public class ServerTestHelper {
                         .slopeShapes(Arrays.asList(new SlopeShape().slopeFactor(1),
                                 new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
                                 new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
-                                new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7)))
-                , EasyMock.createNiceMock(ImagePersistence.class), null, null);
+                                new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7))),
+                EasyMock.createNiceMock(ImagePersistence.class),
+                null,
+                null,
+                EasyMock.createNiceMock(ThreeJsModelCrudPersistence.class));
         return slopeConfigEntity;
     }
 
