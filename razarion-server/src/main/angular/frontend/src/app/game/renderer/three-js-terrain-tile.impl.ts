@@ -123,7 +123,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         let geometry = new BufferGeometry();
         geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
         geometry.setAttribute('norm', new BufferAttribute(slopeGeometry.norms, 3));
-        geometry.setAttribute('uvs', new BufferAttribute(slopeGeometry.uvs, 2));
+        geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
         geometry.setAttribute('slopeFactors', new BufferAttribute(slopeGeometry.slopeFactors, 3));
 
         const cube = new Mesh(geometry, material);

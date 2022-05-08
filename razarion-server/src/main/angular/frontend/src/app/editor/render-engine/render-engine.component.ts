@@ -262,7 +262,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
               data = new class implements AngularTreeNodeData {
                 canHaveChildren: boolean = false;
                 createAllowed: boolean = false;
-                deleteAllowed: boolean = false;
+                deleteAllowed: boolean = true;
                 name: string = key;
                 nullable: boolean = false;
                 options: string[] = [];
@@ -298,8 +298,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
               data = new class implements AngularTreeNodeData {
                 canHaveChildren: boolean = true;
                 createAllowed: boolean = false;
-                deleteAllowed: boolean = false;
-                name: string = key;
+                deleteAllowed: boolean = true;
+                name: string = `${key} '${property.constructor.name}'`;
                 nullable: boolean = false;
                 options: string[] = [];
                 propertyEditorSelector: string = '';
@@ -322,7 +322,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
             data = new class implements AngularTreeNodeData {
               canHaveChildren: boolean = true;
               createAllowed: boolean = true;
-              deleteAllowed: boolean = true;
+              deleteAllowed: boolean = false;
               name: string = key;
               nullable: boolean = false;
               options: string[] = [];
