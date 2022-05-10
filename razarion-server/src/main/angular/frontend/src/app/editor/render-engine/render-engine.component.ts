@@ -16,7 +16,7 @@ import {ThreeJsRendererServiceImpl} from 'src/app/game/renderer/three-js-rendere
 import {MessageService, TreeNode} from 'primeng/api';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {URL_THREE_JS_MODEL_EDITOR} from 'src/app/common';
-import {BufferAttribute, BufferGeometry, Group, Mesh, Object3D, RepeatWrapping, Scene, Texture} from 'three';
+import {BufferAttribute, BufferGeometry, Group, Mesh, Object3D, RepeatWrapping, Scene, Texture, Vector2} from 'three';
 
 const IGNORED_THREE_JS_OBJECT_PROPERTIES: string[] = ["parent", "children", "up", "_listeners", "_onChangeCallback"];
 const READONLY_THREE_JS_OBJECT_PROPERTIES: string[] = ["uuid", "type"];
@@ -35,7 +35,7 @@ function setupCreateOptionLabels(createOptions: any[]) {
   templateUrl: './render-engine.component.html'
 })
 export class RenderEngineComponent extends EditorPanel implements OnDestroy, AfterViewInit {
-  renderEngineDisplayTree: TreeNode[] = [];
+  renderEngineDisplayTree: TreeNode<Object3D>[] = [];
   gwtAngularPropertyTable: GwtAngularPropertyTable | null = null;
   @ViewChild('selectedDiv')
   selectedDiv!: ElementRef;
@@ -46,6 +46,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   exportMaterialOnly: boolean = false;
   rendererEditorService: RendererEditorService;
   renderTaskRunnerControls: RenderTaskRunnerControl[];
+  treeSelection: TreeNode<Object3D> | undefined;
+  mouseDownHandler: any;
 
   createOptions = [
     {
@@ -95,6 +97,21 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
           });
     }
     this.initRenderEngineDisplayTree();
+    this.mouseDownHandler = (event: any) => {
+      let object3D = threeJsRendererServiceImpl.intersectObjects(new Vector2(event.clientX, event.clientY));
+      if (object3D != null) {
+        this.treeSelection = this.findTreeNode(object3D, this.renderEngineDisplayTree);
+        this.expandParent(this.treeSelection);
+      }
+    }
+    threeJsRendererServiceImpl.addMouseDownHandler(this.mouseDownHandler);
+  }
+
+  private expandParent(threeNode: TreeNode | undefined) {
+    if(threeNode) {
+      threeNode.expanded = true;
+      this.expandParent(threeNode.parent);
+    }
   }
 
   private static getSpecialSelector(property: any): string | null {
@@ -108,6 +125,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
 
   ngOnDestroy(): void {
     this.gwtAngularService.gwtAngularFacade.statusProvider.setStats(null);
+    this.threeJsRendererServiceImpl.removeMouseDownHandler(this.mouseDownHandler);
+    this.mouseDownHandler = null;
   }
 
   ngAfterViewInit(): void {
@@ -397,20 +416,36 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     this.renderEngineDisplayTree.push(this.recursivelyAddTreeNodes(this.threeJsRendererServiceImpl.scene));
   }
 
-  private recursivelyAddTreeNodes(object3D: Object3D): TreeNode<Object3D> {
-    let children: TreeNode<Object3D>[] = [];
+  private recursivelyAddTreeNodes(object3D: Object3D, parentTreeNode?: TreeNode<Object3D>): TreeNode<Object3D> {
+    let treeNode = new class implements TreeNode<Object3D> {
+      label = object3D.name;
+      icon = 'pi pi-globe';
+      children: TreeNode<Object3D>[] = [];
+      data = object3D;
+      parent = parentTreeNode;
+    };
 
     for (let i = 0, l = object3D.children.length; i < l; i++) {
       const child = object3D.children[i];
-      children.push(this.recursivelyAddTreeNodes(child));
+      treeNode.children.push(this.recursivelyAddTreeNodes(child, treeNode));
     }
 
-    let name = object3D.name;
-    return new class implements TreeNode<Object3D> {
-      label = name;
-      icon = 'pi pi-globe';
-      children = children;
-      data = object3D;
-    };
+    return treeNode;
   }
+
+  private findTreeNode(object3D: Object3D, threeNodes: TreeNode<Object3D>[]): TreeNode<Object3D> | undefined {
+    for (const threeNode of threeNodes) {
+      if (threeNode.data?.id === object3D.id) {
+        return threeNode;
+      }
+      if (threeNode.children) {
+        let childObject3D = this.findTreeNode(object3D, threeNode.children);
+        if (childObject3D) {
+          return childObject3D;
+        }
+      }
+    }
+    return undefined;
+  }
+
 }

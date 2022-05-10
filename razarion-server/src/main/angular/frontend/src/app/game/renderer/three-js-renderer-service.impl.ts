@@ -192,10 +192,32 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
                 }
                 default:
             }
-        };
+        }
         if (hasChanged) {
             this.onViewFieldChanged();
         }
+    }
+
+    addMouseDownHandler(mouseDown: any): void {
+        this.renderer.domElement.addEventListener("mousedown", mouseDown);
+    }
+
+    removeMouseDownHandler(mouseDown: any): void {
+        this.renderer.domElement.removeEventListener("mousedown", mouseDown);
+    }
+
+    intersectObjects(mousePosition: Vector2): Object3D | null {
+      const raycaster = new Raycaster();
+      const ndcPointer = new Vector2();
+      ndcPointer.x = ( mousePosition.x / this.renderer.domElement.width ) * 2 - 1;
+      ndcPointer.y = - ( mousePosition.y / this.renderer.domElement.height ) * 2 + 1;
+
+      raycaster.setFromCamera(ndcPointer, this.camera);
+      let intersects = raycaster.intersectObjects( this.scene.children, true );
+      if(intersects.length == 0) {
+        return null;
+      }
+      return intersects[0].object;
     }
 
     public addToSceneEditor(scene: Scene) {

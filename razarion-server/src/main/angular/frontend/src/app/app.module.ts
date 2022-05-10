@@ -82,6 +82,7 @@ import {ImagePropertyEditorComponent} from "./editor/property-table/editors/imag
 import {OverlayPanelModule} from "primeng/overlaypanel";
 import {ListboxModule} from "primeng/listbox";
 import {ToolbarModule} from "primeng/toolbar";
+import {SplitterModule} from "primeng/splitter";
 
 @NgModule({
   declarations: [
@@ -162,7 +163,8 @@ import {ToolbarModule} from "primeng/toolbar";
     TreeModule,
     OverlayPanelModule,
     ListboxModule,
-    ToolbarModule
+    ToolbarModule,
+    SplitterModule
   ],
   providers: [
     FrontendService, {
