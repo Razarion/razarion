@@ -102,6 +102,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
       if (object3D != null) {
         this.treeSelection = this.findTreeNode(object3D, this.renderEngineDisplayTree);
         this.expandParent(this.treeSelection);
+        this.displayPropertyTable(object3D)
       }
     }
     threeJsRendererServiceImpl.addMouseDownHandler(this.mouseDownHandler);
@@ -137,16 +138,13 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     // this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().dom.style.cssText = '';
     // (<HTMLDivElement>this.statsContainer.nativeElement).appendChild(this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().dom)
     // this.gwtAngularService.gwtAngularFacade.statusProvider.getStats().showPanel(0);
-
-    // ----- setup scene property editor -----
-    (<any>Number.prototype).format = function () {
-      return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-    };
   }
 
   onTreeSelectionChanged(event: any) {
-    let object3D = event.node.data;
+    this.displayPropertyTable(event.node.data);
+  }
 
+  private displayPropertyTable(object3D: Object3D) {
     let rootTreeNodes: TreeNode<AngularTreeNodeData>[] = [];
     this.recursivelyAddProperty(object3D, null, null, rootTreeNodes)
 
