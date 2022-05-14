@@ -1,7 +1,18 @@
 import { SlopeGeometry, TerrainTile, ThreeJsTerrainTile } from "src/app/gwtangular/GwtAngularFacade";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
-import {BufferAttribute, BufferGeometry, Group, Material, Matrix4, Mesh, MeshBasicMaterial, Scene} from "three";
+import {
+  BufferAttribute,
+  BufferGeometry,
+  Group,
+  Material,
+  Matrix4,
+  Mesh,
+  MeshBasicMaterial,
+  MeshNormalMaterial,
+  Scene
+} from "three";
 import { ThreeJsModelService } from "./three-js-model.service";
+import {VertexNormalsHelper} from "three/examples/jsm/helpers/VertexNormalsHelper";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     private group = new Group();
@@ -122,13 +133,22 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     private setupSlopeGeometry(slopeGeometry: SlopeGeometry, material: Material): void {
         let geometry = new BufferGeometry();
         geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
-        geometry.setAttribute('norm', new BufferAttribute(slopeGeometry.norms, 3));
+        geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
         geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
         geometry.setAttribute('slopeFactors', new BufferAttribute(slopeGeometry.slopeFactors, 3));
 
-        const cube = new Mesh(geometry, material);
-        cube.name = "Slope";
-        this.group.add(cube);
+        // const meshNormalMaterial = new MeshNormalMaterial()
+        // const slope = new Mesh(geometry, meshNormalMaterial);
+
+        // const meshBasicMaterial = new MeshBasicMaterial({ color: 0x8888ff });
+        // const slope = new Mesh(geometry, meshBasicMaterial);
+
+        const slope = new Mesh(geometry, material);
+        slope.name = "Slope";
+        this.group.add(slope);
+
+        // const normHelper = new VertexNormalsHelper( slope, 2, 0x00ff00);
+        // this.group.add(normHelper);
     }
 
     private setupWater(positions: Float32Array) {

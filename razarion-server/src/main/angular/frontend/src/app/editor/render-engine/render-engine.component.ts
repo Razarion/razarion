@@ -316,7 +316,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
                 canHaveChildren: boolean = true;
                 createAllowed: boolean = false;
                 deleteAllowed: boolean = true;
-                name: string = `${key} '${property.constructor.name}'`;
+                // name: string = `${key} '${property.constructor.name}'`;
+                name: string = key;
                 nullable: boolean = false;
                 options: string[] = [];
                 propertyEditorSelector: string = '';
