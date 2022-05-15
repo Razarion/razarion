@@ -14,7 +14,7 @@
         <p-button label="Dump"
                   icon="pi pi-save"
                   styleClass="p-button-sm"
-                  (onClick)="onDump()"></p-button>
+                  (onClick)="onDumpAll()"></p-button>
       </div>
     </p-toolbar>
   </div>
@@ -46,9 +46,16 @@
         </div>
       </div>
       <div class="field grid">
-        <p-button id="upload" type="button" label="Save" icon="pi pi-cloud-upload" styleClass="p-button-sm"
-                  [disabled]="selectedThreeJsModel == null"
-                  (onClick)="onSave()"></p-button>
+        <p-toolbar>
+
+        <p-button type="button" label="Save" icon="pi pi-cloud-upload" styleClass="p-button-sm"
+                  [disabled]="selectedThreeJsModel == null || selectedThreeJsObject == null"
+                  (onClick)="onSaveSelected()"></p-button>
+          <i>&nbsp;</i>
+          <p-button type="button" label="Dump" icon="pi pi-save" styleClass="p-button-sm"
+                  [disabled]="selectedThreeJsObject == null"
+                  (onClick)="onDumpSelected()"></p-button>
+        </p-toolbar>
       </div>
     </p-panel>
   </div>

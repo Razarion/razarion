@@ -99,7 +99,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     loader.loadFiles(event.files);
   }
 
-  onDump() {
+  onDumpAll() {
     const exporter = new GLTFExporter();
     try {
       const exporterAny: any = exporter;
@@ -111,7 +111,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
         function (gltf: any) {
           const link = document.createElement("a");
           link.href = URL.createObjectURL(new Blob([gltf]));
-          link.setAttribute("download", "main-scene.gltf");
+          link.setAttribute("download", "dump-all.gltf");
           link.click();
         },
         function (error: any) {
@@ -135,7 +135,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     }
   }
 
-  onSave() {
+  onSaveSelected() {
     let _this = this;
     const exporter = new GLTFExporter();
     try {
@@ -169,6 +169,45 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
                 });
               }
             })
+        },
+        function (error: any) {
+          console.warn(error);
+          _this.messageService.add({
+            severity: 'error',
+            summary: `Can not export GLTF`,
+            detail: String(error),
+            sticky: true
+          });
+        },
+        {binary: true});
+    } catch (error) {
+      console.warn(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not export GLTF`,
+        detail: String(error),
+        sticky: true
+      });
+    }
+  }
+
+  onDumpSelected() {
+    const exporter = new GLTFExporter();
+    try {
+      const exporterAny: any = exporter;
+      let uploadObject = this.selectedThreeJsObject;
+      if (this.exportMaterialOnly) {
+        let geometry = new BufferGeometry();
+        geometry.setAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 0, 1, -1, 0, -1, 1, 0]), 3));
+        uploadObject = new Mesh(geometry, this.selectedThreeJsObject.material);
+        uploadObject.name = "Fake Mesh for Material"
+      }
+      exporterAny.parse(uploadObject,
+        function (gltf: any) {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(new Blob([gltf]));
+          link.setAttribute("download", "dump-selected.gltf");
+          link.click();
         },
         function (error: any) {
           console.warn(error);

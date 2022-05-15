@@ -36,6 +36,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         SlopeConfig slopeConfigLand = new SlopeConfig();
         slopeConfigLand.id(1);
         slopeConfigLand.horizontalSpace(5);
+        slopeConfigLand.setThreeJsMaterial(8884);
         slopeConfigLand.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
@@ -74,7 +75,8 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
                 // new ThreeJsModelConfig().id(8881),
                 new ThreeJsModelConfig().id(8882),
-                new ThreeJsModelConfig().id(8883)
+                new ThreeJsModelConfig().id(8883),
+                new ThreeJsModelConfig().id(8884)
         );
 
         setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, groundConfig, threeJsModelConfigs);

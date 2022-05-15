@@ -154,8 +154,33 @@ export class GameMockService {
                     throw new Error(`No TerrainObjectConfig for id ${terrainObjectConfigId}`);
                 }
             }
-            getSlopeConfig(id: number): SlopeConfig {
-                throw new Error("Method not implemented.");
+            getSlopeConfig(slopeConfigId: number): SlopeConfig {
+              let slopeConfig: SlopeConfig | null = null;
+              _this.staticGameConfigJson.slopeConfigs.forEach((slopeConfigJson: any) => {
+                if (slopeConfigJson.id != slopeConfigId) {
+                  return;
+                }
+                slopeConfig = new class implements SlopeConfig {
+                  getId(): number {
+                    return slopeConfigJson.id;
+                  }
+
+                  getInternalName(): string {
+                    return slopeConfigJson.internalName;
+                  }
+
+                  getThreeJsMaterial(): number {
+                    return slopeConfigJson.threeJsMaterial;
+                  }
+                }
+                return
+              });
+              if (slopeConfig !== null) {
+                return slopeConfig;
+              } else {
+                throw new Error(`No SlopeConfig for id ${slopeConfigId}`);
+              }
+
             }
             getDrivewayConfig(drivewayConfigId: number): DrivewayConfig {
                 throw new Error("Method not implemented.");
