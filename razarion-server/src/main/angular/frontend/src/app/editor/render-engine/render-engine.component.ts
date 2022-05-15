@@ -1,12 +1,7 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {
-  AngularTreeNodeData,
-  GwtAngularPropertyTable,
-  RendererEditorService,
-  RenderTaskRunnerControl
-} from "../../gwtangular/GwtAngularFacade";
+import {AngularTreeNodeData, GwtAngularPropertyTable} from "../../gwtangular/GwtAngularFacade";
 import * as Stats from 'stats.js';
 import {environment} from 'src/environments/environment';
 import {GameMockService} from 'src/app/game/renderer/game-mock.service';
@@ -16,19 +11,11 @@ import {ThreeJsRendererServiceImpl} from 'src/app/game/renderer/three-js-rendere
 import {MessageService, TreeNode} from 'primeng/api';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {URL_THREE_JS_MODEL_EDITOR} from 'src/app/common';
-import {BufferAttribute, BufferGeometry, Group, Mesh, Object3D, RepeatWrapping, Scene, Texture, Vector2} from 'three';
+import {BufferAttribute, BufferGeometry, Mesh, Object3D, Scene, Vector2} from 'three';
+import {ThreeJsPropertyTable} from "./three-js-property-table";
+import {ThreeJsTree} from "./three-js-tree";
 
-const IGNORED_THREE_JS_OBJECT_PROPERTIES: string[] = ["parent", "children", "up", "_listeners", "_onChangeCallback"];
-const READONLY_THREE_JS_OBJECT_PROPERTIES: string[] = ["uuid", "type"];
 let _this: any = null;
-
-function setupCreateOptionLabels(createOptions: any[]) {
-  let createOptionLabels = []
-  for (let i = 0; i < createOptions.length; i++) {
-    createOptionLabels.push({"label": createOptions[i].name, "value": i});
-  }
-  return createOptionLabels;
-}
 
 @Component({
   selector: 'render-engine',
@@ -36,39 +23,14 @@ function setupCreateOptionLabels(createOptions: any[]) {
 })
 export class RenderEngineComponent extends EditorPanel implements OnDestroy, AfterViewInit {
   renderEngineDisplayTree: TreeNode<Object3D>[] = [];
+  treeSelection: TreeNode<Object3D> | undefined;
+  mouseDownHandler: any;
   gwtAngularPropertyTable: GwtAngularPropertyTable | null = null;
-  @ViewChild('selectedDiv')
-  selectedDiv!: ElementRef;
   threeJsModels: any[] = [];
   selectedThreeJsModel: any = null;
   selectedThreeJsName: string | null = null;
   selectedThreeJsObject: any | null = null;
   exportMaterialOnly: boolean = false;
-  rendererEditorService: RendererEditorService;
-  renderTaskRunnerControls: RenderTaskRunnerControl[];
-  treeSelection: TreeNode<Object3D> | undefined;
-  mouseDownHandler: any;
-
-  createOptions = [
-    {
-      name: 'Texture',
-      exec(): any {
-        let texture = new Texture();
-        texture.image = new Image();
-        texture.wrapS = RepeatWrapping;
-        texture.wrapT = RepeatWrapping;
-        return texture
-      }
-    },
-    {
-      name: 'Group',
-      exec(): any {
-        return new Group();
-      }
-    }
-  ]
-
-  createOptionLabels = setupCreateOptionLabels(this.createOptions);
 
   constructor(private gwtAngularService: GwtAngularService,
               private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl,
@@ -78,12 +40,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     super();
     _this = this;
     if (environment.gwtMock) {
-      this.rendererEditorService = gameMockService.setupRendererEditorService();
-      this.renderTaskRunnerControls = [];
       this.threeJsModels = gameMockService.threeJsModels;
     } else {
-      this.rendererEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getCameraFrontendService();
-      this.renderTaskRunnerControls = this.rendererEditorService.getRenderTaskRunnerControls();
       gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().requestObjectNameIds("Three.js Model")
         .then((value: any) => this.threeJsModels = value,
           (reason: any) => {
@@ -96,32 +54,17 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
             });
           });
     }
-    this.initRenderEngineDisplayTree();
+    let threeJsTree = new ThreeJsTree(threeJsRendererServiceImpl);
+    this.renderEngineDisplayTree = threeJsTree.getRootTreeNodes();
     this.mouseDownHandler = (event: any) => {
       let object3D = threeJsRendererServiceImpl.intersectObjects(new Vector2(event.clientX, event.clientY));
       if (object3D != null) {
-        this.treeSelection = this.findTreeNode(object3D, this.renderEngineDisplayTree);
-        this.expandParent(this.treeSelection);
+        this.treeSelection = threeJsTree.findTreeNode(object3D);
+        threeJsTree.expandParent(this.treeSelection);
         this.displayPropertyTable(object3D)
       }
     }
     threeJsRendererServiceImpl.addMouseDownHandler(this.mouseDownHandler);
-  }
-
-  private expandParent(threeNode: TreeNode | undefined) {
-    if(threeNode) {
-      threeNode.expanded = true;
-      this.expandParent(threeNode.parent);
-    }
-  }
-
-  private static getSpecialSelector(property: any): string | null {
-    switch (property.constructor.name) {
-      case 'HTMLImageElement':
-      case 'ImageBitmap':
-        return 'image-property-editor';
-    }
-    return null;
   }
 
   ngOnDestroy(): void {
@@ -142,20 +85,6 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
 
   onTreeSelectionChanged(event: any) {
     this.displayPropertyTable(event.node.data);
-  }
-
-  private displayPropertyTable(object3D: Object3D) {
-    let rootTreeNodes: TreeNode<AngularTreeNodeData>[] = [];
-    this.recursivelyAddProperty(object3D, null, null, rootTreeNodes)
-
-    this.selectedThreeJsObject = object3D;
-    this.selectedThreeJsName = object3D.name;
-    this.exportMaterialOnly = false;
-
-    this.gwtAngularPropertyTable = new class implements GwtAngularPropertyTable {
-      configId: number = -999888777;
-      rootTreeNodes: TreeNode<AngularTreeNodeData>[] = rootTreeNodes;
-    }
   }
 
   onImport(event: any) {
@@ -204,8 +133,6 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
         sticky: true
       });
     }
-
-
   }
 
   onSave() {
@@ -264,187 +191,17 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     }
   }
 
-  private recursivelyAddProperty(object3D: Object3D, parent: Object3D | null, parentKey: string | null, treeNodes: TreeNode[]) {
-    const _this = this;
-    Object.keys(object3D).forEach(function (key, index) {
-      if (IGNORED_THREE_JS_OBJECT_PROPERTIES.includes(key)) {
-        return;
-      }
-      const property = (<any>object3D)[key];
-      if (typeof property === "object") {
-        if (property && (!Array.isArray(property) || property.length > 0)) {
-          let specialSelector = RenderEngineComponent.getSpecialSelector(property);
-          if (specialSelector != null) {
-            treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
-              data = new class implements AngularTreeNodeData {
-                canHaveChildren: boolean = false;
-                createAllowed: boolean = false;
-                deleteAllowed: boolean = true;
-                name: string = key;
-                nullable: boolean = false;
-                options: string[] = [];
-                propertyEditorSelector: string = specialSelector != null ? specialSelector : 'Stupid typescript case';
-                value: any = property;
+  private displayPropertyTable(object3D: Object3D) {
+    let threeJsPropertyTable = new ThreeJsPropertyTable(object3D);
 
-                onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void {
-                }
+    this.selectedThreeJsObject = object3D;
+    this.selectedThreeJsName = object3D.name;
+    this.exportMaterialOnly = false;
 
-                onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
-                }
-
-                setValue(value: any): void {
-                  if ((<any>object3D).isTexture) {
-                    let image = new Image();
-                    image.src = value;
-                    const texture = (<any>object3D).clone();
-                    texture.image = image;
-                    texture.needsUpdate = true;
-                    (<any>parent)[<string>parentKey] = texture;
-                  } else {
-                    (<any>object3D)[key] = value;
-                  }
-                }
-
-              }
-            });
-          } else {
-            const childTreeNodes: TreeNode[] = [];
-            _this.recursivelyAddProperty(property, object3D, key, childTreeNodes);
-            treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
-              children = childTreeNodes;
-              data = new class implements AngularTreeNodeData {
-                canHaveChildren: boolean = true;
-                createAllowed: boolean = false;
-                deleteAllowed: boolean = true;
-                // name: string = `${key} '${property.constructor.name}'`;
-                name: string = key;
-                nullable: boolean = false;
-                options: string[] = [];
-                propertyEditorSelector: string = '';
-                value: any;
-
-                onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void {
-                }
-
-                onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
-                }
-
-                setValue(value: any): void {
-                }
-
-              }
-            });
-          }
-        } else {
-          treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
-            data = new class implements AngularTreeNodeData {
-              canHaveChildren: boolean = true;
-              createAllowed: boolean = true;
-              deleteAllowed: boolean = false;
-              name: string = key;
-              nullable: boolean = false;
-              options: string[] = [];
-              propertyEditorSelector: string = '';
-              value: any;
-              createOptions: any = _this.createOptionLabels;
-
-              onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void {
-                (<any>object3D)[key] = _this.createOptions[createOption].exec();
-              }
-
-              onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
-              }
-
-              setValue(value: any): void {
-              }
-
-            }
-          });
-        }
-      } else {
-        treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
-          data = new class implements AngularTreeNodeData {
-            canHaveChildren: boolean = false;
-            createAllowed: boolean = false;
-            deleteAllowed: boolean = false;
-            name: string = key;
-            nullable: boolean = false;
-            options: string[] = [];
-            propertyEditorSelector: string = RenderEngineComponent.setupPropertyEditorSelector(property);
-            value: any = property;
-
-            onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void {
-            }
-
-            onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
-            }
-
-            setValue(value: any): void {
-              (<any>object3D)[key] = value;
-            }
-
-          }
-        });
-        // TODO gui.add(object3D, key).enable(!READONLY_THREE_JS_OBJECT_PROPERTIES.includes(key));
-      }
-    });
-  }
-
-  private static setupPropertyEditorSelector(property: any): string {
-    if (property == null) {
-      return ''
+    this.gwtAngularPropertyTable = new class implements GwtAngularPropertyTable {
+      configId: number = -999888777;
+      rootTreeNodes: TreeNode<AngularTreeNodeData>[] = threeJsPropertyTable.getRootTreeNodes();
     }
-    switch (typeof property) {
-      case 'number':
-        return 'double-property-editor';
-      case 'boolean':
-        return 'boolean-property-editor';
-      case 'string':
-        return 'string-property-editor';
-    }
-    return ''
-  }
-
-  private initRenderEngineDisplayTree() {
-    let camera = this.threeJsRendererServiceImpl.camera;
-    this.renderEngineDisplayTree.push(new class implements TreeNode {
-      label = camera.name;
-      icon = 'pi pi-video';
-      data = camera;
-    });
-    this.renderEngineDisplayTree.push(this.recursivelyAddTreeNodes(this.threeJsRendererServiceImpl.scene));
-  }
-
-  private recursivelyAddTreeNodes(object3D: Object3D, parentTreeNode?: TreeNode<Object3D>): TreeNode<Object3D> {
-    let treeNode = new class implements TreeNode<Object3D> {
-      label = object3D.name;
-      icon = 'pi pi-globe';
-      children: TreeNode<Object3D>[] = [];
-      data = object3D;
-      parent = parentTreeNode;
-    };
-
-    for (let i = 0, l = object3D.children.length; i < l; i++) {
-      const child = object3D.children[i];
-      treeNode.children.push(this.recursivelyAddTreeNodes(child, treeNode));
-    }
-
-    return treeNode;
-  }
-
-  private findTreeNode(object3D: Object3D, threeNodes: TreeNode<Object3D>[]): TreeNode<Object3D> | undefined {
-    for (const threeNode of threeNodes) {
-      if (threeNode.data?.id === object3D.id) {
-        return threeNode;
-      }
-      if (threeNode.children) {
-        let childObject3D = this.findTreeNode(object3D, threeNode.children);
-        if (childObject3D) {
-          return childObject3D;
-        }
-      }
-    }
-    return undefined;
   }
 
 }

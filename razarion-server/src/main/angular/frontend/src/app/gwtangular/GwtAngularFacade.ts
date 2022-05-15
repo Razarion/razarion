@@ -296,8 +296,6 @@ export interface EditorFrontendProvider {
   getTerrainMarkerService(): TerrainMarkerService;
 
   getTerrainEditorService(): TerrainEditorService;
-
-  getCameraFrontendService(): RendererEditorService;
 }
 
 export interface GenericEditorFrontendProvider {
@@ -420,50 +418,6 @@ export interface ImageGalleryItem {
   size: number;
   type: string;
   internalName: string
-}
-
-export interface RendererEditorService {
-  isRenderInterpolation(): boolean;
-
-  setRenderInterpolation(value: boolean): void;
-
-  isCallGetError(): boolean;
-
-  setCallGetError(callGetError: boolean): void;
-
-  getCameraXPosition(): number;
-
-  setCameraXPosition(x: number): void;
-
-  getCameraYPosition(): number;
-
-  setCameraYPosition(y: number): void;
-
-  getCameraZPosition(): number;
-
-  setCameraZPosition(z: number): void;
-
-  getCameraXRotation(): number;
-
-  setCameraXRotation(x: number): void;
-
-  getCameraZRotation(): number;
-
-  setCameraZRotation(z: number): void;
-
-  getCameraOpeningAngleY(): number;
-
-  setCameraOpeningAngleY(y: number): void;
-
-  getRenderTaskRunnerControls(): RenderTaskRunnerControl[];
-}
-
-export interface RenderTaskRunnerControl {
-  getName(): string;
-
-  isEnabled(): boolean;
-
-  setEnabled(enabled: boolean): void;
 }
 
 // ---------- Performance ----------

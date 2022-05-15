@@ -26,8 +26,6 @@ public class EditorFrontendProvider {
     private TerrainMarkerService terrainMarkerService;
     @Inject
     private TerrainEditorService terrainEditorService;
-    @Inject
-    private RendererEditorService cameraFrontendService;
 
     @SuppressWarnings("unused") // Called by Angular
     public GenericEditorFrontendProvider getGenericEditorFrontendProvider() {
@@ -52,10 +50,5 @@ public class EditorFrontendProvider {
     @SuppressWarnings("unused") // Called by Angular
     public TerrainEditorService getTerrainEditorService() {
         return terrainEditorService;
-    }
-
-    @SuppressWarnings("unused") // Called by Angular
-    public RendererEditorService getCameraFrontendService() {
-        return cameraFrontendService;
     }
 }

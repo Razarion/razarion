@@ -9,6 +9,7 @@ import jsinterop.annotations.JsType;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+@Deprecated
 @JsType
 @ApplicationScoped
 public class RendererEditorService {

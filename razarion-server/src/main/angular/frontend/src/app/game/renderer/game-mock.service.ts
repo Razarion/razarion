@@ -14,8 +14,6 @@ import {
   ObjectNameId,
   PerfmonStatistic,
   PhongMaterialConfig,
-  RendererEditorService,
-  RenderTaskRunnerControl,
   SlopeConfig,
   SlopeGeometry,
   StatusProvider,
@@ -104,10 +102,6 @@ export class GameMockService {
         getTerrainEditorService(): TerrainEditorService {
             throw new Error("Method not implemented.");
         }
-        getCameraFrontendService(): RendererEditorService {
-            throw new Error("Method not implemented.");
-        }
-
     };
 
     threeJsModels: ObjectNameId[] = [new class implements ObjectNameId {
@@ -297,55 +291,6 @@ export class GameMockService {
         return nativeMatrix;
     }
 
-    setupRendererEditorService(): RendererEditorService {
-        return new class implements RendererEditorService {
-            isRenderInterpolation(): boolean {
-                return false;
-            }
-            setRenderInterpolation(value: boolean): void {
-            }
-            isCallGetError(): boolean {
-                return false;
-            }
-            setCallGetError(callGetError: boolean): void {
-            }
-            getCameraXPosition(): number {
-                return 0;
-            }
-            setCameraXPosition(x: number): void {
-            }
-            getCameraYPosition(): number {
-                return 0;
-            }
-            setCameraYPosition(y: number): void {
-            }
-            getCameraZPosition(): number {
-                return 0;
-            }
-            setCameraZPosition(z: number): void {
-            }
-            getCameraXRotation(): number {
-                return 0;
-            }
-            setCameraXRotation(x: number): void {
-            }
-            getCameraZRotation(): number {
-                return 0;
-            }
-            setCameraZRotation(z: number): void {
-            }
-            getCameraOpeningAngleY(): number {
-                return 0;
-            }
-            setCameraOpeningAngleY(y: number): void {
-            }
-            getRenderTaskRunnerControls(): RenderTaskRunnerControl[] {
-                return [];
-            }
-
-        };
-    }
-
     mockThreeJsModelConfigs(): ThreeJsModelConfig[] {
         let threeJsModelConfigs: ThreeJsModelConfig[] = [];
         this.staticGameConfigJson.threeJsModelConfigs.forEach((threeJsModelConfigJson: any) => {
@@ -362,34 +307,5 @@ export class GameMockService {
         return threeJsModelConfigs;
     }
 
-}
-function createPhongMaterialConfig(material: any): PhongMaterialConfig {
-    let _material: any = material;
-    return new class implements PhongMaterialConfig {
-        getTextureId(): number {
-            return _material.textureId;
-        }
-        getScale(): number {
-            return _material.scale;
-        }
-        getNormalMapId(): number {
-            return _material.normalMapId;
-        }
-        getNormalMapDepth(): number {
-            return _material.normalMapDepth;
-        }
-        getBumpMapId(): number {
-            return _material.bumpMapId;
-        }
-        getBumpMapDepth(): number {
-            return _material.bumpMapDepth;
-        }
-        getShininess(): number {
-            return _material.shininess;
-        }
-        getSpecularStrength(): number {
-            return _material.specularStrength;
-        }
-    }
 }
 
