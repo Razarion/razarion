@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -8,6 +9,8 @@ import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+
+import static com.btxtech.shared.utils.CollectionUtils.getCorrectedIndex;
 
 /**
  * Created by Beat
@@ -47,13 +50,13 @@ public class TerrainSlopeTileBuilder {
     public TerrainSlopeTile generate() {
         TerrainSlopeTile terrainSlopeTile = new TerrainSlopeTile();
         terrainSlopeTile.setSlopeConfigId(slopeConfig.getId());
-        if(!outerSlopeGeometryBuilder.isEmpty()) {
+        if (!outerSlopeGeometryBuilder.isEmpty()) {
             terrainSlopeTile.setOuterSlopeGeometry(outerSlopeGeometryBuilder.generate());
         }
-        if(!centerSlopeGeometryBuilder.isEmpty()) {
+        if (!centerSlopeGeometryBuilder.isEmpty()) {
             terrainSlopeTile.setCenterSlopeGeometry(centerSlopeGeometryBuilder.generate());
         }
-        if(!innerSlopeGeometryBuilder.isEmpty()) {
+        if (!innerSlopeGeometryBuilder.isEmpty()) {
             terrainSlopeTile.setInnerSlopeGeometry(innerSlopeGeometryBuilder.generate());
         }
         return terrainSlopeTile;
@@ -80,8 +83,8 @@ public class TerrainSlopeTileBuilder {
 
                     Segment segment = polygon2Segment[y];
 
-                    Vertex normBR = setupNorm(x + 1, y, vertexBR.toXY(), invert);
-                    Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY(), invert);
+                    Vertex normBRInterpolated = setupNormInterpolated(x + 1, y, invert);
+                    Vertex normTLInterpolated = setupNormInterpolated(x, y + 1, invert);
                     DecimalPosition uvBL = mesh[x][y].getUv();
                     DecimalPosition uvBR = mesh[x][y].isUvTermination() ? mesh[x][y].getUvTermination() : mesh[x + 1][y].getUv();
                     DecimalPosition uvTR = mesh[x][y + 1].isUvTermination() ? mesh[x][y + 1].getUvTermination() : mesh[x + 1][y + 1].getUv();
@@ -91,23 +94,23 @@ public class TerrainSlopeTileBuilder {
                     double slopeFactorTL = mesh[x][y + 1].getSlopeFactor();
 
                     if (triangle1Valid) {
-                        Vertex normBL = setupNorm(x, y, vertexBL.toXY(), invert);
+                        Vertex normBLInterpolated = setupNormInterpolated(x, y, invert);
                         double slopeFactorBL = mesh[x][y].getSlopeFactor();
 
                         Vertex norm = vertexBL.cross(vertexBR, vertexTL).normalize(1.0);
-                        insertTriangleCorner(vertexBL, interpolateNorm ? normBL : norm, uvBL, slopeFactorBL, segment);
-                        insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, segment);
-                        insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, segment);
+                        insertTriangleCorner(vertexBL, interpolateNorm ? normBLInterpolated : norm, uvBL, slopeFactorBL, segment);
+                        insertTriangleCorner(vertexBR, interpolateNorm ? normBRInterpolated : norm, uvBR, slopeFactorBR, segment);
+                        insertTriangleCorner(vertexTL, interpolateNorm ? normTLInterpolated : norm, uvTL, slopeFactorTL, segment);
                     }
 
                     if (triangle2Valid) {
-                        Vertex normTR = setupNorm(x + 1, y + 1, vertexTR.toXY(), invert);
+                        Vertex normTRInterpolated = setupNormInterpolated(x + 1, y + 1, invert);
                         double slopeFactorTR = mesh[x + 1][y + 1].getSlopeFactor();
 
                         Vertex norm = vertexTR.cross(vertexTL, vertexBR).normalize(1.0);
-                        insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, segment);
-                        insertTriangleCorner(vertexTR, interpolateNorm ? normTR : norm, uvTR, slopeFactorTR, segment);
-                        insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, segment);
+                        insertTriangleCorner(vertexBR, interpolateNorm ? normBRInterpolated : norm, uvBR, slopeFactorBR, segment);
+                        insertTriangleCorner(vertexTR, interpolateNorm ? normTRInterpolated : norm, uvTR, slopeFactorTR, segment);
+                        insertTriangleCorner(vertexTL, interpolateNorm ? normTLInterpolated : norm, uvTL, slopeFactorTL, segment);
                     }
                 } catch (Throwable t) {
                     exceptionHandler.handleException(t);
@@ -116,39 +119,71 @@ public class TerrainSlopeTileBuilder {
         }
     }
 
-    private Vertex setupNorm(int x, int y, DecimalPosition absolutePosition, boolean swap) {
+    private Vertex setupNormInterpolated(int x, int y, boolean invert) {
+        Vertex vertical = setupVerticalNormed(x, y);
+        Vertex horizontal = setupHorizontalNormed(x, y);
+
+        if (invert) {
+            return vertical.cross(horizontal).normalize(1.0);
+        } else {
+            return horizontal.cross(vertical).normalize(1.0);
+        }
+    }
+
+    private Vertex setupVerticalNormed(int x, int y) {
+        Index xWxE = correctWestEast(x, y);
+        int sum = xWxE.getX() + xWxE.getY();
+        int correctedX = getCorrectedIndex(x - xWxE.getX() + (int) (sum / 2.0), xCount);
+
         Vertex verticalUnNormed;
         if (y == 0) {
-            // Ground skeleton not respected
-            // Outer take norm from ground
-            // return terrainTileBuilder.interpolateNorm(absolutePosition, Vertex.Z_NORM);
-            verticalUnNormed = mesh[x][y + 1].getVertex().sub(mesh[x][0].getVertex());
+            verticalUnNormed = mesh[correctedX][1].getVertex().sub(mesh[correctedX][0].getVertex());
         } else if (y == yCount - 1) {
-            // Ground skeleton no respected
-            // Inner take norm from ground
-            // return terrainTileBuilder.interpolateNorm(absolutePosition, Vertex.Z_NORM);
-            verticalUnNormed = mesh[x][y].getVertex().sub(mesh[x][y - 1].getVertex());
+            verticalUnNormed = mesh[correctedX][y].getVertex().sub(mesh[correctedX][y - 1].getVertex());
         } else {
-            verticalUnNormed = mesh[x][y + 1].getVertex().sub(mesh[x][y - 1].getVertex());
+            verticalUnNormed = mesh[correctedX][y + 1].getVertex().sub(mesh[correctedX][y - 1].getVertex());
         }
         if (verticalUnNormed.magnitude() == 0.0) {
             // Driveway bottom -> all triangles are squashed
             return Vertex.Z_NORM;
         }
-        Vertex vertical = verticalUnNormed.normalize(1);
 
+        return verticalUnNormed.normalize(1);
+    }
+
+
+    private Vertex setupHorizontalNormed(int x, int y) {
+        Index xWxE = correctWestEast(x, y);
+
+        Vertex correctedWest = mesh[getCorrectedIndex(x - 1 - xWxE.getX(), xCount)][y].getVertex();
+        Vertex correctedEast = mesh[getCorrectedIndex(x + 1 + xWxE.getY(), xCount)][y].getVertex();
+        return correctedEast.sub(correctedWest).normalize(1);
+    }
+
+    private Index correctWestEast(int x, int y) {
         Vertex east = mesh[x + 1][y].getVertex();
+        Vertex center = mesh[x][y].getVertex();
         Vertex west = mesh[x - 1][y].getVertex();
-        Vertex horizontalUnnormed = east.sub(west);
-        if (horizontalUnnormed.magnitude() == 0.0) {
-            return Vertex.Z_NORM;
+        if (!east.equalsDelta(center, 0.001) && !west.equalsDelta(center, 0.001)) {
+            return Index.ZERO;
         }
-        Vertex horizontal = horizontalUnnormed.normalize(1);
-        if (swap) {
-            return vertical.cross(horizontal).normalize(1.0);
-        } else {
-            return horizontal.cross(vertical).normalize(1.0);
+        Vertex correctedWest = west;
+        int i = 2;
+        int correctWestIncrease = 0;
+        while (correctedWest.equalsDelta(center, 0.001) && i < xCount) {
+            correctedWest = mesh[getCorrectedIndex(x - i, xCount)][y].getVertex();
+            i++;
+            correctWestIncrease++;
         }
+        Vertex correctedEast = east;
+        int correctEastIncrease = 0;
+        i = 2;
+        while (correctedEast.equalsDelta(center, 0.001) && i < xCount) {
+            correctedEast = mesh[getCorrectedIndex(x + i, xCount)][y].getVertex();
+            i++;
+            correctEastIncrease++;
+        }
+        return new Index(correctWestIncrease, correctEastIncrease);
     }
 
     private void insertTriangleCorner(Vertex vertex, Vertex norm, DecimalPosition uv, double slopeFactor, Segment segment) {
@@ -167,6 +202,12 @@ public class TerrainSlopeTileBuilder {
                 throw new IllegalArgumentException("Unexpected segment: " + segment);
         }
         slopeGeometryContext.addTriangleCorner(vertex, norm, uv, slopeFactor);
+    }
+
+    public enum Segment {
+        OUTER,
+        CENTER,
+        INNER
     }
 
     private class SlopeVertex {
@@ -201,11 +242,5 @@ public class TerrainSlopeTileBuilder {
         public double getSlopeFactor() {
             return slopeFactor;
         }
-    }
-
-    public enum Segment {
-        OUTER,
-        CENTER,
-        INNER
     }
 }

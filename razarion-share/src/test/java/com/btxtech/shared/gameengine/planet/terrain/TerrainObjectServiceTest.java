@@ -37,6 +37,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         slopeConfigLand.id(1);
         slopeConfigLand.horizontalSpace(5);
         slopeConfigLand.setThreeJsMaterial(8884);
+        slopeConfigLand.setInterpolateNorm(true);
         slopeConfigLand.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
