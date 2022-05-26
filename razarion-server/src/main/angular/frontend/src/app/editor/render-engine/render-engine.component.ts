@@ -56,12 +56,15 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     }
     let threeJsTree = new ThreeJsTree(threeJsRendererServiceImpl);
     this.renderEngineDisplayTree = threeJsTree.getRootTreeNodes();
+
     this.mouseDownHandler = (event: any) => {
       let object3D = threeJsRendererServiceImpl.intersectObjects(new Vector2(event.clientX, event.clientY));
       if (object3D != null) {
         this.treeSelection = threeJsTree.findTreeNode(object3D);
         threeJsTree.expandParent(this.treeSelection);
-        this.displayPropertyTable(object3D)
+        if (object3D !== this.selectedThreeJsObject) {
+          this.displayPropertyTable(object3D)
+        }
       }
     }
     threeJsRendererServiceImpl.addMouseDownHandler(this.mouseDownHandler);
@@ -84,7 +87,9 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   }
 
   onTreeSelectionChanged(event: any) {
-    this.displayPropertyTable(event.node.data);
+    if (event.node.data !== this.selectedThreeJsObject) {
+      this.displayPropertyTable(event.node.data);
+    }
   }
 
   onImport(event: any) {
@@ -231,7 +236,9 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   }
 
   private displayPropertyTable(object3D: Object3D) {
-    let threeJsPropertyTable = new ThreeJsPropertyTable(object3D);
+    let threeJsPropertyTable = new ThreeJsPropertyTable(object3D, () =>
+      _this.gwtAngularPropertyTable.rootTreeNodes = [..._this.gwtAngularPropertyTable.rootTreeNodes]
+    );
 
     this.selectedThreeJsObject = object3D;
     this.selectedThreeJsName = object3D.name;

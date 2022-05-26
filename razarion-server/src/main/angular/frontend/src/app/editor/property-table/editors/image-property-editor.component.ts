@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {AngularTreeNodeData} from "../../../gwtangular/GwtAngularFacade";
 import {MessageService} from "primeng/api";
 
@@ -13,11 +13,11 @@ import {MessageService} from "primeng/api";
                     mode="basic"
                     [auto]="true"
                     [customUpload]=true
-                    (uploadHandler)="onImport($event)">
+                    (uploadHandler)="onImport($event); fileUploadElement.clear()">
       </p-fileUpload>
     `
 })
-export class ImagePropertyEditorComponent implements AfterViewInit {
+export class ImagePropertyEditorComponent implements OnInit {
   angularTreeNodeData!: AngularTreeNodeData;
   imageUrl!: string;
   showCanvas: boolean = false;
@@ -27,7 +27,7 @@ export class ImagePropertyEditorComponent implements AfterViewInit {
   constructor(private messageService: MessageService, private changeDetector: ChangeDetectorRef) {
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     if (this.angularTreeNodeData.value !== undefined && this.angularTreeNodeData.value !== null) {
       if (this.angularTreeNodeData.value.constructor.name === 'ImageBitmap') {
         this.showCanvas = true;

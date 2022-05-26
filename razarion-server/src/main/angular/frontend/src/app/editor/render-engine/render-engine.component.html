@@ -64,8 +64,7 @@
     <p-splitter layout="vertical">
       <ng-template pTemplate>
         <p-tree [value]="renderEngineDisplayTree" selectionMode="single" [(selection)]="treeSelection"
-                (onNodeSelect)="onTreeSelectionChanged($event)" style="width: 100%"
-                scrollHeight="200px">
+                (onNodeSelect)="onTreeSelectionChanged($event)" scrollHeight="200px">
         </p-tree>
       </ng-template>
       <ng-template pTemplate>
