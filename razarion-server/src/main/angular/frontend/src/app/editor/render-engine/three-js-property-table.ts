@@ -1,6 +1,6 @@
 import {TreeNode} from "primeng/api";
 import {AngularTreeNodeData, GwtAngularPropertyTable} from "../../gwtangular/GwtAngularFacade";
-import {Group, Object3D, RepeatWrapping, Texture, TextureLoader} from "three";
+import {Group, Object3D, RepeatWrapping, Texture} from "three";
 
 const IGNORED_THREE_JS_OBJECT_PROPERTIES: string[] = ["parent", "children", "up", "_listeners", "_onChangeCallback"];
 
@@ -42,7 +42,7 @@ export class ThreeJsPropertyTable {
   private rootTreeNodes: TreeNode<AngularTreeNodeData>[] = [];
 
   constructor(object3D: Object3D, private updateHandler: () => {}) {
-    this.recursivelyAddProperties(object3D, this.rootTreeNodes);
+    this.recursivelyAddProperties(object3D, null, null, this.rootTreeNodes);
   }
 
   private static getSpecialSelector(property: any): string | null {
@@ -77,7 +77,7 @@ export class ThreeJsPropertyTable {
     const property = this.createOptions[createOption].exec();
     parentProperty[name] = property;
     treeNode.children = [];
-    this.recursivelyAddProperties(property, treeNode.children);
+    this.recursivelyAddProperties(property, name, parentProperty, treeNode.children);
     parentProperty.needsUpdate = true;
     treeNode.data.createAllowed = false;
     treeNode.data.deleteAllowed = true;
@@ -94,7 +94,7 @@ export class ThreeJsPropertyTable {
     this.updateHandler();
   }
 
-  private recursivelyAddProperties(property: any, treeNodes: TreeNode[]) {
+  private recursivelyAddProperties(property: any, propertyName: string | null, parentProperty: any, treeNodes: TreeNode[]) {
     const _this = this;
     Object.keys(property).forEach(function (childName) {
       if (IGNORED_THREE_JS_OBJECT_PROPERTIES.includes(childName)) {
@@ -103,7 +103,7 @@ export class ThreeJsPropertyTable {
       const childProperty = property[childName];
       if (typeof childProperty === "object") {
         if (childProperty && (!Array.isArray(childProperty) || childProperty.length > 0)) {
-          _this.addObjectProperty(childName, childProperty, property, treeNodes);
+          _this.addObjectProperty(childName, childProperty, property, propertyName, parentProperty, treeNodes);
         } else {
           _this.addNullObjectProperty(childName, property, treeNodes);
         }
@@ -113,7 +113,7 @@ export class ThreeJsPropertyTable {
     });
   }
 
-  private addObjectProperty(name: string, property: any, parentProperty: any, treeNodes: TreeNode[]) {
+  private addObjectProperty(name: string, property: any, parentProperty: any, parentPropertyName: string | null, grandParentProperty: any, treeNodes: TreeNode[]) {
     const _this = this;
     let specialSelector = ThreeJsPropertyTable.getSpecialSelector(property);
     if (specialSelector != null) {
@@ -135,20 +135,31 @@ export class ThreeJsPropertyTable {
           }
 
           setValue(value: any): void {
-            if (name === "image") {
+            if (parentProperty.isTexture) {
+              const newTexture = parentProperty.clone();
               let image = new Image();
+              image.onload = function () {
+                newTexture.needsUpdate = true;
+                grandParentProperty.needsUpdate = true;
+              };
               image.src = value;
-              value = image;
+              newTexture.image = image;
+              if(parentPropertyName) {
+                grandParentProperty[parentPropertyName] = newTexture;
+              } else {
+                throw new Error("Parent property is null");
+              }
+            } else {
+              (<any>parentProperty)[name] = value;
+              parentProperty.needsUpdate = true;
             }
-            (<any>parentProperty)[name] = value;
-            parentProperty.needsUpdate = true;
           }
 
         }
       });
     } else {
       const childTreeNodes: TreeNode[] = [];
-      _this.recursivelyAddProperties(property, childTreeNodes);
+      _this.recursivelyAddProperties(property, name, parentProperty, childTreeNodes);
       const treeNode = new class implements TreeNode<AngularTreeNodeData> {
         children = childTreeNodes;
         data = new class implements AngularTreeNodeData {
