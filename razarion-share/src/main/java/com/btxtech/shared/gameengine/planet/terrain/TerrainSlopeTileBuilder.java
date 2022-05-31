@@ -10,8 +10,6 @@ import com.btxtech.shared.utils.GeometricUtil;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import static com.btxtech.shared.utils.CollectionUtils.getCorrectedIndex;
-
 /**
  * Created by Beat
  * 03.04.2017.
@@ -133,7 +131,7 @@ public class TerrainSlopeTileBuilder {
     private Vertex setupVerticalNormed(int x, int y) {
         Index xWxE = correctWestEast(x, y);
         int sum = xWxE.getX() + xWxE.getY();
-        int correctedX = getCorrectedIndex(x - xWxE.getX() + (int) (sum / 2.0), xCount);
+        int correctedX = x - xWxE.getX() + (int) (sum / 2.0);
 
         Vertex verticalUnNormed;
         if (y == 0) {
@@ -155,8 +153,8 @@ public class TerrainSlopeTileBuilder {
     private Vertex setupHorizontalNormed(int x, int y) {
         Index xWxE = correctWestEast(x, y);
 
-        Vertex correctedWest = mesh[getCorrectedIndex(x - 1 - xWxE.getX(), xCount)][y].getVertex();
-        Vertex correctedEast = mesh[getCorrectedIndex(x + 1 + xWxE.getY(), xCount)][y].getVertex();
+        Vertex correctedWest = mesh[x - 1 - xWxE.getX()][y].getVertex();
+        Vertex correctedEast = mesh[x + 1 + xWxE.getY()][y].getVertex();
         return correctedEast.sub(correctedWest).normalize(1);
     }
 
@@ -168,19 +166,19 @@ public class TerrainSlopeTileBuilder {
             return Index.ZERO;
         }
         Vertex correctedWest = west;
-        int i = 2;
+        int correctedXWest = x - 2;
         int correctWestIncrease = 0;
-        while (correctedWest.equalsDelta(center, 0.001) && i < xCount) {
-            correctedWest = mesh[getCorrectedIndex(x - i, xCount)][y].getVertex();
-            i++;
+        while (correctedWest.equalsDelta(center, 0.001) && correctedXWest >= 0) {
+            correctedWest = mesh[correctedXWest][y].getVertex();
+            correctedXWest--;
             correctWestIncrease++;
         }
         Vertex correctedEast = east;
         int correctEastIncrease = 0;
-        i = 2;
-        while (correctedEast.equalsDelta(center, 0.001) && i < xCount) {
-            correctedEast = mesh[getCorrectedIndex(x + i, xCount)][y].getVertex();
-            i++;
+        int correctedXEast = x + 2;
+        while (correctedEast.equalsDelta(center, 0.001) && correctedXEast < xCount) {
+            correctedEast = mesh[correctedXEast][y].getVertex();
+            correctedXEast++;
             correctEastIncrease++;
         }
         return new Index(correctWestIncrease, correctEastIncrease);

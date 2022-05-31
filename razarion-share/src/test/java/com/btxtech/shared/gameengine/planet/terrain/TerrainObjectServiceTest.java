@@ -50,10 +50,10 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         beachConfig.setThreeJsMaterial(8884);
         beachConfig.setInterpolateNorm(true);
         beachConfig.setSlopeShapes(Arrays.asList(
-                new SlopeShape().position(new DecimalPosition(0, 5)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(8, 10)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(16, 20)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(24, 20)).slopeFactor(1)));
+                new SlopeShape().position(new DecimalPosition(0, 0)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(8, -0.3)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(16, -0.6)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(24, -0.9)).slopeFactor(1)));
 
         beachConfig.outerLineGameEngine(8).innerLineGameEngine(16);
         slopeConfigs.add(beachConfig);
@@ -64,17 +64,19 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         beachPosition.id(2);
         beachPosition.slopeConfigId(2);
 
-        beachPosition.polygon(Arrays.asList(
-                GameTestHelper.createTerrainSlopeCorner(412.5000, 434.2500, null),
-                GameTestHelper.createTerrainSlopeCorner(351.5000, 439.5833, null),
-                GameTestHelper.createTerrainSlopeCorner(322.1667, 398.9167, null),
-                GameTestHelper.createTerrainSlopeCorner(301.5000, 337.5833, null),
-                GameTestHelper.createTerrainSlopeCorner(362.1667, 322.2500, null),
-                GameTestHelper.createTerrainSlopeCorner(390.5000, 290.5833, null),
-                GameTestHelper.createTerrainSlopeCorner(434.8333, 343.5833, null),
-                GameTestHelper.createTerrainSlopeCorner(399.8333, 394.5833, null))
+        beachPosition.polygon(
+                Arrays.asList(
+                        GameTestHelper.createTerrainSlopeCorner(179.0833, 151.2500, null),
+                        GameTestHelper.createTerrainSlopeCorner(212.5833, 177.5000, null),
+                        GameTestHelper.createTerrainSlopeCorner(246.3333, 159.7500, null),
+                        GameTestHelper.createTerrainSlopeCorner(278.5833, 207.5000, null),
+                        GameTestHelper.createTerrainSlopeCorner(274.0833, 262.2500, null),
+                        GameTestHelper.createTerrainSlopeCorner(240.5833, 294.2500, null),
+                        GameTestHelper.createTerrainSlopeCorner(197.8333, 290.2500, null),
+                        GameTestHelper.createTerrainSlopeCorner(185.5833, 242.2500, null),
+                        GameTestHelper.createTerrainSlopeCorner(150.8333, 208.0000, null))
         );
-        // terrainSlopePositions.add(beachPosition);
+        terrainSlopePositions.add(beachPosition);
         // Razarion Industries base
         TerrainSlopePosition razarionIndustries = new TerrainSlopePosition();
         razarionIndustries.id(1);
@@ -83,7 +85,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 GameTestHelper.createTerrainSlopeCorner(20, 20, null),
                 GameTestHelper.createTerrainSlopeCorner(50, 20, null),
                 GameTestHelper.createTerrainSlopeCorner(50, 50, null),
-                GameTestHelper.createTerrainSlopeCorner(20, 159, null)));
+                GameTestHelper.createTerrainSlopeCorner(20, 50, null)));
         terrainSlopePositions.add(razarionIndustries);
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
