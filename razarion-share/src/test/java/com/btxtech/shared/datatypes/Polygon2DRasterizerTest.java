@@ -1,6 +1,5 @@
 package com.btxtech.shared.datatypes;
 
-import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import org.junit.Test;
 
@@ -11,10 +10,9 @@ import java.util.Arrays;
  * on 11.11.2017.
  */
 public class Polygon2DRasterizerTest {
-    @Test
+    @Test(expected = RuntimeException.class)
     public void test1() throws Exception {
-        // Runs forever
-        // Polygon2DRasterizer polygon2DRasterizer = Polygon2DRasterizer.create(new Polygon2D(Arrays.asList(new DecimalPosition(23.375, 38.250), new DecimalPosition(88.625, 41.250), new DecimalPosition(28.125, -21.250))), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+        Polygon2DRasterizer polygon2DRasterizer = Polygon2DRasterizer.create(new Polygon2D(Arrays.asList(new DecimalPosition(23.375, 38.250), new DecimalPosition(88.625, 41.250), new DecimalPosition(28.125, -21.250))), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
     }
 
     @Test

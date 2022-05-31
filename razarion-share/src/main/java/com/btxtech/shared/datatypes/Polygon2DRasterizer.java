@@ -2,6 +2,7 @@ package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
+import com.btxtech.shared.utils.PolygonUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,16 +26,19 @@ public class Polygon2DRasterizer {
     private Set<Index> openInside = new HashSet<>();
     private Set<Index> closedInside = new HashSet<>();
 
-    public static Polygon2DRasterizer create(Polygon2D polygon, int rasterSize) {
-        polygon.checkForLineCrossing();
-        Polygon2DRasterizer polygon2DRasterizer = new Polygon2DRasterizer(polygon, rasterSize);
-        polygon2DRasterizer.rasterize();
-        return polygon2DRasterizer;
-    }
-
     private Polygon2DRasterizer(Polygon2D polygon, int rasterSize) {
         this.polygon = polygon;
         this.rasterSize = rasterSize;
+    }
+
+    public static Polygon2DRasterizer create(Polygon2D polygon, int rasterSize) {
+        polygon.checkForLineCrossing();
+        if (!PolygonUtil.isCounterclockwise(polygon.getCorners())) {
+            throw new RuntimeException("Polygon corners must be in counter-clock order");
+        }
+        Polygon2DRasterizer polygon2DRasterizer = new Polygon2DRasterizer(polygon, rasterSize);
+        polygon2DRasterizer.rasterize();
+        return polygon2DRasterizer;
     }
 
     private void rasterize() {
@@ -44,21 +48,22 @@ public class Polygon2DRasterizer {
     }
 
     private void findPiercedTiles() {
-        polygon.getLines().stream().map(line -> GeometricUtil.rasterizeLine(line, rasterSize)).forEach(indices -> indices.forEach(index -> {
-
-            if (piercedTileOrder.isEmpty()) {
-                piercedTiles.put(index, 1);
-                piercedTileOrder.add(index);
-            } else if (!piercedTileOrder.get(piercedTileOrder.size() - 1).equals(index)) {
-                piercedTileOrder.add(index);
-                Integer count = piercedTiles.get(index);
-                if (count == null) {
-                    count = 0;
-                }
-                count++;
-                piercedTiles.put(index, count);
-            }
-        }));
+        polygon.getLines().stream()
+                .map(line -> GeometricUtil.rasterizeLine(line, rasterSize))
+                .forEach(indices -> indices.forEach(index -> {
+                    if (piercedTileOrder.isEmpty()) {
+                        piercedTiles.put(index, 1);
+                        piercedTileOrder.add(index);
+                    } else if (!piercedTileOrder.get(piercedTileOrder.size() - 1).equals(index)) {
+                        piercedTileOrder.add(index);
+                        Integer count = piercedTiles.get(index);
+                        if (count == null) {
+                            count = 0;
+                        }
+                        count++;
+                        piercedTiles.put(index, count);
+                    }
+                }));
         if (piercedTileOrder.size() > 1) {
             if (piercedTileOrder.get(piercedTileOrder.size() - 1).equals(piercedTileOrder.get(0))) {
                 piercedTileOrder.remove(0);

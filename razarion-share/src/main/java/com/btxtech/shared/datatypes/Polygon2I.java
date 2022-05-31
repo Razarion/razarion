@@ -1,7 +1,6 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -357,26 +356,6 @@ public class Polygon2I {
             movedCorners.add(corner.add(translation));
         }
         return new Polygon2I(movedCorners);
-    }
-
-    public static boolean isCounterClock(List<Index> corners) {
-        double angleSum = 0;
-        for (int i = 0; i < corners.size(); i++) {
-            Index lastCorner = corners.get(CollectionUtils.getCorrectedIndex(i - 1, corners.size()));
-            Index currentCorner = corners.get(CollectionUtils.getCorrectedIndex(i, corners.size()));
-            Index nextCorner = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
-            angleSum += currentCorner.getAngle(nextCorner, lastCorner);
-        }
-        double angleSumCalculated = MathHelper.HALF_RADIANT * (corners.size() - 2);
-        double outerAngleSumCalculated = MathHelper.ONE_RADIANT * corners.size() - angleSumCalculated;
-
-        if (MathHelper.compareWithPrecision(angleSumCalculated, angleSum)) {
-            return false;
-        } else if (MathHelper.compareWithPrecision(outerAngleSumCalculated, angleSum)) {
-            return true;
-        } else {
-            throw new IllegalStateException("angleSum is odd: " + angleSum + " (" + MathHelper.radToGrad(angleSum) + ") ");
-        }
     }
 
     public String testString() {
