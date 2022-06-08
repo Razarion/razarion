@@ -150,7 +150,6 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     // const meshBasicMaterial = new MeshBasicMaterial({ color: 0x8888ff });
     // const slope = new Mesh(geometry, meshBasicMaterial);
 
-    (<any>material).flatShading = false;
     const slope = new Mesh(geometry, material);
     slope.name = "Slope";
     this.group.add(slope);
