@@ -1,18 +1,7 @@
 import {SlopeGeometry, TerrainTile, ThreeJsTerrainTile} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
-import {
-  BufferAttribute,
-  BufferGeometry,
-  Group,
-  Material,
-  Matrix4,
-  Mesh,
-  MeshBasicMaterial,
-  MeshNormalMaterial,
-  Scene
-} from "three";
+import {BufferAttribute, BufferGeometry, Group, Material, Matrix4, Mesh, MeshBasicMaterial, Scene} from "three";
 import {ThreeJsModelService} from "./three-js-model.service";
-import {VertexNormalsHelper} from "three/examples/jsm/helpers/VertexNormalsHelper";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   private group = new Group();
@@ -26,13 +15,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         let geometry = new BufferGeometry();
         geometry.setAttribute('position', new BufferAttribute(groundTerrainTile.positions, 3));
         geometry.setAttribute('normal', new BufferAttribute(groundTerrainTile.norms, 3));
-        let uvs = new Float32Array(groundTerrainTile.positions.length * 2 / 3);
-        let uvCount = uvs.length / 2;
-        for (let uvIndex = 0; uvIndex < uvCount; uvIndex++) {
-          uvs[uvIndex * 2] = groundTerrainTile.positions[uvIndex * 3];
-          uvs[uvIndex * 2 + 1] = groundTerrainTile.positions[uvIndex * 3 + 1];
-        }
-        geometry.setAttribute('uv', new BufferAttribute(uvs, 2));
+        geometry.setAttribute('uv', this.uvFromPosition(groundTerrainTile.positions));
         let material;
         if (groundConfig.getTopThreeJsMaterial() === undefined || groundConfig.getTopThreeJsMaterial() == null) {
           material = new MeshBasicMaterial({color: 0x11EE11});
@@ -56,13 +39,18 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
           }
           let material = threeJsModelService.getMaterial(slopeConfig.getThreeJsMaterial());
           if (terrainSlopeTile.outerSlopeGeometry !== null && terrainSlopeTile.outerSlopeGeometry !== undefined) {
-            this.setupSlopeGeometry(terrainSlopeTile.outerSlopeGeometry, material);
+            this.setupSlopeGeometry(terrainSlopeTile.outerSlopeGeometry, material, null);
           }
           if (terrainSlopeTile.centerSlopeGeometry !== null && terrainSlopeTile.centerSlopeGeometry !== undefined) {
-            this.setupSlopeGeometry(terrainSlopeTile.centerSlopeGeometry, material);
+            this.setupSlopeGeometry(terrainSlopeTile.centerSlopeGeometry, material, null);
           }
           if (terrainSlopeTile.innerSlopeGeometry !== null && terrainSlopeTile.innerSlopeGeometry !== undefined) {
-            this.setupSlopeGeometry(terrainSlopeTile.innerSlopeGeometry, material);
+            let innerGroundMaterial = null;
+            if (slopeConfig.getGroundConfigId()) {
+              let innerGroundConfigMaterialId = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(slopeConfig.getGroundConfigId()).getTopThreeJsMaterial();
+              innerGroundMaterial = threeJsModelService.getMaterial(innerGroundConfigMaterialId);
+            }
+            this.setupSlopeGeometry(terrainSlopeTile.innerSlopeGeometry, material, innerGroundMaterial);
           }
         } catch (error) {
           // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
@@ -130,12 +118,46 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     }
   }
 
-  private setupSlopeGeometry(slopeGeometry: SlopeGeometry, material: Material): void {
+  addToScene(): void {
+    this.parentScene.add(this.group);
+  }
+
+  removeFromScene(): void {
+    this.parentScene.remove(this.group);
+  }
+
+  private uvFromPosition(positions: Float32Array) {
+    let uvs = new Float32Array(positions.length * 2 / 3);
+    let uvCount = uvs.length / 2;
+    for (let uvIndex = 0; uvIndex < uvCount; uvIndex++) {
+      uvs[uvIndex * 2] = positions[uvIndex * 3];
+      uvs[uvIndex * 2 + 1] = positions[uvIndex * 3 + 1];
+    }
+    return new BufferAttribute(uvs, 2);
+  }
+
+  private setupSlopeGeometry(slopeGeometry: SlopeGeometry, material: Material, groundMaterial: Material | null): void {
     let geometry = new BufferGeometry();
     geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
     geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
     geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
     geometry.setAttribute('slopeFactors', new BufferAttribute(slopeGeometry.slopeFactors, 3));
+    let slope = new Mesh(geometry, material);
+    slope.name = "Slope";
+    this.group.add(slope);
+
+    // if (groundMaterial !== null) {
+    //   let geometry = new BufferGeometry();
+    //   geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
+    //   geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
+    //   geometry.setAttribute('uv', this.uvFromPosition(slopeGeometry.positions));
+    //   geometry.setAttribute('slopeFactors', new BufferAttribute(slopeGeometry.slopeFactors, 3));
+    //   let groundMaterialClone = groundMaterial.clone();
+    //   groundMaterialClone.transparent = true;
+    //   let slope = new Mesh(geometry, groundMaterialClone);
+    //   slope.name = "Slope-Ground";
+    //   this.group.add(slope);
+    // }
 
     // const meshNormalMaterial = new MeshNormalMaterial()
     // meshNormalMaterial.normalMap = (<any>material).normalMap;
@@ -150,11 +172,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     // const meshBasicMaterial = new MeshBasicMaterial({ color: 0x8888ff });
     // const slope = new Mesh(geometry, meshBasicMaterial);
 
-    const slope = new Mesh(geometry, material);
-    slope.name = "Slope";
-    this.group.add(slope);
-
-        // const normHelper = new VertexNormalsHelper( slope, 2, 0x00ff00);
+    // const normHelper = new VertexNormalsHelper( slope, 2, 0x00ff00);
     // this.group.add(normHelper);
   }
 
@@ -178,13 +196,5 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     cube.name = "Shallow Water";
     this.group.add(cube);
   }
-
-    addToScene(): void {
-        this.parentScene.add(this.group);
-    }
-
-    removeFromScene(): void {
-        this.parentScene.remove(this.group);
-    }
 
 }

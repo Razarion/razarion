@@ -91,6 +91,8 @@ export interface SlopeConfig {
   getInternalName(): string;
 
   getThreeJsMaterial(): number;
+
+  getGroundConfigId(): number;
 }
 
 export interface DrivewayConfig {

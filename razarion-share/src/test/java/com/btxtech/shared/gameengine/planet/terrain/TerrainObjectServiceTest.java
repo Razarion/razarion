@@ -48,12 +48,14 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         beachConfig.id(2);
         beachConfig.horizontalSpace(5);
         beachConfig.setThreeJsMaterial(8884);
+        beachConfig.setGroundConfigId(GROUND_CONFIG_ID);
         beachConfig.setInterpolateNorm(true);
         beachConfig.setSlopeShapes(Arrays.asList(
                 new SlopeShape().position(new DecimalPosition(0, 0)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(8, -0.3)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(16, -0.6)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(24, -0.9)).slopeFactor(1)));
+                //new SlopeShape().position(new DecimalPosition(6, -0.3)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(12, -0.6)).slopeFactor(1),
+                //new SlopeShape().position(new DecimalPosition(18, -0.9)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(24, -1.2)).slopeFactor(0)));
 
         beachConfig.outerLineGameEngine(8).innerLineGameEngine(16);
         slopeConfigs.add(beachConfig);
@@ -66,15 +68,12 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
         beachPosition.polygon(
                 Arrays.asList(
-                        GameTestHelper.createTerrainSlopeCorner(179.0833, 151.2500, null),
-                        GameTestHelper.createTerrainSlopeCorner(212.5833, 177.5000, null),
-                        GameTestHelper.createTerrainSlopeCorner(246.3333, 159.7500, null),
-                        GameTestHelper.createTerrainSlopeCorner(278.5833, 207.5000, null),
-                        GameTestHelper.createTerrainSlopeCorner(274.0833, 262.2500, null),
-                        GameTestHelper.createTerrainSlopeCorner(240.5833, 294.2500, null),
-                        GameTestHelper.createTerrainSlopeCorner(197.8333, 290.2500, null),
-                        GameTestHelper.createTerrainSlopeCorner(185.5833, 242.2500, null),
-                        GameTestHelper.createTerrainSlopeCorner(150.8333, 208.0000, null))
+                        GameTestHelper.createTerrainSlopeCorner(170, 170, null),
+                        GameTestHelper.createTerrainSlopeCorner(250, 170, null),
+                        GameTestHelper.createTerrainSlopeCorner(250, 250, null),
+                        GameTestHelper.createTerrainSlopeCorner(170, 250, null)
+                )
+                // Arrays.asList(GameTestHelper.createTerrainSlopeCorner(260.2333, 273.8667, null), GameTestHelper.createTerrainSlopeCorner(256.4000, 275.5333, null), GameTestHelper.createTerrainSlopeCorner(248.7333, 279.7000, null), GameTestHelper.createTerrainSlopeCorner(244.0667, 282.5333, null), GameTestHelper.createTerrainSlopeCorner(237.5667, 285.0333, null), GameTestHelper.createTerrainSlopeCorner(233.2333, 286.5333, null), GameTestHelper.createTerrainSlopeCorner(221.9000, 288.2000, null), GameTestHelper.createTerrainSlopeCorner(218.4000, 287.7000, null), GameTestHelper.createTerrainSlopeCorner(208.4000, 286.3667, null), GameTestHelper.createTerrainSlopeCorner(203.2333, 284.3667, null), GameTestHelper.createTerrainSlopeCorner(201.7333, 279.8667, null), GameTestHelper.createTerrainSlopeCorner(201.9000, 271.8667, null), GameTestHelper.createTerrainSlopeCorner(197.4000, 264.7000, null), GameTestHelper.createTerrainSlopeCorner(192.0667, 261.0333, null), GameTestHelper.createTerrainSlopeCorner(185.0667, 257.2000, null), GameTestHelper.createTerrainSlopeCorner(179.7333, 245.7000, null), GameTestHelper.createTerrainSlopeCorner(177.0667, 237.0333, null), GameTestHelper.createTerrainSlopeCorner(175.2333, 227.0333, null), GameTestHelper.createTerrainSlopeCorner(175.9000, 220.8667, null), GameTestHelper.createTerrainSlopeCorner(172.2333, 217.8667, null), GameTestHelper.createTerrainSlopeCorner(169.2333, 216.0333, null), GameTestHelper.createTerrainSlopeCorner(164.4000, 215.7000, null), GameTestHelper.createTerrainSlopeCorner(160.2333, 213.3667, null), GameTestHelper.createTerrainSlopeCorner(158.0667, 209.5333, null), GameTestHelper.createTerrainSlopeCorner(156.2333, 189.0333, null), GameTestHelper.createTerrainSlopeCorner(158.5667, 183.3667, null), GameTestHelper.createTerrainSlopeCorner(161.2333, 181.3667, null), GameTestHelper.createTerrainSlopeCorner(167.5667, 178.3667, null), GameTestHelper.createTerrainSlopeCorner(170.5667, 172.5333, null), GameTestHelper.createTerrainSlopeCorner(173.5667, 165.3667, null), GameTestHelper.createTerrainSlopeCorner(176.2333, 160.5333, null), GameTestHelper.createTerrainSlopeCorner(182.0667, 159.0333, null), GameTestHelper.createTerrainSlopeCorner(190.4000, 160.8667, null), GameTestHelper.createTerrainSlopeCorner(191.2333, 161.5333, null), GameTestHelper.createTerrainSlopeCorner(199.2333, 166.3667, null), GameTestHelper.createTerrainSlopeCorner(205.0667, 173.0333, null), GameTestHelper.createTerrainSlopeCorner(210.0667, 177.7000, null), GameTestHelper.createTerrainSlopeCorner(213.9000, 175.0333, null), GameTestHelper.createTerrainSlopeCorner(217.9000, 171.2000, null), GameTestHelper.createTerrainSlopeCorner(220.9000, 170.0333, null), GameTestHelper.createTerrainSlopeCorner(225.2333, 168.3667, null), GameTestHelper.createTerrainSlopeCorner(233.0667, 167.5333, null), GameTestHelper.createTerrainSlopeCorner(240.9000, 169.7000, null), GameTestHelper.createTerrainSlopeCorner(244.5667, 171.0333, null), GameTestHelper.createTerrainSlopeCorner(255.2333, 173.7000, null), GameTestHelper.createTerrainSlopeCorner(263.4000, 179.8667, null), GameTestHelper.createTerrainSlopeCorner(268.5667, 185.2000, null), GameTestHelper.createTerrainSlopeCorner(273.7333, 197.5333, null), GameTestHelper.createTerrainSlopeCorner(274.4000, 204.8667, null), GameTestHelper.createTerrainSlopeCorner(271.4000, 210.7000, null), GameTestHelper.createTerrainSlopeCorner(268.9000, 215.8667, null), GameTestHelper.createTerrainSlopeCorner(265.9000, 220.3667, null), GameTestHelper.createTerrainSlopeCorner(260.5667, 233.3667, null), GameTestHelper.createTerrainSlopeCorner(261.0667, 241.2000, null), GameTestHelper.createTerrainSlopeCorner(266.4000, 245.5333, null), GameTestHelper.createTerrainSlopeCorner(270.2333, 250.5333, null), GameTestHelper.createTerrainSlopeCorner(265.7333, 262.7000, null), GameTestHelper.createTerrainSlopeCorner(266.5667, 267.2000, null), GameTestHelper.createTerrainSlopeCorner(262.2333, 270.7000, null))
         );
         terrainSlopePositions.add(beachPosition);
         // Razarion Industries base

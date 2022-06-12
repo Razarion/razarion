@@ -172,6 +172,9 @@ export class GameMockService {
                   getThreeJsMaterial(): number {
                     return slopeConfigJson.threeJsMaterial;
                   }
+                  getGroundConfigId(): number {
+                    return slopeConfigJson.groundConfigId;
+                  }
                 }
                 return
               });
