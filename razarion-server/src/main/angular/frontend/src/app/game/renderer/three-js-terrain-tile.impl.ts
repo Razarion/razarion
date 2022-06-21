@@ -1,12 +1,68 @@
 import {SlopeGeometry, TerrainTile, ThreeJsTerrainTile} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
-import {BufferAttribute, BufferGeometry, Group, Material, Matrix4, Mesh, MeshBasicMaterial, Scene} from "three";
+import {
+  BufferAttribute,
+  BufferGeometry,
+  Group,
+  Material,
+  Matrix4,
+  Mesh,
+  MeshBasicMaterial,
+  Scene,
+  ShaderMaterial, WebGLRenderTarget
+} from "three";
 import {ThreeJsModelService} from "./three-js-model.service";
+
+const splattingSlopeVertexShader = `
+attribute float slopeFactor;
+
+varying vec2 vUv;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying float vSlopeFactor;
+
+void main(void) {
+    #include <beginnormal_vertex>
+
+    vSlopeFactor = slopeFactor;
+
+    vNormal = normalize(normalMatrix * objectNormal);
+
+    vViewPosition = - (modelViewMatrix * vec4(position, 1.0)).xyz;
+
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+
+    vUv = gl_Position.xy / gl_Position.w;
+}
+`
+const splattingSlopeFragmentShader = `
+varying vec2 vUv;
+varying float vSlopeFactor;
+
+uniform sampler2D slope;
+uniform sampler2D ground;
+
+void main(void) {
+    vec2 uVNdcSpace = vUv * 0.5 + 0.5;
+    vec4 slopeTexture = texture2D(slope, uVNdcSpace);
+    vec4 groundTexture = texture2D(ground, uVNdcSpace);
+    gl_FragColor = mix(groundTexture, slopeTexture, vSlopeFactor);
+}
+`
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   private group = new Group();
+  private slopeGroup = new Group();
+  private slopeInnerGroundGroup = new Group();
 
-  constructor(terrainTile: TerrainTile, private parentScene: Scene, private gwtAngularService: GwtAngularService, threeJsModelService: ThreeJsModelService) {
+  constructor(terrainTile: TerrainTile,
+              private scene: Scene,
+              private slopeScene: Scene,
+              private slopeInnerGroundScene: Scene,
+              private slopeRenderTarget: WebGLRenderTarget,
+              private slopeInnerGroundRenderTarget: WebGLRenderTarget,
+              private gwtAngularService: GwtAngularService,
+              threeJsModelService: ThreeJsModelService) {
     this.group.name = `TerrainTile ${terrainTile.getIndex().toString()}`;
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
@@ -119,11 +175,15 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   }
 
   addToScene(): void {
-    this.parentScene.add(this.group);
+    this.scene.add(this.group);
+    this.slopeScene.add(this.slopeGroup);
+    this.slopeInnerGroundScene.add(this.slopeInnerGroundGroup);
   }
 
   removeFromScene(): void {
-    this.parentScene.remove(this.group);
+    this.scene.remove(this.group);
+    this.slopeScene.remove(this.slopeGroup);
+    this.slopeInnerGroundScene.remove(this.slopeInnerGroundGroup);
   }
 
   private uvFromPosition(positions: Float32Array) {
@@ -137,27 +197,50 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   }
 
   private setupSlopeGeometry(slopeGeometry: SlopeGeometry, material: Material, groundMaterial: Material | null): void {
-    let geometry = new BufferGeometry();
-    geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
-    geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
-    geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
-    geometry.setAttribute('slopeFactors', new BufferAttribute(slopeGeometry.slopeFactors, 3));
-    let slope = new Mesh(geometry, material);
-    slope.name = "Slope";
-    this.group.add(slope);
+    if (groundMaterial !== null) {
+      let splattingGeometry = new BufferGeometry();
+      splattingGeometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
+      splattingGeometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
+      splattingGeometry.setAttribute('uv', this.uvFromPosition(slopeGeometry.positions));
+      splattingGeometry.setAttribute('slopeFactor', new BufferAttribute(slopeGeometry.slopeFactors, 1));
+      let splattingMaterial = new ShaderMaterial({
+        uniforms: {
+          slope: {value: this.slopeRenderTarget.texture},
+          ground: {value: this.slopeInnerGroundRenderTarget.texture},
+        },
+        vertexShader: splattingSlopeVertexShader,
+        fragmentShader: splattingSlopeFragmentShader
+      });
+      let splattingSlope = new Mesh(splattingGeometry, splattingMaterial);
+      splattingSlope.name = "Slope-Splatted";
+      this.group.add(splattingSlope);
 
-    // if (groundMaterial !== null) {
-    //   let geometry = new BufferGeometry();
-    //   geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
-    //   geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
-    //   geometry.setAttribute('uv', this.uvFromPosition(slopeGeometry.positions));
-    //   geometry.setAttribute('slopeFactors', new BufferAttribute(slopeGeometry.slopeFactors, 3));
-    //   let groundMaterialClone = groundMaterial.clone();
-    //   groundMaterialClone.transparent = true;
-    //   let slope = new Mesh(geometry, groundMaterialClone);
-    //   slope.name = "Slope-Ground";
-    //   this.group.add(slope);
-    // }
+      let groundGeometry = new BufferGeometry();
+      groundGeometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
+      groundGeometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
+      groundGeometry.setAttribute('uv', this.uvFromPosition(slopeGeometry.positions));
+      let groundMaterialClone = groundMaterial.clone();
+      groundMaterialClone.transparent = true;
+      let groundSlope = new Mesh(groundGeometry, groundMaterialClone);
+      groundSlope.name = "Slope-Ground";
+      this.slopeInnerGroundGroup.add(groundSlope);
+
+      let geometry = new BufferGeometry();
+      geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
+      geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
+      geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
+      let slope = new Mesh(geometry, material);
+      slope.name = "Slope";
+      this.slopeGroup.add(slope);
+    } else {
+      let geometry = new BufferGeometry();
+      geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
+      geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
+      geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
+      let slope = new Mesh(geometry, material);
+      slope.name = "Slope";
+      this.group.add(slope);
+    }
 
     // const meshNormalMaterial = new MeshNormalMaterial()
     // meshNormalMaterial.normalMap = (<any>material).normalMap;

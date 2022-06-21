@@ -13,6 +13,7 @@ export class ThreeJsTree {
       data = camera;
     });
     this.rootTreeNodes.push(this.recursivelyAddTreeNodes(threeJsRendererServiceImpl.scene));
+    this.rootTreeNodes.push(this.recursivelyAddTreeNodes(threeJsRendererServiceImpl.slopeScene));
   }
 
   public findTreeNode(object3D: Object3D): TreeNode<Object3D> | undefined {
