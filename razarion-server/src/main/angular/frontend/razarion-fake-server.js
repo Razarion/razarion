@@ -72,6 +72,9 @@ function loadImage(req) {
         case '9992':
             imageToLoad = "GroundTopBm.png";
             break;
+        case '9993':
+            imageToLoad = "GroundSplatting.png";
+            break;
     }
     return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\textures", imageToLoad));
 }

@@ -93,6 +93,22 @@ export interface SlopeConfig {
   getThreeJsMaterial(): number;
 
   getGroundConfigId(): number;
+
+  getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null;
+
+  getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null;
+}
+
+export interface SlopeSplattingConfig {
+  getTextureId(): number;
+
+  getScale(): number;
+
+  getImpact(): number;
+
+  getBlur(): number;
+
+  getOffset(): number;
 }
 
 export interface DrivewayConfig {

@@ -1,4 +1,9 @@
-import {SlopeGeometry, TerrainTile, ThreeJsTerrainTile} from "src/app/gwtangular/GwtAngularFacade";
+import {
+  SlopeGeometry,
+  SlopeSplattingConfig,
+  TerrainTile,
+  ThreeJsTerrainTile
+} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {
   BufferAttribute,
@@ -7,46 +12,59 @@ import {
   Material,
   Matrix4,
   Mesh,
-  MeshBasicMaterial,
+  MeshBasicMaterial, RepeatWrapping,
   Scene,
-  ShaderMaterial, WebGLRenderTarget
+  ShaderMaterial, TextureLoader, WebGLRenderTarget
 } from "three";
 import {ThreeJsModelService} from "./three-js-model.service";
+import {getImageUrl} from "../../common";
 
 const splattingSlopeVertexShader = `
 attribute float slopeFactor;
 
 varying vec2 vUv;
-varying vec3 vNormal;
-varying vec3 vViewPosition;
 varying float vSlopeFactor;
+varying vec3 vWorldVertexPosition;
 
 void main(void) {
     #include <beginnormal_vertex>
 
     vSlopeFactor = slopeFactor;
 
-    vNormal = normalize(normalMatrix * objectNormal);
-
-    vViewPosition = - (modelViewMatrix * vec4(position, 1.0)).xyz;
-
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
 
     vUv = gl_Position.xy / gl_Position.w;
+    vWorldVertexPosition = position.xyz;
 }
 `
 const splattingSlopeFragmentShader = `
 varying vec2 vUv;
 varying float vSlopeFactor;
+varying vec3 vWorldVertexPosition;
 
 uniform sampler2D slope;
 uniform sampler2D ground;
+
+uniform sampler2D splattingImage;
+uniform float scale;
+uniform float impact;
+uniform float blur;
+uniform float offset;
 
 void main(void) {
     vec2 uVNdcSpace = vUv * 0.5 + 0.5;
     vec4 slopeTexture = texture2D(slope, uVNdcSpace);
     vec4 groundTexture = texture2D(ground, uVNdcSpace);
-    gl_FragColor = mix(groundTexture, slopeTexture, vSlopeFactor);
+
+    // float splatting = clamp(vSlopeFactor, 0.0, 1.0);
+
+    float splattingTexture = texture2D(splattingImage, vWorldVertexPosition.xy / scale).r;
+    float splatting = (splattingTexture * impact + vSlopeFactor) / (1.0 + impact);
+    splatting = (splatting - offset) / (2.0 * blur) + 0.5;
+    splatting = clamp(splatting, 0.0, 1.0);
+
+    vec3 slopeGround = mix(groundTexture, slopeTexture, splatting).rgb;
+    gl_FragColor = vec4(slopeGround, 1.0);
 }
 `
 
@@ -95,10 +113,10 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
           }
           let material = threeJsModelService.getMaterial(slopeConfig.getThreeJsMaterial());
           if (terrainSlopeTile.outerSlopeGeometry !== null && terrainSlopeTile.outerSlopeGeometry !== undefined) {
-            this.setupSlopeGeometry(terrainSlopeTile.outerSlopeGeometry, material, null);
+            this.setupSlopeGeometry(terrainSlopeTile.outerSlopeGeometry, material, null, slopeConfig.getOuterSlopeSplattingConfig());
           }
           if (terrainSlopeTile.centerSlopeGeometry !== null && terrainSlopeTile.centerSlopeGeometry !== undefined) {
-            this.setupSlopeGeometry(terrainSlopeTile.centerSlopeGeometry, material, null);
+            this.setupSlopeGeometry(terrainSlopeTile.centerSlopeGeometry, material, null, null);
           }
           if (terrainSlopeTile.innerSlopeGeometry !== null && terrainSlopeTile.innerSlopeGeometry !== undefined) {
             let innerGroundMaterial = null;
@@ -106,7 +124,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
               let innerGroundConfigMaterialId = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(slopeConfig.getGroundConfigId()).getTopThreeJsMaterial();
               innerGroundMaterial = threeJsModelService.getMaterial(innerGroundConfigMaterialId);
             }
-            this.setupSlopeGeometry(terrainSlopeTile.innerSlopeGeometry, material, innerGroundMaterial);
+            this.setupSlopeGeometry(terrainSlopeTile.innerSlopeGeometry, material, innerGroundMaterial, slopeConfig.getInnerSlopeSplattingConfig());
           }
         } catch (error) {
           // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
@@ -196,8 +214,8 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     return new BufferAttribute(uvs, 2);
   }
 
-  private setupSlopeGeometry(slopeGeometry: SlopeGeometry, material: Material, groundMaterial: Material | null): void {
-    if (groundMaterial !== null) {
+  private setupSlopeGeometry(slopeGeometry: SlopeGeometry, material: Material, groundMaterial: Material | null, splatting: SlopeSplattingConfig | null): void {
+    if (groundMaterial !== null && splatting != null) {
       let splattingGeometry = new BufferGeometry();
       splattingGeometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
       splattingGeometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
@@ -207,10 +225,20 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         uniforms: {
           slope: {value: this.slopeRenderTarget.texture},
           ground: {value: this.slopeInnerGroundRenderTarget.texture},
+
+          splattingImage: {value: null},
+          scale: {value: splatting.getScale()},
+          impact: {value: splatting.getImpact()},
+          blur: {value: splatting.getBlur()},
+          offset: {value: splatting.getOffset()},
         },
         vertexShader: splattingSlopeVertexShader,
         fragmentShader: splattingSlopeFragmentShader
       });
+      splattingMaterial.uniforms.splattingImage.value = new TextureLoader().load(getImageUrl(splatting.getTextureId()));
+      splattingMaterial.uniforms.splattingImage.value.wrapS = RepeatWrapping;
+      splattingMaterial.uniforms.splattingImage.value.wrapT = RepeatWrapping;
+
       let splattingSlope = new Mesh(splattingGeometry, splattingMaterial);
       splattingSlope.name = "Slope-Splatted";
       this.group.add(splattingSlope);

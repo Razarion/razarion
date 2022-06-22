@@ -15,7 +15,7 @@ import {
   PerfmonStatistic,
   PhongMaterialConfig,
   SlopeConfig,
-  SlopeGeometry,
+  SlopeGeometry, SlopeSplattingConfig,
   StatusProvider,
   TerrainEditorService,
   TerrainMarkerService,
@@ -164,16 +164,20 @@ export class GameMockService {
                   getId(): number {
                     return slopeConfigJson.id;
                   }
-
                   getInternalName(): string {
                     return slopeConfigJson.internalName;
                   }
-
                   getThreeJsMaterial(): number {
                     return slopeConfigJson.threeJsMaterial;
                   }
                   getGroundConfigId(): number {
                     return slopeConfigJson.groundConfigId;
+                  }
+                  getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null {
+                    return _this.setupSlopeSplattingConfig(slopeConfigJson.innerSlopeSplattingConfig);
+                  }
+                  getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null {
+                    return _this.setupSlopeSplattingConfig(slopeConfigJson.outerSlopeSplattingConfig);
                   }
                 }
                 return
@@ -213,6 +217,34 @@ export class GameMockService {
             }
         };
     }
+
+  private setupSlopeSplattingConfig(slopeSplattingConfig: any): SlopeSplattingConfig | null{
+    if(slopeSplattingConfig) {
+      return new class implements SlopeSplattingConfig {
+        getBlur(): number {
+          return slopeSplattingConfig.blur;
+        }
+
+        getImpact(): number {
+          return slopeSplattingConfig.impact;
+        }
+
+        getOffset(): number {
+          return slopeSplattingConfig.offset;
+        }
+
+        getScale(): number {
+          return slopeSplattingConfig.scale;
+        }
+
+        getTextureId(): number {
+          return slopeSplattingConfig.textureId;
+        }
+      }
+    } else {
+      return null;
+    }
+  }
 
     mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl) {
         const _this = this;
