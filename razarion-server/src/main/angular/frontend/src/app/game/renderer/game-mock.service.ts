@@ -317,7 +317,7 @@ export class GameMockService {
                       }
                     }
                 };
-                const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
+                const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, 1);
                 threeJsTerrainTile.addToScene();
             }
         });

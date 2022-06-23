@@ -118,7 +118,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private QuestProgressInfo serverQuestProgress;
 
     public void onWarmGameConfigLoaded(WarmGameUiContext warmGameUiContext) {
-        this.coldGameUiContext.warmGameUiContext(warmGameUiContext);
+        this.coldGameUiContext.setWarmGameUiContext(warmGameUiContext);
         gameEngineMode = warmGameUiContext.getGameEngineMode();
         initServerQuest(warmGameUiContext.getSlaveQuestInfo());
     }

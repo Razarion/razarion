@@ -15,8 +15,8 @@ public class ThreeJsRendererService {
     @Inject
     private ThreeJsRendererServiceAccess threeJsRendererServiceAccess;
 
-    public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile) {
-        return threeJsRendererServiceAccess.createTerrainTile(terrainTile);
+    public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfig) {
+        return threeJsRendererServiceAccess.createTerrainTile(terrainTile, defaultGroundConfig);
     }
 
     public void executeViewFieldConfig(ViewFieldConfig viewFieldConfig, Optional<Runnable> completionCallback) {

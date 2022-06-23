@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.ThreeJsRendererService;
 import com.btxtech.uiservice.renderer.ThreeJsTerrainTile;
 
@@ -29,16 +30,19 @@ public class UiTerrainTile {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
+    private GameUiControl gameUiControl;
+    @Inject
     private ThreeJsRendererService threeJsRendererService;
     private Index index;
     private TerrainTile terrainTile;
     private ThreeJsTerrainTile threeJsTerrainTile;
     private boolean active;
-    // private GroundConfig defaultGroundConfig;
+    private Integer defaultGroundConfig;
 
     public void init(Index index) {
         this.index = index;
         terrainUiService.requestTerrainTile(index, this::terrainTileReceived);
+        defaultGroundConfig = gameUiControl.getPlanetConfig().getGroundConfigId();
     }
 
     public void setActive(boolean active) {
@@ -55,8 +59,7 @@ public class UiTerrainTile {
 
     private void terrainTileReceived(TerrainTile terrainTile) {
         this.terrainTile = terrainTile;
-        // defaultGroundConfig = terrainTypeService.getGroundConfig(gameUiControl.getPlanetConfig().getGroundConfigId());
-        threeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
+        threeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, defaultGroundConfig);
 
         if (active) {
             threeJsTerrainTile.addToScene();

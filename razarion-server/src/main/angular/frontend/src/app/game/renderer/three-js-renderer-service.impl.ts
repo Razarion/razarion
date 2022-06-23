@@ -137,9 +137,10 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     animate();
   }
 
-  createTerrainTile(terrainTile: TerrainTile): ThreeJsTerrainTile {
+  createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile {
     try {
       return new ThreeJsTerrainTileImpl(terrainTile,
+        defaultGroundConfigId,
         this.scene,
         this.slopeScene,
         this.slopeInnerGroundScene,

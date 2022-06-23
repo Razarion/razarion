@@ -5,7 +5,7 @@ import jsinterop.annotations.JsType;
 
 @JsType(isNative = true)
 public interface ThreeJsRendererServiceAccess {
-    ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile);
+    ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId);
 
     void setViewFieldCenter(double x, double y);
 }

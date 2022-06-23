@@ -52,14 +52,15 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         beachConfig.setGroundConfigId(GROUND_CONFIG_ID);
         beachConfig.setInterpolateNorm(true);
         beachConfig.setSlopeShapes(Arrays.asList(
-                new SlopeShape().position(new DecimalPosition(0, 0)).slopeFactor(1),
-                //new SlopeShape().position(new DecimalPosition(6, -0.3)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(0, 0)).slopeFactor(0),
+                new SlopeShape().position(new DecimalPosition(6, -0.3)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(12, -0.6)).slopeFactor(1),
-                //new SlopeShape().position(new DecimalPosition(18, -0.9)).slopeFactor(1),
+                new SlopeShape().position(new DecimalPosition(18, -0.9)).slopeFactor(1),
                 new SlopeShape().position(new DecimalPosition(24, -1.2)).slopeFactor(0)));
 
         beachConfig.outerLineGameEngine(8).innerLineGameEngine(16);
         beachConfig.setInnerSlopeSplattingConfig(new SlopeSplattingConfig().textureId(9993).blur(0.053).impact(0.78).offset(0.5).scale(90));
+        beachConfig.setOuterSlopeSplattingConfig(new SlopeSplattingConfig().textureId(9993).blur(0.1).impact(0.1).offset(0.6).scale(45));
         slopeConfigs.add(beachConfig);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

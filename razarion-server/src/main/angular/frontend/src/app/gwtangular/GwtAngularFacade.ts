@@ -164,7 +164,7 @@ export interface ThreeJsModelConfig {
 
 // ---------- Renderer ----------
 export interface ThreeJsRendererServiceAccess {
-  createTerrainTile(terrainTile: TerrainTile, threejsObject3D: any): ThreeJsTerrainTile;
+  createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
 
   setViewFieldCenter(x: number, y: number): void;
 }

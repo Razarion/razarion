@@ -12,7 +12,7 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
     private final Logger logger = Logger.getLogger(ThreeJsRendererServiceAccessMock.class.getName());
 
     @Override
-    public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile) {
+    public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId) {
         logger.warning("createTerrainTile()");
         return null;
     }
