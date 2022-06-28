@@ -26,7 +26,8 @@ import {
   TerrainTypeService,
   TerrainWaterTile,
   ThreeJsModelConfig,
-  ThreeJsTerrainTile
+  ThreeJsTerrainTile,
+  WaterConfig
 } from "src/app/gwtangular/GwtAngularFacade";
 import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 import {HttpClient} from "@angular/common/http";
@@ -215,6 +216,14 @@ export class GameMockService {
                     throw new Error(`No GroundConfig for id ${groundConfigId}`);
                 }
             }
+
+          getWaterConfig(waterConfigId: number): WaterConfig {
+            return new class implements WaterConfig {
+              getId(): number {
+                return 0;
+              }
+            };
+          }
         };
     }
 

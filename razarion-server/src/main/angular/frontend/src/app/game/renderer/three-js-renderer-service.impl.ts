@@ -20,6 +20,7 @@ import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {ThreeJsModelService} from "./three-js-model.service";
 import {ShadowMapViewer} from 'three/examples/jsm/utils/ShadowMapViewer';
+import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 
 
 @Injectable()
@@ -35,7 +36,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private slopeRenderTarget!: WebGLRenderTarget;
   private slopeInnerGroundRenderTarget!: WebGLRenderTarget;
 
-  constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService) {
+  constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService, private threeJsWaterRenderService:  ThreeJsWaterRenderService) {
     this.scene.name = "Main Scene"
   }
 
@@ -147,7 +148,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         this.slopeRenderTarget,
         this.slopeInnerGroundRenderTarget,
         this.gwtAngularService,
-        this.threeJsModelService);
+        this.threeJsModelService,
+        this.threeJsWaterRenderService);
     } catch (e) {
       console.error(`Error createTerrainTile() with index ${terrainTile.getIndex()}`)
       console.error(e);

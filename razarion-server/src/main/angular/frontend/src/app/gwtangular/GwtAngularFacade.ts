@@ -76,6 +76,7 @@ export interface TerrainTypeService {
 
   getGroundConfig(groundConfigId: number): GroundConfig;
 
+  getWaterConfig(waterConfigId: number): WaterConfig;
 }
 
 // ---------- Configs ----------
@@ -124,6 +125,10 @@ export interface GroundConfig {
   getBottomThreeJsMaterial(): number;
 
   getSplatting(): GroundSplattingConfig | null;
+}
+
+export interface WaterConfig {
+  getId(): number;
 }
 
 export interface PhongMaterialConfig {

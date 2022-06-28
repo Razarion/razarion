@@ -2,11 +2,13 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 15.03.2017.
  */
+@JsType
 public class WaterConfig implements Config {
     private int id;
     private String internalName;

@@ -83,6 +83,7 @@ import {OverlayPanelModule} from "primeng/overlaypanel";
 import {ListboxModule} from "primeng/listbox";
 import {ToolbarModule} from "primeng/toolbar";
 import {SplitterModule} from "primeng/splitter";
+import {ThreeJsWaterRenderService} from "./game/renderer/three-js-water-render.service";
 
 @NgModule({
   declarations: [
@@ -176,6 +177,7 @@ import {SplitterModule} from "primeng/splitter";
     EditorService,
     DatePipe,
     ThreeJsRendererServiceImpl,
+    ThreeJsWaterRenderService,
     GameMockService,
     ThreeJsModelService
   ],

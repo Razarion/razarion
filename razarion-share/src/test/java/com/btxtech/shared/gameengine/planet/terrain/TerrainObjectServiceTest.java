@@ -9,6 +9,7 @@ import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
@@ -16,9 +17,11 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.btxtech.shared.dto.FallbackConfig.GROUND_CONFIG_ID;
+import static com.btxtech.shared.dto.FallbackConfig.WATER_CONFIG_ID;
 
 /**
  * Created by Beat
@@ -29,6 +32,8 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testTerrainObjectTileGeneration4Tiles() {
         GroundConfig groundConfig = new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(8883);
+
+        List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig().id(WATER_CONFIG_ID).waterLevel(-0.2).groundLevel(-1.2));
 
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         // Razarion Industries base
@@ -47,6 +52,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         // Beach
         SlopeConfig beachConfig = new SlopeConfig();
         beachConfig.id(2);
+        beachConfig.setWaterConfigId(WATER_CONFIG_ID);
         beachConfig.horizontalSpace(5);
         beachConfig.setThreeJsMaterial(8884);
         beachConfig.setGroundConfigId(GROUND_CONFIG_ID);
@@ -113,7 +119,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 new ThreeJsModelConfig().id(8884)
         );
 
-        setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, groundConfig, threeJsModelConfigs);
+        setupTerrainTypeService(slopeConfigs, null, waterConfigs, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, groundConfig, threeJsModelConfigs);
 
         // showDisplay();
 

@@ -22,8 +22,8 @@ import java.util.Map;
 @Singleton
 public class TerrainTypeService {
     private Map<Integer, SlopeConfig> slopeConfigs = new HashMap<>();
-    private Map<Integer, GroundConfig> groundConfigs = new HashMap<>();;
-    private Map<Integer,WaterConfig> waterConfigs = new HashMap<>();
+    private Map<Integer, GroundConfig> groundConfigs = new HashMap<>();
+    private Map<Integer, WaterConfig> waterConfigs = new HashMap<>();
     private Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
     private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
 
@@ -48,29 +48,11 @@ public class TerrainTypeService {
         }
     }
 
-    private void setSlopeConfigs(Collection<SlopeConfig> slopeConfigs) {
-        this.slopeConfigs.clear();
-        if (slopeConfigs != null) {
-            for (SlopeConfig slopeConfig : slopeConfigs) {
-                this.slopeConfigs.put(slopeConfig.getId(), slopeConfig);
-            }
-        }
-    }
-
     private void setWaterConfigs(Collection<WaterConfig> waterConfigs) {
         this.waterConfigs.clear();
         if (waterConfigs != null) {
             for (WaterConfig waterConfig : waterConfigs) {
                 this.waterConfigs.put(waterConfig.getId(), waterConfig);
-            }
-        }
-    }
-
-    public void setTerrainObjectConfigs(Collection<TerrainObjectConfig> terrainObjectConfigs) {
-        this.terrainObjectConfigs.clear();
-        if (terrainObjectConfigs != null) {
-            for (TerrainObjectConfig terrainObjectConfig : terrainObjectConfigs) {
-                this.terrainObjectConfigs.put(terrainObjectConfig.getId(), terrainObjectConfig);
             }
         }
     }
@@ -83,7 +65,6 @@ public class TerrainTypeService {
             }
         }
     }
-
 
     public TerrainObjectConfig getTerrainObjectConfig(int id) {
         TerrainObjectConfig terrainObjectConfig = terrainObjectConfigs.get(id);
@@ -105,8 +86,26 @@ public class TerrainTypeService {
         return slopeConfigs.values();
     }
 
+    private void setSlopeConfigs(Collection<SlopeConfig> slopeConfigs) {
+        this.slopeConfigs.clear();
+        if (slopeConfigs != null) {
+            for (SlopeConfig slopeConfig : slopeConfigs) {
+                this.slopeConfigs.put(slopeConfig.getId(), slopeConfig);
+            }
+        }
+    }
+
     public Collection<TerrainObjectConfig> getTerrainObjectConfigs() {
         return terrainObjectConfigs.values();
+    }
+
+    public void setTerrainObjectConfigs(Collection<TerrainObjectConfig> terrainObjectConfigs) {
+        this.terrainObjectConfigs.clear();
+        if (terrainObjectConfigs != null) {
+            for (TerrainObjectConfig terrainObjectConfig : terrainObjectConfigs) {
+                this.terrainObjectConfigs.put(terrainObjectConfig.getId(), terrainObjectConfig);
+            }
+        }
     }
 
     public WaterConfig getWaterConfig(int id) {

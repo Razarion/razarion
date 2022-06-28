@@ -18,10 +18,12 @@ import {
   Scene,
   ShaderMaterial,
   TextureLoader,
+  Vector3,
   WebGLRenderTarget
 } from "three";
 import {ThreeJsModelService} from "./three-js-model.service";
 import {getImageUrl} from "../../common";
+import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 
 const splattingSlopeVertexShader = `
 attribute float slopeFactor;
@@ -85,7 +87,8 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
               private slopeRenderTarget: WebGLRenderTarget,
               private slopeInnerGroundRenderTarget: WebGLRenderTarget,
               private gwtAngularService: GwtAngularService,
-              private threeJsModelService: ThreeJsModelService) {
+              private threeJsModelService: ThreeJsModelService,
+              private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.group.name = `TerrainTile ${terrainTile.getIndex().toString()}`;
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
@@ -94,7 +97,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         let geometry = new BufferGeometry();
         geometry.setAttribute('position', new BufferAttribute(groundTerrainTile.positions, 3));
         geometry.setAttribute('normal', new BufferAttribute(groundTerrainTile.norms, 3));
-        geometry.setAttribute('uv', this.uvFromPosition(groundTerrainTile.positions));
+        geometry.setAttribute('uv', ThreeJsTerrainTileImpl.uvFromPosition(groundTerrainTile.positions));
         let material;
         if (groundConfig.getTopThreeJsMaterial() === undefined || groundConfig.getTopThreeJsMaterial() == null) {
           material = new MeshBasicMaterial({color: 0x11EE11});
@@ -133,16 +136,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         }
       });
     }
-    if (terrainTile.getTerrainWaterTiles() !== null) {
-      terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile => {
-        if (terrainWaterTile.positions !== null && terrainWaterTile.positions !== undefined) {
-          this.setupWater(terrainWaterTile.positions);
-        }
-        if (terrainWaterTile.shallowPositions !== null && terrainWaterTile.shallowPositions !== undefined) {
-          this.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs);
-        }
-      });
-    }
+    this.threeJsWaterRenderService.setup(terrainTile.getTerrainWaterTiles(), this.group);
     if (terrainTile.getTerrainTileObjectLists() !== null) {
       const _this = this;
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
@@ -193,6 +187,26 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     }
   }
 
+  static uvFromPosition(positions: Float32Array) {
+    let uvs = new Float32Array(positions.length * 2 / 3);
+    let uvCount = uvs.length / 2;
+    for (let uvIndex = 0; uvIndex < uvCount; uvIndex++) {
+      uvs[uvIndex * 2] = positions[uvIndex * 3];
+      uvs[uvIndex * 2 + 1] = positions[uvIndex * 3 + 1];
+    }
+    return new BufferAttribute(uvs, 2);
+  }
+
+  static fillVec3(vec: Vector3, length: number): BufferAttribute {
+    let float32Array = new Float32Array(length);
+    for (let i = 0; i < length / 3; i++) {
+      float32Array[i * 3] = vec.x;
+      float32Array[i * 3 + 1] = vec.y;
+      float32Array[i * 3 + 2] = vec.z;
+    }
+    return new BufferAttribute(float32Array, 3);
+  }
+
   addToScene(): void {
     this.scene.add(this.group);
     this.slopeScene.add(this.slopeGroup);
@@ -215,22 +229,12 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     }
   }
 
-  private uvFromPosition(positions: Float32Array) {
-    let uvs = new Float32Array(positions.length * 2 / 3);
-    let uvCount = uvs.length / 2;
-    for (let uvIndex = 0; uvIndex < uvCount; uvIndex++) {
-      uvs[uvIndex * 2] = positions[uvIndex * 3];
-      uvs[uvIndex * 2 + 1] = positions[uvIndex * 3 + 1];
-    }
-    return new BufferAttribute(uvs, 2);
-  }
-
   private setupSlopeGeometry(slopeGeometry: SlopeGeometry, material: Material, groundMaterial: Material | null, splatting: SlopeSplattingConfig | null): void {
     if (groundMaterial && splatting) {
       let splattingGeometry = new BufferGeometry();
       splattingGeometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
       splattingGeometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
-      splattingGeometry.setAttribute('uv', this.uvFromPosition(slopeGeometry.positions));
+      splattingGeometry.setAttribute('uv', ThreeJsTerrainTileImpl.uvFromPosition(slopeGeometry.positions));
       splattingGeometry.setAttribute('slopeFactor', new BufferAttribute(slopeGeometry.slopeFactors, 1));
       let splattingMaterial = new ShaderMaterial({
         uniforms: {
@@ -257,7 +261,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       let groundGeometry = new BufferGeometry();
       groundGeometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
       groundGeometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
-      groundGeometry.setAttribute('uv', this.uvFromPosition(slopeGeometry.positions));
+      groundGeometry.setAttribute('uv', ThreeJsTerrainTileImpl.uvFromPosition(slopeGeometry.positions));
       let groundMaterialClone = groundMaterial.clone();
       groundMaterialClone.transparent = true;
       let groundSlope = new Mesh(groundGeometry, groundMaterialClone);
@@ -297,26 +301,4 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     // const normHelper = new VertexNormalsHelper( slope, 2, 0x00ff00);
     // this.group.add(normHelper);
   }
-
-  private setupWater(positions: Float32Array) {
-    let geometry = new BufferGeometry();
-    geometry.setAttribute('position', new BufferAttribute(positions, 3));
-    const material = new MeshBasicMaterial({color: 0x0000ff});
-    material.wireframe = true;
-    const cube = new Mesh(geometry, material);
-    cube.name = "Water";
-    this.group.add(cube);
-  }
-
-  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array) {
-    let geometry = new BufferGeometry();
-    geometry.setAttribute('position', new BufferAttribute(shallowPositions, 3));
-    geometry.setAttribute('uvs', new BufferAttribute(shallowUvs, 3));
-    const material = new MeshBasicMaterial({color: 0x5555ff});
-    material.wireframe = true;
-    const cube = new Mesh(geometry, material);
-    cube.name = "Shallow Water";
-    this.group.add(cube);
-  }
-
 }
