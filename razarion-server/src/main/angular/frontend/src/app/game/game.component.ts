@@ -60,7 +60,8 @@ export class GameComponent implements OnInit {
         this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs()).then(() => {
           this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
           this.gameMockService.mockTerrainTile(this.threeJsRendererService);
-          this.mainCockpitComponent.show();  
+          this.mainCockpitComponent.show();
+          this.threeJsRendererService.setViewFieldCenter(190, 170);
         });
       });
     } else {

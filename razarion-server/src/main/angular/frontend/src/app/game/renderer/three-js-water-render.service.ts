@@ -1,17 +1,21 @@
 import {Injectable} from "@angular/core";
-import {TerrainWaterTile} from "../../gwtangular/GwtAngularFacade";
+import {TerrainWaterTile, WaterConfig} from "../../gwtangular/GwtAngularFacade";
 import {
   BufferAttribute,
   BufferGeometry,
   Group,
   Mesh,
   MeshBasicMaterial,
+  RepeatWrapping,
   ShaderLib,
   ShaderMaterial,
+  TextureLoader,
   UniformsUtils,
   Vector3
 } from "three";
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
+import {getGwtMockImageUrl} from "./game-mock.service";
+import {SignalGenerator} from "../signal-generator";
 
 export const vertex = /* glsl */`
 #define STANDARD
@@ -20,7 +24,7 @@ varying vec3 vViewPosition;
 
 #ifdef USE_TRANSMISSION
 
-	varying vec3 vWorldPosition;
+varying vec3 vWorldPosition;
 
 #endif
 
@@ -123,6 +127,12 @@ uniform float opacity;
 
 varying vec3 vViewPosition;
 
+uniform sampler2D uDistortionMap;
+uniform float uDistortionScale;
+uniform float uDistortionAnimation;
+uniform float uDistortionStrength;
+uniform float uReflectionScale;
+
 #include <common>
 #include <packing>
 #include <dithering_pars_fragment>
@@ -162,7 +172,14 @@ void main() {
 	vec3 totalEmissiveRadiance = emissive;
 
 	#include <logdepthbuf_fragment>
-	#include <map_fragment>
+
+  vec2 distortion1 = texture2D(uDistortionMap, vUv / uDistortionScale + vec2(uDistortionAnimation, 0.5)).rg;
+  vec2 distortion2 = texture2D(uDistortionMap, vUv / uDistortionScale + vec2(-uDistortionAnimation, uDistortionAnimation)).rg;
+  vec2 totalDistortion = (distortion1 + distortion2) / 2.0 - 1.0;
+  vec2 reflectionCoord = vUv / uReflectionScale + totalDistortion * uDistortionStrength;
+  vec4 sampledDiffuseColor = vec4(texture2D(map, reflectionCoord).rgb, 1.0);
+	diffuseColor *= sampledDiffuseColor;
+
 	#include <color_fragment>
 	#include <alphamap_fragment>
 	#include <alphatest_fragment>
@@ -216,15 +233,36 @@ void main() {
 	#include <fog_fragment>
 	#include <premultiplied_alpha_fragment>
 	#include <dithering_fragment>
-
 }
 `;
 
-
 @Injectable()
 export class ThreeJsWaterRenderService {
+  private materials: { material: ShaderMaterial, waterConfig: WaterConfig | null }[] = []; // TODO is not cleanup after scene is removed
 
-  private static setupWater(positions: Float32Array, group: Group) {
+  public setup(terrainWaterTiles: TerrainWaterTile[], group: Group): void {
+    if (!terrainWaterTiles) {
+      return;
+    }
+    terrainWaterTiles.forEach(terrainWaterTile => {
+      terrainWaterTile.slopeConfigId
+
+      if (terrainWaterTile.positions) {
+        this.setupWater(terrainWaterTile.positions, group);
+      }
+      if (terrainWaterTile.shallowPositions) {
+        this.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, group);
+      }
+    });
+  }
+
+  public update() {
+    for (const material of this.materials) {
+      material.material.uniforms.uDistortionAnimation.value = this.getWaterAnimation(Date.now(), 30);
+    }
+  }
+
+  private setupWater(positions: Float32Array, group: Group) {
     let geometry = new BufferGeometry();
     geometry.setAttribute('position', new BufferAttribute(positions, 3));
     geometry.setAttribute('normal', ThreeJsTerrainTileImpl.fillVec3(new Vector3(0, 0, 1), positions.length));
@@ -232,12 +270,46 @@ export class ThreeJsWaterRenderService {
 
     let waterMaterial = new ShaderMaterial({
       lights: true,
-      defines: { 'STANDARD': '' },
+      defines: {
+        'STANDARD': '',
+        'USE_MAP': '',
+        'USE_UV': ''
+      },
       vertexShader: vertex,
-      fragmentShader: fragment
+      fragmentShader: fragment,
+      uniforms: UniformsUtils.merge([
+        ShaderLib.standard.uniforms,
+        {
+          uReflectionScale: {value: 50.0},
+          uDistortionStrength: {value: 0.5},
+          uDistortionScale: {value: 5.0},
+          uDistortionAnimation: {value: 1.0},
+          uDistortionMap: {value: null},
+        }
+      ])
     });
-    waterMaterial.uniforms = UniformsUtils.clone(ShaderLib.standard.uniforms)
+
+    waterMaterial.uniforms.map.value = new TextureLoader().load(getGwtMockImageUrl('WaterCloudReflection.png'));
+    // waterMaterial.uniforms.map.value = new TextureLoader().load(getGwtMockImageUrl('chess32.jpg'));
+    waterMaterial.uniforms.map.value.wrapS = RepeatWrapping;
+    waterMaterial.uniforms.map.value.wrapT = RepeatWrapping;
+
+    waterMaterial.uniforms.uDistortionMap.value = new TextureLoader().load(getGwtMockImageUrl('WaterDistortion.png'));
+    waterMaterial.uniforms.uDistortionMap.value.wrapS = RepeatWrapping;
+    waterMaterial.uniforms.uDistortionMap.value.wrapT = RepeatWrapping;
+
     const mesh = new Mesh(geometry, waterMaterial);
+
+    mesh.addEventListener('added', () => {
+      this.materials.push({material: waterMaterial, waterConfig: null});
+    });
+    mesh.addEventListener('removed', () => {
+      this.materials.forEach((value, index) => {
+        if (value.material == waterMaterial) {
+          this.materials.splice(index, 1);
+        }
+      });
+    });
 
     // const normalMaterial = new MeshNormalMaterial();
     // const mesh = new Mesh(geometry, normalMaterial);
@@ -253,7 +325,7 @@ export class ThreeJsWaterRenderService {
 
   }
 
-  private static setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, group: Group) {
+  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, group: Group) {
     let geometry = new BufferGeometry();
     geometry.setAttribute('position', new BufferAttribute(shallowPositions, 3));
     geometry.setAttribute('uvs', new BufferAttribute(shallowUvs, 3));
@@ -264,20 +336,7 @@ export class ThreeJsWaterRenderService {
     group.add(cube);
   }
 
-  public setup(terrainWaterTiles: TerrainWaterTile[], group: Group): void {
-    if (!terrainWaterTiles) {
-      return;
-    }
-    terrainWaterTiles.forEach(terrainWaterTile => {
-      terrainWaterTile.slopeConfigId
-
-      if (terrainWaterTile.positions) {
-        ThreeJsWaterRenderService.setupWater(terrainWaterTile.positions, group);
-      }
-      if (terrainWaterTile.shallowPositions) {
-        ThreeJsWaterRenderService.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, group);
-      }
-    });
+  private getWaterAnimation(millis: number, durationSeconds: number): number {
+    return SignalGenerator.sawtooth(millis, durationSeconds * 1000.0, 0);
   }
-
 }

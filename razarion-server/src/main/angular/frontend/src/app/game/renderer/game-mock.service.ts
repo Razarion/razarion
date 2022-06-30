@@ -13,7 +13,6 @@ import {
   NativeMatrix,
   ObjectNameId,
   PerfmonStatistic,
-  PhongMaterialConfig,
   SlopeConfig,
   SlopeGeometry, SlopeSplattingConfig,
   StatusProvider,
@@ -32,6 +31,7 @@ import {
 import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 import {HttpClient} from "@angular/common/http";
 import * as Stats from 'stats.js';
+import {URL_IMAGE} from "../../common";
 
 @Injectable()
 export class GameMockService {
@@ -376,5 +376,9 @@ export class GameMockService {
         return threeJsModelConfigs;
     }
 
+}
+
+export function getGwtMockImageUrl(filename: string) {
+  return `${URL_IMAGE}/${filename}`
 }
 

@@ -117,6 +117,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     function animate() {
       const delta = clock.getDelta();
 
+      self.threeJsWaterRenderService.update();
+
       requestAnimationFrame(animate);
       self.scrollCamera(delta, self.camera);
 
