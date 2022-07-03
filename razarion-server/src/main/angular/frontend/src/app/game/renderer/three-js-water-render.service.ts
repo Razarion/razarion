@@ -8,7 +8,7 @@ import {
   Group,
   Mesh,
   MeshBasicMaterial,
-  MeshPhongMaterial,
+  MultiplyOperation,
   RepeatWrapping,
   ShaderLib,
   ShaderMaterial,
@@ -23,20 +23,15 @@ import {getGwtMockImageUrl} from "./game-mock.service";
 import {SignalGenerator} from "../signal-generator";
 
 export const vertex = /* glsl */`
-#define STANDARD
+#define PHONG
 
 varying vec3 vViewPosition;
-
-#ifdef USE_TRANSMISSION
-
-varying vec3 vWorldPosition;
-
-#endif
 
 #include <common>
 #include <uv_pars_vertex>
 #include <uv2_pars_vertex>
 #include <displacementmap_pars_vertex>
+#include <envmap_pars_vertex>
 #include <color_pars_vertex>
 #include <fog_pars_vertex>
 #include <normal_pars_vertex>
@@ -70,73 +65,23 @@ void main() {
 	vViewPosition = - mvPosition.xyz;
 
 	#include <worldpos_vertex>
+	#include <envmap_vertex>
 	#include <shadowmap_vertex>
 	#include <fog_vertex>
-
-#ifdef USE_TRANSMISSION
-
-	vWorldPosition = worldPosition.xyz;
-
-#endif
 }
 `;
 
 export const fragment = /* glsl */`
-#define STANDARD
-
-#ifdef PHYSICAL
-	#define IOR
-	#define SPECULAR
-#endif
+#define PHONG
 
 uniform vec3 diffuse;
 uniform vec3 emissive;
-uniform float roughness;
-uniform float metalness;
+uniform vec3 specular;
+uniform float shininess;
 uniform float opacity;
 
-#ifdef IOR
-	uniform float ior;
-#endif
-
-#ifdef SPECULAR
-	uniform float specularIntensity;
-	uniform vec3 specularColor;
-
-	#ifdef USE_SPECULARINTENSITYMAP
-		uniform sampler2D specularIntensityMap;
-	#endif
-
-	#ifdef USE_SPECULARCOLORMAP
-		uniform sampler2D specularColorMap;
-	#endif
-#endif
-
-#ifdef USE_CLEARCOAT
-	uniform float clearcoat;
-	uniform float clearcoatRoughness;
-#endif
-
-#ifdef USE_SHEEN
-	uniform vec3 sheenColor;
-	uniform float sheenRoughness;
-
-	#ifdef USE_SHEENCOLORMAP
-		uniform sampler2D sheenColorMap;
-	#endif
-
-	#ifdef USE_SHEENROUGHNESSMAP
-		uniform sampler2D sheenRoughnessMap;
-	#endif
-#endif
-
-varying vec3 vViewPosition;
-
-uniform sampler2D uDistortionMap;
 uniform float uDistortionScale;
 uniform float uDistortionAnimation;
-uniform float uDistortionStrength;
-uniform float uReflectionScale;
 
 #include <common>
 #include <packing>
@@ -150,21 +95,18 @@ uniform float uReflectionScale;
 #include <aomap_pars_fragment>
 #include <lightmap_pars_fragment>
 #include <emissivemap_pars_fragment>
-#include <bsdfs>
-#include <cube_uv_reflection_fragment>
 #include <envmap_common_pars_fragment>
-#include <envmap_physical_pars_fragment>
+#include <envmap_pars_fragment>
+#include <cube_uv_reflection_fragment>
 #include <fog_pars_fragment>
+#include <bsdfs>
 #include <lights_pars_begin>
 #include <normal_pars_fragment>
-#include <lights_physical_pars_fragment>
-#include <transmission_pars_fragment>
+#include <lights_phong_pars_fragment>
 #include <shadowmap_pars_fragment>
 #include <bumpmap_pars_fragment>
 #include <normalmap_pars_fragment>
-#include <clearcoat_pars_fragment>
-#include <roughnessmap_pars_fragment>
-#include <metalnessmap_pars_fragment>
+#include <specularmap_pars_fragment>
 #include <logdepthbuf_pars_fragment>
 #include <clipping_planes_pars_fragment>
 
@@ -177,31 +119,21 @@ void main() {
 	vec3 totalEmissiveRadiance = emissive;
 
 	#include <logdepthbuf_fragment>
-
-  vec2 distortion1 = texture2D(uDistortionMap, vUv / uDistortionScale + vec2(uDistortionAnimation, 0.5)).rg;
-  vec2 distortion2 = texture2D(uDistortionMap, vUv / uDistortionScale + vec2(-uDistortionAnimation, uDistortionAnimation)).rg;
-  vec2 totalDistortion = (distortion1 + distortion2) / 2.0 - 1.0;
-  vec2 reflectionCoord = vUv / uReflectionScale + totalDistortion * uDistortionStrength;
-  vec4 sampledDiffuseColor = vec4(texture2D(map, reflectionCoord).rgb, 1.0);
-	diffuseColor *= sampledDiffuseColor;
-
+	#include <map_fragment>
 	#include <color_fragment>
 	#include <alphamap_fragment>
 	#include <alphatest_fragment>
-	#include <roughnessmap_fragment>
-	#include <metalnessmap_fragment>
+	#include <specularmap_fragment>
 	#include <normal_fragment_begin>
 	vec3 mapN1 = texture2D( normalMap, vUv / uDistortionScale + vec2(uDistortionAnimation, 0.5)).xyz * 2.0 - 1.0;
 	vec3 mapN2 = texture2D( normalMap, vUv / uDistortionScale + vec2(-uDistortionAnimation, uDistortionAnimation)).xyz * 2.0 - 1.0;
-  vec3 mapN = (mapN1 + mapN2) / 2.0;
+    vec3 mapN = (mapN1 + mapN2) / 2.0;
 	mapN.xy *= normalScale;
 	normal = perturbNormal2Arb( - vViewPosition, normal, mapN, faceDirection );
-	#include <clearcoat_normal_fragment_begin>
-	#include <clearcoat_normal_fragment_maps>
 	#include <emissivemap_fragment>
 
 	// accumulation
-	#include <lights_physical_fragment>
+	#include <lights_phong_fragment>
 	#include <lights_fragment_begin>
 	#include <lights_fragment_maps>
 	#include <lights_fragment_end>
@@ -209,33 +141,9 @@ void main() {
 	// modulation
 	#include <aomap_fragment>
 
-	vec3 totalDiffuse = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;
-	vec3 totalSpecular = reflectedLight.directSpecular + reflectedLight.indirectSpecular;
+	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;
 
-	#include <transmission_fragment>
-
-	vec3 outgoingLight = totalDiffuse + totalSpecular + totalEmissiveRadiance;
-
-	#ifdef USE_SHEEN
-
-		// Sheen energy compensation approximation calculation can be found at the end of
-		// https://drive.google.com/file/d/1T0D1VSyR4AllqIJTQAraEIzjlb5h4FKH/view?usp=sharing
-		float sheenEnergyComp = 1.0 - 0.157 * max3( material.sheenColor );
-
-		outgoingLight = outgoingLight * sheenEnergyComp + sheenSpecular;
-
-	#endif
-
-	#ifdef USE_CLEARCOAT
-
-		float dotNVcc = saturate( dot( geometry.clearcoatNormal, geometry.viewDir ) );
-
-		vec3 Fcc = F_Schlick( material.clearcoatF0, material.clearcoatF90, dotNVcc );
-
-		outgoingLight = outgoingLight * ( 1.0 - material.clearcoat * Fcc ) + clearcoatSpecular * material.clearcoat;
-
-	#endif
-
+	#include <envmap_fragment>
 	#include <output_fragment>
 	#include <tonemapping_fragment>
 	#include <encodings_fragment>
@@ -247,7 +155,7 @@ void main() {
 
 @Injectable()
 export class ThreeJsWaterRenderService {
-  private materials: { material: ShaderMaterial, waterConfig: WaterConfig | null }[] = []; // TODO is not cleanup after scene is removed
+  private materials: { material: ShaderMaterial, waterConfig: WaterConfig | null }[] = [];
 
   public setup(terrainWaterTiles: TerrainWaterTile[], group: Group): void {
     if (!terrainWaterTiles) {
@@ -260,14 +168,14 @@ export class ThreeJsWaterRenderService {
         this.setupWater(terrainWaterTile.positions, group);
       }
       if (terrainWaterTile.shallowPositions) {
-        this.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, group);
+        ThreeJsWaterRenderService.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, group);
       }
     });
   }
 
   public update() {
     for (const material of this.materials) {
-      material.material.uniforms.uDistortionAnimation.value = this.getWaterAnimation(Date.now(), 20);
+      material.material.uniforms.uDistortionAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), 20); // TODO Take time from WaterConfig
     }
   }
 
@@ -276,58 +184,6 @@ export class ThreeJsWaterRenderService {
     geometry.setAttribute('position', new BufferAttribute(positions, 3));
     geometry.setAttribute('normal', ThreeJsTerrainTileImpl.fillVec3(new Vector3(0, 0, 1), positions.length));
     geometry.setAttribute('uv', ThreeJsTerrainTileImpl.uvFromPosition(positions));
-
-    let waterMaterial = new ShaderMaterial({
-      lights: true,
-      defines: {
-        'STANDARD': '',
-        'USE_MAP': '',
-        'USE_UV': '',
-        'USE_NORMALMAP': '',
-        'TANGENTSPACE_NORMALMAP': '',
-        'USE_ENVMAP': '',
-        'ENVMAP_TYPE_CUBE_UV': '',
-        'ENVMAP_MODE_REFRACTION': '',
-        // 'SPECULAR ': '',
-        // 'IOR ': '',
-      },
-      vertexShader: vertex,
-      fragmentShader: fragment,
-      uniforms: UniformsUtils.merge([
-        ShaderLib.standard.uniforms,
-        {
-          uReflectionScale: {value: 20.0},
-          uDistortionStrength: {value: 0.2},
-          uDistortionScale: {value: 10.0},
-          uDistortionAnimation: {value: 1.0},
-          uDistortionMap: {value: null},
-          normalMapType: {value: TangentSpaceNormalMap},
-          normalScale: {value: new Vector2(1, 1)},
-          // specularIntensity: {value: 1},
-          // specularColor: {value: new Color( 1, 1, 1 )},
-          roughness: {value: 0.5},
-          metalness: {value: 0.8},
-          envMapIntensity: {value: 1.0},
-          flipEnvMap: {value: 0},
-          envMap: {value: null},
-          refractionRatio: {value: 1},
-        }
-      ])
-    });
-
-    waterMaterial.uniforms.map.value = new TextureLoader().load(getGwtMockImageUrl('Grey512.png'));
-    // waterMaterial.uniforms.map.value = new TextureLoader().load(getGwtMockImageUrl('img.png'));
-    // waterMaterial.uniforms.map.value = new TextureLoader().load(getGwtMockImageUrl('chess32.jpg'));
-    waterMaterial.uniforms.map.value.wrapS = RepeatWrapping;
-    waterMaterial.uniforms.map.value.wrapT = RepeatWrapping;
-
-    waterMaterial.uniforms.uDistortionMap.value = new TextureLoader().load(getGwtMockImageUrl('WaterDistortion.png'));
-    waterMaterial.uniforms.uDistortionMap.value.wrapS = RepeatWrapping;
-    waterMaterial.uniforms.uDistortionMap.value.wrapT = RepeatWrapping;
-
-    waterMaterial.uniforms.normalMap.value = new TextureLoader().load(getGwtMockImageUrl('WaterNorm.png'));
-    waterMaterial.uniforms.normalMap.value.wrapS = RepeatWrapping;
-    waterMaterial.uniforms.normalMap.value.wrapT = RepeatWrapping;
 
     let cubeTexture = new CubeTextureLoader()
       .setPath('')
@@ -340,35 +196,37 @@ export class ThreeJsWaterRenderService {
         getGwtMockImageUrl('WaterCloudReflection.png')
       ]);
 
-    let texture = new TextureLoader().load(getGwtMockImageUrl('WaterNorm.png'));
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-
     let normalMap = new TextureLoader().load(getGwtMockImageUrl('WaterNorm.png'));
     normalMap.wrapS = RepeatWrapping;
     normalMap.wrapT = RepeatWrapping;
-    normalMap.repeat = new Vector2(0.1, 0.1);
 
-
-    // waterMaterial.uniforms.envMap.value.wrapS = RepeatWrapping;
-    // waterMaterial.uniforms.envMap.value.wrapT = RepeatWrapping;
-
-    // let material = new MeshBasicMaterial( { color: 0xFFFFFF, envMap: cubeTexture} );
-    // let material = new MeshStandardMaterial( { color: 0xFFFFFF} );
-    let material = new MeshPhongMaterial({
-      color: 0xFFFFFF,
-      envMap: cubeTexture,
-      normalMap: normalMap,
-      normalScale: new Vector2(0.2, 0.2),
-      shininess: 1.0,
-      specular: new Color(1.0, 1.0, 1.0),
-      opacity: 0.8,
+    let waterMaterial = new ShaderMaterial({
+      lights: true,
+      vertexShader: vertex,
+      fragmentShader: fragment,
       transparent: true,
+      uniforms: UniformsUtils.merge([
+        ShaderLib.phong.uniforms,
+        {
+          normalScale: {value: new Vector2(0.2, 0.2)},
+          uDistortionScale: {value: 7.0},
+          uDistortionAnimation: {value: 1.0},
+          opacity: {value: 0.8},
+          shininess: {value: 50},
+          specular: {value: new Color(1.0, 1.0, 1.0)},
+        }
+      ]),
     });
-    material.name = 'manual mipmaps';
 
+    waterMaterial.uniforms.envMap.value = cubeTexture;
+    waterMaterial.uniforms.normalMap.value = normalMap;
 
-    const mesh = new Mesh(geometry, material);
+    (<any>waterMaterial).envMap = waterMaterial.uniforms.envMap.value;
+    (<any>waterMaterial).combine = MultiplyOperation;
+    (<any>waterMaterial).normalMap = waterMaterial.uniforms.normalMap.value;
+    (<any>waterMaterial).normalMapType = TangentSpaceNormalMap;
+
+    const mesh = new Mesh(geometry, waterMaterial);
 
     mesh.addEventListener('added', () => {
       this.materials.push({material: waterMaterial, waterConfig: null});
@@ -384,9 +242,6 @@ export class ThreeJsWaterRenderService {
     // const normalMaterial = new MeshNormalMaterial();
     // const mesh = new Mesh(geometry, normalMaterial);
 
-    // const meshBasicMaterial = new MeshBasicMaterial({ color: 0x1188ff });
-    // const mesh = new Mesh(geometry, meshBasicMaterial);
-
     mesh.name = "Water";
     group.add(mesh);
 
@@ -395,7 +250,7 @@ export class ThreeJsWaterRenderService {
 
   }
 
-  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, group: Group) {
+  private static setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, group: Group) {
     let geometry = new BufferGeometry();
     geometry.setAttribute('position', new BufferAttribute(shallowPositions, 3));
     geometry.setAttribute('uvs', new BufferAttribute(shallowUvs, 3));
@@ -406,7 +261,7 @@ export class ThreeJsWaterRenderService {
     group.add(cube);
   }
 
-  private getWaterAnimation(millis: number, durationSeconds: number): number {
+  private static getWaterAnimation(millis: number, durationSeconds: number): number {
     return SignalGenerator.sawtooth(millis, durationSeconds * 1000.0, 0);
   }
 }
