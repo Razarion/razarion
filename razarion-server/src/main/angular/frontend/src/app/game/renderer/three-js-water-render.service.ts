@@ -3,14 +3,19 @@ import {TerrainWaterTile, WaterConfig} from "../../gwtangular/GwtAngularFacade";
 import {
   BufferAttribute,
   BufferGeometry,
+  Color,
+  CubeTextureLoader,
   Group,
   Mesh,
   MeshBasicMaterial,
+  MeshPhongMaterial,
   RepeatWrapping,
   ShaderLib,
   ShaderMaterial,
+  TangentSpaceNormalMap,
   TextureLoader,
   UniformsUtils,
+  Vector2,
   Vector3
 } from "three";
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
@@ -186,7 +191,11 @@ void main() {
 	#include <roughnessmap_fragment>
 	#include <metalnessmap_fragment>
 	#include <normal_fragment_begin>
-	#include <normal_fragment_maps>
+	vec3 mapN1 = texture2D( normalMap, vUv / uDistortionScale + vec2(uDistortionAnimation, 0.5)).xyz * 2.0 - 1.0;
+	vec3 mapN2 = texture2D( normalMap, vUv / uDistortionScale + vec2(-uDistortionAnimation, uDistortionAnimation)).xyz * 2.0 - 1.0;
+  vec3 mapN = (mapN1 + mapN2) / 2.0;
+	mapN.xy *= normalScale;
+	normal = perturbNormal2Arb( - vViewPosition, normal, mapN, faceDirection );
 	#include <clearcoat_normal_fragment_begin>
 	#include <clearcoat_normal_fragment_maps>
 	#include <emissivemap_fragment>
@@ -258,7 +267,7 @@ export class ThreeJsWaterRenderService {
 
   public update() {
     for (const material of this.materials) {
-      material.material.uniforms.uDistortionAnimation.value = this.getWaterAnimation(Date.now(), 30);
+      material.material.uniforms.uDistortionAnimation.value = this.getWaterAnimation(Date.now(), 20);
     }
   }
 
@@ -273,23 +282,41 @@ export class ThreeJsWaterRenderService {
       defines: {
         'STANDARD': '',
         'USE_MAP': '',
-        'USE_UV': ''
+        'USE_UV': '',
+        'USE_NORMALMAP': '',
+        'TANGENTSPACE_NORMALMAP': '',
+        'USE_ENVMAP': '',
+        'ENVMAP_TYPE_CUBE_UV': '',
+        'ENVMAP_MODE_REFRACTION': '',
+        // 'SPECULAR ': '',
+        // 'IOR ': '',
       },
       vertexShader: vertex,
       fragmentShader: fragment,
       uniforms: UniformsUtils.merge([
         ShaderLib.standard.uniforms,
         {
-          uReflectionScale: {value: 50.0},
-          uDistortionStrength: {value: 0.5},
-          uDistortionScale: {value: 5.0},
+          uReflectionScale: {value: 20.0},
+          uDistortionStrength: {value: 0.2},
+          uDistortionScale: {value: 10.0},
           uDistortionAnimation: {value: 1.0},
           uDistortionMap: {value: null},
+          normalMapType: {value: TangentSpaceNormalMap},
+          normalScale: {value: new Vector2(1, 1)},
+          // specularIntensity: {value: 1},
+          // specularColor: {value: new Color( 1, 1, 1 )},
+          roughness: {value: 0.5},
+          metalness: {value: 0.8},
+          envMapIntensity: {value: 1.0},
+          flipEnvMap: {value: 0},
+          envMap: {value: null},
+          refractionRatio: {value: 1},
         }
       ])
     });
 
-    waterMaterial.uniforms.map.value = new TextureLoader().load(getGwtMockImageUrl('WaterCloudReflection.png'));
+    waterMaterial.uniforms.map.value = new TextureLoader().load(getGwtMockImageUrl('Grey512.png'));
+    // waterMaterial.uniforms.map.value = new TextureLoader().load(getGwtMockImageUrl('img.png'));
     // waterMaterial.uniforms.map.value = new TextureLoader().load(getGwtMockImageUrl('chess32.jpg'));
     waterMaterial.uniforms.map.value.wrapS = RepeatWrapping;
     waterMaterial.uniforms.map.value.wrapT = RepeatWrapping;
@@ -298,7 +325,50 @@ export class ThreeJsWaterRenderService {
     waterMaterial.uniforms.uDistortionMap.value.wrapS = RepeatWrapping;
     waterMaterial.uniforms.uDistortionMap.value.wrapT = RepeatWrapping;
 
-    const mesh = new Mesh(geometry, waterMaterial);
+    waterMaterial.uniforms.normalMap.value = new TextureLoader().load(getGwtMockImageUrl('WaterNorm.png'));
+    waterMaterial.uniforms.normalMap.value.wrapS = RepeatWrapping;
+    waterMaterial.uniforms.normalMap.value.wrapT = RepeatWrapping;
+
+    let cubeTexture = new CubeTextureLoader()
+      .setPath('')
+      .load([
+        getGwtMockImageUrl('WaterCloudReflection.png'),
+        getGwtMockImageUrl('WaterCloudReflection.png'),
+        getGwtMockImageUrl('WaterCloudReflection.png'),
+        getGwtMockImageUrl('WaterCloudReflection.png'),
+        getGwtMockImageUrl('WaterCloudReflection.png'),
+        getGwtMockImageUrl('WaterCloudReflection.png')
+      ]);
+
+    let texture = new TextureLoader().load(getGwtMockImageUrl('WaterNorm.png'));
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+
+    let normalMap = new TextureLoader().load(getGwtMockImageUrl('WaterNorm.png'));
+    normalMap.wrapS = RepeatWrapping;
+    normalMap.wrapT = RepeatWrapping;
+    normalMap.repeat = new Vector2(0.1, 0.1);
+
+
+    // waterMaterial.uniforms.envMap.value.wrapS = RepeatWrapping;
+    // waterMaterial.uniforms.envMap.value.wrapT = RepeatWrapping;
+
+    // let material = new MeshBasicMaterial( { color: 0xFFFFFF, envMap: cubeTexture} );
+    // let material = new MeshStandardMaterial( { color: 0xFFFFFF} );
+    let material = new MeshPhongMaterial({
+      color: 0xFFFFFF,
+      envMap: cubeTexture,
+      normalMap: normalMap,
+      normalScale: new Vector2(0.2, 0.2),
+      shininess: 1.0,
+      specular: new Color(1.0, 1.0, 1.0),
+      opacity: 0.8,
+      transparent: true,
+    });
+    material.name = 'manual mipmaps';
+
+
+    const mesh = new Mesh(geometry, material);
 
     mesh.addEventListener('added', () => {
       this.materials.push({material: waterMaterial, waterConfig: null});
