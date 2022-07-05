@@ -7,7 +7,6 @@ import {
   CubeTextureLoader,
   Group,
   Mesh,
-  MeshBasicMaterial,
   MultiplyOperation,
   RepeatWrapping,
   ShaderLib,
@@ -21,11 +20,17 @@ import {
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
 import {getGwtMockImageUrl} from "./game-mock.service";
 import {SignalGenerator} from "../signal-generator";
+import {Texture} from "three/src/textures/Texture";
 
 export const vertex = /* glsl */`
 #define PHONG
 
 varying vec3 vViewPosition;
+
+#ifdef  RENDER_SHALLOW_WATER
+attribute vec2 shallowUv;
+varying vec2 vShallowUv;
+#endif
 
 #include <common>
 #include <uv_pars_vertex>
@@ -64,6 +69,10 @@ void main() {
 
 	vViewPosition = - mvPosition.xyz;
 
+#ifdef  RENDER_SHALLOW_WATER
+  vShallowUv = shallowUv;
+#endif
+
 	#include <worldpos_vertex>
 	#include <envmap_vertex>
 	#include <shadowmap_vertex>
@@ -82,6 +91,16 @@ uniform float opacity;
 
 uniform float uDistortionScale;
 uniform float uDistortionAnimation;
+
+#ifdef  RENDER_SHALLOW_WATER
+varying vec2 vShallowUv;
+uniform sampler2D uShallowWater;
+uniform float uShallowWaterScale;
+uniform sampler2D uShallowDistortionMap;
+uniform float uShallowDistortionStrength;
+uniform float uShallowAnimation;
+uniform sampler2D uWaterStencil;
+#endif
 
 #include <common>
 #include <packing>
@@ -127,7 +146,7 @@ void main() {
 	#include <normal_fragment_begin>
 	vec3 mapN1 = texture2D( normalMap, vUv / uDistortionScale + vec2(uDistortionAnimation, 0.5)).xyz * 2.0 - 1.0;
 	vec3 mapN2 = texture2D( normalMap, vUv / uDistortionScale + vec2(-uDistortionAnimation, uDistortionAnimation)).xyz * 2.0 - 1.0;
-    vec3 mapN = (mapN1 + mapN2) / 2.0;
+  vec3 mapN = (mapN1 + mapN2) / 2.0;
 	mapN.xy *= normalScale;
 	normal = perturbNormal2Arb( - vViewPosition, normal, mapN, faceDirection );
 	#include <emissivemap_fragment>
@@ -150,6 +169,17 @@ void main() {
 	#include <fog_fragment>
 	#include <premultiplied_alpha_fragment>
 	#include <dithering_fragment>
+
+#ifdef  RENDER_SHALLOW_WATER
+  vec2 totalShallowDistortion = uShallowDistortionStrength  * (texture2D(uShallowDistortionMap, vShallowUv / uShallowWaterScale + vec2(uShallowAnimation, 0)).rg * 2.0 - 1.0);
+  vec4 shallowWater = texture2D(uShallowWater, (vShallowUv + totalShallowDistortion) / uShallowWaterScale);
+  float waterStencil = texture2D(uWaterStencil, (vShallowUv + totalShallowDistortion) / uShallowWaterScale).b;
+  // Porter-Duff Composition
+  // https://de.wikipedia.org/wiki/Alpha_Blending
+  float transparency = shallowWater.a + (1.0 - shallowWater.a) * waterStencil;
+  vec3 color = 1.0 / transparency * (shallowWater.a * shallowWater.rgb + (1.0 - shallowWater.a) * waterStencil * gl_FragColor.rgb);
+  gl_FragColor = vec4(color, max(shallowWater.a, min(transparency, gl_FragColor.a)));
+#endif
 }
 `;
 
@@ -157,34 +187,19 @@ void main() {
 export class ThreeJsWaterRenderService {
   private materials: { material: ShaderMaterial, waterConfig: WaterConfig | null }[] = [];
 
-  public setup(terrainWaterTiles: TerrainWaterTile[], group: Group): void {
-    if (!terrainWaterTiles) {
-      return;
-    }
-    terrainWaterTiles.forEach(terrainWaterTile => {
-      terrainWaterTile.slopeConfigId
-
-      if (terrainWaterTile.positions) {
-        this.setupWater(terrainWaterTile.positions, group);
-      }
-      if (terrainWaterTile.shallowPositions) {
-        ThreeJsWaterRenderService.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, group);
-      }
-    });
+  private static getWaterAnimation(millis: number, durationSeconds: number): number {
+    return SignalGenerator.sawtooth(millis, durationSeconds * 1000.0, 0);
   }
 
-  public update() {
-    for (const material of this.materials) {
-      material.material.uniforms.uDistortionAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), 20); // TODO Take time from WaterConfig
-    }
-  }
-
-  private setupWater(positions: Float32Array, group: Group) {
+  private static setupWaterGeometry(positions: Float32Array) {
     let geometry = new BufferGeometry();
     geometry.setAttribute('position', new BufferAttribute(positions, 3));
     geometry.setAttribute('normal', ThreeJsTerrainTileImpl.fillVec3(new Vector3(0, 0, 1), positions.length));
     geometry.setAttribute('uv', ThreeJsTerrainTileImpl.uvFromPosition(positions));
+    return geometry;
+  }
 
+  private static setupWaterMaterial(): ShaderMaterial {
     let cubeTexture = new CubeTextureLoader()
       .setPath('')
       .load([
@@ -225,7 +240,63 @@ export class ThreeJsWaterRenderService {
     (<any>waterMaterial).combine = MultiplyOperation;
     (<any>waterMaterial).normalMap = waterMaterial.uniforms.normalMap.value;
     (<any>waterMaterial).normalMapType = TangentSpaceNormalMap;
+    return waterMaterial;
+  }
 
+  public setup(terrainWaterTiles: TerrainWaterTile[], group: Group): void {
+    if (!terrainWaterTiles) {
+      return;
+    }
+    terrainWaterTiles.forEach(terrainWaterTile => {
+      terrainWaterTile.slopeConfigId
+
+      if (terrainWaterTile.positions) {
+        this.setupWater(terrainWaterTile.positions, group);
+      }
+      if (terrainWaterTile.shallowPositions) {
+        this.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, group);
+      }
+    });
+  }
+
+  public update() {
+    for (const material of this.materials) {
+      material.material.uniforms.uDistortionAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), 20); // TODO Take time from WaterConfig
+      if (material.material.uniforms.uShallowAnimation) {
+        material.material.uniforms.uShallowAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), 20); // TODO Take time from SlopeConfig
+      }
+    }
+  }
+
+  private setupWater(positions: Float32Array, group: Group) {
+    let geometry = ThreeJsWaterRenderService.setupWaterGeometry(positions);
+    let waterMaterial = ThreeJsWaterRenderService.setupWaterMaterial();
+    this.createAndAddMesh(geometry, waterMaterial, group, "Water");
+
+  }
+
+  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, group: Group) {
+    let geometry = ThreeJsWaterRenderService.setupWaterGeometry(shallowPositions);
+    geometry.setAttribute('shallowUv', new BufferAttribute(shallowUvs, 2));
+    let waterMaterial = ThreeJsWaterRenderService.setupWaterMaterial();
+    waterMaterial.defines['RENDER_SHALLOW_WATER'] = '';
+
+    waterMaterial.uniforms.uShallowWater = {value: new TextureLoader().load(getGwtMockImageUrl('Foam.png'), (texture: Texture) => texture.wrapT = RepeatWrapping)}
+    waterMaterial.uniforms.uShallowWaterScale = {value: 24}
+    waterMaterial.uniforms.uShallowDistortionMap = {
+      value: new TextureLoader().load(getGwtMockImageUrl('FoamDistortion.png'), (texture: Texture) => {
+        texture.wrapS = RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
+      })
+    }
+    waterMaterial.uniforms.uShallowDistortionStrength = {value: 1}
+    waterMaterial.uniforms.uShallowAnimation = {value: 1}
+    waterMaterial.uniforms.uWaterStencil = {value: new TextureLoader().load(getGwtMockImageUrl('WaterStencil.png'), (texture: Texture) => texture.wrapT = RepeatWrapping)}
+
+    this.createAndAddMesh(geometry, waterMaterial, group, "Shallow Water");
+  }
+
+  private createAndAddMesh(geometry: BufferGeometry, waterMaterial: ShaderMaterial, group: Group, meshName: string) {
     const mesh = new Mesh(geometry, waterMaterial);
 
     mesh.addEventListener('added', () => {
@@ -242,26 +313,10 @@ export class ThreeJsWaterRenderService {
     // const normalMaterial = new MeshNormalMaterial();
     // const mesh = new Mesh(geometry, normalMaterial);
 
-    mesh.name = "Water";
+    mesh.name = meshName;
     group.add(mesh);
 
     // const normHelper = new VertexNormalsHelper(mesh, 2, 0x111111);
     // group.add(normHelper);
-
-  }
-
-  private static setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, group: Group) {
-    let geometry = new BufferGeometry();
-    geometry.setAttribute('position', new BufferAttribute(shallowPositions, 3));
-    geometry.setAttribute('uvs', new BufferAttribute(shallowUvs, 3));
-    const material = new MeshBasicMaterial({color: 0x5555ff});
-    material.wireframe = true;
-    const cube = new Mesh(geometry, material);
-    cube.name = "Shallow Water";
-    group.add(cube);
-  }
-
-  private static getWaterAnimation(millis: number, durationSeconds: number): number {
-    return SignalGenerator.sawtooth(millis, durationSeconds * 1000.0, 0);
   }
 }
