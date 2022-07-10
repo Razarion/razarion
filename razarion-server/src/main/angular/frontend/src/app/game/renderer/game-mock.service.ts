@@ -271,6 +271,15 @@ export class GameMockService {
               getDistortionAnimationSeconds(): number{
                 return this._waterConfigJson.distortionAnimationSeconds
               }
+
+              getDistortionStrength(): number {
+                return this._waterConfigJson.distortionStrength
+              }
+
+              getNormalMapDepth(): number {
+                return this._waterConfigJson.normalMapDepth
+              }
+
             }
           });
           if (waterConfig !== null) {

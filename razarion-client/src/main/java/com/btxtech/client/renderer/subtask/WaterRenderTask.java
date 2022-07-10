@@ -22,6 +22,7 @@ import static com.btxtech.client.renderer.webgl.WebGlFacadeConfig.Blend.SOURCE_A
  * 04.09.2015.
  */
 @Dependent
+@Deprecated
 public class WaterRenderTask extends AbstractWebGlRenderTask<UiTerrainWaterTile> implements WaterRenderTaskRunner.RenderTask {
     // private Logger logger = Logger.getLogger(ClientWaterRendererUnit.class.getName());
     // TODO @Inject
@@ -50,13 +51,13 @@ public class WaterRenderTask extends AbstractWebGlRenderTask<UiTerrainWaterTile>
         setupUniform("uTransparency", F, () -> uiTerrainWaterTile.getWaterConfig().getTransparency());
         setupUniform("uFresnelOffset", F, () -> uiTerrainWaterTile.getWaterConfig().getFresnelOffset());
         setupUniform("uFresnelDelta", F, () -> uiTerrainWaterTile.getWaterConfig().getFresnelDelta());
-        setupUniform("uBumpMapDepth", F, () -> uiTerrainWaterTile.getWaterConfig().getBumpMapDepth());
+        setupUniform("uBumpMapDepth", F, () -> uiTerrainWaterTile.getWaterConfig().getNormalMapDepth());
         setupUniform("uDistortionStrength", F, () -> uiTerrainWaterTile.getWaterConfig().getDistortionStrength());
-        setupUniform("uBumpDistortionScale", F, () -> uiTerrainWaterTile.getWaterConfig().getBumpDistortionScale());
+        // setupUniform("uBumpDistortionScale", F, () -> uiTerrainWaterTile.getWaterConfig().getBumpDistortionScale());
         setupUniform("uBumpDistortionAnimation", F, uiTerrainWaterTile::getWaterAnimation);
 
         createWebGLTexture("uReflection", uiTerrainWaterTile.getWaterConfig().getReflectionId());
-        createWebGLTexture("uBumpMap", uiTerrainWaterTile.getWaterConfig().getBumpMapId());
+        createWebGLTexture("uBumpMap", uiTerrainWaterTile.getWaterConfig().getNormalMapId());
         createWebGLTexture("uDistortionMap", uiTerrainWaterTile.getWaterConfig().getDistortionId());
 
         if (hasShallowWater(uiTerrainWaterTile)) {

@@ -91,7 +91,7 @@ uniform vec3 specular;
 uniform float shininess;
 uniform float opacity;
 
-uniform float uDistortionScale;
+uniform float uDistortionStrength;
 uniform float uDistortionAnimation;
 
 #ifdef  RENDER_SHALLOW_WATER
@@ -146,8 +146,8 @@ void main() {
 	#include <alphatest_fragment>
 	#include <specularmap_fragment>
 	#include <normal_fragment_begin>
-	vec3 mapN1 = texture2D( normalMap, vUv / uDistortionScale + vec2(uDistortionAnimation, 0.5)).xyz * 2.0 - 1.0;
-	vec3 mapN2 = texture2D( normalMap, vUv / uDistortionScale + vec2(-uDistortionAnimation, uDistortionAnimation)).xyz * 2.0 - 1.0;
+	vec3 mapN1 = texture2D( normalMap, vUv / uDistortionStrength + vec2(uDistortionAnimation, 0.5)).xyz * 2.0 - 1.0;
+	vec3 mapN2 = texture2D( normalMap, vUv / uDistortionStrength + vec2(-uDistortionAnimation, uDistortionAnimation)).xyz * 2.0 - 1.0;
   vec3 mapN = (mapN1 + mapN2) / 2.0;
 	mapN.xy *= normalScale;
 	normal = perturbNormal2Arb( - vViewPosition, normal, mapN, faceDirection );
@@ -228,9 +228,9 @@ export class ThreeJsWaterRenderService {
       uniforms: UniformsUtils.merge([
         ShaderLib.phong.uniforms,
         {
-          normalScale: {value: new Vector2(0.2, 0.2)}, // TODO Take time from WaterConfig
-          uDistortionScale: {value: 7.0}, // TODO Take time from WaterConfig
-          uDistortionAnimation: {value: 1.0}, // TODO Take time from WaterConfig
+          normalScale: {value: new Vector2(waterConfig.getNormalMapDepth(), waterConfig.getNormalMapDepth())},
+          uDistortionStrength: {value: waterConfig.getDistortionStrength()},
+          uDistortionAnimation: {value: 1.0},
           opacity: {value: waterConfig.getTransparency()},
           shininess: {value: waterConfig.getShininess()},
           specular: {value: new Color(waterConfig.getSpecularStrength(), waterConfig.getSpecularStrength(), waterConfig.getSpecularStrength())},

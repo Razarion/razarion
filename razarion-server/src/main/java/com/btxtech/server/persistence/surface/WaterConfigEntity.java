@@ -62,15 +62,14 @@ public class WaterConfigEntity {
                 .fresnelDelta(fresnelDelta)
                 .shininess(shininess)
                 .specularStrength(specularStrength)
-                .bumpMapDepth(bumpMapDepth)
-                .bumpDistortionScale(bumpDistortionScale)
+                .normalMapDepth(bumpMapDepth)
                 .distortionStrength(distortionStrength)
                 .distortionAnimationSeconds(distortionDurationSeconds);
         if (reflection != null) {
             waterConfig.setReflectionId(reflection.getId());
         }
         if (bumpMap != null) {
-            waterConfig.setBumpMapId(bumpMap.getId());
+            waterConfig.setNormalMapId(bumpMap.getId());
         }
         if (distortion != null) {
             waterConfig.setDistortionId(distortion.getId());
@@ -89,9 +88,8 @@ public class WaterConfigEntity {
         fresnelDelta = waterConfig.getFresnelDelta();
         shininess = waterConfig.getShininess();
         specularStrength = waterConfig.getSpecularStrength();
-        bumpMap = imagePersistence.getImageLibraryEntity(waterConfig.getBumpMapId());
-        bumpMapDepth = waterConfig.getBumpMapDepth();
-        bumpDistortionScale = waterConfig.getBumpDistortionScale();
+        bumpMap = imagePersistence.getImageLibraryEntity(waterConfig.getNormalMapId());
+        bumpMapDepth = waterConfig.getNormalMapDepth();
         distortion = imagePersistence.getImageLibraryEntity(waterConfig.getDistortionId());
         distortionStrength = waterConfig.getDistortionStrength();
         distortionDurationSeconds = waterConfig.getDistortionAnimationSeconds();

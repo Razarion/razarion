@@ -40,7 +40,9 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 .transparency(0.8)
                 .shininess(50)
                 .specularStrength(1.0)
-                .distortionAnimationSeconds(20));
+                .distortionAnimationSeconds(20)
+                .distortionStrength(7)
+                .normalMapDepth(0.2));
 
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         // Razarion Industries base

@@ -139,6 +139,10 @@ export interface WaterConfig {
   getSpecularStrength(): number;
 
   getDistortionAnimationSeconds(): number;
+
+  getDistortionStrength(): number;
+
+  getNormalMapDepth(): number;
 }
 
 export interface PhongMaterialConfig {
