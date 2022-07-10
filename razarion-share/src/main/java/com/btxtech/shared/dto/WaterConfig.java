@@ -17,9 +17,6 @@ public class WaterConfig implements Config {
     private double transparency;
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer reflectionId;
-    private double reflectionScale;
-    private double fresnelOffset;
-    private double fresnelDelta;
     private double shininess;
     private double specularStrength;
     @CollectionReference(CollectionReferenceType.IMAGE)
@@ -75,30 +72,6 @@ public class WaterConfig implements Config {
 
     public void setReflectionId(Integer reflectionId) {
         this.reflectionId = reflectionId;
-    }
-
-    public double getReflectionScale() {
-        return reflectionScale;
-    }
-
-    public void setReflectionScale(double reflectionScale) {
-        this.reflectionScale = reflectionScale;
-    }
-
-    public double getFresnelOffset() {
-        return fresnelOffset;
-    }
-
-    public void setFresnelOffset(double fresnelOffset) {
-        this.fresnelOffset = fresnelOffset;
-    }
-
-    public double getFresnelDelta() {
-        return fresnelDelta;
-    }
-
-    public void setFresnelDelta(double fresnelDelta) {
-        this.fresnelDelta = fresnelDelta;
     }
 
     public double getShininess() {
@@ -194,21 +167,6 @@ public class WaterConfig implements Config {
 
     public WaterConfig specularStrength(double specularStrength) {
         setSpecularStrength(specularStrength);
-        return this;
-    }
-
-    public WaterConfig reflectionScale(double reflectionScale) {
-        setReflectionScale(reflectionScale);
-        return this;
-    }
-
-    public WaterConfig fresnelOffset(double fresnelOffset) {
-        setFresnelOffset(fresnelOffset);
-        return this;
-    }
-
-    public WaterConfig fresnelDelta(double fresnelDelta) {
-        setFresnelDelta(fresnelDelta);
         return this;
     }
 

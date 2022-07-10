@@ -47,10 +47,10 @@ public class WaterRenderTask extends AbstractWebGlRenderTask<UiTerrainWaterTile>
 
         setupUniform("uShininess", F, () -> uiTerrainWaterTile.getWaterConfig().getShininess());
         setupUniform("uSpecularStrength", F, () -> uiTerrainWaterTile.getWaterConfig().getSpecularStrength());
-        setupUniform("uReflectionScale", F, () -> uiTerrainWaterTile.getWaterConfig().getReflectionScale());
+        // setupUniform("uReflectionScale", F, () -> uiTerrainWaterTile.getWaterConfig().getReflectionScale());
         setupUniform("uTransparency", F, () -> uiTerrainWaterTile.getWaterConfig().getTransparency());
-        setupUniform("uFresnelOffset", F, () -> uiTerrainWaterTile.getWaterConfig().getFresnelOffset());
-        setupUniform("uFresnelDelta", F, () -> uiTerrainWaterTile.getWaterConfig().getFresnelDelta());
+        // setupUniform("uFresnelOffset", F, () -> uiTerrainWaterTile.getWaterConfig().getFresnelOffset());
+        // setupUniform("uFresnelDelta", F, () -> uiTerrainWaterTile.getWaterConfig().getFresnelDelta());
         setupUniform("uBumpMapDepth", F, () -> uiTerrainWaterTile.getWaterConfig().getNormalMapDepth());
         setupUniform("uDistortionStrength", F, () -> uiTerrainWaterTile.getWaterConfig().getDistortionStrength());
         // setupUniform("uBumpDistortionScale", F, () -> uiTerrainWaterTile.getWaterConfig().getBumpDistortionScale());

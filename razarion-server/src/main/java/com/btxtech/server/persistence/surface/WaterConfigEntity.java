@@ -57,9 +57,6 @@ public class WaterConfigEntity {
                 .waterLevel(waterLevel)
                 .groundLevel(groundLevel)
                 .transparency(transparency)
-                .reflectionScale(reflectionScale)
-                .fresnelOffset(fresnelOffset)
-                .fresnelDelta(fresnelDelta)
                 .shininess(shininess)
                 .specularStrength(specularStrength)
                 .normalMapDepth(bumpMapDepth)
@@ -83,9 +80,6 @@ public class WaterConfigEntity {
         groundLevel = waterConfig.getGroundLevel();
         transparency = waterConfig.getTransparency();
         reflection = imagePersistence.getImageLibraryEntity(waterConfig.getReflectionId());
-        reflectionScale = waterConfig.getReflectionScale();
-        fresnelOffset = waterConfig.getFresnelOffset();
-        fresnelDelta = waterConfig.getFresnelDelta();
         shininess = waterConfig.getShininess();
         specularStrength = waterConfig.getSpecularStrength();
         bumpMap = imagePersistence.getImageLibraryEntity(waterConfig.getNormalMapId());
