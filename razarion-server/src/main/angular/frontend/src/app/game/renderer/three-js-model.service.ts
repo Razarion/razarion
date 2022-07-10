@@ -53,6 +53,9 @@ export class ThreeJsModelService {
         let found = null;
         for (let object3D of this.object3Ds) {
             found = this.findInObject3D(threeJsUuid, object3D);
+            if(found) {
+              break;
+            }
         }
         if (found != null) {
             return this.createThreeJsModel(found, threeJsUuid);
@@ -120,13 +123,12 @@ export class ThreeJsModelService {
         }
 
         let gwtIssueNumber = threeJsModelId;
-        if(typeof threeJsModelId  !== 'number') {
-            gwtIssueNumber = (<any>threeJsModelId).a; // GWT rubbish
+        if(typeof <any>threeJsModelId  !== 'number') {
+            gwtIssueNumber = <number>Object.values(threeJsModelId)[0]; // GWT rubbish
         }
 
         let threeJsObject = this.object3DMap.get(gwtIssueNumber);
         if(threeJsObject === undefined) {
-          console.error(threeJsModelId)
           throw new Error(`No Material for threeJsModelId '${gwtIssueNumber}'.`);
         }
 

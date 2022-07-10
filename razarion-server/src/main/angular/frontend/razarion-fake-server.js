@@ -81,6 +81,15 @@ function loadImage(req) {
         case '9995':
             imageToLoad = "WaterNorm.png";
             break;
+        case '9996':
+            imageToLoad = "Foam.png";
+            break;
+        case '9997':
+            imageToLoad = "FoamDistortion.png";
+            break;
+        case '9998':
+            imageToLoad = "WaterStencil.png";
+            break;
     }
     return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\textures", imageToLoad));
 }

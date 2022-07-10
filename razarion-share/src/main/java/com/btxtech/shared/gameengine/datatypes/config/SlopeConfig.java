@@ -23,7 +23,9 @@ public class SlopeConfig implements Config {
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
+    @CollectionReference(CollectionReferenceType.GROUND)
     private Integer groundConfigId;
+    @CollectionReference(CollectionReferenceType.WATER)
     private Integer waterConfigId;
     private boolean interpolateNorm;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)

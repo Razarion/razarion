@@ -100,6 +100,8 @@ export interface SlopeConfig {
   getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null;
 
   getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null;
+
+  getShallowWaterConfig(): ShallowWaterConfig | null;
 }
 
 export interface SlopeSplattingConfig {
@@ -147,6 +149,20 @@ export interface WaterConfig {
   getNormalMapId(): number;
 
   getNormalMapDepth(): number;
+}
+
+export interface ShallowWaterConfig {
+  getTextureId(): number;
+
+  getScale(): number;
+
+  getDistortionId(): number;
+
+  getDistortionStrength(): number;
+
+  getStencilId(): number;
+
+  getDurationSeconds(): number;
 }
 
 export interface PhongMaterialConfig {

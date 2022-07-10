@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {TerrainWaterTile, WaterConfig} from "../../gwtangular/GwtAngularFacade";
+import {ShallowWaterConfig, SlopeConfig, TerrainWaterTile, WaterConfig} from "../../gwtangular/GwtAngularFacade";
 import {
   BufferAttribute,
   BufferGeometry,
@@ -18,7 +18,6 @@ import {
   Vector3
 } from "three";
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
-import {getGwtMockImageUrl} from "./game-mock.service";
 import {SignalGenerator} from "../signal-generator";
 import {Texture} from "three/src/textures/Texture";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
@@ -187,7 +186,11 @@ void main() {
 
 @Injectable()
 export class ThreeJsWaterRenderService {
-  private materials: { material: ShaderMaterial, waterConfig: WaterConfig }[] = [];
+  private materials: {
+    material: ShaderMaterial,
+    waterConfig: WaterConfig,
+    shallowWaterConfig: ShallowWaterConfig | null
+  }[] = [];
 
   constructor(private gwtAngularService: GwtAngularService) {
   }
@@ -260,19 +263,18 @@ export class ThreeJsWaterRenderService {
       if (terrainWaterTile.positions) {
         this.setupWater(terrainWaterTile.positions, waterConfig, group);
       }
-      if (terrainWaterTile.shallowPositions) {
-        this.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, waterConfig, group);
+      if (terrainWaterTile.shallowPositions && slopeConfig.getShallowWaterConfig()) {
+        this.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, slopeConfig, waterConfig, group);
       }
     });
   }
 
   public update() {
     this.materials.forEach(value => {
-      let material = value.material;
-      let waterConfig = value.waterConfig;
-      material.uniforms.uDistortionAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), waterConfig.getDistortionAnimationSeconds());
-      if (material.uniforms.uShallowAnimation) {
-        material.uniforms.uShallowAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), 20); // TODO Take time from SlopeConfig
+      let uniforms = value.material.uniforms;
+      uniforms.uDistortionAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), value.waterConfig.getDistortionAnimationSeconds());
+      if (uniforms.uShallowAnimation && value.shallowWaterConfig) {
+        uniforms.uShallowAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), value.shallowWaterConfig.getDurationSeconds());
       }
     })
   }
@@ -280,36 +282,49 @@ export class ThreeJsWaterRenderService {
   private setupWater(positions: Float32Array, waterConfig: WaterConfig, group: Group) {
     let geometry = ThreeJsWaterRenderService.setupWaterGeometry(positions);
     let waterMaterial = ThreeJsWaterRenderService.setupWaterMaterial(waterConfig);
-    this.createAndAddMesh(geometry, waterMaterial, waterConfig, group, "Water");
+    this.createAndAddMesh(geometry, waterMaterial, waterConfig, null, group, "Water");
   }
 
-  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, waterConfig: WaterConfig, group: Group) {
+  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, slopeConfig: SlopeConfig, waterConfig: WaterConfig, group: Group) {
     let geometry = ThreeJsWaterRenderService.setupWaterGeometry(shallowPositions);
     geometry.setAttribute('shallowUv', new BufferAttribute(shallowUvs, 2));
     let waterMaterial = ThreeJsWaterRenderService.setupWaterMaterial(waterConfig);
     waterMaterial.defines['RENDER_SHALLOW_WATER'] = '';
 
-    waterMaterial.uniforms.uShallowWater = {value: new TextureLoader().load(getGwtMockImageUrl('Foam.png'), (texture: Texture) => texture.wrapT = RepeatWrapping)}// TODO Take time from SlopeConfig
-    waterMaterial.uniforms.uShallowWaterScale = {value: 24} // TODO Take time from SlopeConfig
-    waterMaterial.uniforms.uShallowDistortionMap = {
-      value: new TextureLoader().load(getGwtMockImageUrl('FoamDistortion.png'), (texture: Texture) => {// TODO Take time from SlopeConfig
-        texture.wrapS = RepeatWrapping;
-        texture.wrapT = RepeatWrapping;
-      })
+    let shallowWaterConfig = slopeConfig.getShallowWaterConfig()!;
+    waterMaterial.uniforms.uShallowWater = {
+      value: new TextureLoader().load(getImageUrl(shallowWaterConfig.getTextureId()),
+        (texture: Texture) => texture.wrapT = RepeatWrapping)
     }
-    waterMaterial.uniforms.uShallowDistortionStrength = {value: 1} // TODO Take time from SlopeConfig
-    waterMaterial.uniforms.uShallowAnimation = {value: 1} // TODO Take time from SlopeConfig
-    waterMaterial.uniforms.uWaterStencil = {value: new TextureLoader().load(getGwtMockImageUrl('WaterStencil.png'), (texture: Texture) => texture.wrapT = RepeatWrapping)}// TODO Take time from SlopeConfig
+    waterMaterial.uniforms.uShallowWaterScale = {value: shallowWaterConfig.getScale()}
+    waterMaterial.uniforms.uShallowDistortionMap = {
+      value: new TextureLoader().load(getImageUrl(shallowWaterConfig.getDistortionId()),
+        (texture: Texture) => {
+          texture.wrapS = RepeatWrapping;
+          texture.wrapT = RepeatWrapping;
+        })
+    }
+    waterMaterial.uniforms.uShallowDistortionStrength = {value: shallowWaterConfig.getDistortionStrength()}
+    waterMaterial.uniforms.uShallowAnimation = {value: 1}
+    waterMaterial.uniforms.uWaterStencil = {
+      value: new TextureLoader().load(getImageUrl(shallowWaterConfig.getStencilId()),
+        (texture: Texture) => texture.wrapT = RepeatWrapping)
+    }
 
-    this.createAndAddMesh(geometry, waterMaterial, waterConfig, group, "Shallow Water");
+    this.createAndAddMesh(geometry, waterMaterial, waterConfig, slopeConfig.getShallowWaterConfig(), group, "Shallow Water");
   }
 
-  private createAndAddMesh(geometry: BufferGeometry, waterMaterial: ShaderMaterial, waterConfig: WaterConfig,group: Group, meshName: string) {
+  private createAndAddMesh(geometry: BufferGeometry, waterMaterial: ShaderMaterial, waterConfig: WaterConfig, shallowWaterConfig: ShallowWaterConfig | null, group: Group, meshName: string) {
     const mesh = new Mesh(geometry, waterMaterial);
 
     mesh.addEventListener('added', () => {
-      this.materials.push({material: waterMaterial, waterConfig: waterConfig});
+      this.materials.push({
+        material: waterMaterial,
+        waterConfig: waterConfig,
+        shallowWaterConfig: shallowWaterConfig
+      });
     });
+
     mesh.addEventListener('removed', () => {
       this.materials.forEach((value, index) => {
         if (value.material == waterMaterial) {

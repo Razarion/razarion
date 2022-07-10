@@ -2,7 +2,9 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import jsinterop.annotations.JsType;
 
+@JsType
 public class ShallowWaterConfig  {
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer textureId;

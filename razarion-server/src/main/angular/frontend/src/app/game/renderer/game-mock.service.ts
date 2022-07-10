@@ -13,8 +13,10 @@ import {
   NativeMatrix,
   ObjectNameId,
   PerfmonStatistic,
+  ShallowWaterConfig,
   SlopeConfig,
-  SlopeGeometry, SlopeSplattingConfig,
+  SlopeGeometry,
+  SlopeSplattingConfig,
   StatusProvider,
   TerrainEditorService,
   TerrainMarkerService,
@@ -35,272 +37,418 @@ import {URL_IMAGE} from "../../common";
 
 @Injectable()
 export class GameMockService {
-    staticGameConfigJson: any | null = null;
+  staticGameConfigJson: any | null = null;
 
-    inputService: InputService = new class implements InputService {
-        onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
-            console.info("onViewFieldChanged()");
-        }
-    };
+  inputService: InputService = new class implements InputService {
+    onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
+      console.info("onViewFieldChanged()");
+    }
+  };
 
-    statusProvider: StatusProvider = new class implements StatusProvider {
-        stats: Stats | null = null;
+  statusProvider: StatusProvider = new class implements StatusProvider {
+    stats: Stats | null = null;
 
-        getClientAlarms(): Alarm[] {
-            return [];
-        }
-        requestServerAlarms(): Promise<Alarm[]> {
-            throw new Error("Method not implemented.");
-        }
-        setStats(stats: Stats | null): void {
-            this.stats = stats;
-        }
-        getStats(): Stats | null {
-            return this.stats;
-        }
-
-    };
-
-    editorFrontendProvider: EditorFrontendProvider = new class implements EditorFrontendProvider {
-        getGenericEditorFrontendProvider(): GenericEditorFrontendProvider {
-            return new class implements GenericEditorFrontendProvider {
-                collectionNames(): string[] {
-                    return [];
-                }
-                requestObjectNameIds(collectionName: string): Promise<ObjectNameId[]> {
-                    throw new Error("Method not implemented.");
-                }
-                requestObjectNameId(collectionName: string, configId: number): Promise<ObjectNameId> {
-                    throw new Error("Method not implemented.");
-                }
-                createConfig(collectionName: string): Promise<GwtAngularPropertyTable> {
-                    throw new Error("Method not implemented.");
-                }
-                readConfig(collectionName: string, configId: number): Promise<GwtAngularPropertyTable> {
-                    throw new Error("Method not implemented.");
-                }
-                updateConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void> {
-                    throw new Error("Method not implemented.");
-                }
-                deleteConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void> {
-                    throw new Error("Method not implemented.");
-                }
-                colladaConvert(gwtAngularPropertyTable: GwtAngularPropertyTable, colladaString: string): Promise<void> {
-                    throw new Error("Method not implemented.");
-                }
-
-            };
-        }
-        getClientPerfmonStatistics(): PerfmonStatistic[] {
-            throw new Error("Method not implemented.");
-        }
-        getWorkerPerfmonStatistics(): Promise<PerfmonStatistic[]> {
-            throw new Error("Method not implemented.");
-        }
-        getTerrainMarkerService(): TerrainMarkerService {
-            throw new Error("Method not implemented.");
-        }
-        getTerrainEditorService(): TerrainEditorService {
-            throw new Error("Method not implemented.");
-        }
-    };
-
-    threeJsModels: ObjectNameId[] = [new class implements ObjectNameId {
-        id = 1;
-        internalName = "3D Model Palm Tree";
-        toString(): string {
-            return "3D Model Palm Tree (1)"
-        }
-    }, new class implements ObjectNameId {
-        id = 2;
-        internalName = "Rock Pack 3D";
-        toString(): string {
-            return "Rock Pack 3D (2)"
-        }
-    }];
-
-    constructor(private http: HttpClient) {
+    getClientAlarms(): Alarm[] {
+      return [];
     }
 
-    loadMockStaticGameConfig(): Promise<void> {
-      return new Promise<void>((resolve, reject) => {
-          this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((staticGameConfigJson: any) => {
-            this.staticGameConfigJson = staticGameConfigJson;
-            resolve(staticGameConfigJson);
-          });
-        });
+    requestServerAlarms(): Promise<Alarm[]> {
+      throw new Error("Method not implemented.");
     }
 
-    mockTerrainTypeService(): TerrainTypeService {
-      let _this = this;
-      return new class implements TerrainTypeService {
-        terrainTypeService = this;
+    setStats(stats: Stats | null): void {
+      this.stats = stats;
+    }
 
-        getTerrainObjectConfig(terrainObjectConfigId: number): TerrainObjectConfig {
-          let terrainObjectConfig: TerrainObjectConfig | null = null;
-          _this.staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
-            if (terrainObjectConfigJson.id != terrainObjectConfigId) {
-              return;
-            }
-            terrainObjectConfig = new class implements TerrainObjectConfig {
-              getThreeJsUuid(): string {
-                return terrainObjectConfigJson.threeJsUuid;
-              }
-            }
-            return
-          });
-          if (terrainObjectConfig !== null) {
-            return terrainObjectConfig;
-          } else {
-            throw new Error(`No TerrainObjectConfig for id ${terrainObjectConfigId}`);
-          }
+    getStats(): Stats | null {
+      return this.stats;
+    }
+
+  };
+
+  editorFrontendProvider: EditorFrontendProvider = new class implements EditorFrontendProvider {
+    getGenericEditorFrontendProvider(): GenericEditorFrontendProvider {
+      return new class implements GenericEditorFrontendProvider {
+        collectionNames(): string[] {
+          return [];
         }
 
-        getSlopeConfig(slopeConfigId: number): SlopeConfig {
-          let slopeConfig: SlopeConfig | null = null;
-          _this.staticGameConfigJson.slopeConfigs.forEach((slopeConfigJson: any) => {
-            if (slopeConfigJson.id != slopeConfigId) {
-              return;
-            }
-            slopeConfig = new class implements SlopeConfig {
-              getId(): number {
-                return slopeConfigJson.id;
-              }
-
-              getInternalName(): string {
-                return slopeConfigJson.internalName;
-              }
-
-              getThreeJsMaterial(): number {
-                return slopeConfigJson.threeJsMaterial;
-              }
-
-              getGroundConfigId(): number {
-                return slopeConfigJson.groundConfigId;
-              }
-
-              getWaterConfigId(): number {
-                return slopeConfigJson.waterConfigId;
-              }
-
-              getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null {
-                return _this.setupSlopeSplattingConfig(slopeConfigJson.innerSlopeSplattingConfig);
-              }
-
-              getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null {
-                return _this.setupSlopeSplattingConfig(slopeConfigJson.outerSlopeSplattingConfig);
-              }
-            }
-            return
-          });
-          if (slopeConfig !== null) {
-            return slopeConfig;
-          } else {
-            throw new Error(`No SlopeConfig for id ${slopeConfigId}`);
-          }
-
-        }
-
-        getDrivewayConfig(drivewayConfigId: number): DrivewayConfig {
+        requestObjectNameIds(collectionName: string): Promise<ObjectNameId[]> {
           throw new Error("Method not implemented.");
         }
 
-        getGroundConfig(groundConfigId: number): GroundConfig {
-          let groundConfig: GroundConfig | null = null;
-          _this.staticGameConfigJson.groundConfigs.forEach((groundConfigJson: any) => {
-            if (groundConfigJson.id != groundConfigId) {
-              return;
-            }
-            groundConfig = new class implements GroundConfig {
-              _groundConfigJson: any = groundConfigJson;
-
-              getId(): number {
-                return this._groundConfigJson.id
-              };
-
-              getInternalName(): string {
-                return this._groundConfigJson.internalName
-              };
-
-              getTopThreeJsMaterial(): number {
-                return this._groundConfigJson.topThreeJsMaterial;
-              };
-
-              getBottomThreeJsMaterial(): number {
-                return this._groundConfigJson.bottomThreeJsMaterial;
-              };
-
-              getSplatting(): GroundSplattingConfig {
-                return this._groundConfigJson.splatting
-              };
-            }
-            return
-          });
-          if (groundConfig !== null) {
-            return groundConfig;
-          } else {
-            throw new Error(`No GroundConfig for id ${groundConfigId}`);
-          }
+        requestObjectNameId(collectionName: string, configId: number): Promise<ObjectNameId> {
+          throw new Error("Method not implemented.");
         }
 
-        getWaterConfig(waterConfigId: number): WaterConfig {
-          let waterConfig: WaterConfig | null = null;
-          _this.staticGameConfigJson.waterConfigs.forEach((waterConfigJson: any) => {
-            if (waterConfigJson.id != waterConfigId) {
-              return;
-            }
-            waterConfig = new class implements WaterConfig {
-              _waterConfigJson: any = waterConfigJson;
+        createConfig(collectionName: string): Promise<GwtAngularPropertyTable> {
+          throw new Error("Method not implemented.");
+        }
 
-              getId(): number {
-                return this._waterConfigJson.id
-              };
+        readConfig(collectionName: string, configId: number): Promise<GwtAngularPropertyTable> {
+          throw new Error("Method not implemented.");
+        }
 
-              getReflectionId(): number {
-                return this._waterConfigJson.reflectionId
-              }
+        updateConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void> {
+          throw new Error("Method not implemented.");
+        }
 
-              getTransparency(): number {
-                return this._waterConfigJson.transparency
-              };
+        deleteConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void> {
+          throw new Error("Method not implemented.");
+        }
 
-              getShininess(): number {
-                return this._waterConfigJson.shininess
-              }
+        colladaConvert(gwtAngularPropertyTable: GwtAngularPropertyTable, colladaString: string): Promise<void> {
+          throw new Error("Method not implemented.");
+        }
 
-              getSpecularStrength(): number{
-                return this._waterConfigJson.specularStrength
-              }
+      };
+    }
 
-              getDistortionAnimationSeconds(): number{
-                return this._waterConfigJson.distortionAnimationSeconds
-              }
+    getClientPerfmonStatistics(): PerfmonStatistic[] {
+      throw new Error("Method not implemented.");
+    }
 
-              getDistortionStrength(): number {
-                return this._waterConfigJson.distortionStrength
-              }
+    getWorkerPerfmonStatistics(): Promise<PerfmonStatistic[]> {
+      throw new Error("Method not implemented.");
+    }
 
-              getNormalMapId(): number {
-                return this._waterConfigJson.normalMapId
-              }
+    getTerrainMarkerService(): TerrainMarkerService {
+      throw new Error("Method not implemented.");
+    }
 
-              getNormalMapDepth(): number {
-                return this._waterConfigJson.normalMapDepth
-              }
+    getTerrainEditorService(): TerrainEditorService {
+      throw new Error("Method not implemented.");
+    }
+  };
 
-            }
-          });
-          if (waterConfig !== null) {
-            return waterConfig;
-          } else {
-            throw new Error(`No WaterConfig for id ${waterConfig}`);
+  threeJsModels: ObjectNameId[] = [new class implements ObjectNameId {
+    id = 1;
+    internalName = "3D Model Palm Tree";
+
+    toString(): string {
+      return "3D Model Palm Tree (1)"
+    }
+  }, new class implements ObjectNameId {
+    id = 2;
+    internalName = "Rock Pack 3D";
+
+    toString(): string {
+      return "Rock Pack 3D (2)"
+    }
+  }];
+
+  constructor(private http: HttpClient) {
+  }
+
+  loadMockStaticGameConfig(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((staticGameConfigJson: any) => {
+        this.staticGameConfigJson = staticGameConfigJson;
+        resolve(staticGameConfigJson);
+      });
+    });
+  }
+
+  mockTerrainTypeService(): TerrainTypeService {
+    let _this = this;
+    return new class implements TerrainTypeService {
+      terrainTypeService = this;
+
+      getTerrainObjectConfig(terrainObjectConfigId: number): TerrainObjectConfig {
+        let terrainObjectConfig: TerrainObjectConfig | null = null;
+        _this.staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
+          if (terrainObjectConfigJson.id != terrainObjectConfigId) {
+            return;
           }
+          terrainObjectConfig = new class implements TerrainObjectConfig {
+            getThreeJsUuid(): string {
+              return terrainObjectConfigJson.threeJsUuid;
+            }
+          }
+          return
+        });
+        if (terrainObjectConfig !== null) {
+          return terrainObjectConfig;
+        } else {
+          throw new Error(`No TerrainObjectConfig for id ${terrainObjectConfigId}`);
         }
       }
-    };
 
-  private setupSlopeSplattingConfig(slopeSplattingConfig: any): SlopeSplattingConfig | null{
-    if(slopeSplattingConfig) {
+      getSlopeConfig(slopeConfigId: number): SlopeConfig {
+        let slopeConfig: SlopeConfig | null = null;
+        _this.staticGameConfigJson.slopeConfigs.forEach((slopeConfigJson: any) => {
+          if (slopeConfigJson.id != slopeConfigId) {
+            return;
+          }
+          slopeConfig = new class implements SlopeConfig {
+            getId(): number {
+              return slopeConfigJson.id;
+            }
+
+            getInternalName(): string {
+              return slopeConfigJson.internalName;
+            }
+
+            getThreeJsMaterial(): number {
+              return slopeConfigJson.threeJsMaterial;
+            }
+
+            getGroundConfigId(): number {
+              return slopeConfigJson.groundConfigId;
+            }
+
+            getWaterConfigId(): number {
+              return slopeConfigJson.waterConfigId;
+            }
+
+            getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null {
+              return _this.setupSlopeSplattingConfig(slopeConfigJson.innerSlopeSplattingConfig);
+            }
+
+            getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null {
+              return _this.setupSlopeSplattingConfig(slopeConfigJson.outerSlopeSplattingConfig);
+            }
+
+            getShallowWaterConfig(): ShallowWaterConfig | null {
+              if (slopeConfigJson.shallowWaterConfig) {
+                return new class implements ShallowWaterConfig {
+                  getDistortionId(): number {
+                    return slopeConfigJson.shallowWaterConfig.distortionId;
+                  }
+
+                  getDistortionStrength(): number {
+                    return slopeConfigJson.shallowWaterConfig.distortionStrength;
+                  }
+
+                  getDurationSeconds(): number {
+                    return slopeConfigJson.shallowWaterConfig.durationSeconds;
+                  }
+
+                  getScale(): number {
+                    return slopeConfigJson.shallowWaterConfig.scale;
+                  }
+
+                  getStencilId(): number {
+                    return slopeConfigJson.shallowWaterConfig.stencilId;
+                  }
+
+                  getTextureId(): number {
+                    return slopeConfigJson.shallowWaterConfig.textureId;
+                  }
+                };
+              } else {
+                return null;
+              }
+            }
+          }
+          return
+        });
+        if (slopeConfig !== null) {
+          return slopeConfig;
+        } else {
+          throw new Error(`No SlopeConfig for id ${slopeConfigId}`);
+        }
+
+      }
+
+      getDrivewayConfig(drivewayConfigId: number): DrivewayConfig {
+        throw new Error("Method not implemented.");
+      }
+
+      getGroundConfig(groundConfigId: number): GroundConfig {
+        let groundConfig: GroundConfig | null = null;
+        _this.staticGameConfigJson.groundConfigs.forEach((groundConfigJson: any) => {
+          if (groundConfigJson.id != groundConfigId) {
+            return;
+          }
+          groundConfig = new class implements GroundConfig {
+            _groundConfigJson: any = groundConfigJson;
+
+            getId(): number {
+              return this._groundConfigJson.id
+            };
+
+            getInternalName(): string {
+              return this._groundConfigJson.internalName
+            };
+
+            getTopThreeJsMaterial(): number {
+              return this._groundConfigJson.topThreeJsMaterial;
+            };
+
+            getBottomThreeJsMaterial(): number {
+              return this._groundConfigJson.bottomThreeJsMaterial;
+            };
+
+            getSplatting(): GroundSplattingConfig {
+              return this._groundConfigJson.splatting
+            };
+          }
+          return
+        });
+        if (groundConfig !== null) {
+          return groundConfig;
+        } else {
+          throw new Error(`No GroundConfig for id ${groundConfigId}`);
+        }
+      }
+
+      getWaterConfig(waterConfigId: number): WaterConfig {
+        let waterConfig: WaterConfig | null = null;
+        _this.staticGameConfigJson.waterConfigs.forEach((waterConfigJson: any) => {
+          if (waterConfigJson.id != waterConfigId) {
+            return;
+          }
+          waterConfig = new class implements WaterConfig {
+            _waterConfigJson: any = waterConfigJson;
+
+            getId(): number {
+              return this._waterConfigJson.id
+            };
+
+            getReflectionId(): number {
+              return this._waterConfigJson.reflectionId
+            }
+
+            getTransparency(): number {
+              return this._waterConfigJson.transparency
+            };
+
+            getShininess(): number {
+              return this._waterConfigJson.shininess
+            }
+
+            getSpecularStrength(): number {
+              return this._waterConfigJson.specularStrength
+            }
+
+            getDistortionAnimationSeconds(): number {
+              return this._waterConfigJson.distortionAnimationSeconds
+            }
+
+            getDistortionStrength(): number {
+              return this._waterConfigJson.distortionStrength
+            }
+
+            getNormalMapId(): number {
+              return this._waterConfigJson.normalMapId
+            }
+
+            getNormalMapDepth(): number {
+              return this._waterConfigJson.normalMapDepth
+            }
+
+          }
+        });
+        if (waterConfig !== null) {
+          return waterConfig;
+        } else {
+          throw new Error(`No WaterConfig for id ${waterConfig}`);
+        }
+      }
+    }
+  };
+
+  mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl) {
+    const _this = this;
+    this.http.get<TerrainTile[]>("/gwt-mock/terrain-tiles").subscribe((terrainTileJsonArray: any[]) => {
+      for (let i in terrainTileJsonArray) {
+        let terrainTileJson: any = terrainTileJsonArray[i];
+        const terrainTile = new class implements TerrainTile {
+          getGroundTerrainTiles(): GroundTerrainTile[] {
+            const groundTerrainTiles: GroundTerrainTile[] = [];
+            if (terrainTileJson.groundTerrainTiles === undefined || terrainTileJson.groundTerrainTiles === null) {
+              return groundTerrainTiles;
+            }
+            for (const [key, value] of Object.entries(terrainTileJson.groundTerrainTiles)) {
+              groundTerrainTiles.push(new class implements GroundTerrainTile {
+                groundConfigId: number = <number>(<any>value)["groundConfigId"];
+                positions: Float32Array = new Float32Array(<number>(<any>value)["positions"]);
+                norms: Float32Array = new Float32Array(<number>(<any>value)["norms"]);
+              });
+            }
+            return groundTerrainTiles;
+          };
+
+          getTerrainSlopeTiles(): TerrainSlopeTile[] {
+            const terrainSlopeTiles: TerrainSlopeTile[] = [];
+            if (terrainTileJson.terrainSlopeTiles === undefined || terrainTileJson.terrainSlopeTiles === null) {
+              return terrainSlopeTiles;
+            }
+            for (const [key, terrainSlopeTileJson] of Object.entries(terrainTileJson.terrainSlopeTiles)) {
+              terrainSlopeTiles.push(new class implements TerrainSlopeTile {
+                slopeConfigId: number = <number>(<any>terrainSlopeTileJson)["slopeConfigId"];
+                outerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("outerSlopeGeometry", <any>terrainSlopeTileJson);
+                centerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("centerSlopeGeometry", <any>terrainSlopeTileJson);
+                innerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("innerSlopeGeometry", <any>terrainSlopeTileJson);
+              });
+            }
+            return terrainSlopeTiles;
+          }
+
+          getTerrainWaterTiles(): TerrainWaterTile[] {
+            const terrainWaterTiles: TerrainWaterTile[] = [];
+            if (terrainTileJson.terrainWaterTiles === undefined || terrainTileJson.terrainWaterTiles === null) {
+              return terrainWaterTiles;
+            }
+            for (const [key, terrainWaterTileJson] of Object.entries(terrainTileJson.terrainWaterTiles)) {
+              terrainWaterTiles.push(new class implements TerrainWaterTile {
+                slopeConfigId: number = <number>(<any>terrainWaterTileJson)["slopeConfigId"];
+                positions: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["positions"]);
+                shallowPositions: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["shallowPositions"]);
+                shallowUvs: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["shallowUvs"]);
+              });
+            }
+            return terrainWaterTiles;
+          }
+
+          getTerrainTileObjectLists(): TerrainTileObjectList[] {
+            const terrainTileObjectLists: TerrainTileObjectList[] = [];
+            if (terrainTileJson.terrainTileObjectLists === undefined || terrainTileJson.terrainTileObjectLists === null) {
+              return terrainTileObjectLists;
+            }
+            for (const [key, terrainTileObjectListJson] of Object.entries(terrainTileJson.terrainTileObjectLists)) {
+              terrainTileObjectLists.push(new class implements TerrainTileObjectList {
+                models: NativeMatrix[] = _this.setupNativeMatrix((<any>terrainTileObjectListJson)["models"]);
+                terrainObjectConfigId = (<any>terrainTileObjectListJson)["terrainObjectConfigId"];
+              });
+            }
+            return terrainTileObjectLists;
+          }
+
+          getIndex(): Index {
+            return new class implements Index {
+              toString(): string {
+                return "TerrainTile.getIndex() MOCK";
+              }
+            }
+          }
+        };
+        const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, 1);
+        threeJsTerrainTile.addToScene();
+      }
+    });
+  }
+
+  mockThreeJsModelConfigs(): ThreeJsModelConfig[] {
+    let threeJsModelConfigs: ThreeJsModelConfig[] = [];
+    this.staticGameConfigJson.threeJsModelConfigs.forEach((threeJsModelConfigJson: any) => {
+      threeJsModelConfigs.push(new class implements ThreeJsModelConfig {
+        getId(): number {
+          return threeJsModelConfigJson.id;
+        }
+
+        getInternalName(): string {
+          return threeJsModelConfigJson.internalName;
+        }
+
+      });
+    })
+    return threeJsModelConfigs;
+  }
+
+  private setupSlopeSplattingConfig(slopeSplattingConfig: any): SlopeSplattingConfig | null {
+    if (slopeSplattingConfig) {
       return new class implements SlopeSplattingConfig {
         getBlur(): number {
           return slopeSplattingConfig.blur;
@@ -327,126 +475,33 @@ export class GameMockService {
     }
   }
 
-    mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl) {
-        const _this = this;
-        this.http.get<TerrainTile[]>("/gwt-mock/terrain-tiles").subscribe((terrainTileJsonArray: any[]) => {
-            for (let i in terrainTileJsonArray) {
-                let terrainTileJson: any = terrainTileJsonArray[i];
-                const terrainTile = new class implements TerrainTile {
-                    getGroundTerrainTiles(): GroundTerrainTile[] {
-                        const groundTerrainTiles: GroundTerrainTile[] = [];
-                        if (terrainTileJson.groundTerrainTiles === undefined || terrainTileJson.groundTerrainTiles === null) {
-                            return groundTerrainTiles;
-                        }
-                        for (const [key, value] of Object.entries(terrainTileJson.groundTerrainTiles)) {
-                            groundTerrainTiles.push(new class implements GroundTerrainTile {
-                                groundConfigId: number = <number>(<any>value)["groundConfigId"];
-                                positions: Float32Array = new Float32Array(<number>(<any>value)["positions"]);
-                                norms: Float32Array = new Float32Array(<number>(<any>value)["norms"]);
-                            });
-                        }
-                        return groundTerrainTiles;
-                    };
-                    getTerrainSlopeTiles(): TerrainSlopeTile[] {
-                        const terrainSlopeTiles: TerrainSlopeTile[] = [];
-                        if (terrainTileJson.terrainSlopeTiles === undefined || terrainTileJson.terrainSlopeTiles === null) {
-                            return terrainSlopeTiles;
-                        }
-                        for (const [key, terrainSlopeTileJson] of Object.entries(terrainTileJson.terrainSlopeTiles)) {
-                            terrainSlopeTiles.push(new class implements TerrainSlopeTile {
-                                slopeConfigId: number = <number>(<any>terrainSlopeTileJson)["slopeConfigId"];
-                                outerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("outerSlopeGeometry", <any>terrainSlopeTileJson);
-                                centerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("centerSlopeGeometry", <any>terrainSlopeTileJson);
-                                innerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("innerSlopeGeometry", <any>terrainSlopeTileJson);
-                            });
-                        }
-                        return terrainSlopeTiles;
-                    }
-                    getTerrainWaterTiles(): TerrainWaterTile[] {
-                        const terrainWaterTiles: TerrainWaterTile[] = [];
-                        if (terrainTileJson.terrainWaterTiles === undefined || terrainTileJson.terrainWaterTiles === null) {
-                            return terrainWaterTiles;
-                        }
-                        for (const [key, terrainWaterTileJson] of Object.entries(terrainTileJson.terrainWaterTiles)) {
-                            terrainWaterTiles.push(new class implements TerrainWaterTile {
-                                slopeConfigId: number = <number>(<any>terrainWaterTileJson)["slopeConfigId"];
-                                positions: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["positions"]);
-                                shallowPositions: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["shallowPositions"]);
-                                shallowUvs: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["shallowUvs"]);
-                            });
-                        }
-                        return terrainWaterTiles;
-                    }
-                    getTerrainTileObjectLists(): TerrainTileObjectList[] {
-                        const terrainTileObjectLists: TerrainTileObjectList[] = [];
-                        if (terrainTileJson.terrainTileObjectLists === undefined || terrainTileJson.terrainTileObjectLists === null) {
-                            return terrainTileObjectLists;
-                        }
-                        for (const [key, terrainTileObjectListJson] of Object.entries(terrainTileJson.terrainTileObjectLists)) {
-                            terrainTileObjectLists.push(new class implements TerrainTileObjectList {
-                                models: NativeMatrix[] = _this.setupNativeMatrix((<any>terrainTileObjectListJson)["models"]);
-                                terrainObjectConfigId = (<any>terrainTileObjectListJson)["terrainObjectConfigId"];
-                            });
-                        }
-                        return terrainTileObjectLists;
-                    }
-                    getIndex(): Index {
-                      return new class implements Index {
-                         toString(): string {
-                             return "TerrainTile.getIndex() MOCK";
-                         }
-                      }
-                    }
-                };
-                const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, 1);
-                threeJsTerrainTile.addToScene();
-            }
-        });
+  private setupGeometry(slopeGeometryName: string, terrainSlopeTileJson: any): SlopeGeometry | null {
+    if (slopeGeometryName in terrainSlopeTileJson) {
+      let slopeGeometry = terrainSlopeTileJson[slopeGeometryName];
+      return new class implements SlopeGeometry {
+        positions: Float32Array = new Float32Array(slopeGeometry["positions"]);
+        norms: Float32Array = new Float32Array(slopeGeometry["norms"]);
+        uvs: Float32Array = new Float32Array(slopeGeometry["uvs"]);
+        slopeFactors: Float32Array = new Float32Array(slopeGeometry["slopeFactors"]);
+      };
+    } else {
+      return null;
     }
 
-    private setupGeometry(slopeGeometryName: string, terrainSlopeTileJson: any): SlopeGeometry | null {
-        if (slopeGeometryName in terrainSlopeTileJson) {
-            let slopeGeometry = terrainSlopeTileJson[slopeGeometryName];
-            return new class implements SlopeGeometry {
-                positions: Float32Array = new Float32Array(slopeGeometry["positions"]);
-                norms: Float32Array = new Float32Array(slopeGeometry["norms"]);
-                uvs: Float32Array = new Float32Array(slopeGeometry["uvs"]);
-                slopeFactors: Float32Array = new Float32Array(slopeGeometry["slopeFactors"]);
-            };
-        } else {
-            return null;
+  }
+
+  private setupNativeMatrix(nativeMatricesJson: any): NativeMatrix[] {
+    let nativeMatrix: NativeMatrix[] = [];
+    nativeMatricesJson.forEach((nativeMatrixJson: any) => {
+      nativeMatrix.push(new class implements NativeMatrix {
+        getColumnMajorFloat32Array(): Float32Array {
+          return new Float32Array(nativeMatrixJson.columnMajorFloat32Array);
         }
 
-    }
-
-    private setupNativeMatrix(nativeMatricesJson: any): NativeMatrix[] {
-        let nativeMatrix: NativeMatrix[] = [];
-        nativeMatricesJson.forEach((nativeMatrixJson: any) => {
-            nativeMatrix.push(new class implements NativeMatrix {
-                getColumnMajorFloat32Array(): Float32Array {
-                    return new Float32Array(nativeMatrixJson.columnMajorFloat32Array);
-                }
-
-            });
-        });
-        return nativeMatrix;
-    }
-
-    mockThreeJsModelConfigs(): ThreeJsModelConfig[] {
-        let threeJsModelConfigs: ThreeJsModelConfig[] = [];
-        this.staticGameConfigJson.threeJsModelConfigs.forEach((threeJsModelConfigJson: any) => {
-            threeJsModelConfigs.push(new class implements ThreeJsModelConfig {
-                getId(): number {
-                    return threeJsModelConfigJson.id;
-                }
-                getInternalName(): string {
-                    return threeJsModelConfigJson.internalName;
-                }
-
-            });
-        })
-        return threeJsModelConfigs;
-    }
+      });
+    });
+    return nativeMatrix;
+  }
 
 }
 
