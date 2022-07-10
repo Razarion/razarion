@@ -22,7 +22,7 @@ import {getGwtMockImageUrl} from "./game-mock.service";
 import {SignalGenerator} from "../signal-generator";
 import {Texture} from "three/src/textures/Texture";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {ThreeJsModelService} from "./three-js-model.service";
+import {getImageUrl} from "../../common";
 
 export const vertex = /* glsl */`
 #define PHONG
@@ -189,7 +189,7 @@ void main() {
 export class ThreeJsWaterRenderService {
   private materials: { material: ShaderMaterial, waterConfig: WaterConfig }[] = [];
 
-  constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService) {
+  constructor(private gwtAngularService: GwtAngularService) {
   }
 
   private static getWaterAnimation(millis: number, durationSeconds: number): number {
@@ -208,15 +208,15 @@ export class ThreeJsWaterRenderService {
     let cubeTexture = new CubeTextureLoader()
       .setPath('')
       .load([
-        getGwtMockImageUrl('WaterCloudReflection.png'),
-        getGwtMockImageUrl('WaterCloudReflection.png'),
-        getGwtMockImageUrl('WaterCloudReflection.png'),
-        getGwtMockImageUrl('WaterCloudReflection.png'),
-        getGwtMockImageUrl('WaterCloudReflection.png'),
-        getGwtMockImageUrl('WaterCloudReflection.png')
+        getImageUrl(waterConfig.getReflectionId()),
+        getImageUrl(waterConfig.getReflectionId()),
+        getImageUrl(waterConfig.getReflectionId()),
+        getImageUrl(waterConfig.getReflectionId()),
+        getImageUrl(waterConfig.getReflectionId()),
+        getImageUrl(waterConfig.getReflectionId())
       ]);
 
-    let normalMap = new TextureLoader().load(getGwtMockImageUrl('WaterNorm.png'));
+    let normalMap = new TextureLoader().load(getImageUrl(waterConfig.getNormalMapId()));
     normalMap.wrapS = RepeatWrapping;
     normalMap.wrapT = RepeatWrapping;
 

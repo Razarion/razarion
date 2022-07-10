@@ -134,6 +134,8 @@ export interface WaterConfig {
 
   getTransparency(): number;
 
+  getReflectionId(): number;
+
   getShininess(): number;
 
   getSpecularStrength(): number;
@@ -141,6 +143,8 @@ export interface WaterConfig {
   getDistortionAnimationSeconds(): number;
 
   getDistortionStrength(): number;
+
+  getNormalMapId(): number;
 
   getNormalMapDepth(): number;
 }

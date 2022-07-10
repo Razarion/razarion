@@ -256,6 +256,10 @@ export class GameMockService {
                 return this._waterConfigJson.id
               };
 
+              getReflectionId(): number {
+                return this._waterConfigJson.reflectionId
+              }
+
               getTransparency(): number {
                 return this._waterConfigJson.transparency
               };
@@ -274,6 +278,10 @@ export class GameMockService {
 
               getDistortionStrength(): number {
                 return this._waterConfigJson.distortionStrength
+              }
+
+              getNormalMapId(): number {
+                return this._waterConfigJson.normalMapId
               }
 
               getNormalMapDepth(): number {

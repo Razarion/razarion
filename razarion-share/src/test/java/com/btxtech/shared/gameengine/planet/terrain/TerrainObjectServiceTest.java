@@ -38,10 +38,12 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 .waterLevel(-0.2)
                 .groundLevel(-1.2)
                 .transparency(0.8)
+                .reflectionId(9994)
                 .shininess(50)
                 .specularStrength(1.0)
                 .distortionAnimationSeconds(20)
                 .distortionStrength(7)
+                .normalMapId(9995)
                 .normalMapDepth(0.2));
 
         List<SlopeConfig> slopeConfigs = new ArrayList<>();

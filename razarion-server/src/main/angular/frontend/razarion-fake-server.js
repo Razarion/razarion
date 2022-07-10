@@ -75,6 +75,12 @@ function loadImage(req) {
         case '9993':
             imageToLoad = "GroundSplatting.png";
             break;
+        case '9994':
+            imageToLoad = "WaterCloudReflection.png";
+            break;
+        case '9995':
+            imageToLoad = "WaterNorm.png";
+            break;
     }
     return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\textures", imageToLoad));
 }
