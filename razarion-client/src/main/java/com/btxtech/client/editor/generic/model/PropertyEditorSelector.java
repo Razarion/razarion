@@ -305,6 +305,38 @@ public enum PropertyEditorSelector {
             return convertNullCollectionReferenceToAngular(CollectionReferenceType.THREE_JS_MODEL);
         }
     },
+    WATER_REFERENCE("collection-reference-property-editor") {
+        @Override
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
+            return value.asInt();
+        }
+
+        @Override
+        public Any convertToAngular(Object object) {
+            return convertCollectionReferenceToAngular(CollectionReferenceType.WATER, object);
+        }
+
+        @Override
+        public Any convertNullToAngular() {
+            return convertNullCollectionReferenceToAngular(CollectionReferenceType.WATER);
+        }
+    },
+    GROUND_REFERENCE("collection-reference-property-editor") {
+        @Override
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
+            return value.asInt();
+        }
+
+        @Override
+        public Any convertToAngular(Object object) {
+            return convertCollectionReferenceToAngular(CollectionReferenceType.GROUND, object);
+        }
+
+        @Override
+        public Any convertNullToAngular() {
+            return convertNullCollectionReferenceToAngular(CollectionReferenceType.GROUND);
+        }
+    },
     COLLADA_STRING("collada-string-property-editor") {
         @Override
         public Object convertFromAngular(Any value, Class<?> propertyClass) {

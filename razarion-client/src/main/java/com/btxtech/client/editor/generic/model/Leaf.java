@@ -112,6 +112,10 @@ public class Leaf extends AbstractPropertyModel {
                             return PropertyEditorSelector.MESH_CONTAINER;
                         case THREE_JS_MODEL:
                             return PropertyEditorSelector.THREE_JS_MODEL_REFERENCE;
+                        case WATER:
+                            return PropertyEditorSelector.WATER_REFERENCE;
+                        case GROUND:
+                            return PropertyEditorSelector.GROUND_REFERENCE;
                         default:
                             throw new IllegalArgumentException("CollectionReferenceType unknown: " + collectionReferenceInfo.getType());
                     }
