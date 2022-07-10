@@ -58,7 +58,7 @@ public class UiTerrainWaterTile {
     }
 
     public double getWaterAnimation() {
-        return SignalGenerator.sawtooth(System.currentTimeMillis(), (int) (waterConfig.getBumpDistortionDurationSeconds() * 1000.0), 0);
+        return SignalGenerator.sawtooth(System.currentTimeMillis(), (int) (waterConfig.getDistortionAnimationSeconds() * 1000.0), 0);
     }
 
     public double getShallowWaterAnimation() {

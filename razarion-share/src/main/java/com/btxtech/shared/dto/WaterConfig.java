@@ -25,11 +25,11 @@ public class WaterConfig implements Config {
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer bumpMapId;
     private double bumpDistortionScale;
-    private double bumpDistortionDurationSeconds;
     private double bumpMapDepth;
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer distortionId;
     private double distortionStrength;
+    private double distortionAnimationSeconds;
 
     @Override
     public int getId() {
@@ -158,12 +158,12 @@ public class WaterConfig implements Config {
         this.distortionStrength = distortionStrength;
     }
 
-    public double getBumpDistortionDurationSeconds() {
-        return bumpDistortionDurationSeconds;
+    public double getDistortionAnimationSeconds() {
+        return distortionAnimationSeconds;
     }
 
-    public void setBumpDistortionDurationSeconds(double bumpDistortionDurationSeconds) {
-        this.bumpDistortionDurationSeconds = bumpDistortionDurationSeconds;
+    public void setDistortionAnimationSeconds(double distortionAnimationSeconds) {
+        this.distortionAnimationSeconds = distortionAnimationSeconds;
     }
 
     public WaterConfig id(int id) {
@@ -246,8 +246,8 @@ public class WaterConfig implements Config {
         return this;
     }
 
-    public WaterConfig distortionDurationSeconds(double distortionDurationSeconds) {
-        setBumpDistortionDurationSeconds(distortionDurationSeconds);
+    public WaterConfig distortionAnimationSeconds(double distortionAnimationSeconds) {
+        setDistortionAnimationSeconds(distortionAnimationSeconds);
         return this;
     }
 }

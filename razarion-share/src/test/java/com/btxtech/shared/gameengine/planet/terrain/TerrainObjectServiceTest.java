@@ -33,7 +33,14 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
     public void testTerrainObjectTileGeneration4Tiles() {
         GroundConfig groundConfig = new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(8883);
 
-        List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig().id(WATER_CONFIG_ID).waterLevel(-0.2).groundLevel(-1.2));
+        List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig()
+                .id(WATER_CONFIG_ID)
+                .waterLevel(-0.2)
+                .groundLevel(-1.2)
+                .transparency(0.8)
+                .shininess(50)
+                .specularStrength(1.0)
+                .distortionAnimationSeconds(20));
 
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         // Razarion Industries base

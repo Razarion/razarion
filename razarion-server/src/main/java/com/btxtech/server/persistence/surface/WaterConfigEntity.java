@@ -65,7 +65,7 @@ public class WaterConfigEntity {
                 .bumpMapDepth(bumpMapDepth)
                 .bumpDistortionScale(bumpDistortionScale)
                 .distortionStrength(distortionStrength)
-                .distortionDurationSeconds(distortionDurationSeconds);
+                .distortionAnimationSeconds(distortionDurationSeconds);
         if (reflection != null) {
             waterConfig.setReflectionId(reflection.getId());
         }
@@ -94,7 +94,7 @@ public class WaterConfigEntity {
         bumpDistortionScale = waterConfig.getBumpDistortionScale();
         distortion = imagePersistence.getImageLibraryEntity(waterConfig.getDistortionId());
         distortionStrength = waterConfig.getDistortionStrength();
-        distortionDurationSeconds = waterConfig.getBumpDistortionDurationSeconds();
+        distortionDurationSeconds = waterConfig.getDistortionAnimationSeconds();
     }
 
     @Override

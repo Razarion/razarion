@@ -132,100 +132,155 @@ export class GameMockService {
     }
 
     mockTerrainTypeService(): TerrainTypeService {
-        let _this = this;
-        return new class implements TerrainTypeService {
-            terrainTypeService = this;
+      let _this = this;
+      return new class implements TerrainTypeService {
+        terrainTypeService = this;
 
-            getTerrainObjectConfig(terrainObjectConfigId: number): TerrainObjectConfig {
-                let terrainObjectConfig: TerrainObjectConfig | null = null;
-                _this.staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
-                    if (terrainObjectConfigJson.id != terrainObjectConfigId) {
-                        return;
-                    }
-                    terrainObjectConfig = new class implements TerrainObjectConfig {
-                        getThreeJsUuid(): string {
-                             return terrainObjectConfigJson.threeJsUuid;
-                        }
-                    }
-                    return
-                });
-                if (terrainObjectConfig !== null) {
-                    return terrainObjectConfig;
-                } else {
-                    throw new Error(`No TerrainObjectConfig for id ${terrainObjectConfigId}`);
-                }
+        getTerrainObjectConfig(terrainObjectConfigId: number): TerrainObjectConfig {
+          let terrainObjectConfig: TerrainObjectConfig | null = null;
+          _this.staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
+            if (terrainObjectConfigJson.id != terrainObjectConfigId) {
+              return;
             }
-            getSlopeConfig(slopeConfigId: number): SlopeConfig {
-              let slopeConfig: SlopeConfig | null = null;
-              _this.staticGameConfigJson.slopeConfigs.forEach((slopeConfigJson: any) => {
-                if (slopeConfigJson.id != slopeConfigId) {
-                  return;
-                }
-                slopeConfig = new class implements SlopeConfig {
-                  getId(): number {
-                    return slopeConfigJson.id;
-                  }
-                  getInternalName(): string {
-                    return slopeConfigJson.internalName;
-                  }
-                  getThreeJsMaterial(): number {
-                    return slopeConfigJson.threeJsMaterial;
-                  }
-                  getGroundConfigId(): number {
-                    return slopeConfigJson.groundConfigId;
-                  }
-                  getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null {
-                    return _this.setupSlopeSplattingConfig(slopeConfigJson.innerSlopeSplattingConfig);
-                  }
-                  getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null {
-                    return _this.setupSlopeSplattingConfig(slopeConfigJson.outerSlopeSplattingConfig);
-                  }
-                }
-                return
-              });
-              if (slopeConfig !== null) {
-                return slopeConfig;
-              } else {
-                throw new Error(`No SlopeConfig for id ${slopeConfigId}`);
+            terrainObjectConfig = new class implements TerrainObjectConfig {
+              getThreeJsUuid(): string {
+                return terrainObjectConfigJson.threeJsUuid;
               }
-
             }
-            getDrivewayConfig(drivewayConfigId: number): DrivewayConfig {
-                throw new Error("Method not implemented.");
-            }
-
-            getGroundConfig(groundConfigId: number): GroundConfig {
-                let groundConfig: GroundConfig | null = null;
-                _this.staticGameConfigJson.groundConfigs.forEach((groundConfigJson: any) => {
-                    if (groundConfigJson.id != groundConfigId) {
-                        return;
-                    }
-                    groundConfig = new class implements GroundConfig {
-                        _groundConfigJson: any = groundConfigJson;
-                        getId(): number { return this._groundConfigJson.id };
-                        getInternalName(): string { return this._groundConfigJson.internalName };
-                        getTopThreeJsMaterial(): number { return this._groundConfigJson.topThreeJsMaterial; };
-                        getBottomThreeJsMaterial(): number { return this._groundConfigJson.bottomThreeJsMaterial; };
-                        getSplatting(): GroundSplattingConfig { return this._groundConfigJson.splatting };
-                    }
-                    return
-                });
-                if (groundConfig !== null) {
-                    return groundConfig;
-                } else {
-                    throw new Error(`No GroundConfig for id ${groundConfigId}`);
-                }
-            }
-
-          getWaterConfig(waterConfigId: number): WaterConfig {
-            return new class implements WaterConfig {
-              getId(): number {
-                return 0;
-              }
-            };
+            return
+          });
+          if (terrainObjectConfig !== null) {
+            return terrainObjectConfig;
+          } else {
+            throw new Error(`No TerrainObjectConfig for id ${terrainObjectConfigId}`);
           }
-        };
-    }
+        }
+
+        getSlopeConfig(slopeConfigId: number): SlopeConfig {
+          let slopeConfig: SlopeConfig | null = null;
+          _this.staticGameConfigJson.slopeConfigs.forEach((slopeConfigJson: any) => {
+            if (slopeConfigJson.id != slopeConfigId) {
+              return;
+            }
+            slopeConfig = new class implements SlopeConfig {
+              getId(): number {
+                return slopeConfigJson.id;
+              }
+
+              getInternalName(): string {
+                return slopeConfigJson.internalName;
+              }
+
+              getThreeJsMaterial(): number {
+                return slopeConfigJson.threeJsMaterial;
+              }
+
+              getGroundConfigId(): number {
+                return slopeConfigJson.groundConfigId;
+              }
+
+              getWaterConfigId(): number {
+                return slopeConfigJson.waterConfigId;
+              }
+
+              getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null {
+                return _this.setupSlopeSplattingConfig(slopeConfigJson.innerSlopeSplattingConfig);
+              }
+
+              getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null {
+                return _this.setupSlopeSplattingConfig(slopeConfigJson.outerSlopeSplattingConfig);
+              }
+            }
+            return
+          });
+          if (slopeConfig !== null) {
+            return slopeConfig;
+          } else {
+            throw new Error(`No SlopeConfig for id ${slopeConfigId}`);
+          }
+
+        }
+
+        getDrivewayConfig(drivewayConfigId: number): DrivewayConfig {
+          throw new Error("Method not implemented.");
+        }
+
+        getGroundConfig(groundConfigId: number): GroundConfig {
+          let groundConfig: GroundConfig | null = null;
+          _this.staticGameConfigJson.groundConfigs.forEach((groundConfigJson: any) => {
+            if (groundConfigJson.id != groundConfigId) {
+              return;
+            }
+            groundConfig = new class implements GroundConfig {
+              _groundConfigJson: any = groundConfigJson;
+
+              getId(): number {
+                return this._groundConfigJson.id
+              };
+
+              getInternalName(): string {
+                return this._groundConfigJson.internalName
+              };
+
+              getTopThreeJsMaterial(): number {
+                return this._groundConfigJson.topThreeJsMaterial;
+              };
+
+              getBottomThreeJsMaterial(): number {
+                return this._groundConfigJson.bottomThreeJsMaterial;
+              };
+
+              getSplatting(): GroundSplattingConfig {
+                return this._groundConfigJson.splatting
+              };
+            }
+            return
+          });
+          if (groundConfig !== null) {
+            return groundConfig;
+          } else {
+            throw new Error(`No GroundConfig for id ${groundConfigId}`);
+          }
+        }
+
+        getWaterConfig(waterConfigId: number): WaterConfig {
+          let waterConfig: WaterConfig | null = null;
+          _this.staticGameConfigJson.waterConfigs.forEach((waterConfigJson: any) => {
+            if (waterConfigJson.id != waterConfigId) {
+              return;
+            }
+            waterConfig = new class implements WaterConfig {
+              _waterConfigJson: any = waterConfigJson;
+
+              getId(): number {
+                return this._waterConfigJson.id
+              };
+
+              getTransparency(): number {
+                return this._waterConfigJson.transparency
+              };
+
+              getShininess(): number {
+                return this._waterConfigJson.shininess
+              }
+
+              getSpecularStrength(): number{
+                return this._waterConfigJson.specularStrength
+              }
+
+              getDistortionAnimationSeconds(): number{
+                return this._waterConfigJson.distortionAnimationSeconds
+              }
+            }
+          });
+          if (waterConfig !== null) {
+            return waterConfig;
+          } else {
+            throw new Error(`No WaterConfig for id ${waterConfig}`);
+          }
+        }
+      }
+    };
 
   private setupSlopeSplattingConfig(slopeSplattingConfig: any): SlopeSplattingConfig | null{
     if(slopeSplattingConfig) {

@@ -95,6 +95,8 @@ export interface SlopeConfig {
 
   getGroundConfigId(): number;
 
+  getWaterConfigId(): number;
+
   getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null;
 
   getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null;
@@ -129,6 +131,14 @@ export interface GroundConfig {
 
 export interface WaterConfig {
   getId(): number;
+
+  getTransparency(): number;
+
+  getShininess(): number;
+
+  getSpecularStrength(): number;
+
+  getDistortionAnimationSeconds(): number;
 }
 
 export interface PhongMaterialConfig {

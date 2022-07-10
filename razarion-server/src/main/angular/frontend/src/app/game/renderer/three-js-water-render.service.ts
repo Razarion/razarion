@@ -21,6 +21,8 @@ import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
 import {getGwtMockImageUrl} from "./game-mock.service";
 import {SignalGenerator} from "../signal-generator";
 import {Texture} from "three/src/textures/Texture";
+import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+import {ThreeJsModelService} from "./three-js-model.service";
 
 export const vertex = /* glsl */`
 #define PHONG
@@ -185,7 +187,10 @@ void main() {
 
 @Injectable()
 export class ThreeJsWaterRenderService {
-  private materials: { material: ShaderMaterial, waterConfig: WaterConfig | null }[] = [];
+  private materials: { material: ShaderMaterial, waterConfig: WaterConfig }[] = [];
+
+  constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService) {
+  }
 
   private static getWaterAnimation(millis: number, durationSeconds: number): number {
     return SignalGenerator.sawtooth(millis, durationSeconds * 1000.0, 0);
@@ -199,7 +204,7 @@ export class ThreeJsWaterRenderService {
     return geometry;
   }
 
-  private static setupWaterMaterial(): ShaderMaterial {
+  private static setupWaterMaterial(waterConfig: WaterConfig): ShaderMaterial {
     let cubeTexture = new CubeTextureLoader()
       .setPath('')
       .load([
@@ -223,12 +228,12 @@ export class ThreeJsWaterRenderService {
       uniforms: UniformsUtils.merge([
         ShaderLib.phong.uniforms,
         {
-          normalScale: {value: new Vector2(0.2, 0.2)},
-          uDistortionScale: {value: 7.0},
-          uDistortionAnimation: {value: 1.0},
-          opacity: {value: 0.8},
-          shininess: {value: 50},
-          specular: {value: new Color(1.0, 1.0, 1.0)},
+          normalScale: {value: new Vector2(0.2, 0.2)}, // TODO Take time from WaterConfig
+          uDistortionScale: {value: 7.0}, // TODO Take time from WaterConfig
+          uDistortionAnimation: {value: 1.0}, // TODO Take time from WaterConfig
+          opacity: {value: waterConfig.getTransparency()},
+          shininess: {value: waterConfig.getShininess()},
+          specular: {value: new Color(waterConfig.getSpecularStrength(), waterConfig.getSpecularStrength(), waterConfig.getSpecularStrength())},
         }
       ]),
     });
@@ -248,59 +253,62 @@ export class ThreeJsWaterRenderService {
       return;
     }
     terrainWaterTiles.forEach(terrainWaterTile => {
-      terrainWaterTile.slopeConfigId
+      let slopeConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getSlopeConfig(terrainWaterTile.slopeConfigId);
+      let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(slopeConfig.getWaterConfigId());
+
 
       if (terrainWaterTile.positions) {
-        this.setupWater(terrainWaterTile.positions, group);
+        this.setupWater(terrainWaterTile.positions, waterConfig, group);
       }
       if (terrainWaterTile.shallowPositions) {
-        this.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, group);
+        this.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, waterConfig, group);
       }
     });
   }
 
   public update() {
-    for (const material of this.materials) {
-      material.material.uniforms.uDistortionAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), 20); // TODO Take time from WaterConfig
-      if (material.material.uniforms.uShallowAnimation) {
-        material.material.uniforms.uShallowAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), 20); // TODO Take time from SlopeConfig
+    this.materials.forEach(value => {
+      let material = value.material;
+      let waterConfig = value.waterConfig;
+      material.uniforms.uDistortionAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), waterConfig.getDistortionAnimationSeconds());
+      if (material.uniforms.uShallowAnimation) {
+        material.uniforms.uShallowAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), 20); // TODO Take time from SlopeConfig
       }
-    }
+    })
   }
 
-  private setupWater(positions: Float32Array, group: Group) {
+  private setupWater(positions: Float32Array, waterConfig: WaterConfig, group: Group) {
     let geometry = ThreeJsWaterRenderService.setupWaterGeometry(positions);
-    let waterMaterial = ThreeJsWaterRenderService.setupWaterMaterial();
-    this.createAndAddMesh(geometry, waterMaterial, group, "Water");
-
+    let waterMaterial = ThreeJsWaterRenderService.setupWaterMaterial(waterConfig);
+    this.createAndAddMesh(geometry, waterMaterial, waterConfig, group, "Water");
   }
 
-  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, group: Group) {
+  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, waterConfig: WaterConfig, group: Group) {
     let geometry = ThreeJsWaterRenderService.setupWaterGeometry(shallowPositions);
     geometry.setAttribute('shallowUv', new BufferAttribute(shallowUvs, 2));
-    let waterMaterial = ThreeJsWaterRenderService.setupWaterMaterial();
+    let waterMaterial = ThreeJsWaterRenderService.setupWaterMaterial(waterConfig);
     waterMaterial.defines['RENDER_SHALLOW_WATER'] = '';
 
-    waterMaterial.uniforms.uShallowWater = {value: new TextureLoader().load(getGwtMockImageUrl('Foam.png'), (texture: Texture) => texture.wrapT = RepeatWrapping)}
-    waterMaterial.uniforms.uShallowWaterScale = {value: 24}
+    waterMaterial.uniforms.uShallowWater = {value: new TextureLoader().load(getGwtMockImageUrl('Foam.png'), (texture: Texture) => texture.wrapT = RepeatWrapping)}// TODO Take time from SlopeConfig
+    waterMaterial.uniforms.uShallowWaterScale = {value: 24} // TODO Take time from SlopeConfig
     waterMaterial.uniforms.uShallowDistortionMap = {
-      value: new TextureLoader().load(getGwtMockImageUrl('FoamDistortion.png'), (texture: Texture) => {
+      value: new TextureLoader().load(getGwtMockImageUrl('FoamDistortion.png'), (texture: Texture) => {// TODO Take time from SlopeConfig
         texture.wrapS = RepeatWrapping;
         texture.wrapT = RepeatWrapping;
       })
     }
-    waterMaterial.uniforms.uShallowDistortionStrength = {value: 1}
-    waterMaterial.uniforms.uShallowAnimation = {value: 1}
-    waterMaterial.uniforms.uWaterStencil = {value: new TextureLoader().load(getGwtMockImageUrl('WaterStencil.png'), (texture: Texture) => texture.wrapT = RepeatWrapping)}
+    waterMaterial.uniforms.uShallowDistortionStrength = {value: 1} // TODO Take time from SlopeConfig
+    waterMaterial.uniforms.uShallowAnimation = {value: 1} // TODO Take time from SlopeConfig
+    waterMaterial.uniforms.uWaterStencil = {value: new TextureLoader().load(getGwtMockImageUrl('WaterStencil.png'), (texture: Texture) => texture.wrapT = RepeatWrapping)}// TODO Take time from SlopeConfig
 
-    this.createAndAddMesh(geometry, waterMaterial, group, "Shallow Water");
+    this.createAndAddMesh(geometry, waterMaterial, waterConfig, group, "Shallow Water");
   }
 
-  private createAndAddMesh(geometry: BufferGeometry, waterMaterial: ShaderMaterial, group: Group, meshName: string) {
+  private createAndAddMesh(geometry: BufferGeometry, waterMaterial: ShaderMaterial, waterConfig: WaterConfig,group: Group, meshName: string) {
     const mesh = new Mesh(geometry, waterMaterial);
 
     mesh.addEventListener('added', () => {
-      this.materials.push({material: waterMaterial, waterConfig: null});
+      this.materials.push({material: waterMaterial, waterConfig: waterConfig});
     });
     mesh.addEventListener('removed', () => {
       this.materials.forEach((value, index) => {
