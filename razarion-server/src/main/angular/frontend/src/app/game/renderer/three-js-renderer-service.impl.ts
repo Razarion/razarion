@@ -3,14 +3,14 @@ import {
   AmbientLight,
   Camera,
   Clock,
-  DirectionalLight,
+  DirectionalLight, Group,
   Light,
   MathUtils,
   Object3D,
   PCFSoftShadowMap,
   PerspectiveCamera,
   Raycaster,
-  Vector2,
+  Vector2, Vector3,
   WebGLRenderTarget
 } from "three";
 import {WebGLRenderer} from "three/src/renderers/WebGLRenderer";
@@ -38,6 +38,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService, private threeJsWaterRenderService:  ThreeJsWaterRenderService) {
     this.scene.name = "Main Scene"
+    this.slopeScene.name = "Splatting Slope"
+    this.slopeInnerGroundScene.name = "Splatting Slope Ground"
   }
 
   internalSetup(canvasHolder: HTMLDivElement) {
@@ -162,7 +164,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   setViewFieldCenter(x: number, y: number): void {
     let currentViewFieldCenter = this.setupGroundPosition(0, 0);
     let newFiledCenter = new Vector2(x, y);
-    let delta = newFiledCenter.sub(currentViewFieldCenter);
+    let delta = newFiledCenter.sub(new Vector2(currentViewFieldCenter.x, currentViewFieldCenter.y));
     this.camera.position.x += delta.x;
     this.camera.position.y += delta.y;
     this.onViewFieldChanged();
@@ -247,7 +249,12 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   public addToSceneEditor(scene: Scene) {
-    this.scene.add(scene);
+    let group = new Group();
+    group.add(scene);
+    group.name = "Imported";
+    let groundPos = this.setupGroundPosition(0,0);
+    group.position.set(groundPos.x, groundPos.y, groundPos.z);
+    this.scene.add(group);
   }
 
   private createHUD(light: Light): ShadowMapViewer {
@@ -284,13 +291,13 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     );
   }
 
-  private setupGroundPosition(ndcX: number, ndcY: number): Vector2 {
+  private setupGroundPosition(ndcX: number, ndcY: number): Vector3 {
     let raycaster = new Raycaster();
     raycaster.setFromCamera({x: ndcX, y: ndcY}, this.camera);
     let factor = this.camera.position.z / -raycaster.ray.direction.z;
     let pointOnGround = raycaster.ray.direction.clone().setLength(factor);
     pointOnGround.add(this.camera.position);
-    return new Vector2(pointOnGround.x, pointOnGround.y);
+    return new Vector3(pointOnGround.x, pointOnGround.y, pointOnGround.z);
   }
 
 }

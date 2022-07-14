@@ -31,8 +31,9 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   selectedThreeJsName: string | null = null;
   selectedThreeJsObject: any | null = null;
   exportMaterialOnly: boolean = false;
+  threeJsTree!: ThreeJsTree;
 
-  constructor(private gwtAngularService: GwtAngularService,
+    constructor(private gwtAngularService: GwtAngularService,
               private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl,
               gameMockService: GameMockService,
               private messageService: MessageService,
@@ -54,20 +55,24 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
             });
           });
     }
-    let threeJsTree = new ThreeJsTree(threeJsRendererServiceImpl);
-    this.renderEngineDisplayTree = threeJsTree.getRootTreeNodes();
+    this.setupRenderEngineDisplayTree();
 
     this.mouseDownHandler = (event: any) => {
       let object3D = threeJsRendererServiceImpl.intersectObjects(new Vector2(event.clientX, event.clientY));
       if (object3D != null) {
-        this.treeSelection = threeJsTree.findTreeNode(object3D);
-        threeJsTree.expandParent(this.treeSelection);
+        this.treeSelection = this.threeJsTree.findTreeNode(object3D);
+        this.threeJsTree.expandParent(this.treeSelection);
         if (object3D !== this.selectedThreeJsObject) {
           this.displayPropertyTable(object3D)
         }
       }
     }
     threeJsRendererServiceImpl.addMouseDownHandler(this.mouseDownHandler);
+  }
+
+  private setupRenderEngineDisplayTree() {
+    this.threeJsTree = new ThreeJsTree(this.threeJsRendererServiceImpl);
+    this.renderEngineDisplayTree = this.threeJsTree.getRootTreeNodes();
   }
 
   ngOnDestroy(): void {
@@ -97,6 +102,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     let callback = {
       execute(arg: any) {
         self.threeJsRendererServiceImpl.addToSceneEditor(arg.object);
+        self.setupRenderEngineDisplayTree();
       }
     }
 
