@@ -85,6 +85,8 @@ import {ToolbarModule} from "primeng/toolbar";
 import {SplitterModule} from "primeng/splitter";
 import {ThreeJsWaterRenderService} from "./game/renderer/three-js-water-render.service";
 import {EulerPropertyEditorComponent} from "./editor/render-engine/editors/euler-property-editor.component";
+import {UserdataPropertyEditorComponent} from "./editor/render-engine/editors/userdata-property-editor.component";
+import {InputTextareaModule} from "primeng/inputtextarea";
 
 @NgModule({
   declarations: [
@@ -133,7 +135,8 @@ import {EulerPropertyEditorComponent} from "./editor/render-engine/editors/euler
     ImageEditorComponent,
     ImageGalleryItemComponent,
     CollectionSelectorComponent,
-    EulerPropertyEditorComponent
+    EulerPropertyEditorComponent,
+    UserdataPropertyEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -167,7 +170,8 @@ import {EulerPropertyEditorComponent} from "./editor/render-engine/editors/euler
     OverlayPanelModule,
     ListboxModule,
     ToolbarModule,
-    SplitterModule
+    SplitterModule,
+    InputTextareaModule
   ],
   providers: [
     FrontendService, {

@@ -45,13 +45,16 @@ export class ThreeJsPropertyTable {
     this.recursivelyAddProperties(object3D, null, null, this.rootTreeNodes);
   }
 
-  private static getSpecialSelector(property: any): string | null {
+  private static getSpecialSelector(name: string, property: any): string | null {
     switch (property.constructor.name) {
       case 'HTMLImageElement':
       case 'ImageBitmap':
         return 'image-property-editor';
       case Euler.name:
         return 'euler-property-editor'
+    }
+    if(name === 'userData') {
+      return 'userdata-property-editor'
     }
     return null;
   }
@@ -117,7 +120,7 @@ export class ThreeJsPropertyTable {
 
   private addObjectProperty(name: string, property: any, parentProperty: any, parentPropertyName: string | null, grandParentProperty: any, treeNodes: TreeNode[]) {
     const _this = this;
-    let specialSelector = ThreeJsPropertyTable.getSpecialSelector(property);
+    let specialSelector = ThreeJsPropertyTable.getSpecialSelector(name, property);
     if (specialSelector != null) {
       treeNodes.push(new class implements TreeNode<AngularTreeNodeData> {
         data = new class implements AngularTreeNodeData {

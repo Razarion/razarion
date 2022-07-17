@@ -16,6 +16,7 @@ import {ThreeJsPropertyTable} from "./three-js-property-table";
 import {ThreeJsTree} from "./three-js-tree";
 import {EditorService} from "../editor-service";
 import {EulerPropertyEditorComponent} from "./editors/euler-property-editor.component";
+import {UserdataPropertyEditorComponent} from "./editors/userdata-property-editor.component";
 
 let _this: any = null;
 
@@ -74,6 +75,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     threeJsRendererServiceImpl.addMouseDownHandler(this.mouseDownHandler);
 
     editorService.registerPropertyEditorComponent(EulerPropertyEditorComponent)
+    editorService.registerPropertyEditorComponent(UserdataPropertyEditorComponent)
   }
 
   ngOnDestroy(): void {
