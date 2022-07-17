@@ -84,6 +84,7 @@ import {ListboxModule} from "primeng/listbox";
 import {ToolbarModule} from "primeng/toolbar";
 import {SplitterModule} from "primeng/splitter";
 import {ThreeJsWaterRenderService} from "./game/renderer/three-js-water-render.service";
+import {EulerPropertyEditorComponent} from "./editor/render-engine/editors/euler-property-editor.component";
 
 @NgModule({
   declarations: [
@@ -131,7 +132,8 @@ import {ThreeJsWaterRenderService} from "./game/renderer/three-js-water-render.s
     RadToDegreePipe,
     ImageEditorComponent,
     ImageGalleryItemComponent,
-    CollectionSelectorComponent
+    CollectionSelectorComponent,
+    EulerPropertyEditorComponent
   ],
   imports: [
     BrowserModule,

@@ -11,9 +11,11 @@ import {ThreeJsRendererServiceImpl} from 'src/app/game/renderer/three-js-rendere
 import {MessageService, TreeNode} from 'primeng/api';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {URL_THREE_JS_MODEL_EDITOR} from 'src/app/common';
-import {BufferAttribute, BufferGeometry, Mesh, Object3D, Scene, Vector2} from 'three';
+import {BufferAttribute, BufferGeometry, MathUtils, Mesh, Object3D, Scene, Vector2} from 'three';
 import {ThreeJsPropertyTable} from "./three-js-property-table";
 import {ThreeJsTree} from "./three-js-tree";
+import {EditorService} from "../editor-service";
+import {EulerPropertyEditorComponent} from "./editors/euler-property-editor.component";
 
 let _this: any = null;
 
@@ -33,9 +35,10 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   exportMaterialOnly: boolean = false;
   threeJsTree!: ThreeJsTree;
 
-    constructor(private gwtAngularService: GwtAngularService,
+  constructor(private gwtAngularService: GwtAngularService,
               private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl,
               gameMockService: GameMockService,
+              editorService: EditorService,
               private messageService: MessageService,
               private http: HttpClient) {
     super();
@@ -68,11 +71,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
       }
     }
     threeJsRendererServiceImpl.addMouseDownHandler(this.mouseDownHandler);
-  }
 
-  private setupRenderEngineDisplayTree() {
-    this.threeJsTree = new ThreeJsTree(this.threeJsRendererServiceImpl);
-    this.renderEngineDisplayTree = this.threeJsTree.getRootTreeNodes();
+    editorService.registerPropertyEditorComponent(EulerPropertyEditorComponent)
   }
 
   ngOnDestroy(): void {
@@ -239,6 +239,11 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
         sticky: true
       });
     }
+  }
+
+  private setupRenderEngineDisplayTree() {
+    this.threeJsTree = new ThreeJsTree(this.threeJsRendererServiceImpl);
+    this.renderEngineDisplayTree = this.threeJsTree.getRootTreeNodes();
   }
 
   private displayPropertyTable(object3D: Object3D) {

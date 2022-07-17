@@ -22,7 +22,7 @@ export class EditorService {
   private propertyEditorComponents = new Map();
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) {
-    this.registerPropertyEditorComponent([
+    this.registerPropertyEditorComponents([
       StringPropertyEditorComponent,
       IntegerPropertyEditorComponent,
       EnumPropertyEditorComponent,
@@ -50,10 +50,14 @@ export class EditorService {
     return propertyEditorComponent;
   }
 
-  private registerPropertyEditorComponent<T>(propertyEditorComponents: Type<T>[]): void {
-    propertyEditorComponents.forEach(propertyEditorComponent => {
-      let factory = this.componentFactoryResolver.resolveComponentFactory(propertyEditorComponent);
-      this.propertyEditorComponents.set(factory.selector, propertyEditorComponent);
-    })
+  registerPropertyEditorComponents<T>(propertyEditorComponents: Type<T>[]): void {
+    propertyEditorComponents.forEach(propertyEditorComponent =>
+      this.registerPropertyEditorComponent(propertyEditorComponent)
+    )
+  }
+
+  registerPropertyEditorComponent<T>(propertyEditorComponent: Type<T>): void {
+    let factory = this.componentFactoryResolver.resolveComponentFactory(propertyEditorComponent);
+    this.propertyEditorComponents.set(factory.selector, propertyEditorComponent);
   }
 }
