@@ -99,6 +99,11 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
 
   onImport(event: any) {
     let self = this;
+
+    (<any>Number.prototype).format = function () {
+      return this.toString().replace( /(\d)(?=(\d{3})+(?!\d))/g, '$1,' );
+    };
+
     let callback = {
       execute(arg: any) {
         self.threeJsRendererServiceImpl.addToSceneEditor(arg.object);
