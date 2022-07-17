@@ -18,7 +18,16 @@
       </div>
     </p-toolbar>
   </div>
-
+  <div class="mr-2">
+    <p-panel header="Three.js properties">
+      <div class="field grid">
+        Three.js Revision
+        <div class="col">
+          {{threeJsRevision}}
+        </div>
+      </div>
+    </p-panel>
+  </div>
   <div class="mr-2">
     <p-panel header="Save Selected">
       <div class="field grid">
@@ -48,13 +57,13 @@
       <div class="field grid">
         <p-toolbar>
 
-        <p-button type="button" label="Save" icon="pi pi-cloud-upload" styleClass="p-button-sm"
-                  [disabled]="selectedThreeJsModel == null || selectedThreeJsObject == null"
-                  (onClick)="onSaveSelected()"></p-button>
+          <p-button type="button" label="Save" icon="pi pi-cloud-upload" styleClass="p-button-sm"
+                    [disabled]="selectedThreeJsModel == null || selectedThreeJsObject == null"
+                    (onClick)="onSaveSelected()"></p-button>
           <i>&nbsp;</i>
           <p-button type="button" label="Dump" icon="pi pi-save" styleClass="p-button-sm"
-                  [disabled]="selectedThreeJsObject == null"
-                  (onClick)="onDumpSelected()"></p-button>
+                    [disabled]="selectedThreeJsObject == null"
+                    (onClick)="onDumpSelected()"></p-button>
         </p-toolbar>
       </div>
     </p-panel>

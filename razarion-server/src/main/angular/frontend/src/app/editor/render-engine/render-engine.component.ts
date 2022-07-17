@@ -11,7 +11,7 @@ import {ThreeJsRendererServiceImpl} from 'src/app/game/renderer/three-js-rendere
 import {MessageService, TreeNode} from 'primeng/api';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {URL_THREE_JS_MODEL_EDITOR} from 'src/app/common';
-import {BufferAttribute, BufferGeometry, MathUtils, Mesh, Object3D, Scene, Vector2} from 'three';
+import {BufferAttribute, BufferGeometry, Mesh, Object3D, REVISION, Scene, Vector2} from 'three';
 import {ThreeJsPropertyTable} from "./three-js-property-table";
 import {ThreeJsTree} from "./three-js-tree";
 import {EditorService} from "../editor-service";
@@ -24,6 +24,7 @@ let _this: any = null;
   templateUrl: './render-engine.component.html'
 })
 export class RenderEngineComponent extends EditorPanel implements OnDestroy, AfterViewInit {
+  threeJsRevision: any = REVISION;
   renderEngineDisplayTree: TreeNode<Object3D>[] = [];
   treeSelection: TreeNode<Object3D> | undefined;
   mouseDownHandler: any;
@@ -101,7 +102,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     let self = this;
 
     (<any>Number.prototype).format = function () {
-      return this.toString().replace( /(\d)(?=(\d{3})+(?!\d))/g, '$1,' );
+      return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     };
 
     let callback = {
@@ -118,19 +119,18 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   onDumpAll() {
     const exporter = new GLTFExporter();
     try {
-      const exporterAny: any = exporter;
       const exportScene = new Scene()
       exportScene.name = "Razarion";
       exportScene.add(this.threeJsRendererServiceImpl.camera)
       exportScene.add(this.threeJsRendererServiceImpl.scene)
-      exporterAny.parse(exportScene,
-        function (gltf: any) {
+      exporter.parse(exportScene,
+        (gltf: any) => {
           const link = document.createElement("a");
           link.href = URL.createObjectURL(new Blob([gltf]));
           link.setAttribute("download", "dump-all.gltf");
           link.click();
         },
-        function (error: any) {
+        (error: any) => {
           console.warn(error);
           _this.messageService.add({
             severity: 'error',
@@ -162,9 +162,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
         uploadObject = new Mesh(geometry, this.selectedThreeJsObject.material);
         uploadObject.name = "Fake Mesh for Material"
       }
-      const exporterAny: any = exporter;
-      exporterAny.parse(uploadObject,
-        function (gltf: any) {
+      exporter.parse(uploadObject,
+        (gltf: any) => {
           const httpOptions = {
             headers: new HttpHeaders({
               'Content-Type': 'application/octet-stream'
@@ -186,7 +185,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
               }
             })
         },
-        function (error: any) {
+        (error: any) => {
           console.warn(error);
           _this.messageService.add({
             severity: 'error',
@@ -210,7 +209,6 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   onDumpSelected() {
     const exporter = new GLTFExporter();
     try {
-      const exporterAny: any = exporter;
       let uploadObject = this.selectedThreeJsObject;
       if (this.exportMaterialOnly) {
         let geometry = new BufferGeometry();
@@ -218,14 +216,14 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
         uploadObject = new Mesh(geometry, this.selectedThreeJsObject.material);
         uploadObject.name = "Fake Mesh for Material"
       }
-      exporterAny.parse(uploadObject,
-        function (gltf: any) {
+      exporter.parse(uploadObject,
+        (gltf: any) => {
           const link = document.createElement("a");
           link.href = URL.createObjectURL(new Blob([gltf]));
           link.setAttribute("download", "dump-selected.gltf");
           link.click();
         },
-        function (error: any) {
+        (error: any) => {
           console.warn(error);
           _this.messageService.add({
             severity: 'error',
