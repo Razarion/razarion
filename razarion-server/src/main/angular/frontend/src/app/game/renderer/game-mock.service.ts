@@ -117,7 +117,97 @@ export class GameMockService {
     }
 
     getTerrainEditorService(): TerrainEditorService {
-      throw new Error("Method not implemented.");
+      return new class implements TerrainEditorService {
+        activate(): void {
+        }
+
+        deactivate(): void {
+        }
+
+        getAllDriveways(): Promise<ObjectNameId[]> {
+          return Promise.resolve([new class implements ObjectNameId {
+            id: number = 1;
+            internalName: string = "Driveway";
+          }]);
+        }
+
+        getAllSlopes(): Promise<ObjectNameId[]> {
+          return Promise.resolve([new class implements ObjectNameId {
+            id: number = 1;
+            internalName: string = "Land";
+          }]);
+        }
+
+        getAllTerrainObjects(): Promise<ObjectNameId[]> {
+          return Promise.resolve([new class implements ObjectNameId {
+            id: number = 1;
+            internalName: string = "TerrainObject";
+          }]);
+        }
+
+        getCursorCorners(): number {
+          return 0;
+        }
+
+        getCursorRadius(): number {
+          return 0;
+        }
+
+        getTerrainObjectRandomScale(): number {
+          return 0;
+        }
+
+        getTerrainObjectRandomZRotation(): number {
+          return 0;
+        }
+
+        isDrivewayMode(): boolean {
+          return false;
+        }
+
+        isInvertedSlope(): boolean {
+          return false;
+        }
+
+        isSlopeMode(): boolean {
+          return false;
+        }
+
+        save(): Promise<string> {
+          return Promise.resolve("");
+        }
+
+        setCursorCorners(cursorCorners: number): void {
+        }
+
+        setCursorRadius(cursorRadius: number): void {
+        }
+
+        setDriveway4New(driveway4New: ObjectNameId): void {
+        }
+
+        setDrivewayMode(drivewayMode: boolean): void {
+        }
+
+        setInvertedSlope(invertedSlope: boolean): void {
+        }
+
+        setSlope4New(slope4New: ObjectNameId): void {
+        }
+
+        setSlopeMode(slopeMode: boolean): void {
+        }
+
+        setTerrainObject4New(terrainObject4New: ObjectNameId): void {
+        }
+
+        setTerrainObjectRandomScale(terrainObjectRandomScale: number): void {
+        }
+
+        setTerrainObjectRandomZRotation(terrainObjectRandomZRotation: number): void {
+        }
+
+      }
     }
   };
 

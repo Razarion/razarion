@@ -3,13 +3,17 @@ import {EditorPanel} from "../editor-model";
 import {TerrainEditorService} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {MessageService} from "primeng/api";
+import {
+  ThreeJsRendererServiceImpl,
+  ThreeJsRendererServiceMouseEvent,
+  ThreeJsRendererServiceMouseEventListener
+} from "../../game/renderer/three-js-renderer-service.impl";
 
 @Component({
   selector: 'app-terrain-editor',
-  templateUrl: './terrain-editor.component.html',
-  styleUrls: ['./terrain-editor.component.scss']
+  templateUrl: './terrain-editor.component.html'
 })
-export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy {
+export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy, ThreeJsRendererServiceMouseEventListener {
   terrainEditorService: TerrainEditorService;
   slopes: any[] = [];
   driveways: any[] = [];
@@ -19,13 +23,14 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   selectedTerrainObject: any;
 
   constructor(private gwtAngularService: GwtAngularService,
-              private messageService: MessageService) {
+              private messageService: MessageService,
+              private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl) {
     super();
     this.terrainEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService();
   }
 
   ngOnInit(): void {
-    this.terrainEditorService.activate();
+    this.threeJsRendererServiceImpl.addMouseDownHandler(this);
     this.terrainEditorService.setSlopeMode(true);
     this.terrainEditorService.getAllSlopes().then(slopes => {
       this.slopes = [];
@@ -54,7 +59,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   }
 
   ngOnDestroy(): void {
-    this.terrainEditorService.deactivate();
+    this.threeJsRendererServiceImpl.removeMouseDownHandler(this);
   }
 
   onTabSelected(event: any) {
@@ -92,4 +97,9 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
         });
       });
   }
+
+  onThreeJsRendererServiceMouseEvent(threeJsRendererServiceMouseEvent: ThreeJsRendererServiceMouseEvent): void {
+    console.warn("threeJsRendererServiceMouseEvent")
+  }
+
 }

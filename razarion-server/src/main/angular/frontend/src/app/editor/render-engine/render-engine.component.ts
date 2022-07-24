@@ -7,11 +7,15 @@ import {environment} from 'src/environments/environment';
 import {GameMockService} from 'src/app/game/renderer/game-mock.service';
 import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
 import {Loader} from 'three/editor/js/Loader';
-import {ThreeJsRendererServiceImpl} from 'src/app/game/renderer/three-js-renderer-service.impl';
+import {
+  ThreeJsRendererServiceImpl,
+  ThreeJsRendererServiceMouseEvent,
+  ThreeJsRendererServiceMouseEventListener
+} from 'src/app/game/renderer/three-js-renderer-service.impl';
 import {MessageService, TreeNode} from 'primeng/api';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {URL_THREE_JS_MODEL_EDITOR} from 'src/app/common';
-import {BufferAttribute, BufferGeometry, Mesh, Object3D, REVISION, Scene, Vector2} from 'three';
+import {BufferAttribute, BufferGeometry, Mesh, Object3D, REVISION, Scene} from 'three';
 import {ThreeJsPropertyTable} from "./three-js-property-table";
 import {ThreeJsTree} from "./three-js-tree";
 import {EditorService} from "../editor-service";
@@ -24,11 +28,10 @@ let _this: any = null;
   selector: 'render-engine',
   templateUrl: './render-engine.component.html'
 })
-export class RenderEngineComponent extends EditorPanel implements OnDestroy, AfterViewInit {
+export class RenderEngineComponent extends EditorPanel implements OnDestroy, AfterViewInit, ThreeJsRendererServiceMouseEventListener {
   threeJsRevision: any = REVISION;
   renderEngineDisplayTree: TreeNode<Object3D>[] = [];
   treeSelection: TreeNode<Object3D> | undefined;
-  mouseDownHandler: any;
   gwtAngularPropertyTable: GwtAngularPropertyTable | null = null;
   threeJsModels: any[] = [];
   selectedThreeJsModel: any = null;
@@ -62,17 +65,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     }
     this.setupRenderEngineDisplayTree();
 
-    this.mouseDownHandler = (event: any) => {
-      let object3D = threeJsRendererServiceImpl.intersectObjects(new Vector2(event.clientX, event.clientY));
-      if (object3D != null) {
-        this.treeSelection = this.threeJsTree.findTreeNode(object3D);
-        this.threeJsTree.expandParent(this.treeSelection);
-        if (object3D !== this.selectedThreeJsObject) {
-          this.displayPropertyTable(object3D)
-        }
-      }
-    }
-    threeJsRendererServiceImpl.addMouseDownHandler(this.mouseDownHandler);
+    threeJsRendererServiceImpl.addMouseDownHandler(this);
 
     editorService.registerPropertyEditorComponent(EulerPropertyEditorComponent)
     editorService.registerPropertyEditorComponent(UserdataPropertyEditorComponent)
@@ -80,8 +73,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
 
   ngOnDestroy(): void {
     this.gwtAngularService.gwtAngularFacade.statusProvider.setStats(null);
-    this.threeJsRendererServiceImpl.removeMouseDownHandler(this.mouseDownHandler);
-    this.mouseDownHandler = null;
+    this.threeJsRendererServiceImpl.removeMouseDownHandler(this);
   }
 
   ngAfterViewInit(): void {
@@ -243,6 +235,16 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
         detail: String(error),
         sticky: true
       });
+    }
+  }
+
+  onThreeJsRendererServiceMouseEvent(threeJsRendererServiceMouseEvent: ThreeJsRendererServiceMouseEvent): void {
+    if (threeJsRendererServiceMouseEvent.object3D != null) {
+      this.treeSelection = this.threeJsTree.findTreeNode(threeJsRendererServiceMouseEvent.object3D);
+      this.threeJsTree.expandParent(this.treeSelection);
+      if (threeJsRendererServiceMouseEvent.object3D !== this.selectedThreeJsObject) {
+        this.displayPropertyTable(threeJsRendererServiceMouseEvent.object3D)
+      }
     }
   }
 

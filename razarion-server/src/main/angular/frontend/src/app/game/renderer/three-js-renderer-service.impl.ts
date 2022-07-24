@@ -3,14 +3,16 @@ import {
   AmbientLight,
   Camera,
   Clock,
-  DirectionalLight, Group,
+  DirectionalLight,
+  Group,
   Light,
   MathUtils,
   Object3D,
   PCFSoftShadowMap,
   PerspectiveCamera,
   Raycaster,
-  Vector2, Vector3,
+  Vector2,
+  Vector3,
   WebGLRenderTarget
 } from "three";
 import {WebGLRenderer} from "three/src/renderers/WebGLRenderer";
@@ -22,6 +24,13 @@ import {ThreeJsModelService} from "./three-js-model.service";
 import {ShadowMapViewer} from 'three/examples/jsm/utils/ShadowMapViewer';
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 
+export class ThreeJsRendererServiceMouseEvent {
+  object3D: Object3D | null = null;
+}
+
+export interface ThreeJsRendererServiceMouseEventListener {
+  onThreeJsRendererServiceMouseEvent(threeJsRendererServiceMouseEvent: ThreeJsRendererServiceMouseEvent): void;
+}
 
 @Injectable()
 export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
@@ -35,11 +44,22 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private directionalLight!: DirectionalLight
   private slopeRenderTarget!: WebGLRenderTarget;
   private slopeInnerGroundRenderTarget!: WebGLRenderTarget;
+  private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
 
-  constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService, private threeJsWaterRenderService:  ThreeJsWaterRenderService) {
+  constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.scene.name = "Main Scene"
     this.slopeScene.name = "Splatting Slope"
     this.slopeInnerGroundScene.name = "Splatting Slope Ground"
+  }
+
+  private static createHUD(light: Light): ShadowMapViewer {
+    let lightShadowMapViewer = new ShadowMapViewer(light);
+    lightShadowMapViewer.position.x = 10;
+    lightShadowMapViewer.position.y = 500;
+    lightShadowMapViewer.size.width = 256;
+    lightShadowMapViewer.size.height = 256;
+    lightShadowMapViewer.update();
+    return lightShadowMapViewer;
   }
 
   internalSetup(canvasHolder: HTMLDivElement) {
@@ -54,7 +74,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.slopeInnerGroundRenderTarget = new WebGLRenderTarget(canvasHolder.offsetWidth, 1000); // TODO canvasHolder.offsetHeight
     this.slopeRenderTarget = new WebGLRenderTarget(canvasHolder.offsetWidth, 1000); // TODO canvasHolder.offsetHeight
 
-    // ----- Scroll -----
+    // ----- Keyboard -----
     const self = this;
     window.addEventListener("keydown", e => {
       if (!self.keyPressed.has(e.key)) {
@@ -78,6 +98,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         this.onViewFieldChanged();
       }
     }, true);
+
+    // Mouse
+    this.renderer.domElement.addEventListener("mousedown", e => this.onMousedownEvent(e));
 
     // -----  Camera -----
     this.camera.position.x = 0;
@@ -109,7 +132,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.directionalLight.shadow.camera.bottom = -50;
     this.directionalLight.shadow.camera.top = 150;
     this.directionalLight.shadow.camera.right = 150;
-    let lightShadowMapViewer = this.createHUD(this.directionalLight);
+    let lightShadowMapViewer = ThreeJsRendererServiceImpl.createHUD(this.directionalLight);
 
     this.scene.add(this.directionalLight);
     this.slopeScene.add(this.directionalLight.clone());
@@ -171,7 +194,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   onResize() {
-    this.renderer.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent starnge loop
+    this.renderer.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent strange loop
     this.camera.aspect = (this.canvasDiv.clientWidth - 5) / this.canvasDiv.clientHeight;
     this.camera.updateProjectionMatrix();
     this.onViewFieldChanged();
@@ -226,12 +249,12 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  addMouseDownHandler(mouseDown: any): void {
-    this.renderer.domElement.addEventListener("mousedown", mouseDown);
+  addMouseDownHandler(mouseListener: ThreeJsRendererServiceMouseEventListener): void {
+    this.mouseListeners.push(mouseListener)
   }
 
-  removeMouseDownHandler(mouseDown: any): void {
-    this.renderer.domElement.removeEventListener("mousedown", mouseDown);
+  removeMouseDownHandler(mouseListener: ThreeJsRendererServiceMouseEventListener): void {
+    this.mouseListeners = this.mouseListeners.filter(obj => obj !== mouseListener);
   }
 
   intersectObjects(mousePosition: Vector2): Object3D | null {
@@ -252,19 +275,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     let group = new Group();
     group.add(scene);
     group.name = "Imported";
-    let groundPos = this.setupGroundPosition(0,0);
+    let groundPos = this.setupGroundPosition(0, 0);
     group.position.set(groundPos.x, groundPos.y, groundPos.z);
     this.scene.add(group);
-  }
-
-  private createHUD(light: Light): ShadowMapViewer {
-    let lightShadowMapViewer = new ShadowMapViewer(light);
-    lightShadowMapViewer.position.x = 10;
-    lightShadowMapViewer.position.y = 500;
-    lightShadowMapViewer.size.width = 256;
-    lightShadowMapViewer.size.height = 256;
-    lightShadowMapViewer.update();
-    return lightShadowMapViewer;
   }
 
   private onViewFieldChanged() {
@@ -300,5 +313,10 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     return new Vector3(pointOnGround.x, pointOnGround.y, pointOnGround.z);
   }
 
+  private onMousedownEvent(this: ThreeJsRendererServiceImpl, event: any): void {
+    let newMouseEvent = new ThreeJsRendererServiceMouseEvent();
+    newMouseEvent.object3D = this.intersectObjects(new Vector2(event.clientX, event.clientY));
+    this.mouseListeners.forEach(mouseListener => mouseListener.onThreeJsRendererServiceMouseEvent(newMouseEvent));
+  }
 }
 
