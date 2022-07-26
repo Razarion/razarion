@@ -156,26 +156,6 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
             );
             let threeJsModel = threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
             threeJsModel.applyMatrix4(matrix4);
-            // threeJsModel.position.x = 100;
-
-            // object3D.traverse((innerObject3D: Object3D) => {
-            // innerObject3D.matrixAutoUpdate = true;
-            // });
-            // object3D.traverse((innerObject3D: Object3D) => {
-            //     if (innerObject3D.type === 'SkinnedMesh') {
-            //         console.info(innerObject3D.type)
-            //         // object3D.position.x = 10;
-            //         // object3D.position.y = 20;
-            //         innerObject3D.scale.x = 10;
-            //         innerObject3D.scale.y = 10;
-            //         innerObject3D.scale.z = 10;
-            //         innerObject3D.translateX(20);
-            //         innerObject3D.updateMatrix();
-            //         innerObject3D.updateWorldMatrix(true, true);
-            //         // innerObject3D.applyMatrix4(matrix4);
-            //     }
-            // });
-
             _this.group.add(threeJsModel);
           });
         } catch (error) {

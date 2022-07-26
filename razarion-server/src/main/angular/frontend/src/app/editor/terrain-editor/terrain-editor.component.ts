@@ -8,6 +8,7 @@ import {
   ThreeJsRendererServiceMouseEvent,
   ThreeJsRendererServiceMouseEventListener
 } from "../../game/renderer/three-js-renderer-service.impl";
+import {ThreeJsModelService} from "../../game/renderer/three-js-model.service";
 
 @Component({
   selector: 'app-terrain-editor',
@@ -15,6 +16,7 @@ import {
 })
 export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy, ThreeJsRendererServiceMouseEventListener {
   terrainEditorService: TerrainEditorService;
+  slopeMode: boolean = true;
   slopes: any[] = [];
   driveways: any[] = [];
   terrainObjects: any[] = [];
@@ -24,6 +26,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
+              private threeJsModelService: ThreeJsModelService,
               private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl) {
     super();
     this.terrainEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService();
@@ -63,11 +66,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   }
 
   onTabSelected(event: any) {
-    if (event.index === 0) {
-      this.terrainEditorService.setSlopeMode(true);
-    } else {
-      this.terrainEditorService.setSlopeMode(false);
-    }
+    this.slopeMode = event.index === 0;
   }
 
   onSelectedSlopeChange(event: any) {
@@ -76,10 +75,6 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
 
   onSelectedDrivewayChange(event: any) {
     this.terrainEditorService.setDriveway4New(event.value.objectNameId);
-  }
-
-  onSelectedTerrainObjectChange(event: any) {
-    this.terrainEditorService.setTerrainObject4New(event.value.objectNameId);
   }
 
   save() {
@@ -99,7 +94,19 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   }
 
   onThreeJsRendererServiceMouseEvent(threeJsRendererServiceMouseEvent: ThreeJsRendererServiceMouseEvent): void {
-    console.warn("threeJsRendererServiceMouseEvent")
+    if (!this.slopeMode) {
+      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.selectedTerrainObject.objectNameId.id);
+      if (terrainObjectConfig.getThreeJsUuid() === undefined) {
+        throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
+      }
+      let threeJsModel = this.threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
+      if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
+        threeJsModel.position.x = threeJsRendererServiceMouseEvent.pointOnObject3D.x;
+        threeJsModel.position.y = threeJsRendererServiceMouseEvent.pointOnObject3D.y;
+        threeJsModel.position.z = threeJsRendererServiceMouseEvent.pointOnObject3D.z;
+      }
+      this.threeJsRendererServiceImpl.scene.add(threeJsModel);
+    }
   }
 
 }

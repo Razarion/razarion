@@ -23,9 +23,11 @@ import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {ThreeJsModelService} from "./three-js-model.service";
 import {ShadowMapViewer} from 'three/examples/jsm/utils/ShadowMapViewer';
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
+import {Intersection} from "three/src/core/Raycaster";
 
 export class ThreeJsRendererServiceMouseEvent {
   object3D: Object3D | null = null;
+  pointOnObject3D: Vector3 | null = null;
 }
 
 export interface ThreeJsRendererServiceMouseEventListener {
@@ -257,18 +259,19 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.mouseListeners = this.mouseListeners.filter(obj => obj !== mouseListener);
   }
 
-  intersectObjects(mousePosition: Vector2): Object3D | null {
+  intersectObjects(mousePosition: Vector2): Intersection | null {
     const raycaster = new Raycaster();
     const ndcPointer = new Vector2();
     ndcPointer.x = (mousePosition.x / this.renderer.domElement.width) * 2 - 1;
     ndcPointer.y = -(mousePosition.y / this.renderer.domElement.height) * 2 + 1;
 
     raycaster.setFromCamera(ndcPointer, this.camera);
-    let intersects = raycaster.intersectObjects(this.scene.children, true);
-    if (intersects.length == 0) {
+    let intersections: Intersection[] = [];
+    raycaster.intersectObjects(this.scene.children, true, intersections);
+    if (intersections.length == 0) {
       return null;
     }
-    return intersects[0].object;
+    return intersections[0];
   }
 
   public addToSceneEditor(scene: Scene) {
@@ -315,7 +318,11 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
   private onMousedownEvent(this: ThreeJsRendererServiceImpl, event: any): void {
     let newMouseEvent = new ThreeJsRendererServiceMouseEvent();
-    newMouseEvent.object3D = this.intersectObjects(new Vector2(event.clientX, event.clientY));
+    let intersection = this.intersectObjects(new Vector2(event.clientX, event.clientY));
+    if (intersection != null) {
+      newMouseEvent.object3D = intersection.object;
+      newMouseEvent.pointOnObject3D = intersection.point;
+    }
     this.mouseListeners.forEach(mouseListener => mouseListener.onThreeJsRendererServiceMouseEvent(newMouseEvent));
   }
 }

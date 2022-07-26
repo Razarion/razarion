@@ -35,10 +35,10 @@ import {HttpClient} from "@angular/common/http";
 import * as Stats from 'stats.js';
 import {URL_IMAGE} from "../../common";
 
+let staticGameConfigJson: any = {};
+
 @Injectable()
 export class GameMockService {
-  staticGameConfigJson: any | null = null;
-
   inputService: InputService = new class implements InputService {
     onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
       console.info("onViewFieldChanged()");
@@ -139,10 +139,15 @@ export class GameMockService {
         }
 
         getAllTerrainObjects(): Promise<ObjectNameId[]> {
-          return Promise.resolve([new class implements ObjectNameId {
-            id: number = 1;
-            internalName: string = "TerrainObject";
-          }]);
+          let objectNameIds: ObjectNameId[] = [];
+          staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
+            objectNameIds.push(new class implements ObjectNameId {
+              id: number = terrainObjectConfigJson.id;
+              internalName: string = terrainObjectConfigJson.internalName;
+            })
+          });
+
+          return Promise.resolve(objectNameIds);
         }
 
         getCursorCorners(): number {
@@ -232,9 +237,9 @@ export class GameMockService {
 
   loadMockStaticGameConfig(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((staticGameConfigJson: any) => {
-        this.staticGameConfigJson = staticGameConfigJson;
-        resolve(staticGameConfigJson);
+      this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((value: any) => {
+        staticGameConfigJson = value;
+        resolve(value);
       });
     });
   }
@@ -246,7 +251,7 @@ export class GameMockService {
 
       getTerrainObjectConfig(terrainObjectConfigId: number): TerrainObjectConfig {
         let terrainObjectConfig: TerrainObjectConfig | null = null;
-        _this.staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
+        staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
           if (terrainObjectConfigJson.id != terrainObjectConfigId) {
             return;
           }
@@ -266,7 +271,7 @@ export class GameMockService {
 
       getSlopeConfig(slopeConfigId: number): SlopeConfig {
         let slopeConfig: SlopeConfig | null = null;
-        _this.staticGameConfigJson.slopeConfigs.forEach((slopeConfigJson: any) => {
+        staticGameConfigJson.slopeConfigs.forEach((slopeConfigJson: any) => {
           if (slopeConfigJson.id != slopeConfigId) {
             return;
           }
@@ -347,7 +352,7 @@ export class GameMockService {
 
       getGroundConfig(groundConfigId: number): GroundConfig {
         let groundConfig: GroundConfig | null = null;
-        _this.staticGameConfigJson.groundConfigs.forEach((groundConfigJson: any) => {
+        staticGameConfigJson.groundConfigs.forEach((groundConfigJson: any) => {
           if (groundConfigJson.id != groundConfigId) {
             return;
           }
@@ -385,7 +390,7 @@ export class GameMockService {
 
       getWaterConfig(waterConfigId: number): WaterConfig {
         let waterConfig: WaterConfig | null = null;
-        _this.staticGameConfigJson.waterConfigs.forEach((waterConfigJson: any) => {
+        staticGameConfigJson.waterConfigs.forEach((waterConfigJson: any) => {
           if (waterConfigJson.id != waterConfigId) {
             return;
           }
@@ -522,7 +527,7 @@ export class GameMockService {
 
   mockThreeJsModelConfigs(): ThreeJsModelConfig[] {
     let threeJsModelConfigs: ThreeJsModelConfig[] = [];
-    this.staticGameConfigJson.threeJsModelConfigs.forEach((threeJsModelConfigJson: any) => {
+    staticGameConfigJson.threeJsModelConfigs.forEach((threeJsModelConfigJson: any) => {
       threeJsModelConfigs.push(new class implements ThreeJsModelConfig {
         getId(): number {
           return threeJsModelConfigJson.id;
