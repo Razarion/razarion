@@ -2,11 +2,13 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 10.05.2016.
  */
+@JsType
 public class TerrainObjectPosition {
     private Integer id;
     private int terrainObjectId;

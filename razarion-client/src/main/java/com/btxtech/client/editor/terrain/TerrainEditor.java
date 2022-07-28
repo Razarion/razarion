@@ -129,7 +129,7 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
 
     @Override
     protected void onConfigureDialog() {
-        registerSaveButton(terrainEditorService::save);
+        // registerSaveButton(terrainEditorService::save);
         enableSaveButton(true);
     }
 

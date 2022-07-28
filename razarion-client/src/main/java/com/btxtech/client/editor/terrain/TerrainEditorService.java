@@ -37,6 +37,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -49,12 +50,6 @@ import java.util.stream.Collectors;
 @JsType
 @ApplicationScoped
 public class TerrainEditorService implements EditorMouseListener, EditorKeyboardListener {
-    public enum CursorType {
-        CREATE,
-        MODIFY,
-        REMOVE_MODE
-    }
-
     // private Logger logger = Logger.getLogger(TerrainEditorImpl.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
@@ -271,7 +266,6 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         }
     }
 
-
     @Override
     @JsIgnore
     public void onSpaceKeyDown(boolean down) {
@@ -385,10 +379,16 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public Promise<String> save() {
+    public Promise<String> save(TerrainObjectPosition[] createdTerrainObjects) {
         TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
-        setupChangedSlopes(terrainEditorUpdate);
-        setupChangedTerrainObjects(terrainEditorUpdate);
+        terrainEditorUpdate.setCreatedSlopes(new ArrayList<>());
+        terrainEditorUpdate.setUpdatedSlopes(new ArrayList<>());
+        terrainEditorUpdate.setDeletedSlopeIds(new ArrayList<>());
+
+        // setupChangedSlopes(terrainEditorUpdate);
+        terrainEditorUpdate.setCreatedTerrainObjects(Arrays.asList(createdTerrainObjects));
+        terrainEditorUpdate.setUpdatedTerrainObjects(new ArrayList<>());
+        terrainEditorUpdate.setDeletedTerrainObjectsIds(new ArrayList<>());
 
         if (!terrainEditorUpdate.hasAnyChanged()) {
             return new Promise<>((resolve, reject) -> resolve.onInvoke("Terrain not changed. Save not needed."));
@@ -418,28 +418,6 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         terrainEditorUpdate.setCreatedSlopes(createdSlopes);
         terrainEditorUpdate.setUpdatedSlopes(updatedSlopes);
         terrainEditorUpdate.setDeletedSlopeIds(editorSlopeWrapperContainer.getAndClearDeletedSlopeIds());
-    }
-
-    private void setupChangedTerrainObjects(TerrainEditorUpdate terrainEditorUpdate) {
-        List<TerrainObjectPosition> createdTerrainObjects = new ArrayList<>();
-        List<TerrainObjectPosition> updatedTerrainObjects = new ArrayList<>();
-        List<Integer> deletedTerrainObjectsIds = new ArrayList<>();
-        for (EditorTerrainObjectWrapper modifiedTerrainObject : terrainObjects) {
-            if (modifiedTerrainObject.isCreated()) {
-                if (modifiedTerrainObject.isNotDeleted()) {
-                    createdTerrainObjects.add(modifiedTerrainObject.createTerrainObjectPositionNoId());
-                }
-            } else {
-                if (!modifiedTerrainObject.isNotDeleted()) {
-                    deletedTerrainObjectsIds.add(modifiedTerrainObject.getOriginalId());
-                } else if (modifiedTerrainObject.isDirty()) {
-                    updatedTerrainObjects.add(modifiedTerrainObject.createTerrainObjectPosition());
-                }
-            }
-        }
-        terrainEditorUpdate.setCreatedTerrainObjects(createdTerrainObjects);
-        terrainEditorUpdate.setUpdatedTerrainObjects(updatedTerrainObjects);
-        terrainEditorUpdate.setDeletedTerrainObjectsIds(deletedTerrainObjectsIds);
     }
 
     @SuppressWarnings("unused") // Called by Angular
@@ -523,6 +501,11 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     @SuppressWarnings("unused") // Called by Angular
+    public boolean isSlopeMode() {
+        return this.slopeMode;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
     public void setSlopeMode(boolean slopeMode) {
         if (this.slopeMode == slopeMode) {
             return;
@@ -532,11 +515,6 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         modifyingTerrainObject = null;
         hoverTerrainObject = null;
         terrainEditorRenderTask.setSlopeMode(slopeMode);
-    }
-
-    @SuppressWarnings("unused") // Called by Angular
-    public boolean isSlopeMode() {
-        return this.slopeMode;
     }
 
     // TODO -> call from angular?
@@ -558,13 +536,13 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public void setDrivewayMode(boolean drivewayMode) {
-        this.drivewayMode = drivewayMode;
+    public boolean isDrivewayMode() {
+        return drivewayMode;
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public boolean isDrivewayMode() {
-        return drivewayMode;
+    public void setDrivewayMode(boolean drivewayMode) {
+        this.drivewayMode = drivewayMode;
     }
 
     @SuppressWarnings("unused") // Called by Angular
@@ -587,5 +565,11 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     @SuppressWarnings("unused") // Called by Angular
     public void setInvertedSlope(boolean invertedSlope) {
         this.invertedSlope = invertedSlope;
+    }
+
+    public enum CursorType {
+        CREATE,
+        MODIFY,
+        REMOVE_MODE
     }
 }

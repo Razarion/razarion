@@ -513,6 +513,14 @@ export class GameMockService {
 
           getIndex(): Index {
             return new class implements Index {
+              getX(): number {
+                return 0;
+              }
+
+              getY(): number {
+                return 0;
+              }
+
               toString(): string {
                 return "TerrainTile.getIndex() MOCK";
               }

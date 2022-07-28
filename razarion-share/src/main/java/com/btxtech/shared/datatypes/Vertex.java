@@ -1,6 +1,8 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
 
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 05.04.2015.
  */
+@JsType
 @Embeddable
 public class Vertex {
     public static final Vertex ZERO = new Vertex(0, 0, 0);
@@ -26,9 +29,11 @@ public class Vertex {
     private double z;
 
     // Used by Errai
+    @JsIgnore
     public Vertex() {
     }
 
+    @JsIgnore
     public Vertex(double x, double y, double z) {
         if (Double.isNaN(x) || Double.isInfinite(x)) {
             throw new IllegalArgumentException("x is invalid: " + x);
@@ -44,6 +49,7 @@ public class Vertex {
         this.z = z;
     }
 
+    @JsIgnore
     public Vertex(DecimalPosition xy, double z) {
         if (Double.isNaN(z) || Double.isInfinite(z)) {
             throw new IllegalArgumentException("z is invalid: " + z);
@@ -53,6 +59,7 @@ public class Vertex {
         this.z = z;
     }
 
+    @JsIgnore
     public Vertex(Index xy, double z) {
         if (Double.isNaN(z) || Double.isInfinite(z)) {
             throw new IllegalArgumentException("z is invalid: " + z);
@@ -60,6 +67,10 @@ public class Vertex {
         this.x = xy.getX();
         this.y = xy.getY();
         this.z = z;
+    }
+
+    public static Vertex create(double x, double y, double z) {
+        return new Vertex(x, y, z);
     }
 
     public double getX() {
@@ -78,18 +89,22 @@ public class Vertex {
         return new Vertex(this.x + x, this.y + y, this.z + z);
     }
 
+    @JsIgnore
     public Vertex add(Vertex other) {
         return new Vertex(x + other.x, y + other.y, z + other.z);
     }
 
+    @JsIgnore
     public Vertex sub(double x, double y, double z) {
         return new Vertex(this.x - x, this.y - y, this.z - z);
     }
 
+    @JsIgnore
     public Vertex sub(Vertex other) {
         return new Vertex(x - other.x, y - other.y, z - other.z);
     }
 
+    @JsIgnore
     public Vertex multiply(double w) {
         return new Vertex(x * w, y * w, z * w);
     }
@@ -128,6 +143,7 @@ public class Vertex {
                 x * vertexB.y - y * vertexB.x);
     }
 
+    @JsIgnore
     public Vertex cross(Vertex vertexB, Vertex vertexC) {
         return vertexB.sub(this).cross(vertexC.sub(this));
     }
@@ -139,6 +155,7 @@ public class Vertex {
      * @param source the source of the projection
      * @return distance positive if in the same direction as canvas
      */
+    @JsIgnore
     public double projection(Vertex canvas, Vertex source) {
         if (canvas.magnitude() == 0.0) {
             throw new IllegalArgumentException("Magnitude of canvas is not allowed to be 0");
@@ -168,6 +185,7 @@ public class Vertex {
         return Math.acos(dot(other) / (magnitude() * other.magnitude()));
     }
 
+    @JsIgnore
     public double unsignedAngle(Vertex start, Vertex end) {
         if (start.equals(this)) {
             throw new IllegalArgumentException("Start is equals to this vertex: " + start);

@@ -61,6 +61,10 @@ public class Index {
         this.y = y;
     }
 
+    public static Index create(int x, int y) {
+        return new Index(x, y);
+    }
+
     public int getX() {
         return x;
     }

@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {EditorPanel} from "../editor-model";
-import {TerrainEditorService} from "../../gwtangular/GwtAngularFacade";
+import {TerrainEditorService, TerrainObjectPosition} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {MessageService} from "primeng/api";
 import {
@@ -23,6 +25,9 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   selectedSlope: any;
   selectedDriveway: any;
   selectedTerrainObject: any;
+  terrainObjectRandomZRotation: number = 0;
+  terrainObjectRandomScale: number = 1;
+  private createdTerrainObjects: TerrainObjectPosition[] = [];
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
@@ -34,7 +39,6 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
 
   ngOnInit(): void {
     this.threeJsRendererServiceImpl.addMouseDownHandler(this);
-    this.terrainEditorService.setSlopeMode(true);
     this.terrainEditorService.getAllSlopes().then(slopes => {
       this.slopes = [];
       slopes.forEach(slope => {
@@ -56,7 +60,6 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
       terrainObjects.forEach(terrainObject => {
         this.terrainObjects.push({name: terrainObject.toString(), objectNameId: terrainObject})
       });
-      this.terrainEditorService.setTerrainObject4New(this.terrainObjects[0].objectNameId);
       this.selectedTerrainObject = this.terrainObjects[0];
     });
   }
@@ -78,11 +81,14 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   }
 
   save() {
-    this.terrainEditorService.save()
-      .then(okString => this.messageService.add({
-        severity: 'success',
-        summary: okString
-      }))
+    this.terrainEditorService.save(this.createdTerrainObjects)
+      .then(okString => {
+        this.createdTerrainObjects = [];
+        this.messageService.add({
+          severity: 'success',
+          summary: okString
+        })
+      })
       .catch(error => {
         this.messageService.add({
           severity: 'error',
@@ -106,6 +112,14 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
         threeJsModel.position.z = threeJsRendererServiceMouseEvent.pointOnObject3D.z;
       }
       this.threeJsRendererServiceImpl.scene.add(threeJsModel);
+
+      let terrainObjectPosition: TerrainObjectPosition = new com.btxtech.shared.dto.TerrainObjectPosition();
+      terrainObjectPosition.setTerrainObjectId(this.selectedTerrainObject.objectNameId.id);
+      terrainObjectPosition.setPosition(com.btxtech.shared.datatypes.DecimalPosition.create(threeJsRendererServiceMouseEvent.pointOnObject3D.x, threeJsRendererServiceMouseEvent.pointOnObject3D.y));
+      terrainObjectPosition.setScale(com.btxtech.shared.datatypes.Vertex.create(1, 1, 1));
+      terrainObjectPosition.setRotation(com.btxtech.shared.datatypes.Vertex.create(0, 0, 0));
+      terrainObjectPosition.setOffset(com.btxtech.shared.datatypes.Vertex.create(0, 0, 0));
+      this.createdTerrainObjects.push(terrainObjectPosition)
     }
   }
 

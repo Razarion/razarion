@@ -24,6 +24,28 @@ export interface GwtAngularBoot {
 // ---------- Common ----------
 
 export interface Index {
+  getX(): number;
+
+  getY(): number;
+
+  toString(): string;
+}
+
+export interface DecimalPosition {
+  getX(): number;
+
+  getY(): number;
+
+  toString(): string;
+}
+
+export interface Vertex {
+  getX(): number;
+
+  getY(): number;
+
+  getZ(): number;
+
   toString(): string;
 }
 
@@ -421,15 +443,7 @@ export interface AngularTreeNodeData {
 }
 
 export interface TerrainEditorService {
-  activate(): void;
-
-  deactivate(): void;
-
-  save(): Promise<string>;
-
-  isSlopeMode(): boolean;
-
-  setSlopeMode(slopeMode: boolean): void;
+  save(createdTerrainObjects: TerrainObjectPosition[]): Promise<string>;
 
   // --- Slope mode
   getAllSlopes(): Promise<ObjectNameId[]>;
@@ -458,16 +472,18 @@ export interface TerrainEditorService {
 
   // --- Terrain Object Mode
   getAllTerrainObjects(): Promise<ObjectNameId[]>;
+}
 
-  setTerrainObject4New(terrainObject4New: ObjectNameId): void;
+export interface TerrainObjectPosition {
+  setTerrainObjectId(terrainObjectId: number): void;
 
-  getTerrainObjectRandomZRotation(): number;
+  setPosition(position: DecimalPosition): void;
 
-  setTerrainObjectRandomZRotation(terrainObjectRandomZRotation: number): void;
+  setScale(scale: Vertex): void;
 
-  getTerrainObjectRandomScale(): number;
+  setRotation(rotation: Vertex): void;
 
-  setTerrainObjectRandomScale(terrainObjectRandomScale: number): void;
+  setOffset(offset: Vertex): void;
 }
 
 export interface ImageGalleryItem {
