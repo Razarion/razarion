@@ -8,6 +8,6 @@ import jsinterop.annotations.JsType;
  */
 @JsType(name = "NativeTerrainShapeObjectList", isNative = true, namespace = "com.btxtech.shared.json")
 public class NativeTerrainShapeObjectList {
-    public int terrainObjectId;
-    public NativeTerrainShapeObjectPosition[] positions;
+    public int terrainObjectConfigId;
+    public NativeTerrainShapeObjectPosition[] terrainShapeObjectPositions;
 }

@@ -11,7 +11,7 @@ import jsinterop.annotations.JsType;
 @JsType
 public class TerrainObjectPosition {
     private Integer id;
-    private int terrainObjectId;
+    private int terrainObjectConfigId;
     private DecimalPosition position;
     private Vertex scale;
     private Vertex rotation;
@@ -29,12 +29,12 @@ public class TerrainObjectPosition {
         return id != null;
     }
 
-    public int getTerrainObjectId() {
-        return terrainObjectId;
+    public int getTerrainObjectConfigId() {
+        return terrainObjectConfigId;
     }
 
-    public void setTerrainObjectId(int terrainObjectId) {
-        this.terrainObjectId = terrainObjectId;
+    public void setTerrainObjectConfigId(int terrainObjectConfigId) {
+        this.terrainObjectConfigId = terrainObjectConfigId;
     }
 
     public DecimalPosition getPosition() {
@@ -74,8 +74,8 @@ public class TerrainObjectPosition {
         return this;
     }
 
-    public TerrainObjectPosition terrainObjectId(int terrainObjectId) {
-        setTerrainObjectId(terrainObjectId);
+    public TerrainObjectPosition terrainObjectConfigId(int terrainObjectId) {
+        setTerrainObjectConfigId(terrainObjectId);
         return this;
     }
 

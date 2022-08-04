@@ -147,14 +147,14 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
     @Test
     public void testTerrainObjectLand() {
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
-                new TerrainObjectPosition().terrainObjectId(1).position(new DecimalPosition(10, 10)),
-                new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(21, 32)),
-                new TerrainObjectPosition().terrainObjectId(3).position(new DecimalPosition(135, 130)),
-                new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(44, 27.5)),
-                new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(72, 88)),
-                new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(20, 60)),
-                new TerrainObjectPosition().terrainObjectId(2).position(new DecimalPosition(92, 64)),
-                new TerrainObjectPosition().terrainObjectId(3).position(new DecimalPosition(47, 117))
+                new TerrainObjectPosition().terrainObjectConfigId(1).position(new DecimalPosition(10, 10)),
+                new TerrainObjectPosition().terrainObjectConfigId(2).position(new DecimalPosition(21, 32)),
+                new TerrainObjectPosition().terrainObjectConfigId(3).position(new DecimalPosition(135, 130)),
+                new TerrainObjectPosition().terrainObjectConfigId(2).position(new DecimalPosition(44, 27.5)),
+                new TerrainObjectPosition().terrainObjectConfigId(2).position(new DecimalPosition(72, 88)),
+                new TerrainObjectPosition().terrainObjectConfigId(2).position(new DecimalPosition(20, 60)),
+                new TerrainObjectPosition().terrainObjectConfigId(2).position(new DecimalPosition(92, 64)),
+                new TerrainObjectPosition().terrainObjectConfigId(3).position(new DecimalPosition(47, 117))
         );
         setup(null,
                 terrainObjectPositions,

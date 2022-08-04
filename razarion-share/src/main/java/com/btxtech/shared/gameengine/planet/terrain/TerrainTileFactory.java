@@ -55,6 +55,16 @@ public class TerrainTileFactory {
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
 
+    private static double setupSlopeFactor(double slopeFactor, double drivewayHeightFactor) {
+        if (MathHelper.compareWithPrecision(1.0, slopeFactor)) {
+            return 1.0;
+        } else if (MathHelper.compareWithPrecision(0.0, slopeFactor)) {
+            return 0;
+        }
+        // Why -shapeTemplateEntry.getNormShift() and not + is unclear
+        // return (float) MathHelper.clamp(slopeSkeletonEntry.getSlopeFactor() - slopeSkeletonEntry.getNormShift(), 0.0, 1.0);
+        return slopeFactor * drivewayHeightFactor;
+    }
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShapeManager terrainShape, PlanetConfig planetConfig) {
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
@@ -218,17 +228,6 @@ public class TerrainTileFactory {
         terrainTileBuilder.getTerrainWaterTileBuilder().triangulateShallowWaterMesh(fractionalSlope.getSlopeConfigId());
     }
 
-    private static double setupSlopeFactor(double slopeFactor, double drivewayHeightFactor) {
-        if (MathHelper.compareWithPrecision(1.0, slopeFactor)) {
-            return 1.0;
-        } else if (MathHelper.compareWithPrecision(0.0, slopeFactor)) {
-            return 0;
-        }
-        // Why -shapeTemplateEntry.getNormShift() and not + is unclear
-        // return (float) MathHelper.clamp(slopeSkeletonEntry.getSlopeFactor() - slopeSkeletonEntry.getNormShift(), 0.0, 1.0);
-        return slopeFactor * drivewayHeightFactor;
-    }
-
     private void insertSlopeGroundConnectionPart(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
         if (terrainShapeTile == null) {
             return;
@@ -359,10 +358,6 @@ public class TerrainTileFactory {
         return InterpolationUtils.interpolateNormFromRectangle(relativePosition, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, terrainShapeNode.getDrivewayHeights());
     }
 
-    private interface SubNodeFeeder {
-        void insertSubNode(int x, int y, TerrainSubNode terrainSubNode);
-    }
-
     private void insertTerrainObjects(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
         if (terrainShapeTile == null) {
             return;
@@ -372,13 +367,13 @@ public class TerrainTileFactory {
             return;
         }
         Arrays.stream(nativeTerrainShapeObjectLists).forEach(nativeTerrainShapeObjectList -> {
-            if (nativeTerrainShapeObjectList.positions == null || nativeTerrainShapeObjectList.positions.length == 0) {
+            if (nativeTerrainShapeObjectList.terrainShapeObjectPositions == null || nativeTerrainShapeObjectList.terrainShapeObjectPositions.length == 0) {
                 return;
             }
             TerrainTileObjectList terrainTileObjectList = new TerrainTileObjectList();
-            terrainTileObjectList.setTerrainObjectConfigId(nativeTerrainShapeObjectList.terrainObjectId);
-            List<NativeMatrix> models = new ArrayList<>();
-            Arrays.stream(nativeTerrainShapeObjectList.positions).forEach(nativeTerrainObjectPosition -> {
+            terrainTileObjectList.setTerrainObjectConfigId(nativeTerrainShapeObjectList.terrainObjectConfigId);
+            List<TerrainObjectModel> terrainObjectModels = new ArrayList<>();
+            Arrays.stream(nativeTerrainShapeObjectList.terrainShapeObjectPositions).forEach(nativeTerrainObjectPosition -> {
                 try {
                     double z = terrainService.getSurfaceAccess().getInterpolatedZ(new DecimalPosition(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y));
                     NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y, z);
@@ -393,14 +388,21 @@ public class TerrainTileFactory {
                         newMatrix = newMatrix.multiply(nativeMatrixFactory.createYRotation(nativeTerrainObjectPosition.rotation.y));
                         newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(nativeTerrainObjectPosition.rotation.z));
                     }
-                    models.add(newMatrix);
+                    TerrainObjectModel terrainObjectModel = new TerrainObjectModel();
+                    terrainObjectModel.model = newMatrix;
+                    terrainObjectModel.terrainObjectId = nativeTerrainObjectPosition.terrainObjectId;
+                    terrainObjectModels.add(terrainObjectModel);
                 } catch (Throwable t) {
                     exceptionHandler.handleException(t);
                 }
             });
-            terrainTileObjectList.setModel(models.toArray(new NativeMatrix[0]));
+            terrainTileObjectList.setTerrainObjectModels(terrainObjectModels.toArray(new TerrainObjectModel[0]));
             terrainTileBuilder.addTerrainTileObjectList(terrainTileObjectList);
         });
+    }
+
+    private interface SubNodeFeeder {
+        void insertSubNode(int x, int y, TerrainSubNode terrainSubNode);
     }
 
 }

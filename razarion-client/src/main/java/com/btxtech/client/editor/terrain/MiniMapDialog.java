@@ -104,7 +104,7 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
         // Terrain objects
         ctx.setFillStyle(TERRAIN_OBJECT_COLOR);
         for (TerrainObjectPosition terrainObjectPosition : terrainEditorLoad.getTerrainObjects()) {
-            TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId());
+            TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectConfigId());
             DecimalPosition center = terrainObjectPosition.getPosition();
             ctx.beginPath();
             ctx.arc((float) center.getX(), (float) center.getY(), (float) terrainObjectConfig.getRadius(), 0f, (float) MathHelper.ONE_RADIANT, true);

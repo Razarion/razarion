@@ -121,14 +121,14 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10).threeJsUuid("Palm Tree"));
 
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
-                new TerrainObjectPosition().id(1).terrainObjectId(1).position(new DecimalPosition(10, 10)).scale(new Vertex(1.1, 1.1, 1.1)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(2).terrainObjectId(1).position(new DecimalPosition(100, 10)).scale(new Vertex(1.3, 1.3, 1.3)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(3).terrainObjectId(1).position(new DecimalPosition(150, 120)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(4).terrainObjectId(2).position(new DecimalPosition(200, 160)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(5).terrainObjectId(3).position(new DecimalPosition(250, 200)).scale(new Vertex(0.8, 0.8, 0.8)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(6).terrainObjectId(3).position(new DecimalPosition(300, 240)).scale(new Vertex(0.5, 0.5, 0.5)).rotation(new Vertex(0, 0, 0)),
-                new TerrainObjectPosition().id(7).terrainObjectId(3).position(new DecimalPosition(50, 280)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
-                new TerrainObjectPosition().id(8).terrainObjectId(3).position(new DecimalPosition(100, 40)).scale(new Vertex(0.9, 0.9, 0.9)).rotation(new Vertex(0, 0, 0))
+                new TerrainObjectPosition().id(1).terrainObjectConfigId(1).position(new DecimalPosition(10, 10)).scale(new Vertex(1.1, 1.1, 1.1)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(2).terrainObjectConfigId(1).position(new DecimalPosition(100, 10)).scale(new Vertex(1.3, 1.3, 1.3)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(3).terrainObjectConfigId(1).position(new DecimalPosition(150, 120)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(4).terrainObjectConfigId(2).position(new DecimalPosition(200, 160)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(5).terrainObjectConfigId(3).position(new DecimalPosition(250, 200)).scale(new Vertex(0.8, 0.8, 0.8)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(6).terrainObjectConfigId(3).position(new DecimalPosition(300, 240)).scale(new Vertex(0.5, 0.5, 0.5)).rotation(new Vertex(0, 0, 0)),
+                new TerrainObjectPosition().id(7).terrainObjectConfigId(3).position(new DecimalPosition(50, 280)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
+                new TerrainObjectPosition().id(8).terrainObjectConfigId(3).position(new DecimalPosition(100, 40)).scale(new Vertex(0.9, 0.9, 0.9)).rotation(new Vertex(0, 0, 0))
         );
 
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(

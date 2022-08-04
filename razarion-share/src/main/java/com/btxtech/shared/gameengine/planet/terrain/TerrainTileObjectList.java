@@ -3,8 +3,6 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import jsinterop.annotations.JsType;
 
-import java.util.List;
-
 /**
  * Created by Beat
  * on 18.01.2018.
@@ -13,7 +11,7 @@ import java.util.List;
 public class TerrainTileObjectList {
     @Deprecated
     public int terrainObjectConfigId;
-    public NativeMatrix[] models;
+    public TerrainObjectModel[] terrainObjectModels;
 
     public int getTerrainObjectConfigId() {
         return terrainObjectConfigId;
@@ -23,11 +21,11 @@ public class TerrainTileObjectList {
         this.terrainObjectConfigId = terrainObjectConfigId;
     }
 
-    public void setModel(NativeMatrix[] models) {
-        this.models = models;
+    public void setTerrainObjectModels(TerrainObjectModel[] terrainObjectModels) {
+        this.terrainObjectModels = terrainObjectModels;
     }
 
-    public NativeMatrix[] getModels() {
-        return models;
+    public TerrainObjectModel[] getTerrainObjectModels() {
+        return terrainObjectModels;
     }
 }

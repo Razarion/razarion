@@ -67,9 +67,9 @@ public class TerrainShapeManagerSetup {
         for (TerrainObjectPosition objectPosition : terrainObjectPositions) {
             // Render engine
             MapList<Integer, TerrainObjectPosition> tileObjects = renderTerrainObjects.computeIfAbsent(TerrainUtil.toTile(objectPosition.getPosition()), k -> new MapList<>());
-            tileObjects.put(objectPosition.getTerrainObjectId(), objectPosition);
+            tileObjects.put(objectPosition.getTerrainObjectConfigId(), objectPosition);
             // Game engine
-            TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectId());
+            TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectConfigId());
             Circle2D terrainObjectCircle = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius() * calculateScale(objectPosition.getScale()));
             ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(terrainObjectCircle);
             for (Index nodeIndex : GeometricUtil.rasterizeCircle(obstacleTerrainObject.getCircle(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
@@ -467,11 +467,12 @@ public class TerrainShapeManagerSetup {
             int terrainObjectIdIndex = 0;
             for (Map.Entry<Integer, List<TerrainObjectPosition>> entry : terrainObjectGroup.getMap().entrySet()) {
                 NativeTerrainShapeObjectList nativeTerrainShapeObjectList = new NativeTerrainShapeObjectList();
-                nativeTerrainShapeObjectList.terrainObjectId = entry.getKey();
-                nativeTerrainShapeObjectList.positions = new NativeTerrainShapeObjectPosition[entry.getValue().size()];
+                nativeTerrainShapeObjectList.terrainObjectConfigId = entry.getKey();
+                nativeTerrainShapeObjectList.terrainShapeObjectPositions = new NativeTerrainShapeObjectPosition[entry.getValue().size()];
                 for (int positionIndex = 0; positionIndex < entry.getValue().size(); positionIndex++) {
                     TerrainObjectPosition terrainObjectPosition = entry.getValue().get(positionIndex);
                     NativeTerrainShapeObjectPosition nativeTerrainShapeObjectPosition = new NativeTerrainShapeObjectPosition();
+                    nativeTerrainShapeObjectPosition.terrainObjectId = terrainObjectPosition.getId();
                     nativeTerrainShapeObjectPosition.x = terrainObjectPosition.getPosition().getX();
                     nativeTerrainShapeObjectPosition.y = terrainObjectPosition.getPosition().getY();
                     if (terrainObjectPosition.getScale() != null) {
@@ -492,7 +493,7 @@ public class TerrainShapeManagerSetup {
                         nativeTerrainShapeObjectPosition.offset.y = terrainObjectPosition.getOffset().getY();
                         nativeTerrainShapeObjectPosition.offset.z = terrainObjectPosition.getOffset().getZ();
                     }
-                    nativeTerrainShapeObjectList.positions[positionIndex] = nativeTerrainShapeObjectPosition;
+                    nativeTerrainShapeObjectList.terrainShapeObjectPositions[positionIndex] = nativeTerrainShapeObjectPosition;
                 }
                 nativeTerrainShapeObjectLists[terrainObjectIdIndex++] = nativeTerrainShapeObjectList;
             }

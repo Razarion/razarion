@@ -556,7 +556,7 @@ public class ServerTestHelper {
         List<TerrainObjectPositionEntity> terrainObjectPositionEntities = new ArrayList<>();
         TerrainObjectPositionEntity top1 = new TerrainObjectPositionEntity();
         top1.fromTerrainObjectPosition(new TerrainObjectPosition()
-                        .terrainObjectId(TERRAIN_OBJECT_1_ID)
+                        .terrainObjectConfigId(TERRAIN_OBJECT_1_ID)
                         .position(new DecimalPosition(25, 25))
                         .scale(new Vertex(0.5, 1, 1.25))
                         .rotation(new Vertex(1.1, 1.2, 1.3))
@@ -564,7 +564,7 @@ public class ServerTestHelper {
         terrainObjectPositionEntities.add(top1);
         TerrainObjectPositionEntity top2 = new TerrainObjectPositionEntity();
         top2.fromTerrainObjectPosition(new TerrainObjectPosition()
-                        .terrainObjectId(TERRAIN_OBJECT_2_ID)
+                        .terrainObjectConfigId(TERRAIN_OBJECT_2_ID)
                         .position(new DecimalPosition(450, 25))
                         .scale(new Vertex(0.6, 1.1, 1.3))
                         .rotation(new Vertex(1.2, 1.3, 1.4))
@@ -572,7 +572,7 @@ public class ServerTestHelper {
         terrainObjectPositionEntities.add(top2);
         TerrainObjectPositionEntity top3 = new TerrainObjectPositionEntity();
         top3.fromTerrainObjectPosition(new TerrainObjectPosition()
-                        .terrainObjectId(TERRAIN_OBJECT_3_ID)
+                        .terrainObjectConfigId(TERRAIN_OBJECT_3_ID)
                         .position(new DecimalPosition(300, 250))
                         .scale(new Vertex(0.8, 0.6, 0.7))
                         .rotation(new Vertex(0.9, 0.8, 0.7))

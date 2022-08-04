@@ -90,13 +90,13 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(5120, 512));
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
-                new TerrainObjectPosition().terrainObjectId(1).scale(new Vertex(1, 1, 1)).position(new DecimalPosition(340, 140)),
-                new TerrainObjectPosition().terrainObjectId(1).scale(new Vertex(2, 2, 2)).position(new DecimalPosition(344, 95)),
-                new TerrainObjectPosition().terrainObjectId(2).scale(new Vertex(1, 1, 1)).position(new DecimalPosition(362, 65)),
-                new TerrainObjectPosition().terrainObjectId(2).scale(new Vertex(1, 1, 1)).position(new DecimalPosition(368, 21)),
-                new TerrainObjectPosition().terrainObjectId(3).scale(new Vertex(1, 1, 1)).position(new DecimalPosition(400, 55)),
-                new TerrainObjectPosition().terrainObjectId(3).scale(new Vertex(1, 1, 1)).position(new DecimalPosition(420, 115)),
-                new TerrainObjectPosition().terrainObjectId(3).scale(new Vertex(0.5, 0.5, 0.5)).position(new DecimalPosition(450, 75))
+                new TerrainObjectPosition().terrainObjectConfigId(1).scale(new Vertex(1, 1, 1)).position(new DecimalPosition(340, 140)),
+                new TerrainObjectPosition().terrainObjectConfigId(1).scale(new Vertex(2, 2, 2)).position(new DecimalPosition(344, 95)),
+                new TerrainObjectPosition().terrainObjectConfigId(2).scale(new Vertex(1, 1, 1)).position(new DecimalPosition(362, 65)),
+                new TerrainObjectPosition().terrainObjectConfigId(2).scale(new Vertex(1, 1, 1)).position(new DecimalPosition(368, 21)),
+                new TerrainObjectPosition().terrainObjectConfigId(3).scale(new Vertex(1, 1, 1)).position(new DecimalPosition(400, 55)),
+                new TerrainObjectPosition().terrainObjectConfigId(3).scale(new Vertex(1, 1, 1)).position(new DecimalPosition(420, 115)),
+                new TerrainObjectPosition().terrainObjectConfigId(3).scale(new Vertex(0.5, 0.5, 0.5)).position(new DecimalPosition(450, 75))
         );
 
         setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions, null, null);

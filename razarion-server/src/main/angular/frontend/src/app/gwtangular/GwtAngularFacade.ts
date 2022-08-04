@@ -270,8 +270,13 @@ export interface TerrainWaterTile {
 }
 
 export interface TerrainTileObjectList {
-  models: NativeMatrix[];
+  terrainObjectModels: TerrainObjectModel[];
   terrainObjectConfigId: number;
+}
+
+export interface TerrainObjectModel {
+  model: NativeMatrix;
+  terrainObjectId: number;
 }
 
 export interface ThreeJsTerrainTile {
@@ -475,7 +480,7 @@ export interface TerrainEditorService {
 }
 
 export interface TerrainObjectPosition {
-  setTerrainObjectId(terrainObjectId: number): void;
+  setTerrainObjectConfigId(terrainObjectConfigId: number): void;
 
   setPosition(position: DecimalPosition): void;
 

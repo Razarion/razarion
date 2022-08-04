@@ -55,7 +55,7 @@ public class TerrainObjectPositionEntity {
     public TerrainObjectPosition toTerrainObjectPosition() {
         TerrainObjectPosition objectPosition = new TerrainObjectPosition();
         objectPosition.setId(id);
-        objectPosition.setTerrainObjectId(terrainObjectEntity.getId());
+        objectPosition.setTerrainObjectConfigId(terrainObjectEntity.getId());
         objectPosition.setPosition(position);
         objectPosition.setScale(scale);
         objectPosition.setRotation(rotation);
@@ -63,7 +63,7 @@ public class TerrainObjectPositionEntity {
     }
 
     public void fromTerrainObjectPosition(TerrainObjectPosition terrainObjectPosition, TerrainObjectCrudPersistence terrainObjectCrudPersistence) {
-        terrainObjectEntity = terrainObjectCrudPersistence.getEntity(terrainObjectPosition.getTerrainObjectId());
+        terrainObjectEntity = terrainObjectCrudPersistence.getEntity(terrainObjectPosition.getTerrainObjectConfigId());
         position = terrainObjectPosition.getPosition();
         scale = terrainObjectPosition.getScale();
         rotation = terrainObjectPosition.getRotation();

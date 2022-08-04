@@ -451,11 +451,11 @@ public class WeldTestRenderer {
             if (terrainTile.getTerrainTileObjectLists() != null) {
                 gc.setFill(Color.BROWN);
                 Arrays.stream(terrainTile.getTerrainTileObjectLists()).forEach(terrainTileObjectList -> {
-                    if (terrainTileObjectList.getModels() != null) {
+                    if (terrainTileObjectList.getTerrainObjectModels() != null) {
                         TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.getTerrainObjectConfigId());
-                        Arrays.stream(terrainTileObjectList.getModels()).forEach(nativeMatrix -> {
-                            NativeVertexDto br = nativeMatrix.multiplyVertex(NativeUtil.toNativeVertex(-terrainObjectConfig.getRadius(), -terrainObjectConfig.getRadius(), 0), 1.0);
-                            NativeVertexDto tl = nativeMatrix.multiplyVertex(NativeUtil.toNativeVertex(terrainObjectConfig.getRadius(), terrainObjectConfig.getRadius(), 0), 1.0);
+                        Arrays.stream(terrainTileObjectList.getTerrainObjectModels()).forEach(terrainObjectModel -> {
+                            NativeVertexDto br = terrainObjectModel.model.multiplyVertex(NativeUtil.toNativeVertex(-terrainObjectConfig.getRadius(), -terrainObjectConfig.getRadius(), 0), 1.0);
+                            NativeVertexDto tl = terrainObjectModel.model.multiplyVertex(NativeUtil.toNativeVertex(terrainObjectConfig.getRadius(), terrainObjectConfig.getRadius(), 0), 1.0);
                             Rectangle2D rect = Rectangle2D.generateRectangleFromAnyPoints(new DecimalPosition(br.x, br.y), new DecimalPosition(tl.x, tl.y)); // If rotated, it is may upside down
                             gc.fillOval(rect.startX(), rect.startY(), rect.width(), rect.height());
                         });
@@ -939,9 +939,9 @@ public class WeldTestRenderer {
         gc.setStroke(Color.BROWN);
         gc.setLineWidth(FAT_LINE_WIDTH);
         Arrays.stream(nativeTerrainShapeObjectLists).forEach(nativeTerrainShapeObjectList -> {
-            if (nativeTerrainShapeObjectList.positions != null) {
-                double radius = terrainTypeService.getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectId).getRadius();
-                Arrays.stream(nativeTerrainShapeObjectList.positions).forEach(nativeTerrainShapeObjectPosition -> {
+            if (nativeTerrainShapeObjectList.terrainShapeObjectPositions != null) {
+                double radius = terrainTypeService.getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
+                Arrays.stream(nativeTerrainShapeObjectList.terrainShapeObjectPositions).forEach(nativeTerrainShapeObjectPosition -> {
                     // TODO double correctedRadius = radius * nativeTerrainShapeObjectPosition.scale;
                     // TODO gc.strokeOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
                 });

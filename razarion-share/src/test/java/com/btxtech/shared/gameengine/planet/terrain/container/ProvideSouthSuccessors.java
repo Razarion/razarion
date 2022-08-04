@@ -56,8 +56,8 @@ public class ProvideSouthSuccessors extends WeldTerrainServiceTestBase {
         terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(20));
 
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
-                new TerrainObjectPosition().terrainObjectId(3).position(new DecimalPosition(50, 51)),
-                new TerrainObjectPosition().terrainObjectId(3).position(new DecimalPosition(70, 82))
+                new TerrainObjectPosition().terrainObjectConfigId(3).position(new DecimalPosition(50, 51)),
+                new TerrainObjectPosition().terrainObjectConfigId(3).position(new DecimalPosition(70, 82))
         );
 
         setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null, null);

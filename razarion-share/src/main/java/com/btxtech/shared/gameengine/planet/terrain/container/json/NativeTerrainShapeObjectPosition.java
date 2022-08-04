@@ -8,6 +8,7 @@ import jsinterop.annotations.JsType;
  */
 @JsType(name = "NativeTerrainShapeObjectPosition", isNative = true, namespace = "com.btxtech.shared.json")
 public class NativeTerrainShapeObjectPosition {
+    public int terrainObjectId;
     public double x;
     public double y;
     public NativeVertex scale;

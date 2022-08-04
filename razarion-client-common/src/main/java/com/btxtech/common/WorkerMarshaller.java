@@ -22,13 +22,13 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.GroundTerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainObjectModel;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
-import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
@@ -485,18 +485,21 @@ public class WorkerMarshaller {
             for (TerrainTileObjectList terrainTileObjectList : terrainTileObjectLists) {
                 JsPropertyMapOfAny mapOfTerrainTileObjectList = JsPropertyMap.of();
                 mapOfTerrainTileObjectList.set("terrainObjectConfigId", terrainTileObjectList.getTerrainObjectConfigId());
-                mapOfTerrainTileObjectList.set("models", marshallNativeMatrices(terrainTileObjectList.getModels()));
+                mapOfTerrainTileObjectList.set("terrainObjectModels", marshallTerrainObjectModel(terrainTileObjectList.getTerrainObjectModels()));
                 result.push(mapOfTerrainTileObjectList);
             }
         }
         return result;
     }
 
-    private static elemental2.core.Map<Integer, Float32Array> marshallNativeMatrices(NativeMatrix[] nativeMatrices) {
-        elemental2.core.Map<Integer, Float32Array> result = new elemental2.core.Map<>();
-        if (nativeMatrices != null) {
-            for (int i = 0; i < nativeMatrices.length; i++) {
-                result.set(i, Js.uncheckedCast(nativeMatrices[i].getColumnMajorFloat32Array()));
+    private static Object marshallTerrainObjectModel(TerrainObjectModel[] terrainObjectModels) {
+        Array<JsPropertyMapOfAny> result = new Array<>();
+        if (terrainObjectModels != null) {
+            for (TerrainObjectModel terrainObjectModel : terrainObjectModels) {
+                JsPropertyMapOfAny mapOfTerrainObjectModel = JsPropertyMap.of();
+                mapOfTerrainObjectModel.set("model", terrainObjectModel.model.getColumnMajorFloat32Array());
+                mapOfTerrainObjectModel.set("terrainObjectId", terrainObjectModel.terrainObjectId);
+                result.push(mapOfTerrainObjectModel);
             }
         }
         return result;
@@ -666,24 +669,22 @@ public class WorkerMarshaller {
         return Arrays.stream(array).map(anyTerrainTileObjectList -> {
             TerrainTileObjectList terrainTileObjectList = new TerrainTileObjectList();
             terrainTileObjectList.setTerrainObjectConfigId(((Any) Js.uncheckedCast(anyTerrainTileObjectList.get("terrainObjectConfigId"))).asInt());
-            terrainTileObjectList.setModel(demarshallNativeMatrices(Js.uncheckedCast(anyTerrainTileObjectList.get("models")), nativeMatrixFactory));
+            terrainTileObjectList.setTerrainObjectModels(demarshallTerrainObjectModels((Any)anyTerrainTileObjectList.get("terrainObjectModels"), nativeMatrixFactory));
             return terrainTileObjectList;
         }).toArray(TerrainTileObjectList[]::new);
     }
 
-    private static NativeMatrix[] demarshallNativeMatrices(Any any, NativeMatrixFactory nativeMatrixFactory) {
-        elemental2.core.Map<Integer, Float32Array> map = uncheckedCast(any);
-        if (map.size == 0) {
+    private static TerrainObjectModel[] demarshallTerrainObjectModels(Any any, NativeMatrixFactory nativeMatrixFactory) {
+        JsPropertyMapOfAny[] array = Js.cast(any);
+        if (array.length == 0) {
             return null;
         }
-        List<NativeMatrix> nativeMatrices = new ArrayList<>();
-        map.forEach((float32Array, key, ignore) -> {
-            nativeMatrices.add(nativeMatrixFactory.createFromColumnMajorFloat32ArrayEmu(Js.uncheckedCast(float32Array)));
-            return null;
-        });
-
-        return nativeMatrices.toArray(new NativeMatrix[0]);
-
+        return Arrays.stream(array).map(anyTerrainObjectModels-> {
+            TerrainObjectModel terrainTileObjectList = new TerrainObjectModel();
+            terrainTileObjectList.model = nativeMatrixFactory.createFromColumnMajorFloat32ArrayEmu(Js.uncheckedCast(anyTerrainObjectModels.get("model")));
+            terrainTileObjectList.terrainObjectId = ((Any)Js.uncheckedCast(anyTerrainObjectModels.get("terrainObjectId"))).asInt();
+            return terrainTileObjectList;
+        }).toArray(TerrainObjectModel[]::new);
     }
 
     private static TerrainNode[][] demarshallTerrainNodes(Any any) {

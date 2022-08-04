@@ -69,11 +69,11 @@ import {TabViewModule} from 'primeng/tabview';
 import {CheckboxModule} from 'primeng/checkbox';
 import {SliderModule} from 'primeng/slider';
 import {DataViewModule} from 'primeng/dataview';
-import {FormatFileSizePipe} from "./common/format-file-size-pipe";
+import {FormatFileSizePipe} from "./common/pipes/format-file-size-pipe";
 import {ImageEditorComponent} from './editor/image-editor/image-editor.component';
 import {ImageGalleryItemComponent, ImageTypePipe} from "./editor/image-editor/image-gallery-item.component";
 import {FileUploadModule} from 'primeng/fileupload';
-import {RadToDegreePipe} from "./common/rad-to-degree-pipe";
+import {RadToDegreePipe} from "./common/pipes/rad-to-degree-pipe";
 import {ThreeJsRendererServiceImpl} from './game/renderer/three-js-renderer-service.impl';
 import {GameMockService} from './game/renderer/game-mock.service';
 import {ThreeJsModelService} from './game/renderer/three-js-model.service';
@@ -87,6 +87,7 @@ import {ThreeJsWaterRenderService} from "./game/renderer/three-js-water-render.s
 import {EulerPropertyEditorComponent} from "./editor/render-engine/editors/euler-property-editor.component";
 import {UserdataPropertyEditorComponent} from "./editor/render-engine/editors/userdata-property-editor.component";
 import {InputTextareaModule} from "primeng/inputtextarea";
+import {Angle3EditorComponent} from "./common/components/angles-3-editor.component";
 
 @NgModule({
   declarations: [
@@ -136,7 +137,8 @@ import {InputTextareaModule} from "primeng/inputtextarea";
     ImageGalleryItemComponent,
     CollectionSelectorComponent,
     EulerPropertyEditorComponent,
-    UserdataPropertyEditorComponent
+    UserdataPropertyEditorComponent,
+    Angle3EditorComponent
   ],
   imports: [
     BrowserModule,

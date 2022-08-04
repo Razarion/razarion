@@ -25,7 +25,7 @@ public class EditorTerrainObjectWrapper {
 
     public EditorTerrainObjectWrapper(TerrainObjectPosition terrainObjectPosition, double radius) {
         this.position = terrainObjectPosition.getPosition();
-        terrainObjectId = terrainObjectPosition.getTerrainObjectId();
+        terrainObjectId = terrainObjectPosition.getTerrainObjectConfigId();
         originalId = terrainObjectPosition.getId();
         scale = terrainObjectPosition.getScale();
         rotation = terrainObjectPosition.getRotation();
@@ -84,10 +84,10 @@ public class EditorTerrainObjectWrapper {
     }
 
     public TerrainObjectPosition createTerrainObjectPositionNoId() {
-        return new TerrainObjectPosition().position(position).terrainObjectId(terrainObjectId).scale(scale).rotation(rotation);
+        return new TerrainObjectPosition().position(position).terrainObjectConfigId(terrainObjectId).scale(scale).rotation(rotation);
     }
 
     public TerrainObjectPosition createTerrainObjectPosition() {
-        return new TerrainObjectPosition().id(originalId).position(position).terrainObjectId(terrainObjectId).scale(scale).rotation(rotation);
+        return new TerrainObjectPosition().id(originalId).position(position).terrainObjectConfigId(terrainObjectId).scale(scale).rotation(rotation);
     }
 }

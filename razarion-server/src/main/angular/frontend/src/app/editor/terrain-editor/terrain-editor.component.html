@@ -76,15 +76,14 @@
         </td>
       </tr>
       <tr>
-        <td>Z Rotation</td>
-        <td><p-slider [(ngModel)]="terrainObjectRandomZRotation"
-                      [min]="0" [max]="360" [step]="1"></p-slider></td>
+        <td>Rotation</td>
+        <td><angle-3-editor [vertexHolder]="terrainObjectRotation"></angle-3-editor></td>
       </tr>
-      <tr>
-        <td>Scale</td>
-        <td><p-slider [(ngModel)]="terrainObjectRandomScale"
-                      [step]="0.01"></p-slider></td>
-      </tr>
+<!--      <tr>-->
+<!--        <td>Scale</td>-->
+<!--        <td><p-slider [(ngModel)]="terrainObjectRandomScale"-->
+<!--                      [step]="0.01"></p-slider></td>-->
+<!--      </tr>-->
     </table>
   </p-tabPanel>
 </p-tabView>

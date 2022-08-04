@@ -145,8 +145,8 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
           if (terrainObjectConfig.getThreeJsUuid() === undefined) {
             throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
           }
-          terrainTileObjectList.models.forEach(model => {
-            let m = model.getColumnMajorFloat32Array();
+          terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
+            let m = terrainObjectModel.model.getColumnMajorFloat32Array();
             let matrix4 = new Matrix4();
             matrix4.set(
               m[0], m[4], m[8], m[12],
@@ -156,6 +156,8 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
             );
             let threeJsModel = threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
             threeJsModel.applyMatrix4(matrix4);
+            (<any>threeJsModel).razarionTerrainObjectId = terrainObjectModel.terrainObjectId;
+            (<any>threeJsModel).razarionTerrainObjectConfigId = terrainTileObjectList.terrainObjectConfigId;
             _this.group.add(threeJsModel);
           });
         } catch (error) {

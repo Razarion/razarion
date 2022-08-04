@@ -21,6 +21,7 @@ import {
   TerrainEditorService,
   TerrainMarkerService,
   TerrainObjectConfig,
+  TerrainObjectModel,
   TerrainSlopeTile,
   TerrainTile,
   TerrainTileObjectList,
@@ -504,7 +505,7 @@ export class GameMockService {
             }
             for (const [key, terrainTileObjectListJson] of Object.entries(terrainTileJson.terrainTileObjectLists)) {
               terrainTileObjectLists.push(new class implements TerrainTileObjectList {
-                models: NativeMatrix[] = _this.setupNativeMatrix((<any>terrainTileObjectListJson)["models"]);
+                terrainObjectModels: TerrainObjectModel[] = _this.setupTerrainObjectModels((<any>terrainTileObjectListJson)["terrainObjectModels"]);
                 terrainObjectConfigId = (<any>terrainTileObjectListJson)["terrainObjectConfigId"];
               });
             }
@@ -593,17 +594,19 @@ export class GameMockService {
 
   }
 
-  private setupNativeMatrix(nativeMatricesJson: any): NativeMatrix[] {
-    let nativeMatrix: NativeMatrix[] = [];
-    nativeMatricesJson.forEach((nativeMatrixJson: any) => {
-      nativeMatrix.push(new class implements NativeMatrix {
-        getColumnMajorFloat32Array(): Float32Array {
-          return new Float32Array(nativeMatrixJson.columnMajorFloat32Array);
-        }
-
+  private setupTerrainObjectModels(terrainObjectModelsJsons: any): TerrainObjectModel[] {
+    let terrainObjectModels: TerrainObjectModel[] = [];
+    terrainObjectModelsJsons.forEach((terrainObjectModelsJson: any) => {
+      terrainObjectModels.push(new class implements TerrainObjectModel {
+        model: NativeMatrix = new class implements NativeMatrix {
+          getColumnMajorFloat32Array(): Float32Array {
+            return new Float32Array(terrainObjectModelsJson.model.columnMajorFloat32Array);
+          }
+        };
+        terrainObjectId: number = terrainObjectModelsJson.terrainObjectId;
       });
     });
-    return nativeMatrix;
+    return terrainObjectModels;
   }
 
 }

@@ -7,8 +7,7 @@ import {ImageGalleryItem} from "../../gwtangular/GwtAngularFacade";
 
 @Component({
   selector: 'image-editor',
-  templateUrl: './image-editor.component.html',
-  styleUrls: ['./image-editor.component.scss']
+  templateUrl: './image-editor.component.html'
 })
 export class ImageEditorComponent extends EditorPanel implements OnInit {
   imageGalleryItems: ImageGalleryItem[] = [];

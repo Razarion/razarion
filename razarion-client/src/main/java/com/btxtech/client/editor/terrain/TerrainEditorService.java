@@ -298,7 +298,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
             terrainObjects = terrainEditorLoad.getTerrainObjects()
                     .stream()
                     .map(terrainObjectPosition -> new EditorTerrainObjectWrapper(terrainObjectPosition,
-                            terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius()))
+                            terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectConfigId()).getRadius()))
                     .collect(Collectors.toList());
             terrainObjectModelMatrices = setupModelMatrices();
             terrainEditorRenderTask.activate(cursor, editorSlopeWrapperContainer.getPolygons(), slopeMode);
