@@ -105,6 +105,10 @@ export interface TerrainTypeService {
 export interface TerrainObjectConfig {
   getThreeJsUuid(): string;
 
+  getId(): number;
+
+  getInternalName(): string;
+
   toString(): string;
 }
 

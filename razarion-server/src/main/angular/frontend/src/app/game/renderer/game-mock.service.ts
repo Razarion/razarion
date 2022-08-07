@@ -260,6 +260,14 @@ export class GameMockService {
             getThreeJsUuid(): string {
               return terrainObjectConfigJson.threeJsUuid;
             }
+
+            getId(): number {
+              return terrainObjectConfigJson.id;
+            }
+
+            getInternalName(): string {
+              return terrainObjectConfigJson.internalName;
+            }
           }
           return
         });

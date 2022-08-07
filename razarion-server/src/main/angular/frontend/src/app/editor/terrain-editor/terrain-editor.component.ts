@@ -10,7 +10,8 @@ import {
 } from "../../game/renderer/three-js-renderer-service.impl";
 import {ThreeJsModelService} from "../../game/renderer/three-js-model.service";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
-import {VertexHolder} from "../../common/components/angles-3-editor.component";
+import {Euler} from "three/src/math/Euler";
+import {Vector3} from "three/src/math/Vector3";
 
 @Component({
   selector: 'app-terrain-editor',
@@ -18,16 +19,18 @@ import {VertexHolder} from "../../common/components/angles-3-editor.component";
 })
 export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy, ThreeJsRendererServiceMouseEventListener {
   terrainEditorService: TerrainEditorService;
-  slopeMode: boolean = true;
+  slopeMode: boolean = false;
   slopes: any[] = [];
   driveways: any[] = [];
   terrainObjects: any[] = [];
   selectedSlope: any;
   selectedDriveway: any;
   selectedTerrainObject: any;
-  terrainObjectRotation = new VertexHolder(GwtInstance.newVertex(0, 0, 0));
-  terrainObjectScale = new VertexHolder(GwtInstance.newVertex(1, 1, 1));
-  terrainObjectOffset = new VertexHolder(GwtInstance.newVertex(0, 0, 0));
+  terrainObjectPosition = new Vector3(0, 0, 0);
+  terrainObjectRotation = new Euler(0, 0, 0);
+  terrainObjectScale = new Vector3(1, 1, 1);
+  terrainObjectOffset = new Vector3(0, 0, 0);
+  selectedTerrainObjectInfo: string = '';
   private createdTerrainObjects: TerrainObjectPosition[] = [];
 
   constructor(private gwtAngularService: GwtAngularService,
@@ -102,30 +105,45 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
 
   onThreeJsRendererServiceMouseEvent(threeJsRendererServiceMouseEvent: ThreeJsRendererServiceMouseEvent): void {
     if (!this.slopeMode) {
-      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.selectedTerrainObject.objectNameId.id);
-      if (terrainObjectConfig.getThreeJsUuid() === undefined) {
-        throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
-      }
-      let threeJsModel = this.threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
-      if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
-        threeJsModel.position.x = threeJsRendererServiceMouseEvent.pointOnObject3D.x;
-        threeJsModel.position.y = threeJsRendererServiceMouseEvent.pointOnObject3D.y;
-        threeJsModel.position.z = threeJsRendererServiceMouseEvent.pointOnObject3D.z;
+      if (threeJsRendererServiceMouseEvent.razarionTerrainObject3D && threeJsRendererServiceMouseEvent.razarionTerrainObjectConfigId) {
+        this.selectedTerrainObject = threeJsRendererServiceMouseEvent.razarionTerrainObject3D;
+        let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(threeJsRendererServiceMouseEvent.razarionTerrainObjectConfigId);
+        this.selectedTerrainObjectInfo = `Id: ${threeJsRendererServiceMouseEvent.razarionTerrainObjectId} Type: ${terrainObjectConfig.toString()} (${terrainObjectConfig.getId()})`
+        this.terrainObjectPosition = threeJsRendererServiceMouseEvent.razarionTerrainObject3D.position;
+        this.terrainObjectRotation = threeJsRendererServiceMouseEvent.razarionTerrainObject3D.rotation;
+        this.terrainObjectScale = threeJsRendererServiceMouseEvent.razarionTerrainObject3D.scale;
+        // TODO this.terrainObjectOffset = threeJsRendererServiceMouseEvent.razarionTerrainObject3D.???;
+      } else {
+        this.selectedTerrainObjectInfo = "New Terrain Object"
+        let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.selectedTerrainObject.objectNameId.id);
+        if (terrainObjectConfig.getThreeJsUuid() === undefined) {
+          throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
+        }
+        let threeJsModel = this.threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
+        if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
+          // TODO threeJsModel.position.x = threeJsRendererServiceMouseEvent.pointOnObject3D.x + this.terrainObjectOffset.vertex.getX();
+          // TODO threeJsModel.position.y = threeJsRendererServiceMouseEvent.pointOnObject3D.y + this.terrainObjectOffset.vertex.getY();
+          // TODO threeJsModel.position.z = threeJsRendererServiceMouseEvent.pointOnObject3D.z + this.terrainObjectOffset.vertex.getZ();
 
-        threeJsModel.rotation.x = this.terrainObjectRotation.vertex.getX();
-        threeJsModel.rotation.y = this.terrainObjectRotation.vertex.getY();
-        threeJsModel.rotation.z = this.terrainObjectRotation.vertex.getZ();
-      }
-      this.threeJsRendererServiceImpl.scene.add(threeJsModel);
+          // TODO threeJsModel.rotation.x = this.terrainObjectRotation.vertex.getX();
+          // TODO threeJsModel.rotation.y = this.terrainObjectRotation.vertex.getY();
+          // TODO threeJsModel.rotation.z = this.terrainObjectRotation.vertex.getZ();
 
-      if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
-        let terrainObjectPosition: TerrainObjectPosition = GwtInstance.newTerrainObjectPosition();
-        terrainObjectPosition.setTerrainObjectConfigId(this.selectedTerrainObject.objectNameId.id);
-        terrainObjectPosition.setPosition(GwtInstance.newDecimalPosition(threeJsRendererServiceMouseEvent.pointOnObject3D.x, threeJsRendererServiceMouseEvent.pointOnObject3D.y));
-        terrainObjectPosition.setScale(this.terrainObjectScale.vertex);
-        terrainObjectPosition.setRotation(this.terrainObjectRotation.vertex);
-        terrainObjectPosition.setOffset(this.terrainObjectOffset.vertex);
-        this.createdTerrainObjects.push(terrainObjectPosition)
+          // TODO threeJsModel.scale.x = this.terrainObjectScale.vertex.getX();
+          // TODO threeJsModel.scale.y = this.terrainObjectScale.vertex.getY();
+          // TODO threeJsModel.scale.z = this.terrainObjectScale.vertex.getZ();
+        }
+        this.threeJsRendererServiceImpl.scene.add(threeJsModel);
+
+        if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
+          let terrainObjectPosition: TerrainObjectPosition = GwtInstance.newTerrainObjectPosition();
+          terrainObjectPosition.setTerrainObjectConfigId(this.selectedTerrainObject.objectNameId.id);
+          terrainObjectPosition.setPosition(GwtInstance.newDecimalPosition(threeJsRendererServiceMouseEvent.pointOnObject3D.x, threeJsRendererServiceMouseEvent.pointOnObject3D.y));
+          // TODO terrainObjectPosition.setScale(this.terrainObjectScale.vertex);
+          // TODO  terrainObjectPosition.setRotation(this.terrainObjectRotation.vertex);
+          // TODO terrainObjectPosition.setOffset(this.terrainObjectOffset.vertex);
+          this.createdTerrainObjects.push(terrainObjectPosition)
+        }
       }
     }
   }

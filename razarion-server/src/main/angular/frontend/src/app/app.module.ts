@@ -87,7 +87,8 @@ import {ThreeJsWaterRenderService} from "./game/renderer/three-js-water-render.s
 import {EulerPropertyEditorComponent} from "./editor/render-engine/editors/euler-property-editor.component";
 import {UserdataPropertyEditorComponent} from "./editor/render-engine/editors/userdata-property-editor.component";
 import {InputTextareaModule} from "primeng/inputtextarea";
-import {Angle3EditorComponent} from "./common/components/angles-3-editor.component";
+import {AngleVertexEditorComponent} from "./editor/terrain-editor/angle-vertex-editor.component";
+import {VertexEditorComponent} from "./editor/terrain-editor/vertex-editor.component";
 
 @NgModule({
   declarations: [
@@ -138,7 +139,8 @@ import {Angle3EditorComponent} from "./common/components/angles-3-editor.compone
     CollectionSelectorComponent,
     EulerPropertyEditorComponent,
     UserdataPropertyEditorComponent,
-    Angle3EditorComponent
+    AngleVertexEditorComponent,
+    VertexEditorComponent
   ],
   imports: [
     BrowserModule,

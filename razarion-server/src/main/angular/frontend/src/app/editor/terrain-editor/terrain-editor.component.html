@@ -1,5 +1,5 @@
 <p-tabView styleClass="tabview-custom" (onChange)="onTabSelected($event)">
-  <p-tabPanel header="Slope" [selected]="true">
+  <p-tabPanel header="Slope">
     <p style="font-size: 80%">Press Insert for new Slope</p>
     <p style="font-size: 80%">Save before drawing a child</p>
     <p style="font-size: 80%">Shift & Delete & Click removes whole slope</p>
@@ -65,7 +65,7 @@
       </tr>
     </table>
   </p-tabPanel>
-  <p-tabPanel header="Terrain Objects">
+  <p-tabPanel header="Terrain Objects" [selected]="true">
     <table style="border-spacing: 0; border-collapse: separate; margin: 5px">
       <tr>
         <td>New Terrain Object</td>
@@ -76,14 +76,33 @@
         </td>
       </tr>
       <tr>
-        <td>Rotation</td>
-        <td><angle-3-editor [vertexHolder]="terrainObjectRotation"></angle-3-editor></td>
+        <td>Selection</td>
+        <td>{{selectedTerrainObjectInfo}}</td>
       </tr>
-<!--      <tr>-->
-<!--        <td>Scale</td>-->
-<!--        <td><p-slider [(ngModel)]="terrainObjectRandomScale"-->
-<!--                      [step]="0.01"></p-slider></td>-->
-<!--      </tr>-->
+      <tr>
+        <td>Position</td>
+        <td>
+          <vertex-editor [vertex]="terrainObjectPosition"></vertex-editor>
+        </td>
+      </tr>
+      <tr>
+        <td>Rotation</td>
+        <td>
+          <angle-vertex-editor [euler]="terrainObjectRotation"></angle-vertex-editor>
+        </td>
+      </tr>
+      <tr>
+        <td>Scale</td>
+        <td>
+          <vertex-editor [vertex]="terrainObjectScale"></vertex-editor>
+        </td>
+      </tr>
+      <tr>
+        <td>Offset</td>
+        <td>
+          <vertex-editor [vertex]="terrainObjectOffset"></vertex-editor>
+        </td>
+      </tr>
     </table>
   </p-tabPanel>
 </p-tabView>

@@ -28,6 +28,10 @@ import {Intersection} from "three/src/core/Raycaster";
 export class ThreeJsRendererServiceMouseEvent {
   object3D: Object3D | null = null;
   pointOnObject3D: Vector3 | null = null;
+  razarionTerrainObject3D: Object3D | null = null;
+  razarionTerrainObjectId: number | null = null;
+  razarionTerrainObjectConfigId: number | null = null;
+
 }
 
 export interface ThreeJsRendererServiceMouseEventListener {
@@ -322,8 +326,25 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     if (intersection != null) {
       newMouseEvent.object3D = intersection.object;
       newMouseEvent.pointOnObject3D = intersection.point;
+      this.recursivelySearchTerrainObject(newMouseEvent.object3D, newMouseEvent);
     }
     this.mouseListeners.forEach(mouseListener => mouseListener.onThreeJsRendererServiceMouseEvent(newMouseEvent));
+  }
+
+  private recursivelySearchTerrainObject(object3D: Object3D, newMouseEvent: ThreeJsRendererServiceMouseEvent) {
+    if ((<any>object3D).razarionTerrainObjectId) {
+      newMouseEvent.razarionTerrainObjectId = (<any>object3D).razarionTerrainObjectId;
+    }
+    if ((<any>object3D).razarionTerrainObjectConfigId) {
+      newMouseEvent.razarionTerrainObjectConfigId = (<any>object3D).razarionTerrainObjectConfigId;
+    }
+    if (newMouseEvent.razarionTerrainObjectId || newMouseEvent.razarionTerrainObjectConfigId) {
+      newMouseEvent.razarionTerrainObject3D = object3D;
+      return;
+    }
+    if (object3D.parent != null) {
+      this.recursivelySearchTerrainObject(object3D.parent, newMouseEvent);
+    }
   }
 }
 

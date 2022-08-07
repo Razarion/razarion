@@ -1,26 +1,9 @@
-import {Component, Input, OnInit} from "@angular/core";
-import {Vertex} from "../../gwtangular/GwtAngularFacade";
-import {GwtInstance} from "../../gwtangular/GwtInstance";
+import {Component, Input, OnInit, SimpleChanges} from "@angular/core";
 import {MathUtils} from "three";
-
-export class VertexHolder {
-  constructor(vertex: Vertex) {
-    this._vertex = vertex;
-  }
-
-  private _vertex: Vertex;
-
-  get vertex(): Vertex {
-    return this._vertex;
-  }
-
-  set vertex(value: Vertex) {
-    this._vertex = value;
-  }
-}
+import {Euler} from "three/src/math/Euler";
 
 @Component({
-  selector: 'angle-3-editor',
+  selector: 'angle-vertex-editor',
   template: `
     <div class="inline-flex">
       <div class="mr-2">
@@ -44,27 +27,29 @@ export class VertexHolder {
     </div>
   `
 })
-export class Angle3EditorComponent implements OnInit {
+export class AngleVertexEditorComponent implements OnInit {
   @Input()
-  vertexHolder!: VertexHolder;
+  euler!: Euler;
 
   x!: number;
   y!: number;
   z!: number;
 
   ngOnInit(): void {
-    if (this.vertexHolder != undefined) {
-      this.x = MathUtils.radToDeg(this.vertexHolder.vertex.getX());
-      this.y = MathUtils.radToDeg(this.vertexHolder.vertex.getY());
-      this.z = MathUtils.radToDeg(this.vertexHolder.vertex.getZ());
+    if (this.euler) {
+      this.update();
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    this.update();
   }
 
   onChangeX(event: any): void {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.x = event.value;
+    this.euler.x = MathUtils.degToRad(event.value);
     this.updateModel();
   }
 
@@ -72,7 +57,7 @@ export class Angle3EditorComponent implements OnInit {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.y = event.value;
+    this.euler.y = MathUtils.degToRad(event.value);
     this.updateModel();
   }
 
@@ -80,16 +65,22 @@ export class Angle3EditorComponent implements OnInit {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.z = event.value;
+    this.euler.z = MathUtils.degToRad(event.value);
     this.updateModel();
   }
 
+  private update(): void {
+    this.x = MathUtils.radToDeg(this.euler.x);
+    this.y = MathUtils.radToDeg(this.euler.y);
+    this.z = MathUtils.radToDeg(this.euler.z);
+  }
+
   private updateModel() {
-    if (this.x != undefined && this.y != undefined && this.z != undefined) {
-      this.vertexHolder.vertex = GwtInstance.newVertex(
-        MathUtils.degToRad(this.x),
-        MathUtils.degToRad(this.y),
-        MathUtils.degToRad(this.z));
-    }
+    // if (this.x != undefined && this.y != undefined && this.z != undefined) {
+    //   this.euler.vertex = GwtInstance.newVertex(
+    //     MathUtils.degToRad(this.x),
+    //     MathUtils.degToRad(this.y),
+    //     MathUtils.degToRad(this.z));
+    // }
   }
 }
