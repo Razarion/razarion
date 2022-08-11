@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {
   Alarm,
+  DecimalPosition,
   DrivewayConfig,
   EditorFrontendProvider,
   GenericEditorFrontendProvider,
@@ -22,6 +23,7 @@ import {
   TerrainMarkerService,
   TerrainObjectConfig,
   TerrainObjectModel,
+  TerrainObjectPosition,
   TerrainSlopeTile,
   TerrainTile,
   TerrainTileObjectList,
@@ -29,12 +31,14 @@ import {
   TerrainWaterTile,
   ThreeJsModelConfig,
   ThreeJsTerrainTile,
+  Vertex,
   WaterConfig
 } from "src/app/gwtangular/GwtAngularFacade";
 import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 import {HttpClient} from "@angular/common/http";
 import * as Stats from 'stats.js';
 import {URL_IMAGE} from "../../common";
+import {GwtInstance} from "../../gwtangular/GwtInstance";
 
 let staticGameConfigJson: any = {};
 
@@ -119,6 +123,49 @@ export class GameMockService {
 
     getTerrainEditorService(): TerrainEditorService {
       return new class implements TerrainEditorService {
+        getTerrainObjectPositions(): Promise<TerrainObjectPosition[]> {
+          return Promise.resolve([new class implements TerrainObjectPosition {
+            getId(): number {
+              return 8;
+            }
+
+            getOffset(): Vertex {
+              return GwtInstance.newVertex(0, 0, 0);
+            }
+
+            getPosition(): DecimalPosition {
+              return GwtInstance.newDecimalPosition(0, 0);
+            }
+
+            getRotation(): Vertex {
+              return GwtInstance.newVertex(0, 0, 0);
+            }
+
+            getScale(): Vertex {
+              return GwtInstance.newVertex(0, 0, 0);
+            }
+
+            getTerrainObjectConfigId(): number {
+              return 0;
+            }
+
+            setOffset(offset: Vertex): void {
+            }
+
+            setPosition(position: DecimalPosition): void {
+            }
+
+            setRotation(rotation: Vertex): void {
+            }
+
+            setScale(scale: Vertex): void {
+            }
+
+            setTerrainObjectConfigId(terrainObjectConfigId: number): void {
+            }
+          }]);
+        }
+
         activate(): void {
         }
 
@@ -179,8 +226,13 @@ export class GameMockService {
           return false;
         }
 
-        save(): Promise<string> {
-          return Promise.resolve("");
+        save(createdTerrainObjects: TerrainObjectPosition[], updatedTerrainObjects: TerrainObjectPosition[]): Promise<string> {
+          console.info("---- Save TerrainObjectPosition ----");
+          console.info("createdTerrainObjects");
+          console.info(createdTerrainObjects);
+          console.info("updatedTerrainObjects");
+          console.info(updatedTerrainObjects);
+          return Promise.resolve("Mock, see console");
         }
 
         setCursorCorners(cursorCorners: number): void {

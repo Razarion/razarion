@@ -1,4 +1,4 @@
-import {Component, Input} from "@angular/core";
+import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {Vector3} from "three/src/math/Vector3";
 
 @Component({
@@ -29,6 +29,8 @@ import {Vector3} from "three/src/math/Vector3";
 export class VertexEditorComponent {
   @Input()
   vertex!: Vector3;
+  @Output()
+  onInput = new EventEmitter<Vector3>();
 
   onChangeX(event: any): void {
     if (event.value != null && typeof event.value !== "number") {
@@ -55,8 +57,6 @@ export class VertexEditorComponent {
   }
 
   private updateModel() {
-    // if (this.x != undefined && this.y != undefined && this.z != undefined) {
-    //   this.vertexHolder.vertex = GwtInstance.newVertex(this.x, this.y, this.z);
-    // }
+    this.onInput.emit(this.vertex);
   }
 }

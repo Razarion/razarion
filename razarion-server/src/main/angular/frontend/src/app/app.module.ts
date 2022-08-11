@@ -89,6 +89,7 @@ import {UserdataPropertyEditorComponent} from "./editor/render-engine/editors/us
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {AngleVertexEditorComponent} from "./editor/terrain-editor/angle-vertex-editor.component";
 import {VertexEditorComponent} from "./editor/terrain-editor/vertex-editor.component";
+import {TerrainObjectPositionComponent} from "./editor/terrain-editor/terrain-object-position.component";
 
 @NgModule({
   declarations: [
@@ -140,7 +141,8 @@ import {VertexEditorComponent} from "./editor/terrain-editor/vertex-editor.compo
     EulerPropertyEditorComponent,
     UserdataPropertyEditorComponent,
     AngleVertexEditorComponent,
-    VertexEditorComponent
+    VertexEditorComponent,
+    TerrainObjectPositionComponent
   ],
   imports: [
     BrowserModule,

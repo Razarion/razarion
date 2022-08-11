@@ -1,77 +1,11 @@
-<p-tabView styleClass="tabview-custom" (onChange)="onTabSelected($event)">
-  <p-tabPanel header="Slope">
-    <p style="font-size: 80%">Press Insert for new Slope</p>
-    <p style="font-size: 80%">Save before drawing a child</p>
-    <p style="font-size: 80%">Shift & Delete & Click removes whole slope</p>
-    <table style="border-spacing: 0; border-collapse: separate; margin: 5px">
-      <tr>
-        <td><label for="cursorRadius">Cursor Radius</label></td>
-        <td>
-          <p-inputNumber id="cursorRadius"
-                         [showButtons]="true"
-                         [step]=5
-                         [ngModel]="terrainEditorService.getCursorRadius()"
-                         (onInput)="terrainEditorService.setCursorRadius($event.value)"
-                         [minFractionDigits]="2"
-                         [maxFractionDigits]="5"></p-inputNumber>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="cursorCorners">Cursor Corners</label></td>
-        <td>
-          <p-inputNumber id="cursorCorners"
-                         [showButtons]="true"
-                         [ngModel]="terrainEditorService.getCursorCorners()"
-                         (onInput)="terrainEditorService.setCursorCorners($event.value)"></p-inputNumber>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="slopeSelection">New Slope</label></td>
-        <td>
-          <p-dropdown id="slopeSelection"
-                      [options]="slopes"
-                      (onChange)="onSelectedSlopeChange($event)"
-                      [(ngModel)]="selectedSlope"
-                      optionLabel="name"></p-dropdown>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="slopeInverted">Inverted</label></td>
-        <td>
-          <p-checkbox id="slopeInverted"
-                      [binary]="true"
-                      [ngModel]="terrainEditorService.isInvertedSlope()"
-                      (onChange)="terrainEditorService.setInvertedSlope($event.checked)"></p-checkbox>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="drivewayMode">Driveway Mode</label></td>
-        <td>
-          <p-checkbox id="drivewayMode"
-                      [binary]="true"
-                      [ngModel]="terrainEditorService.isDrivewayMode()"
-                      (onChange)="terrainEditorService.setDrivewayMode($event.checked)"></p-checkbox>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="drivewaySelection">New Driveway</label></td>
-        <td>
-          <p-dropdown id="drivewaySelection"
-                      [options]="driveways"
-                      (onChange)="onSelectedDrivewayChange($event)"
-                      [(ngModel)]="selectedDriveway"
-                      optionLabel="name"></p-dropdown>
-        </td>
-      </tr>
-    </table>
-  </p-tabPanel>
-  <p-tabPanel header="Terrain Objects" [selected]="true">
+<p-tabView styleClass="tabview-custom">
+  <p-tabPanel header="Terrain Objects">
     <table style="border-spacing: 0; border-collapse: separate; margin: 5px">
       <tr>
         <td>New Terrain Object</td>
         <td>
-          <p-dropdown [options]="terrainObjects"
-                      [(ngModel)]="selectedTerrainObject"
+          <p-dropdown [options]="terrainObjectConfigs"
+                      [(ngModel)]="selectedTerrainObjectConfig"
                       optionLabel="name"></p-dropdown>
         </td>
       </tr>
@@ -80,28 +14,7 @@
         <td>{{selectedTerrainObjectInfo}}</td>
       </tr>
       <tr>
-        <td>Position</td>
-        <td>
-          <vertex-editor [vertex]="terrainObjectPosition"></vertex-editor>
-        </td>
-      </tr>
-      <tr>
-        <td>Rotation</td>
-        <td>
-          <angle-vertex-editor [euler]="terrainObjectRotation"></angle-vertex-editor>
-        </td>
-      </tr>
-      <tr>
-        <td>Scale</td>
-        <td>
-          <vertex-editor [vertex]="terrainObjectScale"></vertex-editor>
-        </td>
-      </tr>
-      <tr>
-        <td>Offset</td>
-        <td>
-          <vertex-editor [vertex]="terrainObjectOffset"></vertex-editor>
-        </td>
+        <td colspan="2"><terrain-object-position #terrainObjectPosition></terrain-object-position></td>
       </tr>
     </table>
   </p-tabPanel>

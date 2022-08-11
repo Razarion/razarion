@@ -379,7 +379,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public Promise<String> save(TerrainObjectPosition[] createdTerrainObjects) {
+    public Promise<String> save(TerrainObjectPosition[] createdTerrainObjects, TerrainObjectPosition[] updatedTerrainObjects) {
         TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
         terrainEditorUpdate.setCreatedSlopes(new ArrayList<>());
         terrainEditorUpdate.setUpdatedSlopes(new ArrayList<>());
@@ -387,7 +387,7 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
 
         // setupChangedSlopes(terrainEditorUpdate);
         terrainEditorUpdate.setCreatedTerrainObjects(Arrays.asList(createdTerrainObjects));
-        terrainEditorUpdate.setUpdatedTerrainObjects(new ArrayList<>());
+        terrainEditorUpdate.setUpdatedTerrainObjects(Arrays.asList(updatedTerrainObjects));
         terrainEditorUpdate.setDeletedTerrainObjectsIds(new ArrayList<>());
 
         if (!terrainEditorUpdate.hasAnyChanged()) {
@@ -444,6 +444,17 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
         return new Promise<>((resolve, reject) -> terrainObjectEditorController.call(
                 (RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> resolve.onInvoke(objectNameIds.toArray(new ObjectNameId[0])),
                 exceptionHandler.restErrorHandler("TerrainObjectEditorController.getObjectNameIds() failed: ")).getObjectNameIds());
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public Promise<TerrainObjectPosition[]> getTerrainObjectPositions() {
+        return new Promise<>((resolve, reject) -> terrainEditorController.call((RemoteCallback<TerrainEditorLoad>) terrainEditorLoad -> {
+            resolve.onInvoke(terrainEditorLoad.getTerrainObjects().toArray(new TerrainObjectPosition[0]));
+        }, (message, throwable) -> {
+            exceptionHandler.handleException("readTerrainEditorLoad failed: " + message, throwable);
+            reject.onInvoke("Error readTerrainEditorLoad() " + message);
+            return false;
+        }).readTerrainEditorLoad(getPlanetId()));
     }
 
     @SuppressWarnings("unused") // Called by Angular

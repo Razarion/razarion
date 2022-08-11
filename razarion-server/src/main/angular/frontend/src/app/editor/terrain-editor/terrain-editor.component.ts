@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {TerrainEditorService, TerrainObjectPosition} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
@@ -9,9 +9,8 @@ import {
   ThreeJsRendererServiceMouseEventListener
 } from "../../game/renderer/three-js-renderer-service.impl";
 import {ThreeJsModelService} from "../../game/renderer/three-js-model.service";
+import {TerrainObjectPositionComponent} from "./terrain-object-position.component";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
-import {Euler} from "three/src/math/Euler";
-import {Vector3} from "three/src/math/Vector3";
 
 @Component({
   selector: 'app-terrain-editor',
@@ -19,19 +18,14 @@ import {Vector3} from "three/src/math/Vector3";
 })
 export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy, ThreeJsRendererServiceMouseEventListener {
   terrainEditorService: TerrainEditorService;
-  slopeMode: boolean = false;
-  slopes: any[] = [];
-  driveways: any[] = [];
-  terrainObjects: any[] = [];
-  selectedSlope: any;
-  selectedDriveway: any;
-  selectedTerrainObject: any;
-  terrainObjectPosition = new Vector3(0, 0, 0);
-  terrainObjectRotation = new Euler(0, 0, 0);
-  terrainObjectScale = new Vector3(1, 1, 1);
-  terrainObjectOffset = new Vector3(0, 0, 0);
+  terrainObjectConfigs: any[] = [];
+  selectedTerrainObjectConfig: any;
   selectedTerrainObjectInfo: string = '';
+  @ViewChild('terrainObjectPosition')
+  terrainObjectPositionComponent!: TerrainObjectPositionComponent;
+  terrainObjectPositions: Map<number, TerrainObjectPosition> = new Map<number, TerrainObjectPosition>()
   private createdTerrainObjects: TerrainObjectPosition[] = [];
+  private updatedTerrainObjects: TerrainObjectPosition[] = [];
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
@@ -43,37 +37,32 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
 
   ngOnInit(): void {
     this.threeJsRendererServiceImpl.addMouseDownHandler(this);
-    this.terrainEditorService.getAllSlopes().then(slopes => {
-      this.slopes = [];
-      slopes.forEach(slope => {
-        this.slopes.push({name: slope.toString(), objectNameId: slope})
-      });
-      this.terrainEditorService.setSlope4New(this.slopes[0].objectNameId);
-      this.selectedSlope = this.slopes[0];
-    })
-    this.terrainEditorService.getAllDriveways().then(driveways => {
-      this.driveways = [];
-      driveways.forEach(driveway => {
-        this.driveways.push({name: driveway.toString(), objectNameId: driveway})
-      });
-      this.terrainEditorService.setDriveway4New(this.driveways[0].objectNameId);
-      this.selectedDriveway = this.driveways[0];
-    });
     this.terrainEditorService.getAllTerrainObjects().then(terrainObjects => {
-      this.terrainObjects = [];
+      this.terrainObjectConfigs = [];
       terrainObjects.forEach(terrainObject => {
-        this.terrainObjects.push({name: terrainObject.toString(), objectNameId: terrainObject})
+        this.terrainObjectConfigs.push({name: terrainObject.toString(), objectNameId: terrainObject})
       });
-      this.selectedTerrainObject = this.terrainObjects[0];
+      this.selectedTerrainObjectConfig = this.terrainObjectConfigs[0];
+    });
+    this.terrainEditorService.getTerrainObjectPositions().then(terrainObjectPositions => {
+      this.terrainObjectPositions.clear();
+      terrainObjectPositions.forEach(terrainObjectPosition => this.terrainObjectPositions.set(terrainObjectPosition.getId(), terrainObjectPosition));
+      this.messageService.add({
+        severity: 'success',
+        summary: "Terrain objects loaded"
+      })
+    }).catch(error => {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Load terrain object failed`,
+        detail: error,
+        sticky: true
+      });
     });
   }
 
   ngOnDestroy(): void {
     this.threeJsRendererServiceImpl.removeMouseDownHandler(this);
-  }
-
-  onTabSelected(event: any) {
-    this.slopeMode = event.index === 0;
   }
 
   onSelectedSlopeChange(event: any) {
@@ -85,7 +74,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   }
 
   save() {
-    this.terrainEditorService.save(this.createdTerrainObjects)
+    this.terrainEditorService.save(this.createdTerrainObjects, this.updatedTerrainObjects)
       .then(okString => {
         this.createdTerrainObjects = [];
         this.messageService.add({
@@ -104,46 +93,44 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   }
 
   onThreeJsRendererServiceMouseEvent(threeJsRendererServiceMouseEvent: ThreeJsRendererServiceMouseEvent): void {
-    if (!this.slopeMode) {
-      if (threeJsRendererServiceMouseEvent.razarionTerrainObject3D && threeJsRendererServiceMouseEvent.razarionTerrainObjectConfigId) {
-        this.selectedTerrainObject = threeJsRendererServiceMouseEvent.razarionTerrainObject3D;
-        let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(threeJsRendererServiceMouseEvent.razarionTerrainObjectConfigId);
-        this.selectedTerrainObjectInfo = `Id: ${threeJsRendererServiceMouseEvent.razarionTerrainObjectId} Type: ${terrainObjectConfig.toString()} (${terrainObjectConfig.getId()})`
-        this.terrainObjectPosition = threeJsRendererServiceMouseEvent.razarionTerrainObject3D.position;
-        this.terrainObjectRotation = threeJsRendererServiceMouseEvent.razarionTerrainObject3D.rotation;
-        this.terrainObjectScale = threeJsRendererServiceMouseEvent.razarionTerrainObject3D.scale;
-        // TODO this.terrainObjectOffset = threeJsRendererServiceMouseEvent.razarionTerrainObject3D.???;
-      } else {
-        this.selectedTerrainObjectInfo = "New Terrain Object"
-        let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.selectedTerrainObject.objectNameId.id);
-        if (terrainObjectConfig.getThreeJsUuid() === undefined) {
-          throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
-        }
-        let threeJsModel = this.threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
-        if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
-          // TODO threeJsModel.position.x = threeJsRendererServiceMouseEvent.pointOnObject3D.x + this.terrainObjectOffset.vertex.getX();
-          // TODO threeJsModel.position.y = threeJsRendererServiceMouseEvent.pointOnObject3D.y + this.terrainObjectOffset.vertex.getY();
-          // TODO threeJsModel.position.z = threeJsRendererServiceMouseEvent.pointOnObject3D.z + this.terrainObjectOffset.vertex.getZ();
-
-          // TODO threeJsModel.rotation.x = this.terrainObjectRotation.vertex.getX();
-          // TODO threeJsModel.rotation.y = this.terrainObjectRotation.vertex.getY();
-          // TODO threeJsModel.rotation.z = this.terrainObjectRotation.vertex.getZ();
-
-          // TODO threeJsModel.scale.x = this.terrainObjectScale.vertex.getX();
-          // TODO threeJsModel.scale.y = this.terrainObjectScale.vertex.getY();
-          // TODO threeJsModel.scale.z = this.terrainObjectScale.vertex.getZ();
-        }
-        this.threeJsRendererServiceImpl.scene.add(threeJsModel);
-
-        if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
-          let terrainObjectPosition: TerrainObjectPosition = GwtInstance.newTerrainObjectPosition();
-          terrainObjectPosition.setTerrainObjectConfigId(this.selectedTerrainObject.objectNameId.id);
-          terrainObjectPosition.setPosition(GwtInstance.newDecimalPosition(threeJsRendererServiceMouseEvent.pointOnObject3D.x, threeJsRendererServiceMouseEvent.pointOnObject3D.y));
-          // TODO terrainObjectPosition.setScale(this.terrainObjectScale.vertex);
-          // TODO  terrainObjectPosition.setRotation(this.terrainObjectRotation.vertex);
-          // TODO terrainObjectPosition.setOffset(this.terrainObjectOffset.vertex);
-          this.createdTerrainObjects.push(terrainObjectPosition)
-        }
+    if (threeJsRendererServiceMouseEvent.razarionTerrainObject3D && (<any>threeJsRendererServiceMouseEvent.razarionTerrainObject3D).razarionNewTerrainObjectPosition) {
+      // New reselected
+      let terrainObjectPosition: TerrainObjectPosition = (<any>threeJsRendererServiceMouseEvent.razarionTerrainObject3D).razarionNewTerrainObjectPosition;
+      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectConfigId());
+      this.selectedTerrainObjectInfo = `Unsaved [${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})]`
+      this.terrainObjectPositionComponent.init(threeJsRendererServiceMouseEvent.razarionTerrainObject3D!, terrainObjectPosition);
+    } else if (threeJsRendererServiceMouseEvent.razarionTerrainObject3D && threeJsRendererServiceMouseEvent.razarionTerrainObjectId) {
+      // Existing selected
+      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(threeJsRendererServiceMouseEvent.razarionTerrainObjectConfigId!);
+      this.selectedTerrainObjectInfo = `Id: ${threeJsRendererServiceMouseEvent.razarionTerrainObjectId} [${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})]`
+      let terrainObjectPosition = this.terrainObjectPositions.get(threeJsRendererServiceMouseEvent.razarionTerrainObjectId!)!;
+      this.terrainObjectPositionComponent.init(threeJsRendererServiceMouseEvent.razarionTerrainObject3D, terrainObjectPosition);
+      if (this.updatedTerrainObjects.findIndex(o => o.getId() === terrainObjectPosition.getId()) === -1) {
+        this.updatedTerrainObjects.push(terrainObjectPosition);
+      }
+    } else {
+      // Create new
+      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.selectedTerrainObjectConfig.objectNameId.id);
+      this.selectedTerrainObjectInfo = `Created [${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})]`
+      if (terrainObjectConfig.getThreeJsUuid() === undefined) {
+        throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
+      }
+      if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
+        let newObject3D = this.threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
+        newObject3D.position.x = threeJsRendererServiceMouseEvent.pointOnObject3D.x;
+        newObject3D.position.y = threeJsRendererServiceMouseEvent.pointOnObject3D.y;
+        newObject3D.position.z = threeJsRendererServiceMouseEvent.pointOnObject3D.z;
+        (<any>newObject3D).razarionTerrainObjectConfigId = this.selectedTerrainObjectConfig.objectNameId.id;
+        this.threeJsRendererServiceImpl.scene.add(newObject3D);
+        let terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
+        terrainObjectPosition.setTerrainObjectConfigId(this.selectedTerrainObjectConfig.objectNameId.id);
+        terrainObjectPosition.setPosition(GwtInstance.newDecimalPosition(threeJsRendererServiceMouseEvent.pointOnObject3D.x, threeJsRendererServiceMouseEvent.pointOnObject3D.y));
+        terrainObjectPosition.setRotation(GwtInstance.newVertex(0, 0, 0));
+        terrainObjectPosition.setScale(GwtInstance.newVertex(1, 1, 1));
+        terrainObjectPosition.setOffset(GwtInstance.newVertex(0, 0, 0));
+        (<any>newObject3D).razarionNewTerrainObjectPosition = terrainObjectPosition;
+        this.createdTerrainObjects.push(terrainObjectPosition);
+        this.terrainObjectPositionComponent.init(newObject3D, terrainObjectPosition);
       }
     }
   }

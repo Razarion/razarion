@@ -452,7 +452,7 @@ export interface AngularTreeNodeData {
 }
 
 export interface TerrainEditorService {
-  save(createdTerrainObjects: TerrainObjectPosition[]): Promise<string>;
+  save(createdTerrainObjects: TerrainObjectPosition[], updatedTerrainObjects: TerrainObjectPosition[]): Promise<string>;
 
   // --- Slope mode
   getAllSlopes(): Promise<ObjectNameId[]>;
@@ -481,16 +481,30 @@ export interface TerrainEditorService {
 
   // --- Terrain Object Mode
   getAllTerrainObjects(): Promise<ObjectNameId[]>;
+
+  getTerrainObjectPositions(): Promise<TerrainObjectPosition[]>;
 }
 
 export interface TerrainObjectPosition {
+  getId(): number;
+
+  getTerrainObjectConfigId(): number;
+
   setTerrainObjectConfigId(terrainObjectConfigId: number): void;
+
+  getPosition(): DecimalPosition;
 
   setPosition(position: DecimalPosition): void;
 
+  getScale(): Vertex;
+
   setScale(scale: Vertex): void;
 
+  getRotation(): Vertex;
+
   setRotation(rotation: Vertex): void;
+
+  getOffset(): Vertex;
 
   setOffset(offset: Vertex): void;
 }

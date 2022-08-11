@@ -43,24 +43,55 @@ export class GwtInstance {
   static newTerrainObjectPosition(): TerrainObjectPosition {
     if (environment.gwtMock) {
       return new class implements TerrainObjectPosition {
-        setTerrainObjectConfigId(terrainObjectConfigId: number): void {
+        id: number;
+        offset: Vertex;
+        position: DecimalPosition;
+        rotation: Vertex;
+        scale: Vertex;
+        terrainObjectConfigId: number;
 
+        getId(): number {
+          return this.id;
+        }
+
+        getOffset(): Vertex {
+          return this.offset;
+        }
+
+        getPosition(): DecimalPosition {
+          return this.position;
+        }
+
+        getRotation(): Vertex {
+          return this.rotation;
+        }
+
+        getScale(): Vertex {
+          return this.scale;
+        }
+
+        getTerrainObjectConfigId(): number {
+          return this.terrainObjectConfigId;
+        }
+
+        setTerrainObjectConfigId(terrainObjectConfigId: number): void {
+          this.terrainObjectConfigId = terrainObjectConfigId;
         }
 
         setPosition(position: DecimalPosition): void {
-
+          this.position = position;
         }
 
         setScale(scale: Vertex): void {
-
+          this.scale = scale;
         }
 
         setRotation(rotation: Vertex): void {
-
+          this.rotation = rotation;
         }
 
         setOffset(offset: Vertex): void {
-
+          this.offset = offset;
         }
 
       }

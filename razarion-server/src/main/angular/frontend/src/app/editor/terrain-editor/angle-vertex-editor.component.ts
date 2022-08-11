@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, SimpleChanges} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from "@angular/core";
 import {MathUtils} from "three";
 import {Euler} from "three/src/math/Euler";
 
@@ -30,6 +30,8 @@ import {Euler} from "three/src/math/Euler";
 export class AngleVertexEditorComponent implements OnInit {
   @Input()
   euler!: Euler;
+  @Output()
+  onInput = new EventEmitter<Euler>();
 
   x!: number;
   y!: number;
@@ -76,11 +78,6 @@ export class AngleVertexEditorComponent implements OnInit {
   }
 
   private updateModel() {
-    // if (this.x != undefined && this.y != undefined && this.z != undefined) {
-    //   this.euler.vertex = GwtInstance.newVertex(
-    //     MathUtils.degToRad(this.x),
-    //     MathUtils.degToRad(this.y),
-    //     MathUtils.degToRad(this.z));
-    // }
+    this.onInput.emit(this.euler);
   }
 }
