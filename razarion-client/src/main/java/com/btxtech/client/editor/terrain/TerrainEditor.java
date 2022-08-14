@@ -89,20 +89,20 @@ public class TerrainEditor extends AbstractEditor implements ViewService.ViewFie
     @DataField
     private Button showMiniMapButton;
 
-    @PostConstruct
-    public void init() {
-        terrainEditorService.activate();
-        id.textContent = Integer.toString(terrainEditorService.getPlanetConfig().getId());
-        terrainSize.textContent = DisplayUtils.handleDecimalPosition(terrainEditorService.getPlanetConfig().getSize());
-
-        slopeRadio.setChecked(terrainEditorService.isSlopeMode());
-        terrainObjectRadio.setChecked(!terrainEditorService.isSlopeMode());
-        setSlopeMode(terrainEditorService.isSlopeMode());
-
-        terrainEditorService.setTerrainPositionListener(vertex -> terrainPositionLabel.textContent = DisplayUtils.formatVertex(vertex));
-        viewService.addViewFieldListeners(this);
-        radarPanel.show();
-    }
+//    @PostConstruct
+//    public void init() {
+//        terrainEditorService.activate();
+//        id.textContent = Integer.toString(terrainEditorService.getPlanetConfig().getId());
+//        terrainSize.textContent = DisplayUtils.handleDecimalPosition(terrainEditorService.getPlanetConfig().getSize());
+//
+//        slopeRadio.setChecked(terrainEditorService.isSlopeMode());
+//        terrainObjectRadio.setChecked(!terrainEditorService.isSlopeMode());
+//        setSlopeMode(terrainEditorService.isSlopeMode());
+//
+//        terrainEditorService.setTerrainPositionListener(vertex -> terrainPositionLabel.textContent = DisplayUtils.formatVertex(vertex));
+//        viewService.addViewFieldListeners(this);
+//        radarPanel.show();
+//    }
 
     @EventHandler("slopeRadio")
     private void slopeRadioClick(ClickEvent event) {

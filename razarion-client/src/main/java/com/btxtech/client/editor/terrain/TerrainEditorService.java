@@ -394,7 +394,6 @@ public class TerrainEditorService implements EditorMouseListener, EditorKeyboard
             return new Promise<>((resolve, reject) -> resolve.onInvoke("Terrain not changed. Save not needed."));
         }
         return new Promise<>((resolve, reject) -> terrainEditorController.call(ignore -> {
-            loadFromServer();
             resolve.onInvoke("Terrain saved");
         }, (message, throwable) -> {
             exceptionHandler.handleException(message.toString(), throwable);
