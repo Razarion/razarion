@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, OnDestroy} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {AngularTreeNodeData, GwtAngularPropertyTable} from "../../gwtangular/GwtAngularFacade";
+import {AngularTreeNodeData, GwtAngularPropertyTable, ObjectNameId} from "../../gwtangular/GwtAngularFacade";
 import * as Stats from 'stats.js';
 import {environment} from 'src/environments/environment';
 import {GameMockService} from 'src/app/game/renderer/game-mock.service';
@@ -21,6 +21,7 @@ import {ThreeJsTree} from "./three-js-tree";
 import {EditorService} from "../editor-service";
 import {EulerPropertyEditorComponent} from "./editors/euler-property-editor.component";
 import {UserdataPropertyEditorComponent} from "./editors/userdata-property-editor.component";
+import {ThreeJsModelService} from "../../game/renderer/three-js-model.service";
 
 let _this: any = null;
 
@@ -34,6 +35,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   treeSelection: TreeNode<Object3D> | undefined;
   gwtAngularPropertyTable: GwtAngularPropertyTable | null = null;
   threeJsModels: any[] = [];
+  treeLoadedThreeJsModel: TreeNode<Object3D>[] = [];
+  loadedGwtAngularPropertyTable: GwtAngularPropertyTable | null = null;
   selectedThreeJsModel: any = null;
   selectedThreeJsName: string | null = null;
   selectedThreeJsObject: any | null = null;
@@ -45,7 +48,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
               gameMockService: GameMockService,
               editorService: EditorService,
               private messageService: MessageService,
-              private http: HttpClient) {
+              private http: HttpClient,
+              private threeJsModelService: ThreeJsModelService) {
     super();
     _this = this;
     if (environment.gwtMock) {
@@ -248,8 +252,26 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     }
   }
 
+  onLoadThreeJsModel(objectNameId: ObjectNameId) {
+    let threeJsModel = this.threeJsModelService.getThreeJsModel(objectNameId.id);
+    console.log(threeJsModel)
+    let threeJsTree = ThreeJsTree.createFromThreeJsModel(threeJsModel);
+    this.treeLoadedThreeJsModel = threeJsTree.getRootTreeNodes();
+  }
+
+  onTreeLoadedSelectionChanged(event: any): void {
+    let threeJsPropertyTable = new ThreeJsPropertyTable(event.node.data, () =>
+      _this.loadedGwtAngularPropertyTable.rootTreeNodes = [..._this.loadedGwtAngularPropertyTable.rootTreeNodes]
+    );
+
+    this.loadedGwtAngularPropertyTable = new class implements GwtAngularPropertyTable {
+      configId: number = -888777666;
+      rootTreeNodes: TreeNode<AngularTreeNodeData>[] = threeJsPropertyTable.getRootTreeNodes();
+    }
+  }
+
   private setupRenderEngineDisplayTree() {
-    this.threeJsTree = new ThreeJsTree(this.threeJsRendererServiceImpl);
+    this.threeJsTree = ThreeJsTree.createFromRendererService((this.threeJsRendererServiceImpl));
     this.renderEngineDisplayTree = this.threeJsTree.getRootTreeNodes();
   }
 
@@ -267,5 +289,4 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
       rootTreeNodes: TreeNode<AngularTreeNodeData>[] = threeJsPropertyTable.getRootTreeNodes();
     }
   }
-
 }

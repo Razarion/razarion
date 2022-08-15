@@ -29,7 +29,7 @@
     </p-panel>
   </div>
   <div class="mr-2">
-    <p-panel header="Save Selected">
+    <p-panel header="Save Selected to Three.js Model">
       <div class="field grid">
         <span class="col-fixed" style="width:100px">Name</span>
         <div *ngIf="selectedThreeJsName" style="border: 1px solid #304562;
@@ -48,9 +48,9 @@
         </div>
       </div>
       <div class="field grid">
-        <label for="model" class="col-fixed" style="width:100px">Three.js Model</label>
+        <label for="saveModel" class="col-fixed" style="width:100px">Three.js Model</label>
         <div class="col">
-          <p-dropdown id="model" [placeholder]="'...'" [(ngModel)]="selectedThreeJsModel" [options]="threeJsModels">
+          <p-dropdown id="saveModel" [placeholder]="'...'" [(ngModel)]="selectedThreeJsModel" [options]="threeJsModels">
           </p-dropdown>
         </div>
       </div>
@@ -68,7 +68,27 @@
       </div>
     </p-panel>
   </div>
-
+  <div class="mr-2">
+    <p-panel header="Load Three.js Model">
+      <div class="field grid">
+        <label for="loadModel" class="col-fixed" style="width:100px">Three.js Model</label>
+        <div class="col">
+          <p-dropdown id="loadModel" [placeholder]="'...'" (onChange)="onLoadThreeJsModel($event.value)" [options]="threeJsModels">
+          </p-dropdown>
+        </div>
+      </div>
+        <p-splitter layout="vertical">
+          <ng-template pTemplate>
+            <p-tree [value]="treeLoadedThreeJsModel" selectionMode="single" (onNodeSelect)="onTreeLoadedSelectionChanged($event)"
+                    scrollHeight="200px">
+            </p-tree>
+          </ng-template>
+          <ng-template pTemplate>
+            <property-table [angular-tree-node-data]=loadedGwtAngularPropertyTable></property-table>
+          </ng-template>
+        </p-splitter>
+    </p-panel>
+  </div>
   <div class="mr-2">
     <p-splitter layout="vertical">
       <ng-template pTemplate>

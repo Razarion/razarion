@@ -117,6 +117,10 @@ export class ThreeJsModelService {
         }
     }
 
+    getThreeJsModel(threeJsModelId: number): any {
+      return this.object3DMap.get(threeJsModelId);
+    }
+
     getMaterial(threeJsModelId: number): Material {
         if(threeJsModelId === undefined) {
           throw new Error(`Material undefined`);

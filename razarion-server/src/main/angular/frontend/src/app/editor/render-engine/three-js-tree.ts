@@ -5,23 +5,38 @@ import {ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-
 export class ThreeJsTree {
   private rootTreeNodes: TreeNode<Object3D>[] = [];
 
-  constructor(threeJsRendererServiceImpl: ThreeJsRendererServiceImpl) {
+  static createFromRendererService(threeJsRendererServiceImpl: ThreeJsRendererServiceImpl): ThreeJsTree {
+    let threeJsTree: ThreeJsTree = new ThreeJsTree()
     let camera = threeJsRendererServiceImpl.camera;
-    this.rootTreeNodes.push(new class implements TreeNode {
+    threeJsTree.rootTreeNodes.push(new class implements TreeNode {
       label = camera.name;
       icon = 'pi pi-video';
       data = camera;
     });
-    this.rootTreeNodes.push(this.recursivelyAddTreeNodes(threeJsRendererServiceImpl.scene));
-    this.rootTreeNodes.push(this.recursivelyAddTreeNodes(threeJsRendererServiceImpl.slopeScene));
+    threeJsTree.rootTreeNodes.push(threeJsTree.recursivelyAddTreeNodes(threeJsRendererServiceImpl.scene));
+    threeJsTree.rootTreeNodes.push(threeJsTree.recursivelyAddTreeNodes(threeJsRendererServiceImpl.slopeScene));
+    return threeJsTree;
+  }
+
+  static createFromThreeJsModel(object3D: Object3D): ThreeJsTree {
+    let threeJsTree: ThreeJsTree = new ThreeJsTree()
+    threeJsTree.rootTreeNodes.push(threeJsTree.recursivelyAddTreeNodes(object3D));
+    return threeJsTree;
   }
 
   public findTreeNode(object3D: Object3D): TreeNode<Object3D> | undefined {
     return this.findTreeNodeRecursively(object3D, this.rootTreeNodes);
   }
 
-  getRootTreeNodes() {
+  getRootTreeNodes(): TreeNode<Object3D>[] {
     return this.rootTreeNodes;
+  }
+
+  public expandParent(threeNode: TreeNode | undefined) {
+    if (threeNode) {
+      threeNode.expanded = true;
+      this.expandParent(threeNode.parent);
+    }
   }
 
   private recursivelyAddTreeNodes(object3D: Object3D, parentTreeNode?: TreeNode<Object3D>): TreeNode<Object3D> {
@@ -55,12 +70,5 @@ export class ThreeJsTree {
       }
     }
     return undefined;
-  }
-
-  public expandParent(threeNode: TreeNode | undefined) {
-    if (threeNode) {
-      threeNode.expanded = true;
-      this.expandParent(threeNode.parent);
-    }
   }
 }

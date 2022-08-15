@@ -270,18 +270,18 @@ export class GameMockService {
   };
 
   threeJsModels: ObjectNameId[] = [new class implements ObjectNameId {
-    id = 1;
+    id = 8883;
     internalName = "3D Model Palm Tree";
 
     toString(): string {
-      return "3D Model Palm Tree (1)"
+      return "3D Model Palm Tree (8883)"
     }
   }, new class implements ObjectNameId {
-    id = 2;
+    id = 8884;
     internalName = "Rock Pack 3D";
 
     toString(): string {
-      return "Rock Pack 3D (2)"
+      return "Rock Pack 3D (8884)"
     }
   }];
 
