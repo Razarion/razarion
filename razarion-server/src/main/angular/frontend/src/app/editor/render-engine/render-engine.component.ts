@@ -15,7 +15,7 @@ import {
 import {MessageService, TreeNode} from 'primeng/api';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {URL_THREE_JS_MODEL_EDITOR} from 'src/app/common';
-import {BufferAttribute, BufferGeometry, Mesh, Object3D, REVISION, Scene} from 'three';
+import {BufferAttribute, BufferGeometry, Mesh, Object3D, REVISION, Scene, Vector3} from 'three';
 import {ThreeJsPropertyTable} from "./three-js-property-table";
 import {ThreeJsTree} from "./three-js-tree";
 import {EditorService} from "../editor-service";
@@ -31,6 +31,7 @@ let _this: any = null;
 })
 export class RenderEngineComponent extends EditorPanel implements OnDestroy, AfterViewInit, ThreeJsRendererServiceMouseEventListener {
   threeJsRevision: any = REVISION;
+  centerGroundPosition: Vector3 | undefined;
   renderEngineDisplayTree: TreeNode<Object3D>[] = [];
   treeSelection: TreeNode<Object3D> | undefined;
   gwtAngularPropertyTable: GwtAngularPropertyTable | null = null;
@@ -268,6 +269,10 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
       configId: number = -888777666;
       rootTreeNodes: TreeNode<AngularTreeNodeData>[] = threeJsPropertyTable.getRootTreeNodes();
     }
+  }
+
+  onShowCenterPosition() {
+    this.centerGroundPosition = this.threeJsRendererServiceImpl.setupCenterGroundPosition();
   }
 
   private setupRenderEngineDisplayTree() {

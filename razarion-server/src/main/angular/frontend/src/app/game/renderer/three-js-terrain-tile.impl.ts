@@ -90,6 +90,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
               private threeJsModelService: ThreeJsModelService,
               private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.group.name = `TerrainTile ${terrainTile.getIndex().toString()}`;
+
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
         let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
@@ -112,6 +113,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         this.group.add(cube);
       });
     }
+
     if (terrainTile.getTerrainSlopeTiles() !== null) {
       const _this = this;
       terrainTile.getTerrainSlopeTiles().forEach(terrainSlopeTile => {
@@ -136,7 +138,9 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         }
       });
     }
+
     this.threeJsWaterRenderService.setup(terrainTile.getTerrainWaterTiles(), this.group);
+
     if (terrainTile.getTerrainTileObjectLists() !== null) {
       const _this = this;
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
@@ -154,11 +158,14 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
               m[2], m[6], m[10], m[14],
               m[3], m[7], m[11], m[15]
             );
+            let terrainObject = new Group();
+            (<any>terrainObject).razarionTerrainObjectId = terrainObjectModel.terrainObjectId;
+            (<any>terrainObject).razarionTerrainObjectConfigId = terrainTileObjectList.terrainObjectConfigId;
+            terrainObject.name = `Terrain Object  ${terrainObjectModel.terrainObjectId}`;
+            terrainObject.applyMatrix4(matrix4);
+            _this.group.add(terrainObject);
             let threeJsModel = threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
-            threeJsModel.applyMatrix4(matrix4);
-            (<any>threeJsModel).razarionTerrainObjectId = terrainObjectModel.terrainObjectId;
-            (<any>threeJsModel).razarionTerrainObjectConfigId = terrainTileObjectList.terrainObjectConfigId;
-            _this.group.add(threeJsModel);
+            terrainObject.add(threeJsModel)
           });
         } catch (error) {
           // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);

@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { URL_THREE_JS_MODEL } from "src/app/common";
 import { ThreeJsModelConfig } from "src/app/gwtangular/GwtAngularFacade";
-import {Group, Material, Mesh, Object3D} from "three";
+import {Group, Material, Mesh, Object3D, Vector3} from "three";
 import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import {Euler} from "three/src/math/Euler";
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 @Injectable()
@@ -50,33 +51,29 @@ export class ThreeJsModelService {
             throw new Error(`Not initialized. Can not clone '${threeJsUuid}`);
         }
 
-        let found = null;
         for (let object3D of this.object3Ds) {
-            found = this.findInObject3D(threeJsUuid, object3D);
+          let found = this.findInObject3D(threeJsUuid, object3D);
             if(found) {
-              break;
+              return this.createThreeJsModel(found);
             }
         }
-        if (found != null) {
-            return this.createThreeJsModel(found, threeJsUuid);
-        }
 
-        let _this = this;
-        function gatherThreeJsUserDataNames() {
-            let threeJsUserDataNames: string[] = []
-            for (let object3D of _this.object3Ds) {
-                _this.iterateOverObject3D4Names(object3D, threeJsUserDataNames);
-            }
-            return threeJsUserDataNames;
-        }
+        let threeJsUserDataNames: string[] = []
+        this.object3Ds.forEach(object3D => {
+          this.iterateOverObject3D4Names(object3D, threeJsUserDataNames);
+          threeJsUserDataNames.push("\n");
+        });
 
-        throw new Error(`No Object3D for threeJsUuid '${threeJsUuid}'. Available threeJsUuids in Object3Ds userData.name [${gatherThreeJsUserDataNames()}]`);
+        throw new Error(`No Object3D for threeJsUuid '${threeJsUuid}'. Available threeJsUuids in Object3Ds userData.name [${threeJsUserDataNames}]`);
     }
 
-    createThreeJsModel(input: Object3D, name: string): Object3D {
+    createThreeJsModel(input: Object3D): Object3D {
+        let parentTransformation = ThreeJsModelService.setupParentTransformationRecursively(input);
+
         let clone = input.clone();
-        clone.name = name;
         this.deepSetup(clone);
+        clone.scale.copy(parentTransformation.scale);
+        clone.rotation.copy(parentTransformation.rotation);
         return clone;
     }
 
@@ -97,11 +94,12 @@ export class ThreeJsModelService {
         if (object3D.userData.name === threeJsUuid) {
             return object3D;
         }
-        const children = object3D.children;
 
-        for (let i = 0, l = children.length; i < l; i++) {
-            const child = children[i];
-            return this.findInObject3D(threeJsUuid, child);
+        for (let children of object3D.children) {
+            let found = this.findInObject3D(threeJsUuid, children);
+            if(found) {
+                return found;
+            }
         }
         return null;
     }
@@ -110,11 +108,7 @@ export class ThreeJsModelService {
         if (object3D.userData.name !== undefined) {
             userDataName.push(object3D.userData.name);
         }
-        const children = object3D.children;
-        for (let i = 0, l = children.length; i < l; i++) {
-            const child = children[i];
-            return this.iterateOverObject3D4Names(child, userDataName);
-        }
+        object3D.children.forEach(child => this.iterateOverObject3D4Names(child, userDataName));
     }
 
     getThreeJsModel(threeJsModelId: number): any {
@@ -148,14 +142,25 @@ export class ThreeJsModelService {
             return threeJsObject.material;
         }
 
-        if(threeJsObject.children !== undefined) {
-          const length = threeJsObject.children.length;
-          for (let i = 0; i < length; i++) {
-            return this.findMaterialRecursively(threeJsObject.children[i]);
-          }
+        for (let child of threeJsObject.children) {
+            let found = this.findMaterialRecursively(child);
+            if(found) {
+                return found;
+           }
         }
-
         return undefined;
     }
 
+  static setupParentTransformationRecursively(object3D: Object3D): {scale: Vector3; rotation: Euler} {
+      if(object3D.parent === null) {
+        return {scale: object3D.scale, rotation: object3D.rotation} ;
+      }
+
+      let parentTransformation = ThreeJsModelService.setupParentTransformationRecursively(object3D.parent);
+      parentTransformation.scale.multiply(object3D.scale);
+      parentTransformation.rotation.set(parentTransformation.rotation.x + object3D.rotation.x,
+        parentTransformation.rotation.y + object3D.rotation.y,
+        parentTransformation.rotation.z + object3D.rotation.z);
+      return parentTransformation;
+  }
 }

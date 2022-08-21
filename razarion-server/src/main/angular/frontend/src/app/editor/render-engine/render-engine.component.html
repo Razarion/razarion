@@ -26,6 +26,13 @@
           {{threeJsRevision}}
         </div>
       </div>
+      <div class="field grid">
+        Position <p-button type="button" icon="pi pi-eye" styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+                                   (onClick)="onShowCenterPosition()"></p-button>
+        <div class="col">
+          {{centerGroundPosition?.x | number}} : {{centerGroundPosition?.y | number}} (z:{{centerGroundPosition?.z | number}})
+        </div>
+      </div>
     </p-panel>
   </div>
   <div class="mr-2">

@@ -191,7 +191,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   setViewFieldCenter(x: number, y: number): void {
-    let currentViewFieldCenter = this.setupGroundPosition(0, 0);
+    let currentViewFieldCenter = this.setupCenterGroundPosition();
     let newFiledCenter = new Vector2(x, y);
     let delta = newFiledCenter.sub(new Vector2(currentViewFieldCenter.x, currentViewFieldCenter.y));
     this.camera.position.x += delta.x;
@@ -278,11 +278,15 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     return intersections[0];
   }
 
+  public setupCenterGroundPosition(): Vector3 {
+    return this.setupGroundPosition(0, 0);
+  }
+
   public addToSceneEditor(scene: Scene) {
     let group = new Group();
     group.add(scene);
     group.name = "Imported";
-    let groundPos = this.setupGroundPosition(0, 0);
+    let groundPos = this.setupCenterGroundPosition();
     group.position.set(groundPos.x, groundPos.y, groundPos.z);
     this.scene.add(group);
   }
