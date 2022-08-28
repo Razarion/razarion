@@ -6,11 +6,14 @@ import {MathUtils} from "three";
   selector: 'euler-property-editor',
   template: `
     X
-    <p-inputNumber [ngModel]="x" [size]="1" [maxlength]="3" (onInput)="onUpdateX($event)"></p-inputNumber>
+    <p-inputNumber [ngModel]="x" [size]="1" [maxlength]="3" (onInput)="onUpdateX($event)"
+                   [showButtons]="true"></p-inputNumber>
     Y
-    <p-inputNumber [ngModel]="y" [size]="1" [maxlength]="3" (onInput)="onUpdateY($event)"></p-inputNumber>
+    <p-inputNumber [ngModel]="y" [size]="1" [maxlength]="3" (onInput)="onUpdateY($event)"
+                   [showButtons]="true"></p-inputNumber>
     Z
-    <p-inputNumber [ngModel]="z" [size]="1" [maxlength]="3" (onInput)="onUpdateZ($event)"></p-inputNumber>
+    <p-inputNumber [ngModel]="z" [size]="1" [maxlength]="3" (onInput)="onUpdateZ($event)"
+                   [showButtons]="true"></p-inputNumber>
   `
 })
 export class EulerPropertyEditorComponent implements OnInit {

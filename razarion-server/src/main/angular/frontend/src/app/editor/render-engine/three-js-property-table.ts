@@ -1,6 +1,6 @@
 import {TreeNode} from "primeng/api";
 import {AngularTreeNodeData, GwtAngularPropertyTable} from "../../gwtangular/GwtAngularFacade";
-import {Euler, Group, Object3D, RepeatWrapping, Texture} from "three";
+import {Euler, Group, Object3D, RepeatWrapping, Texture, Vector3} from "three";
 
 const IGNORED_THREE_JS_OBJECT_PROPERTIES: string[] = ["parent", "children", "up", "_listeners", "_onChangeCallback"];
 
@@ -50,10 +50,12 @@ export class ThreeJsPropertyTable {
       case 'HTMLImageElement':
       case 'ImageBitmap':
         return 'image-property-editor';
+      case Vector3.name:
+        return 'vector3-property-editor'
       case Euler.name:
         return 'euler-property-editor'
     }
-    if(name === 'userData') {
+    if (name === 'userData') {
       return 'userdata-property-editor'
     }
     return null;

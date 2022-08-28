@@ -9,6 +9,7 @@ import {Euler} from "three/src/math/Euler";
       <div class="mr-2">
         <p-inputNumber [ngModel]="x" prefix="x: " [minFractionDigits]="1"
                        [size]=5 (onInput)="onChangeX($event)"
+                       [showButtons]="true"
                        [maxFractionDigits]="6">
         </p-inputNumber>
       </div>

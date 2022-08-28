@@ -22,6 +22,7 @@ import {EditorService} from "../editor-service";
 import {EulerPropertyEditorComponent} from "./editors/euler-property-editor.component";
 import {UserdataPropertyEditorComponent} from "./editors/userdata-property-editor.component";
 import {ThreeJsModelService} from "../../game/renderer/three-js-model.service";
+import {Vector3PropertyEditorComponent} from "./editors/vector3-property-editor.component";
 
 let _this: any = null;
 
@@ -72,6 +73,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
 
     threeJsRendererServiceImpl.addMouseDownHandler(this);
 
+    editorService.registerPropertyEditorComponent(Vector3PropertyEditorComponent)
     editorService.registerPropertyEditorComponent(EulerPropertyEditorComponent)
     editorService.registerPropertyEditorComponent(UserdataPropertyEditorComponent)
   }

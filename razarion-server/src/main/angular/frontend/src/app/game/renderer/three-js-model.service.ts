@@ -8,8 +8,8 @@ import {Euler} from "three/src/math/Euler";
 
 @Injectable()
 export class ThreeJsModelService {
-    private object3Ds: Object3D[] = [];
-    private object3DMap: Map<number, any> = new Map();
+    private threeJsModels: Object3D[] = [];
+    private threeJsModelMap: Map<number, any> = new Map();
 
     init(threeJsModelConfigs: ThreeJsModelConfig[]): Promise<void> {
       const _this = this;
@@ -27,8 +27,8 @@ export class ThreeJsModelService {
                 threeJsModelConfigs.forEach(threeJsModelConfig => {
                     loader.load(`${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`,
                         (gltf: GLTF) => {
-                            _this.object3Ds.push(gltf.scene);
-                            _this.object3DMap.set(threeJsModelConfig.getId(), gltf.scene);
+                            _this.threeJsModels.push(gltf.scene);
+                            _this.threeJsModelMap.set(threeJsModelConfig.getId(), gltf.scene);
                             handleResolve();
                         },
                         (progressEvent: ProgressEvent) => {
@@ -47,11 +47,11 @@ export class ThreeJsModelService {
     }
 
     cloneObject3D(threeJsUuid: string): Object3D {
-        if (this.object3Ds.length === 0) {
+        if (this.threeJsModels.length === 0) {
             throw new Error(`Not initialized. Can not clone '${threeJsUuid}`);
         }
 
-        for (let object3D of this.object3Ds) {
+        for (let object3D of this.threeJsModels) {
           let found = this.findInObject3D(threeJsUuid, object3D);
             if(found) {
               return this.createThreeJsModel(found);
@@ -59,7 +59,7 @@ export class ThreeJsModelService {
         }
 
         let threeJsUserDataNames: string[] = []
-        this.object3Ds.forEach(object3D => {
+        this.threeJsModels.forEach(object3D => {
           this.iterateOverObject3D4Names(object3D, threeJsUserDataNames);
           threeJsUserDataNames.push("\n");
         });
@@ -112,7 +112,7 @@ export class ThreeJsModelService {
     }
 
     getThreeJsModel(threeJsModelId: number): any {
-      return this.object3DMap.get(threeJsModelId);
+      return this.threeJsModelMap.get(threeJsModelId);
     }
 
     getMaterial(threeJsModelId: number): Material {
@@ -125,7 +125,7 @@ export class ThreeJsModelService {
             gwtIssueNumber = <number>Object.values(threeJsModelId)[0]; // GWT rubbish
         }
 
-        let threeJsObject = this.object3DMap.get(gwtIssueNumber);
+        let threeJsObject = this.threeJsModelMap.get(gwtIssueNumber);
         if(threeJsObject === undefined) {
           throw new Error(`No Material for threeJsModelId '${gwtIssueNumber}'.`);
         }
