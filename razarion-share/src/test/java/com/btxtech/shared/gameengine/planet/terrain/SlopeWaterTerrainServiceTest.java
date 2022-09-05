@@ -55,7 +55,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                                 GameTestHelper.createTerrainSlopeCorner(100, 110, null),
                                 GameTestHelper.createTerrainSlopeCorner(50, 110, null))));
 
-        setupTerrainTypeService(slopeConfigs, null, waterConfigs, null, null, terrainSlopePositions, null, null, null);
+        setupTerrainTypeService(slopeConfigs, null, waterConfigs, null, null, terrainSlopePositions, null, null, null, null);
 
         // showDisplay();
 
@@ -100,7 +100,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                                 GameTestHelper.createTerrainSlopeCorner(59.750, 84.000, null),
                                 GameTestHelper.createTerrainSlopeCorner(19.750, 82.000, null))));
 
-        setupTerrainTypeService(slopeConfigs, null, waterConfigs, null, null, terrainSlopePositions, null, null, null);
+        setupTerrainTypeService(slopeConfigs, null, waterConfigs, null, null, terrainSlopePositions, null, null, null, null);
 
         // showDisplay();
 
@@ -151,7 +151,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                                 GameTestHelper.createTerrainSlopeCorner(80, 110, null),
                                 GameTestHelper.createTerrainSlopeCorner(30, 110, null)))
         );
-        setupTerrainTypeService(slopeConfigs, null, waterConfigs, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, waterConfigs, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null, null, null);
 
         // showDisplay();
 

@@ -136,6 +136,6 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         terrainSlopePositions.add(terrainSlopePosition);
 
-        setupTerrainTypeService(slopeConfigs, null, waterConfigs, null, null, terrainSlopePositions, null, null, null);
+        setupTerrainTypeService(slopeConfigs, null, waterConfigs, null, null, terrainSlopePositions, null, null, null, null);
     }
 }

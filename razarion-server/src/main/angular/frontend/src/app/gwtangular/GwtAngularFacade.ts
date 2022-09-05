@@ -11,6 +11,7 @@ export abstract class GwtAngularFacade {
   threeJsRendererServiceAccess!: ThreeJsRendererServiceAccess;
   inputService!: InputService;
   terrainTypeService!: TerrainTypeService;
+  threeJsModelPackService!: ThreeJsModelPackService;
 
   abstract onCrash(): void;
 }
@@ -101,9 +102,13 @@ export interface TerrainTypeService {
   getWaterConfig(waterConfigId: number): WaterConfig;
 }
 
+export interface ThreeJsModelPackService {
+  getThreeJsModelPackConfig(id: number): ThreeJsModelPackConfig;
+}
+
 // ---------- Configs ----------
 export interface TerrainObjectConfig {
-  getThreeJsUuid(): string;
+  getThreeJsModelPackConfigId(): number;
 
   getId(): number;
 
@@ -225,6 +230,22 @@ export interface ThreeJsModelConfig {
   getId(): number;
 
   getInternalName(): string;
+}
+
+export interface ThreeJsModelPackConfig {
+  getId(): number;
+
+  getInternalName(): string;
+
+  getThreeJsModelId(): number;
+
+  getNamePath(): string[];
+
+  getPosition(): Vertex;
+
+  getScale(): Vertex;
+
+  getRotation(): Vertex;
 }
 
 // ---------- Renderer ----------

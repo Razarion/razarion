@@ -39,7 +39,7 @@ public class TerrainObjectEntity {
                 .id(id)
                 .internalName(internalName)
                 .radius(radius)
-                .threeJsUuid(threeJsUuid);
+                .threeJsModelPackConfigId(-9999999); // TODO
         if (colladaEntity != null) {
             terrainObjectConfig.setShape3DId(colladaEntity.getId());
         }
@@ -50,7 +50,7 @@ public class TerrainObjectEntity {
         this.internalName = terrainObjectConfig.getInternalName();
         this.colladaEntity = colladaEntity;
         radius = terrainObjectConfig.getRadius();
-        threeJsUuid = terrainObjectConfig.getThreeJsUuid();
+        // TODO threeJsUuid = terrainObjectConfig.getThreeJsModelPackConfigId();
     }
 
     @Override

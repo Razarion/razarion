@@ -112,11 +112,11 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
       // Create new
       let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.selectedTerrainObjectConfig.objectNameId.id);
       this.selectedTerrainObjectInfo = `Created [${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})]`
-      if (terrainObjectConfig.getThreeJsUuid() === undefined) {
-        throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
+      if (terrainObjectConfig.getThreeJsModelPackConfigId() === undefined) {
+        throw new Error(`TerrainObjectConfig has no threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
       }
       if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
-        let newObject3D = this.threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
+        let newObject3D = this.threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsModelPackConfigId());
         newObject3D.position.x = threeJsRendererServiceMouseEvent.pointOnObject3D.x;
         newObject3D.position.y = threeJsRendererServiceMouseEvent.pointOnObject3D.y;
         newObject3D.position.z = threeJsRendererServiceMouseEvent.pointOnObject3D.z;

@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
+import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -115,15 +116,50 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 GameTestHelper.createTerrainSlopeCorner(20, 50, null)));
         terrainSlopePositions.add(razarionIndustries);
 
+
+        List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
+                new ThreeJsModelConfig().id(8881),
+                new ThreeJsModelConfig().id(8882),
+                new ThreeJsModelConfig().id(8883),
+                new ThreeJsModelConfig().id(8884)
+        );
+
+        List<ThreeJsModelPackConfig> threeJsModelPackConfigs = Arrays.asList(
+                new ThreeJsModelPackConfig()
+                        .id(1)
+                        .threeJsModelId(8881)
+                        .internalName("Pack 8881 1")
+                        .position(new Vertex(0, 0, 0))
+                        .scale(new Vertex(0.01, 0.01, 0.01))
+                        .rotation(new Vertex(0, 0, 0))
+                        .namePath(new String[]{"Sketchfab_Scene", "Sketchfab_model", "de49941573ca4a6cb3fbcf3e4d72f085fbx", "RootNode", "Mid_4", "Object_4", "Mid_4_MID_0"}),
+                new ThreeJsModelPackConfig()
+                        .id(2)
+                        .threeJsModelId(8881)
+                        .internalName("Pack 8881 2")
+                        .position(new Vertex(0, 0, 0))
+                        .scale(new Vertex(0.01, 0.01, 0.01))
+                        .rotation(new Vertex(0, 0, 0))
+                        .namePath(new String[]{"o1", "o2", "03"}),
+                new ThreeJsModelPackConfig()
+                        .id(3)
+                        .threeJsModelId(8881)
+                        .internalName("Pack 8881 3")
+                        .position(new Vertex(0, 0, 0))
+                        .scale(new Vertex(0.01, 0.01, 0.01))
+                        .rotation(new Vertex(0, 0, 0))
+                        .namePath(new String[]{"o1", "o2", "03"})
+        );
+
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
-        terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1).threeJsUuid("Palm Tree"));
-        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5).threeJsUuid("Palm Tree"));
-        terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10).threeJsUuid("Palm Tree"));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1).threeJsModelPackConfigId(1));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5).threeJsModelPackConfigId(2));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10).threeJsModelPackConfigId(3));
 
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
                 new TerrainObjectPosition().id(1).terrainObjectConfigId(1).position(new DecimalPosition(10, 10)).scale(new Vertex(1.1, 1.1, 1.1)).rotation(new Vertex(0, 0, 0)),
                 new TerrainObjectPosition().id(2).terrainObjectConfigId(1).position(new DecimalPosition(20, 10)).scale(new Vertex(1.3, 1.3, 1.3)).rotation(new Vertex(Math.toRadians(90), 0, 0)),
-                new TerrainObjectPosition().id(3).terrainObjectConfigId(1).position(new DecimalPosition(30, 10)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, Math.toRadians(90), 0)),
+                new TerrainObjectPosition().id(3).terrainObjectConfigId(1).position(new DecimalPosition(30, 10)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
                 new TerrainObjectPosition().id(4).terrainObjectConfigId(3).position(new DecimalPosition(40, 10)).scale(new Vertex(0.8, 0.8, 0.8)).rotation(new Vertex(0, 0, Math.toRadians(90))),
                 new TerrainObjectPosition().id(5).terrainObjectConfigId(3).position(new DecimalPosition(50, 10)).scale(new Vertex(0.5, 0.5, 0.5)).rotation(new Vertex(Math.toRadians(90), Math.toRadians(90), 0)),
                 new TerrainObjectPosition().id(6).terrainObjectConfigId(3).position(new DecimalPosition(60, 10)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, Math.toRadians(90), Math.toRadians(90))),
@@ -131,14 +167,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 new TerrainObjectPosition().id(8).terrainObjectConfigId(2).position(new DecimalPosition(200, 160)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0))
         );
 
-        List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
-                // new ThreeJsModelConfig().id(8881),
-                new ThreeJsModelConfig().id(8882),
-                new ThreeJsModelConfig().id(8883),
-                new ThreeJsModelConfig().id(8884)
-        );
-
-        setupTerrainTypeService(slopeConfigs, null, waterConfigs, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, groundConfig, threeJsModelConfigs);
+        setupTerrainTypeService(slopeConfigs, null, waterConfigs, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, groundConfig, threeJsModelConfigs, threeJsModelPackConfigs);
 
         // showDisplay();
 

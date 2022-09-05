@@ -16,7 +16,8 @@ public class TerrainObjectConfig implements Config {
     @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer shape3DId;
     private double radius;
-    private String threeJsUuid;
+    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL_PACK)
+    private Integer threeJsModelPackConfigId;
 
     @Override
     public int getId() {
@@ -49,12 +50,12 @@ public class TerrainObjectConfig implements Config {
         this.radius = radius;
     }
 
-    public String getThreeJsUuid() {
-        return threeJsUuid;
+    public Integer getThreeJsModelPackConfigId() {
+        return threeJsModelPackConfigId;
     }
 
-    public void setThreeJsUuid(String threeJsUuid) {
-        this.threeJsUuid = threeJsUuid;
+    public void setThreeJsModelPackConfigId(Integer threeJsModelPackConfigId) {
+        this.threeJsModelPackConfigId = threeJsModelPackConfigId;
     }
 
     @Override
@@ -95,8 +96,8 @@ public class TerrainObjectConfig implements Config {
         return this;
     }
 
-    public TerrainObjectConfig threeJsUuid(String threeJsUuid) {
-        setThreeJsUuid(threeJsUuid);
+    public TerrainObjectConfig threeJsModelPackConfigId(Integer threeJsModelPackConfigId) {
+        setThreeJsModelPackConfigId(threeJsModelPackConfigId);
         return this;
     }
 
@@ -107,7 +108,7 @@ public class TerrainObjectConfig implements Config {
                 ", internalName='" + internalName + '\'' +
                 ", shape3DId=" + shape3DId +
                 ", radius=" + radius +
-                ", threeJsUuid='" + threeJsUuid + '\'' +
+                ", threeJsModelPackConfigId='" + threeJsModelPackConfigId + '\'' +
                 '}';
     }
 }

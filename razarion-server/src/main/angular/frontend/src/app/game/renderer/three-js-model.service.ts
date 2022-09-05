@@ -1,18 +1,20 @@
-import { Injectable } from "@angular/core";
-import { URL_THREE_JS_MODEL } from "src/app/common";
-import { ThreeJsModelConfig } from "src/app/gwtangular/GwtAngularFacade";
-import {Group, Material, Mesh, Object3D, Vector3} from "three";
-import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import {Euler} from "three/src/math/Euler";
+import {Injectable} from "@angular/core";
+import {URL_THREE_JS_MODEL} from "src/app/common";
+import {ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
+import {Group, Material, Object3D} from "three";
+import {GLTF, GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
+import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 @Injectable()
 export class ThreeJsModelService {
-    private threeJsModels: Object3D[] = [];
     private threeJsModelMap: Map<number, any> = new Map();
+    private gwtAngularService!: GwtAngularService;
 
-    init(threeJsModelConfigs: ThreeJsModelConfig[]): Promise<void> {
+    init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
       const _this = this;
+      _this.gwtAngularService = gwtAngularService;
 
       return new Promise<void>((resolve, reject) => {
             try {
@@ -27,7 +29,6 @@ export class ThreeJsModelService {
                 threeJsModelConfigs.forEach(threeJsModelConfig => {
                     loader.load(`${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`,
                         (gltf: GLTF) => {
-                            _this.threeJsModels.push(gltf.scene);
                             _this.threeJsModelMap.set(threeJsModelConfig.getId(), gltf.scene);
                             handleResolve();
                         },
@@ -46,40 +47,65 @@ export class ThreeJsModelService {
         });
     }
 
-    cloneObject3D(threeJsUuid: string): Object3D {
-        if (this.threeJsModels.length === 0) {
-            throw new Error(`Not initialized. Can not clone '${threeJsUuid}`);
+    cloneObject3D(threeJsModelPackConfigId: number): Object3D {
+        let threeJsModelPackConfig = this.gwtAngularService.gwtAngularFacade.threeJsModelPackService.getThreeJsModelPackConfig(threeJsModelPackConfigId);
+
+        let threeJsModel: Object3D = this.getThreeJsModel(threeJsModelPackConfig.getThreeJsModelId());
+
+        threeJsModel = this.removeAuxScene(threeJsModel);
+
+        let object3D = this.findObject3D(threeJsModel, threeJsModelPackConfig.getNamePath());
+
+        if(object3D === null) {
+            throw new Error(`No Object3D for threeJsModelPackConfigId '${threeJsModelPackConfigId}'`);
         }
 
-        for (let object3D of this.threeJsModels) {
-          let found = this.findInObject3D(threeJsUuid, object3D);
-            if(found) {
-              return this.createThreeJsModel(found);
+        let positionScale = new Group();
+        positionScale.name = `ThreeJsModelPackConfigId position scale ${threeJsModelPackConfig.getInternalName()} (${threeJsModelPackConfig.getId()})`;
+        positionScale.position.set(
+          threeJsModelPackConfig.getPosition().getX(),
+          threeJsModelPackConfig.getPosition().getY(),
+          threeJsModelPackConfig.getPosition().getZ());
+        positionScale.scale.set(
+          threeJsModelPackConfig.getScale().getX(),
+          threeJsModelPackConfig.getScale().getY(),
+          threeJsModelPackConfig.getScale().getZ());
+        positionScale.add(this.deepSetup(object3D.clone()));
+
+        let rotation = new Group();
+        rotation.name = `ThreeJsModelPackConfigId rotation`;
+        rotation.rotation.set(
+          threeJsModelPackConfig.getRotation().getX(),
+          threeJsModelPackConfig.getRotation().getY(),
+          threeJsModelPackConfig.getRotation().getZ());
+        rotation.add(positionScale);
+
+        return positionScale;
+    }
+
+    private findObject3D(object3D: Object3D, namePath: string[]): Object3D | null {
+        if(namePath.length == 0) {
+            throw new Error("Empty namePath array is not allowed")
+        }
+
+        if(object3D.name === namePath[0]) {
+            if(namePath.length == 1) {
+                return object3D;
+            }
+            let childNamePath = namePath.slice(1);
+            for (let childObject3D of object3D.children) {
+                let found = this.findObject3D(childObject3D, childNamePath);
+                if(found) {
+                    return found;
+                }
             }
         }
-
-        let threeJsUserDataNames: string[] = []
-        this.threeJsModels.forEach(object3D => {
-          this.iterateOverObject3D4Names(object3D, threeJsUserDataNames);
-          threeJsUserDataNames.push("\n");
-        });
-
-        throw new Error(`No Object3D for threeJsUuid '${threeJsUuid}'. Available threeJsUuids in Object3Ds userData.name [${threeJsUserDataNames}]`);
+        return null;
     }
 
-    createThreeJsModel(input: Object3D): Object3D {
-        let parentTransformation = ThreeJsModelService.setupParentTransformationRecursively(input);
-
-        let clone = input.clone();
-        this.deepSetup(clone);
-        clone.scale.copy(parentTransformation.scale);
-        clone.rotation.copy(parentTransformation.rotation);
-        return clone;
-    }
-
-    private deepSetup(object3D: Object3D) {
+    private deepSetup(object3D: Object3D): Object3D {
         if (object3D === undefined) {
-            return;
+            return object3D;
         }
 
         object3D.castShadow = true;
@@ -88,6 +114,8 @@ export class ThreeJsModelService {
         for (let i = 0, l = children.length; i < l; i++) {
             this.deepSetup(children[i]);
         }
+
+        return object3D;
     }
 
     findInObject3D(threeJsUuid: string, object3D: Object3D): Object3D | null {
@@ -112,7 +140,13 @@ export class ThreeJsModelService {
     }
 
     getThreeJsModel(threeJsModelId: number): any {
-      return this.threeJsModelMap.get(threeJsModelId);
+      let threeJsModel = this.threeJsModelMap.get(threeJsModelId);
+
+      if (!threeJsModel) {
+        throw new Error(`Not ThreeJsModel for threeJsModelId '${threeJsModelId}`);
+      }
+
+      return threeJsModel;
     }
 
     getMaterial(threeJsModelId: number): Material {
@@ -151,16 +185,10 @@ export class ThreeJsModelService {
         return undefined;
     }
 
-  static setupParentTransformationRecursively(object3D: Object3D): {scale: Vector3; rotation: Euler} {
-      if(object3D.parent === null) {
-        return {scale: object3D.scale, rotation: object3D.rotation} ;
-      }
-
-      let parentTransformation = ThreeJsModelService.setupParentTransformationRecursively(object3D.parent);
-      parentTransformation.scale.multiply(object3D.scale);
-      parentTransformation.rotation.set(parentTransformation.rotation.x + object3D.rotation.x,
-        parentTransformation.rotation.y + object3D.rotation.y,
-        parentTransformation.rotation.z + object3D.rotation.z);
-      return parentTransformation;
-  }
+    private removeAuxScene(object3D: Object3D): Object3D {
+        if(object3D.name === 'AuxScene') {
+            return object3D.children[0];
+        }
+        return object3D;
+    }
 }

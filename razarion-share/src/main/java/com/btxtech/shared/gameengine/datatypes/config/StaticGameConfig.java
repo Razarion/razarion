@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
+import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -28,6 +29,7 @@ public class StaticGameConfig {
     private List<InventoryItem> inventoryItems;
     private List<DrivewayConfig> drivewayConfigs;
     private List<ThreeJsModelConfig> threeJsModelConfigs;
+    private List<ThreeJsModelPackConfig> threeJsModelPackConfigs;
 
     public List<GroundConfig> getGroundConfigs() {
         return groundConfigs;
@@ -117,6 +119,14 @@ public class StaticGameConfig {
         this.threeJsModelConfigs = threeJsModelConfigs;
     }
 
+    public List<ThreeJsModelPackConfig> getThreeJsModelPackConfigs() {
+        return threeJsModelPackConfigs;
+    }
+
+    public void setThreeJsModelPackConfigs(List<ThreeJsModelPackConfig> threeJsModelPackConfigs) {
+        this.threeJsModelPackConfigs = threeJsModelPackConfigs;
+    }
+
     public StaticGameConfig groundConfigs(List<GroundConfig> groundConfigs) {
         setGroundConfigs(groundConfigs);
         return this;
@@ -169,6 +179,11 @@ public class StaticGameConfig {
 
     public StaticGameConfig threeJsModelConfigs(List<ThreeJsModelConfig> threeJsModelConfigs) {
         setThreeJsModelConfigs(threeJsModelConfigs);
+        return this;
+    }
+
+    public StaticGameConfig threeJsModelPackConfigs(List<ThreeJsModelPackConfig> threeJsModelPackConfigs) {
+        setThreeJsModelPackConfigs(threeJsModelPackConfigs);
         return this;
     }
 }

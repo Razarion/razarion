@@ -24,7 +24,7 @@ export class GwtAngularService {
     };
     this.gwtAngularFacade.gwtAngularBoot = new class implements GwtAngularBoot {
       loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[]) {
-        return threeJsModelService.init(threeJsModelConfigs);
+        return threeJsModelService.init(threeJsModelConfigs, self);
       };
     }
     window.gwtAngularFacade = this.gwtAngularFacade;

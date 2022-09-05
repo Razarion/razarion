@@ -42,6 +42,7 @@ public enum CollectionReferenceType {
     PARTICLE_EMITTER_SEQUENCE(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequence"),
     SERVER_GAME_ENGINE(ServerGameEngineEditorController.class, "Server Game Engine"),
     THREE_JS_MODEL(ThreeJsModelEditorController.class, "Three.js Model"),
+    THREE_JS_MODEL_PACK(null, "Three.js Model Pack"), // TODO
     IMAGE(null, "Image");
 
     private static Map<String, CollectionReferenceType> collectionName2Type;

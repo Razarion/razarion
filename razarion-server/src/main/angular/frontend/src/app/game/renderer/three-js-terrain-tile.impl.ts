@@ -146,8 +146,8 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
         try {
           let terrainObjectConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
-          if (terrainObjectConfig.getThreeJsUuid() === undefined) {
-            throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
+          if (!terrainObjectConfig.getThreeJsModelPackConfigId()) {
+            throw new Error(`TerrainObjectConfig has no threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
           }
           terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
             let m = terrainObjectModel.model.getColumnMajorFloat32Array();
@@ -164,7 +164,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
             terrainObject.name = `Terrain Object  ${terrainObjectModel.terrainObjectId}`;
             terrainObject.applyMatrix4(matrix4);
             _this.group.add(terrainObject);
-            let threeJsModel = threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsUuid());
+            let threeJsModel = threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsModelPackConfigId());
             terrainObject.add(threeJsModel)
           });
         } catch (error) {

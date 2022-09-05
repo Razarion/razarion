@@ -30,6 +30,8 @@ import {
   TerrainTypeService,
   TerrainWaterTile,
   ThreeJsModelConfig,
+  ThreeJsModelPackConfig,
+  ThreeJsModelPackService,
   ThreeJsTerrainTile,
   Vertex,
   WaterConfig
@@ -277,11 +279,11 @@ export class GameMockService {
       return "3D Model Palm Tree (8883)"
     }
   }, new class implements ObjectNameId {
-    id = 8884;
-    internalName = "Rock Pack 3D";
+    id = 8881;
+    internalName = "Stone Pack";
 
     toString(): string {
-      return "Rock Pack 3D (8884)"
+      return "Stone Pack (8881)"
     }
   }];
 
@@ -309,8 +311,8 @@ export class GameMockService {
             return;
           }
           terrainObjectConfig = new class implements TerrainObjectConfig {
-            getThreeJsUuid(): string {
-              return terrainObjectConfigJson.threeJsUuid;
+            getThreeJsModelPackConfigId(): number {
+              return terrainObjectConfigJson.threeJsModelPackConfigId;
             }
 
             getId(): number {
@@ -504,6 +506,44 @@ export class GameMockService {
       }
     }
   };
+
+  mockThreeJsModelPackService: ThreeJsModelPackService = new class implements ThreeJsModelPackService {
+    getThreeJsModelPackConfig(id: number): ThreeJsModelPackConfig {
+      let packJson = staticGameConfigJson.threeJsModelPackConfigs.find((packJson: any) => packJson.id === id);
+      if (!packJson) {
+        throw new Error(`ThreeJsModelPackConfig not found: ${id}`);
+      }
+      return new class implements ThreeJsModelPackConfig {
+        getId(): number {
+          return packJson.id;
+        }
+
+        getInternalName(): string {
+          return packJson.internalName;
+        }
+
+        getNamePath(): string[] {
+          return packJson.namePath;
+        }
+
+        getPosition(): Vertex {
+          return GwtInstance.newVertex(packJson.position.x, packJson.position.y, packJson.position.z);
+        }
+
+        getRotation(): Vertex {
+          return GwtInstance.newVertex(packJson.rotation.x, packJson.rotation.y, packJson.rotation.z);
+        }
+
+        getScale(): Vertex {
+          return GwtInstance.newVertex(packJson.scale.x, packJson.scale.y, packJson.scale.z);
+        }
+
+        getThreeJsModelId(): number {
+          return packJson.threeJsModelId;
+        }
+      }
+    }
+  }
 
   mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl) {
     const _this = this;
