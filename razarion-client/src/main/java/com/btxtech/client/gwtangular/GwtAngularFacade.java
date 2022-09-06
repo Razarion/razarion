@@ -4,6 +4,7 @@ import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitFrontend;
+import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
@@ -24,6 +25,6 @@ public abstract class GwtAngularFacade {
     public ThreeJsRendererServiceAccess threeJsRendererServiceAccess; // Initialized by Angular
     public InputService inputService; // Initialized by GWT
     public TerrainTypeService terrainTypeService; // Initialized by GWT
-
+    public ThreeJsModelPackService threeJsModelPackService; // Initialized by GWT
     public abstract void onCrash();
 }

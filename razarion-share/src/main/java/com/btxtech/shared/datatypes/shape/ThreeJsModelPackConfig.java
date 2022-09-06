@@ -2,14 +2,19 @@ package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.Config;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import jsinterop.annotations.JsType;
+
+import java.util.List;
 
 @JsType
 public class ThreeJsModelPackConfig implements Config {
     private int id;
     private String internalName;
+    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
     private Integer threeJsModelId;
-    private String[] namePath;
+    private List<String> namePath;
     private Vertex position;
     private Vertex scale;
     private Vertex rotation;
@@ -37,11 +42,11 @@ public class ThreeJsModelPackConfig implements Config {
         this.threeJsModelId = threeJsModelId;
     }
 
-    public String[] getNamePath() {
+    public List<String> getNamePath() {
         return namePath;
     }
 
-    public void setNamePath(String[] namePath) {
+    public void setNamePath(List<String> namePath) {
         this.namePath = namePath;
     }
 
@@ -69,6 +74,13 @@ public class ThreeJsModelPackConfig implements Config {
         this.rotation = rotation;
     }
 
+    public String[] toNamePathAsArray() {
+        if (namePath == null) {
+            return new String[0];
+        }
+        return namePath.toArray(new String[0]);
+    }
+
     public ThreeJsModelPackConfig id(int id) {
         this.id = id;
         return this;
@@ -84,7 +96,7 @@ public class ThreeJsModelPackConfig implements Config {
         return this;
     }
 
-    public ThreeJsModelPackConfig namePath(String[] namePath) {
+    public ThreeJsModelPackConfig namePath(List<String> namePath) {
         setNamePath(namePath);
         return this;
     }

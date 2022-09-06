@@ -4,6 +4,7 @@ import {ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
 import {Group, Material, Object3D} from "three";
 import {GLTF, GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+import {GwtHelper} from "../../gwtangular/GwtHelper";
 
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
@@ -54,10 +55,10 @@ export class ThreeJsModelService {
 
         threeJsModel = this.removeAuxScene(threeJsModel);
 
-        let object3D = this.findObject3D(threeJsModel, threeJsModelPackConfig.getNamePath());
+        let object3D = this.findObject3D(threeJsModel, threeJsModelPackConfig.toNamePathAsArray());
 
         if(object3D === null) {
-            throw new Error(`No Object3D for threeJsModelPackConfigId '${threeJsModelPackConfigId}'`);
+            throw new Error(`No Object3D for threeJsModelPackConfigId '${threeJsModelPackConfigId}'. Three.js Path  '${threeJsModelPackConfig.toNamePathAsArray()}'`);
         }
 
         let positionScale = new Group();
@@ -80,7 +81,7 @@ export class ThreeJsModelService {
           threeJsModelPackConfig.getRotation().getZ());
         rotation.add(positionScale);
 
-        return positionScale;
+        return rotation;
     }
 
     private findObject3D(object3D: Object3D, namePath: string[]): Object3D | null {
@@ -140,10 +141,16 @@ export class ThreeJsModelService {
     }
 
     getThreeJsModel(threeJsModelId: number): any {
+      if(threeJsModelId === undefined) {
+        throw new Error(`ThreeJsModel id undefined`);
+      }
+
+      threeJsModelId = GwtHelper.gwtIssueNumber(threeJsModelId);
+
       let threeJsModel = this.threeJsModelMap.get(threeJsModelId);
 
       if (!threeJsModel) {
-        throw new Error(`Not ThreeJsModel for threeJsModelId '${threeJsModelId}`);
+        throw new Error(`No ThreeJsModel for threeJsModelId '${threeJsModelId}`);
       }
 
       return threeJsModel;
@@ -154,14 +161,11 @@ export class ThreeJsModelService {
           throw new Error(`Material undefined`);
         }
 
-        let gwtIssueNumber = threeJsModelId;
-        if(typeof <any>threeJsModelId  !== 'number') {
-            gwtIssueNumber = <number>Object.values(threeJsModelId)[0]; // GWT rubbish
-        }
+        threeJsModelId = GwtHelper.gwtIssueNumber(threeJsModelId);
 
-        let threeJsObject = this.threeJsModelMap.get(gwtIssueNumber);
+        let threeJsObject = this.threeJsModelMap.get(threeJsModelId);
         if(threeJsObject === undefined) {
-          throw new Error(`No Material for threeJsModelId '${gwtIssueNumber}'.`);
+          throw new Error(`No Material for threeJsModelId '${threeJsModelId}'.`);
         }
 
       let material:Material | undefined = this.findMaterialRecursively(threeJsObject);

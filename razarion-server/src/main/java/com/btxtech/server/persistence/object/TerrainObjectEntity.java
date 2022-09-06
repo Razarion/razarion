@@ -1,6 +1,9 @@
 package com.btxtech.server.persistence.object;
 
 import com.btxtech.server.persistence.ColladaEntity;
+import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
+import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
+import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 
 import javax.persistence.Entity;
@@ -11,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -25,32 +30,25 @@ public class TerrainObjectEntity {
     private String internalName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    @Deprecated
-    private ColladaEntity colladaEntity;
+    private ThreeJsModelPackConfigEntity threeJsModelPackConfig;
     private double radius;
-    private String threeJsUuid;
 
     public Integer getId() {
         return id;
     }
 
     public TerrainObjectConfig toTerrainObjectConfig() {
-        TerrainObjectConfig terrainObjectConfig = new TerrainObjectConfig()
+        return new TerrainObjectConfig()
                 .id(id)
                 .internalName(internalName)
                 .radius(radius)
-                .threeJsModelPackConfigId(-9999999); // TODO
-        if (colladaEntity != null) {
-            terrainObjectConfig.setShape3DId(colladaEntity.getId());
-        }
-        return terrainObjectConfig;
+                .threeJsModelPackConfigId(extractId(threeJsModelPackConfig, ThreeJsModelPackConfigEntity::getId));
     }
 
-    public void fromTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig, ColladaEntity colladaEntity) {
+    public void fromTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig, ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence) {
         this.internalName = terrainObjectConfig.getInternalName();
-        this.colladaEntity = colladaEntity;
         radius = terrainObjectConfig.getRadius();
-        // TODO threeJsUuid = terrainObjectConfig.getThreeJsModelPackConfigId();
+        threeJsModelPackConfig = threeJsModelPackCrudPersistence.getEntity(terrainObjectConfig.getThreeJsModelPackConfigId());
     }
 
     @Override

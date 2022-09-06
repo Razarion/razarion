@@ -17,8 +17,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
-import static com.btxtech.server.persistence.PersistenceUtil.defaultOnNull;
 import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
@@ -38,7 +39,7 @@ public class ThreeJsModelPackConfigEntity {
     @ElementCollection
     @CollectionTable(name = "THREE_JS_MODEL_PACK_PATH", joinColumns = @JoinColumn(name = "threeJsModelPackConfig"))
     @OrderColumn(name = "orderColumn")
-    private String[] namePath;
+    private List<String> namePath;
     @AttributeOverrides({
             @AttributeOverride(name = "x", column = @Column(name = "positionX")),
             @AttributeOverride(name = "y", column = @Column(name = "positionY")),
@@ -58,11 +59,15 @@ public class ThreeJsModelPackConfigEntity {
     })
     private Vertex rotation;
 
+    public Integer getId() {
+        return id;
+    }
+
     public ThreeJsModelPackConfig toConfig() {
         return new ThreeJsModelPackConfig()
                 .id(id)
                 .internalName(internalName)
-                .namePath(defaultOnNull(namePath, new String[0]))
+                .namePath(namePath != null ? new ArrayList<>(namePath) : new ArrayList<>())
                 .threeJsModelId(extractId(threeJsModelConfig, ThreeJsModelConfigEntity::getId))
                 .position(position)
                 .rotation(rotation)

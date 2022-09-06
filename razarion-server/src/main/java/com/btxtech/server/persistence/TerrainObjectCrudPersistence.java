@@ -14,7 +14,7 @@ import javax.inject.Singleton;
 @Singleton
 public class TerrainObjectCrudPersistence extends AbstractCrudPersistence<TerrainObjectConfig, TerrainObjectEntity> {
     @Inject
-    private Shape3DCrudPersistence shape3DPersistence;
+    private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
 
     public TerrainObjectCrudPersistence() {
         super(TerrainObjectEntity.class, TerrainObjectEntity_.id, TerrainObjectEntity_.internalName);
@@ -27,6 +27,6 @@ public class TerrainObjectCrudPersistence extends AbstractCrudPersistence<Terrai
 
     @Override
     protected void fromConfig(TerrainObjectConfig config, TerrainObjectEntity entity) {
-        entity.fromTerrainObjectConfig(config, shape3DPersistence.getEntity(config.getShape3DId()));
+        entity.fromTerrainObjectConfig(config, threeJsModelPackCrudPersistence);
     }
 }

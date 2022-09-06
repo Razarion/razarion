@@ -4,6 +4,7 @@ import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
+import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
 import com.btxtech.uiservice.terrain.InputService;
@@ -29,6 +30,8 @@ public class GwtAngularService {
     private InputService inputService;
     @Inject
     private TerrainTypeService terrainTypeService;
+    @Inject
+    private ThreeJsModelPackService threeJsModelPackService;
     private GwtAngularFacade gwtAngularFacade;
 
     public void init() {
@@ -37,6 +40,7 @@ public class GwtAngularService {
         gwtAngularFacade.statusProvider = statusProvider;
         gwtAngularFacade.inputService = inputService;
         gwtAngularFacade.terrainTypeService = terrainTypeService;
+        gwtAngularFacade.threeJsModelPackService = threeJsModelPackService;
         cockpitService.init(gwtAngularFacade.mainCockpit);
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
     }

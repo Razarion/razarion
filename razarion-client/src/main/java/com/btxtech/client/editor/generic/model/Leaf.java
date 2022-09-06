@@ -113,7 +113,7 @@ public class Leaf extends AbstractPropertyModel {
                         case THREE_JS_MODEL:
                             return PropertyEditorSelector.THREE_JS_MODEL_REFERENCE;
                         case THREE_JS_MODEL_PACK:
-                            return PropertyEditorSelector.THREE_JS_MODEL_REFERENCE;
+                            return PropertyEditorSelector.THREE_JS_MODEL_PACK_REFERENCE;
                         case WATER:
                             return PropertyEditorSelector.WATER_REFERENCE;
                         case GROUND:

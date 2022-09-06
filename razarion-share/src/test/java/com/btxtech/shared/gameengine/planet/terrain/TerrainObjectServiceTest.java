@@ -132,7 +132,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                         .position(new Vertex(0, 0, 0))
                         .scale(new Vertex(0.01, 0.01, 0.01))
                         .rotation(new Vertex(0, 0, 0))
-                        .namePath(new String[]{"Sketchfab_Scene", "Sketchfab_model", "de49941573ca4a6cb3fbcf3e4d72f085fbx", "RootNode", "Mid_4", "Object_4", "Mid_4_MID_0"}),
+                        .namePath(Arrays.asList("Sketchfab_Scene", "Sketchfab_model", "de49941573ca4a6cb3fbcf3e4d72f085fbx", "RootNode", "Mid_4", "Object_4", "Mid_4_MID_0")),
                 new ThreeJsModelPackConfig()
                         .id(2)
                         .threeJsModelId(8881)
@@ -140,7 +140,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                         .position(new Vertex(0, 0, 0))
                         .scale(new Vertex(0.01, 0.01, 0.01))
                         .rotation(new Vertex(0, 0, 0))
-                        .namePath(new String[]{"o1", "o2", "03"}),
+                        .namePath(Arrays.asList("o1", "o2", "03")),
                 new ThreeJsModelPackConfig()
                         .id(3)
                         .threeJsModelId(8881)
@@ -148,7 +148,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                         .position(new Vertex(0, 0, 0))
                         .scale(new Vertex(0.01, 0.01, 0.01))
                         .rotation(new Vertex(0, 0, 0))
-                        .namePath(new String[]{"o1", "o2", "03"})
+                        .namePath(Arrays.asList("o1", "o2", "03"))
         );
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();

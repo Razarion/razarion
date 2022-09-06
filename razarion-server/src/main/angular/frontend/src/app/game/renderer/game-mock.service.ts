@@ -522,7 +522,7 @@ export class GameMockService {
           return packJson.internalName;
         }
 
-        getNamePath(): string[] {
+        toNamePathAsArray(): string[] {
           return packJson.namePath;
         }
 

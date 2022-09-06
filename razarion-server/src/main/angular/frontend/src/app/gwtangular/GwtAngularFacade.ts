@@ -239,7 +239,7 @@ export interface ThreeJsModelPackConfig {
 
   getThreeJsModelId(): number;
 
-  getNamePath(): string[];
+  toNamePathAsArray(): string[];
 
   getPosition(): Vertex;
 

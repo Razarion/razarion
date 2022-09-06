@@ -280,15 +280,15 @@ public class ServerTestHelper {
     }
 
     protected void setupTerrainObjectConfig() {
-        TERRAIN_OBJECT_1_ID = persistInTransaction(createTerrainObjectEntity(new TerrainObjectConfig().radius(1.0).shape3DId(SHAPE_3D_1_ID))).getId();
-        TERRAIN_OBJECT_2_ID = persistInTransaction(createTerrainObjectEntity(new TerrainObjectConfig().radius(2.0).shape3DId(SHAPE_3D_2_ID))).getId();
-        TERRAIN_OBJECT_3_ID = persistInTransaction(createTerrainObjectEntity(new TerrainObjectConfig().radius(2.5).shape3DId(SHAPE_3D_3_ID))).getId();
+        TERRAIN_OBJECT_1_ID = persistInTransaction(createTerrainObjectEntity(new TerrainObjectConfig().radius(1.0))).getId();
+        TERRAIN_OBJECT_2_ID = persistInTransaction(createTerrainObjectEntity(new TerrainObjectConfig().radius(2.0))).getId();
+        TERRAIN_OBJECT_3_ID = persistInTransaction(createTerrainObjectEntity(new TerrainObjectConfig().radius(2.5))).getId();
         cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(TerrainObjectEntity.class)));
     }
 
     private TerrainObjectEntity createTerrainObjectEntity(TerrainObjectConfig terrainObjectConfig) {
         TerrainObjectEntity terrainObjectEntity = new TerrainObjectEntity();
-        terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, entityManager.find(ColladaEntity.class, terrainObjectConfig.getShape3DId()));
+        terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, EasyMock.createNiceMock(ThreeJsModelPackCrudPersistence.class));
         return terrainObjectEntity;
     }
 

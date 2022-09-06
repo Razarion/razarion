@@ -12,9 +12,6 @@ import jsinterop.annotations.JsType;
 public class TerrainObjectConfig implements Config {
     private int id;
     private String internalName;
-    @Deprecated
-    @CollectionReference(CollectionReferenceType.SHAPE_3D)
-    private Integer shape3DId;
     private double radius;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL_PACK)
     private Integer threeJsModelPackConfigId;
@@ -32,14 +29,6 @@ public class TerrainObjectConfig implements Config {
     @Override
     public void setInternalName(String internalName) {
         this.internalName = internalName;
-    }
-
-    public Integer getShape3DId() {
-        return shape3DId;
-    }
-
-    public void setShape3DId(Integer shape3DId) {
-        this.shape3DId = shape3DId;
     }
 
     public double getRadius() {
@@ -86,11 +75,6 @@ public class TerrainObjectConfig implements Config {
         return this;
     }
 
-    public TerrainObjectConfig shape3DId(Integer shape3DId) {
-        setShape3DId(shape3DId);
-        return this;
-    }
-
     public TerrainObjectConfig radius(double radius) {
         setRadius(radius);
         return this;
@@ -106,7 +90,6 @@ public class TerrainObjectConfig implements Config {
         return "TerrainObjectConfig{" +
                 "id=" + id +
                 ", internalName='" + internalName + '\'' +
-                ", shape3DId=" + shape3DId +
                 ", radius=" + radius +
                 ", threeJsModelPackConfigId='" + threeJsModelPackConfigId + '\'' +
                 '}';
