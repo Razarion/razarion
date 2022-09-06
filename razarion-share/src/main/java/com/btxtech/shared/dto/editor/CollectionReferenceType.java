@@ -18,6 +18,7 @@ import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainObjectEditorController;
 import com.btxtech.shared.rest.ThreeJsModelEditorController;
+import com.btxtech.shared.rest.ThreeJsModelPackEditorController;
 import com.btxtech.shared.rest.WaterEditorController;
 
 import java.util.Arrays;
@@ -42,7 +43,7 @@ public enum CollectionReferenceType {
     PARTICLE_EMITTER_SEQUENCE(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequence"),
     SERVER_GAME_ENGINE(ServerGameEngineEditorController.class, "Server Game Engine"),
     THREE_JS_MODEL(ThreeJsModelEditorController.class, "Three.js Model"),
-    THREE_JS_MODEL_PACK(null, "Three.js Model Pack"), // TODO
+    THREE_JS_MODEL_PACK(ThreeJsModelPackEditorController.class, "Three.js Model Pack"),
     IMAGE(null, "Image");
 
     private static Map<String, CollectionReferenceType> collectionName2Type;

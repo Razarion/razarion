@@ -305,6 +305,22 @@ public enum PropertyEditorSelector {
             return convertNullCollectionReferenceToAngular(CollectionReferenceType.THREE_JS_MODEL);
         }
     },
+    THREE_JS_MODEL_PACK_REFERENCE("collection-reference-property-editor") {
+        @Override
+        public Object convertFromAngular(Any value, Class<?> propertyClass) {
+            return value.asInt();
+        }
+
+        @Override
+        public Any convertToAngular(Object object) {
+            return convertCollectionReferenceToAngular(CollectionReferenceType.THREE_JS_MODEL_PACK, object);
+        }
+
+        @Override
+        public Any convertNullToAngular() {
+            return convertNullCollectionReferenceToAngular(CollectionReferenceType.THREE_JS_MODEL_PACK);
+        }
+    },
     WATER_REFERENCE("collection-reference-property-editor") {
         @Override
         public Object convertFromAngular(Any value, Class<?> propertyClass) {
