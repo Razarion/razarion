@@ -8,7 +8,7 @@ import jsinterop.annotations.JsType;
 public class ThreeJsModelPackConfig implements Config {
     private int id;
     private String internalName;
-    private int threeJsModelId;
+    private Integer threeJsModelId;
     private String[] namePath;
     private Vertex position;
     private Vertex scale;
@@ -29,11 +29,11 @@ public class ThreeJsModelPackConfig implements Config {
         this.internalName = internalName;
     }
 
-    public int getThreeJsModelId() {
+    public Integer getThreeJsModelId() {
         return threeJsModelId;
     }
 
-    public void setThreeJsModelId(int threeJsModelId) {
+    public void setThreeJsModelId(Integer threeJsModelId) {
         this.threeJsModelId = threeJsModelId;
     }
 
@@ -79,7 +79,7 @@ public class ThreeJsModelPackConfig implements Config {
         return this;
     }
 
-    public ThreeJsModelPackConfig threeJsModelId(int threeJsModelId) {
+    public ThreeJsModelPackConfig threeJsModelId(Integer threeJsModelId) {
         setThreeJsModelId(threeJsModelId);
         return this;
     }

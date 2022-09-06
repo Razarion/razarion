@@ -57,6 +57,7 @@ public class CommonUrl {
     public static final String PARTICLE_EMITTER_SEQUENCE_EDITOR_PATH = "editor/particle-emitter-sequence-editor";
     public static final String PARTICLE_SHAPE_EDITOR_PATH = "editor/particle-shape-editor";
     public static final String ASSET_EDITOR_PATH = "editor/asset";
+    public static final String THREE_JS_MODEL_PACK_EDITOR_PATH = "editor/three_js_model_pack_editor";
     public static final String SHAPE_3D_CONTROLLER = G_ZIPPED + "/" + "shape3d-controller";
     public static final String TERRAIN_SHAPE_CONTROLLER = G_ZIPPED + "/" + "terrainshape";
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";

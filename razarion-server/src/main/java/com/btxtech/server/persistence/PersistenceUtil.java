@@ -135,5 +135,11 @@ public interface PersistenceUtil {
         return outputEntities;
     }
 
+    static <V> V defaultOnNull(V value, V defaultNullValue) {
+        if (value == null) {
+            return defaultNullValue;
+        }
+        return value;
+    }
 
 }
