@@ -7,23 +7,25 @@ import {Euler} from "three/src/math/Euler";
   template: `
     <div class="inline-flex">
       <div class="mr-2">
-        <p-inputNumber [ngModel]="x" prefix="x: " [minFractionDigits]="1"
-                       [size]=5 (onInput)="onChangeX($event)"
-                       [showButtons]="true"
-                       [maxFractionDigits]="6">
-        </p-inputNumber>
+        <p-inputNumber [ngModel]="x" (onInput)="onChangeX($event)"
+                       [prefix]="'x: '" [size]="5"
+                       [minFractionDigits]="1" [maxFractionDigits]="6"
+                       [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                       [showButtons]="true"></p-inputNumber>
       </div>
       <div class="mr-2">
-        <p-inputNumber [ngModel]="y" prefix="y: " [minFractionDigits]="1"
-                       [size]=5 (onInput)="onChangeY($event)"
-                       [maxFractionDigits]="6">
-        </p-inputNumber>
+        <p-inputNumber [ngModel]="y" (onInput)="onChangeY($event)"
+                       [prefix]="'y: '" [size]="5"
+                       [minFractionDigits]="1" [maxFractionDigits]="6"
+                       [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                       [showButtons]="true"></p-inputNumber>
       </div>
       <div class="mr-2">
-        <p-inputNumber [ngModel]="z" prefix="z: " [minFractionDigits]="1"
-                       [size]=5 (onInput)="onChangeZ($event)"
-                       [maxFractionDigits]="6">
-        </p-inputNumber>
+        <p-inputNumber [ngModel]="z" (onInput)="onChangeZ($event)"
+                       [prefix]="'z: '" [size]="5"
+                       [minFractionDigits]="1" [maxFractionDigits]="6"
+                       [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                       [showButtons]="true"></p-inputNumber>
       </div>
     </div>
   `

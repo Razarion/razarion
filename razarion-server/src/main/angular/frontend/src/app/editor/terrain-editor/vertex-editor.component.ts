@@ -6,22 +6,25 @@ import {Vector3} from "three/src/math/Vector3";
   template: `
     <div class="inline-flex">
       <div class="mr-2">
-        <p-inputNumber [ngModel]="vertex.x" prefix="x: " [minFractionDigits]="1"
-                       [size]=5 (onInput)="onChangeX($event)"
-                       [maxFractionDigits]="6">
-        </p-inputNumber>
+        <p-inputNumber [ngModel]="vertex.x" (onInput)="onChangeX($event)"
+                       [prefix]="'x: '" [size]="5"
+                       [minFractionDigits]="1" [maxFractionDigits]="6"
+                       [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                       [showButtons]="true"></p-inputNumber>
       </div>
       <div class="mr-2">
-        <p-inputNumber [ngModel]="vertex.y" prefix="y: " [minFractionDigits]="1"
-                       [size]=5 (onInput)="onChangeY($event)"
-                       [maxFractionDigits]="6">
-        </p-inputNumber>
+        <p-inputNumber [ngModel]="vertex.y" (onInput)="onChangeY($event)"
+                       [prefix]="'y: '" [size]="5"
+                       [minFractionDigits]="1" [maxFractionDigits]="6"
+                       [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                       [showButtons]="true"></p-inputNumber>
       </div>
       <div class="mr-2">
-        <p-inputNumber [ngModel]="vertex.z" prefix="z: " [minFractionDigits]="1"
-                       [size]=5 (onInput)="onChangeZ($event)"
-                       [maxFractionDigits]="6">
-        </p-inputNumber>
+        <p-inputNumber [ngModel]="vertex.z" (onInput)="onChangeZ($event)"
+                       [prefix]="'z: '" [size]="5"
+                       [minFractionDigits]="1" [maxFractionDigits]="6"
+                       [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                       [showButtons]="true"></p-inputNumber>
       </div>
     </div>
   `

@@ -4,15 +4,21 @@ import {AngularTreeNodeData} from "../../../gwtangular/GwtAngularFacade";
 @Component({
   selector: 'vertex-property-editor',
   template: `
-    X
-    <p-inputNumber [ngModel]="x" [size]="1" [maxlength]="3"
-                   [showButtons]="true" (onInput)="onChangeX($event.value)"></p-inputNumber>
-    Y
-    <p-inputNumber [ngModel]="y" [size]="1" [maxlength]="3"
-                   [showButtons]="true" (onInput)="onChangeY($event.value)"></p-inputNumber>
-    Z
-    <p-inputNumber [ngModel]="z" [size]="1" [maxlength]="3"
-                   [showButtons]="true" (onInput)="onChangeZ($event.value)"></p-inputNumber>
+    <p-inputNumber [ngModel]="x" (onInput)="onChangeX($event.value)"
+                   [prefix]="'x: '" [size]="5"
+                   [minFractionDigits]="1" [maxFractionDigits]="6"
+                   [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                   [showButtons]="true"></p-inputNumber>
+    <p-inputNumber [ngModel]="y" (onInput)="onChangeY($event.value)"
+                   [prefix]="'y: '" [size]="5"
+                   [minFractionDigits]="1" [maxFractionDigits]="6"
+                   [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                   [showButtons]="true"></p-inputNumber>
+    <p-inputNumber [ngModel]="z" (onInput)="onChangeZ($event.value)"
+                   [prefix]="'z: '" [size]="5"
+                   [minFractionDigits]="1" [maxFractionDigits]="6"
+                   [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                   [showButtons]="true"></p-inputNumber>
   `
 })
 export class VertexPropertyEditorComponent implements OnInit {
