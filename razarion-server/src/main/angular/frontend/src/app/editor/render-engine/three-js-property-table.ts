@@ -46,14 +46,17 @@ export class ThreeJsPropertyTable {
   }
 
   private static getSpecialSelector(name: string, property: any): string | null {
+    if(property.isVector3) {
+      return 'vector3-property-editor'
+    }
+    if(property.isEuler) {
+      return 'euler-property-editor'
+    }
+    // Do not user three.js or own classes here. Webpack uses minifier.
     switch (property.constructor.name) {
       case 'HTMLImageElement':
       case 'ImageBitmap':
         return 'image-property-editor';
-      case Vector3.name:
-        return 'vector3-property-editor'
-      case Euler.name:
-        return 'euler-property-editor'
     }
     if (name === 'userData') {
       return 'userdata-property-editor'
@@ -173,7 +176,6 @@ export class ThreeJsPropertyTable {
           canHaveChildren: boolean = true;
           createAllowed: boolean = false;
           deleteAllowed: boolean = true;
-          // name: string = `${name} '${property.constructor.name}'`;
           name: string = name;
           nullable: boolean = false;
           options: string[] = [];
