@@ -20,6 +20,7 @@ public class PlanetConfig implements Config {
     private int startRazarion;
     @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer startBaseItemTypeId;
+    @CollectionReference(CollectionReferenceType.GROUND)
     private Integer groundConfigId;
 
     @Override
