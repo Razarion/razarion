@@ -1,6 +1,6 @@
 import {TreeNode} from "primeng/api";
 import {AngularTreeNodeData, GwtAngularPropertyTable} from "../../gwtangular/GwtAngularFacade";
-import {Euler, Group, Object3D, RepeatWrapping, Texture, Vector3} from "three";
+import {Group, Object3D, RepeatWrapping, Texture, TextureLoader} from "three";
 
 const IGNORED_THREE_JS_OBJECT_PROPERTIES: string[] = ["parent", "children", "up", "_listeners", "_onChangeCallback"];
 
@@ -42,17 +42,17 @@ export class ThreeJsPropertyTable {
   private rootTreeNodes: TreeNode<AngularTreeNodeData>[] = [];
 
   constructor(object3D: Object3D, private updateHandler: () => {}) {
-    this.recursivelyAddProperties(object3D, null, null, this.rootTreeNodes);
+    this.recursivelyAddProperties(object3D, null, new PropertyPath(null, object3D, null), this.rootTreeNodes);
   }
 
   private static getSpecialSelector(name: string, property: any): string | null {
-    if(property.isVector3) {
+    if (property.isVector3) {
       return 'vector3-property-editor'
     }
-    if(property.isEuler) {
+    if (property.isEuler) {
       return 'euler-property-editor'
     }
-    // Do not user three.js or own classes here. Webpack uses minifier.
+    // Do not user three.js or own classes here. Webpack uses minifier property.constructor.name is not working.
     switch (property.constructor.name) {
       case 'HTMLImageElement':
       case 'ImageBitmap':
@@ -83,12 +83,12 @@ export class ThreeJsPropertyTable {
     return this.rootTreeNodes;
   }
 
-  private createObject(name: string, parentProperty: any, createOption: any, treeNode: TreeNode) {
+  private createObject(name: string, propertyPath: PropertyPath, createOption: any, treeNode: TreeNode) {
     const property = this.createOptions[createOption].exec();
-    parentProperty[name] = property;
+    propertyPath.setInParent(property);
     treeNode.children = [];
-    this.recursivelyAddProperties(property, name, parentProperty, treeNode.children);
-    parentProperty.needsUpdate = true;
+    this.recursivelyAddProperties(property, name, propertyPath, treeNode.children);
+    propertyPath.updateParent();
     treeNode.data.createAllowed = false;
     treeNode.data.deleteAllowed = true;
     this.updateHandler();
@@ -104,16 +104,16 @@ export class ThreeJsPropertyTable {
     this.updateHandler();
   }
 
-  private recursivelyAddProperties(property: any, propertyName: string | null, parentProperty: any, treeNodes: TreeNode[]) {
+  private recursivelyAddProperties(property: any, propertyName: string | null, propertyPath: PropertyPath, treeNodes: TreeNode[]) {
     const _this = this;
-    Object.keys(property).forEach(function (childName) {
+    Object.keys(property).forEach(childName => {
       if (IGNORED_THREE_JS_OBJECT_PROPERTIES.includes(childName)) {
         return;
       }
       const childProperty = property[childName];
       if (typeof childProperty === "object") {
         if (childProperty && (!Array.isArray(childProperty) || childProperty.length > 0)) {
-          _this.addObjectProperty(childName, childProperty, property, propertyName, parentProperty, treeNodes);
+          _this.addObjectProperty(childName, childProperty, propertyPath.generateChild(childProperty, childName), treeNodes);
         } else {
           _this.addNullObjectProperty(childName, property, treeNodes);
         }
@@ -123,7 +123,7 @@ export class ThreeJsPropertyTable {
     });
   }
 
-  private addObjectProperty(name: string, property: any, parentProperty: any, parentPropertyName: string | null, grandParentProperty: any, treeNodes: TreeNode[]) {
+  private addObjectProperty(name: string, property: any, propertyPath: PropertyPath, treeNodes: TreeNode[]) {
     const _this = this;
     let specialSelector = ThreeJsPropertyTable.getSpecialSelector(name, property);
     if (specialSelector != null) {
@@ -145,23 +145,26 @@ export class ThreeJsPropertyTable {
           }
 
           setValue(value: any): void {
-            if (parentProperty.isTexture) {
-              const newTexture = parentProperty.clone();
+            if (propertyPath.getParentProperty().isTexture) {
+              const newTexture = propertyPath.getParentProperty().clone();
               let image = new Image();
-              image.onload = function () {
+              image.onload = () => {
                 newTexture.needsUpdate = true;
-                grandParentProperty.needsUpdate = true;
+                propertyPath.getParent().updateParent();
               };
               image.src = value;
               newTexture.image = image;
-              if (parentPropertyName) {
-                grandParentProperty[parentPropertyName] = newTexture;
-              } else {
-                throw new Error("Parent property is null");
-              }
+              propertyPath.setInGrandParent(newTexture);
+            } else if (propertyPath.getGrandParentProperty().isTexture && propertyPath.getParentProperty().isSource) {
+              const origTexture = propertyPath.getGrandParentProperty();
+              const newTexture = new TextureLoader().load(value);
+              newTexture.wrapS = origTexture.wrapS;
+              newTexture.wrapT = origTexture.wrapT;
+              newTexture.repeat.set(origTexture.repeat.x, origTexture.repeat.y);
+              propertyPath.setInGreatGrandParent(newTexture);
             } else {
-              (<any>parentProperty)[name] = value;
-              parentProperty.needsUpdate = true;
+              propertyPath.setInParent(value);
+              propertyPath.updateParent();
             }
           }
 
@@ -169,7 +172,7 @@ export class ThreeJsPropertyTable {
       });
     } else {
       const childTreeNodes: TreeNode[] = [];
-      _this.recursivelyAddProperties(property, name, parentProperty, childTreeNodes);
+      _this.recursivelyAddProperties(property, name, propertyPath, childTreeNodes);
       const treeNode = new class implements TreeNode<AngularTreeNodeData> {
         children = childTreeNodes;
         data = new class implements AngularTreeNodeData {
@@ -184,11 +187,11 @@ export class ThreeJsPropertyTable {
           createOptions: any = _this.createOptionLabels;
 
           onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void {
-            _this.createObject(name, parentProperty, createOption, treeNode);
+            _this.createObject(name, propertyPath, createOption, treeNode);
           }
 
           onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void {
-            _this.deleteObject(name, parentProperty, treeNode);
+            _this.deleteObject(name, propertyPath, treeNode);
           }
 
           setValue(value: any): void {
@@ -254,4 +257,61 @@ export class ThreeJsPropertyTable {
       }
     });
   }
+}
+
+class PropertyPath {
+  private parent: PropertyPath | null;
+  private property: any
+  private propertyName: string | null;
+
+  constructor(parent: PropertyPath | null, property: any, propertyName: string | null) {
+    this.parent = parent;
+    this.propertyName = propertyName;
+    this.property = property;
+  }
+
+  generateChild(property: any, propertyName: string | null): PropertyPath {
+    return new PropertyPath(this, property, propertyName);
+  }
+
+  setInParent(value: any) {
+    this.getParent().property[this.propertyName!] = value;
+  }
+
+  setInGrandParent(value: any) {
+    this.getGrandParent().property[this.getParent().propertyName!] = value;
+  }
+
+  setInGreatGrandParent(value: any) {
+    this.getParent().getGrandParent().property[this.getGrandParent().propertyName!] = value;
+  }
+
+  getParent(): PropertyPath {
+    return this.parent!;
+  }
+
+  getGrandParent(): PropertyPath {
+    return this.getParent().getParent();
+  }
+
+  getGreatGrandParent(): PropertyPath {
+    return this.getGrandParent().getParent();
+  }
+
+  getProperty(): any {
+    return this.property;
+  }
+
+  getParentProperty(): any {
+    return this.getParent().getProperty();
+  }
+
+  getGrandParentProperty(): any {
+    return this.getGrandParent().getProperty();
+  }
+
+  updateParent() {
+    this.getParent().property.needsUpdate = true;
+  }
+
 }
