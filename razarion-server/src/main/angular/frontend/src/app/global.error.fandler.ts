@@ -14,7 +14,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     this.messageService.add({
       severity: 'error',
       summary: `Unknown Error`,
-      detail: error,
+      detail: String(error),
       sticky: true
     });
   }

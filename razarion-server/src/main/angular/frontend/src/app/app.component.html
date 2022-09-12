@@ -1,4 +1,12 @@
-<p-toast></p-toast>
+<p-toast [baseZIndex]="5000">
+  <ng-template let-message pTemplate="message">
+    <div class="text-center">
+      <p>{{message.summary.length > 100 ? message.summary.slice(0, 100) + '...' : message.summary}}</p>
+      <p
+        *ngIf="message.detail">{{message.detail.length > 100 ? message.detail.slice(0, 100) + '...' : message.detail}}</p>
+    </div>
+  </ng-template>
+</p-toast>
 <router-outlet></router-outlet>
 
 

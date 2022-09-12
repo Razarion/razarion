@@ -31,7 +31,7 @@ export class CollectionSelectorComponent extends EditorPanel {
       this.messageService.add({
         severity: 'error',
         summary: `Can not read ObjectNameId: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
-        detail: "" + error,
+        detail: String(error),
         sticky: true
       });
       console.error(error);
