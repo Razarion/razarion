@@ -77,8 +77,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.renderer = new WebGLRenderer({antialias: true});
     this.renderer.setSize(canvasHolder.offsetWidth, canvasHolder.offsetHeight);
     canvasHolder.appendChild(this.renderer.domElement);
-    this.slopeInnerGroundRenderTarget = new WebGLRenderTarget(canvasHolder.offsetWidth, 1000); // TODO canvasHolder.offsetHeight
-    this.slopeRenderTarget = new WebGLRenderTarget(canvasHolder.offsetWidth, 1000); // TODO canvasHolder.offsetHeight
+    this.slopeInnerGroundRenderTarget = new WebGLRenderTarget(canvasHolder.offsetWidth, canvasHolder.offsetHeight);
+    this.slopeRenderTarget = new WebGLRenderTarget(canvasHolder.offsetWidth, canvasHolder.offsetHeight);
 
     // ----- Keyboard -----
     const self = this;
@@ -201,6 +201,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
   onResize() {
     this.renderer.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent strange loop
+    this.slopeInnerGroundRenderTarget.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent strange loop
+    this.slopeRenderTarget.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent strange loop
     this.camera.aspect = (this.canvasDiv.clientWidth - 5) / this.canvasDiv.clientHeight;
     this.camera.updateProjectionMatrix();
     this.onViewFieldChanged();
