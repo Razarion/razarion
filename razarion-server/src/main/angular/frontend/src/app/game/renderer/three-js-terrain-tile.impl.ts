@@ -107,10 +107,10 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         } else {
           material = threeJsModelService.getMaterial(groundConfig.getTopThreeJsMaterial());
         }
-        const cube = new Mesh(geometry, material);
-        cube.name = "Ground"
-        cube.receiveShadow = true;
-        this.group.add(cube);
+        const ground = new Mesh(geometry, material);
+        ground.name = "Ground"
+        ground.receiveShadow = true;
+        this.group.add(ground);
       });
     }
 
