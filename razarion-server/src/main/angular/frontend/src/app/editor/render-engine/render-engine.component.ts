@@ -6,7 +6,7 @@ import * as Stats from 'stats.js';
 import {environment} from 'src/environments/environment';
 import {GameMockService} from 'src/app/game/renderer/game-mock.service';
 import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
-import {Loader} from 'three/editor/js/Loader';
+// TODO import {Loader} from 'three/editor/js/Loader';
 import {
   ThreeJsRendererServiceImpl,
   ThreeJsRendererServiceMouseEvent,
@@ -113,8 +113,8 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
       }
     }
 
-    let loader = new Loader(callback);
-    loader.loadFiles(event.files);
+    // TODO let loader = new Loader(callback);
+    // TODO loader.loadFiles(event.files);
   }
 
   onDumpAll() {

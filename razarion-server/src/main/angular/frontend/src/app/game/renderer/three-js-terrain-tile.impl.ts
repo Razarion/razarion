@@ -24,6 +24,8 @@ import {
 import {ThreeJsModelService} from "./three-js-model.service";
 import {getImageUrl} from "../../common";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
+import MeshBasicNodeMaterial from "three/examples/jsm/nodes/materials/MeshBasicNodeMaterial";
+
 
 const splattingSlopeVertexShader = `
 attribute float slopeFactor;
@@ -279,7 +281,15 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
       geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
       geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
-      let slope = new Mesh(geometry, material);
+      let nodeMaterial = new MeshBasicNodeMaterial();
+      // nodeMaterial.clearcoatNode = float(1);
+      // nodeMaterial.roughnessNode = float(0.1);
+      // nodeMaterial.metalnessNode = float(0);
+      // nodeMaterial.colorNode = color(0xffffff);
+      // nodeMaterial.normalNode = normalMap(texture(normalMap4));
+      // y scale is negated to compensate for normal map handedness.
+      // nodeMaterial.clearcoatNormalNode = normalMap(texture(clearcoatNormalMap), vec2(2.0, -2.0));
+      let slope = new Mesh(geometry, nodeMaterial);
       slope.name = "Slope";
       slope.receiveShadow = true;
       this.group.add(slope);
