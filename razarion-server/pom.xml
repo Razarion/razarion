@@ -261,7 +261,7 @@
                             <workingDirectory>${project.basedir}/src/main/angular/frontend</workingDirectory>
                             <arguments>
                                 <argument>build</argument>
-                                <argument>--prod</argument>
+                                <argument>--configuration=production</argument>
                                 <!--<argument>&#45;&#45;env=dev</argument>-->
                                 <argument>--output-path=${project.build.directory}/ROOT</argument>
                                 <argument>--base-href=/</argument>

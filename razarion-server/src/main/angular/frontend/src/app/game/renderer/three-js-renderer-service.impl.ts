@@ -24,7 +24,6 @@ import {ThreeJsModelService} from "./three-js-model.service";
 import {ShadowMapViewer} from 'three/examples/jsm/utils/ShadowMapViewer';
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import {Intersection} from "three/src/core/Raycaster";
-import { nodeFrame as nodeFrame } from 'three/examples/jsm/renderers/webgl/nodes/WebGLNodes';
 export class ThreeJsRendererServiceMouseEvent {
   object3D: Object3D | null = null;
   pointOnObject3D: Vector3 | null = null;
@@ -153,17 +152,16 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       requestAnimationFrame(animate);
       self.scrollCamera(delta, self.camera);
 
-      self.renderer.setRenderTarget(self.slopeRenderTarget);
-      self.renderer.clear();
-      self.renderer.render(self.slopeScene, self.camera);
+      // self.renderer.setRenderTarget(self.slopeRenderTarget);
+      // self.renderer.clear();
+      // self.renderer.render(self.slopeScene, self.camera);
+      //
+      // self.renderer.setRenderTarget(self.slopeInnerGroundRenderTarget);
+      // self.renderer.clear();
+      // self.renderer.render(self.slopeInnerGroundScene, self.camera);
 
-      self.renderer.setRenderTarget(self.slopeInnerGroundRenderTarget);
-      self.renderer.clear();
-      self.renderer.render(self.slopeInnerGroundScene, self.camera);
-
-      self.renderer.setRenderTarget(null);
-      self.renderer.clear();
-      nodeFrame.update();
+      // self.renderer.setRenderTarget(null);
+      // self.renderer.clear();
       self.renderer.render(self.scene, self.camera);
 
       lightShadowMapViewer.render(self.renderer);

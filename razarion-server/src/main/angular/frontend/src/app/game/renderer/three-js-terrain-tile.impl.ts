@@ -15,9 +15,9 @@ import {
   Mesh,
   MeshBasicMaterial,
   RepeatWrapping,
-  Scene,
+  Scene, ShaderLib,
   ShaderMaterial,
-  TextureLoader,
+  TextureLoader, UniformsUtils,
   Vector3,
   WebGLRenderTarget
 } from "three";
@@ -25,6 +25,7 @@ import {ThreeJsModelService} from "./three-js-model.service";
 import {getImageUrl} from "../../common";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import MeshBasicNodeMaterial from "three/examples/jsm/nodes/materials/MeshBasicNodeMaterial";
+import {color} from "three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements";
 
 
 const splattingSlopeVertexShader = `
@@ -281,11 +282,12 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
       geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
       geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
-      let nodeMaterial = new MeshBasicNodeMaterial();
+      const uniforms = UniformsUtils.clone(ShaderLib.standard.uniforms)
+      let nodeMaterial = new MeshBasicNodeMaterial({uniforms}); // Prevents (WebGLRenderer.js:1437) TypeError: Cannot set properties of undefined (setting 'value')
       // nodeMaterial.clearcoatNode = float(1);
       // nodeMaterial.roughnessNode = float(0.1);
       // nodeMaterial.metalnessNode = float(0);
-      // nodeMaterial.colorNode = color(0xffffff);
+      nodeMaterial.colorNode = color(0xff0000);
       // nodeMaterial.normalNode = normalMap(texture(normalMap4));
       // y scale is negated to compensate for normal map handedness.
       // nodeMaterial.clearcoatNormalNode = normalMap(texture(clearcoatNormalMap), vec2(2.0, -2.0));
