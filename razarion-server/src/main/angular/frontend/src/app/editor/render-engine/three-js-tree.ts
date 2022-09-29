@@ -14,7 +14,6 @@ export class ThreeJsTree {
       data = camera;
     });
     threeJsTree.rootTreeNodes.push(threeJsTree.recursivelyAddTreeNodes(threeJsRendererServiceImpl.scene));
-    threeJsTree.rootTreeNodes.push(threeJsTree.recursivelyAddTreeNodes(threeJsRendererServiceImpl.slopeScene));
     return threeJsTree;
   }
 

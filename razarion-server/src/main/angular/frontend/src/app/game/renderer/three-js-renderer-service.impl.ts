@@ -12,8 +12,7 @@ import {
   PerspectiveCamera,
   Raycaster,
   Vector2,
-  Vector3,
-  WebGLRenderTarget
+  Vector3
 } from "three";
 import {WebGLRenderer} from "three/src/renderers/WebGLRenderer";
 import {Scene} from "three/src/scenes/Scene";
@@ -24,6 +23,8 @@ import {ThreeJsModelService} from "./three-js-model.service";
 import {ShadowMapViewer} from 'three/examples/jsm/utils/ShadowMapViewer';
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import {Intersection} from "three/src/core/Raycaster";
+import {nodeFrame} from "three/examples/jsm/renderers/webgl/nodes/WebGLNodes";
+
 export class ThreeJsRendererServiceMouseEvent {
   object3D: Object3D | null = null;
   pointOnObject3D: Vector3 | null = null;
@@ -40,21 +41,15 @@ export interface ThreeJsRendererServiceMouseEventListener {
 @Injectable()
 export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
   scene = new Scene();
-  slopeScene = new Scene();
-  slopeInnerGroundScene = new Scene();
   camera: PerspectiveCamera = new PerspectiveCamera;
   private keyPressed: Map<string, number> = new Map();
   private canvasDiv!: HTMLDivElement;
   private renderer!: WebGLRenderer
   private directionalLight!: DirectionalLight
-  private slopeRenderTarget!: WebGLRenderTarget;
-  private slopeInnerGroundRenderTarget!: WebGLRenderTarget;
   private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.scene.name = "Main Scene"
-    this.slopeScene.name = "Splatting Slope"
-    this.slopeInnerGroundScene.name = "Splatting Slope Ground"
   }
 
   private static createHUD(light: Light): ShadowMapViewer {
@@ -76,8 +71,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.renderer = new WebGLRenderer({antialias: true});
     this.renderer.setSize(canvasHolder.offsetWidth, canvasHolder.offsetHeight);
     canvasHolder.appendChild(this.renderer.domElement);
-    this.slopeInnerGroundRenderTarget = new WebGLRenderTarget(canvasHolder.offsetWidth, canvasHolder.offsetHeight);
-    this.slopeRenderTarget = new WebGLRenderTarget(canvasHolder.offsetWidth, canvasHolder.offsetHeight);
 
     // ----- Keyboard -----
     const self = this;
@@ -117,8 +110,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     let ambientLight = new AmbientLight(0xFFFFFF, 0.70);
     ambientLight.name = "Ambient Light"
     this.scene.add(ambientLight);
-    this.slopeScene.add(ambientLight.clone());
-    this.slopeInnerGroundScene.add(ambientLight.clone());
 
     this.directionalLight = new DirectionalLight(0xFFFFFF, 0.80);
     this.directionalLight.name = "Directional Light"
@@ -140,8 +131,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     let lightShadowMapViewer = ThreeJsRendererServiceImpl.createHUD(this.directionalLight);
 
     this.scene.add(this.directionalLight);
-    this.slopeScene.add(this.directionalLight.clone());
-    this.slopeInnerGroundScene.add(this.directionalLight.clone());
 
     // ----- Render loop -----
     function animate() {
@@ -152,16 +141,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       requestAnimationFrame(animate);
       self.scrollCamera(delta, self.camera);
 
-      // self.renderer.setRenderTarget(self.slopeRenderTarget);
-      // self.renderer.clear();
-      // self.renderer.render(self.slopeScene, self.camera);
-      //
-      // self.renderer.setRenderTarget(self.slopeInnerGroundRenderTarget);
-      // self.renderer.clear();
-      // self.renderer.render(self.slopeInnerGroundScene, self.camera);
-
-      // self.renderer.setRenderTarget(null);
-      // self.renderer.clear();
+      nodeFrame.update();
       self.renderer.render(self.scene, self.camera);
 
       lightShadowMapViewer.render(self.renderer);
@@ -175,10 +155,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       return new ThreeJsTerrainTileImpl(terrainTile,
         defaultGroundConfigId,
         this.scene,
-        this.slopeScene,
-        this.slopeInnerGroundScene,
-        this.slopeRenderTarget,
-        this.slopeInnerGroundRenderTarget,
         this.gwtAngularService,
         this.threeJsModelService,
         this.threeJsWaterRenderService);
@@ -200,8 +176,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
   onResize() {
     this.renderer.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent strange loop
-    this.slopeInnerGroundRenderTarget.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent strange loop
-    this.slopeRenderTarget.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent strange loop
     this.camera.aspect = (this.canvasDiv.clientWidth - 5) / this.canvasDiv.clientHeight;
     this.camera.updateProjectionMatrix();
     this.onViewFieldChanged();
