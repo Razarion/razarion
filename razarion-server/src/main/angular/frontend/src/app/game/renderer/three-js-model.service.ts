@@ -111,10 +111,12 @@ export class ThreeJsModelService {
 
         object3D.castShadow = true;
 
-        if((<any>object3D).isMesh && (<any>object3D).material) {
-          (<any>object3D).material.alphaToCoverage = true;
-          (<any>object3D).material. depthWrite = true;
-        }
+        // TODO remove
+        //if((<any>object3D).isMesh && (<any>object3D).material) {
+        //  (<any>object3D).material.alphaToCoverage = true;
+        //  (<any>object3D).material. depthWrite = true;
+        //}
+        // TODO remove ends
 
         const children = object3D.children;
         for (let i = 0, l = children.length; i < l; i++) {
