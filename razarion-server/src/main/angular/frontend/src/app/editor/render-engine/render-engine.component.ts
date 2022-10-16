@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy,} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {AngularTreeNodeData, GwtAngularPropertyTable, ObjectNameId} from "../../gwtangular/GwtAngularFacade";
@@ -275,6 +275,10 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
 
   onShowCenterPosition() {
     this.centerGroundPosition = this.threeJsRendererServiceImpl.setupCenterGroundPosition();
+  }
+
+  onStartNodeEditor(iframe: any) {
+    iframe.contentWindow.initNodesEditor(this.threeJsRendererServiceImpl.scene, this.selectedThreeJsObject)
   }
 
   private setupRenderEngineDisplayTree() {

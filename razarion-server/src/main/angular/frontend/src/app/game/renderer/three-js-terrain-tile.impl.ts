@@ -15,14 +15,10 @@ import {
   Mesh,
   MeshBasicMaterial,
   Scene,
-  ShaderLib,
-  UniformsUtils,
   Vector3
 } from "three";
 import {ThreeJsModelService} from "./three-js-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import {color} from "three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements";
-import MeshBasicNodeMaterial from "three/examples/jsm/nodes/materials/MeshBasicNodeMaterial";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   private group = new Group();
@@ -173,37 +169,10 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
       geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
       geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
-      const uniforms = UniformsUtils.clone(ShaderLib.standard.uniforms)
-      let nodeMaterial = new MeshBasicNodeMaterial({uniforms}); // Prevents (WebGLRenderer.js:1437) TypeError: Cannot set properties of undefined (setting 'value')
-        // nodeMaterial.clearcoatNode = float(1);
-        // nodeMaterial.roughnessNode = float(0.1);
-      // nodeMaterial.metalnessNode = float(0);
-      // nodeMaterial.colorNode = new TextureNode((<MeshStandardMaterial>material).map!);
-       nodeMaterial.colorNode = color(0xFF00FF);
-      // nodeMaterial.normalNode = normalMap(texture((<MeshStandardMaterial>material).normalMap!));
-      // y scale is negated to compensate for normal map handedness.
-      // nodeMaterial.clearcoatNormalNode = normalMap(texture(clearcoatNormalMap), vec2(2.0, -2.0));
-      // nodeMaterial.copy(<MeshStandardNodeMaterial>material)
-      let slope = new Mesh(geometry, nodeMaterial);
+      let slope = new Mesh(geometry, material);
       slope.name = "Slope";
       slope.receiveShadow = true;
       this.group.add(slope);
     }
-
-    // const meshNormalMaterial = new MeshNormalMaterial()
-    // meshNormalMaterial.normalMap = (<any>material).normalMap;
-    // if ((<any>material).map && meshNormalMaterial.normalMap) {
-    //   meshNormalMaterial.normalMap.repeat = (<any>material).map.repeat;
-    //   if ((<any>material).normalScale) {
-    //     meshNormalMaterial.normalScale = (<any>material).normalScale
-    //   }
-    // }
-    // const slope = new Mesh(geometry, meshNormalMaterial);
-
-    // const meshBasicMaterial = new MeshBasicMaterial({ color: 0x8888ff });
-    // const slope = new Mesh(geometry, meshBasicMaterial);
-
-    // const normHelper = new VertexNormalsHelper( slope, 2, 0x00ff00);
-    // this.group.add(normHelper);
   }
 }

@@ -27,11 +27,27 @@
         </div>
       </div>
       <div class="field grid">
-        Position <p-button type="button" icon="pi pi-eye" styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
-                                   (onClick)="onShowCenterPosition()"></p-button>
+        Position
+        <p-button type="button" icon="pi pi-eye"
+                  styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+                  (onClick)="onShowCenterPosition()"></p-button>
         <div class="col">
-          {{centerGroundPosition?.x | number}} : {{centerGroundPosition?.y | number}} (z:{{centerGroundPosition?.z | number}})
+          {{centerGroundPosition?.x | number}} : {{centerGroundPosition?.y | number}}
+          (z:{{centerGroundPosition?.z | number}})
         </div>
+      </div>
+      <div class="field grid">
+        Selected
+        <div class="col">
+          {{selectedThreeJsName}}
+        </div>
+      </div>
+    </p-panel>
+  </div>
+  <div class="mr-2">
+    <p-panel header="Node Editor">
+      <div class="field grid">
+        <iframe style="width: 1000px;height: 800px;" src="/assets/nodes-editor.html" #iframe (load)="onStartNodeEditor(iframe)"></iframe>
       </div>
     </p-panel>
   </div>
@@ -80,20 +96,22 @@
       <div class="field grid">
         <label for="loadModel" class="col-fixed" style="width:100px">Three.js Model</label>
         <div class="col">
-          <p-dropdown id="loadModel" [placeholder]="'...'" (onChange)="onLoadThreeJsModel($event.value)" [options]="threeJsModels">
+          <p-dropdown id="loadModel" [placeholder]="'...'" (onChange)="onLoadThreeJsModel($event.value)"
+                      [options]="threeJsModels">
           </p-dropdown>
         </div>
       </div>
-        <p-splitter layout="vertical">
-          <ng-template pTemplate>
-            <p-tree [value]="treeLoadedThreeJsModel" selectionMode="single" (onNodeSelect)="onTreeLoadedSelectionChanged($event)"
-                    scrollHeight="200px">
-            </p-tree>
-          </ng-template>
-          <ng-template pTemplate>
-            <property-table [angular-tree-node-data]=loadedGwtAngularPropertyTable></property-table>
-          </ng-template>
-        </p-splitter>
+      <p-splitter layout="vertical">
+        <ng-template pTemplate>
+          <p-tree [value]="treeLoadedThreeJsModel" selectionMode="single"
+                  (onNodeSelect)="onTreeLoadedSelectionChanged($event)"
+                  scrollHeight="200px">
+          </p-tree>
+        </ng-template>
+        <ng-template pTemplate>
+          <property-table [angular-tree-node-data]=loadedGwtAngularPropertyTable></property-table>
+        </ng-template>
+      </p-splitter>
     </p-panel>
   </div>
   <div class="mr-2">
