@@ -63,19 +63,22 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
             throw new Error(`SlopeConfig has no threeJsMaterial: ${slopeConfig.toString()}`);
           }
           if (terrainSlopeTile.outerSlopeGeometry !== null && terrainSlopeTile.outerSlopeGeometry !== undefined) {
-            this.setupSlopeGeometry(terrainSlopeTile.outerSlopeGeometry,
+            this.setupSlopeGeometry(slopeConfig,
+              terrainSlopeTile.outerSlopeGeometry,
               threeJsModelService.getMaterial(slopeConfig.getThreeJsMaterial()),
               _this.evalGroundMaterial(null),
               slopeConfig.getOuterSlopeSplattingConfig());
           }
           if (terrainSlopeTile.centerSlopeGeometry !== null && terrainSlopeTile.centerSlopeGeometry !== undefined) {
-            this.setupSlopeGeometry(terrainSlopeTile.centerSlopeGeometry,
+            this.setupSlopeGeometry(slopeConfig,
+              terrainSlopeTile.centerSlopeGeometry,
               threeJsModelService.getMaterial(slopeConfig.getThreeJsMaterial()),
               null,
               null);
           }
           if (terrainSlopeTile.innerSlopeGeometry !== null && terrainSlopeTile.innerSlopeGeometry !== undefined) {
-            this.setupSlopeGeometry(terrainSlopeTile.innerSlopeGeometry,
+            this.setupSlopeGeometry(slopeConfig,
+              terrainSlopeTile.innerSlopeGeometry,
               threeJsModelService.getMaterial(slopeConfig.getThreeJsMaterial()),
               _this.evalGroundMaterial(slopeConfig),
               slopeConfig.getInnerSlopeSplattingConfig());
@@ -162,7 +165,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     }
   }
 
-  private setupSlopeGeometry(slopeGeometry: SlopeGeometry, material: Material, groundMaterial: Material | null, splatting: SlopeSplattingConfig | null): void {
+  private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: Material, groundMaterial: Material | null, splatting: SlopeSplattingConfig | null): void {
     if (groundMaterial && splatting) {
     } else {
       let geometry = new BufferGeometry();
@@ -170,7 +173,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
       geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
       let slope = new Mesh(geometry, material);
-      slope.name = "Slope";
+      slope.name = `Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`;
       slope.receiveShadow = true;
       this.group.add(slope);
     }
