@@ -64,10 +64,10 @@
         </div>
       </div>
       <div class="field grid">
-        <label for="Export" class="col-fixed" style="width:100px">Material only</label>
+        <label for="Export" class="col-fixed" style="width:100px">Nodes Material only</label>
         <div class="col">
-          <p-checkbox id="Export" [(ngModel)]="exportMaterialOnly" [binary]="true"
-                      [disabled]="selectedThreeJsObject == null || !selectedThreeJsObject.material"></p-checkbox>
+          <p-checkbox id="Export" [(ngModel)]="exportNodesMaterialOnly" [binary]="true"
+                      [disabled]="selectedThreeJsObject == null || !selectedThreeJsObject.material || !selectedThreeJsObject.material.isNodeMaterial"></p-checkbox>
         </div>
       </div>
       <div class="field grid">

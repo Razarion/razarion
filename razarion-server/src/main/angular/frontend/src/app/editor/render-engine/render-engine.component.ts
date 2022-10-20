@@ -15,7 +15,7 @@ import {
 import {MessageService, TreeNode} from 'primeng/api';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {URL_THREE_JS_MODEL_EDITOR} from 'src/app/common';
-import {BufferAttribute, BufferGeometry, Mesh, Object3D, REVISION, Scene, Vector3} from 'three';
+import {Object3D, REVISION, Scene, Vector3} from 'three';
 import {ThreeJsPropertyTable} from "./three-js-property-table";
 import {ThreeJsTree} from "./three-js-tree";
 import {EditorService} from "../editor-service";
@@ -42,7 +42,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   selectedThreeJsModel: any = null;
   selectedThreeJsName: string | null = null;
   selectedThreeJsObject: any | null = null;
-  exportMaterialOnly: boolean = false;
+  exportNodesMaterialOnly: boolean = false;
   threeJsTree!: ThreeJsTree;
 
   constructor(private gwtAngularService: GwtAngularService,
@@ -156,51 +156,37 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     let _this = this;
     const exporter = new GLTFExporter();
     try {
-      let uploadObject = this.selectedThreeJsObject;
-      if (this.exportMaterialOnly) {
-        let geometry = new BufferGeometry();
-        geometry.setAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 0, 1, -1, 0, -1, 1, 0]), 3));
-        uploadObject = new Mesh(geometry, this.selectedThreeJsObject.material);
-        uploadObject.name = "Fake Mesh for Material"
+      if (this.exportNodesMaterialOnly) {
+        if (!this.selectedThreeJsObject.material) {
+          throw new Error("No Material")
+        }
+        if (!this.selectedThreeJsObject.material.isNodeMaterial) {
+          throw new Error("Material is not a nodes material")
+        }
+        this.restUpload(_this, new Blob(
+            [JSON.stringify(this.selectedThreeJsObject.material.toJSON())],
+            {type: 'application/json'}));
+      } else {
+        exporter.parse(this.selectedThreeJsObject,
+          (gltf: any) => {
+            this.restUpload(_this, new Blob([gltf]));
+          },
+          (error: any) => {
+            console.warn(error);
+            _this.messageService.add({
+              severity: 'error',
+              summary: `Can not save GLTF`,
+              detail: String(error),
+              sticky: true
+            });
+          },
+          {binary: true});
       }
-      exporter.parse(uploadObject,
-        (gltf: any) => {
-          const httpOptions = {
-            headers: new HttpHeaders({
-              'Content-Type': 'application/octet-stream'
-            })
-          };
-          _this.http.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${_this.selectedThreeJsModel.id}`, new Blob([gltf]), httpOptions)
-            .subscribe({
-              complete: () => _this.messageService.add({
-                severity: 'success',
-                summary: 'Save successful'
-              }),
-              error: (error: any) => {
-                _this.messageService.add({
-                  severity: 'error',
-                  summary: `Save failed`,
-                  detail: String(error),
-                  sticky: true
-                });
-              }
-            })
-        },
-        (error: any) => {
-          console.warn(error);
-          _this.messageService.add({
-            severity: 'error',
-            summary: `Can not export GLTF`,
-            detail: String(error),
-            sticky: true
-          });
-        },
-        {binary: true});
     } catch (error) {
       console.warn(error);
       this.messageService.add({
         severity: 'error',
-        summary: `Can not export GLTF`,
+        summary: `Can not save Three.js model`,
         detail: String(error),
         sticky: true
       });
@@ -210,35 +196,43 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
   onDumpSelected() {
     const exporter = new GLTFExporter();
     try {
-      let uploadObject = this.selectedThreeJsObject;
-      if (this.exportMaterialOnly) {
-        let geometry = new BufferGeometry();
-        geometry.setAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 0, 1, -1, 0, -1, 1, 0]), 3));
-        uploadObject = new Mesh(geometry, this.selectedThreeJsObject.material);
-        uploadObject.name = "Fake Mesh for Material"
+      if (this.exportNodesMaterialOnly) {
+        if (!this.selectedThreeJsObject.material) {
+          throw new Error("No Material")
+        }
+        if (!this.selectedThreeJsObject.material.isNodeMaterial) {
+          throw new Error("Material is not a nodes material")
+        }
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(new Blob(
+          [JSON.stringify(this.selectedThreeJsObject.material.toJSON())],
+          {type: 'application/json'}));
+        link.setAttribute("download", "dump-nodes-material.json");
+        link.click();
+      } else {
+        exporter.parse(this.selectedThreeJsObject,
+          (gltf: any) => {
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(new Blob([gltf]));
+            link.setAttribute("download", "dump-selected.gltf");
+            link.click();
+          },
+          (error: any) => {
+            console.warn(error);
+            _this.messageService.add({
+              severity: 'error',
+              summary: `Can not export GLTF`,
+              detail: String(error),
+              sticky: true
+            });
+          },
+          {binary: true});
       }
-      exporter.parse(uploadObject,
-        (gltf: any) => {
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(new Blob([gltf]));
-          link.setAttribute("download", "dump-selected.gltf");
-          link.click();
-        },
-        (error: any) => {
-          console.warn(error);
-          _this.messageService.add({
-            severity: 'error',
-            summary: `Can not export GLTF`,
-            detail: String(error),
-            sticky: true
-          });
-        },
-        {binary: true});
     } catch (error) {
       console.warn(error);
       this.messageService.add({
         severity: 'error',
-        summary: `Can not export GLTF`,
+        summary: `Can not export Three.js model`,
         detail: String(error),
         sticky: true
       });
@@ -281,6 +275,29 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
     iframe.contentWindow.initNodesEditor(this.threeJsRendererServiceImpl.scene, this.selectedThreeJsObject)
   }
 
+  private restUpload(_this: this, blob: Blob) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/octet-stream'
+      })
+    };
+    _this.http.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${_this.selectedThreeJsModel.id}`, blob, httpOptions)
+      .subscribe({
+        complete: () => _this.messageService.add({
+          severity: 'success',
+          summary: 'Save successful'
+        }),
+        error: (error: any) => {
+          _this.messageService.add({
+            severity: 'error',
+            summary: `Save failed`,
+            detail: String(error),
+            sticky: true
+          });
+        }
+      })
+  }
+
   private setupRenderEngineDisplayTree() {
     this.threeJsTree = ThreeJsTree.createFromRendererService((this.threeJsRendererServiceImpl));
     this.renderEngineDisplayTree = this.threeJsTree.getRootTreeNodes();
@@ -293,7 +310,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy, Aft
 
     this.selectedThreeJsObject = object3D;
     this.selectedThreeJsName = object3D.name;
-    this.exportMaterialOnly = false;
+    this.exportNodesMaterialOnly = false;
 
     this.gwtAngularPropertyTable = new class implements GwtAngularPropertyTable {
       configId: number = -999888777;
