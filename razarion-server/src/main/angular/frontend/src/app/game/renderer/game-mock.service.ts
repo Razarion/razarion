@@ -646,6 +646,10 @@ export class GameMockService {
           return threeJsModelConfigJson.internalName;
         }
 
+        getType(): ThreeJsModelConfig.Type {
+          return ThreeJsModelConfig.Type[<ThreeJsModelConfig.Type>threeJsModelConfigJson.type];
+        }
+
       });
     })
     return threeJsModelConfigs;

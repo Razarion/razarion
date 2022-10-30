@@ -230,6 +230,16 @@ export interface ThreeJsModelConfig {
   getId(): number;
 
   getInternalName(): string;
+
+  getType(): ThreeJsModelConfig.Type
+
+}
+
+export namespace ThreeJsModelConfig {
+  export enum Type {
+    GLTF = "GLTF",
+    NODES_MATERIAL = "NODES_MATERIAL"
+  }
 }
 
 export interface ThreeJsModelPackConfig {

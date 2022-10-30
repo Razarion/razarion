@@ -67,7 +67,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         beachConfig.id(2);
         beachConfig.setWaterConfigId(WATER_CONFIG_ID);
         beachConfig.horizontalSpace(5);
-        beachConfig.setThreeJsMaterial(8884);
+        beachConfig.setThreeJsMaterial(8885);
         beachConfig.setGroundConfigId(GROUND_CONFIG_ID);
         beachConfig.setInterpolateNorm(true);
         beachConfig.setSlopeShapes(Arrays.asList(
@@ -118,10 +118,10 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
 
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
-                new ThreeJsModelConfig().id(8881),
-                new ThreeJsModelConfig().id(8882),
-                new ThreeJsModelConfig().id(8883),
-                new ThreeJsModelConfig().id(8884)
+                new ThreeJsModelConfig().id(8881).type(ThreeJsModelConfig.Type.GLTF),
+                new ThreeJsModelConfig().id(8882).type(ThreeJsModelConfig.Type.GLTF),
+                new ThreeJsModelConfig().id(8883).type(ThreeJsModelConfig.Type.GLTF),
+                new ThreeJsModelConfig().id(8885).type(ThreeJsModelConfig.Type.NODES_MATERIAL)
         );
 
         List<ThreeJsModelPackConfig> threeJsModelPackConfigs = Arrays.asList(
@@ -140,7 +140,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                         .position(new Vertex(0, 0, 0))
                         .scale(new Vertex(0.01, 0.01, 0.01))
                         .rotation(new Vertex(0, 0, 0))
-                        .namePath(Arrays.asList("o1", "o2", "03")),
+                        .namePath(Arrays.asList("Sketchfab_Scene", "Sketchfab_model", "de49941573ca4a6cb3fbcf3e4d72f085fbx", "RootNode", "Mid_4", "Object_4", "Mid_4_MID_0")),
                 new ThreeJsModelPackConfig()
                         .id(3)
                         .threeJsModelId(8881)
@@ -148,7 +148,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                         .position(new Vertex(0, 0, 0))
                         .scale(new Vertex(0.01, 0.01, 0.01))
                         .rotation(new Vertex(0, 0, 0))
-                        .namePath(Arrays.asList("o1", "o2", "03"))
+                        .namePath(Arrays.asList("Sketchfab_Scene", "Sketchfab_model", "de49941573ca4a6cb3fbcf3e4d72f085fbx", "RootNode", "Mid_4", "Object_4", "Mid_4_MID_0"))
         );
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();

@@ -5,6 +5,11 @@ import {Group, Material, Object3D} from "three";
 import {GLTF, GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
+// import NodeObjectLoader from "three/examples/jsm/nodes/loaders/NodeObjectLoader";
+// import {NodeMaterialLoader} from "three/examples/jsm/nodes/Nodes";
+import {NodeObjectLoader} from "three/examples/jsm/nodes/Nodes";
+
+
 
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
@@ -12,6 +17,7 @@ import {GwtHelper} from "../../gwtangular/GwtHelper";
 export class ThreeJsModelService {
     private threeJsModelMap: Map<number, any> = new Map();
     private gwtAngularService!: GwtAngularService;
+    private loader = new GLTFLoader();
 
     init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
       const _this = this;
@@ -19,7 +25,6 @@ export class ThreeJsModelService {
 
       return new Promise<void>((resolve, reject) => {
             try {
-                const loader = new GLTFLoader();
                 let loadingCount = threeJsModelConfigs.length;
                 function handleResolve() {
                     loadingCount--;
@@ -28,24 +33,60 @@ export class ThreeJsModelService {
                     }
                 }
                 threeJsModelConfigs.forEach(threeJsModelConfig => {
-                    loader.load(`${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`,
-                        (gltf: GLTF) => {
-                            _this.threeJsModelMap.set(threeJsModelConfig.getId(), gltf.scene);
-                            handleResolve();
-                        },
-                        (progressEvent: ProgressEvent) => {
-                            // TODO console.info(`Loading Three.js model: '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})': ${progressEvent.loaded}/${progressEvent.total}`);
-                        },
-                        (error: ErrorEvent) => {
-                            console.error(error);
-                            handleResolve();
-                        });
+                  const url = `${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`;
+                  switch (GwtHelper.gwtIssueStringEnum(threeJsModelConfig.getType())) {
+                    case ThreeJsModelConfig.Type.GLTF:
+                      this.blobToGltf(url, threeJsModelConfig, handleResolve);
+                      break;
+
+                    case ThreeJsModelConfig.Type.NODES_MATERIAL:
+                      this.blobToNodesMaterial(url, threeJsModelConfig, handleResolve);
+                      break;
+
+                    default:
+                      console.warn(`Unknown type '${threeJsModelConfig.getType()}' in ThreeJsModelConfig (${threeJsModelConfig.getInternalName()}[${threeJsModelConfig.getId()}])`);
+                      handleResolve();
+                      break;
+                  }
+
+
                 });
             } catch (error) {
                 console.error(error);
                 reject(error);
             }
         });
+    }
+
+    private blobToGltf(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
+      this.loader.load(url,
+        (gltf: GLTF) => {
+          this.threeJsModelMap.set(threeJsModelConfig.getId(), gltf.scene);
+          handleResolve();
+        },
+        (progressEvent: ProgressEvent) => {
+          // TODO console.info(`Loading Three.js model: '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})': ${progressEvent.loaded}/${progressEvent.total}`);
+        },
+        (error: ErrorEvent) => {
+          console.error(error);
+          handleResolve();
+        });
+    }
+
+    private blobToNodesMaterial(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
+      let nodeObjectLoader = new NodeObjectLoader();
+      nodeObjectLoader.load(url,
+        (nodeMaterial :any) =>{
+        console.warn(nodeMaterial)
+          this.threeJsModelMap.set(threeJsModelConfig.getId(), nodeMaterial);
+          handleResolve();
+        },
+        ()=>{},
+        (event: Error | ErrorEvent)=>{
+          console.warn(event)
+          handleResolve();
+        }
+      );
     }
 
     cloneObject3D(threeJsModelPackConfigId: number): Object3D {
@@ -112,10 +153,10 @@ export class ThreeJsModelService {
         object3D.castShadow = true;
 
         // TODO remove
-        //if((<any>object3D).isMesh && (<any>object3D).material) {
-        //  (<any>object3D).material.alphaToCoverage = true;
-        //  (<any>object3D).material. depthWrite = true;
-        //}
+        if((<any>object3D).isMesh && (<any>object3D).material) {
+          (<any>object3D).material.alphaToCoverage = true;
+          (<any>object3D).material. depthWrite = true;
+        }
         // TODO remove ends
 
         const children = object3D.children;
@@ -164,22 +205,17 @@ export class ThreeJsModelService {
     }
 
     getMaterial(threeJsModelId: number): Material {
-        if(threeJsModelId === undefined) {
-          throw new Error(`Material undefined`);
-        }
+        let threeJsModel = this.getThreeJsModel(threeJsModelId);
 
-        threeJsModelId = GwtHelper.gwtIssueNumber(threeJsModelId);
-
-        let threeJsObject = this.threeJsModelMap.get(threeJsModelId);
-        if(threeJsObject === undefined) {
-          throw new Error(`No Material for threeJsModelId '${threeJsModelId}'.`);
-        }
-
-      let material:Material | undefined = this.findMaterialRecursively(threeJsObject);
+        let material:Material | undefined = this.findMaterialRecursively(threeJsModel);
         if(material === undefined) {
             throw new Error(`No material found in threeJsModelId '${threeJsModelId}' does not have a material.`);
         }
         return material;
+    }
+
+    getNodesMaterial(threeJsModelId: number): Material {
+        return this.getThreeJsModel(threeJsModelId);
     }
 
     private findMaterialRecursively(threeJsObject: any): Material | undefined {

@@ -30,6 +30,7 @@ public class ThreeJsModelEditorControllerTest extends AbstractCrudTest<ThreeJsMo
 
     @Override
     protected void setupUpdate() {
+        // TODO
     }
 
     @Test
@@ -50,6 +51,7 @@ public class ThreeJsModelEditorControllerTest extends AbstractCrudTest<ThreeJsMo
         Response response1 = getDefaultRestConnection().getTarget().proxy(ThreeJsModelController.class).getThreeJsModel(threeJsModelConfig.getId());
         Assert.assertEquals(200, response1.getStatus());
         Assert.fail("Verify content of response1");
+        Assert.fail("Verify all attributes (type etc)");
 
     }
 }

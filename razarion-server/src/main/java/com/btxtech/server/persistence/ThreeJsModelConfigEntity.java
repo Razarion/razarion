@@ -4,6 +4,8 @@ import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,17 +27,21 @@ public class ThreeJsModelConfigEntity {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] data;
+    @Enumerated(EnumType.STRING)
+    private ThreeJsModelConfig.Type type;
+
 
     public Integer getId() {
         return id;
     }
 
     public ThreeJsModelConfig toConfig() {
-        return new ThreeJsModelConfig().id(id).internalName(internalName);
+        return new ThreeJsModelConfig().id(id).internalName(internalName).type(type);
     }
 
     public void from(ThreeJsModelConfig config) {
-        this.internalName = config.getInternalName();
+        internalName = config.getInternalName();
+        type = config.getType();
     }
 
     public byte[] getData() {

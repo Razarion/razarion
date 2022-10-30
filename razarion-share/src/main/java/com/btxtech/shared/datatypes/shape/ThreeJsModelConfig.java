@@ -7,6 +7,7 @@ import jsinterop.annotations.JsType;
 public class ThreeJsModelConfig implements Config {
     private int id;
     private String internalName;
+    private Type type;
 
     @Override
     public int getId() {
@@ -27,6 +28,14 @@ public class ThreeJsModelConfig implements Config {
         this.internalName = internalName;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     public ThreeJsModelConfig id(int id) {
         setId(id);
         return this;
@@ -35,5 +44,15 @@ public class ThreeJsModelConfig implements Config {
     public ThreeJsModelConfig internalName(String internalName) {
         setInternalName(internalName);
         return this;
+    }
+
+    public ThreeJsModelConfig type(Type type) {
+        setType(type);
+        return this;
+    }
+
+    public enum Type {
+        GLTF,
+        NODES_MATERIAL
     }
 }

@@ -65,21 +65,21 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
           if (terrainSlopeTile.outerSlopeGeometry !== null && terrainSlopeTile.outerSlopeGeometry !== undefined) {
             this.setupSlopeGeometry(slopeConfig,
               terrainSlopeTile.outerSlopeGeometry,
-              threeJsModelService.getMaterial(slopeConfig.getThreeJsMaterial()),
+              threeJsModelService.getNodesMaterial(slopeConfig.getThreeJsMaterial()),
               _this.evalGroundMaterial(null),
               slopeConfig.getOuterSlopeSplattingConfig());
           }
           if (terrainSlopeTile.centerSlopeGeometry !== null && terrainSlopeTile.centerSlopeGeometry !== undefined) {
             this.setupSlopeGeometry(slopeConfig,
               terrainSlopeTile.centerSlopeGeometry,
-              threeJsModelService.getMaterial(slopeConfig.getThreeJsMaterial()),
+              threeJsModelService.getNodesMaterial(slopeConfig.getThreeJsMaterial()),
               null,
               null);
           }
           if (terrainSlopeTile.innerSlopeGeometry !== null && terrainSlopeTile.innerSlopeGeometry !== undefined) {
             this.setupSlopeGeometry(slopeConfig,
               terrainSlopeTile.innerSlopeGeometry,
-              threeJsModelService.getMaterial(slopeConfig.getThreeJsMaterial()),
+              threeJsModelService.getNodesMaterial(slopeConfig.getThreeJsMaterial()),
               _this.evalGroundMaterial(slopeConfig),
               slopeConfig.getInnerSlopeSplattingConfig());
           }
