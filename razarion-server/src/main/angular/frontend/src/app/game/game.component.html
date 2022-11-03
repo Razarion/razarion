@@ -1,8 +1,10 @@
 ﻿<div class="flex card-container overflow-hidden align-items-stretch" [style]="{height:'100%'}">
-  <div #canvasDiv class="flex-grow-1 flex-shrink-1 flex align-items-center justify-content-center" [style]="{height:'100%'}">
+  <div #canvasDiv>
+    <canvas #canvas [style]="{height:'100%'}"></canvas>
   </div>
   <div class="flex-none flex align-items-center justify-content-center" *ngFor="let editorModel of editorModels">
-    <app-editor-panel [editorModel]="editorModel" [gameComponent]="getGameComponent()" [mainCockpitComponent]="mainCockpit" [style]="{height:'100%'}"></app-editor-panel>
+    <app-editor-panel [editorModel]="editorModel" [gameComponent]="getGameComponent()"
+                      [mainCockpitComponent]="mainCockpit" [style]="{height:'100%'}"></app-editor-panel>
   </div>
 </div>
 

@@ -38,16 +38,26 @@ import {StringPropertyEditorComponent} from "./editor/property-table/editors/str
 import {EnumPropertyEditorComponent} from "./editor/property-table/editors/enum-property-editor.component";
 import {IntegerPropertyEditorComponent} from "./editor/property-table/editors/integer-property-editor.component";
 import {IntegerMapPropertyEditorComponent} from "./editor/property-table/editors/integer-map-property-editor.component";
-import {DecimalPositionPropertyEditorComponent} from "./editor/property-table/editors/decimal-position-property-editor.component";
+import {
+  DecimalPositionPropertyEditorComponent
+} from "./editor/property-table/editors/decimal-position-property-editor.component";
 import {DoublePropertyEditorComponent} from "./editor/property-table/editors/double-property-editor.component";
-import {CollectionReferencePropertyEditorComponent} from "./editor/property-table/editors/collection-reference-property-editor.component";
+import {
+  CollectionReferencePropertyEditorComponent
+} from "./editor/property-table/editors/collection-reference-property-editor.component";
 import {BooleanPropertyEditorComponent} from "./editor/property-table/editors/boolean-property-editor.component";
-import {PlaceConfigPropertyEditorComponent} from "./editor/property-table/editors/place-config-property-editor.component";
-import {Rectangle2dPropertyEditorComponent} from "./editor/property-table/editors/rectangle-2d-property-editor.component";
+import {
+  PlaceConfigPropertyEditorComponent
+} from "./editor/property-table/editors/place-config-property-editor.component";
+import {
+  Rectangle2dPropertyEditorComponent
+} from "./editor/property-table/editors/rectangle-2d-property-editor.component";
 import {RectanglePropertyEditorComponent} from "./editor/property-table/editors/rectangle-property-editor.component";
 import {IndexPropertyEditorComponent} from "./editor/property-table/editors/index-property-editor.component";
 import {VertexPropertyEditorComponent} from "./editor/property-table/editors/vertex-property-editor.component";
-import {ColladaStringPropertyEditorComponent} from "./editor/property-table/editors/collada-string-property-editor.component";
+import {
+  ColladaStringPropertyEditorComponent
+} from "./editor/property-table/editors/collada-string-property-editor.component";
 import {I18nStringPropertyEditorComponent} from "./editor/property-table/editors/i18n-string-property-editor.component";
 import {Polygon2dPropertyEditorComponent} from "./editor/property-table/editors/polygon-2d-property-editor.component";
 import {InputNumberModule} from 'primeng/inputnumber';
@@ -84,13 +94,10 @@ import {ListboxModule} from "primeng/listbox";
 import {ToolbarModule} from "primeng/toolbar";
 import {SplitterModule} from "primeng/splitter";
 import {ThreeJsWaterRenderService} from "./game/renderer/three-js-water-render.service";
-import {EulerPropertyEditorComponent} from "./editor/render-engine/editors/euler-property-editor.component";
-import {UserdataPropertyEditorComponent} from "./editor/render-engine/editors/userdata-property-editor.component";
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {AngleVertexEditorComponent} from "./editor/terrain-editor/angle-vertex-editor.component";
 import {VertexEditorComponent} from "./editor/terrain-editor/vertex-editor.component";
 import {TerrainObjectPositionComponent} from "./editor/terrain-editor/terrain-object-position.component";
-import {Vector3PropertyEditorComponent} from "./editor/render-engine/editors/vector3-property-editor.component";
 
 @NgModule({
   declarations: [
@@ -139,9 +146,6 @@ import {Vector3PropertyEditorComponent} from "./editor/render-engine/editors/vec
     ImageEditorComponent,
     ImageGalleryItemComponent,
     CollectionSelectorComponent,
-    EulerPropertyEditorComponent,
-    Vector3PropertyEditorComponent,
-    UserdataPropertyEditorComponent,
     AngleVertexEditorComponent,
     VertexEditorComponent,
     TerrainObjectPositionComponent

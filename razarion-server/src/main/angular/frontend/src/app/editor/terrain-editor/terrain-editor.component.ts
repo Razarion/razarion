@@ -121,7 +121,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
         newObject3D.position.y = threeJsRendererServiceMouseEvent.pointOnObject3D.y;
         newObject3D.position.z = threeJsRendererServiceMouseEvent.pointOnObject3D.z;
         (<any>newObject3D).razarionTerrainObjectConfigId = this.selectedTerrainObjectConfig.objectNameId.id;
-        this.threeJsRendererServiceImpl.scene.add(newObject3D);
+        // this.threeJsRendererServiceImpl.scene.add(newObject3D);
         let terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
         terrainObjectPosition.setTerrainObjectConfigId(this.selectedTerrainObjectConfig.objectNameId.id);
         terrainObjectPosition.setPosition(GwtInstance.newDecimalPosition(threeJsRendererServiceMouseEvent.pointOnObject3D.x, threeJsRendererServiceMouseEvent.pointOnObject3D.y));

@@ -1,17 +1,15 @@
-﻿import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FrontendService } from "../service/frontend.service";
-import { NavigationStart, Router } from "@angular/router";
-import { GwtAngularService } from "../gwtangular/GwtAngularService";
-import { EditorModel } from "../editor/editor-model";
-import { ItemCockpitComponent } from "./cockpit/item/item-cockpit.component";
-import { MainCockpitComponent } from "./cockpit/main/main-cockpit.component";
-import { CrashPanelComponent } from "../editor/crash-panel/crash-panel.component";
-import { ThreeJsRendererServiceImpl } from './renderer/three-js-renderer-service.impl';
-import { environment } from 'src/environments/environment';
-import { GameMockService } from './renderer/game-mock.service';
-import { ObjectLoader } from 'three';
-import { URL_MODEL } from '../common';
-import { ThreeJsModelService } from './renderer/three-js-model.service';
+﻿import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {FrontendService} from "../service/frontend.service";
+import {NavigationStart, Router} from "@angular/router";
+import {GwtAngularService} from "../gwtangular/GwtAngularService";
+import {EditorModel} from "../editor/editor-model";
+import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
+import {MainCockpitComponent} from "./cockpit/main/main-cockpit.component";
+import {CrashPanelComponent} from "../editor/crash-panel/crash-panel.component";
+import {ThreeJsRendererServiceImpl} from './renderer/three-js-renderer-service.impl';
+import {environment} from 'src/environments/environment';
+import {GameMockService} from './renderer/game-mock.service';
+import {ThreeJsModelService} from './renderer/three-js-model.service';
 
 
 @Component({
@@ -19,18 +17,18 @@ import { ThreeJsModelService } from './renderer/three-js-model.service';
   styleUrls: ['game.component.scss']
 })
 export class GameComponent implements OnInit {
-  @ViewChild('canvasDiv', { static: true })
-  canvasDiv!: ElementRef<HTMLDivElement>;
-  @ViewChild('mainCockpit', { static: true })
+  @ViewChild('canvas', {static: true})
+  canvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('mainCockpit', {static: true})
   mainCockpitComponent!: MainCockpitComponent;
-  @ViewChild('itemCockpitContainer', { static: true })
+  @ViewChild('itemCockpitContainer', {static: true})
   itemCockpitContainer!: ItemCockpitComponent;
   // TODO @ViewChild('loadingCover', {static: true})
   // TODO loadingCover?: OverlayPanel;
   editorModels: EditorModel[] = [];
 
   constructor(private frontendService: FrontendService,
-    private router: Router,
+              private router: Router,
     private gwtAngularService: GwtAngularService,
     private threeJsRendererService: ThreeJsRendererServiceImpl,
     private threeJsModelService: ThreeJsModelService,
@@ -40,17 +38,17 @@ export class GameComponent implements OnInit {
   ngOnInit(): void {
     this.gwtAngularService.crashListener = () => this.addEditorModel(new EditorModel("Crash Information Panel", CrashPanelComponent));
 
-    this.threeJsRendererService.setup(this.canvasDiv.nativeElement);
+    this.threeJsRendererService.setup(this.canvas.nativeElement);
 
     // @ts-ignore
     const resizeObserver = new ResizeObserver(entries => {
       for (let entry of entries) {
-        if (this.canvasDiv.nativeElement == entry.target) {
+        if (this.canvas.nativeElement == entry.target) {
           this.threeJsRendererService.onResize();
         }
       }
     });
-    resizeObserver.observe(this.canvasDiv.nativeElement);
+    resizeObserver.observe(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
       this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;

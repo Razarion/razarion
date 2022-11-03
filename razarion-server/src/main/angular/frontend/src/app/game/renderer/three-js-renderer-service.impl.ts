@@ -1,34 +1,16 @@
 import {Injectable} from "@angular/core";
-import {
-  AmbientLight,
-  Camera,
-  Clock,
-  DirectionalLight,
-  Group,
-  Light,
-  MathUtils,
-  Object3D,
-  PCFSoftShadowMap,
-  PerspectiveCamera,
-  Raycaster,
-  Vector2,
-  Vector3
-} from "three";
-import {WebGLRenderer} from "three/src/renderers/WebGLRenderer";
-import {Scene} from "three/src/scenes/Scene";
 import {TerrainTile, ThreeJsRendererServiceAccess, ThreeJsTerrainTile} from "src/app/gwtangular/GwtAngularFacade";
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {ThreeJsModelService} from "./three-js-model.service";
-import {ShadowMapViewer} from 'three/examples/jsm/utils/ShadowMapViewer';
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import {Intersection} from "three/src/core/Raycaster";
-import {nodeFrame} from "three/examples/jsm/renderers/webgl/nodes/WebGLNodes";
+import * as BABYLON from 'babylonjs';
+import {Scene} from 'babylonjs';
 
 export class ThreeJsRendererServiceMouseEvent {
-  object3D: Object3D | null = null;
-  pointOnObject3D: Vector3 | null = null;
-  razarionTerrainObject3D: Object3D | null = null;
+  object3D: any = null;
+  pointOnObject3D: BABYLON.Vector3 | null = null;
+  razarionTerrainObject3D: any = null;
   razarionTerrainObjectId: number | null = null;
   razarionTerrainObjectConfigId: number | null = null;
 
@@ -40,37 +22,21 @@ export interface ThreeJsRendererServiceMouseEventListener {
 
 @Injectable()
 export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
-  scene = new Scene();
-  camera: PerspectiveCamera = new PerspectiveCamera;
+  private scene!: BABYLON.Scene;
+  private engine!: BABYLON.Engine;
+  // private camera!: BABYLON.Camera;
+  private camera!: BABYLON.FreeCamera;
   private keyPressed: Map<string, number> = new Map();
-  private canvasDiv!: HTMLDivElement;
-  private renderer!: WebGLRenderer
-  private directionalLight!: DirectionalLight
+  private canvas!: HTMLCanvasElement;
+  private directionalLight!: BABYLON.DirectionalLight
   private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
-    this.scene.name = "Main Scene"
   }
 
-  private static createHUD(light: Light): ShadowMapViewer {
-    let lightShadowMapViewer = new ShadowMapViewer(light);
-    lightShadowMapViewer.position.x = 10;
-    lightShadowMapViewer.position.y = 500;
-    lightShadowMapViewer.size.width = 256;
-    lightShadowMapViewer.size.height = 256;
-    lightShadowMapViewer.update();
-    return lightShadowMapViewer;
-  }
-
-  internalSetup(canvasHolder: HTMLDivElement) {
-    let clock = new Clock();
-
-    this.camera = new PerspectiveCamera(75, canvasHolder.offsetWidth / canvasHolder.offsetHeight, 0.1, 1000);
-    this.camera.name = "Camera";
-
-    this.renderer = new WebGLRenderer({antialias: true});
-    this.renderer.setSize(canvasHolder.offsetWidth, canvasHolder.offsetHeight);
-    canvasHolder.appendChild(this.renderer.domElement);
+  internalSetup(canvas: HTMLCanvasElement) {
+    this.engine = new BABYLON.Engine(canvas)
+    this.scene = new BABYLON.Scene(this.engine);
 
     // ----- Keyboard -----
     const self = this;
@@ -92,69 +58,31 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         delta -= self.camera.position.z * 0.1;
       }
       if (self.camera.position.z + delta > 1 && self.camera.position.z + delta < 200) {
-        self.camera.translateZ(delta);
+        // TODO self.camera.translateZ(delta);
         this.onViewFieldChanged();
       }
     }, true);
 
-    // Mouse
-    this.renderer.domElement.addEventListener("mousedown", e => this.onMousedownEvent(e));
-
     // -----  Camera -----
-    this.camera.position.x = 0;
-    this.camera.position.y = -10;
-    this.camera.position.z = 20;
-    this.camera.rotation.x = MathUtils.degToRad(45);
+    //this.camera = new BABYLON.Camera("Main Cam", new BABYLON.Vector3(0, -10, 20), this.scene);
+    this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, -20, 20), this.scene);
+    this.camera.setTarget(new BABYLON.Vector3(0, 20, 0));
+    this.camera.attachControl(canvas, true);
 
     // ----- Light -----
-    let ambientLight = new AmbientLight(0xFFFFFF, 0.70);
-    ambientLight.name = "Ambient Light"
-    this.scene.add(ambientLight);
-
-    this.directionalLight = new DirectionalLight(0xFFFFFF, 0.80);
-    this.directionalLight.name = "Directional Light"
-    this.directionalLight.position.set(50, -50, 100);
-    this.directionalLight.target.position.set(0, 0, -100);
-
-    // ----- Shadow -----
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
-    this.directionalLight.castShadow = true;
-    this.directionalLight.shadow.mapSize.width = 2048; // default
-    this.directionalLight.shadow.mapSize.height = 2048; // default
-    this.directionalLight.shadow.camera.near = 0.5; // default
-    this.directionalLight.shadow.camera.far = 500; // default
-    this.directionalLight.shadow.camera.left = -50;
-    this.directionalLight.shadow.camera.bottom = -50;
-    this.directionalLight.shadow.camera.top = 150;
-    this.directionalLight.shadow.camera.right = 150;
-    let lightShadowMapViewer = ThreeJsRendererServiceImpl.createHUD(this.directionalLight);
-
-    this.scene.add(this.directionalLight);
+    this.directionalLight = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0, 0, -1), this.scene);
 
     // ----- Render loop -----
-    function animate() {
-      const delta = clock.getDelta();
-
-      self.threeJsWaterRenderService.update();
-
-      requestAnimationFrame(animate);
-      self.scrollCamera(delta, self.camera);
-
-      nodeFrame.update();
-      self.renderer.render(self.scene, self.camera);
-
-      lightShadowMapViewer.render(self.renderer);
-    }
-
-    animate();
+    this.engine.runRenderLoop(() => {
+      this.scene.render();
+    });
   }
 
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile {
     try {
       return new ThreeJsTerrainTileImpl(terrainTile,
         defaultGroundConfigId,
-        this.scene,
+        new BABYLON.AssetContainer(this.scene),
         this.gwtAngularService,
         this.threeJsModelService,
         this.threeJsWaterRenderService);
@@ -166,31 +94,31 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   setViewFieldCenter(x: number, y: number): void {
-    let currentViewFieldCenter = this.setupCenterGroundPosition();
-    let newFiledCenter = new Vector2(x, y);
-    let delta = newFiledCenter.sub(new Vector2(currentViewFieldCenter.x, currentViewFieldCenter.y));
-    this.camera.position.x += delta.x;
-    this.camera.position.y += delta.y;
+    // let currentViewFieldCenter = this.setupCenterGroundPosition();
+    // let newFiledCenter = new Vector2(x, y);
+    // let delta = newFiledCenter.sub(new Vector2(currentViewFieldCenter.x, currentViewFieldCenter.y));
+    // this.camera.position.x += delta.x;
+    // this.camera.position.y += delta.y;
     this.onViewFieldChanged();
   }
 
   onResize() {
-    this.renderer.setSize(this.canvasDiv.clientWidth - 5, this.canvasDiv.clientHeight); // TODO -> -5 prevent strange loop
-    this.camera.aspect = (this.canvasDiv.clientWidth - 5) / this.canvasDiv.clientHeight;
-    this.camera.updateProjectionMatrix();
+    // TODO this.renderer.setSize(this.canvas.clientWidth - 5, this.canvas.clientHeight); // TODO -> -5 prevent strange loop
+    // TODO this.camera.aspect = (this.canvas.clientWidth - 5) / this.canvas.clientHeight;
+    // TODO this.camera.updateProjectionMatrix();
     this.onViewFieldChanged();
   }
 
-  setup(canvasHolder: HTMLDivElement) {
-    this.canvasDiv = canvasHolder;
+  setup(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
     try {
-      this.internalSetup(canvasHolder);
+      this.internalSetup(canvas);
     } catch (err) {
       console.error(err);
     }
   }
 
-  scrollCamera(delta: number, camera: Camera) {
+  scrollCamera(delta: number, camera: BABYLON.Camera) {
     let hasChanged = false;
     for (let [key, start] of this.keyPressed) {
       const duration = new Date().getTime() - start;
@@ -238,49 +166,63 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.mouseListeners = this.mouseListeners.filter(obj => obj !== mouseListener);
   }
 
-  intersectObjects(mousePosition: Vector2): Intersection | null {
-    const raycaster = new Raycaster();
-    const ndcPointer = new Vector2();
-    ndcPointer.x = (mousePosition.x / this.renderer.domElement.width) * 2 - 1;
-    ndcPointer.y = -(mousePosition.y / this.renderer.domElement.height) * 2 + 1;
-
-    raycaster.setFromCamera(ndcPointer, this.camera);
-    let intersections: Intersection[] = [];
-    raycaster.intersectObjects(this.scene.children, true, intersections);
-    if (intersections.length == 0) {
-      return null;
-    }
-    return intersections[0];
+  intersectObjects(mousePosition: BABYLON.Vector2): any {
+    // const raycaster = new Raycaster();
+    // const ndcPointer = new Vector2();
+    // ndcPointer.x = (mousePosition.x / this.renderer.domElement.width) * 2 - 1;
+    // ndcPointer.y = -(mousePosition.y / this.renderer.domElement.height) * 2 + 1;
+    //
+    // raycaster.setFromCamera(ndcPointer, this.camera);
+    // let intersections: Intersection[] = [];
+    // raycaster.intersectObjects(this.scene.children, true, intersections);
+    // if (intersections.length == 0) {
+    //   return null;
+    // }
+    // TODO return intersections[0];
+    return null;
   }
 
-  public setupCenterGroundPosition(): Vector3 {
+  public setupCenterGroundPosition(): BABYLON.Vector3 {
     return this.setupGroundPosition(0, 0);
   }
 
   public addToSceneEditor(scene: Scene) {
-    let group = new Group();
-    group.add(scene);
-    group.name = "Imported";
-    let groundPos = this.setupCenterGroundPosition();
-    group.position.set(groundPos.x, groundPos.y, groundPos.z);
-    this.scene.add(group);
+    // let group = new Group();
+    // group.add(scene);
+    // group.name = "Imported";
+    // let groundPos = this.setupCenterGroundPosition();
+    // group.position.set(groundPos.x, groundPos.y, groundPos.z);
+    // TODO this.scene.add(group);
+  }
+
+  addScene(scene: BABYLON.Scene) {
+
+  }
+
+  removeScene(scene: BABYLON.Scene) {
+
   }
 
   private onViewFieldChanged() {
     if (this.gwtAngularService.gwtAngularFacade.inputService === undefined) {
       return;
     }
-    let bottomLeft = this.setupGroundPosition(-1, -1);
-    let bottomRight = this.setupGroundPosition(1, -1);
-    let topRight = this.setupGroundPosition(1, 1);
-    let topLeft = this.setupGroundPosition(-1, 1);
+    // let bottomLeft = this.setupGroundPosition(-1, -1);
+    // let bottomRight = this.setupGroundPosition(1, -1);
+    // let topRight = this.setupGroundPosition(1, 1);
+    // let topLeft = this.setupGroundPosition(-1, 1);
 
-    this.directionalLight.shadow.camera.left = topLeft.x;
-    this.directionalLight.shadow.camera.bottom = bottomLeft.y;
-    this.directionalLight.shadow.camera.top = topLeft.y;
-    this.directionalLight.shadow.camera.right = topRight.x;
-    this.directionalLight.shadow.camera.updateMatrix();
-    this.directionalLight.shadow.camera.updateProjectionMatrix();
+    // this.directionalLight.shadow.camera.left = topLeft.x;
+    // this.directionalLight.shadow.camera.bottom = bottomLeft.y;
+    // this.directionalLight.shadow.camera.top = topLeft.y;
+    // this.directionalLight.shadow.camera.right = topRight.x;
+    // this.directionalLight.shadow.camera.updateMatrix();
+    // this.directionalLight.shadow.camera.updateProjectionMatrix();
+
+    let bottomLeft = new BABYLON.Vector2(0, 0);
+    let bottomRight = new BABYLON.Vector2(0, 20);
+    let topRight = new BABYLON.Vector2(20, 20);
+    let topLeft = new BABYLON.Vector2(0, 20);
 
     this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
       bottomLeft.x, bottomLeft.y,
@@ -290,18 +232,19 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     );
   }
 
-  private setupGroundPosition(ndcX: number, ndcY: number): Vector3 {
-    let raycaster = new Raycaster();
-    raycaster.setFromCamera({x: ndcX, y: ndcY}, this.camera);
-    let factor = this.camera.position.z / -raycaster.ray.direction.z;
-    let pointOnGround = raycaster.ray.direction.clone().setLength(factor);
-    pointOnGround.add(this.camera.position);
-    return new Vector3(pointOnGround.x, pointOnGround.y, pointOnGround.z);
+  private setupGroundPosition(ndcX: number, ndcY: number): BABYLON.Vector3 {
+    // let raycaster = new Raycaster();
+    // raycaster.setFromCamera({x: ndcX, y: ndcY}, this.camera);
+    // let factor = this.camera.position.z / -raycaster.ray.direction.z;
+    // let pointOnGround = raycaster.ray.direction.clone().setLength(factor);
+    // pointOnGround.add(this.camera.position);
+    // TODO return new Vector3(pointOnGround.x, pointOnGround.y, pointOnGround.z);
+    throw new Error("...TODO...");
   }
 
   private onMousedownEvent(this: ThreeJsRendererServiceImpl, event: any): void {
     let newMouseEvent = new ThreeJsRendererServiceMouseEvent();
-    let intersection = this.intersectObjects(new Vector2(event.clientX, event.clientY));
+    let intersection = this.intersectObjects(new BABYLON.Vector2(event.clientX, event.clientY));
     if (intersection != null) {
       newMouseEvent.object3D = intersection.object;
       newMouseEvent.pointOnObject3D = intersection.point;
@@ -310,7 +253,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.mouseListeners.forEach(mouseListener => mouseListener.onThreeJsRendererServiceMouseEvent(newMouseEvent));
   }
 
-  private recursivelySearchTerrainObject(object3D: Object3D, newMouseEvent: ThreeJsRendererServiceMouseEvent) {
+  private recursivelySearchTerrainObject(object3D: any, newMouseEvent: ThreeJsRendererServiceMouseEvent) {
     if ((<any>object3D).razarionTerrainObjectId) {
       newMouseEvent.razarionTerrainObjectId = (<any>object3D).razarionTerrainObjectId;
     }
