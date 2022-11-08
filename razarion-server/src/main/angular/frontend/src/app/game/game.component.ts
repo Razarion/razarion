@@ -40,16 +40,6 @@ export class GameComponent implements OnInit {
 
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
-    // @ts-ignore
-    const resizeObserver = new ResizeObserver(entries => {
-      for (let entry of entries) {
-        if (this.canvas.nativeElement == entry.target) {
-          this.threeJsRendererService.onResize();
-        }
-      }
-    });
-    resizeObserver.observe(this.canvas.nativeElement);
-
     if (environment.gwtMock) {
       this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
       this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;

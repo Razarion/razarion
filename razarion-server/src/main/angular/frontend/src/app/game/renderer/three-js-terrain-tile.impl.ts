@@ -37,7 +37,27 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         // ground.name = "Ground"
         // ground.receiveShadow = true;
         // this.scene.add(ground);
-        container.meshes.push(BABYLON.Mesh.CreateBox("Test Mesh", 20, null));
+
+        const ground = new BABYLON.Mesh("Ground", null);
+        const vertexData = new BABYLON.VertexData();
+        const indices = [];
+        for (let i = 0; i < groundTerrainTile.positions.length / 3; i++) {
+          indices[i] = i;
+        }
+        vertexData.positions = groundTerrainTile.positions;
+        vertexData.normals = groundTerrainTile.norms;
+        vertexData.indices = indices;
+
+        vertexData.applyToMesh(ground)
+
+        const redMat = new BABYLON.StandardMaterial("red");
+        redMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+        redMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
+        redMat.specularColor = new BABYLON.Color3(1, 0, 0);
+        redMat.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
+        ground.material = redMat;
+
+        container.meshes.push(ground);
       });
     }
 

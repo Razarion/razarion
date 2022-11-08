@@ -37,6 +37,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   internalSetup(canvas: HTMLCanvasElement) {
     this.engine = new BABYLON.Engine(canvas)
     this.scene = new BABYLON.Scene(this.engine);
+    this.scene.useRightHandedSystem = true;
 
     // ----- Keyboard -----
     const self = this;
@@ -65,12 +66,42 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
     // -----  Camera -----
     //this.camera = new BABYLON.Camera("Main Cam", new BABYLON.Vector3(0, -10, 20), this.scene);
-    this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, -20, 20), this.scene);
-    this.camera.setTarget(new BABYLON.Vector3(0, 20, 0));
+    this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(10, -20, 20), this.scene);
+    this.camera.setTarget(new BABYLON.Vector3(10, 20, 0));
     this.camera.attachControl(canvas, true);
 
     // ----- Light -----
     this.directionalLight = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0, 0, -1), this.scene);
+
+    // ----- Helpers -----
+    const axisX = BABYLON.Mesh.CreateLines("axisX",
+      [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(10, 0, 0)],
+      this.scene,
+      false);
+    axisX.color = new BABYLON.Color3(1, 0, 0);
+
+    const axisY = BABYLON.Mesh.CreateLines("axisY",
+      [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 10, 0)],
+      this.scene,
+      false);
+    axisY.color = new BABYLON.Color3(0, 1, 0);
+
+    const axisZ = BABYLON.Mesh.CreateLines("axisZ",
+      [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 10)],
+      this.scene,
+      false);
+    axisZ.color = new BABYLON.Color3(0, 0, 1);
+
+    // ----- Resize listener -----
+    const resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        if (this.canvas == entry.target) {
+          this.engine.resize();
+        }
+      }
+    });
+    resizeObserver.observe(this.canvas);
+
 
     // ----- Render loop -----
     this.engine.runRenderLoop(() => {
