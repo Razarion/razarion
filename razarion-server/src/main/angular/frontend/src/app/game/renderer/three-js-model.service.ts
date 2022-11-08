@@ -3,51 +3,57 @@ import {URL_THREE_JS_MODEL} from "src/app/common";
 import {ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
+import * as BABYLON from 'babylonjs';
+import NullEngine = BABYLON.NullEngine;
+import Scene = BABYLON.Scene;
 
 
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 @Injectable()
 export class ThreeJsModelService {
-    private threeJsModelMap: Map<number, any> = new Map();
-    private gwtAngularService!: GwtAngularService;
-
-    init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
-      const _this = this;
-      _this.gwtAngularService = gwtAngularService;
-
-      return new Promise<void>((resolve, reject) => {
-            try {
-                let loadingCount = threeJsModelConfigs.length;
-                function handleResolve() {
-                    loadingCount--;
-                    if (loadingCount === 0) {
-                        resolve();
-                    }
-                }
-                threeJsModelConfigs.forEach(threeJsModelConfig => {
-                  const url = `${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`;
-                  switch (GwtHelper.gwtIssueStringEnum(threeJsModelConfig.getType())) {
-                    case ThreeJsModelConfig.Type.GLTF:
-                      this.blobToGltf(url, threeJsModelConfig, handleResolve);
-                      break;
-
-                    case ThreeJsModelConfig.Type.NODES_MATERIAL:
-                      this.blobToNodesMaterial(url, threeJsModelConfig, handleResolve);
-                      break;
-
-                    default:
-                      console.warn(`Unknown type '${threeJsModelConfig.getType()}' in ThreeJsModelConfig (${threeJsModelConfig.getInternalName()}[${threeJsModelConfig.getId()}])`);
-                      handleResolve();
-                      break;
-                  }
+  private threeJsModelMap: Map<number, any> = new Map();
+  private gwtAngularService!: GwtAngularService;
+  private virtualScene = new Scene(new NullEngine(), {virtual: true});
 
 
-                });
-            } catch (error) {
-                console.error(error);
-                reject(error);
-            }
+  init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
+    const _this = this;
+    _this.gwtAngularService = gwtAngularService;
+
+    return new Promise<void>((resolve, reject) => {
+      try {
+        let loadingCount = threeJsModelConfigs.length;
+
+        function handleResolve() {
+          loadingCount--;
+          if (loadingCount === 0) {
+            resolve();
+          }
+        }
+
+        threeJsModelConfigs.forEach(threeJsModelConfig => {
+          const url = `${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`;
+          switch (GwtHelper.gwtIssueStringEnum(threeJsModelConfig.getType())) {
+            case ThreeJsModelConfig.Type.GLTF:
+              this.blobToGltf(url, threeJsModelConfig, handleResolve);
+              break;
+            case ThreeJsModelConfig.Type.NODES_MATERIAL:
+              this.blobToNodesMaterial(url, threeJsModelConfig, handleResolve);
+              break;
+
+            default:
+              console.warn(`Unknown type '${threeJsModelConfig.getType()}' in ThreeJsModelConfig (${threeJsModelConfig.getInternalName()}[${threeJsModelConfig.getId()}])`);
+              handleResolve();
+              break;
+          }
+
+
+        });
+      } catch (error) {
+        console.error(error);
+        reject(error);
+      }
         });
     }
 
@@ -88,18 +94,26 @@ export class ThreeJsModelService {
   }
 
     private blobToGltf(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
-      // this.loader.load(url,
-      //   (gltf: GLTF) => {
-      //     this.threeJsModelMap.set(threeJsModelConfig.getId(), gltf.scene);
-      //     handleResolve();
-      //   },
-      //   (progressEvent: ProgressEvent) => {
-      //     // TODO console.info(`Loading Three.js model: '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})': ${progressEvent.loaded}/${progressEvent.total}`);
-      //   },
-      //   (error: ErrorEvent) => {
-      //     console.error(error);
-      handleResolve();
-      //   });
+      try {
+        const result = BABYLON.SceneLoader.LoadAssetContainer(url, '', this.virtualScene, scene => {
+            handleResolve();
+          },
+          progress => {
+          },
+          error => {
+            console.error(`Error loading Babylon Asset ${url}`);
+            console.error(error);
+            handleResolve();
+          })
+        if (result === null) {
+          console.error("LoadAssetContainer failed");
+          handleResolve();
+        }
+      } catch (e) {
+        console.error(`Exception loading Babylon Asset ${url}`);
+        console.error(e);
+        handleResolve();
+      }
     }
 
     private blobToNodesMaterial(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
@@ -117,5 +131,4 @@ export class ThreeJsModelService {
       //   }
       // );
     }
-
 }

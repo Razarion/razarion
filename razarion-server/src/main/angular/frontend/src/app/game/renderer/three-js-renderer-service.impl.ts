@@ -38,6 +38,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.engine = new BABYLON.Engine(canvas)
     this.scene = new BABYLON.Scene(this.engine);
     this.scene.useRightHandedSystem = true;
+    this.scene.debugLayer.show();
 
     // ----- Keyboard -----
     const self = this;
@@ -105,7 +106,13 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
     // ----- Render loop -----
     this.engine.runRenderLoop(() => {
-      this.scene.render();
+      try {
+        this.scene.render();
+      } catch (e) {
+        console.error("Render Engine crashed")
+        console.log(e);
+        throw e;
+      }
     });
   }
 

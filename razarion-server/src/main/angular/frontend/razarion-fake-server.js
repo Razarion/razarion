@@ -33,13 +33,13 @@ function loadThreeJsModel(req) {
     let threeJsModelToLoad = req.url.substring("/rest/gz/three-js-model/".length, req.url.length);
     switch (threeJsModelToLoad) {
         case '8881':
-            threeJsModelToLoad = "stone_pack.gltf";
+            threeJsModelToLoad = "tropical_vegetation.babylon";
             break;
         case '8882':
-            threeJsModelToLoad = "three-js-model_8882.bin";
+            threeJsModelToLoad = "tropical_vegetation.babylon";
             break;
         case '8883':
-            threeJsModelToLoad = "three-js-model_material_ground.gltf";
+            threeJsModelToLoad = "tropical_vegetation.babylon";
             break;
         case '8884':
             threeJsModelToLoad = "three_js_model_material_beach.gltf";
