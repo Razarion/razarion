@@ -92,8 +92,8 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
             // terrainObject.name = `Terrain Object  ${terrainObjectModel.terrainObjectId}`;
             // terrainObject.applyMatrix4(matrix4);
             // _this.scene.add(terrainObject);
-            // let threeJsModel = threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsModelPackConfigId());
-            // terrainObject.add(threeJsModel)
+            let threeJsModel = threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsModelPackConfigId());
+            container.meshes.push(threeJsModel);
           });
         } catch (error) {
           // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);

@@ -6,13 +6,14 @@ import {GwtHelper} from "../../gwtangular/GwtHelper";
 import * as BABYLON from 'babylonjs';
 import NullEngine = BABYLON.NullEngine;
 import Scene = BABYLON.Scene;
+import AssetContainer = BABYLON.AssetContainer;
 
 
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 @Injectable()
 export class ThreeJsModelService {
-  private threeJsModelMap: Map<number, any> = new Map();
+  private threeJsModelMap: Map<number, AssetContainer> = new Map();
   private gwtAngularService!: GwtAngularService;
   private virtualScene = new Scene(new NullEngine(), {virtual: true});
 
@@ -58,9 +59,11 @@ export class ThreeJsModelService {
     }
 
   cloneObject3D(threeJsModelPackConfigId: number): any {
-    // let threeJsModelPackConfig = this.gwtAngularService.gwtAngularFacade.threeJsModelPackService.getThreeJsModelPackConfig(threeJsModelPackConfigId);
-    //
-    // let threeJsModel: Object3D = this.getThreeJsModel(threeJsModelPackConfig.getThreeJsModelId());
+    const threeJsModelPackConfig = this.gwtAngularService.gwtAngularFacade.threeJsModelPackService.getThreeJsModelPackConfig(threeJsModelPackConfigId);
+
+    const threeJsModel: any = this.getThreeJsModel(threeJsModelPackConfig.getThreeJsModelId());
+
+    return threeJsModel;
     //
     // threeJsModel = this.removeAuxScene(threeJsModel);
     //
@@ -95,7 +98,8 @@ export class ThreeJsModelService {
 
     private blobToGltf(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
       try {
-        const result = BABYLON.SceneLoader.LoadAssetContainer(url, '', this.virtualScene, scene => {
+        const result = BABYLON.SceneLoader.LoadAssetContainer(url, '', this.virtualScene, assetContainer => {
+            this.threeJsModelMap.set(threeJsModelConfig.getId(), assetContainer);
             handleResolve();
           },
           progress => {
@@ -131,4 +135,21 @@ export class ThreeJsModelService {
       //   }
       // );
     }
+
+  getThreeJsModel(threeJsModelId: number): any {
+    if(threeJsModelId === undefined) {
+      throw new Error(`ThreeJsModel id undefined`);
+    }
+
+    threeJsModelId = GwtHelper.gwtIssueNumber(threeJsModelId);
+
+    let threeJsModel = this.threeJsModelMap.get(threeJsModelId);
+
+    if (!threeJsModel) {
+      throw new Error(`No ThreeJsModel for threeJsModelId '${threeJsModelId}`);
+    }
+
+    return threeJsModel;
+  }
+
 }
