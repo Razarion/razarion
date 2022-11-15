@@ -4,18 +4,19 @@ import {ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import * as BABYLON from 'babylonjs';
-import NullEngine = BABYLON.NullEngine;
+import {Mesh} from "babylonjs/Meshes/mesh";
 import Scene = BABYLON.Scene;
 import AssetContainer = BABYLON.AssetContainer;
+import Node = BABYLON.Node;
 
 
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 @Injectable()
 export class ThreeJsModelService {
-  private threeJsModelMap: Map<number, AssetContainer> = new Map();
+  private assetContainers: Map<number, AssetContainer> = new Map();
   private gwtAngularService!: GwtAngularService;
-  private virtualScene = new Scene(new NullEngine(), {virtual: true});
+  private scene!: Scene;
 
 
   init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
@@ -55,101 +56,122 @@ export class ThreeJsModelService {
         console.error(error);
         reject(error);
       }
-        });
-    }
-
-  cloneObject3D(threeJsModelPackConfigId: number): any {
-    const threeJsModelPackConfig = this.gwtAngularService.gwtAngularFacade.threeJsModelPackService.getThreeJsModelPackConfig(threeJsModelPackConfigId);
-
-    const threeJsModel: any = this.getThreeJsModel(threeJsModelPackConfig.getThreeJsModelId());
-
-    return threeJsModel;
-    //
-    // threeJsModel = this.removeAuxScene(threeJsModel);
-    //
-    // let object3D = this.findObject3D(threeJsModel, threeJsModelPackConfig.toNamePathAsArray());
-    //
-    // if(object3D === null) {
-    //     throw new Error(`No Object3D for threeJsModelPackConfigId '${threeJsModelPackConfigId}'. Three.js Path  '${threeJsModelPackConfig.toNamePathAsArray()}'`);
-    // }
-
-    // let positionScale = new Group();
-    // positionScale.name = `ThreeJsModelPackConfigId position scale ${threeJsModelPackConfig.getInternalName()} (${threeJsModelPackConfig.getId()})`;
-    // positionScale.position.set(
-    //   threeJsModelPackConfig.getPosition().getX(),
-    //   threeJsModelPackConfig.getPosition().getY(),
-    //   threeJsModelPackConfig.getPosition().getZ());
-    // positionScale.scale.set(
-    //   threeJsModelPackConfig.getScale().getX(),
-    //   threeJsModelPackConfig.getScale().getY(),
-    //   threeJsModelPackConfig.getScale().getZ());
-    // positionScale.add(this.deepSetup(object3D.clone()));
-    //
-    // let rotation = new Group();
-    // rotation.name = `ThreeJsModelPackConfigId rotation`;
-    // rotation.rotation.set(
-    //   threeJsModelPackConfig.getRotation().getX(),
-    //   threeJsModelPackConfig.getRotation().getY(),
-    //   threeJsModelPackConfig.getRotation().getZ());
-    // rotation.add(positionScale);
-    //
-    // return rotation;
+    });
   }
 
-    private blobToGltf(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
-      try {
-        const result = BABYLON.SceneLoader.LoadAssetContainer(url, '', this.virtualScene, assetContainer => {
-            this.threeJsModelMap.set(threeJsModelConfig.getId(), assetContainer);
-            handleResolve();
-          },
-          progress => {
-          },
-          error => {
-            console.error(`Error loading Babylon Asset ${url}`);
-            console.error(error);
-            handleResolve();
-          })
-        if (result === null) {
-          console.error("LoadAssetContainer failed");
-          handleResolve();
-        }
-      } catch (e) {
-        console.error(`Exception loading Babylon Asset ${url}`);
-        console.error(e);
-        handleResolve();
+  cloneMesh(threeJsModelPackConfigId: number, parent: Node): Node {
+    const threeJsModelPackConf = this.gwtAngularService.gwtAngularFacade.threeJsModelPackService.getThreeJsModelPackConfig(threeJsModelPackConfigId);
+
+    const assetContainer: AssetContainer = this.getAssetContainer(threeJsModelPackConf.getThreeJsModelId());
+
+    let rootMesh = null;
+
+    for (let childNod of assetContainer.getNodes()) {
+      rootMesh = this.findChildNode(childNod, threeJsModelPackConf.toNamePathAsArray());
+      if (rootMesh) {
+        break;
       }
     }
 
-    private blobToNodesMaterial(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
-      // let nodeObjectLoader = new NodeObjectLoader();
-      // nodeObjectLoader.load(url,
-      //   (nodeMaterial :any) =>{
-      //   console.warn(nodeMaterial)
-      //     this.threeJsModelMap.set(threeJsModelConfig.getId(), nodeMaterial);
-      //     handleResolve();
-      //   },
-      //   ()=>{},
-      //   (event: Error | ErrorEvent)=>{
-      //     console.warn(event)
-      handleResolve();
-      //   }
-      // );
+    if (rootMesh == null) {
+      throw new Error(`No Mesh for threeJsModelPackConfigId '${threeJsModelPackConfigId}'. Three.js Path  '${threeJsModelPackConf.toNamePathAsArray()}'`);
     }
 
-  getThreeJsModel(threeJsModelId: number): any {
-    if(threeJsModelId === undefined) {
+    const mesh = (<Mesh>rootMesh).clone("", parent);
+
+    mesh.position.set(threeJsModelPackConf.getPosition().getX(),
+      threeJsModelPackConf.getPosition().getY(),
+      threeJsModelPackConf.getPosition().getZ());
+    mesh.scaling.set(threeJsModelPackConf.getScale().getX(),
+      threeJsModelPackConf.getScale().getY(),
+      threeJsModelPackConf.getScale().getZ());
+    mesh.rotationQuaternion = null;
+    mesh.rotation.set(threeJsModelPackConf.getRotation().getX(),
+      threeJsModelPackConf.getRotation().getY(),
+      threeJsModelPackConf.getRotation().getZ());
+    return mesh;
+  }
+
+  private findChildNode(node: Node, namePath: string[]): Node | null {
+    if (namePath.length == 0) {
+      throw new Error("Empty namePath array is not allowed")
+    }
+
+    if (node.id === namePath[0]) {
+      if (namePath.length == 1) {
+        return node;
+      }
+      let childNamePath = namePath.slice(1);
+      for (let childMesh of node.getChildren()) {
+        let found = this.findChildNode(<Mesh>childMesh, childNamePath);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }
+
+  private blobToGltf(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
+    try {
+      let hasError = false;
+      const result = BABYLON.SceneLoader.LoadAssetContainer(url, '', this.scene, assetContainer => {
+          if (!hasError) {
+            this.assetContainers.set(threeJsModelConfig.getId(), assetContainer);
+            handleResolve();
+          }
+        },
+        progress => {
+        },
+        (scene: Scene, message: string, exception?: any) => {
+          hasError = true;
+          console.error(`Error loading Babylon Asset '${url}'. exception: '${exception}'`);
+          handleResolve();
+        })
+      if (result === null) {
+        console.error("LoadAssetContainer failed");
+        handleResolve();
+      }
+    } catch (e) {
+      console.error(`Exception loading Babylon Asset ${url}`);
+      console.error(e);
+      handleResolve();
+    }
+  }
+
+  private blobToNodesMaterial(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
+    // let nodeObjectLoader = new NodeObjectLoader();
+    // nodeObjectLoader.load(url,
+    //   (nodeMaterial :any) =>{
+    //   console.warn(nodeMaterial)
+    //     this.assetContainers.set(threeJsModelConfig.getId(), nodeMaterial);
+    //     handleResolve();
+    //   },
+    //   ()=>{},
+    //   (event: Error | ErrorEvent)=>{
+    //     console.warn(event)
+    handleResolve();
+    //   }
+    // );
+  }
+
+  getAssetContainer(threeJsModelId: number): any {
+    if (threeJsModelId === undefined) {
       throw new Error(`ThreeJsModel id undefined`);
     }
 
     threeJsModelId = GwtHelper.gwtIssueNumber(threeJsModelId);
 
-    let threeJsModel = this.threeJsModelMap.get(threeJsModelId);
+    let assetContainer = this.assetContainers.get(threeJsModelId);
 
-    if (!threeJsModel) {
-      throw new Error(`No ThreeJsModel for threeJsModelId '${threeJsModelId}`);
+    if (!assetContainer) {
+      throw new Error(`No AssetContainers for threeJsModelId '${threeJsModelId}'`);
     }
 
-    return threeJsModel;
+    return assetContainer;
   }
 
+  setScene(scene: Scene) {
+    this.scene = scene;
+  }
 }

@@ -38,7 +38,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.engine = new BABYLON.Engine(canvas)
     this.scene = new BABYLON.Scene(this.engine);
     this.scene.useRightHandedSystem = true;
-    this.scene.debugLayer.show();
+    this.scene.debugLayer.show({enableClose: true, embedMode: true});
+
+    this.threeJsModelService.setScene(this.scene);
 
     // ----- Keyboard -----
     const self = this;
@@ -120,7 +122,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     try {
       return new ThreeJsTerrainTileImpl(terrainTile,
         defaultGroundConfigId,
-        new BABYLON.AssetContainer(this.scene),
+        this.scene,
         this.gwtAngularService,
         this.threeJsModelService,
         this.threeJsWaterRenderService);
@@ -258,9 +260,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     // this.directionalLight.shadow.camera.updateProjectionMatrix();
 
     let bottomLeft = new BABYLON.Vector2(0, 0);
-    let bottomRight = new BABYLON.Vector2(0, 20);
-    let topRight = new BABYLON.Vector2(20, 20);
-    let topLeft = new BABYLON.Vector2(0, 20);
+    let bottomRight = new BABYLON.Vector2(0, 400);
+    let topRight = new BABYLON.Vector2(400, 400);
+    let topLeft = new BABYLON.Vector2(0, 400);
 
     this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
       bottomLeft.x, bottomLeft.y,

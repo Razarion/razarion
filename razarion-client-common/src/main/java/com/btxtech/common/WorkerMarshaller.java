@@ -32,6 +32,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
+import com.google.gwt.core.client.JsArrayNumber;
 import elemental2.core.Array;
 import elemental2.core.Float32Array;
 import elemental2.core.JsObject;
@@ -497,8 +498,10 @@ public class WorkerMarshaller {
         if (terrainObjectModels != null) {
             for (TerrainObjectModel terrainObjectModel : terrainObjectModels) {
                 JsPropertyMapOfAny mapOfTerrainObjectModel = JsPropertyMap.of();
-                mapOfTerrainObjectModel.set("model", terrainObjectModel.model.getColumnMajorFloat32Array());
                 mapOfTerrainObjectModel.set("terrainObjectId", terrainObjectModel.terrainObjectId);
+                mapOfTerrainObjectModel.set("position", vertexToArray(terrainObjectModel.position));
+                mapOfTerrainObjectModel.set("scale", vertexToArray(terrainObjectModel.scale));
+                mapOfTerrainObjectModel.set("rotation", vertexToArray(terrainObjectModel.rotation));
                 result.push(mapOfTerrainObjectModel);
             }
         }
@@ -681,8 +684,10 @@ public class WorkerMarshaller {
         }
         return Arrays.stream(array).map(anyTerrainObjectModels-> {
             TerrainObjectModel terrainTileObjectList = new TerrainObjectModel();
-            terrainTileObjectList.model = nativeMatrixFactory.createFromColumnMajorFloat32ArrayEmu(Js.uncheckedCast(anyTerrainObjectModels.get("model")));
-            terrainTileObjectList.terrainObjectId = ((Any)Js.uncheckedCast(anyTerrainObjectModels.get("terrainObjectId"))).asInt();
+            terrainTileObjectList.terrainObjectId = ((Any) Js.uncheckedCast(anyTerrainObjectModels.get("terrainObjectId"))).asInt();
+            terrainTileObjectList.position = arrayToVertex(anyTerrainObjectModels.get("position"));
+            terrainTileObjectList.scale = arrayToVertex(anyTerrainObjectModels.get("scale"));
+            terrainTileObjectList.rotation = arrayToVertex(anyTerrainObjectModels.get("rotation"));
             return terrainTileObjectList;
         }).toArray(TerrainObjectModel[]::new);
     }
@@ -755,4 +760,24 @@ public class WorkerMarshaller {
         return terrainSubNodes;
     }
 
+    private static JsArrayNumber vertexToArray(Vertex vertex) {
+        if (vertex == null) {
+            return null;
+        }
+        JsArrayNumber xyz = JavaScriptObject.createArray().cast();
+        xyz.push(vertex.getX());
+        xyz.push(vertex.getY());
+        xyz.push(vertex.getZ());
+        return xyz;
+    }
+
+    private static Vertex arrayToVertex(Object xyz) {
+        if (xyz == null) {
+            return null;
+        }
+        Any[] jsArray = ((Any)xyz).asArray();
+        return new Vertex(jsArray[0].asDouble(),
+                jsArray[1].asDouble(),
+                jsArray[2].asDouble());
+    }
 }

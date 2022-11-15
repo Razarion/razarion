@@ -454,10 +454,10 @@ public class WeldTestRenderer {
                     if (terrainTileObjectList.getTerrainObjectModels() != null) {
                         TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.getTerrainObjectConfigId());
                         Arrays.stream(terrainTileObjectList.getTerrainObjectModels()).forEach(terrainObjectModel -> {
-                            NativeVertexDto br = terrainObjectModel.model.multiplyVertex(NativeUtil.toNativeVertex(-terrainObjectConfig.getRadius(), -terrainObjectConfig.getRadius(), 0), 1.0);
-                            NativeVertexDto tl = terrainObjectModel.model.multiplyVertex(NativeUtil.toNativeVertex(terrainObjectConfig.getRadius(), terrainObjectConfig.getRadius(), 0), 1.0);
-                            Rectangle2D rect = Rectangle2D.generateRectangleFromAnyPoints(new DecimalPosition(br.x, br.y), new DecimalPosition(tl.x, tl.y)); // If rotated, it is may upside down
-                            gc.fillOval(rect.startX(), rect.startY(), rect.width(), rect.height());
+                            // TODO NativeVertexDto br = terrainObjectModel.model.multiplyVertex(NativeUtil.toNativeVertex(-terrainObjectConfig.getRadius(), -terrainObjectConfig.getRadius(), 0), 1.0);
+                            // TODO NativeVertexDto tl = terrainObjectModel.model.multiplyVertex(NativeUtil.toNativeVertex(terrainObjectConfig.getRadius(), terrainObjectConfig.getRadius(), 0), 1.0);
+                            // TODO Rectangle2D rect = Rectangle2D.generateRectangleFromAnyPoints(new DecimalPosition(br.x, br.y), new DecimalPosition(tl.x, tl.y)); // If rotated, it is may upside down
+                            // TODO gc.fillOval(rect.startX(), rect.startY(), rect.width(), rect.height());
                         });
                     }
                 });

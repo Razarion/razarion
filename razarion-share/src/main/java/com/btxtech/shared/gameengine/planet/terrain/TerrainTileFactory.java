@@ -20,7 +20,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.slope.CalculatedSlopeData;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
-import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
@@ -375,21 +374,27 @@ public class TerrainTileFactory {
             List<TerrainObjectModel> terrainObjectModels = new ArrayList<>();
             Arrays.stream(nativeTerrainShapeObjectList.terrainShapeObjectPositions).forEach(nativeTerrainObjectPosition -> {
                 try {
+                    TerrainObjectModel terrainObjectModel = new TerrainObjectModel();
                     double z = terrainService.getSurfaceAccess().getInterpolatedZ(new DecimalPosition(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y));
-                    NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y, z);
+                    terrainObjectModel.position = new Vertex(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y, z);
                     if (nativeTerrainObjectPosition.offset != null) {
-                        newMatrix = newMatrix.multiply(nativeMatrixFactory.createTranslation(nativeTerrainObjectPosition.offset.x, nativeTerrainObjectPosition.offset.y, nativeTerrainObjectPosition.offset.z));
+                        terrainObjectModel.position = terrainObjectModel.position.add(
+                                nativeTerrainObjectPosition.offset.x,
+                                nativeTerrainObjectPosition.offset.y,
+                                nativeTerrainObjectPosition.offset.z);
                     }
                     if (nativeTerrainObjectPosition.scale != null) {
-                        newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(nativeTerrainObjectPosition.scale.x, nativeTerrainObjectPosition.scale.y, nativeTerrainObjectPosition.scale.z));
+                        terrainObjectModel.scale = new Vertex(
+                                nativeTerrainObjectPosition.scale.x,
+                                nativeTerrainObjectPosition.scale.y,
+                                nativeTerrainObjectPosition.scale.z);
                     }
                     if (nativeTerrainObjectPosition.rotation != null) {
-                        newMatrix = newMatrix.multiply(nativeMatrixFactory.createXRotation(nativeTerrainObjectPosition.rotation.x));
-                        newMatrix = newMatrix.multiply(nativeMatrixFactory.createYRotation(nativeTerrainObjectPosition.rotation.y));
-                        newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(nativeTerrainObjectPosition.rotation.z));
+                        terrainObjectModel.rotation = new Vertex(
+                                nativeTerrainObjectPosition.rotation.x,
+                                nativeTerrainObjectPosition.rotation.y,
+                                nativeTerrainObjectPosition.rotation.z);
                     }
-                    TerrainObjectModel terrainObjectModel = new TerrainObjectModel();
-                    terrainObjectModel.model = newMatrix;
                     terrainObjectModel.terrainObjectId = nativeTerrainObjectPosition.terrainObjectId;
                     terrainObjectModels.add(terrainObjectModel);
                 } catch (Throwable t) {

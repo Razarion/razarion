@@ -310,8 +310,10 @@ export interface TerrainTileObjectList {
 }
 
 export interface TerrainObjectModel {
-  model: NativeMatrix;
   terrainObjectId: number;
+  position: Vertex;
+  scale: Vertex | null;
+  rotation: Vertex | null;
 }
 
 export interface ThreeJsTerrainTile {

@@ -9,14 +9,20 @@ import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {ThreeJsModelService} from "./three-js-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import * as BABYLON from 'babylonjs';
+import {Scene} from 'babylonjs';
+import Mesh = BABYLON.Mesh;
+import TransformNode = BABYLON.TransformNode;
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
+  private container: Mesh;
+
   constructor(terrainTile: TerrainTile,
               private defaultGroundConfigId: number,
-              private container: BABYLON.AssetContainer,
+              scene: Scene,
               private gwtAngularService: GwtAngularService,
               private threeJsModelService: ThreeJsModelService,
               private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+    this.container = new Mesh(`Terrain Tile ${terrainTile.getIndex().toString()}`, scene);
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
         // let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
@@ -57,7 +63,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         redMat.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
         ground.material = redMat;
 
-        container.meshes.push(ground);
+        this.container.addChild(ground);
       });
     }
 
@@ -67,7 +73,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       });
     }
 
-    this.threeJsWaterRenderService.setup(terrainTile.getTerrainWaterTiles(), this.container);
+    // TODO this.threeJsWaterRenderService.setup(terrainTile.getTerrainWaterTiles(), this.container);
 
     if (terrainTile.getTerrainTileObjectLists() !== null) {
       const _this = this;
@@ -78,22 +84,34 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
             throw new Error(`TerrainObjectConfig has no threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
           }
           terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
-            let m = terrainObjectModel.model.getColumnMajorFloat32Array();
-            // let matrix4 = new Matrix4();
-            // matrix4.set(
-            //   m[0], m[4], m[8], m[12],
-            //   m[1], m[5], m[9], m[13],
-            //   m[2], m[6], m[10], m[14],
-            //   m[3], m[7], m[11], m[15]
-            // );
-            // let terrainObject = new Group();
-            // (<any>terrainObject).razarionTerrainObjectId = terrainObjectModel.terrainObjectId;
-            // (<any>terrainObject).razarionTerrainObjectConfigId = terrainTileObjectList.terrainObjectConfigId;
-            // terrainObject.name = `Terrain Object  ${terrainObjectModel.terrainObjectId}`;
-            // terrainObject.applyMatrix4(matrix4);
-            // _this.scene.add(terrainObject);
-            let threeJsModel = threeJsModelService.cloneObject3D(terrainObjectConfig.getThreeJsModelPackConfigId());
-            container.meshes.push(threeJsModel);
+            try {
+              const terrainObjectModelTransform = new TransformNode(`TerrainObjectModel (${terrainObjectModel.terrainObjectId})`);
+              terrainObjectModelTransform.parent = this.container;
+              this.container.getChildren().push(terrainObjectModelTransform);
+              terrainObjectModelTransform.parent = this.container;
+              terrainObjectModelTransform.position.set(
+                terrainObjectModel.position.getX(),
+                terrainObjectModel.position.getY(),
+                terrainObjectModel.position.getZ());
+              if (terrainObjectModel.scale) {
+                terrainObjectModelTransform.scaling.set(
+                  terrainObjectModel.scale.getX(),
+                  terrainObjectModel.scale.getY(),
+                  terrainObjectModel.scale.getZ());
+              }
+              if (terrainObjectModel.rotation) {
+                terrainObjectModelTransform.rotationQuaternion = null;
+                terrainObjectModelTransform.rotation.set(
+                  terrainObjectModel.rotation.getX(),
+                  terrainObjectModel.rotation.getY(),
+                  terrainObjectModel.rotation.getZ());
+              }
+              let terrainObjectMesh: Mesh = <Mesh>threeJsModelService.cloneMesh(terrainObjectConfig.getThreeJsModelPackConfigId(), terrainObjectModelTransform);
+              terrainObjectMesh.name = `TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`;
+              terrainObjectMesh.parent = terrainObjectModelTransform;
+            } catch (error) {
+              console.error(error);
+            }
           });
         } catch (error) {
           // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
@@ -125,11 +143,11 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   }
 
   addToScene(): void {
-    this.container.addAllToScene();
+    // TODO this.container.addAllToScene();
   }
 
   removeFromScene(): void {
-    this.container.removeAllFromScene();
+    // TODO this.container.removeAllFromScene();
   }
 
   private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: any, groundMaterial: any | null, splatting: SlopeSplattingConfig | null): void {

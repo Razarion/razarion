@@ -11,7 +11,6 @@ import {
   GwtAngularPropertyTable,
   Index,
   InputService,
-  NativeMatrix,
   ObjectNameId,
   PerfmonStatistic,
   ShallowWaterConfig,
@@ -615,15 +614,15 @@ export class GameMockService {
           getIndex(): Index {
             return new class implements Index {
               getX(): number {
-                return 0;
+                return terrainTileJson.index.x;
               }
 
               getY(): number {
-                return 0;
+                return terrainTileJson.index.y;
               }
 
               toString(): string {
-                return "TerrainTile.getIndex() MOCK";
+                return `${terrainTileJson.index.x}:${terrainTileJson.index.y}`;
               }
             }
           }
@@ -702,12 +701,10 @@ export class GameMockService {
     let terrainObjectModels: TerrainObjectModel[] = [];
     terrainObjectModelsJsons.forEach((terrainObjectModelsJson: any) => {
       terrainObjectModels.push(new class implements TerrainObjectModel {
-        model: NativeMatrix = new class implements NativeMatrix {
-          getColumnMajorFloat32Array(): Float32Array {
-            return new Float32Array(terrainObjectModelsJson.model.columnMajorFloat32Array);
-          }
-        };
         terrainObjectId: number = terrainObjectModelsJson.terrainObjectId;
+        position: Vertex = GwtInstance.newVertex(terrainObjectModelsJson.position.x, terrainObjectModelsJson.position.y, terrainObjectModelsJson.position.z);
+        scale: Vertex | null = terrainObjectModelsJson.scale ? GwtInstance.newVertex(terrainObjectModelsJson.scale.x, terrainObjectModelsJson.scale.y, terrainObjectModelsJson.scale.z) : null;
+        rotation: Vertex | null = terrainObjectModelsJson.rotation ? GwtInstance.newVertex(terrainObjectModelsJson.rotation.x, terrainObjectModelsJson.rotation.y, terrainObjectModelsJson.rotation.z) : null;
       });
     });
     return terrainObjectModels;
