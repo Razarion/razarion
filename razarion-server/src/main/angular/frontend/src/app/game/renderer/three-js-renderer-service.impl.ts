@@ -6,6 +6,8 @@ import {ThreeJsModelService} from "./three-js-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import * as BABYLON from 'babylonjs';
 import {Scene} from 'babylonjs';
+import {Vector3} from "babylonjs";
+import Quaternion = BABYLON.Quaternion;
 
 export class ThreeJsRendererServiceMouseEvent {
   object3D: any = null;
@@ -57,12 +59,17 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       delta = delta / 240;
       delta = -delta;
       if (delta <= 0) {
-        delta += self.camera.position.z * 0.1;
+        delta += self.camera.position.z * 0.2;
       } else {
-        delta -= self.camera.position.z * 0.1;
+        delta -= self.camera.position.z * 0.2;
       }
-      if (self.camera.position.z + delta > 1 && self.camera.position.z + delta < 200) {
-        // TODO self.camera.translateZ(delta);
+      const cameraRotation = Quaternion.FromEulerAngles(self.camera.rotation.x, self.camera.rotation.y, self.camera.rotation.z);
+      let deltaVector = Vector3.Zero();
+      new Vector3(0, 0, -delta).rotateByQuaternionToRef(cameraRotation, deltaVector);
+      if (self.camera.position.z + deltaVector.z > 1 && self.camera.position.z + deltaVector.z < 200) {
+        this.camera.position.x += deltaVector.x;
+        this.camera.position.y += deltaVector.y;
+        this.camera.position.z += deltaVector.z;
         this.onViewFieldChanged();
       }
     }, true);
@@ -71,7 +78,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     //this.camera = new BABYLON.Camera("Main Cam", new BABYLON.Vector3(0, -10, 20), this.scene);
     this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(10, -20, 20), this.scene);
     this.camera.setTarget(new BABYLON.Vector3(10, 20, 0));
-    this.camera.attachControl(canvas, true);
 
     // ----- Light -----
     this.directionalLight = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0, 0, -1), this.scene);
@@ -107,9 +113,12 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
 
     // ----- Render loop -----
+    let renderTime = Date.now();
     this.engine.runRenderLoop(() => {
       try {
+        this.scrollCamera((Date.now() - renderTime) / 1000);
         this.scene.render();
+        renderTime = Date.now();
       } catch (e) {
         console.error("Render Engine crashed")
         console.log(e);
@@ -158,7 +167,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  scrollCamera(delta: number, camera: BABYLON.Camera) {
+  scrollCamera(delta: number) {
     let hasChanged = false;
     for (let [key, start] of this.keyPressed) {
       const duration = new Date().getTime() - start;
@@ -167,27 +176,27 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
       distance = distance * delta / 0.016;
 
-      distance = distance + camera.position.z * 0.02;
+      distance = distance + this.camera.position.z * 0.02;
 
       switch (key) {
         case 'ArrowUp': {
           hasChanged = true;
-          camera.position.y += distance;
+          this.camera.position.y += distance;
           break;
         }
         case 'ArrowDown': {
           hasChanged = true;
-          camera.position.y -= distance;
+          this.camera.position.y -= distance;
           break;
         }
         case 'ArrowRight': {
           hasChanged = true;
-          camera.position.x += distance;
+          this.camera.position.x += distance;
           break;
         }
         case 'ArrowLeft': {
           hasChanged = true;
-          camera.position.x -= distance;
+          this.camera.position.x -= distance;
           break;
         }
         default:
