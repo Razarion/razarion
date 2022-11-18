@@ -25,45 +25,36 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     this.container = new Mesh(`Terrain Tile ${terrainTile.getIndex().toString()}`, scene);
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
-        // let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
-        // // Geometry
-        // let geometry = new BufferGeometry();
-        // geometry.setAttribute('position', new BufferAttribute(groundTerrainTile.positions, 3));
-        // geometry.setAttribute('normal', new BufferAttribute(groundTerrainTile.norms, 3));
-        // geometry.setAttribute('uv', ThreeJsTerrainTileImpl.uvFromPosition(groundTerrainTile.positions));
-        // let material;
-        // if (groundConfig.getTopThreeJsMaterial() === undefined || groundConfig.getTopThreeJsMaterial() == null) {
-        //   material = new MeshBasicMaterial({color: 0x11EE11});
-        //   material.wireframe = true;
-        //   console.warn(`No top material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
-        // } else {
-        //   material = threeJsModelService.getMaterial(groundConfig.getTopThreeJsMaterial());
-        // }
-        // const ground = new Mesh(geometry, material);
-        // ground.name = "Ground"
-        // ground.receiveShadow = true;
-        // this.scene.add(ground);
+        try {
+          const ground = new BABYLON.Mesh("Ground", null);
+          const vertexData = new BABYLON.VertexData();
+          const indices = [];
+          for (let i = 0; i < groundTerrainTile.positions.length / 3; i++) {
+            indices[i] = i;
+          }
+          vertexData.positions = groundTerrainTile.positions;
+          vertexData.normals = groundTerrainTile.norms;
+          vertexData.indices = indices;
 
-        const ground = new BABYLON.Mesh("Ground", null);
-        const vertexData = new BABYLON.VertexData();
-        const indices = [];
-        for (let i = 0; i < groundTerrainTile.positions.length / 3; i++) {
-          indices[i] = i;
+          vertexData.applyToMesh(ground)
+
+          let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
+          if (groundConfig.getTopThreeJsMaterial()) {
+            ground.material = threeJsModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
+            ground.material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
+          } else {
+            const redMat = new BABYLON.StandardMaterial("red");
+            redMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+            redMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
+            redMat.specularColor = new BABYLON.Color3(1, 0, 0);
+            redMat.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
+            ground.material = redMat;
+            console.warn(`No top or bottom material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
+          }
+          this.container.addChild(ground);
+        } catch (error) {
+          console.error(error);
         }
-        vertexData.positions = groundTerrainTile.positions;
-        vertexData.normals = groundTerrainTile.norms;
-        vertexData.indices = indices;
-
-        vertexData.applyToMesh(ground)
-
-        const redMat = new BABYLON.StandardMaterial("red");
-        redMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
-        redMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
-        redMat.specularColor = new BABYLON.Color3(1, 0, 0);
-        redMat.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
-        ground.material = redMat;
-
-        this.container.addChild(ground);
       });
     }
 

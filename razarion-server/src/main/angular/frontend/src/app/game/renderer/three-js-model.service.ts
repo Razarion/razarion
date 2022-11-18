@@ -8,6 +8,7 @@ import {Mesh} from "babylonjs/Meshes/mesh";
 import Scene = BABYLON.Scene;
 import AssetContainer = BABYLON.AssetContainer;
 import Node = BABYLON.Node;
+import NodeMaterial = BABYLON.NodeMaterial;
 
 
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
@@ -15,6 +16,7 @@ import Node = BABYLON.Node;
 @Injectable()
 export class ThreeJsModelService {
   private assetContainers: Map<number, AssetContainer> = new Map();
+  private nodeMaterials: Map<number, NodeMaterial> = new Map();
   private gwtAngularService!: GwtAngularService;
   private scene!: Scene;
 
@@ -38,10 +40,10 @@ export class ThreeJsModelService {
           const url = `${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`;
           switch (GwtHelper.gwtIssueStringEnum(threeJsModelConfig.getType())) {
             case ThreeJsModelConfig.Type.GLTF:
-              this.blobToGltf(url, threeJsModelConfig, handleResolve);
+              this.loadAssetContainer(url, threeJsModelConfig, handleResolve);
               break;
             case ThreeJsModelConfig.Type.NODES_MATERIAL:
-              this.blobToNodesMaterial(url, threeJsModelConfig, handleResolve);
+              this.loadNodeMaterial(url, threeJsModelConfig, handleResolve);
               break;
 
             default:
@@ -112,7 +114,7 @@ export class ThreeJsModelService {
     return null;
   }
 
-  private blobToGltf(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
+  private loadAssetContainer(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
     try {
       let hasError = false;
       const result = BABYLON.SceneLoader.LoadAssetContainer(url, '', this.scene, assetContainer => {
@@ -139,20 +141,18 @@ export class ThreeJsModelService {
     }
   }
 
-  private blobToNodesMaterial(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
-    // let nodeObjectLoader = new NodeObjectLoader();
-    // nodeObjectLoader.load(url,
-    //   (nodeMaterial :any) =>{
-    //   console.warn(nodeMaterial)
-    //     this.assetContainers.set(threeJsModelConfig.getId(), nodeMaterial);
-    //     handleResolve();
-    //   },
-    //   ()=>{},
-    //   (event: Error | ErrorEvent)=>{
-    //     console.warn(event)
-    handleResolve();
-    //   }
-    // );
+  private loadNodeMaterial(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
+    BABYLON.NodeMaterial.ParseFromFileAsync(
+      `Node Material '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})'`,
+      url,
+      this.scene
+    ).then(nodeMaterial => {
+      this.nodeMaterials.set(threeJsModelConfig.getId(), nodeMaterial);
+      handleResolve();
+    }).catch(reason => {
+      console.error(`Load NodeMaterial failed. Node Material: '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})' Reason: ${reason}`);
+      handleResolve();
+    })
   }
 
   getAssetContainer(threeJsModelId: number): any {
@@ -173,5 +173,20 @@ export class ThreeJsModelService {
 
   setScene(scene: Scene) {
     this.scene = scene;
+  }
+
+  getNodeMaterial(babylonJsModelId: number): NodeMaterial {
+    if (babylonJsModelId === undefined) {
+      throw new Error(`getNodeMaterial(): babylonJsModelId id undefined`);
+    }
+    babylonJsModelId = GwtHelper.gwtIssueNumber(babylonJsModelId);
+
+    let nodeMaterial = this.nodeMaterials.get(babylonJsModelId);
+
+    if (!nodeMaterial) {
+      throw new Error(`No NodeMaterial for babylonJsModelId '${babylonJsModelId}'`);
+    }
+
+    return nodeMaterial;
   }
 }

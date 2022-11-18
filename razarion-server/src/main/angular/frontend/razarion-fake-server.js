@@ -45,7 +45,7 @@ function loadThreeJsModel(req) {
             threeJsModelToLoad = "three_js_model_material_beach.gltf";
             break;
         case '8885':
-            threeJsModelToLoad = "three-js-model_nodes_material_8885.bin";
+            threeJsModelToLoad = "babylon-js_nodes_material.json";
             break;
     }
     return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\threejs-models", threeJsModelToLoad));

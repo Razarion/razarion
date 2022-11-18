@@ -33,7 +33,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testTerrainObjectTileGeneration4Tiles() {
-        GroundConfig groundConfig = new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(8883);
+        GroundConfig groundConfig = new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(8885);
 
         List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig()
                 .id(WATER_CONFIG_ID)
@@ -67,7 +67,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         beachConfig.id(2);
         beachConfig.setWaterConfigId(WATER_CONFIG_ID);
         beachConfig.horizontalSpace(5);
-        beachConfig.setThreeJsMaterial(8885);
+        beachConfig.setThreeJsMaterial(8883);
         beachConfig.setGroundConfigId(GROUND_CONFIG_ID);
         beachConfig.setInterpolateNorm(true);
         beachConfig.setSlopeShapes(Arrays.asList(
@@ -118,10 +118,10 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
 
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
-                new ThreeJsModelConfig().id(8881).type(ThreeJsModelConfig.Type.GLTF)
+                new ThreeJsModelConfig().id(8881).type(ThreeJsModelConfig.Type.GLTF),
                 //new ThreeJsModelConfig().id(8882).type(ThreeJsModelConfig.Type.GLTF),
                 //new ThreeJsModelConfig().id(8883).type(ThreeJsModelConfig.Type.GLTF),
-                //new ThreeJsModelConfig().id(8885).type(ThreeJsModelConfig.Type.NODES_MATERIAL)
+                new ThreeJsModelConfig().id(8885).type(ThreeJsModelConfig.Type.NODES_MATERIAL)
         );
 
         List<ThreeJsModelPackConfig> threeJsModelPackConfigs = Arrays.asList(
