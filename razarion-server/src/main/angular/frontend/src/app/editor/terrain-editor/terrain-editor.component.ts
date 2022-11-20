@@ -8,7 +8,7 @@ import {
   ThreeJsRendererServiceMouseEvent,
   ThreeJsRendererServiceMouseEventListener
 } from "../../game/renderer/three-js-renderer-service.impl";
-import {ThreeJsModelService} from "../../game/renderer/three-js-model.service";
+import {BabylonModelService} from "../../game/renderer/babylon-model.service";
 import {TerrainObjectPositionComponent} from "./terrain-object-position.component";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
 
@@ -29,7 +29,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
-              private threeJsModelService: ThreeJsModelService,
+              private babylonModelService: BabylonModelService,
               private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl) {
     super();
     this.terrainEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService();
@@ -116,7 +116,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
         throw new Error(`TerrainObjectConfig has no threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
       }
       // if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
-      //   let newObject3D = this.threeJsModelService.cloneMesh(terrainObjectConfig.getThreeJsModelPackConfigId());
+      //   let newObject3D = this.babylonModelService.cloneMesh(terrainObjectConfig.getThreeJsModelPackConfigId());
       //   newObject3D.position.x = threeJsRendererServiceMouseEvent.pointOnObject3D.x;
       //   newObject3D.position.y = threeJsRendererServiceMouseEvent.pointOnObject3D.y;
       //   newObject3D.position.z = threeJsRendererServiceMouseEvent.pointOnObject3D.z;

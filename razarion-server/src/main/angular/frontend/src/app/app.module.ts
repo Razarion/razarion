@@ -86,7 +86,7 @@ import {FileUploadModule} from 'primeng/fileupload';
 import {RadToDegreePipe} from "./common/pipes/rad-to-degree-pipe";
 import {ThreeJsRendererServiceImpl} from './game/renderer/three-js-renderer-service.impl';
 import {GameMockService} from './game/renderer/game-mock.service';
-import {ThreeJsModelService} from './game/renderer/three-js-model.service';
+import {BabylonModelService} from './game/renderer/babylon-model.service';
 import {CollectionSelectorComponent} from "./editor/property-table/collection-selector.component";
 import {ImagePropertyEditorComponent} from "./editor/property-table/editors/image-property-editor.component";
 import {OverlayPanelModule} from "primeng/overlaypanel";
@@ -198,7 +198,7 @@ import {TerrainObjectPositionComponent} from "./editor/terrain-editor/terrain-ob
     ThreeJsRendererServiceImpl,
     ThreeJsWaterRenderService,
     GameMockService,
-    ThreeJsModelService
+    BabylonModelService
   ],
   bootstrap: [AppComponent]
 })

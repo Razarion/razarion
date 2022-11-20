@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {TerrainTile, ThreeJsRendererServiceAccess, ThreeJsTerrainTile} from "src/app/gwtangular/GwtAngularFacade";
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
-import {ThreeJsModelService} from "./three-js-model.service";
+import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import * as BABYLON from 'babylonjs';
 import {Scene} from 'babylonjs';
@@ -26,14 +26,13 @@ export interface ThreeJsRendererServiceMouseEventListener {
 export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
   private scene!: BABYLON.Scene;
   private engine!: BABYLON.Engine;
-  // private camera!: BABYLON.Camera;
   private camera!: BABYLON.FreeCamera;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
   private directionalLight!: BABYLON.DirectionalLight
   private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
 
-  constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: ThreeJsModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+  constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
 
   internalSetup(canvas: HTMLCanvasElement) {

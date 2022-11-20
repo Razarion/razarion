@@ -9,7 +9,7 @@ import {CrashPanelComponent} from "../editor/crash-panel/crash-panel.component";
 import {ThreeJsRendererServiceImpl} from './renderer/three-js-renderer-service.impl';
 import {environment} from 'src/environments/environment';
 import {GameMockService} from './renderer/game-mock.service';
-import {ThreeJsModelService} from './renderer/three-js-model.service';
+import {BabylonModelService} from './renderer/babylon-model.service';
 
 
 @Component({
@@ -31,7 +31,7 @@ export class GameComponent implements OnInit {
               private router: Router,
     private gwtAngularService: GwtAngularService,
     private threeJsRendererService: ThreeJsRendererServiceImpl,
-    private threeJsModelService: ThreeJsModelService,
+    private threeJsModelService: BabylonModelService,
     private gameMockService: GameMockService) {
   }
 

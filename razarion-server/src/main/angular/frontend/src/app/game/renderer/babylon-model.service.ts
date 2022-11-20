@@ -1,10 +1,12 @@
 import {Injectable} from "@angular/core";
-import {URL_THREE_JS_MODEL} from "src/app/common";
+import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "src/app/common";
 import {ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import * as BABYLON from 'babylonjs';
 import {Mesh} from "babylonjs/Meshes/mesh";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {MessageService} from "primeng/api";
 import Scene = BABYLON.Scene;
 import AssetContainer = BABYLON.AssetContainer;
 import Node = BABYLON.Node;
@@ -14,12 +16,14 @@ import NodeMaterial = BABYLON.NodeMaterial;
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 @Injectable()
-export class ThreeJsModelService {
+export class BabylonModelService {
   private assetContainers: Map<number, AssetContainer> = new Map();
   private nodeMaterials: Map<number, NodeMaterial> = new Map();
   private gwtAngularService!: GwtAngularService;
   private scene!: Scene;
 
+  constructor(private httpClient: HttpClient, private messageService: MessageService) {
+  }
 
   init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
     const _this = this;
@@ -175,18 +179,72 @@ export class ThreeJsModelService {
     this.scene = scene;
   }
 
-  getNodeMaterial(babylonJsModelId: number): NodeMaterial {
-    if (babylonJsModelId === undefined) {
-      throw new Error(`getNodeMaterial(): babylonJsModelId id undefined`);
+  getNodeMaterial(babylonModelId: number): NodeMaterial {
+    if (babylonModelId === undefined) {
+      throw new Error(`getNodeMaterial(): babylonModelId undefined`);
     }
-    babylonJsModelId = GwtHelper.gwtIssueNumber(babylonJsModelId);
+    babylonModelId = GwtHelper.gwtIssueNumber(babylonModelId);
 
-    let nodeMaterial = this.nodeMaterials.get(babylonJsModelId);
-
+    let nodeMaterial: NodeMaterial = <NodeMaterial>this.nodeMaterials.get(babylonModelId);
     if (!nodeMaterial) {
-      throw new Error(`No NodeMaterial for babylonJsModelId '${babylonJsModelId}'`);
+      throw new Error(`No NodeMaterial for babylonModelId '${babylonModelId}'`);
     }
+
+    nodeMaterial.inspectableCustomProperties = [
+      {
+        label: "Save to Razarion",
+        propertyName: "dummy",
+        callback: () => {
+          const json = this.serializeNodeMaterial(nodeMaterial);
+          this.babylonModelUpload(babylonModelId, new Blob([json], {type: 'application/json'}));
+        },
+        type: BABYLON.InspectableType.Button
+      }
+    ];
 
     return nodeMaterial;
   }
+
+
+  private serializeNodeMaterial(material: NodeMaterial): string {
+    // See Babylon.js code
+    // packages/tools/nodeEditor/src/serializationTools.ts Serialize
+
+    // const bufferSerializationState = Texture.SerializeBuffers;
+    // Texture.SerializeBuffers = DataStorage.ReadBoolean("EmbedTextures", true);
+
+    // this.UpdateLocations(material, globalState, frame);
+
+    const serializationObject = material.serialize();
+
+    // Texture.SerializeBuffers = bufferSerializationState;
+
+    return JSON.stringify(serializationObject, undefined, 2);
+  }
+
+
+  private babylonModelUpload(babylonModelId: number, blob: Blob) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/octet-stream'
+      })
+    };
+    this.httpClient.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${babylonModelId}`, blob, httpOptions)
+      .subscribe({
+        complete: () => this.messageService.add({
+          severity: 'success',
+          summary: 'Save successful'
+        }),
+        error: (error: any) => {
+          console.error(error);
+          this.messageService.add({
+            severity: 'error',
+            summary: `${error.name}: ${error.status}`,
+            detail: `${error.statusText}`,
+            sticky: true
+          });
+        }
+      })
+  }
+
 }

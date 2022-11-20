@@ -6,7 +6,7 @@ import {
   ThreeJsTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
-import {ThreeJsModelService} from "./three-js-model.service";
+import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import * as BABYLON from 'babylonjs';
 import {Scene} from 'babylonjs';
@@ -20,7 +20,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
               private defaultGroundConfigId: number,
               scene: Scene,
               private gwtAngularService: GwtAngularService,
-              private threeJsModelService: ThreeJsModelService,
+              private threeJsModelService: BabylonModelService,
               private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.container = new Mesh(`Terrain Tile ${terrainTile.getIndex().toString()}`, scene);
     if (terrainTile.getGroundTerrainTiles() !== null) {

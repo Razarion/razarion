@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from "@angular/core";
-import { ThreeJsModelService } from "../game/renderer/three-js-model.service";
+import { BabylonModelService } from "../game/renderer/babylon-model.service";
 import { GwtAngularBoot, GwtAngularFacade, ThreeJsModelConfig } from "./GwtAngularFacade";
 
 declare global {
@@ -13,7 +13,7 @@ export class GwtAngularService {
   gwtAngularFacade!: GwtAngularFacade;
   crashListener!: () => void;
 
-  constructor(private zone: NgZone, threeJsModelService: ThreeJsModelService) {
+  constructor(private zone: NgZone, threeJsModelService: BabylonModelService) {
     const self = this;
     this.gwtAngularFacade = new class extends GwtAngularFacade {
       onCrash(): void {
