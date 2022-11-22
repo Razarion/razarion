@@ -40,18 +40,19 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
 
           let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
           if (groundConfig.getTopThreeJsMaterial()) {
-            ground.material = threeJsModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
-            ground.material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
+            try {
+              ground.material = threeJsModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
+              ground.material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
+            } catch (error) {
+              console.warn(error);
+              this.addErrorMaterial(ground);
+            }
           } else {
-            const redMat = new BABYLON.StandardMaterial("red");
-            redMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
-            redMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
-            redMat.specularColor = new BABYLON.Color3(1, 0, 0);
-            redMat.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
-            ground.material = redMat;
+            this.addErrorMaterial(ground);
             console.warn(`No top or bottom material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
           }
-          this.container.addChild(ground);
+          ground.parent = this.container;
+          this.container.getChildren().push(ground);
         } catch (error) {
           console.error(error);
         }
@@ -79,7 +80,6 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
               const terrainObjectModelTransform = new TransformNode(`TerrainObjectModel (${terrainObjectModel.terrainObjectId})`);
               terrainObjectModelTransform.parent = this.container;
               this.container.getChildren().push(terrainObjectModelTransform);
-              terrainObjectModelTransform.parent = this.container;
               terrainObjectModelTransform.position.set(
                 terrainObjectModel.position.getX(),
                 terrainObjectModel.position.getY(),
@@ -111,6 +111,15 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         }
       });
     }
+  }
+
+  private addErrorMaterial(mesh: BABYLON.Mesh) {
+    const material = new BABYLON.StandardMaterial("Error Material");
+    material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+    material.emissiveColor = new BABYLON.Color3(1, 0, 0);
+    material.specularColor = new BABYLON.Color3(1, 0, 0);
+    material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
+    mesh.material = material;
   }
 
   static uvFromPosition(positions: Float32Array) {
