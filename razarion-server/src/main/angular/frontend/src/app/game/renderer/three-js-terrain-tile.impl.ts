@@ -18,11 +18,11 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
 
   constructor(terrainTile: TerrainTile,
               private defaultGroundConfigId: number,
-              scene: Scene,
+              private scene: Scene,
               private gwtAngularService: GwtAngularService,
               private threeJsModelService: BabylonModelService,
               private threeJsWaterRenderService: ThreeJsWaterRenderService) {
-    this.container = new Mesh(`Terrain Tile ${terrainTile.getIndex().toString()}`, scene);
+    this.container = new Mesh(`Terrain Tile ${terrainTile.getIndex().toString()}`);
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
         try {
@@ -143,11 +143,11 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   }
 
   addToScene(): void {
-    // TODO this.container.addAllToScene();
+    this.scene.addMesh(this.container);
   }
 
   removeFromScene(): void {
-    // TODO this.container.removeAllFromScene();
+    this.scene.removeMesh(this.container);
   }
 
   private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: any, groundMaterial: any | null, splatting: SlopeSplattingConfig | null): void {

@@ -5,8 +5,7 @@ import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import * as BABYLON from 'babylonjs';
-import {Scene} from 'babylonjs';
-import {Vector3} from "babylonjs";
+import {Scene, Vector3} from 'babylonjs';
 import Quaternion = BABYLON.Quaternion;
 
 export class ThreeJsRendererServiceMouseEvent {
@@ -75,7 +74,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
     // -----  Camera -----
     //this.camera = new BABYLON.Camera("Main Cam", new BABYLON.Vector3(0, -10, 20), this.scene);
-    this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(10, -20, 20), this.scene);
+    this.camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(10, -20, 20), this.scene);
     this.camera.setTarget(new BABYLON.Vector3(10, 20, 0));
 
     // ----- Light -----
@@ -173,9 +172,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
       let distance = Math.sqrt(duration + 200) * 0.01 + 0.05;
 
-      distance = distance * delta / 0.016;
+      distance = distance * delta * 0.03;
 
-      distance = distance + this.camera.position.z * 0.02;
+      distance = distance + this.camera.position.z * 0.03;
 
       switch (key) {
         case 'ArrowUp': {
@@ -230,9 +229,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     return null;
   }
 
-  public setupCenterGroundPosition(): BABYLON.Vector3 {
-    return this.setupGroundPosition(0, 0);
-  }
+  // public setupCenterGroundPosition(): BABYLON.Vector3 {
+  //   return this.setupZeroLevelPosition(0, 0);
+  // }
 
   public addToSceneEditor(scene: Scene) {
     // let group = new Group();
@@ -255,22 +254,12 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     if (this.gwtAngularService.gwtAngularFacade.inputService === undefined) {
       return;
     }
-    // let bottomLeft = this.setupGroundPosition(-1, -1);
-    // let bottomRight = this.setupGroundPosition(1, -1);
-    // let topRight = this.setupGroundPosition(1, 1);
-    // let topLeft = this.setupGroundPosition(-1, 1);
+    let invertCameraViewProj = BABYLON.Matrix.Invert(this.camera.getTransformationMatrix());
 
-    // this.directionalLight.shadow.camera.left = topLeft.x;
-    // this.directionalLight.shadow.camera.bottom = bottomLeft.y;
-    // this.directionalLight.shadow.camera.top = topLeft.y;
-    // this.directionalLight.shadow.camera.right = topRight.x;
-    // this.directionalLight.shadow.camera.updateMatrix();
-    // this.directionalLight.shadow.camera.updateProjectionMatrix();
-
-    let bottomLeft = new BABYLON.Vector2(0, 0);
-    let bottomRight = new BABYLON.Vector2(0, 400);
-    let topRight = new BABYLON.Vector2(400, 400);
-    let topLeft = new BABYLON.Vector2(0, 400);
+    const bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
+    const bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
+    const topRight = this.setupZeroLevelPosition(1, 1, invertCameraViewProj);
+    const topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
 
     this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
       bottomLeft.x, bottomLeft.y,
@@ -280,14 +269,11 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     );
   }
 
-  private setupGroundPosition(ndcX: number, ndcY: number): BABYLON.Vector3 {
-    // let raycaster = new Raycaster();
-    // raycaster.setFromCamera({x: ndcX, y: ndcY}, this.camera);
-    // let factor = this.camera.position.z / -raycaster.ray.direction.z;
-    // let pointOnGround = raycaster.ray.direction.clone().setLength(factor);
-    // pointOnGround.add(this.camera.position);
-    // TODO return new Vector3(pointOnGround.x, pointOnGround.y, pointOnGround.z);
-    throw new Error("...TODO...");
+  private setupZeroLevelPosition(ndcX: number, ndcY: number, invertCameraViewProj: BABYLON.Matrix): BABYLON.Vector3 {
+    let ndcToWorld = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(ndcX, ndcY, 0), invertCameraViewProj);
+    const direction = ndcToWorld.subtract(this.camera.position).normalize();
+    const distanceToNullLevel = -this.camera.position.z / direction.z;
+    return this.camera.position.add(direction.multiplyByFloats(distanceToNullLevel, distanceToNullLevel, distanceToNullLevel));
   }
 
   private onMousedownEvent(this: ThreeJsRendererServiceImpl, event: any): void {
