@@ -119,8 +119,8 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
                 new ThreeJsModelConfig().id(8881).type(ThreeJsModelConfig.Type.GLTF),
-                //new ThreeJsModelConfig().id(8882).type(ThreeJsModelConfig.Type.GLTF),
-                //new ThreeJsModelConfig().id(8883).type(ThreeJsModelConfig.Type.GLTF),
+                new ThreeJsModelConfig().id(8882).type(ThreeJsModelConfig.Type.NODES_MATERIAL),
+                new ThreeJsModelConfig().id(8883).type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(8885).type(ThreeJsModelConfig.Type.NODES_MATERIAL)
         );
 

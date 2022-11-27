@@ -14,7 +14,7 @@ import Mesh = BABYLON.Mesh;
 import TransformNode = BABYLON.TransformNode;
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
-  private container: Mesh;
+  private readonly container: Mesh;
 
   constructor(terrainTile: TerrainTile,
               private defaultGroundConfigId: number,
@@ -40,13 +40,8 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
 
           let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
           if (groundConfig.getTopThreeJsMaterial()) {
-            try {
               ground.material = threeJsModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
               ground.material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
-            } catch (error) {
-              console.warn(error);
-              this.addErrorMaterial(ground);
-            }
           } else {
             this.addErrorMaterial(ground);
             console.warn(`No top or bottom material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
@@ -60,15 +55,44 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     }
 
     if (terrainTile.getTerrainSlopeTiles() !== null) {
-      const _this = this;
       terrainTile.getTerrainSlopeTiles().forEach(terrainSlopeTile => {
+        try {
+          let slopeConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getSlopeConfig(terrainSlopeTile.slopeConfigId);
+          if (slopeConfig.getThreeJsMaterial() === undefined) {
+            throw new Error(`SlopeConfig has no threeJsMaterial: ${slopeConfig.toString()}`);
+          }
+          let material = threeJsModelService.getNodeMaterial(slopeConfig.getThreeJsMaterial());
+          if (terrainSlopeTile.outerSlopeGeometry !== null && terrainSlopeTile.outerSlopeGeometry !== undefined) {
+            this.setupSlopeGeometry(slopeConfig,
+              terrainSlopeTile.outerSlopeGeometry,
+              material,
+              this.evalGroundMaterial(null),
+              slopeConfig.getOuterSlopeSplattingConfig());
+          }
+          if (terrainSlopeTile.centerSlopeGeometry !== null && terrainSlopeTile.centerSlopeGeometry !== undefined) {
+            this.setupSlopeGeometry(slopeConfig,
+              terrainSlopeTile.centerSlopeGeometry,
+              material,
+              null,
+              null);
+          }
+          if (terrainSlopeTile.innerSlopeGeometry !== null && terrainSlopeTile.innerSlopeGeometry !== undefined) {
+            this.setupSlopeGeometry(slopeConfig,
+              terrainSlopeTile.innerSlopeGeometry,
+              material,
+              this.evalGroundMaterial(slopeConfig),
+              slopeConfig.getInnerSlopeSplattingConfig());
+          }
+        } catch (error) {
+          // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
+          console.error(error);
+        }
       });
     }
 
     // TODO this.threeJsWaterRenderService.setup(terrainTile.getTerrainWaterTiles(), this.container);
 
     if (terrainTile.getTerrainTileObjectLists() !== null) {
-      const _this = this;
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
         try {
           let terrainObjectConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
@@ -113,6 +137,16 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     }
   }
 
+  private evalGroundMaterial(slopeConfig: SlopeConfig | null): BABYLON.NodeMaterial {
+    if (slopeConfig && slopeConfig.getGroundConfigId()) {
+      let innerGroundConfigMaterialId = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(slopeConfig.getGroundConfigId()).getTopThreeJsMaterial();
+      return this.threeJsModelService.getNodeMaterial(innerGroundConfigMaterialId);
+    } else {
+      let innerGroundConfigMaterialId = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(this.defaultGroundConfigId).getTopThreeJsMaterial();
+      return this.threeJsModelService.getNodeMaterial(innerGroundConfigMaterialId);
+    }
+  }
+
   private addErrorMaterial(mesh: BABYLON.Mesh) {
     const material = new BABYLON.StandardMaterial("Error Material");
     material.diffuseColor = new BABYLON.Color3(1, 0, 0);
@@ -150,17 +184,28 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     this.scene.removeMesh(this.container);
   }
 
-  private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: any, groundMaterial: any | null, splatting: SlopeSplattingConfig | null): void {
-    // if (groundMaterial && splatting) {
-    // } else {
-    //   let geometry = new BufferGeometry();
-    //   geometry.setAttribute('position', new BufferAttribute(slopeGeometry.positions, 3));
-    //   geometry.setAttribute('normal', new BufferAttribute(slopeGeometry.norms, 3));
-    //   geometry.setAttribute('uv', new BufferAttribute(slopeGeometry.uvs, 2));
-    //   let slope = new Mesh(geometry, material);
-    //   slope.name = `Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`;
-    //   slope.receiveShadow = true;
-    //   this.scene.add(slope);
-    // }
+  private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: BABYLON.NodeMaterial, groundMaterial: BABYLON.NodeMaterial | null, splatting: SlopeSplattingConfig | null): void {
+    if (groundMaterial && splatting) {
+    } else {
+      const slope = new BABYLON.Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
+      const vertexData = new BABYLON.VertexData();
+      const indices = [];
+      for (let i = 0; i < slopeGeometry.positions.length / 3; i++) {
+        indices[i] = i;
+      }
+      vertexData.positions = slopeGeometry.positions;
+      vertexData.normals = slopeGeometry.norms;
+      vertexData.uvs = slopeGeometry.uvs;
+      vertexData.indices = indices;
+
+      vertexData.applyToMesh(slope)
+
+      slope.parent = this.container;
+
+      slope.material = material;
+      slope.material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
+
+      this.container.getChildren().push(slope);
+    }
   }
 }

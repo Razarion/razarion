@@ -36,10 +36,10 @@ function loadThreeJsModel(req) {
             threeJsModelToLoad = "tropical_vegetation.babylon";
             break;
         case '8882':
-            threeJsModelToLoad = "tropical_vegetation.babylon";
+            threeJsModelToLoad = "babylon-js_nodes_material.json";
             break;
         case '8883':
-            threeJsModelToLoad = "tropical_vegetation.babylon";
+            threeJsModelToLoad = "babylon-js_nodes_material.json";
             break;
         case '8884':
             threeJsModelToLoad = "three_js_model_material_beach.gltf";

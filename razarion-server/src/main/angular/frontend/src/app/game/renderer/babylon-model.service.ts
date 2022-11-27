@@ -41,22 +41,25 @@ export class BabylonModelService {
         }
 
         threeJsModelConfigs.forEach(threeJsModelConfig => {
-          const url = `${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`;
-          switch (GwtHelper.gwtIssueStringEnum(threeJsModelConfig.getType())) {
-            case ThreeJsModelConfig.Type.GLTF:
-              this.loadAssetContainer(url, threeJsModelConfig, handleResolve);
-              break;
-            case ThreeJsModelConfig.Type.NODES_MATERIAL:
-              this.loadNodeMaterial(url, threeJsModelConfig, handleResolve);
-              break;
+          try {
+            const url = `${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`;
+            switch (GwtHelper.gwtIssueStringEnum(threeJsModelConfig.getType())) {
+              case ThreeJsModelConfig.Type.GLTF:
+                this.loadAssetContainer(url, threeJsModelConfig, handleResolve);
+                break;
+              case ThreeJsModelConfig.Type.NODES_MATERIAL:
+                this.loadNodeMaterial(url, threeJsModelConfig, handleResolve);
+                break;
 
-            default:
-              console.warn(`Unknown type '${threeJsModelConfig.getType()}' in ThreeJsModelConfig (${threeJsModelConfig.getInternalName()}[${threeJsModelConfig.getId()}])`);
-              handleResolve();
-              break;
+              default:
+                console.warn(`Unknown type '${threeJsModelConfig.getType()}' in ThreeJsModelConfig (${threeJsModelConfig.getInternalName()}[${threeJsModelConfig.getId()}])`);
+                handleResolve();
+                break;
+            }
+          } catch (error) {
+            console.warn(`Error in ThreeJsModelConfig (${threeJsModelConfig.getInternalName()}[${threeJsModelConfig.getId()}]) ${error}`);
+            handleResolve();
           }
-
-
         });
       } catch (error) {
         console.error(error);
@@ -187,12 +190,26 @@ export class BabylonModelService {
 
     let nodeMaterial: NodeMaterial = <NodeMaterial>this.nodeMaterials.get(babylonModelId);
     if (!nodeMaterial) {
-      throw new Error(`No NodeMaterial for babylonModelId '${babylonModelId}'`);
+      console.error(`No NodeMaterial for babylonModelId '${babylonModelId}'`);
+      nodeMaterial = this.createErrorMaterial();
     }
 
-    nodeMaterial.inspectableCustomProperties = [
+    nodeMaterial.inspectableCustomProperties = this.setupEditorProperties(babylonModelId, nodeMaterial);
+
+    return nodeMaterial;
+  }
+
+  private createErrorMaterial(): BABYLON.NodeMaterial {
+    const material = BABYLON.NodeMaterial.CreateDefault("Default NodeMaterial");
+    material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
+    return material;
+  }
+
+
+  private setupEditorProperties(babylonModelId: number, nodeMaterial: NodeMaterial): BABYLON.IInspectable[] {
+    return [
       {
-        label: "Save to Razarion",
+        label: `Save to Razarion (${babylonModelId})`,
         propertyName: "dummy",
         callback: () => {
           const json = this.serializeNodeMaterial(nodeMaterial);
@@ -201,10 +218,7 @@ export class BabylonModelService {
         type: BABYLON.InspectableType.Button
       }
     ];
-
-    return nodeMaterial;
   }
-
 
   private serializeNodeMaterial(material: NodeMaterial): string {
     // See Babylon.js code
