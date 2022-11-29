@@ -75,6 +75,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     // -----  Camera -----
     //this.camera = new BABYLON.Camera("Main Cam", new BABYLON.Vector3(0, -10, 20), this.scene);
     this.camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(10, -20, 20), this.scene);
+    this.camera.upVector =  new BABYLON.Vector3(0, 0, 1);
     this.camera.setTarget(new BABYLON.Vector3(10, 20, 0));
 
     // ----- Light -----

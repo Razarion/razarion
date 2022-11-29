@@ -150,10 +150,12 @@ export class BabylonModelService {
 
   private loadNodeMaterial(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
     BABYLON.NodeMaterial.ParseFromFileAsync(
-      `Node Material '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})'`,
+      `${threeJsModelConfig.getInternalName()}(${threeJsModelConfig.getId()})`,
       url,
       this.scene
     ).then(nodeMaterial => {
+      nodeMaterial.inspectableCustomProperties = this.setupEditorProperties(threeJsModelConfig, nodeMaterial);
+      nodeMaterial.ignoreAlpha = true;
       this.nodeMaterials.set(threeJsModelConfig.getId(), nodeMaterial);
       handleResolve();
     }).catch(reason => {
@@ -191,29 +193,27 @@ export class BabylonModelService {
     let nodeMaterial: NodeMaterial = <NodeMaterial>this.nodeMaterials.get(babylonModelId);
     if (!nodeMaterial) {
       console.error(`No NodeMaterial for babylonModelId '${babylonModelId}'`);
-      nodeMaterial = this.createErrorMaterial();
+      nodeMaterial = this.createMissingNodeMaterial(babylonModelId);
     }
-
-    nodeMaterial.inspectableCustomProperties = this.setupEditorProperties(babylonModelId, nodeMaterial);
 
     return nodeMaterial;
   }
 
-  private createErrorMaterial(): BABYLON.NodeMaterial {
-    const material = BABYLON.NodeMaterial.CreateDefault("Default NodeMaterial");
+  private createMissingNodeMaterial(babylonModelId: number): BABYLON.NodeMaterial {
+    const material = BABYLON.NodeMaterial.CreateDefault(`Missing NodeMaterial ${babylonModelId}`);
     material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
     return material;
   }
 
 
-  private setupEditorProperties(babylonModelId: number, nodeMaterial: NodeMaterial): BABYLON.IInspectable[] {
+  private setupEditorProperties(threeJsModelConfig: ThreeJsModelConfig, nodeMaterial: NodeMaterial): BABYLON.IInspectable[] {
     return [
       {
-        label: `Save to Razarion (${babylonModelId})`,
+        label: `Save to Razarion '${threeJsModelConfig.getInternalName()}(${threeJsModelConfig.getId()}')`,
         propertyName: "dummy",
         callback: () => {
           const json = this.serializeNodeMaterial(nodeMaterial);
-          this.babylonModelUpload(babylonModelId, new Blob([json], {type: 'application/json'}));
+          this.babylonModelUpload(threeJsModelConfig.getId(), new Blob([json], {type: 'application/json'}));
         },
         type: BABYLON.InspectableType.Button
       }
