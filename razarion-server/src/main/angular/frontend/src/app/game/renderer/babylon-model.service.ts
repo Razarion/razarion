@@ -11,6 +11,7 @@ import Scene = BABYLON.Scene;
 import AssetContainer = BABYLON.AssetContainer;
 import Node = BABYLON.Node;
 import NodeMaterial = BABYLON.NodeMaterial;
+import Type = ThreeJsModelConfig.Type;
 
 
 //import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
@@ -200,8 +201,21 @@ export class BabylonModelService {
   }
 
   private createMissingNodeMaterial(babylonModelId: number): BABYLON.NodeMaterial {
-    const material = BABYLON.NodeMaterial.CreateDefault(`Missing NodeMaterial ${babylonModelId}`);
+    const material = BABYLON.NodeMaterial.CreateDefault(`_Missing NodeMaterial ${babylonModelId}`);
     material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
+    material.inspectableCustomProperties = this.setupEditorProperties(new class implements ThreeJsModelConfig {
+      getId(): number {
+        return babylonModelId;
+      }
+
+      getInternalName(): string {
+        return "_Missing NodeMaterial";
+      }
+
+      getType(): ThreeJsModelConfig.Type {
+        return Type.NODES_MATERIAL;
+      }
+    }, material);
     return material;
   }
 
