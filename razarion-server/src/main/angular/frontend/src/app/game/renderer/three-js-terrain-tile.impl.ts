@@ -28,20 +28,27 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         try {
           const ground = new BABYLON.Mesh("Ground", null);
           const vertexData = new BABYLON.VertexData();
-          const indices = [];
+
           for (let i = 0; i < groundTerrainTile.positions.length / 3; i++) {
-            indices[i] = i;
+            const newPositionY = groundTerrainTile.positions[i * 3 + 2];
+            const newPositionZ = groundTerrainTile.positions[i * 3 + 1];
+            groundTerrainTile.positions[i * 3 + 1] = newPositionY;
+            groundTerrainTile.positions[i * 3 + 2] = newPositionZ;
+            const newNormalY = groundTerrainTile.norms[i * 3 + 2];
+            const newNormalZ = groundTerrainTile.norms[i * 3 + 1];
+            groundTerrainTile.norms[i * 3 + 1] = newNormalY;
+            groundTerrainTile.norms[i * 3 + 2] = newNormalZ;
           }
+
           vertexData.positions = groundTerrainTile.positions;
           vertexData.normals = groundTerrainTile.norms;
-          vertexData.indices = indices;
+          vertexData.indices = this.generateIndices(groundTerrainTile.positions.length);
 
           vertexData.applyToMesh(ground)
 
           let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
           if (groundConfig.getTopThreeJsMaterial()) {
               ground.material = threeJsModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
-              ground.material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
           } else {
             this.addErrorMaterial(ground);
             console.warn(`No top or bottom material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
@@ -106,20 +113,20 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
               this.container.getChildren().push(terrainObjectModelTransform);
               terrainObjectModelTransform.position.set(
                 terrainObjectModel.position.getX(),
-                terrainObjectModel.position.getY(),
-                terrainObjectModel.position.getZ());
+                terrainObjectModel.position.getZ(),
+                terrainObjectModel.position.getY());
               if (terrainObjectModel.scale) {
                 terrainObjectModelTransform.scaling.set(
                   terrainObjectModel.scale.getX(),
-                  terrainObjectModel.scale.getY(),
-                  terrainObjectModel.scale.getZ());
+                  terrainObjectModel.scale.getZ(),
+                  terrainObjectModel.scale.getY());
               }
               if (terrainObjectModel.rotation) {
                 terrainObjectModelTransform.rotationQuaternion = null;
                 terrainObjectModelTransform.rotation.set(
                   terrainObjectModel.rotation.getX(),
-                  terrainObjectModel.rotation.getY(),
-                  terrainObjectModel.rotation.getZ());
+                  terrainObjectModel.rotation.getZ(),
+                  terrainObjectModel.rotation.getY());
               }
               let terrainObjectMesh: Mesh = <Mesh>threeJsModelService.cloneMesh(terrainObjectConfig.getThreeJsModelPackConfigId(), terrainObjectModelTransform);
               terrainObjectMesh.name = `TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`;
@@ -187,25 +194,59 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: BABYLON.NodeMaterial, groundMaterial: BABYLON.NodeMaterial | null, splatting: SlopeSplattingConfig | null): void {
     if (groundMaterial && splatting) {
     } else {
+
+      for (let i = 0; i < slopeGeometry.positions.length / 3; i++) {
+        const newPositionY = slopeGeometry.positions[i * 3 + 2];
+        const newPositionZ = slopeGeometry.positions[i * 3 + 1];
+        slopeGeometry.positions[i * 3 + 1] = newPositionY;
+        slopeGeometry.positions[i * 3 + 2] = newPositionZ;
+        const newNormalY = slopeGeometry.norms[i * 3 + 2];
+        const newNormalZ = slopeGeometry.norms[i * 3 + 1];
+        slopeGeometry.norms[i * 3 + 1] = newNormalY;
+        slopeGeometry.norms[i * 3 + 2] = newNormalZ;
+      }
+
       const slope = new BABYLON.Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
       const vertexData = new BABYLON.VertexData();
-      const indices = [];
-      for (let i = 0; i < slopeGeometry.positions.length / 3; i++) {
-        indices[i] = i;
-      }
       vertexData.positions = slopeGeometry.positions;
       vertexData.normals = slopeGeometry.norms;
       vertexData.uvs = slopeGeometry.uvs;
-      vertexData.indices = indices;
+      vertexData.indices = this.generateIndices(slopeGeometry.positions.length);
 
       vertexData.applyToMesh(slope)
 
       slope.parent = this.container;
 
       slope.material = material;
-      slope.material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
+
+      this.showNormals(slope, 1, BABYLON.Color3.White(), this.scene);
 
       this.container.getChildren().push(slope);
     }
+  }
+
+  showNormals(mesh: BABYLON.AbstractMesh, size: number, color: BABYLON.Color3, scene: Scene) {
+    const normals: any = mesh.getVerticesData(BABYLON.VertexBuffer.NormalKind);
+    const positions: any = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+    color = color || BABYLON.Color3.White();
+    size = size || 1;
+
+    var lines = [];
+    for (var i = 0; i < normals.length; i += 3) {
+      var v1 = BABYLON.Vector3.FromArray(positions, i);
+      var v2 = v1.add(BABYLON.Vector3.FromArray(normals, i).scaleInPlace(size));
+      lines.push([v1.add(mesh.position), v2.add(mesh.position)]);
+    }
+    const normalLines = BABYLON.MeshBuilder.CreateLineSystem("normalLines", {lines: lines}, scene);
+    normalLines.color = color;
+    return normalLines;
+  }
+
+  private generateIndices(positionCount: number): number[] {
+    const indices = [];
+    for (let i = 0; i < positionCount / 3; i++) {
+      indices[i] = i;
+    }
+    return indices;
   }
 }

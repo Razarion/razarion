@@ -52,6 +52,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         // Razarion Industries base
         SlopeConfig razarionIndustriesConfig = new SlopeConfig();
         razarionIndustriesConfig.id(1);
+        razarionIndustriesConfig.setInternalName("RI Slope");
         razarionIndustriesConfig.horizontalSpace(5);
         razarionIndustriesConfig.setThreeJsMaterial(8882);
         razarionIndustriesConfig.setInterpolateNorm(false);
@@ -65,6 +66,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         // Beach
         SlopeConfig beachConfig = new SlopeConfig();
         beachConfig.id(2);
+        beachConfig.setInternalName("Beach");
         beachConfig.setWaterConfigId(WATER_CONFIG_ID);
         beachConfig.horizontalSpace(5);
         beachConfig.setThreeJsMaterial(8883);
@@ -118,10 +120,11 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
 
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
-                new ThreeJsModelConfig().id(8881).type(ThreeJsModelConfig.Type.GLTF),
-                new ThreeJsModelConfig().id(8882).type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(8883).type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(8885).type(ThreeJsModelConfig.Type.NODES_MATERIAL)
+                new ThreeJsModelConfig().id(8881).internalName("Tropical Pack").type(ThreeJsModelConfig.Type.GLTF),
+                new ThreeJsModelConfig().id(8882).internalName("RI Slope").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
+                new ThreeJsModelConfig().id(8883).internalName("Beach").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
+                new ThreeJsModelConfig().id(8884).internalName("Simple Earth Planet").type(ThreeJsModelConfig.Type.GLTF),
+                new ThreeJsModelConfig().id(8885).internalName("Ground").type(ThreeJsModelConfig.Type.NODES_MATERIAL)
         );
 
         List<ThreeJsModelPackConfig> threeJsModelPackConfigs = Arrays.asList(
@@ -132,15 +135,15 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                         .position(new Vertex(10, 0, 0))
                         .scale(new Vertex(0.01, 0.01, 0.01))
                         .rotation(new Vertex(Math.toRadians(90), 0, 0))
-                        .namePath(Arrays.asList("__root__", "Sketchfab_model", "Vegetation.FBX", "RootNode", "fern", "fern_fern_0"))
-//                new ThreeJsModelPackConfig()
-//                        .id(2)
-//                        .threeJsModelId(8881)
-//                        .internalName("Pack 8881 2")
-//                        .position(new Vertex(0, 0, 0))
-//                        .scale(new Vertex(0.01, 0.01, 0.01))
-//                        .rotation(new Vertex(0, 0, 0))
-//                        .namePath(Arrays.asList("Sketchfab_Scene", "Sketchfab_model", "de49941573ca4a6cb3fbcf3e4d72f085fbx", "RootNode", "Mid_4", "Object_4", "Mid_4_MID_0")),
+                        .namePath(Arrays.asList("__root__", "Sketchfab_model", "Vegetation.FBX", "RootNode", "fern", "fern_fern_0")),
+                new ThreeJsModelPackConfig()
+                        .id(2)
+                        .threeJsModelId(8884)
+                        .internalName("Simple Earth Planet")
+                        .position(new Vertex(0, 0, 0))
+                        .scale(new Vertex(0.01, 0.01, 0.01))
+                        .rotation(new Vertex(0, 0, 0))
+                        .namePath(Arrays.asList("__root__", "Sketchfab_model", "Collada visual scene group", "Earth", "_1_-_Default_1"))
 //                new ThreeJsModelPackConfig()
 //                        .id(3)
 //                        .threeJsModelId(8881)
@@ -153,14 +156,15 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
         terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1).threeJsModelPackConfigId(1));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(1).threeJsModelPackConfigId(2));
         // terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5).threeJsModelPackConfigId(2));
         // terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10).threeJsModelPackConfigId(3));
 
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
                 new TerrainObjectPosition().id(1).terrainObjectConfigId(1).position(new DecimalPosition(2, 7)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(Math.toRadians(180), 0, 0)),
                 new TerrainObjectPosition().id(2).terrainObjectConfigId(1).position(new DecimalPosition(3, 11)).scale(new Vertex(1.3, 1.3, 1.3)).rotation(new Vertex(Math.toRadians(0), 0, 0)),
-                new TerrainObjectPosition().id(3).terrainObjectConfigId(1).position(new DecimalPosition(200, 10)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90)))
-//                new TerrainObjectPosition().id(4).terrainObjectConfigId(3).position(new DecimalPosition(40, 10)).scale(new Vertex(0.8, 0.8, 0.8)).rotation(new Vertex(0, 0, Math.toRadians(90))),
+                new TerrainObjectPosition().id(3).terrainObjectConfigId(1).position(new DecimalPosition(200, 10)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
+                new TerrainObjectPosition().id(4).terrainObjectConfigId(2).position(new DecimalPosition(8, 8)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(0)))
 //                new TerrainObjectPosition().id(5).terrainObjectConfigId(3).position(new DecimalPosition(50, 10)).scale(new Vertex(0.5, 0.5, 0.5)).rotation(new Vertex(Math.toRadians(90), Math.toRadians(90), 0)),
 //                new TerrainObjectPosition().id(6).terrainObjectConfigId(3).position(new DecimalPosition(60, 10)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, Math.toRadians(90), Math.toRadians(90))),
 //                new TerrainObjectPosition().id(7).terrainObjectConfigId(3).position(new DecimalPosition(70, 10)).scale(new Vertex(0.9, 0.9, 0.9)).rotation(new Vertex(Math.toRadians(90), 0, Math.toRadians(90))),

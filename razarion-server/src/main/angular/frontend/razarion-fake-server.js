@@ -36,16 +36,16 @@ function loadThreeJsModel(req) {
             threeJsModelToLoad = "tropical_vegetation.babylon";
             break;
         case '8882':
-            threeJsModelToLoad = "babylon-js_nodes_material.json";
+            threeJsModelToLoad = "ri_slope_node_material.json";
             break;
         case '8883':
-            threeJsModelToLoad = "babylon-js_nodes_material.json";
+            threeJsModelToLoad = "unknown";
             break;
         case '8884':
-            threeJsModelToLoad = "three_js_model_material_beach.gltf";
+            threeJsModelToLoad = "simple_earth_planet.babylon";
             break;
         case '8885':
-            threeJsModelToLoad = "babylon-js_nodes_material.json";
+            threeJsModelToLoad = "ground_node_material.json";
             break;
     }
     return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\threejs-models", threeJsModelToLoad));

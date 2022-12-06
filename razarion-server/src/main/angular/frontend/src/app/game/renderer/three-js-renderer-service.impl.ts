@@ -30,6 +30,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private canvas!: HTMLCanvasElement;
   private directionalLight!: BABYLON.DirectionalLight
   private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
+  private gizmoManager!: BABYLON.GizmoManager;
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -37,7 +38,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   internalSetup(canvas: HTMLCanvasElement) {
     this.engine = new BABYLON.Engine(canvas)
     this.scene = new BABYLON.Scene(this.engine);
-    this.scene.useRightHandedSystem = true;
     this.scene.debugLayer.show({enableClose: true, embedMode: true});
 
     this.threeJsModelService.setScene(this.scene);
@@ -57,14 +57,14 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       delta = delta / 240;
       delta = -delta;
       if (delta <= 0) {
-        delta += self.camera.position.z * 0.2;
+        delta += self.camera.position.y * 0.2;
       } else {
-        delta -= self.camera.position.z * 0.2;
+        delta -= self.camera.position.y * 0.2;
       }
       const cameraRotation = Quaternion.FromEulerAngles(self.camera.rotation.x, self.camera.rotation.y, self.camera.rotation.z);
       let deltaVector = Vector3.Zero();
       new Vector3(0, 0, -delta).rotateByQuaternionToRef(cameraRotation, deltaVector);
-      if (self.camera.position.z + deltaVector.z > 1 && self.camera.position.z + deltaVector.z < 200) {
+      if (self.camera.position.y + deltaVector.y > 1 && self.camera.position.y + deltaVector.y < 200) {
         this.camera.position.x += deltaVector.x;
         this.camera.position.y += deltaVector.y;
         this.camera.position.z += deltaVector.z;
@@ -73,32 +73,21 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }, true);
 
     // -----  Camera -----
-    //this.camera = new BABYLON.Camera("Main Cam", new BABYLON.Vector3(0, -10, 20), this.scene);
-    this.camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(10, -20, 20), this.scene);
-    this.camera.upVector =  new BABYLON.Vector3(0, 0, 1);
-    this.camera.setTarget(new BABYLON.Vector3(10, 20, 0));
+    this.camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(0, 10, -10), this.scene);
+    this.camera.setTarget(new BABYLON.Vector3(0, 0, 0));
 
     // ----- Light -----
-    this.directionalLight = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0, 0, -1), this.scene);
+    this.directionalLight = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0.12, -0.98, 0.15), this.scene);
+    // --- gizmo
+    const lightGizmo = new BABYLON.LightGizmo();
+    lightGizmo.light = this.directionalLight;
 
-    // ----- Helpers -----
-    const axisX = BABYLON.Mesh.CreateLines("axisX",
-      [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(10, 0, 0)],
-      this.scene,
-      false);
-    axisX.color = new BABYLON.Color3(1, 0, 0);
-
-    const axisY = BABYLON.Mesh.CreateLines("axisY",
-      [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 10, 0)],
-      this.scene,
-      false);
-    axisY.color = new BABYLON.Color3(0, 1, 0);
-
-    const axisZ = BABYLON.Mesh.CreateLines("axisZ",
-      [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 10)],
-      this.scene,
-      false);
-    axisZ.color = new BABYLON.Color3(0, 0, 1);
+    this.gizmoManager = new BABYLON.GizmoManager(this.scene);
+    this.gizmoManager.positionGizmoEnabled = true;
+    this.gizmoManager.rotationGizmoEnabled = true;
+    this.gizmoManager.usePointerToAttachGizmos = false;
+    this.gizmoManager.attachToMesh(lightGizmo.attachedMesh);
+    // --- gizmo ends
 
     // ----- Resize listener -----
     const resizeObserver = new ResizeObserver(entries => {
@@ -175,17 +164,17 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
       distance = distance * delta * 0.03;
 
-      distance = distance + this.camera.position.z * 0.03;
+      distance = distance + this.camera.position.y * 0.03;
 
       switch (key) {
         case 'ArrowUp': {
           hasChanged = true;
-          this.camera.position.y += distance;
+          this.camera.position.z += distance;
           break;
         }
         case 'ArrowDown': {
           hasChanged = true;
-          this.camera.position.y -= distance;
+          this.camera.position.z -= distance;
           break;
         }
         case 'ArrowRight': {
