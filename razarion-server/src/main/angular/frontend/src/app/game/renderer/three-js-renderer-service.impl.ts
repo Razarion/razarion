@@ -252,17 +252,17 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     const topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
 
     this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
-      bottomLeft.x, bottomLeft.y,
-      bottomRight.x, bottomRight.y,
-      topRight.x, topRight.y,
-      topLeft.x, topLeft.y
+      bottomLeft.x, bottomLeft.z,
+      bottomRight.x, bottomRight.z,
+      topRight.x, topRight.z,
+      topLeft.x, topLeft.z
     );
   }
 
   private setupZeroLevelPosition(ndcX: number, ndcY: number, invertCameraViewProj: BABYLON.Matrix): BABYLON.Vector3 {
     let ndcToWorld = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(ndcX, ndcY, 0), invertCameraViewProj);
     const direction = ndcToWorld.subtract(this.camera.position).normalize();
-    const distanceToNullLevel = -this.camera.position.z / direction.z;
+    const distanceToNullLevel = -this.camera.position.y / direction.y;
     return this.camera.position.add(direction.multiplyByFloats(distanceToNullLevel, distanceToNullLevel, distanceToNullLevel));
   }
 
