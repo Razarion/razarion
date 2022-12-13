@@ -1,2 +1,17 @@
 <div class="flex flex-column">
+  <div class="mr-2">
+    <p-toolbar>
+      <div class="p-toolbar-group-left">
+        <p-fileUpload #fileUploadElement
+                      chooseLabel="Import GLTF"
+                      chooseIcon="pi pi-folder-open"
+                      mode="basic"
+                      styleClass="p-button-sm"
+                      [auto]=true
+                      [customUpload]=true
+                      (uploadHandler)="onImport($event)">
+        </p-fileUpload>
+      </div>
+    </p-toolbar>
+  </div>
 </div>

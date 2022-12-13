@@ -240,6 +240,14 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
   }
 
+  getEngine(): BABYLON.Engine {
+    return this.engine;
+  }
+
+  getScene(): BABYLON.Scene {
+    return this.scene;
+  }
+
   private onViewFieldChanged() {
     if (this.gwtAngularService.gwtAngularFacade.inputService === undefined) {
       return;
