@@ -13,5 +13,46 @@
         </p-fileUpload>
       </div>
     </p-toolbar>
+    <p-panel>
+      <ng-template pTemplate="header">
+        Save Selected
+      </ng-template>
+      <div class="field grid">
+        <label for="selectedBabylonName" class="col-12 mb-2 md:col-2 md:mb-0">Name</label>
+        <div class="col-12 md:col-10">
+          <input id="selectedBabylonName" value="{{selectedBabylonName}}" disabled="true" type="text"
+                 class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        </div>
+      </div>
+      <div class="field grid">
+        <label for="selectedBabylonName" class="col-12 mb-2 md:col-2 md:mb-0">ID</label>
+        <div class="col-12 md:col-10">
+          <input id="selectedBabylonId" value="{{selectedBabylonId}}" disabled="true" type="text"
+                 class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        </div>
+      </div>
+      <div class="field grid">
+        <label for="selectedBabylonType" class="col-12 mb-2 md:col-2 md:mb-0">Class</label>
+        <div class="col-12 md:col-10">
+          <input id="selectedBabylonType" value="{{selectedBabylonClass}}" disabled="true" type="text"
+                 class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        </div>
+      </div>
+      <div class="field grid">
+        <label for="selectedBabylonType" class="col-12 mb-2 md:col-2 md:mb-0">Babylon.js Model</label>
+        <div class="col">
+          <p-dropdown id="saveBabylonModel" [placeholder]="'...'" [(ngModel)]="dropDownBabylonModel"
+                      [options]="dropDownBabylonModels">
+          </p-dropdown>
+        </div>
+      </div>
+      <p-button type="button" label="Save" icon="pi pi-cloud-upload" styleClass="p-button-sm"
+                [disabled]="dropDownBabylonModel == null || selectedBabylonName == null"
+                (onClick)="onSaveSelected()"></p-button>
+      <i>&nbsp;</i>
+      <p-button type="button" label="Dump" icon="pi pi-save" styleClass="p-button-sm"
+                [disabled]="selectedBabylonName == null"
+                (onClick)="onDumpSelected()"></p-button>
+    </p-panel>
   </div>
 </div>

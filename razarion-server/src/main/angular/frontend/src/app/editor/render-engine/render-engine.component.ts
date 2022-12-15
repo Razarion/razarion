@@ -4,6 +4,11 @@ import * as BABYLON from 'babylonjs';
 import {MessageService} from "primeng/api";
 import {ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-service.impl";
 import {FileUpload} from "primeng/fileupload/fileupload";
+import {environment} from 'src/environments/environment';
+import {GameMockService} from "../../game/renderer/game-mock.service";
+import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {URL_THREE_JS_MODEL_EDITOR} from "../../common";
 
 @Component({
   selector: 'render-engine',
@@ -12,10 +17,39 @@ import {FileUpload} from "primeng/fileupload/fileupload";
 export class RenderEngineComponent extends EditorPanel {
   @ViewChild('fileUploadElement')
   fileUploadElement!: FileUpload;
+  dropDownBabylonModels: any[] = [];
+  dropDownBabylonModel: any = null;
+  selectedBabylon: any;
+  selectedBabylonName: any;
+  selectedBabylonId: any;
+  selectedBabylonClass: any;
 
-  constructor(private messageService: MessageService, private renderEngine: ThreeJsRendererServiceImpl) {
+  constructor(private gwtAngularService: GwtAngularService,
+              private messageService: MessageService,
+              private renderEngine: ThreeJsRendererServiceImpl,
+              private http: HttpClient,
+              gameMockService: GameMockService,
+  ) {
     super();
     this.loadBabylonJsLoaders();
+    renderEngine.getScene().debugLayer.onSelectionChangedObservable.add((selectedBabylonObject: any) => {
+      this.setupSavePanel(selectedBabylonObject)
+    });
+    if (environment.gwtMock) {
+      this.dropDownBabylonModels = gameMockService.threeJsModels;
+    } else {
+      gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().requestObjectNameIds("Three.js Model")
+        .then((value: any) => this.dropDownBabylonModels = value,
+          (reason: any) => {
+            console.error(reason);
+            this.messageService.add({
+              severity: 'error',
+              summary: `Can not load THREE_JS_MODEL configs`,
+              detail: reason,
+              sticky: true
+            });
+          });
+    }
   }
 
   onImport(event: any) {
@@ -71,4 +105,71 @@ export class RenderEngineComponent extends EditorPanel {
     document.getElementsByTagName('head')[0].appendChild(script);
   }
 
+  private setupSavePanel(selectedBabylonObject: any) {
+    if (selectedBabylonObject) {
+      this.selectedBabylon = selectedBabylonObject;
+      this.selectedBabylonName = selectedBabylonObject.name;
+      this.selectedBabylonClass = selectedBabylonObject.getClassName();
+      this.selectedBabylonId = selectedBabylonObject.id;
+    } else {
+      this.selectedBabylon = null;
+      this.selectedBabylonName = '';
+      this.selectedBabylonClass = ''
+      this.selectedBabylonId = ''
+    }
+  }
+
+  onSaveSelected() {
+    try {
+      const serializedMesh = BABYLON.SceneSerializer.SerializeMesh(this.selectedBabylon);
+      const strMesh = JSON.stringify(serializedMesh);
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/octet-stream'
+        })
+      };
+      this.http.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${this.dropDownBabylonModel.id}`, new Blob([strMesh]), httpOptions)
+        .subscribe({
+          complete: () => this.messageService.add({
+            severity: 'success',
+            summary: 'Save successful'
+          }),
+          error: (error: any) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: `Save failed ${error.statusText}`,
+              detail: `${error.statusText}: ${error.status}`,
+              sticky: true
+            });
+          }
+        })
+    } catch (error) {
+      console.warn(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not export Babylon Model`,
+        detail: String(error),
+        sticky: true
+      });
+    }
+  }
+
+  onDumpSelected() {
+    try {
+      const serializedMesh = BABYLON.SceneSerializer.SerializeMesh(this.selectedBabylon);
+      const strMesh = JSON.stringify(serializedMesh);
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob([strMesh]));
+      link.setAttribute("download", "dump-selected.babylon");
+      link.click();
+    } catch (error) {
+      console.warn(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not export BABYLON`,
+        detail: String(error),
+        sticky: true
+      });
+    }
+  }
 }
