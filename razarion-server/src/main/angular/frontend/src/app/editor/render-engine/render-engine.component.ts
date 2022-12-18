@@ -8,7 +8,8 @@ import {environment} from 'src/environments/environment';
 import {GameMockService} from "../../game/renderer/game-mock.service";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {URL_THREE_JS_MODEL_EDITOR} from "../../common";
+import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "../../common";
+import Mesh = BABYLON.Mesh;
 
 @Component({
   selector: 'render-engine',
@@ -23,6 +24,7 @@ export class RenderEngineComponent extends EditorPanel {
   selectedBabylonName: any;
   selectedBabylonId: any;
   selectedBabylonClass: any;
+  dropDownLoadBabylonModel: any = null;
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
@@ -121,8 +123,7 @@ export class RenderEngineComponent extends EditorPanel {
 
   onSaveSelected() {
     try {
-      const serializedMesh = BABYLON.SceneSerializer.SerializeMesh(this.selectedBabylon);
-      const strMesh = JSON.stringify(serializedMesh);
+      const strMesh = this.serializeBabylon(this.selectedBabylon);
       const httpOptions = {
         headers: new HttpHeaders({
           'Content-Type': 'application/octet-stream'
@@ -156,8 +157,7 @@ export class RenderEngineComponent extends EditorPanel {
 
   onDumpSelected() {
     try {
-      const serializedMesh = BABYLON.SceneSerializer.SerializeMesh(this.selectedBabylon);
-      const strMesh = JSON.stringify(serializedMesh);
+      const strMesh = this.serializeBabylon(this.selectedBabylon);
       const link = document.createElement("a");
       link.href = URL.createObjectURL(new Blob([strMesh]));
       link.setAttribute("download", "dump-selected.babylon");
@@ -171,5 +171,36 @@ export class RenderEngineComponent extends EditorPanel {
         sticky: true
       });
     }
+  }
+
+  onLoad() {
+    const url = `${URL_THREE_JS_MODEL}/${this.dropDownLoadBabylonModel.id}`;
+    const result = BABYLON.SceneLoader.Append(url, '', this.renderEngine.getScene(), (scene: BABYLON.Scene) => {
+      },
+      progress => {
+      },
+      (scene: BABYLON.Scene, message: string, exception?: any) => {
+        console.error(`Error loading Babylon file '${message}'. exception: '${exception}'`);
+        this.messageService.add({
+          severity: 'error',
+          summary: `Exception during Babylon load ${message}`,
+          detail: exception,
+          sticky: true
+        });
+
+      })
+    if (result === null) {
+      console.error("Error loading Babylon");
+      this.messageService.add({
+        severity: 'error',
+        summary: `Error loading Babylon`,
+        sticky: true
+      });
+    }
+  }
+
+  private serializeBabylon(mesh: Mesh) {
+    const serializedMesh = BABYLON.SceneSerializer.SerializeMesh(mesh, false, true);
+    return JSON.stringify(serializedMesh);
   }
 }

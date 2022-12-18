@@ -15,7 +15,7 @@
     </p-toolbar>
     <p-panel>
       <ng-template pTemplate="header">
-        Save Selected
+        Save selected Babylon Model
       </ng-template>
       <div class="field grid">
         <label for="selectedBabylonName" class="col-12 mb-2 md:col-2 md:mb-0">Name</label>
@@ -39,9 +39,9 @@
         </div>
       </div>
       <div class="field grid">
-        <label for="selectedBabylonType" class="col-12 mb-2 md:col-2 md:mb-0">Babylon.js Model</label>
+        <label for="dropDownBabylonModel" class="col-12 mb-2 md:col-2 md:mb-0">Babylon.js Model</label>
         <div class="col">
-          <p-dropdown id="saveBabylonModel" [placeholder]="'...'" [(ngModel)]="dropDownBabylonModel"
+          <p-dropdown id="dropDownBabylonModel" [placeholder]="'...'" [(ngModel)]="dropDownBabylonModel"
                       [options]="dropDownBabylonModels">
           </p-dropdown>
         </div>
@@ -53,6 +53,23 @@
       <p-button type="button" label="Dump" icon="pi pi-save" styleClass="p-button-sm"
                 [disabled]="selectedBabylonName == null"
                 (onClick)="onDumpSelected()"></p-button>
+    </p-panel>
+    <p-panel>
+      <ng-template pTemplate="header">
+        Load Babylon Model
+      </ng-template>
+      <div class="field grid">
+        <label for="dropDownLoadBabylonModel" class="col-12 mb-2 md:col-2 md:mb-0">Babylon.js Model</label>
+        <div class="col">
+          <p-dropdown id="dropDownLoadBabylonModel" [placeholder]="'...'" [(ngModel)]="dropDownLoadBabylonModel"
+                      [options]="dropDownBabylonModels">
+          </p-dropdown>
+        </div>
+      </div>
+      <p-button type="button" label="Load" icon="pi pi-cloud-download" styleClass="p-button-sm"
+                [disabled]="dropDownLoadBabylonModel == null"
+                (onClick)="onLoad()"></p-button>
+      <i>&nbsp;</i>
     </p-panel>
   </div>
 </div>
