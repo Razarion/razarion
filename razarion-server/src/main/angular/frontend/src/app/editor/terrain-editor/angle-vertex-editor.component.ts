@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from "@angular/core";
+import {Tools, Vector3} from "@babylonjs/core";
 
 @Component({
   selector: 'angle-vertex-editor',
@@ -30,9 +31,9 @@ import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from "@an
 })
 export class AngleVertexEditorComponent implements OnInit {
   @Input()
-  euler!: BABYLON.Vector3;
+  euler!: Vector3;
   @Output()
-  onInput = new EventEmitter<BABYLON.Vector3>();
+  onInput = new EventEmitter<Vector3>();
 
   x!: number;
   y!: number;
@@ -52,7 +53,7 @@ export class AngleVertexEditorComponent implements OnInit {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.euler.x = BABYLON.Tools.ToRadians(event.value);
+    this.euler.x = Tools.ToRadians(event.value);
     this.updateModel();
   }
 
@@ -60,7 +61,7 @@ export class AngleVertexEditorComponent implements OnInit {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.euler.y = BABYLON.Tools.ToRadians(event.value);
+    this.euler.y = Tools.ToRadians(event.value);
     this.updateModel();
   }
 
@@ -68,14 +69,14 @@ export class AngleVertexEditorComponent implements OnInit {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.euler.z = BABYLON.Tools.ToRadians(event.value);
+    this.euler.z = Tools.ToRadians(event.value);
     this.updateModel();
   }
 
   private update(): void {
-    this.x = BABYLON.Tools.ToRadians(this.euler.x);
-    this.y = BABYLON.Tools.ToRadians(this.euler.y);
-    this.z = BABYLON.Tools.ToRadians(this.euler.z);
+    this.x = Tools.ToRadians(this.euler.x);
+    this.y = Tools.ToRadians(this.euler.y);
+    this.z = Tools.ToRadians(this.euler.z);
   }
 
   private updateModel() {

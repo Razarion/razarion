@@ -1,6 +1,5 @@
 import {EditorPanel} from "../editor-model";
 import {Component, ViewChild} from "@angular/core";
-import * as BABYLON from 'babylonjs';
 import {MessageService} from "primeng/api";
 import {ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-service.impl";
 import {FileUpload} from "primeng/fileupload/fileupload";
@@ -9,7 +8,7 @@ import {GameMockService} from "../../game/renderer/game-mock.service";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "../../common";
-import Mesh = BABYLON.Mesh;
+import {Mesh, Scene, SceneLoader, SceneSerializer} from "@babylonjs/core";
 
 @Component({
   selector: 'render-engine',
@@ -33,7 +32,6 @@ export class RenderEngineComponent extends EditorPanel {
               gameMockService: GameMockService,
   ) {
     super();
-    this.loadBabylonJsLoaders();
     renderEngine.getScene().debugLayer.onSelectionChangedObservable.add((selectedBabylonObject: any) => {
       this.setupSavePanel(selectedBabylonObject)
     });
@@ -69,12 +67,11 @@ export class RenderEngineComponent extends EditorPanel {
   }
 
   private loadGltf(gltfFile: File) {
-    const result = BABYLON.SceneLoader.Append('', gltfFile, this.renderEngine.getScene(), (scene: BABYLON.Scene) => {
-        console.error(scene)
+    const result = SceneLoader.Append('', gltfFile, this.renderEngine.getScene(), (scene: Scene) => {
       },
       progress => {
       },
-      (scene: BABYLON.Scene, message: string, exception?: any) => {
+      (scene: Scene, message: string, exception?: any) => {
         console.error(`Error loading GLTF file '${message}'. exception: '${exception}'`);
         this.messageService.add({
           severity: 'error',
@@ -92,19 +89,6 @@ export class RenderEngineComponent extends EditorPanel {
         sticky: true
       });
     }
-  }
-
-  private loadBabylonJsLoaders() {
-    let script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = "https://preview.babylonjs.com/loaders/babylonjs.loaders.js";
-    script.onload = () => {
-      console.info("Babylon-Loaders loaded")
-    };
-    script.onerror = (error: any) => {
-      console.error(`error ${error}`)
-    };
-    document.getElementsByTagName('head')[0].appendChild(script);
   }
 
   private setupSavePanel(selectedBabylonObject: any) {
@@ -175,11 +159,11 @@ export class RenderEngineComponent extends EditorPanel {
 
   onLoad() {
     const url = `${URL_THREE_JS_MODEL}/${this.dropDownLoadBabylonModel.id}`;
-    const result = BABYLON.SceneLoader.Append(url, '', this.renderEngine.getScene(), (scene: BABYLON.Scene) => {
+    const result = SceneLoader.Append(url, '', this.renderEngine.getScene(), (scene: Scene) => {
       },
       progress => {
       },
-      (scene: BABYLON.Scene, message: string, exception?: any) => {
+      (scene: Scene, message: string, exception?: any) => {
         console.error(`Error loading Babylon file '${message}'. exception: '${exception}'`);
         this.messageService.add({
           severity: 'error',
@@ -200,7 +184,7 @@ export class RenderEngineComponent extends EditorPanel {
   }
 
   private serializeBabylon(mesh: Mesh) {
-    const serializedMesh = BABYLON.SceneSerializer.SerializeMesh(mesh, false, true);
+    const serializedMesh = SceneSerializer.SerializeMesh(mesh, false, true);
     return JSON.stringify(serializedMesh);
   }
 }

@@ -4,13 +4,20 @@ import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import * as BABYLON from 'babylonjs';
-import {Scene, Vector3} from 'babylonjs';
-import Quaternion = BABYLON.Quaternion;
+import {
+  DirectionalLight,
+  Engine,
+  FreeCamera,
+  Matrix,
+  Quaternion,
+  Scene,
+  Vector2,
+  Vector3
+} from "@babylonjs/core";
 
 export class ThreeJsRendererServiceMouseEvent {
   object3D: any = null;
-  pointOnObject3D: BABYLON.Vector3 | null = null;
+  pointOnObject3D: Vector3 | null = null;
   razarionTerrainObject3D: any = null;
   razarionTerrainObjectId: number | null = null;
   razarionTerrainObjectConfigId: number | null = null;
@@ -23,22 +30,21 @@ export interface ThreeJsRendererServiceMouseEventListener {
 
 @Injectable()
 export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
-  private scene!: BABYLON.Scene;
-  private engine!: BABYLON.Engine;
-  private camera!: BABYLON.FreeCamera;
+  private scene!: Scene;
+  private engine!: Engine;
+  private camera!: FreeCamera;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
-  private directionalLight!: BABYLON.DirectionalLight
+  private directionalLight!: DirectionalLight
   private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
-  private gizmoManager!: BABYLON.GizmoManager;
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
 
   internalSetup(canvas: HTMLCanvasElement) {
-    this.engine = new BABYLON.Engine(canvas)
-    this.scene = new BABYLON.Scene(this.engine);
-    this.scene.debugLayer.show({enableClose: true, embedMode: true});
+    this.engine = new Engine(canvas)
+    this.scene = new Scene(this.engine);
+    // this.scene.debugLayer.show({enableClose: true, embedMode: true});
 
     this.threeJsModelService.setScene(this.scene);
 
@@ -73,21 +79,12 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }, true);
 
     // -----  Camera -----
-    this.camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(0, 10, -10), this.scene);
-    this.camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+    //this.camera = new Camera("Main Cam", new Vector3(0, -10, 20), this.scene);
+    this.camera = new FreeCamera("Camera", new Vector3(0, 10, -10), this.scene);
+    this.camera.setTarget(new Vector3(0, 0, 0));
 
     // ----- Light -----
-    this.directionalLight = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0.12, -0.98, 0.15), this.scene);
-    // --- gizmo
-    const lightGizmo = new BABYLON.LightGizmo();
-    lightGizmo.light = this.directionalLight;
-
-    this.gizmoManager = new BABYLON.GizmoManager(this.scene);
-    this.gizmoManager.positionGizmoEnabled = true;
-    this.gizmoManager.rotationGizmoEnabled = true;
-    this.gizmoManager.usePointerToAttachGizmos = false;
-    this.gizmoManager.attachToMesh(lightGizmo.attachedMesh);
-    // --- gizmo ends
+    this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0.12, -0.98, 0.15), this.scene);
 
     // ----- Resize listener -----
     const resizeObserver = new ResizeObserver(entries => {
@@ -203,7 +200,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.mouseListeners = this.mouseListeners.filter(obj => obj !== mouseListener);
   }
 
-  intersectObjects(mousePosition: BABYLON.Vector2): any {
+  intersectObjects(mousePosition: Vector2): any {
     // const raycaster = new Raycaster();
     // const ndcPointer = new Vector2();
     // ndcPointer.x = (mousePosition.x / this.renderer.domElement.width) * 2 - 1;
@@ -219,7 +216,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     return null;
   }
 
-  // public setupCenterGroundPosition(): BABYLON.Vector3 {
+  // public setupCenterGroundPosition(): Vector3 {
   //   return this.setupZeroLevelPosition(0, 0);
   // }
 
@@ -232,19 +229,19 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     // TODO this.scene.add(group);
   }
 
-  addScene(scene: BABYLON.Scene) {
+  addScene(scene: Scene) {
 
   }
 
-  removeScene(scene: BABYLON.Scene) {
+  removeScene(scene: Scene) {
 
   }
 
-  getEngine(): BABYLON.Engine {
+  getEngine(): Engine {
     return this.engine;
   }
 
-  getScene(): BABYLON.Scene {
+  getScene(): Scene {
     return this.scene;
   }
 
@@ -252,7 +249,14 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     if (this.gwtAngularService.gwtAngularFacade.inputService === undefined) {
       return;
     }
-    let invertCameraViewProj = BABYLON.Matrix.Invert(this.camera.getTransformationMatrix());
+    let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
+
+    // this.directionalLight.shadow.camera.left = topLeft.x;
+    // this.directionalLight.shadow.camera.bottom = bottomLeft.y;
+    // this.directionalLight.shadow.camera.top = topLeft.y;
+    // this.directionalLight.shadow.camera.right = topRight.x;
+    // this.directionalLight.shadow.camera.updateMatrix();
+    // this.directionalLight.shadow.camera.updateProjectionMatrix();
 
     const bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
     const bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
@@ -267,8 +271,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     );
   }
 
-  private setupZeroLevelPosition(ndcX: number, ndcY: number, invertCameraViewProj: BABYLON.Matrix): BABYLON.Vector3 {
-    let ndcToWorld = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(ndcX, ndcY, 0), invertCameraViewProj);
+  private setupZeroLevelPosition(ndcX: number, ndcY: number, invertCameraViewProj: Matrix): Vector3 {
+    let ndcToWorld = Vector3.TransformCoordinates(new Vector3(ndcX, ndcY, 0), invertCameraViewProj);
     const direction = ndcToWorld.subtract(this.camera.position).normalize();
     const distanceToNullLevel = -this.camera.position.y / direction.y;
     return this.camera.position.add(direction.multiplyByFloats(distanceToNullLevel, distanceToNullLevel, distanceToNullLevel));
@@ -276,7 +280,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
   private onMousedownEvent(this: ThreeJsRendererServiceImpl, event: any): void {
     let newMouseEvent = new ThreeJsRendererServiceMouseEvent();
-    let intersection = this.intersectObjects(new BABYLON.Vector2(event.clientX, event.clientY));
+    let intersection = this.intersectObjects(new Vector2(event.clientX, event.clientY));
     if (intersection != null) {
       newMouseEvent.object3D = intersection.object;
       newMouseEvent.pointOnObject3D = intersection.point;
@@ -299,6 +303,18 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     if (object3D.parent != null) {
       this.recursivelySearchTerrainObject(object3D.parent, newMouseEvent);
     }
+  }
+
+  // @ts-ignore
+  showInspector() {
+    void Promise.all([
+      import("@babylonjs/core/Debug/debugLayer"),
+      import("@babylonjs/inspector"),
+      import("@babylonjs/node-editor")
+    ]).then((_values) => {
+      console.log(_values);
+      this.scene.debugLayer.show({enableClose: true, embedMode: true});
+    });
   }
 }
 

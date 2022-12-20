@@ -8,10 +8,19 @@ import {
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import * as BABYLON from 'babylonjs';
-import {Scene} from 'babylonjs';
-import Mesh = BABYLON.Mesh;
-import TransformNode = BABYLON.TransformNode;
+import {
+  AbstractMesh,
+  Color3,
+  Mesh,
+  MeshBuilder,
+  NodeMaterial,
+  Scene,
+  StandardMaterial,
+  TransformNode,
+  Vector3,
+  VertexBuffer,
+  VertexData
+} from "@babylonjs/core";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   private readonly container: Mesh;
@@ -26,9 +35,8 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
         try {
-          const ground = new BABYLON.Mesh("Ground", null);
-          const vertexData = new BABYLON.VertexData();
-
+          const ground = new Mesh("Ground", null);
+          const vertexData = new VertexData();
           for (let i = 0; i < groundTerrainTile.positions.length / 3; i++) {
             const newPositionY = groundTerrainTile.positions[i * 3 + 2];
             const newPositionZ = groundTerrainTile.positions[i * 3 + 1];
@@ -144,7 +152,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     }
   }
 
-  private evalGroundMaterial(slopeConfig: SlopeConfig | null): BABYLON.NodeMaterial {
+  private evalGroundMaterial(slopeConfig: SlopeConfig | null): NodeMaterial {
     if (slopeConfig && slopeConfig.getGroundConfigId()) {
       let innerGroundConfigMaterialId = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(slopeConfig.getGroundConfigId()).getTopThreeJsMaterial();
       return this.threeJsModelService.getNodeMaterial(innerGroundConfigMaterialId);
@@ -154,11 +162,11 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     }
   }
 
-  private addErrorMaterial(mesh: BABYLON.Mesh) {
-    const material = new BABYLON.StandardMaterial("Error Material");
-    material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-    material.emissiveColor = new BABYLON.Color3(1, 0, 0);
-    material.specularColor = new BABYLON.Color3(1, 0, 0);
+  private addErrorMaterial(mesh: Mesh) {
+    const material = new StandardMaterial("Error Material");
+    material.diffuseColor = new Color3(1, 0, 0);
+    material.emissiveColor = new Color3(1, 0, 0);
+    material.specularColor = new Color3(1, 0, 0);
     material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
     mesh.material = material;
   }
@@ -173,7 +181,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     // return new BufferAttribute(uvs, 2);
   }
 
-  static fillVec3(vec: BABYLON.Vector3, length: number): any {
+  static fillVec3(vec: Vector3, length: number): any {
     // let float32Array = new Float32Array(length);
     // for (let i = 0; i < length / 3; i++) {
     //   float32Array[i * 3] = vec.x;
@@ -191,7 +199,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     this.scene.removeMesh(this.container);
   }
 
-  private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: BABYLON.NodeMaterial, groundMaterial: BABYLON.NodeMaterial | null, splatting: SlopeSplattingConfig | null): void {
+  private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: NodeMaterial, groundMaterial: NodeMaterial | null, splatting: SlopeSplattingConfig | null): void {
     if (groundMaterial && splatting) {
     } else {
 
@@ -206,8 +214,8 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         slopeGeometry.norms[i * 3 + 2] = newNormalZ;
       }
 
-      const slope = new BABYLON.Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
-      const vertexData = new BABYLON.VertexData();
+      const slope = new Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
+      const vertexData = new VertexData();
       vertexData.positions = slopeGeometry.positions;
       vertexData.normals = slopeGeometry.norms;
       vertexData.uvs = slopeGeometry.uvs;
@@ -219,25 +227,25 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
 
       slope.material = material;
 
-      this.showNormals(slope, 1, BABYLON.Color3.White(), this.scene);
+      this.showNormals(slope, 1, Color3.White(), this.scene);
 
       this.container.getChildren().push(slope);
     }
   }
 
-  showNormals(mesh: BABYLON.AbstractMesh, size: number, color: BABYLON.Color3, scene: Scene) {
-    const normals: any = mesh.getVerticesData(BABYLON.VertexBuffer.NormalKind);
-    const positions: any = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-    color = color || BABYLON.Color3.White();
+  showNormals(mesh: AbstractMesh, size: number, color: Color3, scene: Scene) {
+    const normals: any = mesh.getVerticesData(VertexBuffer.NormalKind);
+    const positions: any = mesh.getVerticesData(VertexBuffer.PositionKind);
+    color = color || Color3.White();
     size = size || 1;
 
     var lines = [];
     for (var i = 0; i < normals.length; i += 3) {
-      var v1 = BABYLON.Vector3.FromArray(positions, i);
-      var v2 = v1.add(BABYLON.Vector3.FromArray(normals, i).scaleInPlace(size));
+      var v1 = Vector3.FromArray(positions, i);
+      var v2 = v1.add(Vector3.FromArray(normals, i).scaleInPlace(size));
       lines.push([v1.add(mesh.position), v2.add(mesh.position)]);
     }
-    const normalLines = BABYLON.MeshBuilder.CreateLineSystem("normalLines", {lines: lines}, scene);
+    const normalLines = MeshBuilder.CreateLineSystem("normalLines", {lines: lines}, scene);
     normalLines.color = color;
     return normalLines;
   }

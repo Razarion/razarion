@@ -3,18 +3,19 @@ import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "src/app/common";
 import {ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
-import * as BABYLON from 'babylonjs';
-import {Mesh} from "babylonjs/Meshes/mesh";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {MessageService} from "primeng/api";
-import Scene = BABYLON.Scene;
-import AssetContainer = BABYLON.AssetContainer;
-import Node = BABYLON.Node;
-import NodeMaterial = BABYLON.NodeMaterial;
 import Type = ThreeJsModelConfig.Type;
-
-
-//import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
+import {
+  AssetContainer,
+  InspectableType,
+  Mesh,
+  NodeMaterial,
+  Scene,
+  Node,
+  SceneLoader,
+  IInspectable
+} from "@babylonjs/core";
 
 @Injectable()
 export class BabylonModelService {
@@ -125,7 +126,7 @@ export class BabylonModelService {
   private loadAssetContainer(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
     try {
       let hasError = false;
-      const result = BABYLON.SceneLoader.LoadAssetContainer(url, '', this.scene, assetContainer => {
+      const result = SceneLoader.LoadAssetContainer(url, '', this.scene, assetContainer => {
           if (!hasError) {
             this.assetContainers.set(threeJsModelConfig.getId(), assetContainer);
             handleResolve();
@@ -150,7 +151,7 @@ export class BabylonModelService {
   }
 
   private loadNodeMaterial(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
-    BABYLON.NodeMaterial.ParseFromFileAsync(
+    NodeMaterial.ParseFromFileAsync(
       `${threeJsModelConfig.getInternalName()}(${threeJsModelConfig.getId()})`,
       url,
       this.scene
@@ -200,8 +201,8 @@ export class BabylonModelService {
     return nodeMaterial;
   }
 
-  private createMissingNodeMaterial(babylonModelId: number): BABYLON.NodeMaterial {
-    const material = BABYLON.NodeMaterial.CreateDefault(`_Missing NodeMaterial ${babylonModelId}`);
+  private createMissingNodeMaterial(babylonModelId: number): NodeMaterial {
+    const material = NodeMaterial.CreateDefault(`_Missing NodeMaterial ${babylonModelId}`);
     material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
     material.inspectableCustomProperties = this.setupEditorProperties(new class implements ThreeJsModelConfig {
       getId(): number {
@@ -220,7 +221,7 @@ export class BabylonModelService {
   }
 
 
-  private setupEditorProperties(threeJsModelConfig: ThreeJsModelConfig, nodeMaterial: NodeMaterial): BABYLON.IInspectable[] {
+  private setupEditorProperties(threeJsModelConfig: ThreeJsModelConfig, nodeMaterial: NodeMaterial): IInspectable[] {
     return [
       {
         label: `Save to Razarion '${threeJsModelConfig.getInternalName()}(${threeJsModelConfig.getId()}')`,
@@ -229,7 +230,7 @@ export class BabylonModelService {
           const json = this.serializeNodeMaterial(nodeMaterial);
           this.babylonModelUpload(threeJsModelConfig.getId(), new Blob([json], {type: 'application/json'}));
         },
-        type: BABYLON.InspectableType.Button
+        type: InspectableType.Button
       }
     ];
   }

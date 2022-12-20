@@ -3,7 +3,7 @@ import {ShallowWaterConfig, TerrainWaterTile, WaterConfig} from "../../gwtangula
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
 import {SignalGenerator} from "../signal-generator";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import BABYLON from "babylonjs";
+import {AssetContainer, Vector3} from "@babylonjs/core";
 
 @Injectable()
 export class ThreeJsWaterRenderService {
@@ -23,13 +23,13 @@ export class ThreeJsWaterRenderService {
   private static setupWaterGeometry(positions: Float32Array) {
     let geometry: any = {};
     geometry.setAttribute('position', positions);
-    geometry.setAttribute('normal', ThreeJsTerrainTileImpl.fillVec3(new BABYLON.Vector3(0, 0, 1), positions.length));
+    geometry.setAttribute('normal', ThreeJsTerrainTileImpl.fillVec3(new Vector3(0, 0, 1), positions.length));
     geometry.setAttribute('uv', ThreeJsTerrainTileImpl.uvFromPosition(positions));
     return geometry;
   }
 
 
-  public setup(terrainWaterTiles: TerrainWaterTile[], container: BABYLON.AssetContainer): void {
+  public setup(terrainWaterTiles: TerrainWaterTile[], container: AssetContainer): void {
     if (!terrainWaterTiles) {
       return;
     }

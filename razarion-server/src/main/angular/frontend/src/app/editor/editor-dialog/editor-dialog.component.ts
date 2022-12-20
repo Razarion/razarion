@@ -9,6 +9,7 @@ import {BackupRestoreComponent} from "../backup-restore/backup-restore.component
 import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component";
 import {ImageEditorComponent} from "../image-editor/image-editor.component";
 import {CollectionSelectorComponent} from "../property-table/collection-selector.component";
+import {ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-service.impl";
 
 @Component({
   selector: 'editor-dialog',
@@ -23,7 +24,7 @@ export class EditorDialogComponent {
   @Input("mainCockpitComponent")
   mainCockpitComponent!: MainCockpitComponent;
 
-  constructor(private gwtAngularService: GwtAngularService) {
+  constructor(private gwtAngularService: GwtAngularService, private renderService: ThreeJsRendererServiceImpl) {
     this.editors.set("Babylon.js", RenderEngineComponent)
     this.editors.set("Server Control", ServerPanelComponent)
     this.editors.set("Backup Restore", BackupRestoreComponent)
@@ -51,5 +52,9 @@ export class EditorDialogComponent {
   openImageEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Image Editor", ImageEditorComponent));
+  }
+
+  openBabylonInspector() {
+    this.renderService.showInspector();
   }
 }

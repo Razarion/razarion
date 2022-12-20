@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, Output} from "@angular/core";
+import {Vector3} from "@babylonjs/core";
 
 @Component({
   selector: 'vertex-editor',
@@ -30,9 +31,9 @@ import {Component, EventEmitter, Input, Output} from "@angular/core";
 })
 export class VertexEditorComponent {
   @Input()
-  vertex!: BABYLON.Vector3;
+  vertex!: Vector3;
   @Output()
-  onInput = new EventEmitter<BABYLON.Vector3>();
+  onInput = new EventEmitter<Vector3>();
 
   onChangeX(event: any): void {
     if (event.value != null && typeof event.value !== "number") {
