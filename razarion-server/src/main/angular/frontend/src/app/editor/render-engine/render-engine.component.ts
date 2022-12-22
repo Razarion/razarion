@@ -8,7 +8,8 @@ import {GameMockService} from "../../game/renderer/game-mock.service";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "../../common";
-import {Mesh, Scene, SceneLoader, SceneSerializer} from "@babylonjs/core";
+import {Mesh, Scene, SceneLoader} from "@babylonjs/core";
+import {GLTF2Export} from "@babylonjs/serializers";
 
 @Component({
   selector: 'render-engine',
@@ -107,27 +108,36 @@ export class RenderEngineComponent extends EditorPanel {
 
   onSaveSelected() {
     try {
-      const strMesh = this.serializeBabylon(this.selectedBabylon);
-      const httpOptions = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/octet-stream'
-        })
-      };
-      this.http.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${this.dropDownBabylonModel.id}`, new Blob([strMesh]), httpOptions)
-        .subscribe({
-          complete: () => this.messageService.add({
-            severity: 'success',
-            summary: 'Save successful'
-          }),
-          error: (error: any) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: `Save failed ${error.statusText}`,
-              detail: `${error.statusText}: ${error.status}`,
-              sticky: true
-            });
-          }
-        })
+      this.serializeGltfBlob(this.selectedBabylon).then((blob) => {
+        const httpOptions = {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/octet-stream'
+          })
+        };
+        this.http.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${this.dropDownBabylonModel.id}`, blob, httpOptions)
+          .subscribe({
+            complete: () => this.messageService.add({
+              severity: 'success',
+              summary: 'Save successful'
+            }),
+            error: (error: any) => {
+              this.messageService.add({
+                severity: 'error',
+                summary: `Save failed ${error.statusText}`,
+                detail: `${error.statusText}: ${error.status}`,
+                sticky: true
+              });
+            }
+          })
+      }).catch(reason => {
+        console.warn(reason);
+        this.messageService.add({
+          severity: 'error',
+          summary: `Can not export GLTF`,
+          detail: String(reason),
+          sticky: true
+        });
+      });
     } catch (error) {
       console.warn(error);
       this.messageService.add({
@@ -141,16 +151,25 @@ export class RenderEngineComponent extends EditorPanel {
 
   onDumpSelected() {
     try {
-      const strMesh = this.serializeBabylon(this.selectedBabylon);
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(new Blob([strMesh]));
-      link.setAttribute("download", "dump-selected.babylon");
-      link.click();
+      this.serializeGltfBlob(this.selectedBabylon).then((blob) => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", "dump-selected.glb");
+        link.click();
+      }).catch(reason => {
+        console.warn(reason);
+        this.messageService.add({
+          severity: 'error',
+          summary: `Can not export GLTF`,
+          detail: String(reason),
+          sticky: true
+        });
+      });
     } catch (error) {
       console.warn(error);
       this.messageService.add({
         severity: 'error',
-        summary: `Can not export BABYLON`,
+        summary: `onDumpSelected() failed`,
         detail: String(error),
         sticky: true
       });
@@ -183,8 +202,21 @@ export class RenderEngineComponent extends EditorPanel {
     }
   }
 
-  private serializeBabylon(mesh: Mesh) {
-    const serializedMesh = SceneSerializer.SerializeMesh(mesh, false, true);
-    return JSON.stringify(serializedMesh);
+  private serializeGltfBlob(mesh: Mesh): Promise<Blob> {
+    let options = {
+      shouldExportNode: function (node: any) {
+        return node === mesh || (node.isDescendantOf && node.isDescendantOf(mesh));
+      },
+    };
+
+    return new Promise((resolve, reject) => {
+      return GLTF2Export.GLBAsync(this.renderEngine.getScene(), "fileName", options)
+        .then((glb) => {
+          const gltFiles = Object.values(glb)[0]
+          const glbBlob = <Blob>Object.values(gltFiles)[0]
+          resolve(glbBlob);
+        }).catch(reason => reject(reason));
+    })
   }
+
 }
