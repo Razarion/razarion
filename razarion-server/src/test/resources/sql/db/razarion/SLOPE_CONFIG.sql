@@ -62,15 +62,15 @@ CREATE TABLE IF NOT EXISTS `SLOPE_CONFIG` (
   CONSTRAINT `FKl1rruyd2re9k16y4rovwcyqdw` FOREIGN KEY (`materialNormalMapId`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKm6v85hb3xsj0d7o7dcsyutdtu` FOREIGN KEY (`groundConfig_id`) REFERENCES `GROUND_CONFIG` (`id`),
   CONSTRAINT `FKq4ko6usrulwximbtoh9sfua6m` FOREIGN KEY (`innerSplattingTextureId`) REFERENCES `IMAGE_LIBRARY` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `SLOPE_CONFIG`;
 /*!40000 ALTER TABLE `SLOPE_CONFIG` DISABLE KEYS */;
 INSERT INTO `SLOPE_CONFIG` (`id`, `coastDelimiterLineGameEngine`, `horizontalSpace`, `innerLineGameEngine`, `innerSplattingBlur`, `innerSplattingImpact`, `innerSplattingOffset`, `innerSplattingScale`, `internalName`, `interpolateNorm`, `materialBumpMapDepth`, `materialScale`, `materialShininess`, `materialSpecularStrength`, `outerLineGameEngine`, `outerSplattingBlur`, `outerSplattingImpact`, `outerSplattingOffset`, `outerSplattingScale`, `shallowWaterDistortionStrength`, `shallowWaterDurationSeconds`, `shallowWaterScale`, `groundConfig_id`, `innerSplattingTextureId`, `materialBumpMapId`, `materialTextureId`, `outerSplattingTextureId`, `shallowWaterDistortionId`, `shallowWaterStencilId`, `shallowWaterTextureId`, `waterConfig_id`, `materialNormalMapDepth`, `materialNormalMapId`, `threeJsMaterial_id`) VALUES
 	(1, 0, 5, 1.5, NULL, NULL, NULL, NULL, 'Razar Industries', b'0', 0.5, 16, 20, 0.5, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 253, NULL, 103, 102, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 7),
-	(22, 5, 2, 7, 0.1, 0.58, 0.5, 300, 'Ocean Beach', b'1', 0.5, 43, 3, 0.5, 3, 0.02, 1, 0.5, 45, 0.5, 10, 14, 254, 101, 107, 106, 101, 110, 109, 108, 10, NULL, NULL, 8),
-	(23, 0.5, 6, 1, NULL, NULL, NULL, NULL, 'Razar Poison Pool', b'0', 0.5, 16, 20, 0.5, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 255, NULL, NULL, 138, NULL, NULL, NULL, NULL, 11, 0.5, 139, NULL),
-	(25, 0, 5, 1.5, NULL, NULL, NULL, NULL, 'Razar Industries inverted', b'0', 5, 20, 20, 0.5, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 103, 102, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	(22, 5, 2, 7, 0.1, 0.58, 0.5, 300, 'Ocean Beach', b'1', 0.5, 43, 3, 0.5, 3, 0.02, 1, 0.5, 45, 0.5, 10, 14, 254, 101, 107, 106, 101, 110, 109, 108, 10, NULL, NULL, 15),
+	(23, 0.5, 6, 1, NULL, NULL, NULL, NULL, 'Razar Poison Pool', b'0', 0.5, 16, 20, 0.5, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 255, NULL, NULL, 138, NULL, NULL, NULL, NULL, 11, 0.5, 139, 20),
+	(25, 0, 5, 1.5, NULL, NULL, NULL, NULL, 'Razar Industries inverted', b'0', 5, 20, 20, 0.5, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 103, 102, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 7);
 /*!40000 ALTER TABLE `SLOPE_CONFIG` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -74,7 +74,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         try {
           let slopeConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getSlopeConfig(terrainSlopeTile.slopeConfigId);
           if (slopeConfig.getThreeJsMaterial() === undefined) {
-            throw new Error(`SlopeConfig has no threeJsMaterial: ${slopeConfig.toString()}`);
+            throw new Error(`SlopeConfig has no threeJsMaterial: ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`);
           }
           let material = threeJsModelService.getNodeMaterial(slopeConfig.getThreeJsMaterial());
           if (terrainSlopeTile.outerSlopeGeometry !== null && terrainSlopeTile.outerSlopeGeometry !== undefined) {

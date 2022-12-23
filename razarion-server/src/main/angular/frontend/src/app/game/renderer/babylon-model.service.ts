@@ -77,20 +77,20 @@ export class BabylonModelService {
 
     const assetContainer: AssetContainer = this.getAssetContainer(threeJsModelPackConf.getThreeJsModelId());
 
-    let rootMesh = null;
+    let childMesh = null;
 
     for (let childNod of assetContainer.getNodes()) {
-      rootMesh = this.findChildNode(childNod, threeJsModelPackConf.toNamePathAsArray());
-      if (rootMesh) {
+      childMesh = this.findChildNode(childNod, threeJsModelPackConf.toNamePathAsArray());
+      if (childMesh) {
         break;
       }
     }
 
-    if (rootMesh == null) {
+    if (childMesh == null) {
       throw new Error(`No Mesh for threeJsModelPackConfigId '${threeJsModelPackConfigId}'. Three.js Path  '${threeJsModelPackConf.toNamePathAsArray()}'`);
     }
 
-    const mesh = (<Mesh>rootMesh).clone("", parent);
+    const mesh = (<Mesh>childMesh).clone("", parent);
 
     mesh.position.set(threeJsModelPackConf.getPosition().getX(),
       threeJsModelPackConf.getPosition().getY(),

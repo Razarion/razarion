@@ -12,13 +12,11 @@ CREATE TABLE IF NOT EXISTS `TERRAIN_OBJECT` (
   PRIMARY KEY (`id`),
   KEY `FKl6f1pat64mpk8p56h60kynr4s` (`threeJsModelPackConfig_id`),
   CONSTRAINT `FKl6f1pat64mpk8p56h60kynr4s` FOREIGN KEY (`threeJsModelPackConfig_id`) REFERENCES `THREE_JS_MODEL_PACK` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `TERRAIN_OBJECT`;
 /*!40000 ALTER TABLE `TERRAIN_OBJECT` DISABLE KEYS */;
 INSERT INTO `TERRAIN_OBJECT` (`id`, `internalName`, `radius`, `threeJsModelPackConfig_id`) VALUES
-	(6, 'Palm Tree 1', 3, 9),
-	(7, 'Palm Tree 2', 3, 10),
 	(8, 'Stone 12', 3, 11),
 	(9, 'Fern 1', 3, 12),
 	(10, 'Fern 2', 3, 13),

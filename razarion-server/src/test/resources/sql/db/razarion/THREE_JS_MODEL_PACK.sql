@@ -20,13 +20,11 @@ CREATE TABLE IF NOT EXISTS `THREE_JS_MODEL_PACK` (
   PRIMARY KEY (`id`),
   KEY `FK1odbqn8a5lg9edjr451fi17hf` (`threeJsModelConfig_id`),
   CONSTRAINT `FK1odbqn8a5lg9edjr451fi17hf` FOREIGN KEY (`threeJsModelConfig_id`) REFERENCES `THREE_JS_MODEL` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `THREE_JS_MODEL_PACK`;
 /*!40000 ALTER TABLE `THREE_JS_MODEL_PACK` DISABLE KEYS */;
 INSERT INTO `THREE_JS_MODEL_PACK` (`id`, `internalName`, `positionX`, `positionY`, `positionZ`, `rotationX`, `rotationY`, `rotationZ`, `scaleX`, `scaleY`, `scaleZ`, `threeJsModelConfig_id`) VALUES
-	(9, 'Palm Tree Pack 1', -1.5, 0, 0, 1.571, 0, 0, 0.01, 0.01, 0.01, 1),
-	(10, 'Palm Tree Pack 2', -4, 0, 0, 1.571, 0, 0, 0.01, 0.01, 0.01, 1),
 	(11, 'Stone 12 [Stone Pack 1]', -2.5, -0.8, 0, 0, 0, 0, 0.025, 0.025, 0.025, 12),
 	(12, 'Fern 1 [Tropical Vegetation 1]', 0, -1.2, 0, 0, 0, 0, 0.015, 0.015, 0.015, 13),
 	(13, 'Fern 2 [Tropical Vegetation 1]', 0, 0, 0, 0, 0, 0, 0.015, 0.015, 0.015, 13),
