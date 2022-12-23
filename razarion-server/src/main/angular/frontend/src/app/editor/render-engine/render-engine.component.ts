@@ -191,7 +191,8 @@ export class RenderEngineComponent extends EditorPanel {
           sticky: true
         });
 
-      })
+      },
+      ".glb")
     if (result === null) {
       console.error("Error loading Babylon");
       this.messageService.add({
