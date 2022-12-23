@@ -16,6 +16,7 @@ import {
   SceneLoader,
   IInspectable
 } from "@babylonjs/core";
+import {GLTFFileLoader} from "@babylonjs/loaders";
 
 @Injectable()
 export class BabylonModelService {
@@ -25,6 +26,7 @@ export class BabylonModelService {
   private scene!: Scene;
 
   constructor(private httpClient: HttpClient, private messageService: MessageService) {
+    SceneLoader.RegisterPlugin(new GLTFFileLoader());
   }
 
   init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
@@ -138,7 +140,7 @@ export class BabylonModelService {
           hasError = true;
           console.error(`Error loading Babylon Asset '${url}'. exception: '${exception}'`);
           handleResolve();
-        })
+        }, ".glb")
       if (result === null) {
         console.error("LoadAssetContainer failed");
         handleResolve();

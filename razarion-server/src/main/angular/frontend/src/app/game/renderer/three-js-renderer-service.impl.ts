@@ -44,7 +44,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   internalSetup(canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas)
     this.scene = new Scene(this.engine);
-    // this.scene.debugLayer.show({enableClose: true, embedMode: true});
 
     this.threeJsModelService.setScene(this.scene);
 
