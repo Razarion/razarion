@@ -133,8 +133,8 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                         .threeJsModelId(8881)
                         .internalName("Pack 8881 1")
                         .position(new Vertex(10, 0, 0))
-                        .scale(new Vertex(0.01, 0.01, 0.01))
-                        .rotation(new Vertex(Math.toRadians(90), 0, 0))
+                        .scale(new Vertex(1, 1, 1))
+                        .rotation(new Vertex(Math.toRadians(0), 0, 0))
                         .namePath(Arrays.asList("__root__", "Sketchfab_model", "Vegetation.FBX", "RootNode", "fern", "fern_fern_0")),
                 new ThreeJsModelPackConfig()
                         .id(2)
@@ -161,10 +161,10 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         // terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10).threeJsModelPackConfigId(3));
 
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
-                new TerrainObjectPosition().id(1).terrainObjectConfigId(1).position(new DecimalPosition(2, 7)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(Math.toRadians(180), 0, 0)),
-                new TerrainObjectPosition().id(2).terrainObjectConfigId(1).position(new DecimalPosition(3, 11)).scale(new Vertex(1.3, 1.3, 1.3)).rotation(new Vertex(Math.toRadians(0), 0, 0)),
-                new TerrainObjectPosition().id(3).terrainObjectConfigId(1).position(new DecimalPosition(200, 10)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
-                new TerrainObjectPosition().id(4).terrainObjectConfigId(2).position(new DecimalPosition(8, 8)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(0)))
+                new TerrainObjectPosition().id(1).terrainObjectConfigId(1).position(new DecimalPosition(2, 7)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(Math.toRadians(0), 0, 0))
+//                new TerrainObjectPosition().id(2).terrainObjectConfigId(1).position(new DecimalPosition(3, 11)).scale(new Vertex(1.3, 1.3, 1.3)).rotation(new Vertex(Math.toRadians(0), 0, 0)),
+//                new TerrainObjectPosition().id(3).terrainObjectConfigId(1).position(new DecimalPosition(200, 10)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
+//                new TerrainObjectPosition().id(4).terrainObjectConfigId(2).position(new DecimalPosition(8, 8)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(0))),
 //                new TerrainObjectPosition().id(5).terrainObjectConfigId(3).position(new DecimalPosition(50, 10)).scale(new Vertex(0.5, 0.5, 0.5)).rotation(new Vertex(Math.toRadians(90), Math.toRadians(90), 0)),
 //                new TerrainObjectPosition().id(6).terrainObjectConfigId(3).position(new DecimalPosition(60, 10)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, Math.toRadians(90), Math.toRadians(90))),
 //                new TerrainObjectPosition().id(7).terrainObjectConfigId(3).position(new DecimalPosition(70, 10)).scale(new Vertex(0.9, 0.9, 0.9)).rotation(new Vertex(Math.toRadians(90), 0, Math.toRadians(90))),

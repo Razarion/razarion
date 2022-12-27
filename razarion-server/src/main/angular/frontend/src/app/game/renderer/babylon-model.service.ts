@@ -5,18 +5,18 @@ import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {MessageService} from "primeng/api";
-import Type = ThreeJsModelConfig.Type;
 import {
   AssetContainer,
+  IInspectable,
   InspectableType,
   Mesh,
+  Node,
   NodeMaterial,
   Scene,
-  Node,
-  SceneLoader,
-  IInspectable
+  SceneLoader
 } from "@babylonjs/core";
 import {GLTFFileLoader} from "@babylonjs/loaders";
+import Type = ThreeJsModelConfig.Type;
 
 @Injectable()
 export class BabylonModelService {
@@ -93,15 +93,15 @@ export class BabylonModelService {
     const mesh = (<Mesh>childMesh).clone("", parent);
 
     mesh.position.set(threeJsModelPackConf.getPosition().getX(),
-      threeJsModelPackConf.getPosition().getY(),
-      threeJsModelPackConf.getPosition().getZ());
+      threeJsModelPackConf.getPosition().getZ(),
+      threeJsModelPackConf.getPosition().getY());
     mesh.scaling.set(threeJsModelPackConf.getScale().getX(),
-      threeJsModelPackConf.getScale().getY(),
-      threeJsModelPackConf.getScale().getZ());
+      threeJsModelPackConf.getScale().getZ(),
+      threeJsModelPackConf.getScale().getY());
     mesh.rotationQuaternion = null;
     mesh.rotation.set(threeJsModelPackConf.getRotation().getX(),
-      threeJsModelPackConf.getRotation().getY(),
-      threeJsModelPackConf.getRotation().getZ());
+      threeJsModelPackConf.getRotation().getZ(),
+      threeJsModelPackConf.getRotation().getY());
     return mesh;
   }
 
