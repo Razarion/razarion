@@ -26,12 +26,12 @@ DELETE FROM `THREE_JS_MODEL_PACK`;
 /*!40000 ALTER TABLE `THREE_JS_MODEL_PACK` DISABLE KEYS */;
 INSERT INTO `THREE_JS_MODEL_PACK` (`id`, `internalName`, `positionX`, `positionY`, `positionZ`, `rotationX`, `rotationY`, `rotationZ`, `scaleX`, `scaleY`, `scaleZ`, `threeJsModelConfig_id`) VALUES
 	(11, 'Stone 12 [Stone Pack 1]', -2.5, -0.8, 0, 0, 0, 0, 0.025, 0.025, 0.025, 12),
-	(12, 'Fern 1 [Tropical Vegetation 1]', 0, -1.2, 0, 0, 0, 0, 0.015, 0.015, 0.015, 13),
-	(13, 'Fern 2 [Tropical Vegetation 1]', 0, 0, 0, 0, 0, 0, 0.015, 0.015, 0.015, 13),
-	(14, 'Leaves [Tropical Vegetation 1]', -1.8, -2.4, 0, 0, 0, 0, 0.015, 0.015, 0.015, 13),
-	(15, 'Trunk 1 [Tropical Vegetation 1]', -2, -1.2, 0, 1.5708, 1, 0, 0.015, 0.015, 0.015, 13),
-	(16, 'Palm [Tropical Vegetation 1]', 4, -1, 0, 1.5708, 0, 0, 0.004, 0.004, 0.004, 13),
-	(17, 'Trunk 3 [Tropical Vegetation 1]', 0, 0, 0, 0, 0, 0, 0.015, 0.015, 0.015, 13),
+	(12, 'Fern 1 [Tropical Vegetation 1]', 0, -1.2, 0, 1.5708, 0, 0, 0.015, 0.015, 0.015, 13),
+	(13, 'Fern 2 [Tropical Vegetation 1]', 0, 0, 0, 1.5708, 0, 0, 0.015, 0.015, 0.015, 13),
+	(14, 'Leaves [Tropical Vegetation 1]', -1.8, 0, 0.4, 1.5708, 0, 0, 0.015, 0.015, 0.015, 13),
+	(15, 'Trunk 1 [Tropical Vegetation 1]', -2, -1.2, 0, 1.5708, 0, 0, 0.015, 0.015, 0.015, 13),
+	(16, 'Palm [Tropical Vegetation 1]', 4, -1, 0, 0, 0, 0, 0.004, 0.004, 0.004, 13),
+	(17, 'Trunk 3 [Tropical Vegetation 1]', 0, 0, 0, 1.5708, 0, 0, 0.015, 0.015, 0.015, 13),
 	(18, 'Stone 1 [Stone Pack 1]', -7, 0, 0, 0, 0, 0, 0.025, 0.025, 0.025, 12),
 	(19, 'Stone 2 [Stone Pack 1]', -12, -6, 0, 0, 0, 0, 0.025, 0.025, 0.025, 12),
 	(20, 'Stone 3 [Stone Pack 1]', -9.5, 4.5, 0, 0, 0, 0, 0.025, 0.025, 0.025, 12),
