@@ -1,14 +1,17 @@
 import {EditorPanel, GenericPropertyEditorModel} from "../editor-model";
-import {Component} from "@angular/core";
+import {Component, ElementRef, ViewChild} from "@angular/core";
 import {MenuItem, MessageService} from "primeng/api";
-import {GwtAngularPropertyTable, ObjectNameId} from "../../gwtangular/GwtAngularFacade";
+import {ObjectNameId} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+import {EDITOR_PATH} from "../../common";
+import {HttpClient} from "@angular/common/http";
+import {JSONEditor} from "vanilla-jsoneditor";
 
 @Component({
   selector: 'collection-selector',
   template: `
     <p-menubar class="mb-0" [model]="items"></p-menubar>
-    <property-table [angular-tree-node-data]=gwtAngularPropertyTable></property-table>
+    <div #jsonEditorContainer class="jse-theme-dark"></div>
   `
 })
 export class CollectionSelectorComponent extends EditorPanel {
@@ -18,9 +21,15 @@ export class CollectionSelectorComponent extends EditorPanel {
     }
   ];
   selectedDisplayObjectName: string | null = null;
-  gwtAngularPropertyTable: GwtAngularPropertyTable | null = null;
+  jsonObject: any;
+  @ViewChild('jsonEditorContainer', {static: true})
+  jsonEditorContainer!: ElementRef;
+  jsonEditor!: JSONEditor;
 
-  constructor(private gwtAngularService: GwtAngularService, private messageService: MessageService) {
+
+  constructor(private gwtAngularService: GwtAngularService,
+              private messageService: MessageService,
+              private http: HttpClient) {
     super();
   }
 
@@ -47,23 +56,15 @@ export class CollectionSelectorComponent extends EditorPanel {
       menuObjectNameIds.push({
         label: displayObjectName,
         command: () => {
-          this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-            .readConfig((<GenericPropertyEditorModel>this.editorModel).collectionName, objectNameId.id)
-            .then(value => {
-                this.gwtAngularPropertyTable = value;
-                this.updateDeleteSaveDisableState();
-                this.items[0].label = displayObjectName;
-                this.selectedDisplayObjectName = displayObjectName;
-              },
-              reason => {
-                this.messageService.add({
-                  severity: 'error',
-                  summary: `Can not load config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName} with id: ${objectNameId.id}`,
-                  detail: reason,
-                  sticky: true
-                });
-                console.error(reason);
-              })
+          this.http.get(`${EDITOR_PATH}/three_js_model_pack_editor/read/${objectNameId.id}`)
+            .subscribe((jsonObject: any) => {
+              this.initJsonEditor();
+              this.jsonEditor.set({json: jsonObject});
+              this.jsonObject = jsonObject;
+              this.updateDeleteSaveDisableState();
+              this.items[0].label = displayObjectName;
+              this.selectedDisplayObjectName = displayObjectName;
+            })
         }
       });
     })
@@ -79,7 +80,7 @@ export class CollectionSelectorComponent extends EditorPanel {
           this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
             .createConfig((<GenericPropertyEditorModel>this.editorModel).collectionName).then(
             value => {
-              this.gwtAngularPropertyTable = value;
+              this.jsonObject = value;
               this.selectedDisplayObjectName = `? (${value.configId})`;
               this.requestObjectNameId();
             },
@@ -96,36 +97,26 @@ export class CollectionSelectorComponent extends EditorPanel {
       },
       {
         label: "Save",
-        disabled: this.gwtAngularPropertyTable == null,
+        disabled: this.jsonObject == null,
         command: () => {
-          this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-            .updateConfig((<GenericPropertyEditorModel>this.editorModel).collectionName, this.gwtAngularPropertyTable!).then(
-            () => {
+          this.http.post(`${EDITOR_PATH}/three_js_model_pack_editor/update`,(<any>this.jsonEditor.get()).json)
+            .subscribe(() => {
               this.requestObjectNameId();
               this.messageService.add({
                 severity: 'success',
                 summary: 'Saved'
               });
-            },
-            reason => {
-              this.messageService.add({
-                severity: 'error',
-                summary: `Can not save config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
-                detail: reason,
-                sticky: true
-              });
-              console.error(reason);
             });
         }
       },
       {
         label: "Delete",
-        disabled: this.gwtAngularPropertyTable == null,
+        disabled: this.jsonObject == null,
         command: () => {
           this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-            .deleteConfig((<GenericPropertyEditorModel>this.editorModel).collectionName, this.gwtAngularPropertyTable!).then(
+            .deleteConfig((<GenericPropertyEditorModel>this.editorModel).collectionName, this.jsonObject!).then(
             () => {
-              this.gwtAngularPropertyTable = null;
+              this.jsonObject = null;
               this.selectedDisplayObjectName = null;
               this.requestObjectNameId();
               this.messageService.add({
@@ -163,9 +154,23 @@ export class CollectionSelectorComponent extends EditorPanel {
   }
 
   private updateDeleteSaveDisableState() {
-    this.items[2].disabled = this.gwtAngularPropertyTable == null;
-    this.items[3].disabled = this.gwtAngularPropertyTable == null;
+    this.items[2].disabled = this.jsonObject == null;
+    this.items[3].disabled = this.jsonObject == null;
     this.items = [...this.items];
   }
 
+  private initJsonEditor() {
+    if (!this.jsonEditor) {
+      this.jsonEditor = new JSONEditor({
+        target: this.jsonEditorContainer.nativeElement,
+        props: {
+          onChange: (updatedContent, previousContent, {contentErrors, patchResult}) => {
+            // content is an object { json: JSONValue } | { text: string }
+            console.log('onChange', {updatedContent, previousContent, contentErrors, patchResult})
+            // content = updatedContent
+          }
+        }
+      })
+    }
+  }
 }

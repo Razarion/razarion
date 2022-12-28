@@ -76,11 +76,14 @@ export class GameMockService {
     getGenericEditorFrontendProvider(): GenericEditorFrontendProvider {
       return new class implements GenericEditorFrontendProvider {
         collectionNames(): string[] {
-          return [];
+          return ["Svelte-jsoneditor"];
         }
 
         requestObjectNameIds(collectionName: string): Promise<ObjectNameId[]> {
-          throw new Error("Method not implemented.");
+          return Promise.resolve([new class implements ObjectNameId {
+            id = -99999;
+            internalName = "Svelte-jsoneditor";
+          }]);
         }
 
         requestObjectNameId(collectionName: string, configId: number): Promise<ObjectNameId> {
@@ -92,7 +95,10 @@ export class GameMockService {
         }
 
         readConfig(collectionName: string, configId: number): Promise<GwtAngularPropertyTable> {
-          throw new Error("Method not implemented.");
+          return Promise.resolve(new class implements GwtAngularPropertyTable {
+            configId = -99999;
+            rootTreeNodes = [];
+          });
         }
 
         updateConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void> {

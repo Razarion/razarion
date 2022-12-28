@@ -34,7 +34,8 @@
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeng/resources/themes/vela-blue/theme.css",
               "node_modules/primeng/resources/primeng.min.css",
-              "node_modules/primeflex/primeflex.css"
+              "node_modules/primeflex/primeflex.css",
+              "node_modules/vanilla-jsoneditor/themes/jse-theme-dark.css"
             ],
             "scripts": [
               "node_modules/chart.js/dist/Chart.js"
@@ -65,7 +66,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "4mb",
-                  "maximumError": "6mb"
+                  "maximumError": "8mb"
                 },
                 {
                   "type": "anyComponentStyle",
