@@ -225,6 +225,11 @@ public class GenericEditorFrontendProvider {
         });
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public String getPathForCollection(String collectionName) {
+        return CollectionReferenceType.getType4CollectionName(collectionName).getPath();
+    }
+
     private void config2GwtAngularPropertyTableAndConnect(Object config, Class<? extends CrudController<? extends Config>> crudControllerClass, int configId,
                                                           Promise.PromiseExecutorCallbackFn.ResolveCallbackFn<GwtAngularPropertyTable> resolve,
                                                           Promise.PromiseExecutorCallbackFn.RejectCallbackFn reject) {

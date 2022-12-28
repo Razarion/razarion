@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto.editor;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.rest.AssetEditorController;
 import com.btxtech.shared.rest.BaseItemTypeEditorController;
@@ -26,33 +27,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum CollectionReferenceType {
-    LEVEL(LevelEditorController.class, "Level"),
-    PLANET(PlanetEditorController.class, "Planet"),
-    GROUND(GroundEditorController.class, "Ground"),
-    SLOPE(SlopeEditorController.class, "Slope"),
-    DRIVEWAY(DrivewayEditorController.class, "Driveway"),
-    WATER(WaterEditorController.class, "Water"),
-    GAME_UI_CONTEXT(GameUiContextEditorController.class, "Game Ui Context"),
-    SHAPE_3D(Shape3DEditorController.class, "Shape 3D"),
-    MESH_CONTAINER(MeshContainerEditorController.class, "Mesh Container"),
-    ASSET(AssetEditorController.class, "Asset"),
-    TERRAIN_OBJECT(TerrainObjectEditorController.class, "Terrain Object"),
-    BASE_ITEM(BaseItemTypeEditorController.class, "Base Item"),
-    RESOURCE_ITEM(ResourceItemTypeEditorController.class, "Resource Item"),
-    PARTICLE_SHAPE(ParticleShapeEditorController.class, "Particle Shape"),
-    PARTICLE_EMITTER_SEQUENCE(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequence"),
-    SERVER_GAME_ENGINE(ServerGameEngineEditorController.class, "Server Game Engine"),
-    THREE_JS_MODEL(ThreeJsModelEditorController.class, "Three.js Model"),
-    THREE_JS_MODEL_PACK(ThreeJsModelPackEditorController.class, "Three.js Model Pack"),
-    IMAGE(null, "Image");
+    LEVEL(LevelEditorController.class, "Level", CommonUrl.LEVEL_EDITOR_PATH),
+    PLANET(PlanetEditorController.class, "Planet", CommonUrl.PLANET_EDITOR_PATH),
+    GROUND(GroundEditorController.class, "Ground", CommonUrl.GROUND_EDITOR_PATH),
+    SLOPE(SlopeEditorController.class, "Slope", CommonUrl.SLOPE_EDITOR_PATH),
+    DRIVEWAY(DrivewayEditorController.class, "Driveway", CommonUrl.DRIVEWAY_EDITOR_PATH),
+    WATER(WaterEditorController.class, "Water", CommonUrl.WATER_EDITOR_PATH),
+    GAME_UI_CONTEXT(GameUiContextEditorController.class, "Game Ui Context", CommonUrl.GAME_UI_CONTEXT_EDITOR_PATH),
+    SHAPE_3D(Shape3DEditorController.class, "Shape 3D", CommonUrl.SHAPE_3D_EDITOR_PATH),
+    MESH_CONTAINER(MeshContainerEditorController.class, "Mesh Container", CommonUrl.MESH_CONTAINER_EDITOR_PATH),
+    ASSET(AssetEditorController.class, "Asset", CommonUrl.ASSET_EDITOR_PATH),
+    TERRAIN_OBJECT(TerrainObjectEditorController.class, "Terrain Object", CommonUrl.TERRAIN_OBJECT_EDITOR_PATH),
+    BASE_ITEM(BaseItemTypeEditorController.class, "Base Item", CommonUrl.BASE_ITEM_TYPE_EDITOR_PATH),
+    RESOURCE_ITEM(ResourceItemTypeEditorController.class, "Resource Item", CommonUrl.RESOURCE_ITEM_TYPE_EDITOR_PATH),
+    PARTICLE_SHAPE(ParticleShapeEditorController.class, "Particle Shape", CommonUrl.PARTICLE_SHAPE_EDITOR_PATH),
+    PARTICLE_EMITTER_SEQUENCE(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequence", CommonUrl.PARTICLE_EMITTER_SEQUENCE_EDITOR_PATH),
+    SERVER_GAME_ENGINE(ServerGameEngineEditorController.class, "Server Game Engine", CommonUrl.SERVER_GAME_ENGINE_EDITOR_PATH),
+    THREE_JS_MODEL(ThreeJsModelEditorController.class, "Three.js Model", CommonUrl.THREE_JS_MODEL_EDITOR_PATH),
+    THREE_JS_MODEL_PACK(ThreeJsModelPackEditorController.class, "Three.js Model Pack", CommonUrl.THREE_JS_MODEL_PACK_EDITOR_PATH),
+    IMAGE(null, "Image", null);
 
     private static Map<String, CollectionReferenceType> collectionName2Type;
     private Class<? extends CrudController<? extends Config>> crudControllerClass;
     private String collectionName;
+    private String path;
 
-    CollectionReferenceType(Class<? extends CrudController<? extends Config>> crudControllerClass, String collectionName) {
+    CollectionReferenceType(Class<? extends CrudController<? extends Config>> crudControllerClass, String collectionName, String path) {
         this.crudControllerClass = crudControllerClass;
         this.collectionName = collectionName;
+        this.path = path;
     }
 
     public static CollectionReferenceType getType4CollectionName(String collectionName) {
@@ -69,6 +72,10 @@ public enum CollectionReferenceType {
 
     public String getCollectionName() {
         return collectionName;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public Class<? extends CrudController<? extends Config>> getCrudControllerClass() {

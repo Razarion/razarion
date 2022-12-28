@@ -3,7 +3,7 @@ import {Component, ElementRef, ViewChild} from "@angular/core";
 import {MenuItem, MessageService} from "primeng/api";
 import {ObjectNameId} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {EDITOR_PATH} from "../../common";
+import {APPLICATION_PATH, EDITOR_PATH} from "../../common";
 import {HttpClient} from "@angular/common/http";
 import {JSONEditor} from "vanilla-jsoneditor";
 
@@ -56,7 +56,7 @@ export class CollectionSelectorComponent extends EditorPanel {
       menuObjectNameIds.push({
         label: displayObjectName,
         command: () => {
-          this.http.get(`${EDITOR_PATH}/three_js_model_pack_editor/read/${objectNameId.id}`)
+          this.http.get(`${this.url4Collection()}/read/${objectNameId.id}`)
             .subscribe((jsonObject: any) => {
               this.initJsonEditor();
               this.jsonEditor.set({json: jsonObject});
@@ -99,7 +99,7 @@ export class CollectionSelectorComponent extends EditorPanel {
         label: "Save",
         disabled: this.jsonObject == null,
         command: () => {
-          this.http.post(`${EDITOR_PATH}/three_js_model_pack_editor/update`,(<any>this.jsonEditor.get()).json)
+          this.http.post(`${this.url4Collection()}/update`,(<any>this.jsonEditor.get()).json)
             .subscribe(() => {
               this.requestObjectNameId();
               this.messageService.add({
@@ -172,5 +172,9 @@ export class CollectionSelectorComponent extends EditorPanel {
         }
       })
     }
+  }
+
+  private url4Collection(): string {
+    return `${APPLICATION_PATH}/${this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().getPathForCollection((<GenericPropertyEditorModel>this.editorModel).collectionName)}`
   }
 }

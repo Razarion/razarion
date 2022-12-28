@@ -113,6 +113,10 @@ export class GameMockService {
           throw new Error("Method not implemented.");
         }
 
+        getPathForCollection(collectionName: string): string {
+          throw new Error("Method not implemented.");
+        }
+
       };
     }
 
