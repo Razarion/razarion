@@ -8,27 +8,16 @@ import {
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import {
-  AbstractMesh,
-  Color3,
-  Mesh,
-  MeshBuilder,
-  NodeMaterial,
-  Scene,
-  StandardMaterial,
-  TransformNode,
-  Vector3,
-  VertexBuffer,
-  VertexData
-} from "@babylonjs/core";
+import {Color3, Mesh, NodeMaterial, StandardMaterial, TransformNode, Vector3, VertexData} from "@babylonjs/core";
+import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   private readonly container: Mesh;
 
   constructor(terrainTile: TerrainTile,
               private defaultGroundConfigId: number,
-              private scene: Scene,
               private gwtAngularService: GwtAngularService,
+              private rendererService: ThreeJsRendererServiceImpl,
               private threeJsModelService: BabylonModelService,
               private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.container = new Mesh(`Terrain Tile ${terrainTile.getIndex().toString()}`);
@@ -56,11 +45,12 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
 
           let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
           if (groundConfig.getTopThreeJsMaterial()) {
-              ground.material = threeJsModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
+            ground.material = threeJsModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
           } else {
             this.addErrorMaterial(ground);
             console.warn(`No top or bottom material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
           }
+          ground.receiveShadows = true;
           ground.parent = this.container;
           this.container.getChildren().push(ground);
         } catch (error) {
@@ -192,11 +182,11 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   }
 
   addToScene(): void {
-    this.scene.addMesh(this.container);
+    this.rendererService.addToScene(this.container);
   }
 
   removeFromScene(): void {
-    this.scene.removeMesh(this.container);
+    this.rendererService.removeFromScene(this.container);
   }
 
   private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: NodeMaterial, groundMaterial: NodeMaterial | null, splatting: SlopeSplattingConfig | null): void {
@@ -224,30 +214,11 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       vertexData.applyToMesh(slope)
 
       slope.parent = this.container;
-
       slope.material = material;
-
-      this.showNormals(slope, 1, Color3.White(), this.scene);
+      slope.receiveShadows = true;
 
       this.container.getChildren().push(slope);
     }
-  }
-
-  showNormals(mesh: AbstractMesh, size: number, color: Color3, scene: Scene) {
-    const normals: any = mesh.getVerticesData(VertexBuffer.NormalKind);
-    const positions: any = mesh.getVerticesData(VertexBuffer.PositionKind);
-    color = color || Color3.White();
-    size = size || 1;
-
-    var lines = [];
-    for (var i = 0; i < normals.length; i += 3) {
-      var v1 = Vector3.FromArray(positions, i);
-      var v2 = v1.add(Vector3.FromArray(normals, i).scaleInPlace(size));
-      lines.push([v1.add(mesh.position), v2.add(mesh.position)]);
-    }
-    const normalLines = MeshBuilder.CreateLineSystem("normalLines", {lines: lines}, scene);
-    normalLines.color = color;
-    return normalLines;
   }
 
   private generateIndices(positionCount: number): number[] {

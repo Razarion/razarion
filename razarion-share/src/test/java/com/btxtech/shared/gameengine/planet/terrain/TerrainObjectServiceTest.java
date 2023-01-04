@@ -132,18 +132,18 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                         .id(1)
                         .threeJsModelId(8881)
                         .internalName("Pack 8881 1")
-                        .position(new Vertex(10, 0, 0))
-                        .scale(new Vertex(1, 1, 1))
-                        .rotation(new Vertex(Math.toRadians(0), 0, 0))
-                        .namePath(Arrays.asList("__root__", "Sketchfab_model", "Vegetation.FBX", "RootNode", "fern", "fern_fern_0")),
-                new ThreeJsModelPackConfig()
-                        .id(2)
-                        .threeJsModelId(8884)
-                        .internalName("Simple Earth Planet")
                         .position(new Vertex(0, 0, 0))
                         .scale(new Vertex(0.01, 0.01, 0.01))
-                        .rotation(new Vertex(0, 0, 0))
-                        .namePath(Arrays.asList("__root__", "Sketchfab_model", "Collada visual scene group", "Earth", "_1_-_Default_1"))
+                        .rotation(new Vertex(Math.toRadians(90), 0, 0))
+                        .namePath(Arrays.asList("__root__", "Sketchfab_model", "Vegetation.FBX", "RootNode", "trunk03", "trunk03_Material #2_0"))
+//                new ThreeJsModelPackConfig()
+//                        .id(2)
+//                        .threeJsModelId(8884)
+//                        .internalName("Simple Earth Planet")
+//                        .position(new Vertex(0, 0, 0))
+//                        .scale(new Vertex(0.01, 0.01, 0.01))
+//                        .rotation(new Vertex(0, 0, 0))
+//                        .namePath(Arrays.asList("__root__", "Sketchfab_model", "Collada visual scene group", "Earth", "_1_-_Default_1"))
 //                new ThreeJsModelPackConfig()
 //                        .id(3)
 //                        .threeJsModelId(8881)
@@ -161,7 +161,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         // terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10).threeJsModelPackConfigId(3));
 
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
-                new TerrainObjectPosition().id(1).terrainObjectConfigId(1).position(new DecimalPosition(2, 7)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(Math.toRadians(0), 0, 0))
+                new TerrainObjectPosition().id(1).terrainObjectConfigId(1).position(new DecimalPosition(48, 40)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(Math.toRadians(0), 0, 0))
 //                new TerrainObjectPosition().id(2).terrainObjectConfigId(1).position(new DecimalPosition(3, 11)).scale(new Vertex(1.3, 1.3, 1.3)).rotation(new Vertex(Math.toRadians(0), 0, 0)),
 //                new TerrainObjectPosition().id(3).terrainObjectConfigId(1).position(new DecimalPosition(200, 10)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(90))),
 //                new TerrainObjectPosition().id(4).terrainObjectConfigId(2).position(new DecimalPosition(8, 8)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, Math.toRadians(0))),

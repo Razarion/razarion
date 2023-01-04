@@ -9,8 +9,10 @@ import {
   Engine,
   FreeCamera,
   Matrix,
+  Mesh,
   Quaternion,
   Scene,
+  ShadowGenerator,
   Vector2,
   Vector3
 } from "@babylonjs/core";
@@ -33,6 +35,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private scene!: Scene;
   private engine!: Engine;
   private camera!: FreeCamera;
+  private shadowGenerator!: ShadowGenerator;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
   private directionalLight!: DirectionalLight
@@ -83,7 +86,11 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.camera.setTarget(new Vector3(0, 0, 0));
 
     // ----- Light -----
-    this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0.12, -0.98, 0.15), this.scene);
+    this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0, -2, 0), this.scene);
+    this.directionalLight.position = new Vector3(0, 100, 0);
+
+    this.shadowGenerator = new ShadowGenerator(4096, this.directionalLight);
+
 
     // ----- Resize listener -----
     const resizeObserver = new ResizeObserver(entries => {
@@ -115,8 +122,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     try {
       return new ThreeJsTerrainTileImpl(terrainTile,
         defaultGroundConfigId,
-        this.scene,
         this.gwtAngularService,
+        this,
         this.threeJsModelService,
         this.threeJsWaterRenderService);
     } catch (e) {
@@ -228,6 +235,16 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     // TODO this.scene.add(group);
   }
 
+  addToScene(mesh: Mesh): void {
+    this.scene.addMesh(mesh);
+    this.shadowGenerator.addShadowCaster(mesh, true);
+  }
+
+  removeFromScene(mesh: Mesh): void {
+    this.scene.removeMesh(mesh);
+    this.shadowGenerator.removeShadowCaster(mesh, true);
+  }
+
   addScene(scene: Scene) {
 
   }
@@ -249,13 +266,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       return;
     }
     let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
-
-    // this.directionalLight.shadow.camera.left = topLeft.x;
-    // this.directionalLight.shadow.camera.bottom = bottomLeft.y;
-    // this.directionalLight.shadow.camera.top = topLeft.y;
-    // this.directionalLight.shadow.camera.right = topRight.x;
-    // this.directionalLight.shadow.camera.updateMatrix();
-    // this.directionalLight.shadow.camera.updateProjectionMatrix();
 
     const bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
     const bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
@@ -304,14 +314,12 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  // @ts-ignore
   showInspector() {
     void Promise.all([
       import("@babylonjs/core/Debug/debugLayer"),
       import("@babylonjs/inspector"),
       import("@babylonjs/node-editor")
     ]).then((_values) => {
-      console.log(_values);
       this.scene.debugLayer.show({enableClose: true, embedMode: true});
     });
   }
