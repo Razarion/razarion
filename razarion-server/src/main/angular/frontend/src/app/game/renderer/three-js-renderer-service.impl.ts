@@ -5,6 +5,7 @@ import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import {
+  CascadedShadowGenerator,
   DirectionalLight,
   Engine,
   FreeCamera,
@@ -12,7 +13,6 @@ import {
   Mesh,
   Quaternion,
   Scene,
-  ShadowGenerator,
   Vector2,
   Vector3
 } from "@babylonjs/core";
@@ -35,7 +35,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private scene!: Scene;
   private engine!: Engine;
   private camera!: FreeCamera;
-  private shadowGenerator!: ShadowGenerator;
+  private shadowGenerator!: CascadedShadowGenerator;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
   private directionalLight!: DirectionalLight
@@ -83,14 +83,15 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     // -----  Camera -----
     //this.camera = new Camera("Main Cam", new Vector3(0, -10, 20), this.scene);
     this.camera = new FreeCamera("Camera", new Vector3(0, 10, -10), this.scene);
+    this.camera.maxZ = 500;
     this.camera.setTarget(new Vector3(0, 0, 0));
 
     // ----- Light -----
     this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0, -2, 0), this.scene);
-    this.directionalLight.position = new Vector3(0, 100, 0);
+    this.directionalLight.position = new Vector3(1, 100, 0);
 
-    this.shadowGenerator = new ShadowGenerator(4096, this.directionalLight);
-
+    this.shadowGenerator = new CascadedShadowGenerator(4096, this.directionalLight);
+    // this.shadowGenerator.debug = true;
 
     // ----- Resize listener -----
     const resizeObserver = new ResizeObserver(entries => {
@@ -134,18 +135,11 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   setViewFieldCenter(x: number, y: number): void {
-    // let currentViewFieldCenter = this.setupCenterGroundPosition();
-    // let newFiledCenter = new Vector2(x, y);
-    // let delta = newFiledCenter.sub(new Vector2(currentViewFieldCenter.x, currentViewFieldCenter.y));
-    // this.camera.position.x += delta.x;
-    // this.camera.position.y += delta.y;
-    this.onViewFieldChanged();
-  }
-
-  onResize() {
-    // TODO this.renderer.setSize(this.canvas.clientWidth - 5, this.canvas.clientHeight); // TODO -> -5 prevent strange loop
-    // TODO this.camera.aspect = (this.canvas.clientWidth - 5) / this.canvas.clientHeight;
-    // TODO this.camera.updateProjectionMatrix();
+    let currentViewFieldCenter = this.setupCenterGroundPosition();
+    let newFiledCenter = new Vector2(x, y);
+    let delta = newFiledCenter.subtract(new Vector2(currentViewFieldCenter.x, currentViewFieldCenter.z));
+    this.camera.position.x += delta.x;
+    this.camera.position.z += delta.y;
     this.onViewFieldChanged();
   }
 
@@ -222,9 +216,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     return null;
   }
 
-  // public setupCenterGroundPosition(): Vector3 {
-  //   return this.setupZeroLevelPosition(0, 0);
-  // }
+  public setupCenterGroundPosition(): Vector3 {
+    return this.setupZeroLevelPosition(0, 0, Matrix.Invert(this.camera.getTransformationMatrix()));
+  }
 
   public addToSceneEditor(scene: Scene) {
     // let group = new Group();
@@ -243,14 +237,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   removeFromScene(mesh: Mesh): void {
     this.scene.removeMesh(mesh);
     this.shadowGenerator.removeShadowCaster(mesh, true);
-  }
-
-  addScene(scene: Scene) {
-
-  }
-
-  removeScene(scene: Scene) {
-
   }
 
   getEngine(): Engine {
@@ -281,7 +267,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   private setupZeroLevelPosition(ndcX: number, ndcY: number, invertCameraViewProj: Matrix): Vector3 {
-    let ndcToWorld = Vector3.TransformCoordinates(new Vector3(ndcX, ndcY, 0), invertCameraViewProj);
+    let ndcToWorld = Vector3.TransformCoordinates(new Vector3(ndcX, 0, ndcY), invertCameraViewProj);
     const direction = ndcToWorld.subtract(this.camera.position).normalize();
     const distanceToNullLevel = -this.camera.position.y / direction.y;
     return this.camera.position.add(direction.multiplyByFloats(distanceToNullLevel, distanceToNullLevel, distanceToNullLevel));

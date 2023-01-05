@@ -92,6 +92,9 @@ export class BabylonModelService {
 
     const mesh = (<Mesh>childMesh).clone("", parent);
 
+    mesh.receiveShadows = true;
+    mesh.getChildMeshes().forEach(m => m.receiveShadows = true);
+
     mesh.position.set(threeJsModelPackConf.getPosition().getX(),
       threeJsModelPackConf.getPosition().getZ(),
       threeJsModelPackConf.getPosition().getY());
