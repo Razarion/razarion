@@ -82,12 +82,12 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
     // -----  Camera -----
     //this.camera = new Camera("Main Cam", new Vector3(0, -10, 20), this.scene);
-    this.camera = new FreeCamera("Camera", new Vector3(0, 10, -10), this.scene);
+    this.camera = new FreeCamera("Camera", new Vector3(0, 20, -10), this.scene);
     this.camera.maxZ = 500;
     this.camera.setTarget(new Vector3(0, 0, 0));
 
     // ----- Light -----
-    this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0, -2, 0), this.scene);
+    this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(1, -2, 1).normalize(), this.scene);
     this.directionalLight.position = new Vector3(1, 100, 0);
 
     this.shadowGenerator = new CascadedShadowGenerator(4096, this.directionalLight);
