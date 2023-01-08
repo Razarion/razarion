@@ -6,6 +6,7 @@ import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import {
   CascadedShadowGenerator,
+  Color3,
   DirectionalLight,
   Engine,
   FreeCamera,
@@ -47,6 +48,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   internalSetup(canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas)
     this.scene = new Scene(this.engine);
+    this.scene.ambientColor  = new Color3(0.3, 0.3, 0.3);
 
     this.threeJsModelService.setScene(this.scene);
 
@@ -91,6 +93,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.directionalLight.position = new Vector3(1, 100, 0);
 
     this.shadowGenerator = new CascadedShadowGenerator(4096, this.directionalLight);
+    this.shadowGenerator.bias = 0.005;
     // this.shadowGenerator.debug = true;
 
     // ----- Resize listener -----

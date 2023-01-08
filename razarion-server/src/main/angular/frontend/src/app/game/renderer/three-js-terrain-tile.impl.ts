@@ -190,18 +190,18 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   }
 
   private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: NodeMaterial, groundMaterial: NodeMaterial | null, splatting: SlopeSplattingConfig | null): void {
-    if (groundMaterial && splatting) {
-    } else {
-
-      for (let i = 0; i < slopeGeometry.positions.length / 3; i++) {
-        const newPositionY = slopeGeometry.positions[i * 3 + 2];
-        const newPositionZ = slopeGeometry.positions[i * 3 + 1];
-        slopeGeometry.positions[i * 3 + 1] = newPositionY;
-        slopeGeometry.positions[i * 3 + 2] = newPositionZ;
-        const newNormalY = slopeGeometry.norms[i * 3 + 2];
-        const newNormalZ = slopeGeometry.norms[i * 3 + 1];
-        slopeGeometry.norms[i * 3 + 1] = newNormalY;
-        slopeGeometry.norms[i * 3 + 2] = newNormalZ;
+    // TODO if (groundMaterial && splatting) {
+    // TODO } else {
+    // TODO }
+    for (let i = 0; i < slopeGeometry.positions.length / 3; i++) {
+      const newPositionY = slopeGeometry.positions[i * 3 + 2];
+      const newPositionZ = slopeGeometry.positions[i * 3 + 1];
+      slopeGeometry.positions[i * 3 + 1] = newPositionY;
+      slopeGeometry.positions[i * 3 + 2] = newPositionZ;
+      const newNormalY = slopeGeometry.norms[i * 3 + 2];
+      const newNormalZ = slopeGeometry.norms[i * 3 + 1];
+      slopeGeometry.norms[i * 3 + 1] = newNormalY;
+      slopeGeometry.norms[i * 3 + 2] = newNormalZ;
       }
 
       const slope = new Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
@@ -218,7 +218,6 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       slope.receiveShadows = true;
 
       this.container.getChildren().push(slope);
-    }
   }
 
   private generateIndices(positionCount: number): number[] {
