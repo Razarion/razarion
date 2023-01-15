@@ -124,6 +124,8 @@ export interface SlopeConfig {
 
   getThreeJsMaterial(): number;
 
+  getShallowWaterThreeJsMaterial(): number;
+
   getGroundConfigId(): number;
 
   getWaterConfigId(): number;
@@ -131,8 +133,6 @@ export interface SlopeConfig {
   getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null;
 
   getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null;
-
-  getShallowWaterConfig(): ShallowWaterConfig | null;
 }
 
 export interface SlopeSplattingConfig {
@@ -165,35 +165,9 @@ export interface GroundConfig {
 export interface WaterConfig {
   getId(): number;
 
-  getTransparency(): number;
+  getInternalName(): string;
 
-  getReflectionId(): number;
-
-  getShininess(): number;
-
-  getSpecularStrength(): number;
-
-  getDistortionAnimationSeconds(): number;
-
-  getDistortionStrength(): number;
-
-  getNormalMapId(): number;
-
-  getNormalMapDepth(): number;
-}
-
-export interface ShallowWaterConfig {
-  getTextureId(): number;
-
-  getScale(): number;
-
-  getDistortionId(): number;
-
-  getDistortionStrength(): number;
-
-  getStencilId(): number;
-
-  getDurationSeconds(): number;
+  getMaterial(): number;
 }
 
 export interface PhongMaterialConfig {

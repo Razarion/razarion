@@ -8,8 +8,9 @@ import {
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import {Color3, Mesh, NodeMaterial, StandardMaterial, TransformNode, Vector3, VertexData} from "@babylonjs/core";
+import {Color3, Mesh, NodeMaterial, StandardMaterial, TransformNode, Vector3} from "@babylonjs/core";
 import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
+import {BabylonJsUtils} from "./babylon-js.utils";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   private readonly container: Mesh;
@@ -24,30 +25,15 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
         try {
+          const vertexData = BabylonJsUtils.createVertexData(groundTerrainTile.positions, groundTerrainTile.norms);
           const ground = new Mesh("Ground", null);
-          const vertexData = new VertexData();
-          for (let i = 0; i < groundTerrainTile.positions.length / 3; i++) {
-            const newPositionY = groundTerrainTile.positions[i * 3 + 2];
-            const newPositionZ = groundTerrainTile.positions[i * 3 + 1];
-            groundTerrainTile.positions[i * 3 + 1] = newPositionY;
-            groundTerrainTile.positions[i * 3 + 2] = newPositionZ;
-            const newNormalY = groundTerrainTile.norms[i * 3 + 2];
-            const newNormalZ = groundTerrainTile.norms[i * 3 + 1];
-            groundTerrainTile.norms[i * 3 + 1] = newNormalY;
-            groundTerrainTile.norms[i * 3 + 2] = newNormalZ;
-          }
-
-          vertexData.positions = groundTerrainTile.positions;
-          vertexData.normals = groundTerrainTile.norms;
-          vertexData.indices = this.generateIndices(groundTerrainTile.positions.length);
-
           vertexData.applyToMesh(ground)
 
           let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
           if (groundConfig.getTopThreeJsMaterial()) {
             ground.material = threeJsModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
           } else {
-            this.addErrorMaterial(ground);
+            BabylonJsUtils.addErrorMaterial(ground);
             console.warn(`No top or bottom material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
           }
           ground.receiveShadows = true;
@@ -95,7 +81,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       });
     }
 
-    // TODO this.threeJsWaterRenderService.setup(terrainTile.getTerrainWaterTiles(), this.container);
+    this.threeJsWaterRenderService.setup(terrainTile.getTerrainWaterTiles(), this.container);
 
     if (terrainTile.getTerrainTileObjectLists() !== null) {
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
@@ -152,25 +138,6 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     }
   }
 
-  private addErrorMaterial(mesh: Mesh) {
-    const material = new StandardMaterial("Error Material");
-    material.diffuseColor = new Color3(1, 0, 0);
-    material.emissiveColor = new Color3(1, 0, 0);
-    material.specularColor = new Color3(1, 0, 0);
-    material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
-    mesh.material = material;
-  }
-
-  static uvFromPosition(positions: Float32Array) {
-    // let uvs = new Float32Array(positions.length * 2 / 3);
-    // let uvCount = uvs.length / 2;
-    // for (let uvIndex = 0; uvIndex < uvCount; uvIndex++) {
-    //   uvs[uvIndex * 2] = positions[uvIndex * 3];
-    //   uvs[uvIndex * 2 + 1] = positions[uvIndex * 3 + 1];
-    // }
-    // return new BufferAttribute(uvs, 2);
-  }
-
   static fillVec3(vec: Vector3, length: number): any {
     // let float32Array = new Float32Array(length);
     // for (let i = 0; i < length / 3; i++) {
@@ -193,38 +160,15 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     // TODO if (groundMaterial && splatting) {
     // TODO } else {
     // TODO }
-    for (let i = 0; i < slopeGeometry.positions.length / 3; i++) {
-      const newPositionY = slopeGeometry.positions[i * 3 + 2];
-      const newPositionZ = slopeGeometry.positions[i * 3 + 1];
-      slopeGeometry.positions[i * 3 + 1] = newPositionY;
-      slopeGeometry.positions[i * 3 + 2] = newPositionZ;
-      const newNormalY = slopeGeometry.norms[i * 3 + 2];
-      const newNormalZ = slopeGeometry.norms[i * 3 + 1];
-      slopeGeometry.norms[i * 3 + 1] = newNormalY;
-      slopeGeometry.norms[i * 3 + 2] = newNormalZ;
-      }
+    const slope = new Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
+    const vertexData = BabylonJsUtils.createVertexData(slopeGeometry.positions, slopeGeometry.norms);
+    vertexData.uvs = slopeGeometry.uvs;
+    vertexData.applyToMesh(slope)
 
-      const slope = new Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
-      const vertexData = new VertexData();
-      vertexData.positions = slopeGeometry.positions;
-      vertexData.normals = slopeGeometry.norms;
-      vertexData.uvs = slopeGeometry.uvs;
-      vertexData.indices = this.generateIndices(slopeGeometry.positions.length);
+    slope.parent = this.container;
+    slope.material = material;
+    slope.receiveShadows = true;
 
-      vertexData.applyToMesh(slope)
-
-      slope.parent = this.container;
-      slope.material = material;
-      slope.receiveShadows = true;
-
-      this.container.getChildren().push(slope);
-  }
-
-  private generateIndices(positionCount: number): number[] {
-    const indices = [];
-    for (let i = 0; i < positionCount / 3; i++) {
-      indices[i] = i;
-    }
-    return indices;
+    this.container.getChildren().push(slope);
   }
 }

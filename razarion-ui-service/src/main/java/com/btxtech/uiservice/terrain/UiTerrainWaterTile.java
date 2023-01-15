@@ -54,7 +54,7 @@ public class UiTerrainWaterTile {
     }
 
     public ShallowWaterConfig getShallowWaterConfig() {
-        return slopeConfig.getShallowWaterConfig();
+        return null;
     }
 
     public double getWaterAnimation() {

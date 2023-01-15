@@ -13,7 +13,6 @@ import {
   InputService,
   ObjectNameId,
   PerfmonStatistic,
-  ShallowWaterConfig,
   SlopeConfig,
   SlopeGeometry,
   SlopeSplattingConfig,
@@ -217,23 +216,11 @@ export class GameMockService {
           return 0;
         }
 
-        getTerrainObjectRandomScale(): number {
-          return 0;
-        }
-
-        getTerrainObjectRandomZRotation(): number {
-          return 0;
-        }
-
         isDrivewayMode(): boolean {
           return false;
         }
 
         isInvertedSlope(): boolean {
-          return false;
-        }
-
-        isSlopeMode(): boolean {
           return false;
         }
 
@@ -263,19 +250,6 @@ export class GameMockService {
 
         setSlope4New(slope4New: ObjectNameId): void {
         }
-
-        setSlopeMode(slopeMode: boolean): void {
-        }
-
-        setTerrainObject4New(terrainObject4New: ObjectNameId): void {
-        }
-
-        setTerrainObjectRandomScale(terrainObjectRandomScale: number): void {
-        }
-
-        setTerrainObjectRandomZRotation(terrainObjectRandomZRotation: number): void {
-        }
-
       }
     }
   };
@@ -376,36 +350,8 @@ export class GameMockService {
               return _this.setupSlopeSplattingConfig(slopeConfigJson.outerSlopeSplattingConfig);
             }
 
-            getShallowWaterConfig(): ShallowWaterConfig | null {
-              if (slopeConfigJson.shallowWaterConfig) {
-                return new class implements ShallowWaterConfig {
-                  getDistortionId(): number {
-                    return slopeConfigJson.shallowWaterConfig.distortionId;
-                  }
-
-                  getDistortionStrength(): number {
-                    return slopeConfigJson.shallowWaterConfig.distortionStrength;
-                  }
-
-                  getDurationSeconds(): number {
-                    return slopeConfigJson.shallowWaterConfig.durationSeconds;
-                  }
-
-                  getScale(): number {
-                    return slopeConfigJson.shallowWaterConfig.scale;
-                  }
-
-                  getStencilId(): number {
-                    return slopeConfigJson.shallowWaterConfig.stencilId;
-                  }
-
-                  getTextureId(): number {
-                    return slopeConfigJson.shallowWaterConfig.textureId;
-                  }
-                };
-              } else {
-                return null;
-              }
+            getShallowWaterThreeJsMaterial(): number {
+              return slopeConfigJson.shallowWaterThreeJsMaterial;
             }
           }
           return
@@ -469,41 +415,18 @@ export class GameMockService {
           waterConfig = new class implements WaterConfig {
             _waterConfigJson: any = waterConfigJson;
 
+            getInternalName(): string {
+              return waterConfigJson.internalName;
+            }
+
+            getMaterial(): number {
+              return waterConfigJson.id;
+            }
+
             getId(): number {
               return this._waterConfigJson.id
             };
 
-            getReflectionId(): number {
-              return this._waterConfigJson.reflectionId
-            }
-
-            getTransparency(): number {
-              return this._waterConfigJson.transparency
-            };
-
-            getShininess(): number {
-              return this._waterConfigJson.shininess
-            }
-
-            getSpecularStrength(): number {
-              return this._waterConfigJson.specularStrength
-            }
-
-            getDistortionAnimationSeconds(): number {
-              return this._waterConfigJson.distortionAnimationSeconds
-            }
-
-            getDistortionStrength(): number {
-              return this._waterConfigJson.distortionStrength
-            }
-
-            getNormalMapId(): number {
-              return this._waterConfigJson.normalMapId
-            }
-
-            getNormalMapDepth(): number {
-              return this._waterConfigJson.normalMapDepth
-            }
 
           }
         });

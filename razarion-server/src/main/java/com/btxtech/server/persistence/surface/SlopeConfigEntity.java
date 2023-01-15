@@ -72,6 +72,9 @@ public class SlopeConfigEntity {
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
     private double horizontalSpace;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelConfigEntity shallowWaterThreeJsMaterial;
 
     public Integer getId() {
         return id;
@@ -86,10 +89,10 @@ public class SlopeConfigEntity {
                 .innerLineGameEngine(innerLineGameEngine)
                 .outerLineGameEngine(outerLineGameEngine)
                 .coastDelimiterLineGameEngine(coastDelimiterLineGameEngine)
-                .shallowWaterConfig(ShallowWaterConfigEmbeddable.to(shallowWaterConfig))
                 .outerSlopeSplattingConfig(SlopeSplattingConfigEmbeddable.to(outerSplatting))
                 .innerSlopeSplattingConfig(SlopeSplattingConfigEmbeddable.to(innerSplatting))
-                .threeJsMaterial(extractId(threeJsMaterial, ThreeJsModelConfigEntity::getId));
+                .threeJsMaterial(extractId(threeJsMaterial, ThreeJsModelConfigEntity::getId))
+                .shallowWaterThreeJsMaterial(extractId(shallowWaterThreeJsMaterial, ThreeJsModelConfigEntity::getId));
         if (groundConfig != null) {
             slopeConfig.setGroundConfigId(groundConfig.getId());
         }
@@ -123,9 +126,9 @@ public class SlopeConfigEntity {
         horizontalSpace = slopeConfig.getHorizontalSpace();
         waterConfig = waterConfigEntity;
         threeJsMaterial = threeJsModelCrudPersistence.getEntity(slopeConfig.getThreeJsMaterial());
-        shallowWaterConfig = ShallowWaterConfigEmbeddable.factorize(slopeConfig.getShallowWaterConfig(), imagePersistence);
         outerSplatting = SlopeSplattingConfigEmbeddable.factorize(slopeConfig.getOuterSlopeSplattingConfig(), imagePersistence);
         innerSplatting = SlopeSplattingConfigEmbeddable.factorize(slopeConfig.getInnerSlopeSplattingConfig(), imagePersistence);
+        shallowWaterThreeJsMaterial = threeJsModelCrudPersistence.getEntity(slopeConfig.getShallowWaterThreeJsMaterial());
     }
 
     @Override

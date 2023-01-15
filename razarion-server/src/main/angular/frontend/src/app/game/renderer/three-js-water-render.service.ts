@@ -1,50 +1,69 @@
 import {Injectable} from "@angular/core";
-import {ShallowWaterConfig, TerrainWaterTile, WaterConfig} from "../../gwtangular/GwtAngularFacade";
-import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
-import {SignalGenerator} from "../signal-generator";
+import {SlopeConfig, TerrainWaterTile, WaterConfig} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {AssetContainer, Vector3} from "@babylonjs/core";
+import {Mesh, NodeMaterial} from "@babylonjs/core";
+import {BabylonJsUtils} from "./babylon-js.utils";
+import {BabylonModelService} from "./babylon-model.service";
 
 @Injectable()
 export class ThreeJsWaterRenderService {
-  private materials: {
-    material: any,
-    waterConfig: WaterConfig,
-    shallowWaterConfig: ShallowWaterConfig | null
-  }[] = [];
-
-  constructor(private gwtAngularService: GwtAngularService) {
+  constructor(private gwtAngularService: GwtAngularService,
+              private babylonModelService: BabylonModelService) {
   }
 
-  private static getWaterAnimation(millis: number, durationSeconds: number): number {
-    return SignalGenerator.sawtooth(millis, durationSeconds * 1000.0, 0);
-  }
-
-  private static setupWaterGeometry(positions: Float32Array) {
-    let geometry: any = {};
-    geometry.setAttribute('position', positions);
-    geometry.setAttribute('normal', ThreeJsTerrainTileImpl.fillVec3(new Vector3(0, 0, 1), positions.length));
-    geometry.setAttribute('uv', ThreeJsTerrainTileImpl.uvFromPosition(positions));
-    return geometry;
-  }
-
-
-  public setup(terrainWaterTiles: TerrainWaterTile[], container: AssetContainer): void {
+  public setup(terrainWaterTiles: TerrainWaterTile[], container: Mesh): void {
     if (!terrainWaterTiles) {
       return;
     }
     terrainWaterTiles.forEach(terrainWaterTile => {
+      let slopeConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getSlopeConfig(terrainWaterTile.slopeConfigId);
+      let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(slopeConfig.getWaterConfigId());
+
+
+      if (terrainWaterTile.positions) {
+        this.setupWater(terrainWaterTile.positions, waterConfig, container);
+      }
+      if (terrainWaterTile.shallowPositions) {
+        this.setupShallowWater(terrainWaterTile.shallowPositions, terrainWaterTile.shallowUvs, slopeConfig, waterConfig, container);
+      }
     });
   }
 
-  public update() {
-    this.materials.forEach(value => {
-      let uniforms = value.material.uniforms;
-      uniforms.uDistortionAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), value.waterConfig.getDistortionAnimationSeconds());
-      if (uniforms.uShallowAnimation && value.shallowWaterConfig) {
-        uniforms.uShallowAnimation.value = ThreeJsWaterRenderService.getWaterAnimation(Date.now(), value.shallowWaterConfig.getDurationSeconds());
-      }
-    })
+  private setupWater(positions: Float32Array, waterConfig: WaterConfig, container: Mesh) {
+    const vertexData = BabylonJsUtils.createVertexData(positions)
+    const water = new Mesh(`Water ${waterConfig.getInternalName()} (${waterConfig.getId()})`, null);
+    vertexData.applyToMesh(water)
+
+    if (waterConfig.getMaterial()) {
+      water.material = this.babylonModelService.getNodeMaterial(waterConfig.getMaterial());
+      (<NodeMaterial>water.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
+    } else {
+      BabylonJsUtils.addErrorMaterial(water);
+      console.warn(`No material in WaterConfig ${waterConfig.getInternalName()} (${waterConfig.getId()})`);
+    }
+
+    water.receiveShadows = true;
+    water.parent = container;
+    container.getChildren().push(water);
+  }
+
+  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, slopeConfig: SlopeConfig, waterConfig: WaterConfig, container: Mesh) {
+    const vertexData = BabylonJsUtils.createVertexData(shallowPositions);
+    vertexData.uvs = shallowUvs;
+
+    const shallowWater = new Mesh(`Shallow Water ${waterConfig.getInternalName()} (${waterConfig.getId()}) SlopeConfig ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`, null);
+    vertexData.applyToMesh(shallowWater)
+
+    if (slopeConfig.getShallowWaterThreeJsMaterial()) {
+      shallowWater.material = this.babylonModelService.getNodeMaterial(slopeConfig.getShallowWaterThreeJsMaterial()!);
+    } else {
+      BabylonJsUtils.addErrorMaterial(shallowWater);
+      console.warn(`No shallowWaterThreeJsMaterial in SlopeConfig ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`);
+    }
+
+    shallowWater.receiveShadows = true;
+    shallowWater.parent = container;
+    container.getChildren().push(shallowWater);
   }
 
 }

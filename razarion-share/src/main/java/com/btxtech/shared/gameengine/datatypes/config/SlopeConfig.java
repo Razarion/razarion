@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 
 import com.btxtech.shared.dto.Config;
-import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
@@ -30,7 +29,8 @@ public class SlopeConfig implements Config {
     private boolean interpolateNorm;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
     private Integer threeJsMaterial;
-    private ShallowWaterConfig shallowWaterConfig;
+    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
+    private Integer shallowWaterThreeJsMaterial;
     private SlopeSplattingConfig outerSlopeSplattingConfig;
     private SlopeSplattingConfig innerSlopeSplattingConfig;
 
@@ -122,12 +122,12 @@ public class SlopeConfig implements Config {
         this.interpolateNorm = interpolateNorm;
     }
 
-    public ShallowWaterConfig getShallowWaterConfig() {
-        return shallowWaterConfig;
+    public Integer getShallowWaterThreeJsMaterial() {
+        return shallowWaterThreeJsMaterial;
     }
 
-    public void setShallowWaterConfig(ShallowWaterConfig shallowWaterConfig) {
-        this.shallowWaterConfig = shallowWaterConfig;
+    public void setShallowWaterThreeJsMaterial(Integer shallowWaterThreeJsMaterial) {
+        this.shallowWaterThreeJsMaterial = shallowWaterThreeJsMaterial;
     }
 
     public SlopeSplattingConfig getOuterSlopeSplattingConfig() {
@@ -201,8 +201,8 @@ public class SlopeConfig implements Config {
         return this;
     }
 
-    public SlopeConfig shallowWaterConfig(ShallowWaterConfig shallowWaterConfig) {
-        setShallowWaterConfig(shallowWaterConfig);
+    public SlopeConfig shallowWaterThreeJsMaterial(Integer shallowWaterThreeJsMaterial) {
+        setShallowWaterThreeJsMaterial(shallowWaterThreeJsMaterial);
         return this;
     }
 

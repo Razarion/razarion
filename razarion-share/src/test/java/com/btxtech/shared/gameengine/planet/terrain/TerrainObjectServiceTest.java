@@ -46,7 +46,8 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 .distortionAnimationSeconds(20)
                 .distortionStrength(7)
                 .normalMapId(9995)
-                .normalMapDepth(0.2));
+                .normalMapDepth(0.2)
+                .material(8886));
 
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         // Razarion Industries base
@@ -82,13 +83,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         beachConfig.outerLineGameEngine(8).innerLineGameEngine(16);
         beachConfig.setInnerSlopeSplattingConfig(new SlopeSplattingConfig().textureId(9993).blur(0.053).impact(0.78).offset(0.5).scale(90));
         beachConfig.setOuterSlopeSplattingConfig(new SlopeSplattingConfig().textureId(9993).blur(0.1).impact(0.1).offset(0.6).scale(45));
-        beachConfig.setShallowWaterConfig(new ShallowWaterConfig()
-                .textureId(9996)
-                .distortionId(9997)
-                .stencilId(9998)
-                .distortionStrength(1)
-                .scale(24)
-                .durationSeconds(20));
+        beachConfig.setShallowWaterThreeJsMaterial(8887);
         slopeConfigs.add(beachConfig);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
@@ -124,7 +119,9 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 new ThreeJsModelConfig().id(8882).internalName("RI Slope").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(8883).internalName("Beach").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(8884).internalName("Simple Earth Planet").type(ThreeJsModelConfig.Type.GLTF),
-                new ThreeJsModelConfig().id(8885).internalName("Ground").type(ThreeJsModelConfig.Type.NODES_MATERIAL)
+                new ThreeJsModelConfig().id(8885).internalName("Ground").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
+                new ThreeJsModelConfig().id(8886).internalName("Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
+                new ThreeJsModelConfig().id(8887).internalName("Shallow Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL)
         );
 
         List<ThreeJsModelPackConfig> threeJsModelPackConfigs = Arrays.asList(

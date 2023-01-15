@@ -12,6 +12,9 @@ public class WaterCrudPersistence extends AbstractCrudPersistence<WaterConfig, W
     @Inject
     private ImagePersistence imagePersistence;
 
+    @Inject
+    private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
+
     public WaterCrudPersistence() {
         super(WaterConfigEntity.class, WaterConfigEntity_.id, WaterConfigEntity_.internalName);
     }
@@ -23,6 +26,6 @@ public class WaterCrudPersistence extends AbstractCrudPersistence<WaterConfig, W
 
     @Override
     protected void fromConfig(WaterConfig waterConfig, WaterConfigEntity waterConfigEntity) {
-        waterConfigEntity.fromWaterConfig(waterConfig, imagePersistence);
+        waterConfigEntity.fromWaterConfig(waterConfig, imagePersistence, threeJsModelCrudPersistence);
     }
 }

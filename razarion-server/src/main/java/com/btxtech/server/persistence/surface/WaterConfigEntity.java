@@ -2,6 +2,9 @@ package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
+import com.btxtech.server.persistence.PersistenceUtil;
+import com.btxtech.server.persistence.ThreeJsModelConfigEntity;
+import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
 import com.btxtech.shared.dto.WaterConfig;
 
 import javax.persistence.Entity;
@@ -45,6 +48,10 @@ public class WaterConfigEntity {
     private ImageLibraryEntity distortion;
     private double distortionStrength;
     private double distortionDurationSeconds;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelConfigEntity material;
+
 
     public Integer getId() {
         return id;
@@ -61,7 +68,8 @@ public class WaterConfigEntity {
                 .specularStrength(specularStrength)
                 .normalMapDepth(bumpMapDepth)
                 .distortionStrength(distortionStrength)
-                .distortionAnimationSeconds(distortionDurationSeconds);
+                .distortionAnimationSeconds(distortionDurationSeconds)
+                .material(PersistenceUtil.extractId(material, ThreeJsModelConfigEntity::getId));
         if (reflection != null) {
             waterConfig.setReflectionId(reflection.getId());
         }
@@ -74,7 +82,7 @@ public class WaterConfigEntity {
         return waterConfig;
     }
 
-    public void fromWaterConfig(WaterConfig waterConfig, ImagePersistence imagePersistence) {
+    public void fromWaterConfig(WaterConfig waterConfig, ImagePersistence imagePersistence, ThreeJsModelCrudPersistence threeJsModelCrudPersistence) {
         internalName = waterConfig.getInternalName();
         waterLevel = waterConfig.getWaterLevel();
         groundLevel = waterConfig.getGroundLevel();
@@ -87,6 +95,7 @@ public class WaterConfigEntity {
         distortion = imagePersistence.getImageLibraryEntity(waterConfig.getDistortionId());
         distortionStrength = waterConfig.getDistortionStrength();
         distortionDurationSeconds = waterConfig.getDistortionAnimationSeconds();
+        material = threeJsModelCrudPersistence.getEntity(waterConfig.getMaterial());
     }
 
     @Override

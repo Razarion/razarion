@@ -26,6 +26,8 @@ public class WaterConfig implements Config {
     private Integer distortionId;
     private double distortionStrength;
     private double distortionAnimationSeconds;
+    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
+    private Integer material;
 
     @Override
     public int getId() {
@@ -130,6 +132,14 @@ public class WaterConfig implements Config {
         this.distortionAnimationSeconds = distortionAnimationSeconds;
     }
 
+    public Integer getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(Integer material) {
+        this.material = material;
+    }
+
     public WaterConfig id(int id) {
         this.id = id;
         return this;
@@ -192,6 +202,11 @@ public class WaterConfig implements Config {
 
     public WaterConfig distortionAnimationSeconds(double distortionAnimationSeconds) {
         setDistortionAnimationSeconds(distortionAnimationSeconds);
+        return this;
+    }
+
+    public WaterConfig material(Integer material) {
+        setMaterial(material);
         return this;
     }
 }

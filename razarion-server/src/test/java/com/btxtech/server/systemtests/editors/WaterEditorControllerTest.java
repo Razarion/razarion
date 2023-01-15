@@ -5,6 +5,7 @@ import com.btxtech.server.systemtests.framework.AbstractCrudTest;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.rest.WaterEditorController;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 
 public class WaterEditorControllerTest extends AbstractCrudTest<WaterEditorController, WaterConfig> {
@@ -29,5 +30,6 @@ public class WaterEditorControllerTest extends AbstractCrudTest<WaterEditorContr
         registerUpdate(waterConfig -> waterConfig.reflectionId(IMAGE_1_ID).normalMapId(IMAGE_2_ID).distortionId(IMAGE_3_ID));
         registerUpdate(waterConfig -> waterConfig.reflectionId(IMAGE_2_ID).normalMapId(IMAGE_3_ID).distortionId(IMAGE_1_ID));
         registerUpdate(waterConfig -> waterConfig.reflectionId(null).normalMapId(null).distortionId(null));
+        Assert.fail("Fix Material");
     }
 }
