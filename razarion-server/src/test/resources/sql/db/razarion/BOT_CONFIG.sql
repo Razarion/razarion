@@ -20,17 +20,17 @@ CREATE TABLE IF NOT EXISTS `BOT_CONFIG` (
   PRIMARY KEY (`id`),
   KEY `FKpevo4xbk12x450abbpwgsdoj4` (`realm_id`),
   CONSTRAINT `FKpevo4xbk12x450abbpwgsdoj4` FOREIGN KEY (`realm_id`) REFERENCES `PLACE_CONFIG` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=138 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=173 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `BOT_CONFIG`;
 /*!40000 ALTER TABLE `BOT_CONFIG` DISABLE KEYS */;
 INSERT INTO `BOT_CONFIG` (`id`, `actionDelay`, `autoAttack`, `auxiliaryId`, `internalName`, `maxActiveMs`, `maxInactiveMs`, `minActiveMs`, `minInactiveMs`, `name`, `npc`, `realm_id`) VALUES
 	(31, 1000, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', NULL),
-	(133, 3000, b'1', NULL, 'Entrance', NULL, NULL, NULL, NULL, 'Raza Outpost Mini', b'0', 446),
-	(134, 3000, b'1', NULL, 'Poison 1', NULL, NULL, NULL, NULL, 'Razza Poison ', b'0', 451),
-	(135, 3, b'0', NULL, 'Passage 1', NULL, NULL, NULL, NULL, 'Passage 1', b'0', 454),
-	(136, 3000, b'0', NULL, 'Passage 2', NULL, NULL, NULL, NULL, 'Passage 2', b'0', 456),
-	(137, 3000, b'0', NULL, 'Gigantism', NULL, NULL, NULL, NULL, 'Gigantism', b'0', 458);
+	(168, 3000, b'1', NULL, 'Entrance', NULL, NULL, NULL, NULL, 'Raza Outpost Mini', b'0', 551),
+	(169, 3000, b'1', NULL, 'Poison 1', NULL, NULL, NULL, NULL, 'Razza Poison ', b'0', 556),
+	(170, 3, b'0', NULL, 'Passage 1', NULL, NULL, NULL, NULL, 'Passage 1', b'0', 559),
+	(171, 3000, b'0', NULL, 'Passage 2', NULL, NULL, NULL, NULL, 'Passage 2', b'0', 561),
+	(172, 3000, b'0', NULL, 'Gigantism', NULL, NULL, NULL, NULL, 'Gigantism', b'0', 563);
 /*!40000 ALTER TABLE `BOT_CONFIG` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -22,20 +22,23 @@ CREATE TABLE IF NOT EXISTS `WATER_CONFIG` (
   `bumpMap_id` int(11) DEFAULT NULL,
   `distortion_id` int(11) DEFAULT NULL,
   `reflection_id` int(11) DEFAULT NULL,
+  `material_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKk8u5re1hk96pkj5mbohe9fue7` (`bumpMap_id`),
   KEY `FKky3w6oh8qfvnu81s0ghcmlg8a` (`distortion_id`),
   KEY `FKjxbl886qx1n0nyxth0uto4g0j` (`reflection_id`),
+  KEY `FKsyxjs4aaw3o30d8t0messgu1v` (`material_id`),
   CONSTRAINT `FKjxbl886qx1n0nyxth0uto4g0j` FOREIGN KEY (`reflection_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
   CONSTRAINT `FKk8u5re1hk96pkj5mbohe9fue7` FOREIGN KEY (`bumpMap_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
-  CONSTRAINT `FKky3w6oh8qfvnu81s0ghcmlg8a` FOREIGN KEY (`distortion_id`) REFERENCES `IMAGE_LIBRARY` (`id`)
+  CONSTRAINT `FKky3w6oh8qfvnu81s0ghcmlg8a` FOREIGN KEY (`distortion_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
+  CONSTRAINT `FKsyxjs4aaw3o30d8t0messgu1v` FOREIGN KEY (`material_id`) REFERENCES `THREE_JS_MODEL` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `WATER_CONFIG`;
 /*!40000 ALTER TABLE `WATER_CONFIG` DISABLE KEYS */;
-INSERT INTO `WATER_CONFIG` (`id`, `bumpDistortionScale`, `bumpMapDepth`, `distortionDurationSeconds`, `distortionStrength`, `fresnelDelta`, `fresnelOffset`, `groundLevel`, `internalName`, `reflectionScale`, `shininess`, `specularStrength`, `transparency`, `waterLevel`, `bumpMap_id`, `distortion_id`, `reflection_id`) VALUES
-	(10, 40, 0.5, 30, 7, 0.5, 0.8, -1, 'Ocean', 80, 30, 0.7, 0.6, -0.1, 161, 114, 112),
-	(11, 30, 0.5, 30, 0.05, 0.5, 0.8, -3, 'Poison', 80, 30, 0.7, 0.8, -1, 34, 89, 132);
+INSERT INTO `WATER_CONFIG` (`id`, `bumpDistortionScale`, `bumpMapDepth`, `distortionDurationSeconds`, `distortionStrength`, `fresnelDelta`, `fresnelOffset`, `groundLevel`, `internalName`, `reflectionScale`, `shininess`, `specularStrength`, `transparency`, `waterLevel`, `bumpMap_id`, `distortion_id`, `reflection_id`, `material_id`) VALUES
+	(10, 40, 0.5, 30, 7, 0.5, 0.8, -1, 'Ocean', 80, 30, 0.7, 0.6, -0.1, 161, 114, 112, 22),
+	(11, 30, 0.5, 30, 0.05, 0.5, 0.8, -3, 'Poison', 80, 30, 0.7, 0.8, -1, 34, 89, 132, NULL);
 /*!40000 ALTER TABLE `WATER_CONFIG` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -8,7 +8,7 @@ import {
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import {Color3, Mesh, NodeMaterial, StandardMaterial, TransformNode, Vector3} from "@babylonjs/core";
+import {Mesh, NodeMaterial, TransformNode, Vector3} from "@babylonjs/core";
 import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 import {BabylonJsUtils} from "./babylon-js.utils";
 
