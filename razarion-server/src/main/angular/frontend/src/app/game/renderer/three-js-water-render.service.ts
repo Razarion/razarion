@@ -56,6 +56,7 @@ export class ThreeJsWaterRenderService {
 
     if (slopeConfig.getShallowWaterThreeJsMaterial()) {
       shallowWater.material = this.babylonModelService.getNodeMaterial(slopeConfig.getShallowWaterThreeJsMaterial()!);
+      (<NodeMaterial>shallowWater.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
     } else {
       BabylonJsUtils.addErrorMaterial(shallowWater);
       console.warn(`No shallowWaterThreeJsMaterial in SlopeConfig ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`);

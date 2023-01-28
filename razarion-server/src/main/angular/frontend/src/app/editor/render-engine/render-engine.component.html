@@ -50,9 +50,30 @@
                 [disabled]="dropDownBabylonModel == null || selectedBabylonName == null"
                 (onClick)="onSaveSelected()"></p-button>
       <i>&nbsp;</i>
-      <p-button type="button" label="Dump" icon="pi pi-save" styleClass="p-button-sm"
-                [disabled]="selectedBabylonName == null"
-                (onClick)="onDumpSelected()"></p-button>
+    </p-panel>
+    <p-panel>
+      <ng-template pTemplate="header">
+        Export Babylon Model
+      </ng-template>
+      <div class="grid">
+        <div class="col">Export selected</div>
+        <div class="col">
+          <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
+                    [disabled]="selectedBabylonName == null"
+                    (onClick)="onDumpSelected()"></p-button>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col">Export all</div>
+        <div class="col">
+          <p-button type="button" icon="pi pi-cloud-download" styleClass="p-button-sm"
+                    (onClick)="onCollectAll()"></p-button>
+          &nbsp;
+          <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
+                    [disabled]="!allBabylonModels"
+                    (onClick)="onDumpAll()"></p-button>
+        </div>
+      </div>
     </p-panel>
     <p-panel>
       <ng-template pTemplate="header">

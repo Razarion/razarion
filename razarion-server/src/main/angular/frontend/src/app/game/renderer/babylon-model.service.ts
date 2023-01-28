@@ -17,6 +17,7 @@ import {
 } from "@babylonjs/core";
 import {GLTFFileLoader} from "@babylonjs/loaders";
 import Type = ThreeJsModelConfig.Type;
+import JSZip from "jszip";
 
 @Injectable()
 export class BabylonModelService {
@@ -24,12 +25,14 @@ export class BabylonModelService {
   private nodeMaterials: Map<number, NodeMaterial> = new Map();
   private gwtAngularService!: GwtAngularService;
   private scene!: Scene;
+  private threeJsModelConfigs!: ThreeJsModelConfig[];
 
   constructor(private httpClient: HttpClient, private messageService: MessageService) {
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
   }
 
   init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
+    this.threeJsModelConfigs = threeJsModelConfigs;
     const _this = this;
     _this.gwtAngularService = gwtAngularService;
 
@@ -281,4 +284,37 @@ export class BabylonModelService {
       })
   }
 
+  dumpAll(): Promise<JSZip> {
+    return new Promise<JSZip>((resolve, reject) => {
+      const zip = new JSZip();
+      let pending = this.threeJsModelConfigs.length;
+      this.threeJsModelConfigs.forEach(babylonModelConfig => {
+        this.httpClient.get(`${URL_THREE_JS_MODEL}/${babylonModelConfig.getId()}`,
+          {responseType: 'blob'})
+          .subscribe({
+            next(blob) {
+              zip.file(`id_${babylonModelConfig.getId()}`, blob);
+              pending--;
+              if (pending == 0) {
+                resolve(zip);
+              }
+            },
+            error: (error: any) => {
+              console.error(error);
+              this.messageService.add({
+                severity: 'error',
+                summary: `${error.name}: ${error.status}`,
+                detail: `Error download ${babylonModelConfig.getId()} (${error.statusText})`,
+                sticky: true
+              });
+              pending--;
+              if (pending == 0) {
+                resolve(zip);
+              }
+            }
+          })
+      });
+    });
+
+  }
 }

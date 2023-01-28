@@ -10,6 +10,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "../../common";
 import {Mesh, Scene, SceneLoader} from "@babylonjs/core";
 import {GLTF2Export} from "@babylonjs/serializers";
+import {BabylonModelService} from "../../game/renderer/babylon-model.service";
 
 @Component({
   selector: 'render-engine',
@@ -25,12 +26,14 @@ export class RenderEngineComponent extends EditorPanel {
   selectedBabylonId: any;
   selectedBabylonClass: any;
   dropDownLoadBabylonModel: any = null;
+  allBabylonModels!: Blob;
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
               private renderEngine: ThreeJsRendererServiceImpl,
               private http: HttpClient,
               gameMockService: GameMockService,
+              private babylonModelService: BabylonModelService
   ) {
     super();
     renderEngine.getScene().debugLayer.onSelectionChangedObservable.add((selectedBabylonObject: any) => {
@@ -174,6 +177,20 @@ export class RenderEngineComponent extends EditorPanel {
         sticky: true
       });
     }
+  }
+
+  onCollectAll() {
+    this.babylonModelService.dumpAll().then(allBabylonModelsZip => {
+      allBabylonModelsZip.generateAsync({type: "blob"})
+        .then(blob => this.allBabylonModels = blob);
+    });
+  }
+
+  onDumpAll() {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(this.allBabylonModels);
+    link.setAttribute("download", "BabylonJsModels.zip");
+    link.click();
   }
 
   onLoad() {

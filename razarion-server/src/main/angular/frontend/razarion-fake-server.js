@@ -1,19 +1,29 @@
 var ServerMock = require("mock-http-server");
 var fs = require('fs');
 const path = require("path");
+const JSZip = require("jszip");
 
 const PORT = 8080;
+let zip = null;
 
-let server = new ServerMock({ host: "localhost", port: PORT });
+fs.readFile("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\threejs-models\\BabylonJsModels.zip",
+  function (err, data) {
+    if (err) throw err;
+    JSZip.loadAsync(data).then(function (z) {
+      zip = z;
+    });
+  });
+
+let server = new ServerMock({host: "localhost", port: PORT});
 
 server.on({
-    method: 'POST',
-    path: '/rest/frontend/login',
-    reply: {
-        status: 200,
-        headers: { "content-type": "application/json" },
-        body: '"OK"'
-    }
+  method: 'POST',
+  path: '/rest/frontend/login',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '"OK"'
+  }
 });
 
 server.on({
@@ -30,25 +40,14 @@ server.on({
 });
 
 function loadThreeJsModel(req) {
-    let threeJsModelToLoad = req.url.substring("/rest/gz/three-js-model/".length, req.url.length);
-    switch (threeJsModelToLoad) {
-        case '8881':
-            threeJsModelToLoad = "tropical_vegetation.glb";
-            break;
-        case '8882':
-            threeJsModelToLoad = "ri_slope_node_material.json";
-            break;
-        case '8883':
-            threeJsModelToLoad = "unknown";
-            break;
-        case '8884':
-            threeJsModelToLoad = "simple_earth_planet.babylon";
-            break;
-        case '8885':
-            threeJsModelToLoad = "ground_node_material.json";
-            break;
-    }
-    return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\threejs-models", threeJsModelToLoad));
+  let threeJsModelToLoad = req.url.substring("/rest/gz/three-js-model/".length, req.url.length);
+
+  let zipObject  = zip.file(`id_${threeJsModelToLoad}`)
+  if(!zipObject || !zipObject._data || !zipObject._data.compressedContent) {
+     throw Error(`loadThreeJsModel not found ${req.url}`);
+  }
+
+  return zipObject._data.compressedContent;
 }
 
 server.on({

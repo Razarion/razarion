@@ -55,6 +55,7 @@ export class EditorDialogComponent {
   }
 
   openBabylonInspector() {
+    this.mainCockpitComponent.editorDialog = false;
     this.renderService.showInspector();
   }
 }
