@@ -420,7 +420,7 @@ export class GameMockService {
             }
 
             getMaterial(): number {
-              return waterConfigJson.id;
+              return waterConfigJson.material;
             }
 
             getId(): number {
