@@ -34,13 +34,8 @@ export class ThreeJsWaterRenderService {
     const water = new Mesh(`Water ${waterConfig.getInternalName()} (${waterConfig.getId()})`, null);
     vertexData.applyToMesh(water)
 
-    if (waterConfig.getMaterial()) {
-      water.material = this.babylonModelService.getNodeMaterial(waterConfig.getMaterial());
-      (<NodeMaterial>water.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
-    } else {
-      BabylonJsUtils.addErrorMaterial(water);
-      console.warn(`No material in WaterConfig ${waterConfig.getInternalName()} (${waterConfig.getId()})`);
-    }
+    water.material = this.babylonModelService.getNodeMaterialNull(waterConfig.getMaterial(), `No material in WaterConfig ${waterConfig.getInternalName()} (${waterConfig.getId()})`);
+    (<NodeMaterial>water.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
 
     water.receiveShadows = true;
     water.parent = container;
@@ -54,13 +49,8 @@ export class ThreeJsWaterRenderService {
     const shallowWater = new Mesh(`Shallow Water ${waterConfig.getInternalName()} (${waterConfig.getId()}) SlopeConfig ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`, null);
     vertexData.applyToMesh(shallowWater)
 
-    if (slopeConfig.getShallowWaterThreeJsMaterial()) {
-      shallowWater.material = this.babylonModelService.getNodeMaterial(slopeConfig.getShallowWaterThreeJsMaterial()!);
-      (<NodeMaterial>shallowWater.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
-    } else {
-      BabylonJsUtils.addErrorMaterial(shallowWater);
-      console.warn(`No shallowWaterThreeJsMaterial in SlopeConfig ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`);
-    }
+    shallowWater.material = this.babylonModelService.getNodeMaterialNull(slopeConfig.getShallowWaterThreeJsMaterial(), `No shallowWaterThreeJsMaterial in SlopeConfig ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`);
+    (<NodeMaterial>shallowWater.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
 
     shallowWater.receiveShadows = true;
     shallowWater.parent = container;

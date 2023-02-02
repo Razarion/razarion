@@ -16,8 +16,9 @@ import {
   SceneLoader
 } from "@babylonjs/core";
 import {GLTFFileLoader} from "@babylonjs/loaders";
-import Type = ThreeJsModelConfig.Type;
 import JSZip from "jszip";
+import {BabylonJsUtils} from "./babylon-js.utils";
+import Type = ThreeJsModelConfig.Type;
 
 @Injectable()
 export class BabylonModelService {
@@ -192,6 +193,14 @@ export class BabylonModelService {
 
   setScene(scene: Scene) {
     this.scene = scene;
+  }
+
+  getNodeMaterialNull(babylonModelId: number | null, errorText: string): NodeMaterial {
+    if (babylonModelId) {
+      return this.getNodeMaterial(babylonModelId);
+    } else {
+      return <any>BabylonJsUtils.createErrorMaterial(errorText);
+    }
   }
 
   getNodeMaterial(babylonModelId: number): NodeMaterial {

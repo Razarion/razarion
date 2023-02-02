@@ -32,7 +32,9 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testTerrainObjectTileGeneration4Tiles() {
-        GroundConfig groundConfig = new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(5);
+        List<GroundConfig> groundConfig = Arrays.asList(
+                new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(5),
+                new GroundConfig().id(2).topThreeJsMaterial(11));
 
         List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig()
                 .id(WATER_CONFIG_ID)
@@ -62,7 +64,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         beachConfig.setWaterConfigId(WATER_CONFIG_ID);
         beachConfig.horizontalSpace(6);
         beachConfig.setThreeJsMaterial(15);
-        beachConfig.setGroundConfigId(GROUND_CONFIG_ID);
+        beachConfig.setGroundConfigId(2);
         beachConfig.setInterpolateNorm(true);
         beachConfig.setSlopeShapes(Arrays.asList(
                 new SlopeShape().slopeFactor(0),
@@ -75,6 +77,8 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 new SlopeShape().position(new DecimalPosition(14, -1.2)).slopeFactor(0)));
 
         beachConfig.outerLineGameEngine(8).innerLineGameEngine(1).coastDelimiterLineGameEngine(0.5);
+        beachConfig.innerSlopeThreeJsMaterial(24);
+        beachConfig.outerSlopeThreeJsMaterial(25);
         beachConfig.setInnerSlopeSplattingConfig(new SlopeSplattingConfig().textureId(9993).blur(0.053).impact(0.78).offset(0.5).scale(90));
         beachConfig.setOuterSlopeSplattingConfig(new SlopeSplattingConfig().textureId(9993).blur(0.1).impact(0.1).offset(0.6).scale(45));
         beachConfig.setShallowWaterThreeJsMaterial(23);
@@ -111,11 +115,13 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
                 new ThreeJsModelConfig().id(13).internalName("Tropical Pack").type(ThreeJsModelConfig.Type.GLTF),
                 new ThreeJsModelConfig().id(7).internalName("RI Slope").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(15).internalName("Beach").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                // new ThreeJsModelConfig().id(8884).internalName("Simple Earth Planet").type(ThreeJsModelConfig.Type.GLTF),
+                new ThreeJsModelConfig().id(15).internalName("Slope Beach").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
+                new ThreeJsModelConfig().id(11).internalName("Ground Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(5).internalName("Ground").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(22).internalName("Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(23).internalName("Shallow Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL)
+                new ThreeJsModelConfig().id(23).internalName("Shallow Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
+                new ThreeJsModelConfig().id(24).internalName("Slope Beach inner").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
+                new ThreeJsModelConfig().id(25).internalName("Slope Beach outer").type(ThreeJsModelConfig.Type.NODES_MATERIAL)
         );
 
         List<ThreeJsModelPackConfig> threeJsModelPackConfigs = Arrays.asList(
@@ -127,14 +133,6 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                         .scale(new Vertex(0.01, 0.01, 0.01))
                         .rotation(new Vertex(Math.toRadians(90), 0, 0))
                         .namePath(Arrays.asList("__root__", "Sketchfab_model", "Vegetation.FBX", "RootNode", "trunk03", "trunk03_Material #2_0"))
-//                new ThreeJsModelPackConfig()
-//                        .id(2)
-//                        .threeJsModelId(8884)
-//                        .internalName("Simple Earth Planet")
-//                        .position(new Vertex(0, 0, 0))
-//                        .scale(new Vertex(0.01, 0.01, 0.01))
-//                        .rotation(new Vertex(0, 0, 0))
-//                        .namePath(Arrays.asList("__root__", "Sketchfab_model", "Collada visual scene group", "Earth", "_1_-_Default_1"))
 //                new ThreeJsModelPackConfig()
 //                        .id(3)
 //                        .threeJsModelId(13)

@@ -32,12 +32,21 @@ import java.util.stream.Collectors;
 public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     public static int DRIVEWAY_ID_1 = 1;
 
-    protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs, List<DrivewayConfig> drivewayConfigs, List<WaterConfig> waterConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundConfig groundConfig, List<ThreeJsModelConfig> threeJsModelConfigs, List<ThreeJsModelPackConfig> threeJsModelPackConfigs) {
+    protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs,
+                                           List<DrivewayConfig> drivewayConfigs,
+                                           List<WaterConfig> waterConfigs,
+                                           List<TerrainObjectConfig> terrainObjectConfigs,
+                                           PlanetConfig planetConfig,
+                                           List<TerrainSlopePosition> terrainSlopePositions,
+                                           List<TerrainObjectPosition> terrainObjectPositions,
+                                           List<GroundConfig> groundConfigs,
+                                           List<ThreeJsModelConfig> threeJsModelConfigs,
+                                           List<ThreeJsModelPackConfig> threeJsModelPackConfigs) {
         StaticGameConfig staticGameConfig = FallbackConfig.setupStaticGameConfig();
-        if (groundConfig == null) {
-            groundConfig = staticGameConfig.getGroundConfigs().get(0);
+        if (groundConfigs == null) {
+            groundConfigs = Collections.singletonList(staticGameConfig.getGroundConfigs().get(0));
         }
-        staticGameConfig.setGroundConfigs(Collections.singletonList(groundConfig));
+        staticGameConfig.setGroundConfigs(groundConfigs);
         staticGameConfig.setSlopeConfigs(slopeConfigs);
         if (waterConfigs != null) {
             staticGameConfig.setWaterConfigs(waterConfigs);

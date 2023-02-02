@@ -338,6 +338,14 @@ export class GameMockService {
               return slopeConfigJson.groundConfigId;
             }
 
+            getInnerSlopeThreeJsMaterial(): number | null {
+              return slopeConfigJson.innerSlopeThreeJsMaterial;
+            }
+
+            getOuterSlopeThreeJsMaterial(): number | null {
+              return slopeConfigJson.outerSlopeThreeJsMaterial;
+            }
+
             getWaterConfigId(): number {
               return slopeConfigJson.waterConfigId;
             }

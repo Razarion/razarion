@@ -1,4 +1,4 @@
-import {Color3, Mesh, StandardMaterial, VertexData} from "@babylonjs/core";
+import {Color3, StandardMaterial, VertexData} from "@babylonjs/core";
 
 export class BabylonJsUtils {
 
@@ -34,13 +34,14 @@ export class BabylonJsUtils {
     return indices;
   }
 
-  static addErrorMaterial(mesh: Mesh) {
-    const material = new StandardMaterial("Error Material");
+  static createErrorMaterial(errorText: string) {
+    console.warn(errorText);
+    const material = new StandardMaterial(`Error Material '${errorText}'`);
     material.diffuseColor = new Color3(1, 0, 0);
-    material.emissiveColor = new Color3(1, 0, 0);
+    material.emissiveColor = new Color3(0.8, 0, 0);
     material.specularColor = new Color3(1, 0, 0);
     material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
-    mesh.material = material;
+    return material;
   }
 
 }

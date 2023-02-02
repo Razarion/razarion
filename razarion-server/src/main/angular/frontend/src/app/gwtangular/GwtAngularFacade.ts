@@ -133,6 +133,10 @@ export interface SlopeConfig {
   getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null;
 
   getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null;
+
+  getOuterSlopeThreeJsMaterial(): number | null;
+
+  getInnerSlopeThreeJsMaterial(): number | null;
 }
 
 export interface SlopeSplattingConfig {

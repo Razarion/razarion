@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `SLOPE_SHAPE` (
   PRIMARY KEY (`id`),
   KEY `FKla78vv4yhnh8nh0hn60yj5ite` (`shape_id`),
   CONSTRAINT `FKla78vv4yhnh8nh0hn60yj5ite` FOREIGN KEY (`shape_id`) REFERENCES `SLOPE_CONFIG` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=710 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=726 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `SLOPE_SHAPE`;
 /*!40000 ALTER TABLE `SLOPE_SHAPE` DISABLE KEYS */;
@@ -36,14 +36,14 @@ INSERT INTO `SLOPE_SHAPE` (`id`, `x`, `y`, `slopeFactor`, `shape_id`, `orderColu
 	(699, 0.5, -2.3, 1, 25, 3),
 	(700, 1.5, -2.3, 1, 25, 4),
 	(701, 1.5, -2.8, 1, 25, 5),
-	(702, NULL, NULL, 0, 22, 0),
-	(703, 2, 0, 1, 22, 1),
-	(704, 4, -0.2, 1, 22, 2),
-	(705, 6, -0.4, 1, 22, 3),
-	(706, 8, -0.6, 0.5, 22, 4),
-	(707, 10, -0.8, 0, 22, 5),
-	(708, 12, -1, 0, 22, 6),
-	(709, 14, -1.2, 0, 22, 7);
+	(718, NULL, NULL, 0, 22, 0),
+	(719, 2, 0, 1, 22, 1),
+	(720, 4, -0.2, 1, 22, 2),
+	(721, 6, -0.4, 1, 22, 3),
+	(722, 8, -0.6, 0.5, 22, 4),
+	(723, 10, -0.8, 0, 22, 5),
+	(724, 12, -1, 0, 22, 6),
+	(725, 14, -1.2, 0, 22, 7);
 /*!40000 ALTER TABLE `SLOPE_SHAPE` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

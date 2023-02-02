@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.btxtech.server.persistence.PersistenceUtil.extractId;
-import static com.btxtech.server.persistence.surface.PhongMaterialConfigEmbeddable.factorize;
 
 /**
  * Created by Beat
@@ -75,6 +74,12 @@ public class SlopeConfigEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ThreeJsModelConfigEntity shallowWaterThreeJsMaterial;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelConfigEntity outerSlopeThreeJsMaterial;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelConfigEntity innerSlopeThreeJsMaterial;
 
     public Integer getId() {
         return id;
@@ -92,7 +97,9 @@ public class SlopeConfigEntity {
                 .outerSlopeSplattingConfig(SlopeSplattingConfigEmbeddable.to(outerSplatting))
                 .innerSlopeSplattingConfig(SlopeSplattingConfigEmbeddable.to(innerSplatting))
                 .threeJsMaterial(extractId(threeJsMaterial, ThreeJsModelConfigEntity::getId))
-                .shallowWaterThreeJsMaterial(extractId(shallowWaterThreeJsMaterial, ThreeJsModelConfigEntity::getId));
+                .shallowWaterThreeJsMaterial(extractId(shallowWaterThreeJsMaterial, ThreeJsModelConfigEntity::getId))
+                .outerSlopeThreeJsMaterial(extractId(outerSlopeThreeJsMaterial, ThreeJsModelConfigEntity::getId))
+                .innerSlopeThreeJsMaterial(extractId(innerSlopeThreeJsMaterial, ThreeJsModelConfigEntity::getId));
         if (groundConfig != null) {
             slopeConfig.setGroundConfigId(groundConfig.getId());
         }
@@ -129,6 +136,8 @@ public class SlopeConfigEntity {
         outerSplatting = SlopeSplattingConfigEmbeddable.factorize(slopeConfig.getOuterSlopeSplattingConfig(), imagePersistence);
         innerSplatting = SlopeSplattingConfigEmbeddable.factorize(slopeConfig.getInnerSlopeSplattingConfig(), imagePersistence);
         shallowWaterThreeJsMaterial = threeJsModelCrudPersistence.getEntity(slopeConfig.getShallowWaterThreeJsMaterial());
+        outerSlopeThreeJsMaterial = threeJsModelCrudPersistence.getEntity(slopeConfig.getOuterSlopeThreeJsMaterial());
+        innerSlopeThreeJsMaterial = threeJsModelCrudPersistence.getEntity(slopeConfig.getInnerSlopeThreeJsMaterial());
     }
 
     @Override

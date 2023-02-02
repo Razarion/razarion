@@ -1,14 +1,13 @@
 import {
   SlopeConfig,
   SlopeGeometry,
-  SlopeSplattingConfig,
   TerrainTile,
   ThreeJsTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import {Mesh, NodeMaterial, TransformNode, Vector3} from "@babylonjs/core";
+import {Mesh, NodeMaterial, TransformNode} from "@babylonjs/core";
 import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 import {BabylonJsUtils} from "./babylon-js.utils";
 
@@ -33,8 +32,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
           if (groundConfig.getTopThreeJsMaterial()) {
             ground.material = threeJsModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
           } else {
-            BabylonJsUtils.addErrorMaterial(ground);
-            console.warn(`No top or bottom material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
+            ground.material = BabylonJsUtils.createErrorMaterial(`No top or bottom material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
           }
           ground.receiveShadows = true;
           ground.parent = this.container;
@@ -49,30 +47,20 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       terrainTile.getTerrainSlopeTiles().forEach(terrainSlopeTile => {
         try {
           let slopeConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getSlopeConfig(terrainSlopeTile.slopeConfigId);
-          if (slopeConfig.getThreeJsMaterial() === undefined) {
-            throw new Error(`SlopeConfig has no threeJsMaterial: ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`);
-          }
-          let material = threeJsModelService.getNodeMaterial(slopeConfig.getThreeJsMaterial());
-          if (terrainSlopeTile.outerSlopeGeometry !== null && terrainSlopeTile.outerSlopeGeometry !== undefined) {
+          if (terrainSlopeTile.outerSlopeGeometry) {
             this.setupSlopeGeometry(slopeConfig,
               terrainSlopeTile.outerSlopeGeometry,
-              material,
-              this.evalGroundMaterial(null),
-              slopeConfig.getOuterSlopeSplattingConfig());
+              threeJsModelService.getNodeMaterialNull(slopeConfig.getOuterSlopeThreeJsMaterial(), `SlopeConfig has no outerSlopeThreeJsMaterial ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`));
           }
-          if (terrainSlopeTile.centerSlopeGeometry !== null && terrainSlopeTile.centerSlopeGeometry !== undefined) {
+          if (terrainSlopeTile.centerSlopeGeometry) {
             this.setupSlopeGeometry(slopeConfig,
               terrainSlopeTile.centerSlopeGeometry,
-              material,
-              null,
-              null);
+              threeJsModelService.getNodeMaterialNull(slopeConfig.getThreeJsMaterial(), `SlopeConfig has no threeJsMaterial: ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`));
           }
-          if (terrainSlopeTile.innerSlopeGeometry !== null && terrainSlopeTile.innerSlopeGeometry !== undefined) {
+          if (terrainSlopeTile.innerSlopeGeometry) {
             this.setupSlopeGeometry(slopeConfig,
               terrainSlopeTile.innerSlopeGeometry,
-              material,
-              this.evalGroundMaterial(slopeConfig),
-              slopeConfig.getInnerSlopeSplattingConfig());
+              threeJsModelService.getNodeMaterialNull(slopeConfig.getInnerSlopeThreeJsMaterial(), `SlopeConfig has no innerSlopeThreeJsMaterial: ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`));
           }
         } catch (error) {
           // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
@@ -128,26 +116,6 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     }
   }
 
-  private evalGroundMaterial(slopeConfig: SlopeConfig | null): NodeMaterial {
-    if (slopeConfig && slopeConfig.getGroundConfigId()) {
-      let innerGroundConfigMaterialId = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(slopeConfig.getGroundConfigId()).getTopThreeJsMaterial();
-      return this.threeJsModelService.getNodeMaterial(innerGroundConfigMaterialId);
-    } else {
-      let innerGroundConfigMaterialId = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(this.defaultGroundConfigId).getTopThreeJsMaterial();
-      return this.threeJsModelService.getNodeMaterial(innerGroundConfigMaterialId);
-    }
-  }
-
-  static fillVec3(vec: Vector3, length: number): any {
-    // let float32Array = new Float32Array(length);
-    // for (let i = 0; i < length / 3; i++) {
-    //   float32Array[i * 3] = vec.x;
-    //   float32Array[i * 3 + 1] = vec.y;
-    //   float32Array[i * 3 + 2] = vec.z;
-    // }
-    // return new BufferAttribute(float32Array, 3);
-  }
-
   addToScene(): void {
     this.rendererService.addToScene(this.container);
   }
@@ -156,10 +124,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     this.rendererService.removeFromScene(this.container);
   }
 
-  private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: NodeMaterial, groundMaterial: NodeMaterial | null, splatting: SlopeSplattingConfig | null): void {
-    // TODO if (groundMaterial && splatting) {
-    // TODO } else {
-    // TODO }
+  private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: NodeMaterial): void {
     const slope = new Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
     const vertexData = BabylonJsUtils.createVertexData(slopeGeometry.positions, slopeGeometry.norms);
     vertexData.uvs = slopeGeometry.uvs;
