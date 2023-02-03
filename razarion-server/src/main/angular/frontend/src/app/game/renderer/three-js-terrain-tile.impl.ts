@@ -108,7 +108,6 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
             }
           });
         } catch (error) {
-          // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
           console.error(terrainTileObjectList);
           console.error(error);
         }
@@ -128,6 +127,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     const slope = new Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
     const vertexData = BabylonJsUtils.createVertexData(slopeGeometry.positions, slopeGeometry.norms);
     vertexData.uvs = slopeGeometry.uvs;
+    vertexData.uvs2 = this.convertFloatTOVec2(slopeGeometry.slopeFactors);
     vertexData.applyToMesh(slope)
 
     slope.parent = this.container;
@@ -135,5 +135,13 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
     slope.receiveShadows = true;
 
     this.container.getChildren().push(slope);
+  }
+
+  private convertFloatTOVec2(vec1: Float32Array) {
+    let vec2Array = new Float32Array(vec1.length * 2);
+    for (let i = 0; i < vec1.length; i++) {
+      vec2Array[i * 2] = vec1[i];
+    }
+    return vec2Array;
   }
 }
