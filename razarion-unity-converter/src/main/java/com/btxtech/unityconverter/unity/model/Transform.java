@@ -1,5 +1,7 @@
 package com.btxtech.unityconverter.unity.model;
 
+import com.btxtech.shared.datatypes.shape.ShapeTransform;
+
 import java.util.List;
 
 public class Transform extends Component {
@@ -76,27 +78,18 @@ public class Transform extends Component {
         this.m_Father = m_Father;
     }
 
-    public static Transform copyTransforms(Transform source) {
-        Transform result = new Transform();
-        result.setObjectId(source.getObjectId());
-        result.setM_Father(source.getM_Father());
-        result.setM_LocalPosition(new UnityVector()
-                .x(source.m_LocalPosition.getX())
-                .y(source.m_LocalPosition.getY())
-                .z(source.m_LocalPosition.getZ()));
-
-        result.setM_LocalRotation(new UnityVector()
-                .x(source.m_LocalRotation.getX())
-                .y(source.m_LocalRotation.getY())
-                .z(source.m_LocalRotation.getZ())
-                .w(source.m_LocalRotation.getW()));
-
-        result.setM_LocalScale(new UnityVector()
-                .x(source.m_LocalScale.getX())
-                .y(source.m_LocalScale.getY())
-                .z(source.m_LocalScale.getZ()));
-
-        return result;
+    public static ShapeTransform createShapeTransform(Transform source) {
+        return new ShapeTransform()
+                .translateX(source.m_LocalPosition.getX())
+                .translateY(source.m_LocalPosition.getY())
+                .translateZ(source.m_LocalPosition.getZ())
+                .rotateX(source.m_LocalRotation.getX())
+                .rotateY(source.m_LocalRotation.getY())
+                .rotateZ(source.m_LocalRotation.getZ())
+                .rotateW(source.m_LocalRotation.getW())
+                .scaleX(source.m_LocalScale.getX())
+                .scaleY(source.m_LocalScale.getY())
+                .scaleZ(source.m_LocalScale.getZ());
     }
 
     @Override

@@ -58,12 +58,15 @@ public class AbstractShape3DRenderTaskRunner extends AbstractRenderTaskRunner {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("No Element3D int Shape3D '" + shape3D.getId() + "' for element3DId: " + element3DId));
 
+        System.out.println(element3DId);
+
         Collection<ProgressAnimation> progressAnimations = setupProgressAnimation(element3D);
         element3D.getVertexContainers().forEach(vertexContainer -> {
             if (vertexContainer.getVertexContainerMaterial() == null) {
                 alarmService.riseAlarm(Alarm.Type.INVALID_SHAPE_3D, "No material for: " + vertexContainer.getKey(), shape3D.getId());
                 return;
             }
+            System.out.println(modelMatricesSupplier);
             createModelRenderTask(RenderTask.class,
                     vertexContainer,
                     modelMatricesSupplier,

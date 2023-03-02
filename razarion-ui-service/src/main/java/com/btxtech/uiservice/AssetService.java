@@ -2,28 +2,28 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
+import jsinterop.annotations.JsType;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import java.util.HashMap;
-import java.util.Map;
 
+@JsType
 @ApplicationScoped
 public class AssetService {
-    private final Map<Integer, MeshContainer> meshContainers = new HashMap<>();
-
+    private MeshContainer[] meshContainers;
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        meshContainers.clear();
         if (gameUiControlInitEvent.getColdGameUiContext().getMeshContainers() != null) {
-            gameUiControlInitEvent.getColdGameUiContext().getMeshContainers().forEach(meshContainer -> meshContainers.put(meshContainer.getId(), meshContainer));
+            meshContainers = gameUiControlInitEvent.getColdGameUiContext().getMeshContainers().toArray(new MeshContainer[0]);
         }
     }
 
+    @Deprecated
     public MeshContainer getMeshContainer(int meshContainerId) {
-        MeshContainer meshContainer = meshContainers.get(meshContainerId);
-        if (meshContainer == null) {
-            throw new IllegalArgumentException("No MeshContainer for id: " + meshContainerId);
-        }
-        return meshContainer;
+        return null;
     }
+
+    public MeshContainer[] getMeshContainers() {
+        return meshContainers;
+    }
+
 }

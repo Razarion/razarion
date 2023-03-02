@@ -1,15 +1,19 @@
 package com.btxtech.server.persistence.asset;
 
-import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.PersistenceUtil;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.server.persistence.ThreeJsModelConfigEntity;
+import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
 import com.btxtech.shared.datatypes.asset.Mesh;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+
+import java.util.List;
 
 import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
@@ -17,24 +21,26 @@ import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 public class MeshEmbeddable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ColladaEntity shape3D;
+    private ThreeJsModelConfigEntity threeJsModelConfig;
     private String element3DId;
-    @Embedded
-    private ShapeTransformEmbeddable shapeTransform;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "mesh_conatiner_id", nullable = false)
+    @OrderColumn
+    private List<ShapeTransformEntity> shapeTransforms;
 
     public Mesh toMesh() {
         return new Mesh()
-                .shape3DId(extractId(shape3D, ColladaEntity::getId))
+                .threeJsModelId(extractId(threeJsModelConfig, ThreeJsModelConfigEntity::getId))
                 .element3DId(element3DId)
-                .shapeTransform(PersistenceUtil.toConfig(shapeTransform, ShapeTransformEmbeddable::toShapeTransform));
+                .shapeTransforms(PersistenceUtil.toConfigList(shapeTransforms, ShapeTransformEntity::toShapeTransform));
     }
 
-    public void fromMesh(Mesh mesh, Shape3DCrudPersistence shape3DCrudPersistence) {
-        shape3D = shape3DCrudPersistence.getEntity(mesh.getShape3DId());
+    public void fromMesh(Mesh mesh, ThreeJsModelCrudPersistence threeJsModelCrudPersistence) {
+        threeJsModelConfig = threeJsModelCrudPersistence.getEntity(mesh.getThreeJsModelId());
         element3DId = mesh.getElement3DId();
-        shapeTransform = PersistenceUtil.fromConfig(shapeTransform,
-                mesh.getShapeTransform(),
-                ShapeTransformEmbeddable::new,
-                ShapeTransformEmbeddable::fromShapeTransform);
+        shapeTransforms = PersistenceUtil.fromConfigs(shapeTransforms,
+                mesh.getShapeTransforms(),
+                ShapeTransformEntity::new,
+                ShapeTransformEntity::fromShapeTransform);
     }
 }

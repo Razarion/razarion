@@ -12,10 +12,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -96,21 +92,5 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
             vertexContainerBuffers.addAll(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity, null).createVertexContainerBuffer(colladaEntity.getId()));
         }
         return vertexContainerBuffers;
-    }
-
-    @Transactional
-    public Integer getColladaEntityId4InternalName(String internalName) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tuple> userQuery = criteriaBuilder.createTupleQuery();
-        Root<ColladaEntity> from = userQuery.from(ColladaEntity.class);
-        userQuery.multiselect(from.get(ColladaEntity_.id));
-        userQuery.where(criteriaBuilder.equal(from.get(ColladaEntity_.internalName), internalName));
-
-        List<Tuple> tuples = entityManager.createQuery(userQuery).getResultList();
-        if (!tuples.isEmpty()) {
-            return (Integer) tuples.get(0).get(0);
-        } else {
-            return null;
-        }
     }
 }

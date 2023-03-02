@@ -24,6 +24,7 @@ public class ThreeJsModelConfigEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String internalName;
+    private String fbxGuidHint;
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] data;
@@ -36,11 +37,16 @@ public class ThreeJsModelConfigEntity {
     }
 
     public ThreeJsModelConfig toConfig() {
-        return new ThreeJsModelConfig().id(id).internalName(internalName).type(type);
+        return new ThreeJsModelConfig()
+                .id(id)
+                .internalName(internalName)
+                .fbxGuidHint(fbxGuidHint)
+                .type(type);
     }
 
     public void from(ThreeJsModelConfig config) {
         internalName = config.getInternalName();
+        fbxGuidHint = config.getFbxGuidHint();
         type = config.getType();
     }
 

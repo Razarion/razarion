@@ -12,6 +12,7 @@ export abstract class GwtAngularFacade {
   inputService!: InputService;
   terrainTypeService!: TerrainTypeService;
   threeJsModelPackService!: ThreeJsModelPackService;
+  assetService!: AssetService;
 
   abstract onCrash(): void;
 }
@@ -104,6 +105,10 @@ export interface TerrainTypeService {
 
 export interface ThreeJsModelPackService {
   getThreeJsModelPackConfig(id: number): ThreeJsModelPackConfig;
+}
+
+export interface AssetService {
+  getMeshContainers(): MeshContainer[];
 }
 
 // ---------- Configs ----------
@@ -236,11 +241,53 @@ export interface ThreeJsModelPackConfig {
   getRotation(): Vertex;
 }
 
+export interface MeshContainer {
+  getId(): string;
+
+  getInternalName(): string;
+
+  getChildrenArray(): MeshContainer[] | null;
+
+  getMesh(): Mesh | null;
+}
+
+export interface Mesh {
+  getThreeJsModelId(): number | null;
+
+  getElement3DId(): string;
+
+  getShapeTransformsArray(): ShapeTransform[];
+}
+
+export interface ShapeTransform {
+  getTranslateX(): number;
+
+  getTranslateY(): number;
+
+  getTranslateZ(): number;
+
+  getRotateX(): number;
+
+  getRotateY(): number;
+
+  getRotateZ(): number;
+
+  getRotateW(): number;
+
+  getScaleX(): number;
+
+  getScaleY(): number;
+
+  getScaleZ(): number;
+}
+
 // ---------- Renderer ----------
 export interface ThreeJsRendererServiceAccess {
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
 
   setViewFieldCenter(x: number, y: number): void;
+
+  initMeshContainers(meshContainers: MeshContainer[]): void;
 }
 
 export interface TerrainTile {

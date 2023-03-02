@@ -28,16 +28,16 @@ class UnityAssetConverterTest {
     private AssetContext createAssetContext() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, Integer> guid2Shape3DId = mapper.readValue(new File("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-ui-service\\src\\test\\resources\\guid2Shape3DId.json"),
+            Map<String, Integer> guid2ThreeJsModelId = mapper.readValue(new File("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-ui-service\\src\\test\\resources\\guid2ThreeJsModelId.json"),
                     new TypeReference<Map<String, Integer>>() {
                     });
 
-            return (fbx, materialInfo) -> {
-                Integer shape3dId = guid2Shape3DId.get(fbx.getGuid());
-                if (shape3dId == null) {
-                    throw new IllegalArgumentException("No Shape3D für Unity FBX GUID: " + fbx.getGuid());
+            return (fbx, materialInfo, assetName) -> {
+                Integer threeJsModelId = guid2ThreeJsModelId.get(fbx.getGuid());
+                if (threeJsModelId == null) {
+                    throw new IllegalArgumentException("No ThreeJsModel für Unity FBX GUID: " + fbx.getGuid());
                 }
-                return shape3dId;
+                return threeJsModelId;
             };
         } catch (IOException e) {
             throw new RuntimeException(e);

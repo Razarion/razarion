@@ -5,7 +5,12 @@ import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Singleton
 public class ThreeJsModelCrudPersistence extends AbstractCrudPersistence<ThreeJsModelConfig, ThreeJsModelConfigEntity> {
@@ -37,4 +42,21 @@ public class ThreeJsModelCrudPersistence extends AbstractCrudPersistence<ThreeJs
     public byte[] getThreeJsModel(int id) {
         return getEntity(id).getData();
     }
+
+    @Transactional
+    public Integer getEntityId4FbxGuidHint(String fbxGuidHint) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> userQuery = criteriaBuilder.createTupleQuery();
+        Root<ThreeJsModelConfigEntity> from = userQuery.from(ThreeJsModelConfigEntity.class);
+        userQuery.multiselect(from.get(ThreeJsModelConfigEntity_.id));
+        userQuery.where(criteriaBuilder.equal(from.get(ThreeJsModelConfigEntity_.fbxGuidHint), fbxGuidHint));
+
+        List<Tuple> tuples = entityManager.createQuery(userQuery).getResultList();
+        if (!tuples.isEmpty()) {
+            return (Integer) tuples.get(0).get(0);
+        } else {
+            return null;
+        }
+    }
+
 }

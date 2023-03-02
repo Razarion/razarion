@@ -45,12 +45,16 @@ export class GameComponent implements OnInit {
       this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
       this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
       this.gwtAngularService.gwtAngularFacade.threeJsModelPackService = this.gameMockService.mockThreeJsModelPackService;
+      // this.gwtAngularService.gwtAngularFacade.assetService = this.gameMockService.mockAssetService;
       this.gameMockService.loadMockStaticGameConfig().then(() => {
-        this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gwtAngularService).then(() => {
-          this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
-          this.gameMockService.mockTerrainTile(this.threeJsRendererService);
-          this.mainCockpitComponent.show();
-          this.threeJsRendererService.setViewFieldCenter(200, 160);
+        this.gameMockService.loadMockAssetConfig().then(() => {
+          this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gwtAngularService).then(() => {
+            this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
+            this.gameMockService.mockTerrainTile(this.threeJsRendererService);
+            this.mainCockpitComponent.show();
+            this.threeJsRendererService.initMeshContainers(this.gameMockService.unityAssetConverterTestAssetConfig);
+            this.threeJsRendererService.setViewFieldCenter(10, 8);
+          });
         });
       });
     } else {

@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.cdimock;
 
+import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
 import com.btxtech.uiservice.renderer.ThreeJsTerrainTile;
@@ -20,5 +21,10 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
     @Override
     public void setViewFieldCenter(double x, double y) {
         logger.warning("setViewFieldCenter()");
+    }
+
+    @Override
+    public void initMeshContainers(MeshContainer[] meshContainers) {
+        logger.warning("initMeshContainers()");
     }
 }

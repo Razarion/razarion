@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.asset;
 
 import com.btxtech.server.persistence.PersistenceUtil;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 
 import javax.persistence.CascadeType;
@@ -51,18 +51,18 @@ public class MeshContainerEntity {
                 .children(toConfigList(children, MeshContainerEntity::toConfig));
     }
 
-    public void fromConfig(MeshContainer meshContainer, MeshContainerEntity parent, Shape3DCrudPersistence shape3DCrudPersistence) {
+    public void fromConfig(MeshContainer meshContainer, MeshContainerEntity parent, ThreeJsModelCrudPersistence threeJsModelCrudPersistence) {
         internalName = meshContainer.getInternalName();
         guid = meshContainer.getGuid();
         children = PersistenceUtil.fromConfigs(children,
                 meshContainer.getChildren(),
                 MeshContainerEntity::new,
-                (childEntity, childConfig) -> childEntity.fromConfig(childConfig, this, shape3DCrudPersistence));
+                (childEntity, childConfig) -> childEntity.fromConfig(childConfig, this, threeJsModelCrudPersistence));
         this.parent = parent;
         mesh = PersistenceUtil.fromConfig(mesh,
                 meshContainer.getMesh(),
                 MeshEmbeddable::new,
-                (meshEmbeddable, mesh) -> meshEmbeddable.fromMesh(mesh, shape3DCrudPersistence));
+                (meshEmbeddable, mesh) -> meshEmbeddable.fromMesh(mesh, threeJsModelCrudPersistence));
     }
 
     @Override

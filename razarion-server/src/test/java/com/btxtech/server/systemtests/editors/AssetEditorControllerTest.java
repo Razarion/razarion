@@ -36,12 +36,13 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
     @After
     public void cleanTables() {
         runInTransaction(entityManager -> entityManager.createNativeQuery("UPDATE ASSET_MESH_CONTAINER SET parent_id = NULL").executeUpdate());
+        cleanTableNative("ASSET_MESH_CONTAINER_TRANSFORMS");
         cleanTable(MeshContainerEntity.class);
         cleanTable(AssetConfigEntity.class);
-        cleanTableNative("COLLADA_ANIMATIONS");
-        cleanTable(ColladaMaterialEntity.class);
-        cleanTable(ColladaEntity.class);
-        cleanTable(ImageLibraryEntity.class);
+        // cleanTableNative("COLLADA_ANIMATIONS");
+        // cleanTable(ColladaMaterialEntity.class);
+        // cleanTable(ColladaEntity.class);
+        // cleanTable(ImageLibraryEntity.class);
     }
 
     @Test
@@ -68,12 +69,12 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
         int meshControllerCount2 = meshContainerEditorController.getObjectNameIds().size();
         Assert.assertEquals(meshControllerCount1, meshControllerCount2);
 //        // -----------------------------------------
-        try {
-            writeJsonFiles("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-ui-service\\src\\test\\resources\\", assetConfig);
-            writeJsonFiles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\mesh_container\\", assetConfig);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            writeJsonFiles("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-ui-service\\src\\test\\resources\\", assetConfig);
+//            writeJsonFiles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\mesh_container\\", assetConfig);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 //        // -----------------------------------------
         JsonAssert.assertViaJson(assetConfig, assetConfig2, null);
 
@@ -123,7 +124,7 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
         shape3DEditorController.getObjectNameIds().stream()
                 .filter(objectNameId -> objectNameId.getInternalName() != null && !objectNameId.getInternalName().trim().isEmpty())
                 .forEach(objectNameId -> guid2Shape3DId.put(objectNameId.getInternalName(), objectNameId.getId()));
-        mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path, "guid2Shape3DId.json"), guid2Shape3DId);
+        mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path, "guid2ThreeJsModelId.json"), guid2Shape3DId);
         // VertexContainerBuffer
         RestConnection shape3DControllerRestConnection = new RestConnection(new ObjectMapperResolver(() -> MeshContainer.class));
         shape3DControllerRestConnection.loginAdmin();
@@ -140,7 +141,7 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
             System.out.println(space + "Guid: " + meshContainer.getGuid());
             String meshString = "-";
             if (meshContainer.getMesh() != null) {
-                meshString = "Shape3DId: " + meshContainer.getMesh().getShape3DId() + ", Element3DId: " + meshContainer.getMesh().getElement3DId();
+                meshString = "ThreeJsModelId: " + meshContainer.getMesh().getThreeJsModelId() + ", Element3DId: " + meshContainer.getMesh().getElement3DId();
             }
             System.out.println(space + "Mesh: " + meshString);
             if (meshContainer.getChildren() != null) {
@@ -152,7 +153,7 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
     private void recursiveFillShape3DIds(List<MeshContainer> meshContainers, Set<Integer> shape3Ds) {
         meshContainers.forEach(meshContainer -> {
             if (meshContainer.getMesh() != null) {
-                shape3Ds.add(meshContainer.getMesh().getShape3DId());
+                shape3Ds.add(meshContainer.getMesh().getThreeJsModelId());
             }
             if (meshContainer.getChildren() != null) {
                 recursiveFillShape3DIds(meshContainer.getChildren(), shape3Ds);

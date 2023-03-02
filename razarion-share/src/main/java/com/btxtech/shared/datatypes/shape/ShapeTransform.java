@@ -1,37 +1,102 @@
 package com.btxtech.shared.datatypes.shape;
 
-import com.btxtech.shared.datatypes.Matrix4;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 05.08.2016.
  */
+@JsType
 public class ShapeTransform {
-    private Matrix4 staticMatrix;
     private double translateX;
     private double translateY;
     private double translateZ;
     private double rotateX;
     private double rotateY;
     private double rotateZ;
+    private double rotateW;
     private double scaleX;
     private double scaleY;
     private double scaleZ;
 
-    // -------------------------
+    public double getTranslateX() {
+        return translateX;
+    }
 
-    public Matrix4 setupMatrix() {
-        if (staticMatrix != null) {
-            return staticMatrix;
-        } else {
-            Matrix4 matrix = Matrix4.createIdentity();
-            matrix = matrix.multiply(Matrix4.createTranslation(translateX, translateY, translateZ));
-            matrix = matrix.multiply(Matrix4.createZRotation(rotateZ));
-            matrix = matrix.multiply(Matrix4.createYRotation(rotateY));
-            matrix = matrix.multiply(Matrix4.createXRotation(rotateX));
-            matrix = matrix.multiply(Matrix4.createScale(scaleX, scaleY, scaleZ));
-            return matrix;
-        }
+    public void setTranslateX(double translateX) {
+        this.translateX = translateX;
+    }
+
+    public double getTranslateY() {
+        return translateY;
+    }
+
+    public void setTranslateY(double translateY) {
+        this.translateY = translateY;
+    }
+
+    public double getTranslateZ() {
+        return translateZ;
+    }
+
+    public void setTranslateZ(double translateZ) {
+        this.translateZ = translateZ;
+    }
+
+    public double getRotateX() {
+        return rotateX;
+    }
+
+    public void setRotateX(double rotateX) {
+        this.rotateX = rotateX;
+    }
+
+    public double getRotateY() {
+        return rotateY;
+    }
+
+    public void setRotateY(double rotateY) {
+        this.rotateY = rotateY;
+    }
+
+    public double getRotateZ() {
+        return rotateZ;
+    }
+
+    public void setRotateZ(double rotateZ) {
+        this.rotateZ = rotateZ;
+    }
+
+    public double getRotateW() {
+        return rotateW;
+    }
+
+    public void setRotateW(double rotateW) {
+        this.rotateW = rotateW;
+    }
+
+    public double getScaleX() {
+        return scaleX;
+    }
+
+    public void setScaleX(double scaleX) {
+        this.scaleX = scaleX;
+    }
+
+    public double getScaleY() {
+        return scaleY;
+    }
+
+    public void setScaleY(double scaleY) {
+        this.scaleY = scaleY;
+    }
+
+    public double getScaleZ() {
+        return scaleZ;
+    }
+
+    public void setScaleZ(double scaleZ) {
+        this.scaleZ = scaleZ;
     }
 
     public ShapeTransform copyTRS() {
@@ -42,101 +107,12 @@ public class ShapeTransform {
         shapeTransform.rotateX = rotateX;
         shapeTransform.rotateY = rotateY;
         shapeTransform.rotateZ = rotateZ;
+        shapeTransform.rotateW = rotateW;
         shapeTransform.scaleX = scaleX;
         shapeTransform.scaleY = scaleY;
         shapeTransform.scaleZ = scaleZ;
 
         return shapeTransform;
-    }
-
-    public ShapeTransform setStaticMatrix(Matrix4 staticMatrix) {
-        this.staticMatrix = staticMatrix;
-        return this;
-    }
-
-    public ShapeTransform setTranslateX(double translateX) {
-        this.translateX = translateX;
-        return this;
-    }
-
-    public ShapeTransform setTranslateY(double translateY) {
-        this.translateY = translateY;
-        return this;
-    }
-
-    public ShapeTransform setTranslateZ(double translateZ) {
-        this.translateZ = translateZ;
-        return this;
-    }
-
-    public ShapeTransform setRotateX(double rotateX) {
-        this.rotateX = rotateX;
-        return this;
-    }
-
-    public ShapeTransform setRotateY(double rotateY) {
-        this.rotateY = rotateY;
-        return this;
-    }
-
-    public ShapeTransform setRotateZ(double rotateZ) {
-        this.rotateZ = rotateZ;
-        return this;
-    }
-
-    public ShapeTransform setScaleX(double scaleX) {
-        this.scaleX = scaleX;
-        return this;
-    }
-
-    public ShapeTransform setScaleY(double scaleY) {
-        this.scaleY = scaleY;
-        return this;
-    }
-
-    public ShapeTransform setScaleZ(double scaleZ) {
-        this.scaleZ = scaleZ;
-        return this;
-    }
-
-    public double getTranslateX() {
-        return translateX;
-    }
-
-    public double getTranslateY() {
-        return translateY;
-    }
-
-    public double getTranslateZ() {
-        return translateZ;
-    }
-
-    public double getRotateX() {
-        return rotateX;
-    }
-
-    public double getRotateY() {
-        return rotateY;
-    }
-
-    public double getRotateZ() {
-        return rotateZ;
-    }
-
-    public double getScaleX() {
-        return scaleX;
-    }
-
-    public double getScaleY() {
-        return scaleY;
-    }
-
-    public double getScaleZ() {
-        return scaleZ;
-    }
-
-    public Matrix4 getStaticMatrix() {
-        return staticMatrix;
     }
 
     @Override
@@ -148,10 +124,60 @@ public class ShapeTransform {
                 ", rotateX=" + rotateX +
                 ", rotateY=" + rotateY +
                 ", rotateZ=" + rotateZ +
+                ", rotateW=" + rotateW +
                 ", scaleX=" + scaleX +
                 ", scaleY=" + scaleY +
                 ", scaleZ=" + scaleZ +
-                ", staticMatrix=" + staticMatrix +
                 '}';
+    }
+
+    public ShapeTransform translateX(double translateX) {
+        setTranslateX(translateX);
+        return this;
+    }
+
+    public ShapeTransform translateY(double translateY) {
+        setTranslateY(translateY);
+        return this;
+    }
+
+    public ShapeTransform translateZ(double translateZ) {
+        setTranslateZ(translateZ);
+        return this;
+    }
+
+    public ShapeTransform rotateX(double rotateX) {
+        setRotateX(rotateX);
+        return this;
+    }
+
+    public ShapeTransform rotateY(double rotateY) {
+        setRotateY(rotateY);
+        return this;
+    }
+
+    public ShapeTransform rotateZ(double rotateZ) {
+        setRotateZ(rotateZ);
+        return this;
+    }
+
+    public ShapeTransform rotateW(double rotateW) {
+        setRotateW(rotateW);
+        return this;
+    }
+
+    public ShapeTransform scaleX(double scaleX) {
+        setScaleX(scaleX);
+        return this;
+    }
+
+    public ShapeTransform scaleY(double scaleY) {
+        setScaleY(scaleY);
+        return this;
+    }
+
+    public ShapeTransform scaleZ(double scaleZ) {
+        setScaleZ(scaleZ);
+        return this;
     }
 }

@@ -1,9 +1,11 @@
 package com.btxtech.shared.datatypes.asset;
 
 import com.btxtech.shared.dto.Config;
+import jsinterop.annotations.JsType;
 
 import java.util.List;
 
+@JsType
 public class MeshContainer implements Config {
     private int id;
     private String internalName;
@@ -48,6 +50,15 @@ public class MeshContainer implements Config {
 
     public List<MeshContainer> getChildren() {
         return children;
+    }
+
+    @SuppressWarnings("unused")
+    public MeshContainer[] getChildrenArray() {
+        if (children == null) {
+            return null;
+        } else {
+            return children.toArray(new MeshContainer[0]);
+        }
     }
 
     public void setChildren(List<MeshContainer> children) {

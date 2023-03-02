@@ -3,21 +3,24 @@ package com.btxtech.shared.datatypes.asset;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import jsinterop.annotations.JsType;
 
+import java.util.List;
 import java.util.Objects;
 
+@JsType
 public class Mesh {
-    @CollectionReference(CollectionReferenceType.SHAPE_3D)
-    private Integer shape3DId;
+    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
+    private Integer threeJsModelId;
     private String element3DId;
-    private ShapeTransform shapeTransform;
+    private List<ShapeTransform> shapeTransforms;
 
-    public Integer getShape3DId() {
-        return shape3DId;
+    public Integer getThreeJsModelId() {
+        return threeJsModelId;
     }
 
-    public void setShape3DId(Integer shape3DId) {
-        this.shape3DId = shape3DId;
+    public void setThreeJsModelId(Integer threeJsModelId) {
+        this.threeJsModelId = threeJsModelId;
     }
 
     public String getElement3DId() {
@@ -28,16 +31,23 @@ public class Mesh {
         this.element3DId = element3DId;
     }
 
-    public ShapeTransform getShapeTransform() {
-        return shapeTransform;
+    public List<ShapeTransform> getShapeTransforms() {
+        return shapeTransforms;
     }
 
-    public void setShapeTransform(ShapeTransform shapeTransform) {
-        this.shapeTransform = shapeTransform;
+    public ShapeTransform[] getShapeTransformsArray() {
+        if(shapeTransforms == null) {
+            return null;
+        }
+        return shapeTransforms.toArray(new ShapeTransform[0]);
     }
 
-    public Mesh shape3DId(Integer shape3DId) {
-        setShape3DId(shape3DId);
+    public void setShapeTransforms(List<ShapeTransform> shapeTransforms) {
+        this.shapeTransforms = shapeTransforms;
+    }
+
+    public Mesh threeJsModelId(Integer threeJsModelId) {
+        setThreeJsModelId(threeJsModelId);
         return this;
     }
 
@@ -46,8 +56,8 @@ public class Mesh {
         return this;
     }
 
-    public Mesh shapeTransform(ShapeTransform shapeTransform) {
-        setShapeTransform(shapeTransform);
+    public Mesh shapeTransforms(List<ShapeTransform> shapeTransforms) {
+        setShapeTransforms(shapeTransforms);
         return this;
     }
 
@@ -60,11 +70,11 @@ public class Mesh {
             return false;
         }
         Mesh mesh = (Mesh) o;
-        return Objects.equals(shape3DId, mesh.shape3DId) && Objects.equals(element3DId, mesh.element3DId);
+        return Objects.equals(threeJsModelId, mesh.threeJsModelId) && Objects.equals(element3DId, mesh.element3DId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(shape3DId, element3DId);
+        return Objects.hash(threeJsModelId, element3DId);
     }
 }

@@ -1,5 +1,10 @@
 import {Injectable} from "@angular/core";
-import {TerrainTile, ThreeJsRendererServiceAccess, ThreeJsTerrainTile} from "src/app/gwtangular/GwtAngularFacade";
+import {
+  MeshContainer, ShapeTransform,
+  TerrainTile,
+  ThreeJsRendererServiceAccess,
+  ThreeJsTerrainTile
+} from "src/app/gwtangular/GwtAngularFacade";
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
@@ -12,8 +17,10 @@ import {
   FreeCamera,
   Matrix,
   Mesh,
+  Node,
   Quaternion,
   Scene,
+  TransformNode,
   Vector2,
   Vector3
 } from "@babylonjs/core";
@@ -41,6 +48,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private canvas!: HTMLCanvasElement;
   private directionalLight!: DirectionalLight
   private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
+  private baseItemContainer!: Mesh;
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -48,7 +56,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   internalSetup(canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas)
     this.scene = new Scene(this.engine);
-    this.scene.ambientColor  = new Color3(0.3, 0.3, 0.3);
+    this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
 
     this.threeJsModelService.setScene(this.scene);
 
@@ -310,6 +318,95 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     ]).then((_values) => {
       this.scene.debugLayer.show({enableClose: true, embedMode: true});
     });
+  }
+
+  initMeshContainers(meshContainers: MeshContainer[]): void {
+    try {
+      let vehicle11MeshContainer = null;
+      for (let meshContainer of meshContainers) {
+        if (meshContainer.getInternalName() === "Vehicle_11") {
+          vehicle11MeshContainer = meshContainer;
+          break;
+        }
+      }
+      this.baseItemContainer = new Mesh(`BaseItems 'Vehicle_11' AssetConfig '${vehicle11MeshContainer!.getInternalName()}'`);
+      this.scene.addMesh(this.baseItemContainer);
+      this.shadowGenerator.addShadowCaster(this.baseItemContainer, true);
+      this.recursivelyFillMeshes(vehicle11MeshContainer!);
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+
+  private createMesh(threeJsModelId: number, element3DId: string, shapeTransforms: ShapeTransform[]) {
+    let assetContainer = this.threeJsModelService.getAssetContainer(threeJsModelId);
+    let childMesh = null;
+    for (let childNod of assetContainer.getNodes()) {
+      childMesh = this.findChildNode(childNod, element3DId);
+      if (childMesh) {
+        break;
+      }
+    }
+    if (childMesh) {
+      let parent: Node = this.baseItemContainer;
+      if (shapeTransforms) {
+        for (let shapeTransform of shapeTransforms) {
+          const transform: any = new TransformNode(`Transform`);
+          transform.position.x = shapeTransform.getTranslateX();
+          transform.position.y = shapeTransform.getTranslateY();
+          transform.position.z = shapeTransform.getTranslateZ();
+          transform.rotationQuaternion = new Quaternion(shapeTransform.getRotateX(),
+            shapeTransform.getRotateY(),
+            shapeTransform.getRotateZ(),
+            shapeTransform.getRotateW())
+          transform.scaling.x = -shapeTransform.getScaleX();
+          transform.scaling.y = shapeTransform.getScaleY();
+          transform.scaling.z = shapeTransform.getScaleZ();
+          transform.parent = parent;
+          parent = transform;
+        }
+      }
+      let mesh = (<Mesh>childMesh!).clone(`threeJsModelId '${threeJsModelId}' element3DId '${element3DId}'`, parent);
+      mesh.position.x = 0;
+      mesh.position.y = 0;
+      mesh.position.z = 0;
+      // mesh.rotationQuaternion = null;
+      // mesh.rotation.x = 0;
+      // mesh.rotation.y = 0;
+      // mesh.rotation.z = 0;
+      // mesh.scaling.x = 1;
+      // mesh.scaling.y = 1;
+      // mesh.scaling.z = 1;
+    } else {
+      console.warn(`Can not find element3DId '${element3DId}' in threeJsModelId '${threeJsModelId}'.`)
+    }
+  }
+
+  private recursivelyFillMeshes(meshContainer: MeshContainer) {
+    if (meshContainer.getMesh() && meshContainer.getMesh()!.getThreeJsModelId()) {
+      this.createMesh(meshContainer.getMesh()!.getThreeJsModelId()!,
+        meshContainer.getMesh()!.getElement3DId(),
+        meshContainer.getMesh()!.getShapeTransformsArray());
+    }
+    if (meshContainer.getChildrenArray()) {
+      meshContainer!.getChildrenArray()?.forEach(childMeshContainer => {
+        this.recursivelyFillMeshes(childMeshContainer);
+      })
+    }
+  }
+
+  private findChildNode(node: Node, name: string): Node | null {
+    if (node.name === name) {
+      return node;
+    }
+    for (let childNode of node.getChildren()) {
+      let childMesh = this.findChildNode(childNode, name);
+      if (childMesh) {
+        return childMesh;
+      }
+    }
+    return null;
   }
 }
 

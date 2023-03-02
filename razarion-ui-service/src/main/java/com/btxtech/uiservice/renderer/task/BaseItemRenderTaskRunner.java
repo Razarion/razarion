@@ -1,17 +1,14 @@
 package com.btxtech.uiservice.renderer.task;
 
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
-import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.alarm.AlarmService;
-import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
@@ -37,6 +34,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_BASE_ITEM;
  * 31.08.2016.
  */
 @ApplicationScoped
+@Deprecated
 public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     // private Logger logger = Logger.getLogger(BaseItemRenderTaskRunner.class.getName());
 
@@ -67,14 +65,14 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     private Function<Long, List<ModelMatrices>> createModelMatricesProvider(MapList<BaseItemType, ShapeTransform> baseItemTransforms) {
         return timestamp -> {
             List<ModelMatrices> resultModelMatrices = new ArrayList<>();
-            baseItemTransforms.getMap().forEach((baseItemType, shapeTransforms) -> {
-                List<ModelMatrices> itemModelMatrices = baseItemUiService.provideAliveModelMatrices(baseItemType);
-                if (itemModelMatrices != null) {
-                    itemModelMatrices.forEach(baseItemModelMatrices -> shapeTransforms.forEach(
-                            shapeTransform -> resultModelMatrices.add(baseItemModelMatrices.multiplyShapeTransform(shapeTransform.getStaticMatrix()))));
-                }
-
-            });
+//            baseItemTransforms.getMap().forEach((baseItemType, shapeTransforms) -> {
+//                List<ModelMatrices> itemModelMatrices = baseItemUiService.provideAliveModelMatrices(baseItemType);
+//                if (itemModelMatrices != null) {
+//                    itemModelMatrices.forEach(baseItemModelMatrices -> shapeTransforms.forEach(
+//                            shapeTransform -> resultModelMatrices.add(baseItemModelMatrices.multiplyShapeTransform(shapeTransform.getStaticMatrix()))));
+//                }
+//
+//            });
             return resultModelMatrices;
         };
     }
@@ -111,14 +109,14 @@ public class BaseItemRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
 
     private void recursiveFillBaseItemShape3DElements(BaseItemType baseItemType, MeshContainer meshContainer, Map<Shape3DElementKey, MapList<BaseItemType, ShapeTransform>> baseItemsTransforms) {
         if (meshContainer.getMesh() != null) {
-            Shape3DElementKey key = new Shape3DElementKey(meshContainer.getMesh().getShape3DId(), meshContainer.getMesh().getElement3DId());
+            Shape3DElementKey key = new Shape3DElementKey(meshContainer.getMesh().getThreeJsModelId(), meshContainer.getMesh().getElement3DId());
             MapList<BaseItemType, ShapeTransform> baseItemTransforms = baseItemsTransforms.get(key);
             if (baseItemTransforms == null) {
                 baseItemTransforms = new MapList<>();
                 baseItemsTransforms.put(key, baseItemTransforms);
             }
-            if (meshContainer.getMesh().getShapeTransform() != null) {
-                baseItemTransforms.put(baseItemType, meshContainer.getMesh().getShapeTransform());
+            if (meshContainer.getMesh().getShapeTransforms() != null) {
+                // baseItemTransforms.put(baseItemType, meshContainer.getMesh().getShapeTransforms());
             } else {
                 ShapeTransform normTransform = new ShapeTransform();
                 normTransform.setScaleX(1);

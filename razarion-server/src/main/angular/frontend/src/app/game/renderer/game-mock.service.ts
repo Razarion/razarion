@@ -41,9 +41,11 @@ import {URL_IMAGE} from "../../common";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
 
 let staticGameConfigJson: any = {};
+let allElement3DIdModelMatricesJson: any = {};
 
 @Injectable()
 export class GameMockService {
+  public unityAssetConverterTestAssetConfig: any = {};
   inputService: InputService = new class implements InputService {
     onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
       // console.info("onViewFieldChanged()");
@@ -277,6 +279,24 @@ export class GameMockService {
     return new Promise<void>((resolve, reject) => {
       this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((value: any) => {
         staticGameConfigJson = value;
+        resolve(value);
+      });
+    });
+  }
+
+  loadElement3DIdModelMatrices(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.http.get<TerrainTile[]>("/gwt-mock/element-3D-Id_model-matrices").subscribe((value: any) => {
+        allElement3DIdModelMatricesJson = value;
+        resolve(value);
+      });
+    });
+  }
+
+  loadMockAssetConfig(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.http.get<TerrainTile[]>("/gwt-mock/unity-asset-converter-test-asset-config").subscribe((value: any) => {
+        this.unityAssetConverterTestAssetConfig = value;
         resolve(value);
       });
     });

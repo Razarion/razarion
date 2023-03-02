@@ -10,12 +10,12 @@ CREATE TABLE IF NOT EXISTS `ASSET` (
   `internalName` varchar(255) DEFAULT NULL,
   `unityAssetGuid` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `ASSET`;
 /*!40000 ALTER TABLE `ASSET` DISABLE KEYS */;
 INSERT INTO `ASSET` (`id`, `assetMetaFileHint`, `internalName`, `unityAssetGuid`) VALUES
-	(1, 'C:\\dev\\projects\\razarion\\razarion-media\\unity\\razarion\\Assets\\Vehicles Constructor.meta', 'Vehicles Constructor', '0603ae7aaa099224198c5febaebb9559');
+	(18, 'C:\\dev\\projects\\razarion\\razarion-media\\unity\\Vehicles\\Assets\\Vehicles Constructor.meta', 'Vehicles Constructor', 'a7aa38d0c9334f340a15fba4d0e1d54b');
 /*!40000 ALTER TABLE `ASSET` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
+import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 
@@ -25,6 +26,10 @@ public class ThreeJsRendererService {
             return;
         }
         threeJsRendererServiceAccess.setViewFieldCenter(viewFieldConfig.getToPosition().getX(), viewFieldConfig.getToPosition().getY());
+    }
+
+    public void initMeshContainers(MeshContainer[] meshContainers) {
+        threeJsRendererServiceAccess.initMeshContainers(meshContainers);
     }
 
     public void startRenderLoop() {

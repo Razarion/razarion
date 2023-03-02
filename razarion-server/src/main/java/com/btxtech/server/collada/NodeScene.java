@@ -1,6 +1,5 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
@@ -20,6 +19,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 18.08.2015.
  */
+@Deprecated
 public class NodeScene extends NameIdColladaXml {
     private static Logger LOGGER = Logger.getLogger(NodeScene.class.getName());
     private ShapeTransform transform;
@@ -111,7 +111,7 @@ public class NodeScene extends NameIdColladaXml {
             throw new IllegalStateException();
         }
 
-        transform = new ShapeTransform().setStaticMatrix(new Matrix4(doubleArray));
+        // transform = new ShapeTransform().setStaticMatrix(new Matrix4(doubleArray));
     }
 
     private void translate(Node node) {
@@ -123,7 +123,7 @@ public class NodeScene extends NameIdColladaXml {
             transform = new ShapeTransform();
         }
 
-        transform.setTranslateX(doubleList.get(0)).setTranslateY(doubleList.get(1)).setTranslateZ(doubleList.get(2));
+        // transform.setTranslateX(doubleList.get(0)).setTranslateY(doubleList.get(1)).setTranslateZ(doubleList.get(2));
     }
 
     private void scale(Node node) {
@@ -135,7 +135,7 @@ public class NodeScene extends NameIdColladaXml {
             transform = new ShapeTransform();
         }
 
-        transform.setScaleX(doubleList.get(0)).setScaleY(doubleList.get(1)).setScaleZ(doubleList.get(2));
+        // transform.setScaleX(doubleList.get(0)).setScaleY(doubleList.get(1)).setScaleZ(doubleList.get(2));
     }
 
     private void rotate(Node node) {

@@ -5,6 +5,8 @@ import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
@@ -31,6 +33,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.dto.FallbackConfig.BUILDER_ITEM_TYPE_ID;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 public class MeshRenderTest extends WeldUiBaseIntegrationTest {
     private final Logger logger = Logger.getLogger(MeshRenderTest.class.getName());
@@ -42,6 +45,7 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
         coldGameUiContext.setMeshContainers(loadMeshContainers());
         List<Shape3D> shape3ds = new ArrayList<>(loadShape3Ds());
         shape3ds.add(new Shape3D().id(999111).element3Ds(Collections.singletonList(new Element3D().id("element-1").vertexContainers(Collections.emptyList())))); // TODO remove
+        shape3ds.add(new Shape3D().id(26).element3Ds(Collections.singletonList(new Element3D().id("WheelW03").vertexContainers(Collections.singletonList(new VertexContainer().key("26-WheelW03").vertexContainerMaterial(new VertexContainerMaterial())))))); // TODO remove
         coldGameUiContext.setShape3Ds(shape3ds);
         setMeshContainerId(coldGameUiContext, BUILDER_ITEM_TYPE_ID, "Vehicle_11");
         setupUiEnvironment(coldGameUiContext);
@@ -100,6 +104,7 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
     private List<MeshContainer> loadMeshContainers() {
         try {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
             AssetConfig assetConfig = mapper.readValue(new File("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\mesh_container\\unityAssetConverterTestAssetConfig.json"),
                     AssetConfig.class);
 

@@ -34,8 +34,7 @@ export class BabylonModelService {
 
   init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
     this.threeJsModelConfigs = threeJsModelConfigs;
-    const _this = this;
-    _this.gwtAngularService = gwtAngularService;
+    this.gwtAngularService = gwtAngularService;
 
     return new Promise<void>((resolve, reject) => {
       try {
@@ -175,7 +174,7 @@ export class BabylonModelService {
     })
   }
 
-  getAssetContainer(threeJsModelId: number): any {
+  getAssetContainer(threeJsModelId: number): AssetContainer {
     if (threeJsModelId === undefined) {
       throw new Error(`ThreeJsModel id undefined`);
     }

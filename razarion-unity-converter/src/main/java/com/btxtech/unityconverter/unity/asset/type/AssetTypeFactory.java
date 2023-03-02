@@ -18,6 +18,7 @@ public class AssetTypeFactory {
         asstTypes.put("unity", Ignore.class);
         asstTypes.put("shadergraph", ShaderGraphAssetType.class);
         asstTypes.put("dae", Ignore.class);
+        asstTypes.put("glb", Ignore.class);
     }
 
     public static AssetType create(Meta meta) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {

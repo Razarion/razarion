@@ -15,6 +15,7 @@ import javax.inject.Inject;
  * 20.05.2015.
  */
 @ApplicationScoped
+@Deprecated
 public class ClientRenderServiceImpl extends RenderService {
     public static final int DEPTH_BUFFER_SIZE = 1024;
     // private Logger logger = Logger.getLogger(ClientRenderServiceImpl.class.getName());

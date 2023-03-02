@@ -387,14 +387,14 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
         }
 
         if (progressAnimations == null) {
-            if (shapeTransform.getStaticMatrix() != null) {
-                if (staticShapeTransformCache == null) {
-                    staticShapeTransformCache = nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray());
-                }
-                return modelMatrix.multiplyStaticShapeTransform(staticShapeTransformCache).calculateFromTurretAngle();
-            } else {
+//            if (shapeTransform.getStaticMatrix() != null) {
+//                if (staticShapeTransformCache == null) {
+//                    staticShapeTransformCache = nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray());
+//                }
+//                return modelMatrix.multiplyStaticShapeTransform(staticShapeTransformCache).calculateFromTurretAngle();
+//            } else {
                 return modelMatrix.multiplyShapeTransform(shapeTransform).calculateFromTurretAngle();
-            }
+//            }
         } else {
             ShapeTransform shapeTransformTRS = new ShapeTransform();
             shapeTransformTRS.setScaleX(1);
@@ -415,11 +415,11 @@ public abstract class AbstractWebGlRenderTask<T> implements WebGlRenderTask<T> {
                         throw new IllegalArgumentException("Unknown animation trigger '" + progressAnimation.getAnimationTrigger());
                 }
             }
-            if (shapeTransform.getStaticMatrix() != null) {
-                return modelMatrix.multiplyStaticShapeTransform(nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray())).multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
-            } else {
+//            if (shapeTransform.getStaticMatrix() != null) {
+//                return modelMatrix.multiplyStaticShapeTransform(nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray())).multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
+//            } else {
                 return modelMatrix.multiplyShapeTransform(shapeTransform).multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
-            }
+ //           }
         }
     }
 

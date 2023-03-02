@@ -121,13 +121,13 @@ public class ClientShape3DUiService extends Shape3DUiService {
     public double getMaxZ(VertexContainer vertexContainer) {
         double maxZ = Double.MIN_VALUE;
 
-        Float32Array vertices = getShape3DBuffer(vertexContainer).getVertex();
-        Matrix4 matrix = vertexContainer.getShapeTransform().setupMatrix();
-
-        for (int i = 0; i < vertices.length; i += 3) {
-            Vertex vertex = new Vertex(vertices.getAt(i), vertices.getAt(i + 1), vertices.getAt(i + 2));
-            maxZ = Math.max(matrix.multiply(vertex, 1.0).getZ(), maxZ);
-        }
+//        Float32Array vertices = getShape3DBuffer(vertexContainer).getVertex();
+//        Matrix4 matrix = vertexContainer.getShapeTransform().setupMatrix();
+//
+//        for (int i = 0; i < vertices.length; i += 3) {
+//            Vertex vertex = new Vertex(vertices.getAt(i), vertices.getAt(i + 1), vertices.getAt(i + 2));
+//            maxZ = Math.max(matrix.multiply(vertex, 1.0).getZ(), maxZ);
+//        }
 
         return maxZ;
     }

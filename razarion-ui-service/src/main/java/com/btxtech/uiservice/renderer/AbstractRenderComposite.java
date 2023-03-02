@@ -77,14 +77,14 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         }
 
         if (progressAnimations == null) {
-            if (shapeTransform.getStaticMatrix() != null) {
-                if (staticShapeTransformCache == null) {
-                    staticShapeTransformCache = nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray());
-                }
-                return modelMatrix.multiplyStaticShapeTransform(staticShapeTransformCache).calculateFromTurretAngle();
-            } else {
+//            if (shapeTransform.getStaticMatrix() != null) {
+//                if (staticShapeTransformCache == null) {
+//                    staticShapeTransformCache = nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray());
+//                }
+//                return modelMatrix.multiplyStaticShapeTransform(staticShapeTransformCache).calculateFromTurretAngle();
+//            } else {
                 return modelMatrix.multiplyShapeTransform(shapeTransform).calculateFromTurretAngle();
-            }
+//            }
         } else {
             ShapeTransform shapeTransformTRS = shapeTransform.copyTRS();
             for (ProgressAnimation progressAnimation : progressAnimations) {

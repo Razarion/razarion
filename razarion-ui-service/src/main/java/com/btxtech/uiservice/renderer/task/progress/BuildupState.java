@@ -23,7 +23,7 @@ public class BuildupState extends ProgressState {
     @Override
     public BuildupState fork(VertexContainer vertexContainer) {
         BuildupState child = new BuildupState(maxZ, getBuildupTextureId());
-        child.buildupMatrix = vertexContainer.getShapeTransform().setupMatrix().toWebGlArray();
+        // child.buildupMatrix = vertexContainer.getShapeTransform().setupMatrix().toWebGlArray();
         return child;
     }
 }

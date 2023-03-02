@@ -7,6 +7,7 @@ import jsinterop.annotations.JsType;
 public class ThreeJsModelConfig implements Config {
     private int id;
     private String internalName;
+    private String fbxGuidHint;
     private Type type;
 
     @Override
@@ -26,6 +27,14 @@ public class ThreeJsModelConfig implements Config {
     @Override
     public void setInternalName(String internalName) {
         this.internalName = internalName;
+    }
+
+    public String getFbxGuidHint() {
+        return fbxGuidHint;
+    }
+
+    public void setFbxGuidHint(String fbxGuidHint) {
+        this.fbxGuidHint = fbxGuidHint;
     }
 
     public Type getType() {
@@ -48,6 +57,11 @@ public class ThreeJsModelConfig implements Config {
 
     public ThreeJsModelConfig type(Type type) {
         setType(type);
+        return this;
+    }
+
+    public ThreeJsModelConfig fbxGuidHint(String fbxGuidHint) {
+        setFbxGuidHint(fbxGuidHint);
         return this;
     }
 

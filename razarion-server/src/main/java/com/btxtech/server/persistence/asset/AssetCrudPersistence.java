@@ -1,8 +1,7 @@
 package com.btxtech.server.persistence.asset;
 
 import com.btxtech.server.persistence.AbstractCrudPersistence;
-import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -25,9 +24,7 @@ public class AssetCrudPersistence extends AbstractCrudPersistence<AssetConfig, A
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private ImagePersistence imagePersistence;
-    @Inject
-    private Shape3DCrudPersistence shape3DCrudPersistence;
+    private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
 
     public AssetCrudPersistence() {
         super(AssetConfigEntity.class, AssetConfigEntity_.id, AssetConfigEntity_.internalName);
@@ -44,7 +41,7 @@ public class AssetCrudPersistence extends AbstractCrudPersistence<AssetConfig, A
             if (config.getAssetMetaFileHint() == null) {
                 throw new IllegalArgumentException("Asset meta file hint is not set");
             }
-            config = UnityAssetConverter.createAssetConfig(config.getAssetMetaFileHint(), new ServerAssetContext(shape3DCrudPersistence, imagePersistence));
+            config = UnityAssetConverter.createAssetConfig(config.getAssetMetaFileHint(), new ServerAssetContext(threeJsModelCrudPersistence));
 
             entity.setAssetMetaFileHint(config.getAssetMetaFileHint());
             entity.setUnityAssetGuid(config.getUnityAssetGuid());
@@ -84,7 +81,7 @@ public class AssetCrudPersistence extends AbstractCrudPersistence<AssetConfig, A
                 entity = new MeshContainerEntity();
                 entityList.add(entity);
             }
-            entity.fromConfig(meshContainer, null, shape3DCrudPersistence);
+            entity.fromConfig(meshContainer, null, threeJsModelCrudPersistence);
         }
         // Remove unused
         entityList.removeIf(unusedSet::contains);
