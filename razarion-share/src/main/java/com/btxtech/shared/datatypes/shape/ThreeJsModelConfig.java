@@ -9,6 +9,7 @@ public class ThreeJsModelConfig implements Config {
     private String internalName;
     private String fbxGuidHint;
     private Type type;
+    private Integer nodeMaterialId;
 
     @Override
     public int getId() {
@@ -45,6 +46,14 @@ public class ThreeJsModelConfig implements Config {
         this.type = type;
     }
 
+    public Integer getNodeMaterialId() {
+        return nodeMaterialId;
+    }
+
+    public void setNodeMaterialId(Integer nodeMaterialId) {
+        this.nodeMaterialId = nodeMaterialId;
+    }
+
     public ThreeJsModelConfig id(int id) {
         setId(id);
         return this;
@@ -62,6 +71,11 @@ public class ThreeJsModelConfig implements Config {
 
     public ThreeJsModelConfig fbxGuidHint(String fbxGuidHint) {
         setFbxGuidHint(fbxGuidHint);
+        return this;
+    }
+
+    public ThreeJsModelConfig nodeMaterialId(Integer nodeMaterialId) {
+        setNodeMaterialId(nodeMaterialId);
         return this;
     }
 

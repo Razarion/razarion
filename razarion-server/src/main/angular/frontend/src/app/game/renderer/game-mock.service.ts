@@ -11,8 +11,11 @@ import {
   GwtAngularPropertyTable,
   Index,
   InputService,
+  Mesh,
+  MeshContainer,
   ObjectNameId,
   PerfmonStatistic,
+  ShapeTransform,
   SlopeConfig,
   SlopeGeometry,
   SlopeSplattingConfig,
@@ -37,7 +40,6 @@ import {
 import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 import {HttpClient} from "@angular/common/http";
 import * as Stats from 'stats.js';
-import {URL_IMAGE} from "../../common";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
 
 let staticGameConfigJson: any = {};
@@ -610,6 +612,10 @@ export class GameMockService {
           return ThreeJsModelConfig.Type[<ThreeJsModelConfig.Type>threeJsModelConfigJson.type];
         }
 
+        getNodeMaterialId(): number | null {
+          return threeJsModelConfigJson.nodeMaterialId;
+        }
+
       });
     })
     return threeJsModelConfigs;
@@ -671,9 +677,105 @@ export class GameMockService {
     return terrainObjectModels;
   }
 
-}
+  createMeshContainers(): MeshContainer[] {
+    let meshContainers: MeshContainer[] = [];
+    for (let meshContainerJson of this.unityAssetConverterTestAssetConfig.meshContainers) {
+      meshContainers.push(this.createMeshContainer(meshContainerJson));
+    }
+    return meshContainers;
+  }
 
-export function getGwtMockImageUrl(filename: string) {
-  return `${URL_IMAGE}/${filename}`
+  private createMeshContainer(meshContainerJson: any): MeshContainer {
+    const _this = this;
+    return new class implements MeshContainer {
+      getChildrenArray(): MeshContainer[] | null {
+        if (meshContainerJson.children) {
+          let meshContainers: MeshContainer[] = [];
+          for (let childMeshContainerJson of meshContainerJson.children) {
+            meshContainers.push(_this.createMeshContainer(childMeshContainerJson));
+          }
+          return meshContainers;
+        } else {
+          return null;
+        }
+      }
+
+      getId(): string {
+        return meshContainerJson.id;
+      }
+
+      getInternalName(): string {
+        return meshContainerJson.internalName;
+      }
+
+      getMesh(): Mesh | null {
+        if (meshContainerJson.mesh) {
+          return new class implements Mesh {
+            getElement3DId(): string {
+              return meshContainerJson.mesh.element3DId;
+            }
+
+            getShapeTransformsArray(): ShapeTransform[] | null {
+              if (meshContainerJson.mesh.shapeTransforms) {
+                let shapeTransforms: ShapeTransform[] = [];
+                for (let shapeTransformJson of meshContainerJson.mesh.shapeTransforms) {
+                  shapeTransforms.push(new class implements ShapeTransform {
+                    getRotateW(): number {
+                      return shapeTransformJson.rotateW;
+                    }
+
+                    getRotateX(): number {
+                      return shapeTransformJson.rotateX;
+                    }
+
+                    getRotateY(): number {
+                      return shapeTransformJson.rotateY;
+                    }
+
+                    getRotateZ(): number {
+                      return shapeTransformJson.rotateZ;
+                    }
+
+                    getScaleX(): number {
+                      return shapeTransformJson.scaleZ;
+                    }
+
+                    getScaleY(): number {
+                      return shapeTransformJson.scaleY;
+                    }
+
+                    getScaleZ(): number {
+                      return shapeTransformJson.scaleZ;
+                    }
+
+                    getTranslateX(): number {
+                      return shapeTransformJson.translateX;
+                    }
+
+                    getTranslateY(): number {
+                      return shapeTransformJson.translateY;
+                    }
+
+                    getTranslateZ(): number {
+                      return shapeTransformJson.translateZ;
+                    }
+                  });
+                }
+                return shapeTransforms;
+              } else {
+                return null;
+              }
+            }
+
+            getThreeJsModelId(): number | null {
+              return meshContainerJson.mesh.threeJsModelId;
+            }
+          }
+        } else {
+          return null;
+        }
+      }
+    }
+  }
 }
 

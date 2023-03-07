@@ -216,6 +216,7 @@ export interface ThreeJsModelConfig {
 
   getType(): ThreeJsModelConfig.Type
 
+  getNodeMaterialId(): number | null;
 }
 
 export namespace ThreeJsModelConfig {
@@ -256,7 +257,7 @@ export interface Mesh {
 
   getElement3DId(): string;
 
-  getShapeTransformsArray(): ShapeTransform[];
+  getShapeTransformsArray(): ShapeTransform[] | null;
 }
 
 export interface ShapeTransform {

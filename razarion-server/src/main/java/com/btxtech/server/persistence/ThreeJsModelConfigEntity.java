@@ -10,8 +10,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -30,7 +34,9 @@ public class ThreeJsModelConfigEntity {
     private byte[] data;
     @Enumerated(EnumType.STRING)
     private ThreeJsModelConfig.Type type;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelConfigEntity nodeMaterial;
 
     public Integer getId() {
         return id;
@@ -41,13 +47,15 @@ public class ThreeJsModelConfigEntity {
                 .id(id)
                 .internalName(internalName)
                 .fbxGuidHint(fbxGuidHint)
-                .type(type);
+                .type(type)
+                .nodeMaterialId(extractId(nodeMaterial, ThreeJsModelConfigEntity::getId));
     }
 
-    public void from(ThreeJsModelConfig config) {
+    public void from(ThreeJsModelConfig config, ThreeJsModelCrudPersistence threeJsModelCrudPersistence) {
         internalName = config.getInternalName();
         fbxGuidHint = config.getFbxGuidHint();
         type = config.getType();
+        nodeMaterial = threeJsModelCrudPersistence.getEntity(config.getNodeMaterialId());
     }
 
     public byte[] getData() {

@@ -27,6 +27,7 @@ export class BabylonModelService {
   private gwtAngularService!: GwtAngularService;
   private scene!: Scene;
   private threeJsModelConfigs!: ThreeJsModelConfig[];
+  private threeJsModelConfigMap: Map<number, ThreeJsModelConfig> = new Map();
 
   constructor(private httpClient: HttpClient, private messageService: MessageService) {
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
@@ -35,6 +36,8 @@ export class BabylonModelService {
   init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
     this.threeJsModelConfigs = threeJsModelConfigs;
     this.gwtAngularService = gwtAngularService;
+
+    this.threeJsModelConfigs.forEach(threeJsModelConfig => this.threeJsModelConfigMap.set(threeJsModelConfig.getId(), threeJsModelConfig))
 
     return new Promise<void>((resolve, reject) => {
       try {
@@ -232,6 +235,10 @@ export class BabylonModelService {
       getType(): ThreeJsModelConfig.Type {
         return Type.NODES_MATERIAL;
       }
+
+      getNodeMaterialId(): number | null {
+        return null;
+      }
     }, material);
     return material;
   }
@@ -324,5 +331,16 @@ export class BabylonModelService {
       });
     });
 
+  }
+
+  getThreeJsModelConfig(id: number): ThreeJsModelConfig {
+    id = GwtHelper.gwtIssueNumber(id);
+
+    let threeJsModelConfig = this.threeJsModelConfigMap.get(id);
+    if (threeJsModelConfig) {
+      return threeJsModelConfig;
+    }
+
+    throw new Error(`No ThreeJsModelConfig for '${id}'`);
   }
 }

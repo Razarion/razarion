@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {
   MeshContainer, ShapeTransform,
-  TerrainTile,
+  TerrainTile, ThreeJsModelConfig,
   ThreeJsRendererServiceAccess,
   ThreeJsTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
@@ -330,6 +330,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         }
       }
       this.baseItemContainer = new Mesh(`BaseItems 'Vehicle_11' AssetConfig '${vehicle11MeshContainer!.getInternalName()}'`);
+      this.baseItemContainer.position.x = 265;
+      this.baseItemContainer.position.z = 290;
       this.scene.addMesh(this.baseItemContainer);
       this.shadowGenerator.addShadowCaster(this.baseItemContainer, true);
       this.recursivelyFillMeshes(vehicle11MeshContainer!);
@@ -339,8 +341,10 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
 
-  private createMesh(threeJsModelId: number, element3DId: string, shapeTransforms: ShapeTransform[]) {
+  private createMesh(threeJsModelId: number, element3DId: string, shapeTransforms: ShapeTransform[] | null) {
     let assetContainer = this.threeJsModelService.getAssetContainer(threeJsModelId);
+    let threeJsModelConfig = this.threeJsModelService.getThreeJsModelConfig(threeJsModelId);
+
     let childMesh = null;
     for (let childNod of assetContainer.getNodes()) {
       childMesh = this.findChildNode(childNod, element3DId);
@@ -368,6 +372,11 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         }
       }
       let mesh = (<Mesh>childMesh!).clone(`threeJsModelId '${threeJsModelId}' element3DId '${element3DId}'`, parent);
+      if(threeJsModelConfig.getNodeMaterialId()) {
+        mesh.material = this.threeJsModelService.getNodeMaterial(threeJsModelConfig.getNodeMaterialId()!);
+        mesh.hasVertexAlpha = false;
+      }
+
       mesh.position.x = 0;
       mesh.position.y = 0;
       mesh.position.z = 0;

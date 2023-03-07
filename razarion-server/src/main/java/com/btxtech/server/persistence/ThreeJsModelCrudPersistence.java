@@ -28,7 +28,7 @@ public class ThreeJsModelCrudPersistence extends AbstractCrudPersistence<ThreeJs
 
     @Override
     protected void fromConfig(ThreeJsModelConfig config, ThreeJsModelConfigEntity entity) {
-        entity.from(config);
+        entity.from(config, this);
     }
 
     @Transactional
