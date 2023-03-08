@@ -53,7 +53,7 @@ export class GameComponent implements OnInit {
             this.gameMockService.mockTerrainTile(this.threeJsRendererService);
             this.mainCockpitComponent.show();
             this.threeJsRendererService.initMeshContainers(this.gameMockService.createMeshContainers());
-            this.threeJsRendererService.setViewFieldCenter(10, 8);
+            this.threeJsRendererService.setViewFieldCenter(268, 290);
           });
         });
       });

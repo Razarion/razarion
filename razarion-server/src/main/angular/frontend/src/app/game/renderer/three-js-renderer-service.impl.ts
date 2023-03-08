@@ -1,7 +1,8 @@
 import {Injectable} from "@angular/core";
 import {
-  MeshContainer, ShapeTransform,
-  TerrainTile, ThreeJsModelConfig,
+  MeshContainer,
+  ShapeTransform,
+  TerrainTile,
   ThreeJsRendererServiceAccess,
   ThreeJsTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
@@ -321,17 +322,23 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   initMeshContainers(meshContainers: MeshContainer[]): void {
+    this.showMeshContainer(meshContainers, "ArmoredCabin02", 271, 290);
+    this.showMeshContainer(meshContainers, "Vehicle_11", 268, 290);
+    this.showMeshContainer(meshContainers, "Turret05", 265, 290);
+  }
+
+  private showMeshContainer(meshContainers: MeshContainer[], name: string, x: number, y: number) {
     try {
       let vehicle11MeshContainer = null;
       for (let meshContainer of meshContainers) {
-        if (meshContainer.getInternalName() === "Vehicle_11") {
+        if (meshContainer.getInternalName() === name) {
           vehicle11MeshContainer = meshContainer;
           break;
         }
       }
-      this.baseItemContainer = new Mesh(`BaseItems 'Vehicle_11' AssetConfig '${vehicle11MeshContainer!.getInternalName()}'`);
-      this.baseItemContainer.position.x = 265;
-      this.baseItemContainer.position.z = 290;
+      this.baseItemContainer = new Mesh(`BaseItems '${name}' AssetConfig '${vehicle11MeshContainer!.getInternalName()}'`);
+      this.baseItemContainer.position.x = x;
+      this.baseItemContainer.position.z = y;
       this.scene.addMesh(this.baseItemContainer);
       this.shadowGenerator.addShadowCaster(this.baseItemContainer, true);
       this.recursivelyFillMeshes(vehicle11MeshContainer!);
@@ -356,14 +363,15 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       let parent: Node = this.baseItemContainer;
       if (shapeTransforms) {
         for (let shapeTransform of shapeTransforms) {
-          const transform: any = new TransformNode(`Transform`);
+          const transform: TransformNode = new TransformNode(`Transform`);
+          transform.ignoreNonUniformScaling = true;
           transform.position.x = shapeTransform.getTranslateX();
           transform.position.y = shapeTransform.getTranslateY();
           transform.position.z = shapeTransform.getTranslateZ();
           transform.rotationQuaternion = new Quaternion(shapeTransform.getRotateX(),
             shapeTransform.getRotateY(),
             shapeTransform.getRotateZ(),
-            shapeTransform.getRotateW())
+            shapeTransform.getRotateW());
           transform.scaling.x = -shapeTransform.getScaleX();
           transform.scaling.y = shapeTransform.getScaleY();
           transform.scaling.z = shapeTransform.getScaleZ();
