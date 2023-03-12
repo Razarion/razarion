@@ -1,6 +1,8 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.ViewField;
 import jsinterop.annotations.JsType;
 
@@ -12,6 +14,8 @@ import javax.inject.Inject;
 public class InputService {
     @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private BaseItemUiService baseItemUiService;
 
     @SuppressWarnings("unused") // Called by Angular
     public void onViewFieldChanged(
@@ -24,7 +28,9 @@ public class InputService {
         viewField.setBottomRight(new DecimalPosition(bottomRightX, bottomRightY));
         viewField.setTopRight(new DecimalPosition(topRightX, topRightY));
         viewField.setTopLeft(new DecimalPosition(topLeftX, topLeftY));
+        Rectangle2D viewFieldAabb = viewField.calculateAabbRectangle();
         terrainUiService.onViewChanged(viewField);
+        baseItemUiService.onViewChanged(viewField, viewFieldAabb);
     }
 
 }

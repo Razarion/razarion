@@ -42,6 +42,7 @@ public class WeldUiBaseIntegrationTest {
         camera.setTranslateXY(translateX, translateY);
     }
 
+    @Deprecated// See BaseItemUiServiceTest
     protected void setCamera(double translateX, double translateY, double rotateX) {
         Camera camera = getWeldBean(Camera.class);
         camera.setTranslateXY(translateX, translateY);

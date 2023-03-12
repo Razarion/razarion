@@ -1,5 +1,7 @@
 import {Injectable} from "@angular/core";
 import {
+  BabylonBaseItem,
+  BabylonBaseItemState,
   MeshContainer,
   ShapeTransform,
   TerrainTile,
@@ -49,7 +51,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private canvas!: HTMLCanvasElement;
   private directionalLight!: DirectionalLight
   private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
-  private baseItemContainer!: Mesh;
+  private meshContainers!: MeshContainer[];
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -130,6 +132,10 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     });
   }
 
+  initMeshContainers(meshContainers: MeshContainer[]): void {
+    this.meshContainers = meshContainers;
+  }
+
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile {
     try {
       return new ThreeJsTerrainTileImpl(terrainTile,
@@ -142,6 +148,20 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       console.error(`Error createTerrainTile() with index ${terrainTile.getIndex()}`)
       console.error(e);
       throw e;
+    }
+  }
+
+  createBaseItem(id: number): BabylonBaseItem {
+    let mesh = this.showMeshContainer(this.meshContainers, "Vehicle_01", 271, 290);
+    return new class implements BabylonBaseItem {
+      remove(): void {
+      }
+
+      updateState(state: BabylonBaseItemState): void {
+        mesh.position.x = state.xPos;
+        mesh.position.y = state.zPos;
+        mesh.position.z = state.yPos;
+      }
     }
   }
 
@@ -321,34 +341,25 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     });
   }
 
-  initMeshContainers(meshContainers: MeshContainer[]): void {
-    this.showMeshContainer(meshContainers, "ArmoredCabin02", 271, 290);
-    this.showMeshContainer(meshContainers, "Vehicle_11", 268, 290);
-    this.showMeshContainer(meshContainers, "Turret05", 265, 290);
-  }
-
-  private showMeshContainer(meshContainers: MeshContainer[], name: string, x: number, y: number) {
-    try {
-      let vehicle11MeshContainer = null;
-      for (let meshContainer of meshContainers) {
-        if (meshContainer.getInternalName() === name) {
-          vehicle11MeshContainer = meshContainer;
-          break;
-        }
+  private showMeshContainer(meshContainers: MeshContainer[], name: string, x: number, y: number): Mesh {
+    let vehicle11MeshContainer = null;
+    for (let meshContainer of meshContainers) {
+      if (meshContainer.getInternalName() === name) {
+        vehicle11MeshContainer = meshContainer;
+        break;
       }
-      this.baseItemContainer = new Mesh(`BaseItems '${name}' AssetConfig '${vehicle11MeshContainer!.getInternalName()}'`);
-      this.baseItemContainer.position.x = x;
-      this.baseItemContainer.position.z = y;
-      this.scene.addMesh(this.baseItemContainer);
-      this.shadowGenerator.addShadowCaster(this.baseItemContainer, true);
-      this.recursivelyFillMeshes(vehicle11MeshContainer!);
-    } catch (error) {
-      console.error(error)
     }
+    let baseItemContainer = new Mesh(`BaseItems '${name}' AssetConfig '${vehicle11MeshContainer!.getInternalName()}'`);
+    baseItemContainer.position.x = x;
+    baseItemContainer.position.z = y;
+    this.scene.addMesh(baseItemContainer);
+    this.shadowGenerator.addShadowCaster(baseItemContainer, true);
+    this.recursivelyFillMeshes(vehicle11MeshContainer!, baseItemContainer);
+    return baseItemContainer;
   }
 
 
-  private createMesh(threeJsModelId: number, element3DId: string, shapeTransforms: ShapeTransform[] | null) {
+  private createMesh(threeJsModelId: number, element3DId: string, parent: Node, shapeTransforms: ShapeTransform[] | null) {
     let assetContainer = this.threeJsModelService.getAssetContainer(threeJsModelId);
     let threeJsModelConfig = this.threeJsModelService.getThreeJsModelConfig(threeJsModelId);
 
@@ -360,7 +371,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       }
     }
     if (childMesh) {
-      let parent: Node = this.baseItemContainer;
+      let childParent: Node = parent;
       if (shapeTransforms) {
         for (let shapeTransform of shapeTransforms) {
           const transform: TransformNode = new TransformNode(`Transform`);
@@ -375,11 +386,11 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
           transform.scaling.x = -shapeTransform.getScaleX();
           transform.scaling.y = shapeTransform.getScaleY();
           transform.scaling.z = shapeTransform.getScaleZ();
-          transform.parent = parent;
-          parent = transform;
+          transform.parent = childParent;
+          childParent = transform;
         }
       }
-      let mesh = (<Mesh>childMesh!).clone(`threeJsModelId '${threeJsModelId}' element3DId '${element3DId}'`, parent);
+      let mesh = (<Mesh>childMesh!).clone(`threeJsModelId '${threeJsModelId}' element3DId '${element3DId}'`, childParent);
       if(threeJsModelConfig.getNodeMaterialId()) {
         mesh.material = this.threeJsModelService.getNodeMaterial(threeJsModelConfig.getNodeMaterialId()!);
         mesh.hasVertexAlpha = false;
@@ -400,15 +411,16 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  private recursivelyFillMeshes(meshContainer: MeshContainer) {
+  private recursivelyFillMeshes(meshContainer: MeshContainer, parent: Node) {
     if (meshContainer.getMesh() && meshContainer.getMesh()!.getThreeJsModelId()) {
       this.createMesh(meshContainer.getMesh()!.getThreeJsModelId()!,
         meshContainer.getMesh()!.getElement3DId(),
+        parent,
         meshContainer.getMesh()!.getShapeTransformsArray());
     }
     if (meshContainer.getChildrenArray()) {
       meshContainer!.getChildrenArray()?.forEach(childMeshContainer => {
-        this.recursivelyFillMeshes(childMeshContainer);
+        this.recursivelyFillMeshes(childMeshContainer, parent);
       })
     }
   }

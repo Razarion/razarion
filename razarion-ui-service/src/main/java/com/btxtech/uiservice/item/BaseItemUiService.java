@@ -27,10 +27,12 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
-import com.btxtech.uiservice.renderer.ViewService;
+import com.btxtech.uiservice.renderer.BabylonBaseItem;
+import com.btxtech.uiservice.renderer.BabylonBaseItemState;
+import com.btxtech.uiservice.renderer.ThreeJsRendererService;
+import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -58,8 +60,6 @@ public class BaseItemUiService {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private ViewService viewService;
-    @Inject
     private SelectionHandler selectionHandler;
     @Inject
     private Instance<GameUiControl> gameUiControl;
@@ -77,6 +77,8 @@ public class BaseItemUiService {
     private NativeMatrixFactory nativeMatrixFactory;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private ThreeJsRendererService threeJsRendererService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
@@ -88,7 +90,7 @@ public class BaseItemUiService {
     private NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
     private MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
-    private MapList<BaseItemType, ModelMatrices> aliveModelMatrices = new MapList<>();
+    private Map<Integer, BabylonBaseItem> aliveBabylonBaseItems = new HashMap<>();
     private MapList<BaseItemType, ModelMatrices> demolitionModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
@@ -96,6 +98,8 @@ public class BaseItemUiService {
     private Set<Integer> buildups = new HashSet<>();
     private long lastUpdateTimeStamp;
     private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
+    private ViewField viewField;
+    private Rectangle2D viewFieldAabb;
 
     public void clear() {
         bases.clear();
@@ -108,7 +112,7 @@ public class BaseItemUiService {
         nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
         spawningModelMatrices.clear();
         buildupModelMatrices.clear();
-        aliveModelMatrices.clear();
+        aliveBabylonBaseItems.clear();
         demolitionModelMatrices.clear();
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
@@ -130,7 +134,8 @@ public class BaseItemUiService {
     }
 
     public List<ModelMatrices> provideAliveModelMatrices(BaseItemType baseItemType) {
-        return aliveModelMatrices.get(baseItemType);
+        // return aliveBabylonBaseItems.get(baseItemType);
+        return null;
     }
 
     public List<ModelMatrices> provideDemolitionModelMatrices(BaseItemType baseItemType) {
@@ -155,7 +160,7 @@ public class BaseItemUiService {
         this.nativeSyncBaseItemTickInfos = nativeSyncBaseItemTickInfos;
         spawningModelMatrices.clear();
         buildupModelMatrices.clear();
-        aliveModelMatrices.clear();
+        Collection<Integer> leftoversAliveBabylonBaseItems = new ArrayList<>(aliveBabylonBaseItems.keySet());
         demolitionModelMatrices.clear();
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
@@ -166,8 +171,8 @@ public class BaseItemUiService {
         int usedHouseSpace = 0;
         boolean radar = false;
         Polygon2D viewFieldCache = null;
-        if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null) {
-            syncBaseItemSetPositionMonitor.init(viewService.getCurrentViewField().calculateCenter());
+        if (syncBaseItemSetPositionMonitor != null && viewField != null) {
+            syncBaseItemSetPositionMonitor.init(viewField.calculateCenter());
         }
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
             try {
@@ -192,9 +197,9 @@ public class BaseItemUiService {
                 }
                 Color color = color4SyncBaseItem(nativeSyncBaseItemTickInfo);
                 NativeMatrix modelMatrix = nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.model);
-                if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
+                if (viewFieldAabb == null || !viewFieldAabb.adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
                     // TODO move to worker
-                    if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && isMyEnemy(nativeSyncBaseItemTickInfo) && !isSpawning && isBuildup) {
+                    if (syncBaseItemSetPositionMonitor != null && viewFieldAabb != null && isMyEnemy(nativeSyncBaseItemTickInfo) && !isSpawning && isBuildup) {
                         syncBaseItemSetPositionMonitor.notInViewAabb(nativeSyncBaseItemTickInfo.baseId, position2d, baseItemType);
                     }
                     continue;
@@ -212,15 +217,24 @@ public class BaseItemUiService {
                 }
                 // Alive
                 if (!isSpawning && isBuildup && isHealthy) {
-                    ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.interpolatableAngularVelocity, color);
-                    aliveModelMatrices.put(baseItemType, modelMatrices);
+                    BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
+                    if (babylonBaseItem == null) {
+                        babylonBaseItem = threeJsRendererService.createTerrainTile(nativeSyncBaseItemTickInfo.id);
+                        aliveBabylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
+                    }
+                    leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
+                    BabylonBaseItemState babylonBaseItemState = new BabylonBaseItemState();
+                    babylonBaseItemState.xPos = nativeSyncBaseItemTickInfo.x;
+                    babylonBaseItemState.yPos = nativeSyncBaseItemTickInfo.y;
+                    babylonBaseItemState.zPos = nativeSyncBaseItemTickInfo.z;
+                    babylonBaseItem.updateState(babylonBaseItemState);
                     if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
-                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
+                        // weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
                     }
                 }
-                if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
+                if (syncBaseItemSetPositionMonitor != null && viewFieldAabb != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                     if (viewFieldCache == null) {
-                        viewFieldCache = viewService.getCurrentViewField().toPolygon();
+                        viewFieldCache = viewField.toPolygon();
                     }
                     if (viewFieldCache.isInside(position2d)) {
                         syncBaseItemSetPositionMonitor.inViewAabb(nativeSyncBaseItemTickInfo.baseId, position3d, baseItemType);
@@ -263,6 +277,7 @@ public class BaseItemUiService {
                 exceptionHandler.handleException(t);
             }
         }
+        leftoversAliveBabylonBaseItems.forEach(id -> aliveBabylonBaseItems.remove(id).remove());
         if (itemCount != tmpItemCount) {
             itemCount = tmpItemCount;
             updateItemCountOnSideCockpit();
@@ -603,4 +618,8 @@ public class BaseItemUiService {
         }
     }
 
+    public void onViewChanged(ViewField viewField, Rectangle2D viewFieldAabb) {
+        this.viewField = viewField;
+        this.viewFieldAabb = viewFieldAabb;
+    }
 }

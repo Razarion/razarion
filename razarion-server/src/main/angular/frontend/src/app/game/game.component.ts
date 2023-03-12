@@ -54,6 +54,21 @@ export class GameComponent implements OnInit {
             this.mainCockpitComponent.show();
             this.threeJsRendererService.initMeshContainers(this.gameMockService.createMeshContainers());
             this.threeJsRendererService.setViewFieldCenter(268, 290);
+            let babylonBaseItem = this.threeJsRendererService.createBaseItem(999999);
+
+
+            babylonBaseItem.updateState({xPos: 271, yPos: 290, zPos: 0})
+            let i = 0.1;
+            let move = () => {
+              babylonBaseItem.updateState({xPos: 271, yPos: 290 + i, zPos: 0})
+              i += 0.1
+              if (i > 10) {
+                return;
+              }
+              setTimeout(move, 100)
+            }
+            setTimeout(move, 100)
+
           });
         });
       });

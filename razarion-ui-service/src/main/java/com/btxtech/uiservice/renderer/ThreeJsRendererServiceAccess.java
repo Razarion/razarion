@@ -8,6 +8,8 @@ import jsinterop.annotations.JsType;
 public interface ThreeJsRendererServiceAccess {
     ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId);
 
+    BabylonBaseItem createBaseItem(int id);
+
     void setViewFieldCenter(double x, double y);
 
     void initMeshContainers(MeshContainer[] meshContainers);

@@ -20,6 +20,10 @@ public class ThreeJsRendererService {
         return threeJsRendererServiceAccess.createTerrainTile(terrainTile, defaultGroundConfig);
     }
 
+    public BabylonBaseItem createTerrainTile(int baseItemId) {
+        return threeJsRendererServiceAccess.createBaseItem(baseItemId);
+    }
+
     public void executeViewFieldConfig(ViewFieldConfig viewFieldConfig, Optional<Runnable> completionCallback) {
         if (viewFieldConfig.getToPosition() == null) {
             LOG.warning("Can only execute ViewFieldConfig with to-position");

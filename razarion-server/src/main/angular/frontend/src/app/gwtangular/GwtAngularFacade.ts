@@ -286,6 +286,8 @@ export interface ShapeTransform {
 export interface ThreeJsRendererServiceAccess {
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
 
+  createBaseItem(id: number): BabylonBaseItem;
+
   setViewFieldCenter(x: number, y: number): void;
 
   initMeshContainers(meshContainers: MeshContainer[]): void;
@@ -346,6 +348,18 @@ export interface ThreeJsTerrainTile {
   addToScene(): void;
 
   removeFromScene(): void;
+}
+
+export interface BabylonBaseItem {
+  updateState(state: BabylonBaseItemState): void;
+
+  remove(): void;
+}
+
+export interface BabylonBaseItemState {
+  xPos: number;
+  yPos: number;
+  zPos: number;
 }
 
 // ---------- Item Cockpit ----------
