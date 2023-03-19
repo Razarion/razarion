@@ -15,7 +15,7 @@ public class SelectionEvent {
         OTHER
     }
 
-    private Type type;
+    private final Type type;
     private Group selectedGroup;
     private SyncItemSimpleDto selectedOther;
 

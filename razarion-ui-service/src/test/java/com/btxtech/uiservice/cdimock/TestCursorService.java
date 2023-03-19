@@ -13,16 +13,16 @@ import javax.enterprise.context.ApplicationScoped;
 public class TestCursorService extends CursorService {
     @Override
     protected void setCursorInternal(CursorType cursorType, boolean allowed) {
-        throw new UnsupportedOperationException();
+        System.out.println("TestCursorService.setCursorInternal(): " + cursorType + " " + allowed);
     }
 
     @Override
     protected void setDefaultCursorInternal() {
-        throw new UnsupportedOperationException();
+        System.out.println("TestCursorService.setDefaultCursorInternal()");
     }
 
     @Override
     protected void setPointerCursorInternal() {
-        throw new UnsupportedOperationException();
+        System.out.println("TestCursorService.setPointerCursorInternal()");
     }
 }

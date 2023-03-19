@@ -16,11 +16,11 @@ public class ThreeJsRendererService {
     @Inject
     private ThreeJsRendererServiceAccess threeJsRendererServiceAccess;
 
-    public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfig) {
+    public ThreeJsTerrainTile createBaseItem(TerrainTile terrainTile, Integer defaultGroundConfig) {
         return threeJsRendererServiceAccess.createTerrainTile(terrainTile, defaultGroundConfig);
     }
 
-    public BabylonBaseItem createTerrainTile(int baseItemId) {
+    public BabylonBaseItem createBaseItem(int baseItemId) {
         return threeJsRendererServiceAccess.createBaseItem(baseItemId);
     }
 

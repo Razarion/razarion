@@ -52,4 +52,30 @@ public class PlayerBaseDto {
     public void setBotId(Integer botId) {
         this.botId = botId;
     }
+
+
+    public PlayerBaseDto baseId(int baseId) {
+        setBaseId(baseId);
+        return this;
+    }
+
+    public PlayerBaseDto name(String name) {
+        setName(name);
+        return this;
+    }
+
+    public PlayerBaseDto character(Character character) {
+        setCharacter(character);
+        return this;
+    }
+
+    public PlayerBaseDto userId(Integer userId) {
+        setUserId(userId);
+        return this;
+    }
+
+    public PlayerBaseDto botId(Integer botId) {
+        setBotId(botId);
+        return this;
+    }
 }

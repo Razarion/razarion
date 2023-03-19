@@ -8,15 +8,11 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.Colors;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,7 +32,7 @@ public class BaseItemPlacer {
     private NativeMatrixFactory nativeMatrixFactory;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private Vertex position;
+    private DecimalPosition position;
     private BaseItemType baseItemType;
     private String errorText;
     private List<Vertex> vertexes;
@@ -47,17 +43,17 @@ public class BaseItemPlacer {
         Circle2D circle2D = new Circle2D(new DecimalPosition(0, 0), baseItemPlacerChecker.getEnemyFreeRadius());
         vertexes = circle2D.triangulation(20, 0);
         if (baseItemPlacerConfig.getSuggestedPosition() != null) {
-            onMove(new Vertex(baseItemPlacerConfig.getSuggestedPosition(), 0));
+            onMove(baseItemPlacerConfig.getSuggestedPosition());
         } else {
             DecimalPosition cameraCenter = viewService.getCurrentViewField().calculateCenter();
-            onMove(new Vertex(cameraCenter, 0));
+            onMove(cameraCenter);
         }
         return this;
     }
 
-    void onMove(Vertex position) {
+    void onMove(DecimalPosition position) {
         try {
-            baseItemPlacerChecker.check(position.toXY());
+            baseItemPlacerChecker.check(position);
             setupErrorText();
             this.position = position;
         } catch (Exception e) {
@@ -82,20 +78,20 @@ public class BaseItemPlacer {
     }
 
     Collection<DecimalPosition> setupAbsolutePositions() {
-        return baseItemPlacerChecker.setupAbsolutePositions(position.toXY());
+        return baseItemPlacerChecker.setupAbsolutePositions(position);
     }
 
-    public List<ModelMatrices> provideCircleModelMatrices() {
-        return Collections.singletonList(ModelMatrices.createFromPosition(position, nativeMatrixFactory));
-    }
+//    public List<ModelMatrices> provideCircleModelMatrices() {
+//        return Collections.singletonList(ModelMatrices.createFromPosition(position, nativeMatrixFactory));
+//    }
 
-    public List<ModelMatrices> provideItemModelMatrices() {
-        List<ModelMatrices> result = new ArrayList<>();
-        for (DecimalPosition position : setupAbsolutePositions()) {
-            result.add(ModelMatrices.createFromPosition(position.getX(), position.getY(), this.position.getZ(), Colors.OWN, nativeMatrixFactory));
-        }
-        return result;
-    }
+//    public List<ModelMatrices> provideItemModelMatrices() {
+//        List<ModelMatrices> result = new ArrayList<>();
+//        for (DecimalPosition position : setupAbsolutePositions()) {
+//            result.add(ModelMatrices.createFromPosition(position.getX(), position.getY(), this.position.getZ(), Colors.OWN, nativeMatrixFactory));
+//        }
+//        return result;
+//    }
 
     private void setupErrorText() {
         // TODO

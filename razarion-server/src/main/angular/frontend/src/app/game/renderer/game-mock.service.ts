@@ -49,6 +49,18 @@ let allElement3DIdModelMatricesJson: any = {};
 export class GameMockService {
   public unityAssetConverterTestAssetConfig: any = {};
   inputService: InputService = new class implements InputService {
+    onMouseDown(x: number, y: number): void {
+      console.info(`Terrain Position ${x}:${y} (mouse down)`);
+    }
+
+    onMouseMove(x: number, y: number, primaryButtonDown: boolean): void {
+      console.info(`Terrain Position ${x}:${y}  (mouse move) ${primaryButtonDown}`);
+    }
+
+    onMouseUp(x: number, y: number): void {
+      console.info(`Terrain Position  ${x}:${y} (mouse up)`);
+    }
+
     onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
       // console.info("onViewFieldChanged()");
     }

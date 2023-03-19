@@ -15,21 +15,21 @@ import javax.enterprise.context.ApplicationScoped;
 public class TestItemCockpitFrontend implements ItemCockpitFrontend {
     @Override
     public void displayOwnSingleType(int count, OwnItemCockpit ownItemCockpit) {
-        throw new UnsupportedOperationException();
+        System.out.println("TestItemCockpitFrontend.displayOwnSingleType(): " + count + " " + ownItemCockpit);
     }
 
     @Override
     public void displayOwnMultipleItemTypes(OwnMultipleIteCockpit[] ownMultipleIteCockpits) {
-        throw new UnsupportedOperationException();
+        System.out.println("TestItemCockpitFrontend.displayOwnMultipleItemTypes(): " + ownMultipleIteCockpits);
     }
 
     @Override
     public void displayOtherItemType(OtherItemCockpit otherItemCockpit) {
-        throw new UnsupportedOperationException();
+        System.out.println("TestItemCockpitFrontend.displayOtherItemType(): " + otherItemCockpit);
     }
 
     @Override
     public void dispose() {
-        throw new UnsupportedOperationException();
+        System.out.println("TestItemCockpitFrontend.dispose()");
     }
 }

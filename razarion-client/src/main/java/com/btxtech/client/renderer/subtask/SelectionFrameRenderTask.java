@@ -17,6 +17,7 @@ import static com.btxtech.client.renderer.webgl.WebGlFacade.U_COLOR;
  * 28.09.2016.
  */
 @Dependent
+@Deprecated
 public class SelectionFrameRenderTask extends AbstractWebGlRenderTask<GroupSelectionFrame> implements SelectionFrameRenderTaskRunner.RenderTask {
     @Override
     protected WebGlFacadeConfig getWebGlFacadeConfig(GroupSelectionFrame groupSelectionFrame) {
@@ -29,8 +30,8 @@ public class SelectionFrameRenderTask extends AbstractWebGlRenderTask<GroupSelec
 
     @Override
     protected void setup(GroupSelectionFrame groupSelectionFrame) {
-        setupVec3VertexPositionArray(groupSelectionFrame.generateVertices());
-        setupUniform(U_COLOR, UniformLocation.Type.COLOR_RGBA, () -> Colors.SELECTION_FRAME);
+//        setupVec3VertexPositionArray(groupSelectionFrame.generateVertices());
+//        setupUniform(U_COLOR, UniformLocation.Type.COLOR_RGBA, () -> Colors.SELECTION_FRAME);
 
     }
 }

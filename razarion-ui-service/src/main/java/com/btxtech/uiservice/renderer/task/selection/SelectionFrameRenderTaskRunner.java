@@ -11,6 +11,7 @@ import javax.enterprise.context.ApplicationScoped;
  * 27.09.2016.
  */
 @ApplicationScoped
+@Deprecated
 public class SelectionFrameRenderTaskRunner extends AbstractRenderTaskRunner {
     public interface RenderTask extends WebGlRenderTask<GroupSelectionFrame> {
     }
@@ -18,13 +19,13 @@ public class SelectionFrameRenderTaskRunner extends AbstractRenderTaskRunner {
     private RenderTask renderTask;
 
     public void startGroupSelection(GroupSelectionFrame groupSelectionFrame) {
-        if (groupSelectionFrame.getCorners() == null) {
-            return;
-        }
-        if (renderTask != null) {
-            throw new IllegalStateException("SelectionFrameRenderTaskRunner is already showing");
-        }
-        renderTask = createRenderTask(RenderTask.class, groupSelectionFrame);
+//        if (groupSelectionFrame.getCorners() == null) {
+//            return;
+//        }
+//        if (renderTask != null) {
+//            throw new IllegalStateException("SelectionFrameRenderTaskRunner is already showing");
+//        }
+//        renderTask = createRenderTask(RenderTask.class, groupSelectionFrame);
     }
 
     public void onMove(GroupSelectionFrame groupSelectionFrame) {

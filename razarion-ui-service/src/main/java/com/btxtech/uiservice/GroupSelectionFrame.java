@@ -15,11 +15,7 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.MathHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: beat
@@ -28,16 +24,15 @@ import java.util.List;
  */
 public class GroupSelectionFrame {
     private static final double MIN_DISTANCE = 0.1;
-    private Vertex start;
+    private DecimalPosition start;
     private Rectangle2D rectangle2D;
-    private List<Vertex> corners;
 
-    public GroupSelectionFrame(Vertex start) {
+    public GroupSelectionFrame(DecimalPosition start) {
         this.start = start;
     }
 
-    public void onMove(Vertex position) {
-        DecimalPosition delta = start.toXY().sub(position.toXY());
+    public void onMove(DecimalPosition position) {
+        DecimalPosition delta = start.sub(position);
         if (MathHelper.compareWithPrecision(delta.getX(), 0, MIN_DISTANCE) || MathHelper.compareWithPrecision(delta.getY(), 0, MIN_DISTANCE)) {
             rectangle2D = null;
         } else {
@@ -47,7 +42,6 @@ public class GroupSelectionFrame {
             double height = Math.abs(start.getY() - position.getY());
             rectangle2D = new Rectangle2D(x, y, width, height);
         }
-        setupCorner4Renderer(position);
     }
 
     public Rectangle2D getRectangle2D() {
@@ -55,36 +49,6 @@ public class GroupSelectionFrame {
     }
 
     public DecimalPosition getStart2D() {
-        return start.toXY();
+        return start;
     }
-
-    public List<Vertex> getCorners() {
-        return corners;
-    }
-
-    private void setupCorner4Renderer(Vertex end) {
-        corners = new ArrayList<>();
-        corners.add(new Vertex(start.getX(), start.getY(), end.getZ()));
-        corners.add(new Vertex(end.getX(), start.getY(), end.getZ()));
-        corners.add(end);
-        corners.add(new Vertex(start.getX(), end.getY(), end.getZ()));
-    }
-
-    public List<Vertex> generateVertices() {
-        List<Vertex> vertices = new ArrayList<>();
-        // Line 1
-        vertices.add(corners.get(0));
-        vertices.add(corners.get(1));
-        // Line 2
-        vertices.add(corners.get(1));
-        vertices.add(corners.get(2));
-        // Line 3
-        vertices.add(corners.get(2));
-        vertices.add(corners.get(3));
-        // Line 4
-        vertices.add(corners.get(3));
-        vertices.add(corners.get(0));
-        return vertices;
-    }
-
 }

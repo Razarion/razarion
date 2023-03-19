@@ -89,6 +89,13 @@ export interface InputService {
     bottomRightX: number, bottomRightY: number,
     topRightX: number, topRightY: number,
     topLeftX: number, topLeftY: number): void;
+
+  onMouseMove(x: number, y: number, primaryButtonDown: boolean): void;
+
+  onMouseDown(x: number, y: number): void;
+
+  onMouseUp(x: number, y: number): void;
+
 }
 
 export interface TerrainTypeService {

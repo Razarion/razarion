@@ -15,9 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.SelectionHandler;
@@ -46,7 +44,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toVertex;
 import static com.btxtech.shared.utils.MathHelper.clamp;
 
 /**
@@ -196,7 +193,7 @@ public class BaseItemUiService {
                     continue;
                 }
                 Color color = color4SyncBaseItem(nativeSyncBaseItemTickInfo);
-                NativeMatrix modelMatrix = nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.model);
+                // NativeMatrix modelMatrix = nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.model);
                 if (viewFieldAabb == null || !viewFieldAabb.adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
                     // TODO move to worker
                     if (syncBaseItemSetPositionMonitor != null && viewFieldAabb != null && isMyEnemy(nativeSyncBaseItemTickInfo) && !isSpawning && isBuildup) {
@@ -208,18 +205,18 @@ public class BaseItemUiService {
                 // Spawning
                 if (isSpawning && isBuildup) {
                     attackAble = false;
-                    spawningModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.spawning, null));
+                    // TODO spawningModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.spawning, null));
                 }
                 // Buildup
                 if (!isSpawning && !isBuildup) {
                     attackAble = false;
-                    buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup, color));
+                    // TODO buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup, color));
                 }
                 // Alive
                 if (!isSpawning && isBuildup && isHealthy) {
                     BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
                     if (babylonBaseItem == null) {
-                        babylonBaseItem = threeJsRendererService.createTerrainTile(nativeSyncBaseItemTickInfo.id);
+                        babylonBaseItem = threeJsRendererService.createBaseItem(nativeSyncBaseItemTickInfo.id);
                         aliveBabylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
                     }
                     leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
@@ -245,32 +242,32 @@ public class BaseItemUiService {
 
                 // Demolition
                 if (!isSpawning && isBuildup && !isHealthy) {
-                    ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.interpolatableAngularVelocity, nativeSyncBaseItemTickInfo.health, color);
-                    demolitionModelMatrices.put(baseItemType, modelMatrices);
+                    // ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.interpolatableAngularVelocity, nativeSyncBaseItemTickInfo.health, color);
+                    // TODO demolitionModelMatrices.put(baseItemType, modelMatrices);
                     if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
                         effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, position3d, baseItemType);
                     }
                     if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
-                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
+                        // TODO weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
                     }
                 }
 
                 // Harvesting
                 if (nativeSyncBaseItemTickInfo.harvestingResourcePosition != null) {
-                    NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getHarvesterType().getAnimationOrigin()), 1.0);
-                    NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.harvestingResourcePosition, origin);
-                    harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
+                    // NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getHarvesterType().getAnimationOrigin()), 1.0);
+                    // NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.harvestingResourcePosition, origin);
+                    // TODO harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
                 }
                 // Building
                 if (nativeSyncBaseItemTickInfo.buildingPosition != null) {
-                    NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getBuilderType().getAnimationOrigin()), 1.0);
-                    NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.buildingPosition, origin);
-                    builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
-                    if(baseItemType.getBuilderType().getAnimationParticleId() != null) {
-                        buildups.add(nativeSyncBaseItemTickInfo.id);
-                        leftoverBuildups.remove(nativeSyncBaseItemTickInfo.id);
-                        effectVisualizationService.updateBuildupParticle(nativeSyncBaseItemTickInfo, toVertex(origin), baseItemType, direction);
-                    }
+                    // TODO  NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getBuilderType().getAnimationOrigin()), 1.0);
+//  TODO                   NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.buildingPosition, origin);
+//                    builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
+//                    if(baseItemType.getBuilderType().getAnimationParticleId() != null) {
+//                        buildups.add(nativeSyncBaseItemTickInfo.id);
+//                        leftoverBuildups.remove(nativeSyncBaseItemTickInfo.id);
+//                        effectVisualizationService.updateBuildupParticle(nativeSyncBaseItemTickInfo, toVertex(origin), baseItemType, direction);
+//                    }
                 }
                 effectVisualizationService.removeBuildupParticle(leftoverBuildups);
             } catch (Throwable t) {

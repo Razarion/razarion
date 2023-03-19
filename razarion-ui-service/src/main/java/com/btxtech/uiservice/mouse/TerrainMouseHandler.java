@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.mouse;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -24,16 +23,12 @@ import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ItemMarkerService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTaskRunner;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -42,20 +37,12 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class TerrainMouseHandler {
-    private static final double FOV_Y_STEP = Math.toRadians(4);
-    private Logger logger = Logger.getLogger(TerrainMouseHandler.class.getName());
-    @Inject
-    private ProjectionTransformation projectionTransformation;
-    @Inject
-    private Camera camera;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
     private CursorService cursorService;
-    @Inject
-    private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
@@ -79,26 +66,21 @@ public class TerrainMouseHandler {
     @Inject
     private ItemMarkerService itemMarkerService;
     private GroupSelectionFrame groupSelectionFrame;
-    private EditorMouseListener editorMouseListener;
+    // DOTO private EditorMouseListener editorMouseListener;
 
     public void clear() {
         groupSelectionFrame = null;
     }
 
-    public void onMouseMove(int x, int y, int width, int height, boolean primaryButtonDown) {
+    public void onMouseMove(DecimalPosition terrainPosition, boolean primaryButtonDown) {
         try {
-            terrainScrollHandler.handleMouseMoveScroll(x, y, width, height);
-            Vertex terrainPosition = setupTerrainPosition(x, y, width, height);
-            if (terrainPosition == null) {
-                return;
-            }
-            if (editorMouseListener != null) {
-                editorMouseListener.onMouseMove(terrainPosition, primaryButtonDown);
-                return;
-            }
+//  TODO          if (editorMouseListener != null) {
+//                editorMouseListener.onMouseMove(terrainPosition, primaryButtonDown);
+//                return;
+//            }
 
             if (baseItemPlacerService.isActive()) {
-                baseItemPlacerService.onMouseMoveEvent(terrainPosition);
+                // TODO baseItemPlacerService.onMouseMoveEvent(terrainPosition);
                 return;
             }
 
@@ -108,25 +90,25 @@ public class TerrainMouseHandler {
                     selectionFrameRenderTaskRunner.onMove(groupSelectionFrame);
                 }
             } else {
-                SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
+                SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition);
                 if (syncBaseItem != null) {
                     cursorService.handleMouseOverBaseItem(syncBaseItem);
                     itemMarkerService.onHover(syncBaseItem);
                     return;
                 }
-                SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition.toXY());
+                SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition);
                 if (syncResourceItem != null) {
                     cursorService.handleMouseOverResourceItem();
                     itemMarkerService.onHover(syncResourceItem);
                     return;
                 }
-                SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition.toXY());
+                SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition);
                 if (syncBoxItem != null) {
                     cursorService.handleMouseOverBoxItem();
                     itemMarkerService.onHover(syncBoxItem);
                     return;
                 }
-                cursorService.handleMouseOverTerrain(terrainPosition.toXY());
+                cursorService.handleMouseOverTerrain(terrainPosition);
                 itemMarkerService.onHover(null);
             }
         } catch (Throwable t) {
@@ -134,28 +116,12 @@ public class TerrainMouseHandler {
         }
     }
 
-    public void onMouseOut() {
+    public void onMouseDown(DecimalPosition terrainPosition) {
         try {
-            terrainScrollHandler.executeAutoScrollMouse(TerrainScrollHandler.ScrollDirection.STOP, TerrainScrollHandler.ScrollDirection.STOP);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
-    }
-
-    public void onMouseDown(int x, int y, int width, int height, boolean shiftKey) {
-        try {
-            Vertex terrainPosition = setupTerrainPosition(x, y, width, height);
-            if (terrainPosition == null) {
-                return;
-            }
-
-            if (shiftKey) {
-                logger.severe("Terrain Position: " + terrainPosition);
-            }
-            if (editorMouseListener != null) {
-                editorMouseListener.onMouseDown(terrainPosition);
-                return;
-            }
+// TODO           if (editorMouseListener != null) {
+//                editorMouseListener.onMouseDown(terrainPosition);
+//                return;
+//            }
 
             if (baseItemPlacerService.isActive()) {
                 return;
@@ -183,17 +149,12 @@ public class TerrainMouseHandler {
         return null;
     }
 
-    public void onMouseUp(int x, int y, int width, int height) {
+    public void onMouseUp(DecimalPosition terrainPosition) {
         try {
-            Vertex terrainPosition = setupTerrainPosition(x, y, width, height);
-            if (terrainPosition == null) {
-                return;
-            }
-
-            if (editorMouseListener != null) {
-                editorMouseListener.onMouseUp();
-                return;
-            }
+// TODO           if (editorMouseListener != null) {
+//                editorMouseListener.onMouseUp();
+//                return;
+//            }
 
             if (baseItemPlacerService.isActive()) {
                 baseItemPlacerService.onMouseUpEvent(terrainPosition);
@@ -208,7 +169,7 @@ public class TerrainMouseHandler {
                     onlySelectionFrame = true;
                     selectionHandler.selectRectangle(groupSelectionFrame.getRectangle2D());
                 } else {
-                    if (isSelectionChangeNeeded(terrainPosition.toXY())) {
+                    if (isSelectionChangeNeeded(terrainPosition)) {
                         selectionHandler.selectPosition(groupSelectionFrame.getStart2D());
                     }
                 }
@@ -216,40 +177,20 @@ public class TerrainMouseHandler {
             }
 
             if (!onlySelectionFrame && selectionHandler.hasOwnSelection()) {
-                mouseUpWithOwnSelection(terrainPosition.toXY());
+                mouseUpWithOwnSelection(terrainPosition);
             }
 
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
-    }
-
-    public void onMouseWheel(double wheelDeltaY) {
-        try {
-            // Chrome and Firefox do have different deltas
-            double fovYStep;
-            if (wheelDeltaY < 0) {
-                fovYStep = FOV_Y_STEP;
-            } else {
-                fovYStep = -FOV_Y_STEP;
-            }
-            projectionTransformation.setFovYSave(projectionTransformation.getFovY() - fovYStep);
-            terrainScrollHandler.onFovChanged();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
     }
 
     public void setEditorMouseListener(EditorMouseListener editorMouseListener) {
-        this.editorMouseListener = editorMouseListener;
+        // TODO this.editorMouseListener = editorMouseListener;
     }
 
-    private Vertex setupTerrainPosition(int x, int y, int width, int height) {
-        DecimalPosition webglClipPosition = new DecimalPosition((double) x / (double) width, 1.0 - (double) y / (double) height);
-        webglClipPosition = webglClipPosition.multiply(2.0).sub(1, 1);
-        Line3d pickRay = projectionTransformation.createPickRay(webglClipPosition);
-        Line3d worldPickRay = camera.toWorld(pickRay);
-        return terrainUiService.calculateMousePositionGroundMesh(worldPickRay);
+    private Vertex setupTerrainPosition(int x, int y) {
+        return new Vertex(x, y, 0);
     }
 
     private void executeMoveCommand(Group selection, DecimalPosition position) {

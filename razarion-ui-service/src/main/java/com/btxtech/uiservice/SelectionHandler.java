@@ -24,6 +24,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
@@ -37,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -45,6 +47,7 @@ import java.util.List;
  */
 @ApplicationScoped
 public class SelectionHandler {
+    private Logger logger = Logger.getLogger(SelectionHandler.class.getName());
     // private Logger logger = Logger.getLogger(SelectionHandler.class.getName());
     @Inject
     private Event<SelectionEvent> selectionEventEventTrigger;
@@ -80,6 +83,8 @@ public class SelectionHandler {
     }
 
     public void selectRectangle(Rectangle2D rectangle) {
+        logger.severe("rectangle: " + rectangle);
+
         Collection<SyncBaseItemSimpleDto> selectedBaseItems = baseItemUiService.findItemsInRect(rectangle);
         if (!selectedBaseItems.isEmpty()) {
             onBaseItemsSelected(selectedBaseItems);

@@ -21,6 +21,7 @@ import {
   Matrix,
   Mesh,
   Node,
+  PointerEventTypes,
   Quaternion,
   Scene,
   TransformNode,
@@ -116,6 +117,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     });
     resizeObserver.observe(this.canvas);
 
+    this.setupPointerInteraction();
 
     // ----- Render loop -----
     let renderTime = Date.now();
@@ -155,6 +157,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     let mesh = this.showMeshContainer(this.meshContainers, "Vehicle_01", 271, 290);
     return new class implements BabylonBaseItem {
       remove(): void {
+        // TODO
       }
 
       updateState(state: BabylonBaseItemState): void {
@@ -304,6 +307,15 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     return this.camera.position.add(direction.multiplyByFloats(distanceToNullLevel, distanceToNullLevel, distanceToNullLevel));
   }
 
+  private setupMeshPickPoint(pointerX: number, pointerY: number): Vector3 | undefined {
+    const pickResult = this.scene.pick(pointerX, pointerY);
+
+    if (!pickResult.hit) {
+      return undefined;
+    }
+    return pickResult.pickedPoint!;
+  }
+
   private onMousedownEvent(this: ThreeJsRendererServiceImpl, event: any): void {
     let newMouseEvent = new ThreeJsRendererServiceMouseEvent();
     let intersection = this.intersectObjects(new Vector2(event.clientX, event.clientY));
@@ -436,6 +448,40 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       }
     }
     return null;
+  }
+
+  private setupPointerInteraction() {
+    this.scene.onPointerObservable.add((pointerInfo) => {
+      if (!this.gwtAngularService.gwtAngularFacade.inputService) {
+        return;
+      }
+      switch (pointerInfo.type) {
+        case PointerEventTypes.POINTERDOWN: {
+          let pickPoint = this.setupMeshPickPoint(this.scene.pointerX, this.scene.pointerY);
+          if(!pickPoint) {
+            return;
+          }
+          this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickPoint.x, pickPoint.z);
+          break;
+        }
+        case PointerEventTypes.POINTERUP: {
+          let pickPoint = this.setupMeshPickPoint(this.scene.pointerX, this.scene.pointerY);
+          if(!pickPoint) {
+            return;
+          }
+          this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickPoint.x, pickPoint.z);
+          break;
+        }
+        case PointerEventTypes.POINTERMOVE: {
+          let pickPoint = this.setupMeshPickPoint(this.scene.pointerX, this.scene.pointerY);
+          if(!pickPoint) {
+            return;
+          }
+          this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickPoint.x, pickPoint.z, (pointerInfo.event.buttons & 1) === 1);
+          break;
+        }
+      }
+    });
   }
 }
 
