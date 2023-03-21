@@ -27,10 +27,7 @@ public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
         // Init
         ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
         setupUiEnvironment(coldGameUiContext);
-
-        AlarmService alarmService = getWeldBean(AlarmService.class);
-        alarmService.addListener(alarm -> logger.severe(alarm.toString()));
-        alarmService.getAlarms().forEach(alarm -> logger.severe(alarm.toString()));
+        setupAlarmService();
 
         GameUiControl gameUiControl = getWeldBean(GameUiControl.class);
         gameUiControl.setColdGameUiContext(coldGameUiContext);

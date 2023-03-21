@@ -108,14 +108,14 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     // this.shadowGenerator.debug = true;
 
     // ----- Resize listener -----
-    const resizeObserver = new ResizeObserver(entries => {
+    new ResizeObserver(entries => {
       for (let entry of entries) {
         if (this.canvas == entry.target) {
           this.engine.resize();
+          this.onViewFieldChanged();
         }
       }
-    });
-    resizeObserver.observe(this.canvas);
+    }).observe(this.canvas);
 
     this.setupPointerInteraction();
 
@@ -154,24 +154,39 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   createBaseItem(id: number): BabylonBaseItem {
-    let mesh = this.showMeshContainer(this.meshContainers, "Vehicle_01", 271, 290);
-    return new class implements BabylonBaseItem {
-      remove(): void {
-        // TODO
-      }
+    console.info(`create BaseItem ${id}`);
+    try {
+      const _this = this;
+      let mesh = this.showMeshContainer(this.meshContainers, "Vehicle_01", 271, 290);
+      mesh.name = `Base Item (id: ${id} )`;
+      return new class implements BabylonBaseItem {
+        remove(): void {
+          console.info(`remove BaseItem ${id}`);
+          _this.scene.removeMesh(mesh);
+        }
 
-      updateState(state: BabylonBaseItemState): void {
-        mesh.position.x = state.xPos;
-        mesh.position.y = state.zPos;
-        mesh.position.z = state.yPos;
+        updateState(state: BabylonBaseItemState): void {
+          mesh.position.x = state.xPos;
+          mesh.position.y = state.zPos;
+          mesh.position.z = state.yPos;
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      return new class implements BabylonBaseItem {
+        remove(): void {
+        }
+
+        updateState(state: BabylonBaseItemState): void {
+        }
       }
     }
   }
 
   setViewFieldCenter(x: number, y: number): void {
     let currentViewFieldCenter = this.setupCenterGroundPosition();
-    let newFiledCenter = new Vector2(x, y);
-    let delta = newFiledCenter.subtract(new Vector2(currentViewFieldCenter.x, currentViewFieldCenter.z));
+    let newFieldCenter = new Vector2(x, y);
+    let delta = newFieldCenter.subtract(new Vector2(currentViewFieldCenter.x, currentViewFieldCenter.z));
     this.camera.position.x += delta.x;
     this.camera.position.z += delta.y;
     this.onViewFieldChanged();
@@ -285,29 +300,39 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     if (this.gwtAngularService.gwtAngularFacade.inputService === undefined) {
       return;
     }
-    let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
+    try {
+      // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
+      //getViewMatrix forces recalculation of the camera view matrix
+      this.camera.getViewMatrix();
 
-    const bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
-    const bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
-    const topRight = this.setupZeroLevelPosition(1, 1, invertCameraViewProj);
-    const topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
+      let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
 
-    this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
-      bottomLeft.x, bottomLeft.z,
-      bottomRight.x, bottomRight.z,
-      topRight.x, topRight.z,
-      topLeft.x, topLeft.z
-    );
+      const bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
+      const bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
+      const topRight = this.setupZeroLevelPosition(1, 1, invertCameraViewProj);
+      const topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
+
+      // console.info(`ViewField BL ${bottomLeft.x}:${bottomLeft.z}:${bottomLeft.y} BR ${bottomRight.x}:${bottomRight.z}:${bottomRight.y} TR ${topRight.x}:${topRight.z}:${topRight.y} TL ${topLeft.x}:${topLeft.z}:${topLeft.y}`)
+
+      this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
+        bottomLeft.x, bottomLeft.z,
+        bottomRight.x, bottomRight.z,
+        topRight.x, topRight.z,
+        topLeft.x, topLeft.z
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   private setupZeroLevelPosition(ndcX: number, ndcY: number, invertCameraViewProj: Matrix): Vector3 {
-    let ndcToWorld = Vector3.TransformCoordinates(new Vector3(ndcX, 0, ndcY), invertCameraViewProj);
-    const direction = ndcToWorld.subtract(this.camera.position).normalize();
+    let worldNearPosition = Vector3.TransformCoordinates(new Vector3(ndcX, ndcY, -1), invertCameraViewProj);
+    let direction = worldNearPosition.subtract(this.camera.position).normalize();
     const distanceToNullLevel = -this.camera.position.y / direction.y;
     return this.camera.position.add(direction.multiplyByFloats(distanceToNullLevel, distanceToNullLevel, distanceToNullLevel));
   }
 
-  private setupMeshPickPoint(pointerX: number, pointerY: number): Vector3 | undefined {
+  public setupMeshPickPoint(pointerX: number, pointerY: number): Vector3 | undefined {
     const pickResult = this.scene.pick(pointerX, pointerY);
 
     if (!pickResult.hit) {
@@ -354,19 +379,22 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   private showMeshContainer(meshContainers: MeshContainer[], name: string, x: number, y: number): Mesh {
-    let vehicle11MeshContainer = null;
+    let foundMeshContainer = null;
     for (let meshContainer of meshContainers) {
       if (meshContainer.getInternalName() === name) {
-        vehicle11MeshContainer = meshContainer;
+        foundMeshContainer = meshContainer;
         break;
       }
     }
-    let baseItemContainer = new Mesh(`BaseItems '${name}' AssetConfig '${vehicle11MeshContainer!.getInternalName()}'`);
+    if (!foundMeshContainer) {
+      throw new Error(`No AssetConfig for '${name}'`);
+    }
+    let baseItemContainer = new Mesh(`BaseItems '${name}' AssetConfig '${foundMeshContainer.getInternalName()}'`);
     baseItemContainer.position.x = x;
     baseItemContainer.position.z = y;
     this.scene.addMesh(baseItemContainer);
     this.shadowGenerator.addShadowCaster(baseItemContainer, true);
-    this.recursivelyFillMeshes(vehicle11MeshContainer!, baseItemContainer);
+    this.recursivelyFillMeshes(foundMeshContainer!, baseItemContainer);
     return baseItemContainer;
   }
 

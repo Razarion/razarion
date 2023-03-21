@@ -1,5 +1,5 @@
 import {EditorPanel} from "../editor-model";
-import {Component, ViewChild} from "@angular/core";
+import {Component, OnDestroy, ViewChild} from "@angular/core";
 import {MessageService} from "primeng/api";
 import {ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-service.impl";
 import {FileUpload} from "primeng/fileupload/fileupload";
@@ -8,7 +8,7 @@ import {GameMockService} from "../../game/renderer/game-mock.service";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "../../common";
-import {Mesh, Scene, SceneLoader} from "@babylonjs/core";
+import {Mesh, Nullable, Observer, PointerEventTypes, PointerInfo, Scene, SceneLoader} from "@babylonjs/core";
 import {GLTF2Export} from "@babylonjs/serializers";
 import {BabylonModelService} from "../../game/renderer/babylon-model.service";
 
@@ -16,7 +16,7 @@ import {BabylonModelService} from "../../game/renderer/babylon-model.service";
   selector: 'render-engine',
   templateUrl: './render-engine.component.html'
 })
-export class RenderEngineComponent extends EditorPanel {
+export class RenderEngineComponent extends EditorPanel implements OnDestroy {
   @ViewChild('fileUploadElement')
   fileUploadElement!: FileUpload;
   dropDownBabylonModels: any[] = [];
@@ -27,6 +27,10 @@ export class RenderEngineComponent extends EditorPanel {
   selectedBabylonClass: any;
   dropDownLoadBabylonModel: any = null;
   allBabylonModels!: Blob;
+  terrainCursorXPosition: number | undefined;
+  terrainCursorYPosition: number | undefined;
+  terrainCursorZPosition: number | undefined;
+  private pointerInfoObservable: Nullable<Observer<PointerInfo>>;
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
@@ -54,7 +58,31 @@ export class RenderEngineComponent extends EditorPanel {
             });
           });
     }
+    this.pointerInfoObservable = renderEngine.getScene().onPointerObservable.add((pointerInfo: PointerInfo) => {
+      if (!this.gwtAngularService.gwtAngularFacade.inputService) {
+        this.terrainCursorXPosition = undefined;
+        this.terrainCursorYPosition = undefined;
+        this.terrainCursorZPosition = undefined;
+        return;
+      }
+      if (pointerInfo.type === PointerEventTypes.POINTERMOVE) {
+        let pickPoint = renderEngine.setupMeshPickPoint(renderEngine.getScene().pointerX, renderEngine.getScene().pointerY);
+        if (pickPoint) {
+          this.terrainCursorXPosition = pickPoint.x;
+          this.terrainCursorYPosition = pickPoint.z;
+          this.terrainCursorZPosition = pickPoint.y;
+        }
+      }
+    });
   }
+
+  ngOnDestroy(): void {
+    if (this.pointerInfoObservable) {
+      this.renderEngine.getScene().onPointerObservable.remove(this.pointerInfoObservable);
+      this.pointerInfoObservable = null;
+    }
+  }
+
 
   onImport(event: any) {
     try {

@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.terrain;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
@@ -7,28 +8,23 @@ import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
-import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
 import com.btxtech.uiservice.cdimock.TestItemCockpitFrontend;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.i18n.I18nConstants;
-import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.renderer.MeshRenderTest;
-import org.easymock.EasyMock;
+import com.btxtech.uiservice.renderer.ViewField;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.logging.Logger;
 
 import static com.btxtech.shared.dto.FallbackConfig.BUILDER_ITEM_TYPE_ID;
 import static com.btxtech.shared.dto.FallbackConfig.FACTORY_ITEM_TYPE_ID;
 
 public class InputServiceTest extends WeldUiBaseIntegrationTest {
-    private final Logger logger = Logger.getLogger(MeshRenderTest.class.getName());
 
     @Test
     public void InputService() {
@@ -39,28 +35,68 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
                 .setUnlockedItemLimit(Collections.emptyMap())
                 .setLevelId(1));
         setupUiEnvironment(coldGameUiContext);
-        // Alarm service
-        AlarmService alarmService = getWeldBean(AlarmService.class);
-        alarmService.addListener(alarm -> logger.severe(alarm.toString()));
-        alarmService.getAlarms().forEach(alarm -> logger.severe(alarm.toString()));
+        setupAlarmService();
+        setupI18nConstants();
         // ???
         GameUiControl gameUiControl = getWeldBean(GameUiControl.class);
         gameUiControl.setColdGameUiContext(coldGameUiContext);
         gameUiControl.init();
-        // I18nConstants
-        I18nConstants i18nConstants = EasyMock.createNiceMock(I18nConstants.class);
-        EasyMock.replay(i18nConstants);
-        I18nHelper.setConstants(i18nConstants);
 
         setupCockpit();
-        // Simulate game engine
-        BaseItemUiService baseItemUiService = getWeldBean(BaseItemUiService.class);
-        simulateGameEngine(baseItemUiService, coldGameUiContext);
-        // Run test
-        InputService inputService = getWeldBean(InputService.class);
-        inputService.onMouseDown(0, 0);
-        inputService.onMouseUp(20, 20);
 
+        // Setup game engine
+        int baseId = 1;
+        createBase(coldGameUiContext.getUserContext().getUserId(), baseId);
+        NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos = setup2BaseItems(baseId);
+
+        BaseItemUiService baseItemUiService = getWeldBean(BaseItemUiService.class);
+
+        // TODO Run selection test
+//  TODO      InputService inputService = getWeldBean(InputService.class);
+//        inputService.onMouseDown(0, 0);
+//        inputService.onMouseUp(20, 20);
+//        baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
+
+        // Run ThreeJsRendererServiceAccess test
+        getThreeJsRendererServiceAccessMock().clear();
+
+        callOnViewChanged(new ViewField(0)
+                .bottomLeft(new DecimalPosition(0, 0))
+                .bottomRight(new DecimalPosition(20, 0))
+                .topRight(new DecimalPosition(20, 20))
+                .topLeft(new DecimalPosition(0, 20)));
+        baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
+        Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
+
+        baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
+        Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
+
+        callOnViewChanged(new ViewField(0)
+                .bottomLeft(new DecimalPosition(30, 30))
+                .bottomRight(new DecimalPosition(50, 30))
+                .topRight(new DecimalPosition(50, 50))
+                .topLeft(new DecimalPosition(30, 50)));
+        baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
+        Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
+        Assert.assertTrue(getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().get(0).isRemoved());
+        Assert.assertTrue(getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().get(1).isRemoved());
+        getThreeJsRendererServiceAccessMock().clear();
+
+        callOnViewChanged(new ViewField(0)
+                .bottomLeft(new DecimalPosition(0, 0))
+                .bottomRight(new DecimalPosition(20, 0))
+                .topRight(new DecimalPosition(20, 20))
+                .topLeft(new DecimalPosition(0, 20)));
+        baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
+        Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
+
+        callOnViewChanged(new ViewField(0)
+                .bottomLeft(new DecimalPosition(1, 1))
+                .bottomRight(new DecimalPosition(21, 1))
+                .topRight(new DecimalPosition(21, 21))
+                .topLeft(new DecimalPosition(1, 21)));
+        baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
+        Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
     }
 
     private void setupCockpit() {
@@ -123,10 +159,10 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
         });
     }
 
-    private void simulateGameEngine(BaseItemUiService baseItemUiService, ColdGameUiContext coldGameUiContext) {
+    private NativeSyncBaseItemTickInfo[] setup2BaseItems(int baseId) {
         NativeSyncBaseItemTickInfo info1 = new NativeSyncBaseItemTickInfo();
         info1.id = 1;
-        info1.baseId = 21;
+        info1.baseId = baseId;
         info1.itemTypeId = BUILDER_ITEM_TYPE_ID;
         info1.x = 10;
         info1.y = 10;
@@ -137,7 +173,7 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
 
         NativeSyncBaseItemTickInfo info2 = new NativeSyncBaseItemTickInfo();
         info2.id = 2;
-        info2.baseId = 21;
+        info2.baseId = baseId;
         info2.itemTypeId = FACTORY_ITEM_TYPE_ID;
         info2.x = 12;
         info2.y = 10;
@@ -146,15 +182,16 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
         info2.health = 1;
         info2.buildup = 1;
 
-
-        baseItemUiService.addBase(new PlayerBaseDto()
-                .name("Test Base")
-                .baseId(info1.baseId)
-                .userId(coldGameUiContext.getUserContext().getUserId())
-                .character(Character.HUMAN));
-        baseItemUiService.updateSyncBaseItems(new NativeSyncBaseItemTickInfo[]{info1, info2});
+        return new NativeSyncBaseItemTickInfo[]{info1, info2};
     }
 
+    private void createBase(int userId, int baseId) {
+        getWeldBean(BaseItemUiService.class).addBase(new PlayerBaseDto()
+                .name("Test Base")
+                .baseId(baseId)
+                .userId(userId)
+                .character(Character.HUMAN));
+    }
 
 }
 

@@ -1,18 +1,23 @@
 <div class="flex flex-column">
   <div class="mr-2">
-    <p-toolbar>
-      <div class="p-toolbar-group-left">
-        <p-fileUpload #fileUploadElement
-                      chooseLabel="Import GLTF"
-                      chooseIcon="pi pi-folder-open"
-                      mode="basic"
-                      styleClass="p-button-sm"
-                      [auto]=true
-                      [customUpload]=true
-                      (uploadHandler)="onImport($event)">
-        </p-fileUpload>
+    <p-panel>
+      <ng-template pTemplate="header">
+        State
+      </ng-template>
+
+      <div class="field grid">
+        <label class="col-fixed" style="width:100px">Cursor Terrain Position</label>
+        <div class="col">
+          {{terrainCursorXPosition | number: '3.2-2'}} : {{terrainCursorYPosition | number: '3.2-2'}}
+        </div>
       </div>
-    </p-toolbar>
+      <div class="field grid">
+        <label class="col-fixed" style="width:100px">Cursor Terrain Height</label>
+        <div class="col">
+          {{terrainCursorZPosition | number: '3.2-2'}}
+        </div>
+      </div>
+    </p-panel>
     <p-panel>
       <ng-template pTemplate="header">
         Save selected Babylon Model
@@ -91,6 +96,20 @@
                 [disabled]="dropDownLoadBabylonModel == null"
                 (onClick)="onLoad()"></p-button>
       <i>&nbsp;</i>
+    </p-panel>
+    <p-panel>
+      <ng-template pTemplate="header">
+        Import GLTF
+      </ng-template>
+      <p-fileUpload #fileUploadElement
+                    chooseLabel="Import GLTF"
+                    chooseIcon="pi pi-folder-open"
+                    mode="basic"
+                    styleClass="p-button-sm"
+                    [auto]=true
+                    [customUpload]=true
+                    (uploadHandler)="onImport($event)">
+      </p-fileUpload>
     </p-panel>
   </div>
 </div>

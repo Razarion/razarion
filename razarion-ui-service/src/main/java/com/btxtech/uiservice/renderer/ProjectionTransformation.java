@@ -17,6 +17,7 @@ import javax.inject.Inject;
  * http://www.songho.ca/opengl/gl_projectionmatrix.html
  */
 @ApplicationScoped
+@Deprecated
 public class ProjectionTransformation {
     private static final int Z_NEAR_FALLBACK = 10;
     private static final int Z_FAR_FALLBACK = 5000000;

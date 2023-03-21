@@ -615,8 +615,8 @@ public class BaseItemUiService {
         }
     }
 
-    public void onViewChanged(ViewField viewField, Rectangle2D viewFieldAabb) {
+    public void onViewChanged(ViewField viewField) {
         this.viewField = viewField;
-        this.viewFieldAabb = viewFieldAabb;
+        this.viewFieldAabb = viewField.calculateAabbRectangle();
     }
 }

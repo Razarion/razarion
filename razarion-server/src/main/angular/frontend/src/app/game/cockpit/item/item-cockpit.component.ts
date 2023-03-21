@@ -24,7 +24,6 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
   }
 
   displayOwnSingleType(count: number, ownItemCockpit: OwnItemCockpit): void {
-    console.info("displayOwnSingleType")
     this.zone.run(() => {
       this.showCockpit = true;
       this.ownItemCockpit = ownItemCockpit;
@@ -47,7 +46,6 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
   }
 
   displayOwnMultipleItemTypes(ownMultipleIteCockpits: OwnMultipleIteCockpit[]): void {
-    console.info("displayOwnMultipleItemTypes")
     this.zone.run(() => {
       this.showCockpit = true;
       this.ownItemCockpit = undefined;
@@ -57,7 +55,6 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
   }
 
   displayOtherItemType(otherItemCockpit: OtherItemCockpit): void {
-    console.info("displayOtherItemType")
     this.zone.run(() => {
       this.showCockpit = true;
       this.ownItemCockpit = undefined;
@@ -67,7 +64,6 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
   }
 
   dispose(): void {
-    console.info("dispose")
     this.zone.run(() => {
       this.showCockpit = false;
       this.ownItemCockpit = undefined;

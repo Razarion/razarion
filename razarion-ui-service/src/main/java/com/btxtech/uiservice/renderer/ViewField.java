@@ -56,6 +56,26 @@ public class ViewField {
         return new Vertex(topLeft, z);
     }
 
+    public ViewField bottomLeft(DecimalPosition bottomLeft) {
+        setBottomLeft(bottomLeft);
+        return this;
+    }
+
+    public ViewField bottomRight(DecimalPosition bottomRight) {
+        setBottomRight(bottomRight);
+        return this;
+    }
+
+    public ViewField topRight(DecimalPosition topRight) {
+        setTopRight(topRight);
+        return this;
+    }
+
+    public ViewField topLeft(DecimalPosition topLeft) {
+        setTopLeft(topLeft);
+        return this;
+    }
+
     public Vertex calculateLongestLegZ(Vertex origin) {
         if (hasNullPosition()) {
             return null;

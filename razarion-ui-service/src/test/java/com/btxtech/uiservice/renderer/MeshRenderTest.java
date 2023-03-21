@@ -49,9 +49,7 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
         coldGameUiContext.setShape3Ds(shape3ds);
         setMeshContainerId(coldGameUiContext, BUILDER_ITEM_TYPE_ID, "Vehicle_11");
         setupUiEnvironment(coldGameUiContext);
-        AlarmService alarmService = getWeldBean(AlarmService.class);
-        alarmService.addListener(alarm -> logger.severe(alarm.toString()));
-        alarmService.getAlarms().forEach(alarm -> logger.severe(alarm.toString()));
+        setupAlarmService();
         GameUiControl gameUiControl = getWeldBean(GameUiControl.class);
         gameUiControl.setColdGameUiContext(coldGameUiContext);
         gameUiControl.init();

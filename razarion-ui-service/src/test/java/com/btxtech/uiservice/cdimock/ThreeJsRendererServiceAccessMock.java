@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 @ApplicationScoped
 public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceAccess {
-    private List<BabylonBaseItemMock> babylonBaseItemMocks = new ArrayList<>();
+    private final List<BabylonBaseItemMock> babylonBaseItemMocks = new ArrayList<>();
 
     private final Logger logger = Logger.getLogger(ThreeJsRendererServiceAccessMock.class.getName());
 
@@ -26,8 +26,7 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
 
     @Override
     public BabylonBaseItem createBaseItem(int id) {
-        logger.warning("createBaseItem()");
-        BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock();
+        BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock(id);
         babylonBaseItemMocks.add(babylonBaseItemMock);
         return babylonBaseItemMock;
     }
@@ -46,9 +45,18 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
         return babylonBaseItemMocks;
     }
 
+    public void clear() {
+        babylonBaseItemMocks.clear();
+    }
+
     public static class BabylonBaseItemMock implements BabylonBaseItem {
+        private final int id;
         private List<BabylonBaseItemState> babylonBaseItemStates = new ArrayList<>();
-        private int removeCalled;
+        private boolean removed;
+
+        public BabylonBaseItemMock(int id) {
+            this.id = id;
+        }
 
         @Override
         public void updateState(BabylonBaseItemState state) {
@@ -57,15 +65,19 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
 
         @Override
         public void remove() {
-            removeCalled++;
+            removed = true;
         }
 
         public List<BabylonBaseItemState> getBabylonBaseItemStates() {
             return babylonBaseItemStates;
         }
 
-        public int getRemoveCalled() {
-            return removeCalled;
+        public boolean isRemoved() {
+            return removed;
+        }
+
+        public int getId() {
+            return id;
         }
     }
 }
