@@ -45,7 +45,6 @@ export class GameComponent implements OnInit {
       this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
       this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
       this.gwtAngularService.gwtAngularFacade.threeJsModelPackService = this.gameMockService.mockThreeJsModelPackService;
-      // this.gwtAngularService.gwtAngularFacade.assetService = this.gameMockService.mockAssetService;
       this.gameMockService.loadMockStaticGameConfig().then(() => {
         this.gameMockService.loadMockAssetConfig().then(() => {
           this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gwtAngularService).then(() => {
@@ -76,6 +75,7 @@ export class GameComponent implements OnInit {
       this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
       this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
       this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
+      this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.threeJsRendererService.createBaseItemPlacerPresenter();
     }
 
     // Prevent running game in the background if someone press the browser history navigation button

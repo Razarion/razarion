@@ -19,6 +19,7 @@ import static com.btxtech.uiservice.Colors.START_POINT_PLACER_VALID;
  * 10.09.2016.
  */
 @Dependent
+@Deprecated
 public class BaseItemPlacerCircleRendererTask extends AbstractWebGlRenderTask<BaseItemPlacer> implements BaseItemPlacerRenderTaskRunner.Circle {
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
@@ -33,7 +34,7 @@ public class BaseItemPlacerCircleRendererTask extends AbstractWebGlRenderTask<Ba
 
     @Override
     protected void setup(BaseItemPlacer baseItemPlacer) {
-        setupVec3PositionArray(jsInteropObjectFactory.newFloat32Array4Vertices(baseItemPlacer.getVertexes()));
+        // setupVec3PositionArray(jsInteropObjectFactory.newFloat32Array4Vertices(baseItemPlacer.getVertexes()));
         setupUniform(U_COLOR, UniformLocation.Type.COLOR_RGBA, () -> baseItemPlacer.isPositionValid() ? START_POINT_PLACER_VALID : START_POINT_PLACER_IN_VALID);
     }
 }

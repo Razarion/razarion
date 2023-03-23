@@ -80,7 +80,7 @@ public class TerrainMouseHandler {
 //            }
 
             if (baseItemPlacerService.isActive()) {
-                // TODO baseItemPlacerService.onMouseMoveEvent(terrainPosition);
+                baseItemPlacerService.onMouseMoveEvent(terrainPosition);
                 return;
             }
 

@@ -6,6 +6,7 @@ export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
+  baseItemPlacerPresenter!: BaseItemPlacerPresenter;
   editorFrontendProvider!: EditorFrontendProvider;
   statusProvider!: StatusProvider;
   threeJsRendererServiceAccess!: ThreeJsRendererServiceAccess;
@@ -430,6 +431,20 @@ export interface BuildupItemCockpit {
   onBuild(): void;
 
   setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void;
+}
+
+export interface BaseItemPlacerPresenter {
+  activate(baseItemPlacer: BaseItemPlacer): void;
+
+  deactivate(): void;
+}
+
+export interface BaseItemPlacer {
+  isPositionValid(): boolean;
+
+  getPosition(): DecimalPosition;
+
+  getEnemyFreeRadius(): number;
 }
 
 export interface AngularZoneRunner {

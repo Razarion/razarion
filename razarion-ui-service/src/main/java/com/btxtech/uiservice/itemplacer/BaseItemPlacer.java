@@ -1,19 +1,17 @@
 package com.btxtech.uiservice.itemplacer;
 
-import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.renderer.ViewService;
+import jsinterop.annotations.JsType;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * User: beat
@@ -21,6 +19,7 @@ import java.util.List;
  * Time: 18:02
  */
 @Dependent
+@JsType
 public class BaseItemPlacer {
     @Inject
     private BaseItemPlacerChecker baseItemPlacerChecker;
@@ -35,13 +34,10 @@ public class BaseItemPlacer {
     private DecimalPosition position;
     private BaseItemType baseItemType;
     private String errorText;
-    private List<Vertex> vertexes;
 
     public BaseItemPlacer init(BaseItemPlacerConfig baseItemPlacerConfig) {
         baseItemType = itemTypeService.getBaseItemType(baseItemPlacerConfig.getBaseItemTypeId());
         baseItemPlacerChecker.init(baseItemType, baseItemPlacerConfig);
-        Circle2D circle2D = new Circle2D(new DecimalPosition(0, 0), baseItemPlacerChecker.getEnemyFreeRadius());
-        vertexes = circle2D.triangulation(20, 0);
         if (baseItemPlacerConfig.getSuggestedPosition() != null) {
             onMove(baseItemPlacerConfig.getSuggestedPosition());
         } else {
@@ -49,6 +45,10 @@ public class BaseItemPlacer {
             onMove(cameraCenter);
         }
         return this;
+    }
+
+    public double getEnemyFreeRadius() {
+        return baseItemPlacerChecker.getEnemyFreeRadius();
     }
 
     void onMove(DecimalPosition position) {
@@ -65,6 +65,10 @@ public class BaseItemPlacer {
         return baseItemPlacerChecker.isPositionValid();
     }
 
+    public DecimalPosition getPosition() {
+        return position;
+    }
+
     public String getErrorText() {
         return errorText;
     }
@@ -73,28 +77,11 @@ public class BaseItemPlacer {
         return baseItemType;
     }
 
-    public List<Vertex> getVertexes() {
-        return vertexes;
-    }
-
     Collection<DecimalPosition> setupAbsolutePositions() {
         return baseItemPlacerChecker.setupAbsolutePositions(position);
     }
 
-//    public List<ModelMatrices> provideCircleModelMatrices() {
-//        return Collections.singletonList(ModelMatrices.createFromPosition(position, nativeMatrixFactory));
-//    }
-
-//    public List<ModelMatrices> provideItemModelMatrices() {
-//        List<ModelMatrices> result = new ArrayList<>();
-//        for (DecimalPosition position : setupAbsolutePositions()) {
-//            result.add(ModelMatrices.createFromPosition(position.getX(), position.getY(), this.position.getZ(), Colors.OWN, nativeMatrixFactory));
-//        }
-//        return result;
-//    }
-
     private void setupErrorText() {
-        // TODO
 //        if (!baseItemPlacerChecker.isEnemiesOk()) {
 //            errorText = ClientI18nHelper.getConstants().enemyTooNear();
 //        } else if (!baseItemPlacerChecker.isItemsOk()) {

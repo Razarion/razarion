@@ -2,6 +2,8 @@ import {Injectable} from "@angular/core";
 import {
   BabylonBaseItem,
   BabylonBaseItemState,
+  BaseItemPlacer,
+  BaseItemPlacerPresenter,
   MeshContainer,
   ShapeTransform,
   TerrainTile,
@@ -20,14 +22,17 @@ import {
   FreeCamera,
   Matrix,
   Mesh,
+  MeshBuilder,
   Node,
   PointerEventTypes,
   Quaternion,
   Scene,
+  Tools,
   TransformNode,
   Vector2,
   Vector3
 } from "@babylonjs/core";
+import {SimpleMaterial} from "@babylonjs/materials";
 
 export class ThreeJsRendererServiceMouseEvent {
   object3D: any = null;
@@ -154,7 +159,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   createBaseItem(id: number): BabylonBaseItem {
-    console.info(`create BaseItem ${id}`);
     try {
       const _this = this;
       let mesh = this.showMeshContainer(this.meshContainers, "Vehicle_01", 271, 290);
@@ -502,7 +506,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         }
         case PointerEventTypes.POINTERMOVE: {
           let pickPoint = this.setupMeshPickPoint(this.scene.pointerX, this.scene.pointerY);
-          if(!pickPoint) {
+          if (!pickPoint) {
             return;
           }
           this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickPoint.x, pickPoint.z, (pointerInfo.event.buttons & 1) === 1);
@@ -510,6 +514,37 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         }
       }
     });
+  }
+
+  createBaseItemPlacerPresenter(): BaseItemPlacerPresenter {
+    const scene = this.scene;
+    let disc: Mesh | null = null;
+    const material = new SimpleMaterial("Base Item Placer", scene);
+    material.diffuseColor = Color3.Red()
+    return new class implements BaseItemPlacerPresenter {
+      activate(baseItemPlacer: BaseItemPlacer): void {
+        disc = MeshBuilder.CreateDisc("Base Item Placer", {radius: baseItemPlacer.getEnemyFreeRadius()}, scene);
+        disc.visibility = 0.5;
+        disc.material = material;
+        disc.rotation.x = Tools.ToRadians(90);
+        disc.position.x = baseItemPlacer.getPosition().getX();
+        disc.position.z = baseItemPlacer.getPosition().getY();
+        disc.position.y = 0.1;
+        material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
+        disc.onBeforeRenderObservable.add(eventData => {
+          if (disc) {
+            disc.position.x = baseItemPlacer.getPosition().getX();
+            disc.position.z = baseItemPlacer.getPosition().getY();
+            material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
+          }
+        })
+      }
+
+      deactivate(): void {
+        scene.removeMesh(disc!);
+        disc = null;
+      }
+    };
   }
 }
 

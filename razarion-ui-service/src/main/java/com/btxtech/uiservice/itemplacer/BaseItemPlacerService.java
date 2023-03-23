@@ -23,15 +23,20 @@ public class BaseItemPlacerService {
     private CursorService cursorService;
     private boolean canBeCanceled;
     private BaseItemPlacer baseItemPlacer;
+    private BaseItemPlacerPresenter baseItemPlacerPresenter;
     private Consumer<Collection<DecimalPosition>> executionCallback;
-    private Collection<BaseItemPlacerListener> listeners = new ArrayList<>();
+    private final Collection<BaseItemPlacerListener> listeners = new ArrayList<>();
+
+    public void init(BaseItemPlacerPresenter baseItemPlacerPresenter) {
+        this.baseItemPlacerPresenter = baseItemPlacerPresenter;
+    }
 
     public void activate(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<Collection<DecimalPosition>> executionCallback) {
         cursorService.handleItemPlaceActivated();
         this.canBeCanceled = canBeCanceled;
         this.executionCallback = executionCallback;
         baseItemPlacer = instance.get().init(baseItemPlacerConfig);
-        // TODO baseItemPlacerRenderTask.activate(baseItemPlacer);
+        baseItemPlacerPresenter.activate(baseItemPlacer);
         new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.activatePlacer(baseItemPlacer));
     }
 
@@ -81,7 +86,7 @@ public class BaseItemPlacerService {
 
     private void deactivateInternal(boolean canceled) {
         baseItemPlacer = null;
-        // TODO baseItemPlacerRenderTask.deactivate();
+        baseItemPlacerPresenter.deactivate();
         new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.deactivatePlacer(canceled));
     }
 }

@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
+import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
@@ -25,6 +26,8 @@ public class GwtAngularService {
     private MainCockpitService cockpitService;
     @Inject
     private ItemCockpitService itemCockpitService;
+    @Inject
+    private BaseItemPlacerService baseItemPlacerService;
     @Inject
     private StatusProvider statusProvider;
     @Inject
@@ -47,6 +50,7 @@ public class GwtAngularService {
         gwtAngularFacade.assetService = assetService;
         cockpitService.init(gwtAngularFacade.mainCockpit);
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
+        baseItemPlacerService.init(gwtAngularFacade.baseItemPlacerPresenter);
     }
 
     public void onCrash() {
