@@ -685,7 +685,6 @@ public class SyncBaseItem extends SyncItem {
         nativeSyncBaseItemTickInfo.itemTypeId = getBaseItemType().getId();
         nativeSyncBaseItemTickInfo.baseId = base.getBaseId();
         if (containedIn == null) {
-            nativeSyncBaseItemTickInfo.model = getSyncPhysicalArea().getModelNativeMatrixDto();
             if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
                 nativeSyncBaseItemTickInfo.turretAngle = syncWeapon.getSyncTurret().getAngle();
             }
@@ -693,6 +692,7 @@ public class SyncBaseItem extends SyncItem {
             nativeSyncBaseItemTickInfo.x = position3d.getX();
             nativeSyncBaseItemTickInfo.y = position3d.getY();
             nativeSyncBaseItemTickInfo.z = position3d.getZ();
+            nativeSyncBaseItemTickInfo.angle = getSyncPhysicalArea().getAngle();
             if (syncHarvester != null && syncHarvester.isHarvesting()) {
                 nativeSyncBaseItemTickInfo.harvestingResourcePosition = NativeUtil.toNativeVertex(syncHarvester.getResource().getSyncPhysicalArea().getPosition3d());
             }

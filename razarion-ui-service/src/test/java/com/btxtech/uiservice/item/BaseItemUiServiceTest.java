@@ -1,11 +1,8 @@
 package com.btxtech.uiservice.item;
 
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.shared.nativejs.NativeMatrixDto;
-import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
 import com.btxtech.uiservice.cdimock.ThreeJsRendererServiceAccessMock;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -42,7 +39,6 @@ public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
                 200, 200);
 
         // Runtime
-        NativeMatrixDto nativeMatrixDto = new NativeMatrixDto();
         NativeSyncBaseItemTickInfo info = new NativeSyncBaseItemTickInfo();
         info.id = 1;
         info.baseId = 21;
@@ -50,8 +46,6 @@ public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
         info.x = 274;
         info.y = 100;
         info.z = 2;
-        nativeMatrixDto.numbers = Matrix4.createTranslation(info.x, info.y, info.z).toArray();
-        info.model = nativeMatrixDto;
         info.spawning = 1;
         info.health = 1;
         info.buildup = 1;

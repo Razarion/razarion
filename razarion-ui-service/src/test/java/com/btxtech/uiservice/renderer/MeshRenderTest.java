@@ -10,8 +10,6 @@ import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.shared.nativejs.NativeMatrixDto;
-import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
 import com.btxtech.uiservice.cdimock.TestNativeMatrixFactory;
 import com.btxtech.uiservice.cdimock.renderer.RenderTaskCollector;
@@ -62,7 +60,6 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
         renderService.setup();
 
         // Runtime
-        NativeMatrixDto nativeMatrixDto = new NativeMatrixDto();
         NativeSyncBaseItemTickInfo info = new NativeSyncBaseItemTickInfo();
         info.id = 1;
         info.baseId = 21;
@@ -70,8 +67,6 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
         info.x = 274;
         info.y = 100;
         info.z = 2;
-        nativeMatrixDto.numbers = Matrix4.createTranslation(info.x, info.y, info.z).toArray();
-        info.model = nativeMatrixDto;
         info.spawning = 1;
         info.health = 1;
         info.buildup = 1;

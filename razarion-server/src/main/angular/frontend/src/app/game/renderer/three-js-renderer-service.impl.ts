@@ -173,6 +173,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
           mesh.position.x = state.xPos;
           mesh.position.y = state.zPos;
           mesh.position.z = state.yPos;
+          mesh.rotation.y = Tools.ToRadians(90) - state.angle;
         }
       }
     } catch (error) {

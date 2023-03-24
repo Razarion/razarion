@@ -224,6 +224,7 @@ public class BaseItemUiService {
                     babylonBaseItemState.xPos = nativeSyncBaseItemTickInfo.x;
                     babylonBaseItemState.yPos = nativeSyncBaseItemTickInfo.y;
                     babylonBaseItemState.zPos = nativeSyncBaseItemTickInfo.z;
+                    babylonBaseItemState.angle = nativeSyncBaseItemTickInfo.angle;
                     babylonBaseItem.updateState(babylonBaseItemState);
                     if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
                         // weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));

@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
-import com.btxtech.shared.nativejs.NativeMatrixDto;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import jsinterop.annotations.JsType;
 
@@ -15,7 +14,7 @@ public class NativeSyncBaseItemTickInfo {
     public double x;
     public double y;
     public double z;
-    public NativeMatrixDto model;
+    public double angle;
     public int baseId;
     public double turretAngle;
     public double spawning;

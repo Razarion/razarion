@@ -56,10 +56,10 @@ export class GameComponent implements OnInit {
             let babylonBaseItem = this.threeJsRendererService.createBaseItem(999999);
 
 
-            babylonBaseItem.updateState({xPos: 271, yPos: 290, zPos: 0})
+            babylonBaseItem.updateState({xPos: 271, yPos: 290, zPos: 0, angle: 0})
             let i = 0.1;
             let move = () => {
-              babylonBaseItem.updateState({xPos: 271, yPos: 290 + i, zPos: 0})
+              babylonBaseItem.updateState({xPos: 271, yPos: 290 + i, zPos: 0, angle: 0})
               i += 0.1
               if (i > 10) {
                 return;

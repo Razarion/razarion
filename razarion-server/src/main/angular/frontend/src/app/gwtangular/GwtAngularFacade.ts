@@ -368,6 +368,7 @@ export interface BabylonBaseItemState {
   xPos: number;
   yPos: number;
   zPos: number;
+  angle: number;
 }
 
 // ---------- Item Cockpit ----------
