@@ -167,6 +167,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         remove(): void {
           console.info(`remove BaseItem ${id}`);
           _this.scene.removeMesh(mesh);
+          mesh.dispose();
         }
 
         updateState(state: BabylonBaseItemState): void {
@@ -543,6 +544,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
       deactivate(): void {
         scene.removeMesh(disc!);
+        disc?.dispose();
         disc = null;
       }
     };
