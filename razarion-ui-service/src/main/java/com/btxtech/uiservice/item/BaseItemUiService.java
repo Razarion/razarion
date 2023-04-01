@@ -15,9 +15,12 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Colors;
+import com.btxtech.uiservice.Diplomacy;
+import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -26,11 +29,11 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
-import com.btxtech.uiservice.renderer.BabylonBaseItemState;
 import com.btxtech.uiservice.renderer.ThreeJsRendererService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.user.UserUiService;
 
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -95,6 +99,8 @@ public class BaseItemUiService {
     private Set<Integer> buildups = new HashSet<>();
     private long lastUpdateTimeStamp;
     private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
+    private final List<BabylonBaseItem> selectedBabylonBaseItem = new ArrayList<>();
+    private BabylonBaseItem hoverBabylonBaseItem;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
 
@@ -116,6 +122,8 @@ public class BaseItemUiService {
         weaponTurretModelMatrices.clear();
         lastUpdateTimeStamp = 0;
         syncBaseItemSetPositionMonitor = null;
+        selectedBabylonBaseItem.clear();
+        hoverBabylonBaseItem = null;
     }
 
     public Collection<BaseItemType> getBaseItemTypes() {
@@ -192,8 +200,6 @@ public class BaseItemUiService {
                 if (nativeSyncBaseItemTickInfo.contained) {
                     continue;
                 }
-                Color color = color4SyncBaseItem(nativeSyncBaseItemTickInfo);
-                // NativeMatrix modelMatrix = nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.model);
                 if (viewFieldAabb == null || !viewFieldAabb.adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
                     // TODO move to worker
                     if (syncBaseItemSetPositionMonitor != null && viewFieldAabb != null && isMyEnemy(nativeSyncBaseItemTickInfo) && !isSpawning && isBuildup) {
@@ -216,16 +222,13 @@ public class BaseItemUiService {
                 if (!isSpawning && isBuildup && isHealthy) {
                     BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
                     if (babylonBaseItem == null) {
-                        babylonBaseItem = threeJsRendererService.createBaseItem(nativeSyncBaseItemTickInfo.id);
+                        babylonBaseItem = threeJsRendererService.createBaseItem(nativeSyncBaseItemTickInfo.id,
+                                diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo),
+                                baseItemType.getPhysicalAreaConfig().getRadius());
                         aliveBabylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
                     }
                     leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
-                    BabylonBaseItemState babylonBaseItemState = new BabylonBaseItemState();
-                    babylonBaseItemState.xPos = nativeSyncBaseItemTickInfo.x;
-                    babylonBaseItemState.yPos = nativeSyncBaseItemTickInfo.y;
-                    babylonBaseItemState.zPos = nativeSyncBaseItemTickInfo.z;
-                    babylonBaseItemState.angle = nativeSyncBaseItemTickInfo.angle;
-                    babylonBaseItem.updateState(babylonBaseItemState);
+                    babylonBaseItem.updatePosition(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y, nativeSyncBaseItemTickInfo.z, nativeSyncBaseItemTickInfo.angle);
                     if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
                         // weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
                     }
@@ -606,6 +609,7 @@ public class BaseItemUiService {
         return hasRadar;
     }
 
+    @Deprecated // use diplomacy4SyncBaseItem
     public Color color4SyncBaseItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
             return Colors.OWN;
@@ -616,8 +620,59 @@ public class BaseItemUiService {
         }
     }
 
+    public Diplomacy diplomacy4SyncBaseItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
+            return Diplomacy.OWN;
+        } else if (isMyEnemy(nativeSyncBaseItemTickInfo)) {
+            return Diplomacy.ENEMY;
+        } else {
+            return Diplomacy.FRIEND;
+        }
+    }
+
     public void onViewChanged(ViewField viewField) {
         this.viewField = viewField;
         this.viewFieldAabb = viewField.calculateAabbRectangle();
     }
+
+    public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+        selectedBabylonBaseItem.forEach(babylonBaseItem -> babylonBaseItem.select(false));
+        selectedBabylonBaseItem.clear();
+
+        if (selectionEvent.getType() == SelectionEvent.Type.OWN) {
+            selectionEvent.getSelectedGroup().getItems().stream()
+                    .map(SyncItemSimpleDto::getId)
+                    .map(id -> aliveBabylonBaseItems.get(id))
+                    .filter(Objects::nonNull)
+                    .forEach(babylonBaseItem -> {
+                        selectedBabylonBaseItem.add(babylonBaseItem);
+                        babylonBaseItem.select(true);
+                    });
+        } else if (selectionEvent.getType() == SelectionEvent.Type.OTHER) {
+            BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(selectionEvent.getSelectedOther().getId());
+            if (babylonBaseItem != null) {
+                selectedBabylonBaseItem.add(babylonBaseItem);
+                babylonBaseItem.select(true);
+            }
+        }
+    }
+
+    public void onHover(SyncItemSimpleDto syncItem) {
+        if (hoverBabylonBaseItem == null && syncItem != null) {
+            hoverBabylonBaseItem = aliveBabylonBaseItems.get(syncItem.getId());
+            if (hoverBabylonBaseItem != null) {
+                hoverBabylonBaseItem.hover(true);
+            }
+        } else if (hoverBabylonBaseItem != null && syncItem == null) {
+            hoverBabylonBaseItem.hover(false);
+            hoverBabylonBaseItem = null;
+        } else if (hoverBabylonBaseItem != null && hoverBabylonBaseItem.getId() != syncItem.getId()) {
+            hoverBabylonBaseItem.hover(false);
+            hoverBabylonBaseItem = aliveBabylonBaseItems.get(syncItem.getId());
+            if (hoverBabylonBaseItem != null) {
+                hoverBabylonBaseItem.hover(true);
+            }
+        }
+    }
+
 }

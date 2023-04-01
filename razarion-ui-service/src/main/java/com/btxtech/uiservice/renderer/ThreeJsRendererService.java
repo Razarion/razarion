@@ -3,6 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.uiservice.Diplomacy;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -16,12 +17,12 @@ public class ThreeJsRendererService {
     @Inject
     private ThreeJsRendererServiceAccess threeJsRendererServiceAccess;
 
-    public ThreeJsTerrainTile createBaseItem(TerrainTile terrainTile, Integer defaultGroundConfig) {
+    public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfig) {
         return threeJsRendererServiceAccess.createTerrainTile(terrainTile, defaultGroundConfig);
     }
 
-    public BabylonBaseItem createBaseItem(int baseItemId) {
-        return threeJsRendererServiceAccess.createBaseItem(baseItemId);
+    public BabylonBaseItem createBaseItem(int baseItemId, Diplomacy diplomacy, double radius) {
+        return threeJsRendererServiceAccess.createBaseItem(baseItemId, diplomacy, radius);
     }
 
     public void executeViewFieldConfig(ViewFieldConfig viewFieldConfig, Optional<Runnable> completionCallback) {

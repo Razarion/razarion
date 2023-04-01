@@ -1,9 +1,9 @@
 import {Injectable} from "@angular/core";
 import {
   BabylonBaseItem,
-  BabylonBaseItemState,
   BaseItemPlacer,
   BaseItemPlacerPresenter,
+  Diplomacy,
   MeshContainer,
   ShapeTransform,
   TerrainTile,
@@ -158,33 +158,96 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  createBaseItem(id: number): BabylonBaseItem {
+  createBaseItem(id: number, diplomacy: Diplomacy, radius: number): BabylonBaseItem {
     try {
       const _this = this;
       let mesh = this.showMeshContainer(this.meshContainers, "Vehicle_01", 271, 290);
       mesh.name = `Base Item (id: ${id} )`;
       return new class implements BabylonBaseItem {
+        private markerDisc: Mesh | null = null;
+        private selectActive: boolean = false;
+        private hoverActive: boolean = false;
+
+        getId(): number {
+          return id;
+        }
+
+        select(active: boolean): void {
+          this.selectActive = active;
+          this.updateMarkedDisk();
+        }
+
+        hover(active: boolean): void {
+          this.hoverActive = active;
+          this.updateMarkedDisk();
+        }
+
+        private updateMarkedDisk(): void {
+          if (this.selectActive || this.hoverActive) {
+            if (!this.markerDisc) {
+              this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: radius});
+              this.markerDisc.material = new SimpleMaterial("Base Item Marker", _this.scene);
+              this.markerDisc.position.y = 0.01;
+              this.markerDisc.rotation.x = Tools.ToRadians(90);
+              switch (diplomacy) {
+                case Diplomacy.OWN:
+                  (<SimpleMaterial>this.markerDisc.material).diffuseColor = Color3.Green()
+                  break;
+                case Diplomacy.ENEMY:
+                  (<SimpleMaterial>this.markerDisc.material).diffuseColor = Color3.Red()
+                  break;
+                case Diplomacy.FRIEND:
+                  (<SimpleMaterial>this.markerDisc.material).diffuseColor = Color3.Yellow()
+                  break;
+              }
+              this.markerDisc.parent = mesh;
+            }
+          } else {
+            if (this.markerDisc) {
+              this.markerDisc.dispose();
+              this.markerDisc = null;
+            }
+          }
+
+          if (this.selectActive) {
+            (<SimpleMaterial>this.markerDisc!.material).alpha = 0.6
+          } else if (this.hoverActive) {
+            (<SimpleMaterial>this.markerDisc!.material).alpha = 0.3
+          }
+        }
+
         remove(): void {
           console.info(`remove BaseItem ${id}`);
           _this.scene.removeMesh(mesh);
           mesh.dispose();
         }
 
-        updateState(state: BabylonBaseItemState): void {
-          mesh.position.x = state.xPos;
-          mesh.position.y = state.zPos;
-          mesh.position.z = state.yPos;
-          mesh.rotation.y = Tools.ToRadians(90) - state.angle;
+        updatePosition(x: number, y: number, z: number, angle: number): void {
+          mesh.position.x = x;
+          mesh.position.y = z;
+          mesh.position.z = y;
+          mesh.rotation.y = Tools.ToRadians(90) - angle;
         }
       }
     } catch (error) {
       console.error(error);
       return new class implements BabylonBaseItem {
+        getId(): number {
+          return id;
+        }
+
+        updatePosition(x: number, y: number, z: number, angle: number): void {
+        }
+
+        select(active: boolean): void {
+        }
+
+        hover(active: boolean): void {
+        }
+
         remove(): void {
         }
 
-        updateState(state: BabylonBaseItemState): void {
-        }
       }
     }
   }

@@ -63,8 +63,6 @@ public class TerrainMouseHandler {
     private ExceptionHandler exceptionHandler;
     @Inject
     private AudioService audioService;
-    @Inject
-    private ItemMarkerService itemMarkerService;
     private GroupSelectionFrame groupSelectionFrame;
     // DOTO private EditorMouseListener editorMouseListener;
 
@@ -93,23 +91,23 @@ public class TerrainMouseHandler {
                 SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition);
                 if (syncBaseItem != null) {
                     cursorService.handleMouseOverBaseItem(syncBaseItem);
-                    itemMarkerService.onHover(syncBaseItem);
+                    baseItemUiService.onHover(syncBaseItem);
                     return;
                 }
                 SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition);
                 if (syncResourceItem != null) {
                     cursorService.handleMouseOverResourceItem();
-                    itemMarkerService.onHover(syncResourceItem);
+                    baseItemUiService.onHover(syncResourceItem);
                     return;
                 }
                 SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition);
                 if (syncBoxItem != null) {
                     cursorService.handleMouseOverBoxItem();
-                    itemMarkerService.onHover(syncBoxItem);
+                    baseItemUiService.onHover(syncBoxItem);
                     return;
                 }
                 cursorService.handleMouseOverTerrain(terrainPosition);
-                itemMarkerService.onHover(null);
+                baseItemUiService.onHover(null);
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

@@ -21,6 +21,7 @@ import java.util.List;
  * 23.01.2017.
  */
 @ApplicationScoped
+@Deprecated
 public class ItemMarkerService {
     private static final double FACTOR = 1.1;
     @Inject

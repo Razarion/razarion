@@ -1,12 +1,20 @@
 package com.btxtech.uiservice;
 
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
+import com.btxtech.shared.gameengine.datatypes.Character;
+import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.system.alarm.AlarmService;
+import com.btxtech.uiservice.cdimock.TestItemCockpitFrontend;
 import com.btxtech.uiservice.cdimock.ThreeJsRendererServiceAccessMock;
+import com.btxtech.uiservice.cockpit.MainCockpit;
+import com.btxtech.uiservice.cockpit.MainCockpitService;
+import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.i18n.I18nConstants;
 import com.btxtech.uiservice.i18n.I18nHelper;
@@ -98,6 +106,74 @@ public class WeldUiBaseIntegrationTest {
         I18nConstants i18nConstants = EasyMock.createNiceMock(I18nConstants.class);
         EasyMock.replay(i18nConstants);
         I18nHelper.setConstants(i18nConstants);
+    }
+
+    protected void createBase(int userId, int baseId) {
+        getWeldBean(BaseItemUiService.class).addBase(new PlayerBaseDto()
+                .name("Test Base")
+                .baseId(baseId)
+                .userId(userId)
+                .character(Character.HUMAN));
+    }
+
+    protected void setupCockpit() {
+        getWeldBean(ItemCockpitService.class).init(getWeldBean(TestItemCockpitFrontend.class));
+        getWeldBean(MainCockpitService.class).init(new MainCockpit() {
+            @Override
+            public void show() {
+
+            }
+
+            @Override
+            public void hide() {
+
+            }
+
+            @Override
+            public void displayResources(int resources) {
+
+            }
+
+            @Override
+            public void displayXps(int xp, int xp2LevelUp) {
+
+            }
+
+            @Override
+            public void displayLevel(int levelNumber) {
+
+            }
+
+            @Override
+            public Rectangle getInventoryDialogButtonLocation() {
+                return null;
+            }
+
+            @Override
+            public Rectangle getScrollHomeButtonLocation() {
+                return null;
+            }
+
+            @Override
+            public void displayItemCount(int itemCount, int houseSpace) {
+
+            }
+
+            @Override
+            public void displayEnergy(int consuming, int generating) {
+
+            }
+
+            @Override
+            public void showRadar(GameUiControl.RadarState radarState) {
+
+            }
+
+            @Override
+            public void clean() {
+
+            }
+        });
     }
 
     protected Vertex toNdcVertex(Vertex4 vertex4) {

@@ -294,7 +294,7 @@ export interface ShapeTransform {
 export interface ThreeJsRendererServiceAccess {
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
 
-  createBaseItem(id: number): BabylonBaseItem;
+  createBaseItem(id: number, diplomacy: Diplomacy, radius: number): BabylonBaseItem;
 
   setViewFieldCenter(x: number, y: number): void;
 
@@ -311,6 +311,12 @@ export interface TerrainTile {
   getTerrainTileObjectLists(): TerrainTileObjectList[];
 
   getIndex(): Index;
+}
+
+export enum Diplomacy {
+  OWN,
+  FRIEND,
+  ENEMY
 }
 
 export interface GroundTerrainTile {
@@ -359,7 +365,13 @@ export interface ThreeJsTerrainTile {
 }
 
 export interface BabylonBaseItem {
-  updateState(state: BabylonBaseItemState): void;
+  getId(): number;
+
+  updatePosition(x: number, y: number, z: number, angle: number): void;
+
+  select(active: boolean): void;
+
+  hover(active: boolean): void;
 
   remove(): void;
 }

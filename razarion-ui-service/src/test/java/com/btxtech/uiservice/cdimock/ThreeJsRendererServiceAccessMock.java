@@ -2,8 +2,8 @@ package com.btxtech.uiservice.cdimock;
 
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
-import com.btxtech.uiservice.renderer.BabylonBaseItemState;
 import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
 import com.btxtech.uiservice.renderer.ThreeJsTerrainTile;
 
@@ -25,8 +25,8 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
     }
 
     @Override
-    public BabylonBaseItem createBaseItem(int id) {
-        BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock(id);
+    public BabylonBaseItem createBaseItem(int id, Diplomacy diplomacy, double radius) {
+        BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock(id, diplomacy, radius);
         babylonBaseItemMocks.add(babylonBaseItemMock);
         return babylonBaseItemMock;
     }
@@ -51,16 +51,40 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
 
     public static class BabylonBaseItemMock implements BabylonBaseItem {
         private final int id;
-        private List<BabylonBaseItemState> babylonBaseItemStates = new ArrayList<>();
+        private final Diplomacy diplomacy;
+        private final double radius;
+        private double x;
+        private double y;
+        private double z;
+        private double angle;
         private boolean removed;
+        private boolean select;
+        private boolean hover;
 
-        public BabylonBaseItemMock(int id) {
+        public BabylonBaseItemMock(int id, Diplomacy diplomacy, double radius) {
             this.id = id;
+            this.diplomacy = diplomacy;
+            this.radius = radius;
+        }
+
+
+        @Override
+        public void updatePosition(double x, double y, double z, double angle) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.angle = angle;
+
         }
 
         @Override
-        public void updateState(BabylonBaseItemState state) {
-            babylonBaseItemStates.add(state);
+        public void select(boolean active) {
+            this.select = active;
+        }
+
+        @Override
+        public void hover(boolean active) {
+            this.hover = active;
         }
 
         @Override
@@ -68,16 +92,44 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
             removed = true;
         }
 
-        public List<BabylonBaseItemState> getBabylonBaseItemStates() {
-            return babylonBaseItemStates;
-        }
-
         public boolean isRemoved() {
             return removed;
         }
 
+        public Diplomacy getDiplomacy() {
+            return diplomacy;
+        }
+
+        public double getRadius() {
+            return radius;
+        }
+
         public int getId() {
             return id;
+        }
+
+        public double getX() {
+            return x;
+        }
+
+        public double getY() {
+            return y;
+        }
+
+        public double getZ() {
+            return z;
+        }
+
+        public double getAngle() {
+            return angle;
+        }
+
+        public boolean isSelect() {
+            return select;
+        }
+
+        public boolean isHover() {
+            return hover;
         }
     }
 }

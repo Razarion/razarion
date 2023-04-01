@@ -1,18 +1,11 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
-import com.btxtech.uiservice.cdimock.TestItemCockpitFrontend;
-import com.btxtech.uiservice.cockpit.MainCockpit;
-import com.btxtech.uiservice.cockpit.MainCockpitService;
-import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.ViewField;
@@ -50,12 +43,6 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
         NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos = setup2BaseItems(baseId);
 
         BaseItemUiService baseItemUiService = getWeldBean(BaseItemUiService.class);
-
-        // TODO Run selection test
-//  TODO      InputService inputService = getWeldBean(InputService.class);
-//        inputService.onMouseDown(0, 0);
-//        inputService.onMouseUp(20, 20);
-//        baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
 
         // Run ThreeJsRendererServiceAccess test
         getThreeJsRendererServiceAccessMock().clear();
@@ -99,66 +86,6 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
         Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
     }
 
-    private void setupCockpit() {
-        getWeldBean(ItemCockpitService.class).init(getWeldBean(TestItemCockpitFrontend.class));
-        getWeldBean(MainCockpitService.class).init(new MainCockpit() {
-            @Override
-            public void show() {
-
-            }
-
-            @Override
-            public void hide() {
-
-            }
-
-            @Override
-            public void displayResources(int resources) {
-
-            }
-
-            @Override
-            public void displayXps(int xp, int xp2LevelUp) {
-
-            }
-
-            @Override
-            public void displayLevel(int levelNumber) {
-
-            }
-
-            @Override
-            public Rectangle getInventoryDialogButtonLocation() {
-                return null;
-            }
-
-            @Override
-            public Rectangle getScrollHomeButtonLocation() {
-                return null;
-            }
-
-            @Override
-            public void displayItemCount(int itemCount, int houseSpace) {
-
-            }
-
-            @Override
-            public void displayEnergy(int consuming, int generating) {
-
-            }
-
-            @Override
-            public void showRadar(GameUiControl.RadarState radarState) {
-
-            }
-
-            @Override
-            public void clean() {
-
-            }
-        });
-    }
-
     private NativeSyncBaseItemTickInfo[] setup2BaseItems(int baseId) {
         NativeSyncBaseItemTickInfo info1 = new NativeSyncBaseItemTickInfo();
         info1.id = 1;
@@ -185,13 +112,6 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
         return new NativeSyncBaseItemTickInfo[]{info1, info2};
     }
 
-    private void createBase(int userId, int baseId) {
-        getWeldBean(BaseItemUiService.class).addBase(new PlayerBaseDto()
-                .name("Test Base")
-                .baseId(baseId)
-                .userId(userId)
-                .character(Character.HUMAN));
-    }
 
 }
 

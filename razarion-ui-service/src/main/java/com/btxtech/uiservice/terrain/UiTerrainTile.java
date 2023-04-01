@@ -59,7 +59,7 @@ public class UiTerrainTile {
 
     private void terrainTileReceived(TerrainTile terrainTile) {
         this.terrainTile = terrainTile;
-        threeJsTerrainTile = threeJsRendererService.createBaseItem(terrainTile, defaultGroundConfig);
+        threeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, defaultGroundConfig);
 
         if (active) {
             threeJsTerrainTile.addToScene();
