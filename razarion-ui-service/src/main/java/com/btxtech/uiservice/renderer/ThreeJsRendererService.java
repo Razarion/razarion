@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
@@ -23,6 +24,10 @@ public class ThreeJsRendererService {
 
     public BabylonBaseItem createBaseItem(int baseItemId, Diplomacy diplomacy, double radius) {
         return threeJsRendererServiceAccess.createBaseItem(baseItemId, diplomacy, radius);
+    }
+
+    public void createProjectile(Vertex start, Vertex destination, double duration) {
+        threeJsRendererServiceAccess.createProjectile(start, destination, duration);
     }
 
     public void executeViewFieldConfig(ViewFieldConfig viewFieldConfig, Optional<Runnable> completionCallback) {

@@ -8,13 +8,15 @@ import {
   ShapeTransform,
   TerrainTile,
   ThreeJsRendererServiceAccess,
-  ThreeJsTerrainTile
+  ThreeJsTerrainTile,
+  Vertex
 } from "src/app/gwtangular/GwtAngularFacade";
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import {
+  Animation,
   CascadedShadowGenerator,
   Color3,
   DirectionalLight,
@@ -251,6 +253,42 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       }
     }
   }
+
+  createProjectile(start: Vertex, destination: Vertex, duration: number): void {
+    const box = MeshBuilder.CreateSphere("Projectile", {diameter: 0.1, segments: 1}, this.scene);
+
+    const frameRate = 1;
+    const xSlide = new Animation("Projectile",
+      "position",
+      frameRate,
+      Animation.ANIMATIONTYPE_VECTOR3,
+      Animation.ANIMATIONLOOPMODE_CONSTANT);
+
+    const keyFrames = [];
+
+    keyFrames.push({
+      frame: 0,
+      value: new Vector3(start.getX(), start.getZ(), start.getY())
+    });
+
+    keyFrames.push({
+      frame: 1,
+      value: new Vector3(destination.getX(), destination.getZ(), destination.getY())
+    });
+
+    xSlide.setKeys(keyFrames);
+
+    box.animations.push(xSlide);
+
+    let animatable = this.scene.beginAnimation(box, 0, 1, false, 1.0 / duration);
+    animatable.onAnimationEnd = () => {
+      this.scene.removeMesh(box);
+      box.dispose();
+    };
+
+
+  }
+
 
   setViewFieldCenter(x: number, y: number): void {
     let currentViewFieldCenter = this.setupCenterGroundPosition();

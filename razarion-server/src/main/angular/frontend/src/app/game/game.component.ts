@@ -10,7 +10,7 @@ import {ThreeJsRendererServiceImpl} from './renderer/three-js-renderer-service.i
 import {environment} from 'src/environments/environment';
 import {GameMockService} from './renderer/game-mock.service';
 import {BabylonModelService} from './renderer/babylon-model.service';
-import {Diplomacy} from "../gwtangular/GwtAngularFacade";
+import {Vertex} from "../gwtangular/GwtAngularFacade";
 
 
 @Component({
@@ -53,23 +53,47 @@ export class GameComponent implements OnInit {
             this.gameMockService.mockTerrainTile(this.threeJsRendererService);
             this.mainCockpitComponent.show();
             this.threeJsRendererService.initMeshContainers(this.gameMockService.createMeshContainers());
-            this.threeJsRendererService.setViewFieldCenter(268, 290);
-            let babylonBaseItem = this.threeJsRendererService.createBaseItem(999999, Diplomacy.OWN, 2);
-
-
-            babylonBaseItem.updatePosition(271, 290, 0, 0)
-            babylonBaseItem.select(true);
-            let i = 0.1;
-            let move = () => {
-              babylonBaseItem.updatePosition(271, 290 + i, 0, 0)
-              i += 0.1
-              if (i > 2) {
-                babylonBaseItem.select(false);
-                return;
+            this.threeJsRendererService.setViewFieldCenter(0, 0);
+            this.threeJsRendererService.createProjectile(new class implements Vertex {
+              getX(): number {
+                return 0;
               }
-              setTimeout(move, 100)
-            }
-            setTimeout(move, 100)
+
+              getY(): number {
+                return 0;
+              }
+
+              getZ(): number {
+                return 0;
+              }
+            }, new class implements Vertex {
+              getX(): number {
+                return 8;
+              }
+
+              getY(): number {
+                return 4;
+              }
+
+              getZ(): number {
+                return 1;
+              }
+            }, 2);
+
+            // let babylonBaseItem = this.threeJsRendererService.createBaseItem(999999, Diplomacy.OWN, 2);
+            // babylonBaseItem.updatePosition(271, 290, 0, 0)
+            // babylonBaseItem.select(true);
+            // let i = 0.1;
+            // let move = () => {
+            //   babylonBaseItem.updatePosition(271, 290 + i, 0, 0)
+            //   i += 0.1
+            //   if (i > 2) {
+            //     babylonBaseItem.select(false);
+            //     return;
+            //   }
+            //   setTimeout(move, 100)
+            // }
+            // setTimeout(move, 100)
 
           });
         });

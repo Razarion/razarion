@@ -17,6 +17,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_BASE_ITEM;
  * 31.08.2016.
  */
 @ApplicationScoped
+@Deprecated
 public class ProjectileRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     @Inject
     private BaseItemUiService baseItemUiService;

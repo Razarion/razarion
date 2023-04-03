@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.cdimock;
 
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.Diplomacy;
@@ -29,6 +30,11 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
         BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock(id, diplomacy, radius);
         babylonBaseItemMocks.add(babylonBaseItemMock);
         return babylonBaseItemMock;
+    }
+
+    @Override
+    public void createProjectile(Vertex start, Vertex destination, double duration) {
+        logger.warning("createProjectile()");
     }
 
     @Override

@@ -296,6 +296,8 @@ export interface ThreeJsRendererServiceAccess {
 
   createBaseItem(id: number, diplomacy: Diplomacy, radius: number): BabylonBaseItem;
 
+  createProjectile(start: Vertex, destination: Vertex, duration: number):void;
+
   setViewFieldCenter(x: number, y: number): void;
 
   initMeshContainers(meshContainers: MeshContainer[]): void;
@@ -374,13 +376,6 @@ export interface BabylonBaseItem {
   hover(active: boolean): void;
 
   remove(): void;
-}
-
-export interface BabylonBaseItemState {
-  xPos: number;
-  yPos: number;
-  zPos: number;
-  angle: number;
 }
 
 // ---------- Item Cockpit ----------
