@@ -367,15 +367,32 @@ export interface ThreeJsTerrainTile {
 }
 
 export interface BabylonBaseItem {
+
   getId(): number;
 
-  updatePosition(x: number, y: number, z: number, angle: number): void;
+  dispose(): void;
+
+  getPosition(): Vertex | null;
+
+  setPosition(position: Vertex): void;
+
+  updatePosition(): void;
+
+  getAngle(): number;
+
+  setAngle(angle: number): void;
+
+  updateAngle(): void;
+
+  getHealth(): number;
+
+  setHealth(health: number): void;
+
+  updateHealth(): void;
 
   select(active: boolean): void;
 
   hover(active: boolean): void;
-
-  remove(): void;
 }
 
 // ---------- Item Cockpit ----------

@@ -59,13 +59,11 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
         private final int id;
         private final Diplomacy diplomacy;
         private final double radius;
-        private double x;
-        private double y;
-        private double z;
-        private double angle;
         private boolean removed;
         private boolean select;
         private boolean hover;
+        private Vertex position;
+        private double angle;
 
         public BabylonBaseItemMock(int id, Diplomacy diplomacy, double radius) {
             this.id = id;
@@ -73,13 +71,38 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
             this.radius = radius;
         }
 
+        @Override
+        public int getId() {
+            return id;
+        }
 
         @Override
-        public void updatePosition(double x, double y, double z, double angle) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.angle = angle;
+        public void dispose() {
+
+        }
+
+        @Override
+        public void updatePosition() {
+
+        }
+
+        @Override
+        public void updateAngle() {
+
+        }
+
+        @Override
+        public double getHealth() {
+            return 0;
+        }
+
+        @Override
+        public void setHealth(double health) {
+
+        }
+
+        @Override
+        public void updateHealth() {
 
         }
 
@@ -94,8 +117,13 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
         }
 
         @Override
-        public void remove() {
-            removed = true;
+        public Vertex getPosition() {
+            return position;
+        }
+
+        @Override
+        public void setPosition(Vertex position) {
+            this.position = position;
         }
 
         public boolean isRemoved() {
@@ -110,24 +138,13 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
             return radius;
         }
 
-        public int getId() {
-            return id;
-        }
-
-        public double getX() {
-            return x;
-        }
-
-        public double getY() {
-            return y;
-        }
-
-        public double getZ() {
-            return z;
-        }
-
         public double getAngle() {
             return angle;
+        }
+
+        @Override
+        public void setAngle(double angle) {
+            this.angle = angle;
         }
 
         public boolean isSelect() {

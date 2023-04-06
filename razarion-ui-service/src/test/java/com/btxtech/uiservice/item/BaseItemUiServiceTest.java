@@ -16,6 +16,7 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static com.btxtech.shared.dto.FallbackConfig.BUILDER_ITEM_TYPE_ID;
+import static com.btxtech.test.shared.SharedTestHelper.assertVertex;
 
 public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
     @Test
@@ -67,9 +68,7 @@ public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
         ThreeJsRendererServiceAccessMock threeJsRendererServiceAccessMock = getWeldBean(ThreeJsRendererServiceAccessMock.class);
         Assert.assertEquals(1, threeJsRendererServiceAccessMock.getBabylonBaseItemMocks().size());
         ThreeJsRendererServiceAccessMock.BabylonBaseItemMock babylonBaseItemMock = threeJsRendererServiceAccessMock.getBabylonBaseItemMocks().get(0);
-        Assert.assertEquals(274, babylonBaseItemMock.getX(), 0.0001);
-        Assert.assertEquals(100, babylonBaseItemMock.getY(), 0.0001);
-        Assert.assertEquals(2, babylonBaseItemMock.getZ(), 0.0001);
+        assertVertex(274, 100, 2, babylonBaseItemMock.getPosition());
         Assert.assertEquals(0, babylonBaseItemMock.getAngle(), 0.0001);
         Assert.assertEquals(babylonBaseItemMock.getDiplomacy(), Diplomacy.OWN);
         Assert.assertFalse(babylonBaseItemMock.isSelect());

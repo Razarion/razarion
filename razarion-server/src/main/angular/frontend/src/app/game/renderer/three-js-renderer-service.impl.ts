@@ -163,15 +163,66 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   createBaseItem(id: number, diplomacy: Diplomacy, radius: number): BabylonBaseItem {
     try {
       const _this = this;
-      let mesh = this.showMeshContainer(this.meshContainers, "Vehicle_01", 271, 290);
-      mesh.name = `Base Item (id: ${id} )`;
       return new class implements BabylonBaseItem {
+        private mesh: Mesh;
         private markerDisc: Mesh | null = null;
         private selectActive: boolean = false;
         private hoverActive: boolean = false;
+        private position: Vertex | null = null;
+        private angle: number = 0;
+        private health: number = 0;
+
+        constructor() {
+          this.mesh = _this.showMeshContainer(_this.meshContainers, "Vehicle_01", 271, 290);
+          this.mesh.name = `Base Item (id: ${id} )`;
+        }
 
         getId(): number {
           return id;
+        }
+
+        getAngle(): number {
+          return this.angle;
+        }
+
+        getHealth(): number {
+          return this.angle;
+        }
+
+        getPosition(): Vertex | null {
+          return this.position;
+        }
+
+        setAngle(angle: number): void {
+          this.angle = angle;
+        }
+
+        setHealth(health: number): void {
+          this.health = health;
+        }
+
+        setPosition(position: Vertex): void {
+          this.position = position;
+        }
+
+        dispose(): void {
+          _this.scene.removeMesh(this.mesh);
+          this.mesh.dispose();
+        }
+
+        updatePosition(): void {
+          if (this.position) {
+            this.mesh.position.x = this.position.getX();
+            this.mesh.position.y = this.position.getZ();
+            this.mesh.position.z = this.position.getY();
+          }
+        }
+
+        updateAngle(): void {
+          this.mesh.rotation.y = Tools.ToRadians(90) - this.angle;
+        }
+
+        updateHealth(): void {
         }
 
         select(active: boolean): void {
@@ -202,7 +253,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
                   (<SimpleMaterial>this.markerDisc.material).diffuseColor = Color3.Yellow()
                   break;
               }
-              this.markerDisc.parent = mesh;
+              this.markerDisc.parent = this.mesh;
             }
           } else {
             if (this.markerDisc) {
@@ -217,28 +268,48 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             (<SimpleMaterial>this.markerDisc!.material).alpha = 0.3
           }
         }
-
-        remove(): void {
-          console.info(`remove BaseItem ${id}`);
-          _this.scene.removeMesh(mesh);
-          mesh.dispose();
-        }
-
-        updatePosition(x: number, y: number, z: number, angle: number): void {
-          mesh.position.x = x;
-          mesh.position.y = z;
-          mesh.position.z = y;
-          mesh.rotation.y = Tools.ToRadians(90) - angle;
-        }
       }
     } catch (error) {
       console.error(error);
       return new class implements BabylonBaseItem {
+        getAngle(): number {
+          return 0;
+        }
+
+        getHealth(): number {
+          return 0;
+        }
+
+        getPosition(): Vertex | null {
+          return null;
+        }
+
+        setAngle(angle: number): void {
+        }
+
+        setHealth(health: number): void {
+        }
+
+        setPosition(position: Vertex): void {
+        }
+
         getId(): number {
           return id;
         }
 
-        updatePosition(x: number, y: number, z: number, angle: number): void {
+        setup(): void {
+        }
+
+        dispose(): void {
+        }
+
+        updateAngle(): void {
+        }
+
+        updateHealth(): void {
+        }
+
+        updatePosition(): void {
         }
 
         select(active: boolean): void {
@@ -246,10 +317,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
         hover(active: boolean): void {
         }
-
-        remove(): void {
-        }
-
       }
     }
   }

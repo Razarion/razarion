@@ -92,7 +92,6 @@ public class BaseItemUiService {
     private MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
     private Map<Integer, BabylonBaseItem> aliveBabylonBaseItems = new HashMap<>();
-    private MapList<BaseItemType, ModelMatrices> demolitionModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
@@ -116,7 +115,6 @@ public class BaseItemUiService {
         spawningModelMatrices.clear();
         buildupModelMatrices.clear();
         aliveBabylonBaseItems.clear();
-        demolitionModelMatrices.clear();
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
@@ -144,7 +142,8 @@ public class BaseItemUiService {
     }
 
     public List<ModelMatrices> provideDemolitionModelMatrices(BaseItemType baseItemType) {
-        return demolitionModelMatrices.get(baseItemType);
+        // return demolitionModelMatrices.get(baseItemType);
+        return null;
     }
 
     public List<ModelMatrices> provideHarvestAnimationModelMatrices(BaseItemType baseItemType) {
@@ -166,7 +165,6 @@ public class BaseItemUiService {
         spawningModelMatrices.clear();
         buildupModelMatrices.clear();
         Collection<Integer> leftoversAliveBabylonBaseItems = new ArrayList<>(aliveBabylonBaseItems.keySet());
-        demolitionModelMatrices.clear();
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
@@ -219,18 +217,47 @@ public class BaseItemUiService {
                     // TODO buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup, color));
                 }
                 // Alive
-                if (!isSpawning && isBuildup && isHealthy) {
+                if (!isSpawning && isBuildup) {
                     BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
                     if (babylonBaseItem == null) {
                         babylonBaseItem = threeJsRendererService.createBaseItem(nativeSyncBaseItemTickInfo.id,
                                 diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo),
                                 baseItemType.getPhysicalAreaConfig().getRadius());
                         aliveBabylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
+                        babylonBaseItem.setPosition(NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo));
+                        babylonBaseItem.updatePosition();
+                        babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
+                        babylonBaseItem.updateAngle();
+                        babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
+                        babylonBaseItem.updateHealth();
                     }
                     leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
-                    babylonBaseItem.updatePosition(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y, nativeSyncBaseItemTickInfo.z, nativeSyncBaseItemTickInfo.angle);
+
+                    Vertex position = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
+                    if (position != null) {
+                        if (babylonBaseItem.getPosition() != null) {
+                            if (!babylonBaseItem.getPosition().equalsDelta(position, 0.000001)) {
+                                babylonBaseItem.setPosition(position);
+                                babylonBaseItem.updatePosition();
+                            }
+                        } else {
+                            babylonBaseItem.setPosition(position);
+                            babylonBaseItem.updatePosition();
+                        }
+                    }
+
+                    if (babylonBaseItem.getAngle() != nativeSyncBaseItemTickInfo.angle) {
+                        babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
+                        babylonBaseItem.updateAngle();
+                    }
+
+                    if (babylonBaseItem.getHealth() != nativeSyncBaseItemTickInfo.health) {
+                        babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
+                        babylonBaseItem.updateHealth();
+                    }
+
                     if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
-                        // weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
+                        // TODO weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
                     }
                 }
                 if (syncBaseItemSetPositionMonitor != null && viewFieldAabb != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
@@ -246,8 +273,6 @@ public class BaseItemUiService {
 
                 // Demolition
                 if (!isSpawning && isBuildup && !isHealthy) {
-                    // ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.interpolatableAngularVelocity, nativeSyncBaseItemTickInfo.health, color);
-                    // TODO demolitionModelMatrices.put(baseItemType, modelMatrices);
                     if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
                         effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, position3d, baseItemType);
                     }
@@ -278,7 +303,7 @@ public class BaseItemUiService {
                 exceptionHandler.handleException(t);
             }
         }
-        leftoversAliveBabylonBaseItems.forEach(id -> aliveBabylonBaseItems.remove(id).remove());
+        leftoversAliveBabylonBaseItems.forEach(id -> aliveBabylonBaseItems.remove(id).dispose());
         if (itemCount != tmpItemCount) {
             itemCount = tmpItemCount;
             updateItemCountOnSideCockpit();
