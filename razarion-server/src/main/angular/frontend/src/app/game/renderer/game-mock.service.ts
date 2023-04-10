@@ -712,7 +712,7 @@ export class GameMockService {
         }
       }
 
-      getId(): string {
+      getId(): number {
         return meshContainerJson.id;
       }
 

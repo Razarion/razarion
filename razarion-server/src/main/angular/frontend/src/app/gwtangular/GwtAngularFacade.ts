@@ -251,7 +251,7 @@ export interface ThreeJsModelPackConfig {
 }
 
 export interface MeshContainer {
-  getId(): string;
+  getId(): number;
 
   getInternalName(): string;
 
@@ -294,9 +294,9 @@ export interface ShapeTransform {
 export interface ThreeJsRendererServiceAccess {
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
 
-  createBaseItem(id: number, diplomacy: Diplomacy, radius: number): BabylonBaseItem;
+  createSyncBaseItem(id: number, meshContainerId: number | null, internalName: string, diplomacy: Diplomacy, radius: number): BabylonBaseItem;
 
-  createProjectile(start: Vertex, destination: Vertex, duration: number):void;
+  createProjectile(start: Vertex, destination: Vertex, duration: number): void;
 
   setViewFieldCenter(x: number, y: number): void;
 

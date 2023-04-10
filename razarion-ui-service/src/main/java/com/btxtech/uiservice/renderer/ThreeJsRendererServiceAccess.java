@@ -10,7 +10,7 @@ import jsinterop.annotations.JsType;
 public interface ThreeJsRendererServiceAccess {
     ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId);
 
-    BabylonBaseItem createBaseItem(int id, Diplomacy diplomacy, double radius);
+    BabylonBaseItem createSyncBaseItem(int id, Integer meshContainerId, String internalName, Diplomacy diplomacy, double radius);
 
     void createProjectile(Vertex start, Vertex destination, double duration);
 

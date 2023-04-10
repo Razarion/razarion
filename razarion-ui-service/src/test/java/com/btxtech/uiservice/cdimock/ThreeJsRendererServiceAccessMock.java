@@ -26,7 +26,7 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
     }
 
     @Override
-    public BabylonBaseItem createBaseItem(int id, Diplomacy diplomacy, double radius) {
+    public BabylonBaseItem createSyncBaseItem(int id, Integer meshContainerId, String internalName, Diplomacy diplomacy, double radius) {
         BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock(id, diplomacy, radius);
         babylonBaseItemMocks.add(babylonBaseItemMock);
         return babylonBaseItemMock;

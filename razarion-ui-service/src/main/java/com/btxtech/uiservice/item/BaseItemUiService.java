@@ -220,7 +220,9 @@ public class BaseItemUiService {
                 if (!isSpawning && isBuildup) {
                     BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
                     if (babylonBaseItem == null) {
-                        babylonBaseItem = threeJsRendererService.createBaseItem(nativeSyncBaseItemTickInfo.id,
+                        babylonBaseItem = threeJsRendererService.createSyncBaseItem(nativeSyncBaseItemTickInfo.id,
+                                baseItemType.getMeshContainerId(),
+                                baseItemType.getInternalName(),
                                 diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo),
                                 baseItemType.getPhysicalAreaConfig().getRadius());
                         aliveBabylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);

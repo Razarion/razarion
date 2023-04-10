@@ -35,6 +35,7 @@ import {
   Vector3
 } from "@babylonjs/core";
 import {SimpleMaterial} from "@babylonjs/materials";
+import {GwtHelper} from "../../gwtangular/GwtHelper";
 
 export class ThreeJsRendererServiceMouseEvent {
   object3D: any = null;
@@ -160,9 +161,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  createBaseItem(id: number, diplomacy: Diplomacy, radius: number): BabylonBaseItem {
+  createSyncBaseItem(id: number, meshContainerId: number | null, internalName: string, diplomacy: Diplomacy, radius: number): BabylonBaseItem {
     try {
-      const _this = this;
+      const threeJsRendererServiceImpl = this;
       return new class implements BabylonBaseItem {
         private mesh: Mesh;
         private markerDisc: Mesh | null = null;
@@ -173,8 +174,15 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         private health: number = 0;
 
         constructor() {
-          this.mesh = _this.showMeshContainer(_this.meshContainers, "Vehicle_01", 271, 290);
-          this.mesh.name = `Base Item (id: ${id} )`;
+          if (meshContainerId) {
+            this.mesh = threeJsRendererServiceImpl.showMeshContainer(threeJsRendererServiceImpl.meshContainers, GwtHelper.gwtIssueNumber(meshContainerId));
+            this.mesh.name = `${internalName} '${id}')`;
+          } else {
+            this.mesh = MeshBuilder.CreateSphere(`No meshContainerId for ${internalName}`, {diameter: radius * 2});
+            console.warn(`No meshContainerId for ${internalName}`)
+            this.mesh.name = `! ${internalName} '${id}')`;
+          }
+
         }
 
         getId(): number {
@@ -206,7 +214,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         }
 
         dispose(): void {
-          _this.scene.removeMesh(this.mesh);
+          threeJsRendererServiceImpl.scene.removeMesh(this.mesh);
           this.mesh.dispose();
         }
 
@@ -238,8 +246,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         private updateMarkedDisk(): void {
           if (this.selectActive || this.hoverActive) {
             if (!this.markerDisc) {
-              this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: radius});
-              this.markerDisc.material = new SimpleMaterial("Base Item Marker", _this.scene);
+              this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: radius + 0.1});
+              this.markerDisc.material = new SimpleMaterial("Base Item Marker", threeJsRendererServiceImpl.scene);
               this.markerDisc.position.y = 0.01;
               this.markerDisc.rotation.x = Tools.ToRadians(90);
               switch (diplomacy) {
@@ -552,20 +560,18 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     });
   }
 
-  private showMeshContainer(meshContainers: MeshContainer[], name: string, x: number, y: number): Mesh {
+  private showMeshContainer(meshContainers: MeshContainer[], id: number): Mesh {
     let foundMeshContainer = null;
     for (let meshContainer of meshContainers) {
-      if (meshContainer.getInternalName() === name) {
+      if (meshContainer.getId() === id) {
         foundMeshContainer = meshContainer;
         break;
       }
     }
     if (!foundMeshContainer) {
-      throw new Error(`No AssetConfig for '${name}'`);
+      throw new Error(`No MeshContainer for '${id}'`);
     }
-    let baseItemContainer = new Mesh(`BaseItems '${name}' AssetConfig '${foundMeshContainer.getInternalName()}'`);
-    baseItemContainer.position.x = x;
-    baseItemContainer.position.z = y;
+    let baseItemContainer = new Mesh(`BaseItems '${id}' AssetConfig '${foundMeshContainer.getInternalName()}'`);
     this.scene.addMesh(baseItemContainer);
     this.shadowGenerator.addShadowCaster(baseItemContainer, true);
     this.recursivelyFillMeshes(foundMeshContainer!, baseItemContainer);
@@ -588,7 +594,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       let childParent: Node = parent;
       if (shapeTransforms) {
         for (let shapeTransform of shapeTransforms) {
-          const transform: TransformNode = new TransformNode(`Transform`);
+          const transform: TransformNode = new TransformNode(`${element3DId} '${threeJsModelId}'`);
           transform.ignoreNonUniformScaling = true;
           transform.position.x = shapeTransform.getTranslateX();
           transform.position.y = shapeTransform.getTranslateY();
@@ -597,14 +603,14 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             shapeTransform.getRotateY(),
             shapeTransform.getRotateZ(),
             shapeTransform.getRotateW());
-          transform.scaling.x = -shapeTransform.getScaleX();
+          transform.scaling.x = shapeTransform.getScaleX();
           transform.scaling.y = shapeTransform.getScaleY();
           transform.scaling.z = shapeTransform.getScaleZ();
           transform.parent = childParent;
           childParent = transform;
         }
       }
-      let mesh = (<Mesh>childMesh!).clone(`threeJsModelId '${threeJsModelId}' element3DId '${element3DId}'`, childParent);
+      let mesh = (<Mesh>childMesh!).clone(`${element3DId} '${threeJsModelId}'`, childParent);
       if(threeJsModelConfig.getNodeMaterialId()) {
         mesh.material = this.threeJsModelService.getNodeMaterial(threeJsModelConfig.getNodeMaterialId()!);
         mesh.hasVertexAlpha = false;
