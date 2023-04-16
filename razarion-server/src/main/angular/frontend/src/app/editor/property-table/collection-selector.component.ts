@@ -3,9 +3,9 @@ import {Component, ElementRef, ViewChild} from "@angular/core";
 import {MenuItem, MessageService} from "primeng/api";
 import {ObjectNameId} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {APPLICATION_PATH, EDITOR_PATH} from "../../common";
+import {APPLICATION_PATH} from "../../common";
 import {HttpClient} from "@angular/common/http";
-import {JSONEditor} from "vanilla-jsoneditor";
+import {JSONEditor, renderJSONSchemaEnum, renderValue, RenderValueProps} from "vanilla-jsoneditor";
 
 @Component({
   selector: 'collection-selector',
@@ -160,17 +160,32 @@ export class CollectionSelectorComponent extends EditorPanel {
   }
 
   private initJsonEditor() {
+    const schema = {
+      properties: {
+        meshContainerId: {
+          type: 'number',
+          // enum: [1, 2, 3]
+        }
+      },
+      required: ["meshContainerId"]
+    }
+
+
     if (!this.jsonEditor) {
       this.jsonEditor = new JSONEditor({
         target: this.jsonEditorContainer.nativeElement,
         props: {
-          onChange: (updatedContent, previousContent, {contentErrors, patchResult}) => {
-            // content is an object { json: JSONValue } | { text: string }
-            console.log('onChange', {updatedContent, previousContent, contentErrors, patchResult})
-            // content = updatedContent
-          }
+          onRenderValue: (props: RenderValueProps) => {
+            return renderJSONSchemaEnum(props, schema, {}) || renderValue(props);
+          },
+          // onChange: (updatedContent, previousContent, {contentErrors, patchResult}) => {
+          //   // content is an object { json: JSONValue } | { text: string }
+          //   console.log('onChange', {updatedContent, previousContent, contentErrors, patchResult})
+          //   // content = updatedContent
+          // },
+          // validator: createAjvValidator({ schema })
         }
-      })
+      });
     }
   }
 

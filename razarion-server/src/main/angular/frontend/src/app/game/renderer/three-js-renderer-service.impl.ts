@@ -592,6 +592,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
     if (childMesh) {
       let childParent: Node = parent;
+      let mesh = (<Mesh>childMesh!).clone(`${element3DId} '${threeJsModelId}'`);
       if (shapeTransforms) {
         for (let shapeTransform of shapeTransforms) {
           const transform: TransformNode = new TransformNode(`${element3DId} '${threeJsModelId}'`);
@@ -603,18 +604,20 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             shapeTransform.getRotateY(),
             shapeTransform.getRotateZ(),
             shapeTransform.getRotateW());
-          transform.scaling.x = shapeTransform.getScaleX();
+          // Strange unity behavior
+          transform.scaling.x = (mesh.position.x < 0 ? -1 : 1) * shapeTransform.getScaleX();
           transform.scaling.y = shapeTransform.getScaleY();
           transform.scaling.z = shapeTransform.getScaleZ();
           transform.parent = childParent;
           childParent = transform;
         }
       }
-      let mesh = (<Mesh>childMesh!).clone(`${element3DId} '${threeJsModelId}'`, childParent);
-      if(threeJsModelConfig.getNodeMaterialId()) {
+      if (threeJsModelConfig.getNodeMaterialId()) {
         mesh.material = this.threeJsModelService.getNodeMaterial(threeJsModelConfig.getNodeMaterialId()!);
         mesh.hasVertexAlpha = false;
       }
+      mesh.parent = childParent;
+      // console.log(`${element3DId} '${threeJsModelId}' ${mesh.position}`)
 
       mesh.position.x = 0;
       mesh.position.y = 0;

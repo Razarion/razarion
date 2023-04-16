@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `BOT_CONFIG_BOT_ITEM` (
   CONSTRAINT `FKka3ph3evw0vd8qvpafrc8u9q3` FOREIGN KEY (`botEnragementStateConfig`) REFERENCES `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` (`id`),
   CONSTRAINT `FKo3anxwa9qjqljjau19r55097r` FOREIGN KEY (`place_id`) REFERENCES `PLACE_CONFIG` (`id`),
   CONSTRAINT `FKrmnmfvv7eqabotm7aik3kp0vo` FOREIGN KEY (`baseItemTypeEntity_id`) REFERENCES `BASE_ITEM_TYPE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=530 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=544 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `BOT_CONFIG_BOT_ITEM`;
 /*!40000 ALTER TABLE `BOT_CONFIG_BOT_ITEM` DISABLE KEYS */;
@@ -32,20 +32,20 @@ INSERT INTO `BOT_CONFIG_BOT_ITEM` (`id`, `angle`, `count`, `createDirectly`, `id
 	(58, 0, 1, b'1', NULL, b'0', b'0', b'0', NULL, 15, 79, 30),
 	(59, 0, 1, b'1', NULL, b'0', b'1', b'0', NULL, 5, 80, 30),
 	(60, 0, 1, b'1', NULL, b'0', b'1', b'0', NULL, 5, 81, 30),
-	(516, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 5, 597, 177),
-	(517, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 5, 598, 177),
-	(518, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 5, 599, 177),
-	(519, 0, 10, b'1', NULL, b'0', b'0', b'0', 600000, 16, 600, 177),
-	(520, 0, 1, b'1', NULL, b'0', b'0', b'0', NULL, 13, NULL, 178),
-	(521, 0.7853, 1, b'0', NULL, b'0', b'0', b'0', NULL, 22, 602, 178),
-	(522, 0, 1, b'0', NULL, b'0', b'0', b'0', 600000, 15, 603, 178),
-	(523, 0, 2, b'0', NULL, b'0', b'0', b'0', 1000, 16, NULL, 178),
-	(524, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 15, 605, 179),
-	(525, 0, 2, b'0', NULL, b'0', b'0', b'0', 600000, 16, NULL, 179),
-	(526, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 15, 607, 180),
-	(527, 0, 2, b'0', NULL, b'0', b'0', b'0', 600000, 16, NULL, 180),
-	(528, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 15, NULL, 181),
-	(529, 0, 2, b'0', NULL, b'0', b'0', b'0', 180000, 16, NULL, 181);
+	(530, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 5, 612, 182),
+	(531, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 5, 613, 182),
+	(532, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 5, 614, 182),
+	(533, 0, 10, b'1', NULL, b'0', b'0', b'0', 600000, 16, 615, 182),
+	(534, 0, 1, b'1', NULL, b'0', b'0', b'0', NULL, 13, NULL, 183),
+	(535, 0.7853, 1, b'0', NULL, b'0', b'0', b'0', NULL, 22, 617, 183),
+	(536, 0, 1, b'0', NULL, b'0', b'0', b'0', 600000, 15, 618, 183),
+	(537, 0, 2, b'0', NULL, b'0', b'0', b'0', 1000, 16, NULL, 183),
+	(538, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 15, 620, 184),
+	(539, 0, 2, b'0', NULL, b'0', b'0', b'0', 600000, 16, NULL, 184),
+	(540, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 15, 622, 185),
+	(541, 0, 2, b'0', NULL, b'0', b'0', b'0', 600000, 16, NULL, 185),
+	(542, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 15, NULL, 186),
+	(543, 0, 2, b'0', NULL, b'0', b'0', b'0', 180000, 16, NULL, 186);
 /*!40000 ALTER TABLE `BOT_CONFIG_BOT_ITEM` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
