@@ -19,13 +19,16 @@ import {
   Animation,
   CascadedShadowGenerator,
   Color3,
+  CubeTexture,
   DirectionalLight,
   Engine,
   FreeCamera,
+  InputBlock,
   Matrix,
   Mesh,
   MeshBuilder,
   Node,
+  NodeMaterial,
   PointerEventTypes,
   Quaternion,
   Scene,
@@ -61,6 +64,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private directionalLight!: DirectionalLight
   private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
   private meshContainers!: MeshContainer[];
+  private diplomacyMaterialCache: Map<number, Map<Diplomacy, NodeMaterial>> = new Map<number, Map<Diplomacy, NodeMaterial>>();
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -69,6 +73,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.engine = new Engine(canvas)
     this.scene = new Scene(this.engine);
     this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
+    this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/country.dds", this.scene);
+    // this.scene.createDefaultEnvironment();
 
     this.threeJsModelService.setScene(this.scene);
 
@@ -163,6 +169,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
   createSyncBaseItem(id: number, meshContainerId: number | null, internalName: string, diplomacy: Diplomacy, radius: number): BabylonBaseItem {
     try {
+      const correctedDiplomacy = GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy);
       const threeJsRendererServiceImpl = this;
       return new class implements BabylonBaseItem {
         private mesh: Mesh;
@@ -175,7 +182,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
         constructor() {
           if (meshContainerId) {
-            this.mesh = threeJsRendererServiceImpl.showMeshContainer(threeJsRendererServiceImpl.meshContainers, GwtHelper.gwtIssueNumber(meshContainerId));
+            this.mesh = threeJsRendererServiceImpl.showMeshContainer(threeJsRendererServiceImpl.meshContainers,
+              GwtHelper.gwtIssueNumber(meshContainerId),
+              correctedDiplomacy);
             this.mesh.name = `${internalName} '${id}')`;
           } else {
             this.mesh = MeshBuilder.CreateSphere(`No meshContainerId for ${internalName}`, {diameter: radius * 2});
@@ -250,17 +259,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
               this.markerDisc.material = new SimpleMaterial("Base Item Marker", threeJsRendererServiceImpl.scene);
               this.markerDisc.position.y = 0.01;
               this.markerDisc.rotation.x = Tools.ToRadians(90);
-              switch (diplomacy) {
-                case Diplomacy.OWN:
-                  (<SimpleMaterial>this.markerDisc.material).diffuseColor = Color3.Green()
-                  break;
-                case Diplomacy.ENEMY:
-                  (<SimpleMaterial>this.markerDisc.material).diffuseColor = Color3.Red()
-                  break;
-                case Diplomacy.FRIEND:
-                  (<SimpleMaterial>this.markerDisc.material).diffuseColor = Color3.Yellow()
-                  break;
-              }
+              (<SimpleMaterial>this.markerDisc.material).diffuseColor = ThreeJsRendererServiceImpl.color4Diplomacy(correctedDiplomacy);
               this.markerDisc.parent = this.mesh;
             }
           } else {
@@ -560,7 +559,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     });
   }
 
-  private showMeshContainer(meshContainers: MeshContainer[], id: number): Mesh {
+  private showMeshContainer(meshContainers: MeshContainer[], id: number, diplomacy: Diplomacy): Mesh {
     let foundMeshContainer = null;
     for (let meshContainer of meshContainers) {
       if (meshContainer.getId() === id) {
@@ -574,12 +573,12 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     let baseItemContainer = new Mesh(`BaseItems '${id}' AssetConfig '${foundMeshContainer.getInternalName()}'`);
     this.scene.addMesh(baseItemContainer);
     this.shadowGenerator.addShadowCaster(baseItemContainer, true);
-    this.recursivelyFillMeshes(foundMeshContainer!, baseItemContainer);
+    this.recursivelyFillMeshes(foundMeshContainer!, baseItemContainer, diplomacy);
     return baseItemContainer;
   }
 
 
-  private createMesh(threeJsModelId: number, element3DId: string, parent: Node, shapeTransforms: ShapeTransform[] | null) {
+  private createMesh(threeJsModelId: number, element3DId: string, parent: Node, diplomacy: Diplomacy, shapeTransforms: ShapeTransform[] | null) {
     let assetContainer = this.threeJsModelService.getAssetContainer(threeJsModelId);
     let threeJsModelConfig = this.threeJsModelService.getThreeJsModelConfig(threeJsModelId);
 
@@ -613,7 +612,23 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         }
       }
       if (threeJsModelConfig.getNodeMaterialId()) {
-        mesh.material = this.threeJsModelService.getNodeMaterial(threeJsModelConfig.getNodeMaterialId()!);
+        let diplomacyCache = this.diplomacyMaterialCache.get(threeJsModelConfig.getNodeMaterialId()!);
+        if (!diplomacyCache) {
+          diplomacyCache = new Map<Diplomacy, NodeMaterial>();
+          this.diplomacyMaterialCache.set(threeJsModelConfig.getNodeMaterialId()!, diplomacyCache)
+        }
+        let cachedMaterial = diplomacyCache.get(diplomacy);
+        if (!cachedMaterial) {
+          cachedMaterial = this.threeJsModelService.getNodeMaterial(threeJsModelConfig.getNodeMaterialId()!).clone(`${threeJsModelConfig.getNodeMaterialId()} '${diplomacy}'`);
+          const diplomacyColorNode = (<NodeMaterial>cachedMaterial).getBlockByPredicate(block => {
+            return "DiplomacyColor" === block.name;
+          });
+          if (diplomacyColorNode) {
+            (<InputBlock>diplomacyColorNode).value = ThreeJsRendererServiceImpl.color4Diplomacy(diplomacy);
+          }
+          diplomacyCache.set(diplomacy, cachedMaterial);
+        }
+        mesh.material = cachedMaterial;
         mesh.hasVertexAlpha = false;
       }
       mesh.parent = childParent;
@@ -622,6 +637,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       mesh.position.x = 0;
       mesh.position.y = 0;
       mesh.position.z = 0;
+      this.shadowGenerator.addShadowCaster(mesh, true);
       // mesh.rotationQuaternion = null;
       // mesh.rotation.x = 0;
       // mesh.rotation.y = 0;
@@ -634,16 +650,17 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  private recursivelyFillMeshes(meshContainer: MeshContainer, parent: Node) {
+  private recursivelyFillMeshes(meshContainer: MeshContainer, parent: Node, diplomacy: Diplomacy) {
     if (meshContainer.getMesh() && meshContainer.getMesh()!.getThreeJsModelId()) {
       this.createMesh(meshContainer.getMesh()!.getThreeJsModelId()!,
         meshContainer.getMesh()!.getElement3DId(),
         parent,
+        diplomacy,
         meshContainer.getMesh()!.getShapeTransformsArray());
     }
     if (meshContainer.getChildrenArray()) {
       meshContainer!.getChildrenArray()?.forEach(childMeshContainer => {
-        this.recursivelyFillMeshes(childMeshContainer, parent);
+        this.recursivelyFillMeshes(childMeshContainer, parent, diplomacy);
       })
     }
   }
@@ -725,6 +742,18 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         disc = null;
       }
     };
+  }
+
+  public static color4Diplomacy(diplomacy: Diplomacy): Color3 {
+    switch (diplomacy) {
+      case Diplomacy.OWN:
+        return Color3.Green()
+      case Diplomacy.ENEMY:
+        return Color3.Red()
+      case Diplomacy.FRIEND:
+        return Color3.Yellow()
+    }
+    return Color3.Gray()
   }
 }
 

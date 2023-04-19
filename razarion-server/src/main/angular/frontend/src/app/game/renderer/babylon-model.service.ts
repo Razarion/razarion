@@ -53,7 +53,7 @@ export class BabylonModelService {
         threeJsModelConfigs.forEach(threeJsModelConfig => {
           try {
             const url = `${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`;
-            switch (GwtHelper.gwtIssueStringEnum(threeJsModelConfig.getType())) {
+            switch (GwtHelper.gwtIssueStringEnum(threeJsModelConfig.getType(), ThreeJsModelConfig.Type)) {
               case ThreeJsModelConfig.Type.GLTF:
                 this.loadAssetContainer(url, threeJsModelConfig, handleResolve);
                 break;

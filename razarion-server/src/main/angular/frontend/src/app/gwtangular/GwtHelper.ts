@@ -6,16 +6,19 @@ export class GwtHelper {
     return <number>Object.values(integer)[0]; // GWT rubbish
   }
 
-  static gwtIssueStringEnum(type: any): any {
-    if (typeof type === "string") {
-      return type;
+  static gwtIssueStringEnum(value: any, enumType: any): any {
+    if (typeof value === "string") {
+      return value;
     }
-    for (let value of Object.values(type)) {
-      if (typeof value === "string") {
-        return value;
+    if (typeof value === "number") {
+      return Object.values(enumType)[value];
+    }
+    for (let childValue of Object.values(value)) {
+      if (typeof childValue === "string") {
+        return childValue;
       }
     }
-    console.info(`GwtHelper: Unexpected GWT enum: '${type}' typeof: ${typeof (type)}`)
-    return type;
+    console.info(`GwtHelper: Unexpected GWT enum: '${value}' typeof: ${typeof (value)} enum ${enumType}`)
+    return value;
   }
 }

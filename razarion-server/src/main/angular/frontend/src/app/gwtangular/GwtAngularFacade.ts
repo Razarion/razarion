@@ -316,9 +316,9 @@ export interface TerrainTile {
 }
 
 export enum Diplomacy {
-  OWN,
-  FRIEND,
-  ENEMY
+  OWN = "OWN",
+  FRIEND = "FRIEND",
+  ENEMY = "ENEMY"
 }
 
 export interface GroundTerrainTile {

@@ -10,7 +10,9 @@ import {ThreeJsRendererServiceImpl} from './renderer/three-js-renderer-service.i
 import {environment} from 'src/environments/environment';
 import {GameMockService} from './renderer/game-mock.service';
 import {BabylonModelService} from './renderer/babylon-model.service';
-import {Vertex} from "../gwtangular/GwtAngularFacade";
+import {Diplomacy, Vertex} from "../gwtangular/GwtAngularFacade";
+import {GwtInstance} from "../gwtangular/GwtInstance";
+import {Color3, CubeTexture, MeshBuilder, PBRMetallicRoughnessMaterial, StandardMaterial} from "@babylonjs/core";
 
 
 @Component({
@@ -54,34 +56,48 @@ export class GameComponent implements OnInit {
             this.mainCockpitComponent.show();
             this.threeJsRendererService.initMeshContainers(this.gameMockService.createMeshContainers());
             this.threeJsRendererService.setViewFieldCenter(0, 0);
-            this.threeJsRendererService.createProjectile(new class implements Vertex {
-              getX(): number {
-                return 0;
-              }
+            // this.threeJsRendererService.createProjectile(new class implements Vertex {
+            //   getX(): number {
+            //     return 0;
+            //   }
+            //
+            //   getY(): number {
+            //     return 0;
+            //   }
+            //
+            //   getZ(): number {
+            //     return 0;
+            //   }
+            // }, new class implements Vertex {
+            //   getX(): number {
+            //     return 8;
+            //   }
+            //
+            //   getY(): number {
+            //     return 4;
+            //   }
+            //
+            //   getZ(): number {
+            //     return 1;
+            //   }
+            // }, 2);
 
-              getY(): number {
-                return 0;
-              }
+            let babylonBaseItem = this.threeJsRendererService.createSyncBaseItem(999999, 23076, "Vehicle 11", Diplomacy.ENEMY, 2);
+            babylonBaseItem.setPosition(GwtInstance.newVertex(8, 8, 0));
+            babylonBaseItem.setAngle(0);
 
-              getZ(): number {
-                return 0;
-              }
-            }, new class implements Vertex {
-              getX(): number {
-                return 8;
-              }
+            babylonBaseItem.updatePosition();
+            babylonBaseItem.updateAngle();
 
-              getY(): number {
-                return 4;
-              }
+            const sphere = MeshBuilder.CreateSphere("TestSphere", {}, this.threeJsRendererService.getScene());
+            const pbr = new PBRMetallicRoughnessMaterial("pbr", this.threeJsRendererService.getScene());
+            sphere.material = pbr;
 
-              getZ(): number {
-                return 1;
-              }
-            }, 2);
+            pbr.baseColor = new Color3(1.0, 0.766, 0.336);
+            pbr.metallic = 1.0;
+            pbr.roughness = 0.0;
+            this.threeJsRendererService.getScene().environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/environment.dds", this.threeJsRendererService.getScene());
 
-            // let babylonBaseItem = this.threeJsRendererService.createBaseItem(999999, Diplomacy.OWN, 2);
-            // babylonBaseItem.updatePosition(271, 290, 0, 0)
             // babylonBaseItem.select(true);
             // let i = 0.1;
             // let move = () => {
