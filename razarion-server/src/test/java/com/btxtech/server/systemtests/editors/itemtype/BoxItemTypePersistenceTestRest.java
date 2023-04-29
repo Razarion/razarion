@@ -77,7 +77,7 @@ public class BoxItemTypePersistenceTestRest extends IgnoreOldArquillianTest {
     }
 
     private void finalizeSimpleBox1(BoxItemType boxItemType) {
-        boxItemType.setI18nName(i18nHelper("Box")).setI18nDescription(i18nHelper("Contains useful items")).setThumbnail(64).setShape3DId(17);
+        boxItemType.i18nName(i18nHelper("Box")).i18nDescription(i18nHelper("Contains useful items")).thumbnail(64).threeJsModelPackConfigId(17);
         boxItemType.setTtl(1500).setRadius(1.2).setFixVerticalNorm(true);
         List<BoxItemTypePossibility> boxItemTypePossibilities = new ArrayList<>();
         boxItemTypePossibilities.add(new BoxItemTypePossibility().setPossibility(0.75).setInventoryItemId(inventoryItemId1));
@@ -85,7 +85,7 @@ public class BoxItemTypePersistenceTestRest extends IgnoreOldArquillianTest {
     }
 
     private void finalizeSimpleBox2(BoxItemType boxItemType) {
-        boxItemType.setI18nName(i18nHelper("asdf")).setI18nDescription(i18nHelper("Codsfe gfrgg ms")).setThumbnail(65).setShape3DId(18);
+        boxItemType.i18nName(i18nHelper("asdf")).i18nDescription(i18nHelper("Codsfe gfrgg ms")).thumbnail(65).threeJsModelPackConfigId(18);
         boxItemType.setTtl(222).setRadius(331).setFixVerticalNorm(false);
         List<BoxItemTypePossibility> boxItemTypePossibilities = new ArrayList<>();
         boxItemTypePossibilities.add(new BoxItemTypePossibility().setPossibility(0.4).setInventoryItemId(inventoryItemId2));

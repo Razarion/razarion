@@ -167,7 +167,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  createSyncBaseItem(id: number, meshContainerId: number | null, internalName: string, diplomacy: Diplomacy, radius: number): BabylonBaseItem {
+  createSyncBaseItem(id: number, threeJsModelPackConfigId: number | null, meshContainerId: number | null, internalName: string, diplomacy: Diplomacy, radius: number): BabylonBaseItem {
     try {
       const correctedDiplomacy = GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy);
       const threeJsRendererServiceImpl = this;
@@ -181,17 +181,28 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         private health: number = 0;
 
         constructor() {
-          if (meshContainerId) {
+          if(threeJsModelPackConfigId) {
+            this.mesh = <Mesh>threeJsRendererServiceImpl.threeJsModelService.cloneMesh(threeJsModelPackConfigId, null);
+            this.mesh.name = `${internalName} '${id}')`;
+            try {
+                this.mesh.getBoundingInfo();
+                threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(this.mesh, true);
+            } catch(error) {
+              this.mesh.getChildMeshes().forEach(childMesh => {
+                threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(childMesh, true);
+              });
+            }
+          } else if (meshContainerId) {
             this.mesh = threeJsRendererServiceImpl.showMeshContainer(threeJsRendererServiceImpl.meshContainers,
               GwtHelper.gwtIssueNumber(meshContainerId),
               correctedDiplomacy);
             this.mesh.name = `${internalName} '${id}')`;
+            threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(this.mesh, true);
           } else {
-            this.mesh = MeshBuilder.CreateSphere(`No meshContainerId for ${internalName}`, {diameter: radius * 2});
+            this.mesh = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${internalName}`, {diameter: radius * 2});
             console.warn(`No meshContainerId for ${internalName}`)
             this.mesh.name = `! ${internalName} '${id}')`;
           }
-
         }
 
         getId(): number {
@@ -572,7 +583,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
     let baseItemContainer = new Mesh(`BaseItems '${id}' AssetConfig '${foundMeshContainer.getInternalName()}'`);
     this.scene.addMesh(baseItemContainer);
-    this.shadowGenerator.addShadowCaster(baseItemContainer, true);
     this.recursivelyFillMeshes(foundMeshContainer!, baseItemContainer, diplomacy);
     return baseItemContainer;
   }
@@ -637,7 +647,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       mesh.position.x = 0;
       mesh.position.y = 0;
       mesh.position.z = 0;
-      this.shadowGenerator.addShadowCaster(mesh, true);
+      // this.shadowGenerator.addShadowCaster(mesh, true);
       // mesh.rotationQuaternion = null;
       // mesh.rotation.x = 0;
       // mesh.rotation.y = 0;

@@ -22,8 +22,8 @@ public class ThreeJsRendererService {
         return threeJsRendererServiceAccess.createTerrainTile(terrainTile, defaultGroundConfig);
     }
 
-    public BabylonBaseItem createSyncBaseItem(int baseItemId, Integer meshContainerId, String internalName, Diplomacy diplomacy, double radius) {
-        return threeJsRendererServiceAccess.createSyncBaseItem(baseItemId, meshContainerId, internalName, diplomacy, radius);
+    public BabylonBaseItem createSyncBaseItem(int baseItemId, Integer threeJsModelPackConfigId, Integer meshContainerId, String internalName, Diplomacy diplomacy, double radius) {
+        return threeJsRendererServiceAccess.createSyncBaseItem(baseItemId, threeJsModelPackConfigId, meshContainerId, internalName, diplomacy, radius);
     }
 
     public void createProjectile(Vertex start, Vertex destination, double duration) {

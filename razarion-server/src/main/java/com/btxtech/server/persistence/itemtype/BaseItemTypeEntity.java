@@ -5,6 +5,7 @@ import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.asset.MeshContainerEntity;
 import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
 import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
@@ -63,7 +64,7 @@ public class BaseItemTypeEntity {
     private ImageLibraryEntity thumbnail;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ColladaEntity shape3DId;
+    private ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private MeshContainerEntity meshContainer;
@@ -125,7 +126,7 @@ public class BaseItemTypeEntity {
             baseItemType.setDropBoxItemTypeId(dropBoxItemTypeEntity.getId());
         }
         baseItemType.setBoxPickupRange(boxPickupRange).setUnlockCrystals(unlockCrystals).setHealth(health).setBuildup(buildup);
-        baseItemType.setId(id).setInternalName(internalName);
+        baseItemType.id(id).internalName(internalName);
         if (i18nName != null) {
             baseItemType.setI18nName(i18nName.toI18nString());
         }
@@ -141,8 +142,8 @@ public class BaseItemTypeEntity {
                 .angularVelocity(angularVelocity)
                 .startAngleSlowDown(startAngleSlowDown)
                 .endAngleSlowDown(endAngleSlowDown));
-        if (shape3DId != null) {
-            baseItemType.setShape3DId(shape3DId.getId());
+        if (threeJsModelPackConfigEntity != null) {
+            baseItemType.setThreeJsModelPackConfigId(threeJsModelPackConfigEntity.getId());
         }
         if (meshContainer != null) {
             baseItemType.setMeshContainerId(meshContainer.getId());
@@ -321,8 +322,12 @@ public class BaseItemTypeEntity {
         }
     }
 
-    public void setShape3DId(ColladaEntity shape3DId) {
-        this.shape3DId = shape3DId;
+    public ThreeJsModelPackConfigEntity getThreeJsModelPackConfigEntity() {
+        return threeJsModelPackConfigEntity;
+    }
+
+    public void setThreeJsModelPackConfigEntity(ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity) {
+        this.threeJsModelPackConfigEntity = threeJsModelPackConfigEntity;
     }
 
     public void setMeshContainer(MeshContainerEntity meshContainer) {

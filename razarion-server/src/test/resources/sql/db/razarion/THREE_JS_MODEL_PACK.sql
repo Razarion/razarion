@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `THREE_JS_MODEL_PACK` (
   PRIMARY KEY (`id`),
   KEY `FK1odbqn8a5lg9edjr451fi17hf` (`threeJsModelConfig_id`),
   CONSTRAINT `FK1odbqn8a5lg9edjr451fi17hf` FOREIGN KEY (`threeJsModelConfig_id`) REFERENCES `THREE_JS_MODEL` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `THREE_JS_MODEL_PACK`;
 /*!40000 ALTER TABLE `THREE_JS_MODEL_PACK` DISABLE KEYS */;
@@ -42,7 +42,8 @@ INSERT INTO `THREE_JS_MODEL_PACK` (`id`, `internalName`, `positionX`, `positionY
 	(25, 'Stone 8 [Stone Pack 1]', -6, -6.5, 0, -1.5708, 0, 0, 0.025, 0.025, -0.025, 12),
 	(26, 'Stone 9 [Stone Pack 1]', 11.5, -1, 0, -1.5708, 0, 0, 0.025, 0.025, -0.025, 12),
 	(27, 'Stone 10 [Stone Pack 1]', 7, -1, 0, -1.5708, 0, 0, 0.025, 0.025, -0.025, 12),
-	(28, 'Stone 11 [Stone Pack 1]', 2, 0, 0, -1.5708, 0, 0, 0.025, 0.025, -0.025, 12);
+	(28, 'Stone 11 [Stone Pack 1]', 2, 0, 0, -1.5708, 0, 0, 0.025, 0.025, -0.025, 12),
+	(30, 'Building 01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 47);
 /*!40000 ALTER TABLE `THREE_JS_MODEL_PACK` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

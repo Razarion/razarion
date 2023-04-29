@@ -52,7 +52,7 @@ public class ResourceItemTypeEntity {
 
     public ResourceItemType toResourceItemType() {
         ResourceItemType resourceItemType = new ResourceItemType();
-        resourceItemType.setRadius(radius).setAmount(amount).setFixVerticalNorm(fixVerticalNorm).setTerrainType(terrainType).setId(id).setInternalName(internalName);
+        resourceItemType.setRadius(radius).setAmount(amount).setFixVerticalNorm(fixVerticalNorm).setTerrainType(terrainType).id(id).internalName(internalName);
         if (shape3DId != null) {
             resourceItemType.setShape3DId(shape3DId.getId());
         }

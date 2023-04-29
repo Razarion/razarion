@@ -78,7 +78,7 @@ export class BabylonModelService {
     });
   }
 
-  cloneMesh(threeJsModelPackConfigId: number, parent: Node): Node {
+  cloneMesh(threeJsModelPackConfigId: number, parent: Node | null): Node {
     const threeJsModelPackConf = this.gwtAngularService.gwtAngularFacade.threeJsModelPackService.getThreeJsModelPackConfig(threeJsModelPackConfigId);
 
     const assetContainer: AssetContainer = this.getAssetContainer(threeJsModelPackConf.getThreeJsModelId());
@@ -101,16 +101,22 @@ export class BabylonModelService {
     mesh.receiveShadows = true;
     mesh.getChildMeshes().forEach(m => m.receiveShadows = true);
 
-    mesh.position.set(threeJsModelPackConf.getPosition().getX(),
-      threeJsModelPackConf.getPosition().getZ(),
-      threeJsModelPackConf.getPosition().getY());
-    mesh.scaling.set(threeJsModelPackConf.getScale().getX(),
-      threeJsModelPackConf.getScale().getZ(),
-      threeJsModelPackConf.getScale().getY());
-    mesh.rotationQuaternion = null;
-    mesh.rotation.set(threeJsModelPackConf.getRotation().getX(),
-      threeJsModelPackConf.getRotation().getZ(),
-      threeJsModelPackConf.getRotation().getY());
+    if (threeJsModelPackConf.getPosition()) {
+      mesh.position.set(threeJsModelPackConf.getPosition().getX(),
+        threeJsModelPackConf.getPosition().getZ(),
+        threeJsModelPackConf.getPosition().getY());
+    }
+    if (threeJsModelPackConf.getScale()) {
+      mesh.scaling.set(threeJsModelPackConf.getScale().getX(),
+        threeJsModelPackConf.getScale().getZ(),
+        threeJsModelPackConf.getScale().getY());
+    }
+    if (threeJsModelPackConf.getRotation()) {
+      mesh.rotationQuaternion = null;
+      mesh.rotation.set(threeJsModelPackConf.getRotation().getX(),
+        threeJsModelPackConf.getRotation().getZ(),
+        threeJsModelPackConf.getRotation().getY());
+    }
     return mesh;
   }
 

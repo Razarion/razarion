@@ -60,7 +60,7 @@ public class BoxItemTypeEntity {
 
     public BoxItemType toBoxItemType() {
         BoxItemType boxItemType = new BoxItemType();
-        boxItemType.setRadius(radius).setTtl(ttl).setFixVerticalNorm(fixVerticalNorm).setTerrainType(terrainType).setId(id).setInternalName(internalName);
+        boxItemType.setRadius(radius).setTtl(ttl).setFixVerticalNorm(fixVerticalNorm).setTerrainType(terrainType).id(id).internalName(internalName);
         if (shape3DId != null) {
             boxItemType.setShape3DId(shape3DId.getId());
         }

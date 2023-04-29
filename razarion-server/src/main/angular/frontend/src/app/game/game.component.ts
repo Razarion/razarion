@@ -10,9 +10,9 @@ import {ThreeJsRendererServiceImpl} from './renderer/three-js-renderer-service.i
 import {environment} from 'src/environments/environment';
 import {GameMockService} from './renderer/game-mock.service';
 import {BabylonModelService} from './renderer/babylon-model.service';
-import {Diplomacy, Vertex} from "../gwtangular/GwtAngularFacade";
+import {Diplomacy} from "../gwtangular/GwtAngularFacade";
 import {GwtInstance} from "../gwtangular/GwtInstance";
-import {Color3, CubeTexture, MeshBuilder, PBRMetallicRoughnessMaterial, StandardMaterial} from "@babylonjs/core";
+import {Color3, CubeTexture, MeshBuilder, PBRMetallicRoughnessMaterial} from "@babylonjs/core";
 
 
 @Component({
@@ -82,7 +82,7 @@ export class GameComponent implements OnInit {
             //   }
             // }, 2);
 
-            let babylonBaseItem = this.threeJsRendererService.createSyncBaseItem(999999, 23076, "Vehicle 11", Diplomacy.ENEMY, 2);
+            let babylonBaseItem = this.threeJsRendererService.createSyncBaseItem(999999, null, 23076, "Vehicle 11", Diplomacy.ENEMY, 2);
             babylonBaseItem.setPosition(GwtInstance.newVertex(8, 8, 0));
             babylonBaseItem.setAngle(0);
 

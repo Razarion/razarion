@@ -294,7 +294,7 @@ export interface ShapeTransform {
 export interface ThreeJsRendererServiceAccess {
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
 
-  createSyncBaseItem(id: number, meshContainerId: number | null, internalName: string, diplomacy: Diplomacy, radius: number): BabylonBaseItem;
+  createSyncBaseItem(id: number, threeJsModelPackConfigId: number | null, meshContainerId: number | null, internalName: string, diplomacy: Diplomacy, radius: number): BabylonBaseItem;
 
   createProjectile(start: Vertex, destination: Vertex, duration: number): void;
 

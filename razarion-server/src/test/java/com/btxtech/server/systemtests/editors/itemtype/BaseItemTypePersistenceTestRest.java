@@ -188,7 +188,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeBuilder(BaseItemType builder, Integer... ableToBuild) {
-        builder.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_2_ID).setThumbnail(IMAGE_3_ID).setShape3DId(SHAPE_3D_1_ID);
+        builder.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_2_ID).thumbnail(IMAGE_3_ID).threeJsModelPackConfigId(SHAPE_3D_1_ID);
         builder.setI18nName(i18nHelper("Builder"));
         builder.setI18nDescription(i18nHelper("Builds buildings"));
         builder.getPhysicalAreaConfig().radius(3).acceleration(40.0).speed(10.0).angularVelocity(Math.toRadians(60)).startAngleSlowDown(Math.toRadians(30)).endAngleSlowDown(Math.toRadians(120));
@@ -202,7 +202,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeHarvester(BaseItemType harvester) {
-        harvester.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_2_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_3_ID).setThumbnail(IMAGE_1_ID).setShape3DId(SHAPE_3D_1_ID);
+        harvester.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_2_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_3_ID).thumbnail(IMAGE_1_ID).threeJsModelPackConfigId(SHAPE_3D_1_ID);
         harvester.setI18nName(i18nHelper("Harvester"));
         harvester.setI18nDescription(i18nHelper("Collects resources"));
         harvester.getPhysicalAreaConfig().radius(3).acceleration(5.0).speed(15.0).angularVelocity(Math.toRadians(60)).startAngleSlowDown(Math.toRadians(40));
@@ -212,7 +212,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeAttacker(BaseItemType attacker) {
-        attacker.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_2_ID).setSpawnAudioId(AUDIO_3_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_1_ID).setThumbnail(IMAGE_2_ID).setShape3DId(SHAPE_3D_3_ID);
+        attacker.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_2_ID).setSpawnAudioId(AUDIO_3_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_1_ID).thumbnail(IMAGE_2_ID).threeJsModelPackConfigId(SHAPE_3D_3_ID);
         attacker.setI18nName(i18nHelper("Attacker"));
         attacker.setI18nDescription(i18nHelper("Attacks other units"));
         attacker.getPhysicalAreaConfig().radius(2).acceleration(5.0).speed(17.0).angularVelocity(Math.toRadians(60)).endAngleSlowDown(Math.toRadians(150));
@@ -222,7 +222,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeTower(BaseItemType tower) {
-        tower.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_2_ID).setDemolitionImageId(IMAGE_3_ID).setThumbnail(IMAGE_3_ID).setShape3DId(SHAPE_3D_3_ID);
+        tower.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_2_ID).setDemolitionImageId(IMAGE_3_ID).thumbnail(IMAGE_3_ID).threeJsModelPackConfigId(SHAPE_3D_3_ID);
         tower.setI18nName(i18nHelper("Tower"));
         tower.setI18nDescription(i18nHelper("Defense tower"));
         tower.getPhysicalAreaConfig().radius(4).fixVerticalNorm(true);
@@ -248,7 +248,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeFactory(BaseItemType factory, Integer... ableToBuild) {
-        factory.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_2_ID).setBuildupTextureId(IMAGE_2_ID).setDemolitionImageId(IMAGE_1_ID).setThumbnail(IMAGE_1_ID).setShape3DId(SHAPE_3D_2_ID);
+        factory.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_2_ID).setBuildupTextureId(IMAGE_2_ID).setDemolitionImageId(IMAGE_1_ID).thumbnail(IMAGE_1_ID).threeJsModelPackConfigId(SHAPE_3D_2_ID);
         factory.setI18nName(i18nHelper("Factory"));
         factory.setI18nDescription(i18nHelper("Creates units"));
         factory.setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_2_ID).setBuildup(30);
@@ -278,7 +278,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeTransporter(BaseItemType transporter, Integer... ableToBuild) {
-        transporter.setHealth(19).setSpawnDurationMillis(2000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_3_ID).setThumbnail(IMAGE_2_ID).setShape3DId(SHAPE_3D_2_ID);
+        transporter.setHealth(19).setSpawnDurationMillis(2000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_3_ID).thumbnail(IMAGE_2_ID).threeJsModelPackConfigId(SHAPE_3D_2_ID);
         transporter.setI18nName(i18nHelper("Transporter"));
         transporter.setI18nDescription(i18nHelper("Transports units"));
         transporter.setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setBuildup(35);

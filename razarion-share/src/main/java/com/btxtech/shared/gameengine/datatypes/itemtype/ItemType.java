@@ -28,8 +28,8 @@ public abstract class ItemType implements Config {
     private String internalName;
     private I18nString i18nName;
     private I18nString i18nDescription;
-    @CollectionReference(CollectionReferenceType.SHAPE_3D)
-    private Integer shape3DId;
+    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL_PACK)
+    private Integer threeJsModelPackConfigId;
     @CollectionReference(CollectionReferenceType.MESH_CONTAINER)
     private Integer meshContainerId;
     private Integer thumbnail;
@@ -39,18 +39,13 @@ public abstract class ItemType implements Config {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String getInternalName() {
         return internalName;
-    }
-
-    public I18nString getI18nName() {
-        return i18nName;
-    }
-
-    public ItemType setId(int id) {
-        this.id = id;
-        return this;
     }
 
     @Override
@@ -58,27 +53,28 @@ public abstract class ItemType implements Config {
         this.internalName = internalName;
     }
 
-    public ItemType setI18nDescription(I18nString i18nDescription) {
-        this.i18nDescription = i18nDescription;
-        return this;
+    public I18nString getI18nName() {
+        return i18nName;
+    }
+
+    public void setI18nName(I18nString i18nName) {
+        this.i18nName = i18nName;
     }
 
     public I18nString getI18nDescription() {
         return i18nDescription;
     }
 
-    public ItemType setI18nName(I18nString i18nName) {
-        this.i18nName = i18nName;
-        return this;
+    public void setI18nDescription(I18nString i18nDescription) {
+        this.i18nDescription = i18nDescription;
     }
 
-    public Integer getShape3DId() {
-        return shape3DId;
+    public Integer getThreeJsModelPackConfigId() {
+        return threeJsModelPackConfigId;
     }
 
-    public ItemType setShape3DId(Integer shape3DId) {
-        this.shape3DId = shape3DId;
-        return this;
+    public void setThreeJsModelPackConfigId(Integer threeJsModelPackConfigId) {
+        this.threeJsModelPackConfigId = threeJsModelPackConfigId;
     }
 
     public Integer getMeshContainerId() {
@@ -93,9 +89,52 @@ public abstract class ItemType implements Config {
         return thumbnail;
     }
 
-    public ItemType setThumbnail(Integer thumbnail) {
+    public void setThumbnail(Integer thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public ItemType id(int id) {
+        setId(id);
         return this;
+    }
+
+    public ItemType internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
+    }
+
+    public ItemType i18nName(I18nString i18nName) {
+        setI18nName(i18nName);
+        return this;
+    }
+
+    public ItemType i18nDescription(I18nString i18nDescription) {
+        setI18nDescription(i18nDescription);
+        return this;
+    }
+
+    public ItemType threeJsModelPackConfigId(Integer threeJsModelPackConfigId) {
+        setThreeJsModelPackConfigId(threeJsModelPackConfigId);
+        return this;
+    }
+
+    public ItemType meshContainerId(Integer meshContainerId) {
+        setMeshContainerId(meshContainerId);
+        return this;
+    }
+
+    public ItemType thumbnail(Integer thumbnail) {
+        setThumbnail(thumbnail);
+        return this;
+    }
+
+    @Deprecated
+    public Integer getShape3DId() {
+        return null;
+    }
+
+    @Deprecated
+    public void setShape3DId(Integer shape3DId) {
     }
 
     @Override

@@ -221,6 +221,7 @@ public class BaseItemUiService {
                     BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
                     if (babylonBaseItem == null) {
                         babylonBaseItem = threeJsRendererService.createSyncBaseItem(nativeSyncBaseItemTickInfo.id,
+                                baseItemType.getThreeJsModelPackConfigId(),
                                 baseItemType.getMeshContainerId(),
                                 baseItemType.getInternalName(),
                                 diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo),
