@@ -4,9 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.renderer.ViewService;
 import jsinterop.annotations.JsType;
 
 import javax.enterprise.context.Dependent;
@@ -26,10 +24,6 @@ public class BaseItemPlacer {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private ViewService viewService;
-    @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
-    @Inject
     private ExceptionHandler exceptionHandler;
     private DecimalPosition position;
     private BaseItemType baseItemType;
@@ -40,9 +34,6 @@ public class BaseItemPlacer {
         baseItemPlacerChecker.init(baseItemType, baseItemPlacerConfig);
         if (baseItemPlacerConfig.getSuggestedPosition() != null) {
             onMove(baseItemPlacerConfig.getSuggestedPosition());
-        } else {
-            DecimalPosition cameraCenter = viewService.getCurrentViewField().calculateCenter();
-            onMove(cameraCenter);
         }
         return this;
     }

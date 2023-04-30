@@ -185,8 +185,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             this.mesh = <Mesh>threeJsRendererServiceImpl.threeJsModelService.cloneMesh(threeJsModelPackConfigId, null);
             this.mesh.name = `${internalName} '${id}')`;
             try {
-                this.mesh.getBoundingInfo();
-                threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(this.mesh, true);
+              // If TransformNode is returned, it has no getBoundingInfo() methode
+              this.mesh.getBoundingInfo();
+              threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(this.mesh, true);
             } catch(error) {
               this.mesh.getChildMeshes().forEach(childMesh => {
                 threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(childMesh, true);
@@ -723,31 +724,41 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   createBaseItemPlacerPresenter(): BaseItemPlacerPresenter {
-    const scene = this.scene;
+    const threeJsRendererServiceImpl = this;
+
     let disc: Mesh | null = null;
-    const material = new SimpleMaterial("Base Item Placer", scene);
+    const material = new SimpleMaterial("Base Item Placer", threeJsRendererServiceImpl.scene);
     material.diffuseColor = Color3.Red()
     return new class implements BaseItemPlacerPresenter {
       activate(baseItemPlacer: BaseItemPlacer): void {
-        disc = MeshBuilder.CreateDisc("Base Item Placer", {radius: baseItemPlacer.getEnemyFreeRadius()}, scene);
+        disc = MeshBuilder.CreateDisc("Base Item Placer", {radius: baseItemPlacer.getEnemyFreeRadius()}, threeJsRendererServiceImpl.scene);
         disc.visibility = 0.5;
         disc.material = material;
         disc.rotation.x = Tools.ToRadians(90);
-        disc.position.x = baseItemPlacer.getPosition().getX();
-        disc.position.z = baseItemPlacer.getPosition().getY();
+        this.updatePosition(disc, baseItemPlacer);
         disc.position.y = 0.1;
         material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
         disc.onBeforeRenderObservable.add(eventData => {
           if (disc) {
-            disc.position.x = baseItemPlacer.getPosition().getX();
-            disc.position.z = baseItemPlacer.getPosition().getY();
+            this.updatePosition(disc, baseItemPlacer);
             material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
           }
         })
       }
 
+      private updatePosition(disc: Mesh, baseItemPlacer: BaseItemPlacer) {
+        if (baseItemPlacer.getPosition()) {
+          disc.position.x = baseItemPlacer.getPosition().getX();
+          disc.position.z = baseItemPlacer.getPosition().getY();
+        } else {
+          let centerPosition = threeJsRendererServiceImpl.setupCenterGroundPosition();
+          disc.position.x = centerPosition.x;
+          disc.position.z = centerPosition.z;
+        }
+      }
+
       deactivate(): void {
-        scene.removeMesh(disc!);
+        threeJsRendererServiceImpl.scene.removeMesh(disc!);
         disc?.dispose();
         disc = null;
       }

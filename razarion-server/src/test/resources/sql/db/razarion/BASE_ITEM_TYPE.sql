@@ -98,7 +98,7 @@ INSERT INTO `BASE_ITEM_TYPE` (`id`, `acceleration`, `angularVelocity`, `boxPicku
 	(1, 2, 2, 2, 60, 0, b'0', 300, 'Builder', 300, 3, 3000, 12, 'LAND', NULL, 2, 1, 17, NULL, 27, NULL, NULL, NULL, NULL, NULL, 41, 42, NULL, 3, 7, 2, NULL, 45, NULL, 16, 2, 1.57, 0, 22743, NULL),
 	(2, 2.5, 2.5, 2, 20, 0, b'0', 200, 'Harvester', 200, 3, 3000, 14, 'LAND', NULL, 1, NULL, 17, NULL, 27, NULL, NULL, NULL, 1, NULL, 43, 44, NULL, 17, 7, 2, NULL, 64, NULL, 16, 2, 1.57, 0, NULL, NULL),
 	(3, 3, 3, 2, 10, 0, b'0', 150, 'Viper', 100, 2, 3000, 17, 'LAND', NULL, 1, NULL, 17, NULL, 27, NULL, NULL, NULL, NULL, NULL, 45, 46, NULL, 11, 7, 2, NULL, 63, 1, 16, 2, 1.57, 0, NULL, NULL),
-	(4, NULL, NULL, 0, 20, 0, b'1', 500, 'Factory', 300, 6, 3000, NULL, 'LAND', NULL, 5, NULL, 17, NULL, 27, NULL, 1, NULL, NULL, NULL, 49, 50, NULL, 8, 7, 2, NULL, 46, NULL, 15, 2, NULL, NULL, 23284, NULL),
+	(4, NULL, NULL, 0, 20, 0, b'1', 500, 'Factory', 300, 6, 3000, NULL, 'LAND', NULL, 5, NULL, 17, NULL, 27, NULL, 1, NULL, NULL, NULL, 49, 50, NULL, 8, 7, 2, NULL, 46, NULL, 15, 2, NULL, NULL, NULL, 31),
 	(5, NULL, NULL, 0, 30, 0, b'1', 250, '(Bot) Tower', 0, 3, 3000, NULL, 'LAND', NULL, 1, NULL, 17, NULL, 27, NULL, NULL, NULL, NULL, NULL, 47, 48, NULL, 10, 7, 2, NULL, 65, 2, 15, 2, NULL, NULL, NULL, 30),
 	(6, NULL, NULL, 0, 30, 0, b'1', 400, 'Radar', 300, 5, 0, NULL, 'LAND', 0, 3, NULL, 17, 1, 33, NULL, NULL, NULL, NULL, NULL, 61, 62, NULL, 19, 7, 2, 1, 73, NULL, 15, 2, NULL, NULL, NULL, NULL),
 	(7, NULL, NULL, 0, 30, 0, b'1', 400, 'Powerplant', 200, 4, 0, NULL, 'LAND', NULL, 2, NULL, 17, NULL, 29, NULL, NULL, 1, NULL, NULL, 63, 64, NULL, 20, 7, 2, NULL, 74, NULL, 15, 2, NULL, NULL, NULL, NULL),

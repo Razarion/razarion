@@ -43,7 +43,8 @@ INSERT INTO `THREE_JS_MODEL_PACK` (`id`, `internalName`, `positionX`, `positionY
 	(26, 'Stone 9 [Stone Pack 1]', 11.5, -1, 0, -1.5708, 0, 0, 0.025, 0.025, -0.025, 12),
 	(27, 'Stone 10 [Stone Pack 1]', 7, -1, 0, -1.5708, 0, 0, 0.025, 0.025, -0.025, 12),
 	(28, 'Stone 11 [Stone Pack 1]', 2, 0, 0, -1.5708, 0, 0, 0.025, 0.025, -0.025, 12),
-	(30, 'Building 01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 47);
+	(30, 'Building 01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 47),
+	(31, 'Building 02', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 47);
 /*!40000 ALTER TABLE `THREE_JS_MODEL_PACK` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
