@@ -322,10 +322,6 @@ public class BaseItemTypeEntity {
         }
     }
 
-    public ThreeJsModelPackConfigEntity getThreeJsModelPackConfigEntity() {
-        return threeJsModelPackConfigEntity;
-    }
-
     public void setThreeJsModelPackConfigEntity(ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity) {
         this.threeJsModelPackConfigEntity = threeJsModelPackConfigEntity;
     }

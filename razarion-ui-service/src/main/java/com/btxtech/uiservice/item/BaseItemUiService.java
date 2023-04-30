@@ -217,52 +217,51 @@ public class BaseItemUiService {
                     // TODO buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup, color));
                 }
                 // Alive
-                if (!isSpawning && isBuildup) {
-                    BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
-                    if (babylonBaseItem == null) {
-                        babylonBaseItem = threeJsRendererService.createSyncBaseItem(nativeSyncBaseItemTickInfo.id,
-                                baseItemType.getThreeJsModelPackConfigId(),
-                                baseItemType.getMeshContainerId(),
-                                baseItemType.getInternalName(),
-                                diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo),
-                                baseItemType.getPhysicalAreaConfig().getRadius());
-                        aliveBabylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
-                        babylonBaseItem.setPosition(NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo));
-                        babylonBaseItem.updatePosition();
-                        babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
-                        babylonBaseItem.updateAngle();
-                        babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
-                        babylonBaseItem.updateHealth();
-                    }
-                    leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
+                BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
+                if (babylonBaseItem == null) {
+                    babylonBaseItem = threeJsRendererService.createSyncBaseItem(nativeSyncBaseItemTickInfo.id,
+                            baseItemType.getThreeJsModelPackConfigId(),
+                            baseItemType.getMeshContainerId(),
+                            baseItemType.getInternalName(),
+                            diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo),
+                            baseItemType.getPhysicalAreaConfig().getRadius());
+                    aliveBabylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
+                    babylonBaseItem.setPosition(NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo));
+                    babylonBaseItem.updatePosition();
+                    babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
+                    babylonBaseItem.updateAngle();
+                    babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
+                    babylonBaseItem.updateHealth();
+                }
+                leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
 
-                    Vertex position = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
-                    if (position != null) {
-                        if (babylonBaseItem.getPosition() != null) {
-                            if (!babylonBaseItem.getPosition().equalsDelta(position, 0.000001)) {
-                                babylonBaseItem.setPosition(position);
-                                babylonBaseItem.updatePosition();
-                            }
-                        } else {
+                Vertex position = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
+                if (position != null) {
+                    if (babylonBaseItem.getPosition() != null) {
+                        if (!babylonBaseItem.getPosition().equalsDelta(position, 0.000001)) {
                             babylonBaseItem.setPosition(position);
                             babylonBaseItem.updatePosition();
                         }
-                    }
-
-                    if (babylonBaseItem.getAngle() != nativeSyncBaseItemTickInfo.angle) {
-                        babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
-                        babylonBaseItem.updateAngle();
-                    }
-
-                    if (babylonBaseItem.getHealth() != nativeSyncBaseItemTickInfo.health) {
-                        babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
-                        babylonBaseItem.updateHealth();
-                    }
-
-                    if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
-                        // TODO weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
+                    } else {
+                        babylonBaseItem.setPosition(position);
+                        babylonBaseItem.updatePosition();
                     }
                 }
+
+                if (babylonBaseItem.getAngle() != nativeSyncBaseItemTickInfo.angle) {
+                    babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
+                    babylonBaseItem.updateAngle();
+                }
+
+                if (babylonBaseItem.getHealth() != nativeSyncBaseItemTickInfo.health) {
+                    babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
+                    babylonBaseItem.updateHealth();
+                }
+
+                if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
+                    // TODO weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
+                }
+
                 if (syncBaseItemSetPositionMonitor != null && viewFieldAabb != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                     if (viewFieldCache == null) {
                         viewFieldCache = viewField.toPolygon();
