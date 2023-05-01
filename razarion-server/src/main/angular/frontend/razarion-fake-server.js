@@ -119,6 +119,27 @@ server.on({
     }
 });
 
+server.on({
+  method: 'GET',
+  path: '/rest/editor/Svelte-jsoneditor/read/-99999',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: '{"value" : -99999}'
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: 'rest/editor/Svelte-jsoneditor/update',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: '{"value" : -99999}'
+  }
+});
+
+
 server.start(function () {
     console.info("Razarion fake server is running on port: " + PORT);
 });

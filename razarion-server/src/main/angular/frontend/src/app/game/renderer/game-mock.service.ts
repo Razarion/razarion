@@ -129,7 +129,7 @@ export class GameMockService {
         }
 
         getPathForCollection(collectionName: string): string {
-          throw new Error("Method not implemented.");
+          return `editor/${collectionName}`;
         }
 
       };
