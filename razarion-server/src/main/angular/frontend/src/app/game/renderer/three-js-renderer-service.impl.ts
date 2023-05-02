@@ -65,6 +65,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
   private meshContainers!: MeshContainer[];
   private diplomacyMaterialCache: Map<number, Map<Diplomacy, NodeMaterial>> = new Map<number, Map<Diplomacy, NodeMaterial>>();
+  private itemMarkerMaterialCache: Map<Diplomacy, SimpleMaterial> = new Map<Diplomacy, SimpleMaterial>();
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -73,8 +74,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.engine = new Engine(canvas)
     this.scene = new Scene(this.engine);
     this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
-    this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/country.dds", this.scene);
-    // this.scene.createDefaultEnvironment();
+    this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
 
     this.threeJsModelService.setScene(this.scene);
 
@@ -268,10 +268,15 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
           if (this.selectActive || this.hoverActive) {
             if (!this.markerDisc) {
               this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: radius + 0.1});
-              this.markerDisc.material = new SimpleMaterial("Base Item Marker", threeJsRendererServiceImpl.scene);
+              let material = threeJsRendererServiceImpl.itemMarkerMaterialCache.get(correctedDiplomacy);
+              if(!material) {
+                material = new SimpleMaterial(`Base Item Marker ${correctedDiplomacy}`, threeJsRendererServiceImpl.scene);
+                material.diffuseColor = ThreeJsRendererServiceImpl.color4Diplomacy(correctedDiplomacy);
+                threeJsRendererServiceImpl.itemMarkerMaterialCache.set(correctedDiplomacy, material);
+              }
+              this.markerDisc.material = material;
               this.markerDisc.position.y = 0.01;
               this.markerDisc.rotation.x = Tools.ToRadians(90);
-              (<SimpleMaterial>this.markerDisc.material).diffuseColor = ThreeJsRendererServiceImpl.color4Diplomacy(correctedDiplomacy);
               this.markerDisc.parent = this.mesh;
             }
           } else {

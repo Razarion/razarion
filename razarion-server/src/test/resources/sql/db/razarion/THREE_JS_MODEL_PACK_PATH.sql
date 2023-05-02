@@ -136,7 +136,7 @@ INSERT INTO `THREE_JS_MODEL_PACK_PATH` (`threeJsModelPackConfig`, `namePath`, `o
 	(28, 'Object_34', 5),
 	(28, 'Mid_3_MID_0', 6),
 	(30, 'Building_01', 0),
-	(31, 'Building_01', 0);
+	(31, 'Building_02', 0);
 /*!40000 ALTER TABLE `THREE_JS_MODEL_PACK_PATH` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
