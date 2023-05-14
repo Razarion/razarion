@@ -18,7 +18,6 @@ import {
   ShapeTransform,
   SlopeConfig,
   SlopeGeometry,
-  SlopeSplattingConfig,
   StatusProvider,
   TerrainEditorService,
   TerrainMarkerService,
@@ -384,14 +383,6 @@ export class GameMockService {
               return slopeConfigJson.waterConfigId;
             }
 
-            getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null {
-              return _this.setupSlopeSplattingConfig(slopeConfigJson.innerSlopeSplattingConfig);
-            }
-
-            getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null {
-              return _this.setupSlopeSplattingConfig(slopeConfigJson.outerSlopeSplattingConfig);
-            }
-
             getShallowWaterThreeJsMaterial(): number {
               return slopeConfigJson.shallowWaterThreeJsMaterial;
             }
@@ -631,34 +622,6 @@ export class GameMockService {
       });
     })
     return threeJsModelConfigs;
-  }
-
-  private setupSlopeSplattingConfig(slopeSplattingConfig: any): SlopeSplattingConfig | null {
-    if (slopeSplattingConfig) {
-      return new class implements SlopeSplattingConfig {
-        getBlur(): number {
-          return slopeSplattingConfig.blur;
-        }
-
-        getImpact(): number {
-          return slopeSplattingConfig.impact;
-        }
-
-        getOffset(): number {
-          return slopeSplattingConfig.offset;
-        }
-
-        getScale(): number {
-          return slopeSplattingConfig.scale;
-        }
-
-        getTextureId(): number {
-          return slopeSplattingConfig.textureId;
-        }
-      }
-    } else {
-      return null;
-    }
   }
 
   private setupGeometry(slopeGeometryName: string, terrainSlopeTileJson: any): SlopeGeometry | null {

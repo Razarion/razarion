@@ -47,20 +47,10 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
       terrainTile.getTerrainSlopeTiles().forEach(terrainSlopeTile => {
         try {
           let slopeConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getSlopeConfig(terrainSlopeTile.slopeConfigId);
-          if (terrainSlopeTile.outerSlopeGeometry) {
-            this.setupSlopeGeometry(slopeConfig,
-              terrainSlopeTile.outerSlopeGeometry,
-              threeJsModelService.getNodeMaterialNull(slopeConfig.getOuterSlopeThreeJsMaterial(), `SlopeConfig has no outerSlopeThreeJsMaterial ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`));
-          }
           if (terrainSlopeTile.centerSlopeGeometry) {
             this.setupSlopeGeometry(slopeConfig,
               terrainSlopeTile.centerSlopeGeometry,
               threeJsModelService.getNodeMaterialNull(slopeConfig.getThreeJsMaterial(), `SlopeConfig has no threeJsMaterial: ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`));
-          }
-          if (terrainSlopeTile.innerSlopeGeometry) {
-            this.setupSlopeGeometry(slopeConfig,
-              terrainSlopeTile.innerSlopeGeometry,
-              threeJsModelService.getNodeMaterialNull(slopeConfig.getInnerSlopeThreeJsMaterial(), `SlopeConfig has no innerSlopeThreeJsMaterial: ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`));
           }
         } catch (error) {
           // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);

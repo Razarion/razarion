@@ -49,24 +49,6 @@ public class SlopeConfigEntity {
     })
     @Embedded
     private ShallowWaterConfigEmbeddable shallowWaterConfig;
-    @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "outerSplattingTextureId"))
-    @AttributeOverrides({
-            @AttributeOverride(name = "scale", column = @Column(name = "outerSplattingScale")),
-            @AttributeOverride(name = "impact", column = @Column(name = "outerSplattingImpact")),
-            @AttributeOverride(name = "blur", column = @Column(name = "outerSplattingBlur")),
-            @AttributeOverride(name = "offset", column = @Column(name = "outerSplattingOffset")),
-    })
-    @Embedded
-    private SlopeSplattingConfigEmbeddable outerSplatting;
-    @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "innerSplattingTextureId"))
-    @AttributeOverrides({
-            @AttributeOverride(name = "scale", column = @Column(name = "innerSplattingScale")),
-            @AttributeOverride(name = "impact", column = @Column(name = "innerSplattingImpact")),
-            @AttributeOverride(name = "blur", column = @Column(name = "innerSplattingBlur")),
-            @AttributeOverride(name = "offset", column = @Column(name = "innerSplattingOffset")),
-    })
-    @Embedded
-    private SlopeSplattingConfigEmbeddable innerSplatting;
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
@@ -74,12 +56,6 @@ public class SlopeConfigEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ThreeJsModelConfigEntity shallowWaterThreeJsMaterial;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ThreeJsModelConfigEntity outerSlopeThreeJsMaterial;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ThreeJsModelConfigEntity innerSlopeThreeJsMaterial;
 
     public Integer getId() {
         return id;
@@ -94,12 +70,8 @@ public class SlopeConfigEntity {
                 .innerLineGameEngine(innerLineGameEngine)
                 .outerLineGameEngine(outerLineGameEngine)
                 .coastDelimiterLineGameEngine(coastDelimiterLineGameEngine)
-                .outerSlopeSplattingConfig(SlopeSplattingConfigEmbeddable.to(outerSplatting))
-                .innerSlopeSplattingConfig(SlopeSplattingConfigEmbeddable.to(innerSplatting))
                 .threeJsMaterial(extractId(threeJsMaterial, ThreeJsModelConfigEntity::getId))
-                .shallowWaterThreeJsMaterial(extractId(shallowWaterThreeJsMaterial, ThreeJsModelConfigEntity::getId))
-                .outerSlopeThreeJsMaterial(extractId(outerSlopeThreeJsMaterial, ThreeJsModelConfigEntity::getId))
-                .innerSlopeThreeJsMaterial(extractId(innerSlopeThreeJsMaterial, ThreeJsModelConfigEntity::getId));
+                .shallowWaterThreeJsMaterial(extractId(shallowWaterThreeJsMaterial, ThreeJsModelConfigEntity::getId));
         if (groundConfig != null) {
             slopeConfig.setGroundConfigId(groundConfig.getId());
         }
@@ -133,11 +105,7 @@ public class SlopeConfigEntity {
         horizontalSpace = slopeConfig.getHorizontalSpace();
         waterConfig = waterConfigEntity;
         threeJsMaterial = threeJsModelCrudPersistence.getEntity(slopeConfig.getThreeJsMaterial());
-        outerSplatting = SlopeSplattingConfigEmbeddable.factorize(slopeConfig.getOuterSlopeSplattingConfig(), imagePersistence);
-        innerSplatting = SlopeSplattingConfigEmbeddable.factorize(slopeConfig.getInnerSlopeSplattingConfig(), imagePersistence);
         shallowWaterThreeJsMaterial = threeJsModelCrudPersistence.getEntity(slopeConfig.getShallowWaterThreeJsMaterial());
-        outerSlopeThreeJsMaterial = threeJsModelCrudPersistence.getEntity(slopeConfig.getOuterSlopeThreeJsMaterial());
-        innerSlopeThreeJsMaterial = threeJsModelCrudPersistence.getEntity(slopeConfig.getInnerSlopeThreeJsMaterial());
     }
 
     @Override

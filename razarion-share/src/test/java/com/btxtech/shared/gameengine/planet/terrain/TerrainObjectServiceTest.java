@@ -12,7 +12,6 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import org.junit.Test;
 
@@ -77,10 +76,6 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 new SlopeShape().position(new DecimalPosition(14, -1.2)).slopeFactor(0)));
 
         beachConfig.outerLineGameEngine(8).innerLineGameEngine(1).coastDelimiterLineGameEngine(0.5);
-        beachConfig.innerSlopeThreeJsMaterial(24);
-        beachConfig.outerSlopeThreeJsMaterial(25);
-        beachConfig.setInnerSlopeSplattingConfig(new SlopeSplattingConfig().textureId(9993).blur(0.053).impact(0.78).offset(0.5).scale(90));
-        beachConfig.setOuterSlopeSplattingConfig(new SlopeSplattingConfig().textureId(9993).blur(0.1).impact(0.1).offset(0.6).scale(45));
         beachConfig.setShallowWaterThreeJsMaterial(23);
         slopeConfigs.add(beachConfig);
 

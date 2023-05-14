@@ -75,7 +75,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.scene = new Scene(this.engine);
     this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
     this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
-
+    this.scene.environmentIntensity = 0.04;
     this.threeJsModelService.setScene(this.scene);
 
     // ----- Keyboard -----
@@ -116,6 +116,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
     // ----- Light -----
     this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0.5, -1, 0).normalize(), this.scene);
+    this.directionalLight.intensity = 5;
 
     this.shadowGenerator = new CascadedShadowGenerator(4096, this.directionalLight);
     this.shadowGenerator.bias = 0.005;

@@ -160,20 +160,20 @@ public interface TerrainUtil {
         TerrainSlopeTileBuilder.Segment[] polygon2Segment = new TerrainSlopeTileBuilder.Segment[slopeShapes.size() - 1];
         Arrays.fill(polygon2Segment, TerrainSlopeTileBuilder.Segment.CENTER);
 
-        for (int triangleIndex = 0; triangleIndex < slopeShapes.size() - 1; triangleIndex++) {
-            SlopeShape slopeShape = slopeShapes.get(triangleIndex);
-            if (slopeShape.getSlopeFactor() >= 1.0) {
-                break;
-            }
-            polygon2Segment[triangleIndex] = TerrainSlopeTileBuilder.Segment.OUTER;
-        }
-        for (int triangleIndex = slopeShapes.size() - 1; triangleIndex > 0; triangleIndex--) {
-            SlopeShape slopeShape = slopeShapes.get(triangleIndex);
-            if (slopeShape.getSlopeFactor() >= 1.0) {
-                break;
-            }
-            polygon2Segment[triangleIndex - 1] = TerrainSlopeTileBuilder.Segment.INNER;
-        }
+//        for (int triangleIndex = 0; triangleIndex < slopeShapes.size() - 1; triangleIndex++) {
+//            SlopeShape slopeShape = slopeShapes.get(triangleIndex);
+//            if (slopeShape.getSlopeFactor() >= 1.0) {
+//                break;
+//            }
+//            polygon2Segment[triangleIndex] = TerrainSlopeTileBuilder.Segment.OUTER;
+//        }
+//        for (int triangleIndex = slopeShapes.size() - 1; triangleIndex > 0; triangleIndex--) {
+//            SlopeShape slopeShape = slopeShapes.get(triangleIndex);
+//            if (slopeShape.getSlopeFactor() >= 1.0) {
+//                break;
+//            }
+//            polygon2Segment[triangleIndex - 1] = TerrainSlopeTileBuilder.Segment.INNER;
+//        }
         return polygon2Segment;
     }
 }

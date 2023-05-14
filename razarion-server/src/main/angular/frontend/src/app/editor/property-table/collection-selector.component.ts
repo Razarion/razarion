@@ -5,7 +5,14 @@ import {ObjectNameId} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {APPLICATION_PATH} from "../../common";
 import {HttpClient} from "@angular/common/http";
-import {JSONEditor, renderJSONSchemaEnum, renderValue, RenderValueProps} from "vanilla-jsoneditor";
+import {
+  JSONEditor,
+  JSONSelection,
+  ReadonlyValue,
+  renderJSONSchemaEnum,
+  renderValue,
+  RenderValueProps
+} from "vanilla-jsoneditor";
 
 @Component({
   selector: 'collection-selector',
@@ -113,25 +120,13 @@ export class CollectionSelectorComponent extends EditorPanel {
         label: "Delete",
         disabled: this.jsonObject == null,
         command: () => {
-          this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-            .deleteConfig((<GenericPropertyEditorModel>this.editorModel).collectionName, this.jsonObject!).then(
-            () => {
-              this.jsonObject = null;
-              this.selectedDisplayObjectName = null;
+          this.http.delete(`${this.url4Collection()}/delete/${this.jsonObject.id}`)
+            .subscribe(() => {
               this.requestObjectNameId();
               this.messageService.add({
                 severity: 'success',
                 summary: 'Deleted'
               });
-            },
-            reason => {
-              this.messageService.add({
-                severity: 'error',
-                summary: `Can not delete config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
-                detail: reason,
-                sticky: true
-              });
-              console.error(reason);
             });
         }
       }
@@ -175,8 +170,74 @@ export class CollectionSelectorComponent extends EditorPanel {
       this.jsonEditor = new JSONEditor({
         target: this.jsonEditorContainer.nativeElement,
         props: {
-          onRenderValue: (props: RenderValueProps) => {
-            return renderJSONSchemaEnum(props, schema, {}) || renderValue(props);
+          onRenderValue: (renderValueProps: RenderValueProps) => {
+
+            console.info("onRenderValue")
+            return renderJSONSchemaEnum(renderValueProps, schema, {}) || renderValue(renderValueProps);
+
+            let valueReadOnly = {
+              value: "Vehicle_00 '12'",
+                path: renderValueProps.path,
+                selection: renderValueProps.selection,
+                parser: renderValueProps.parser,
+                readOnly: renderValueProps.readOnly,
+                onPatch: renderValueProps.onPatch,
+                enforceString: renderValueProps.enforceString,
+                searchResultItems: renderValueProps.enforceString,
+                isEditing: renderValueProps.isEditing,
+                normalization: renderValueProps.normalization,
+                onPasteJson: renderValueProps.onPasteJson,
+                onSelect: renderValueProps.onSelect,
+                onFind: renderValueProps.onFind,
+                findNextInside: renderValueProps.findNextInside,
+                focus: renderValueProps.focus,
+            }
+
+            return [{
+              component: <any>ReadonlyValue, // TODO: casting should not be needed
+              // props: <any>renderValueProps
+              props: valueReadOnly
+            },{
+              component: <any>ReadonlyValue, // TODO: casting should not be needed
+              // props: <any>renderValueProps
+              props: {
+                value: "⚒",
+                path: renderValueProps.path,
+                selection: renderValueProps.selection,
+                parser: renderValueProps.parser,
+                readOnly: renderValueProps.readOnly,
+                onPatch: renderValueProps.onPatch,
+                enforceString: renderValueProps.enforceString,
+                searchResultItems: renderValueProps.enforceString,
+                isEditing: renderValueProps.isEditing,
+                normalization: renderValueProps.normalization,
+                onPasteJson: renderValueProps.onPasteJson,
+                onSelect: (selection: JSONSelection) =>{valueReadOnly.value = "12";console.error(`onSelect ${selection}`)},
+                onFind: renderValueProps.onFind,
+                findNextInside: renderValueProps.findNextInside,
+                focus: renderValueProps.focus,
+              }
+            },{
+              component: <any>ReadonlyValue, // TODO: casting should not be needed
+              // props: <any>renderValueProps
+              props: {
+                value: "☒",
+                path: renderValueProps.path,
+                selection: renderValueProps.selection,
+                parser: renderValueProps.parser,
+                readOnly: renderValueProps.readOnly,
+                onPatch: renderValueProps.onPatch,
+                enforceString: renderValueProps.enforceString,
+                searchResultItems: renderValueProps.enforceString,
+                isEditing: renderValueProps.isEditing,
+                normalization: renderValueProps.normalization,
+                onPasteJson: renderValueProps.onPasteJson,
+                onSelect: (selection: JSONSelection) =>{console.error(`onSelect ${selection}`)},
+                onFind: renderValueProps.onFind,
+                findNextInside: renderValueProps.findNextInside,
+                focus: renderValueProps.focus,
+              }
+            }];
           },
           // onChange: (updatedContent, previousContent, {contentErrors, patchResult}) => {
           //   // content is an object { json: JSONValue } | { text: string }

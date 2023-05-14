@@ -4,11 +4,8 @@ import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeShapeEntity;
 import com.btxtech.server.systemtests.framework.AbstractCrudTest;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.gameengine.datatypes.config.ShallowWaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.rest.SlopeEditorController;
 import org.junit.After;
 import org.junit.Assert;
@@ -57,12 +54,6 @@ public class SlopeEditorControllerTest extends AbstractCrudTest<SlopeEditorContr
 //    TODO    registerUpdate(slopeConfig -> slopeConfig.setShallowWaterConfig(new ShallowWaterConfig().textureId(IMAGE_1_ID).scale(123).distortionId(IMAGE_2_ID).distortionStrength(12.5).stencilId(IMAGE_3_ID).durationSeconds(21)));
 //    TODO    registerUpdate(slopeConfig -> slopeConfig.setShallowWaterConfig(new ShallowWaterConfig().textureId(IMAGE_3_ID).scale(34).distortionId(IMAGE_1_ID).distortionStrength(1.5).stencilId(IMAGE_2_ID).durationSeconds(10.4)));
 //    TODO    registerUpdate(slopeConfig -> slopeConfig.setShallowWaterConfig(null));
-        registerUpdate(slopeConfig -> slopeConfig.setOuterSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_1_ID).scale(1.2).impact(1.7).blur(5).offset(38)));
-        registerUpdate(slopeConfig -> slopeConfig.setInnerSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_3_ID).scale(5.2).impact(7.7).blur(0.5).offset(12)));
-        registerUpdate(slopeConfig -> slopeConfig.setOuterSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_2_ID).scale(3.2).impact(5.7).blur(80).offset(1)));
-        registerUpdate(slopeConfig -> slopeConfig.setOuterSlopeSplattingConfig(null));
-        registerUpdate(slopeConfig -> slopeConfig.setInnerSlopeSplattingConfig(new SlopeSplattingConfig().textureId(IMAGE_1_ID).scale(4.7).impact(9.6).blur(0.2).offset(122)));
-        registerUpdate(slopeConfig -> slopeConfig.setInnerSlopeSplattingConfig(null));
         Assert.fail("Fix Material see TODOs");
     }
 }

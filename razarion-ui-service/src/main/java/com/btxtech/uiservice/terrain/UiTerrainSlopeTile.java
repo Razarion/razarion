@@ -2,7 +2,6 @@ package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeSplattingConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
 
@@ -22,16 +21,6 @@ public class UiTerrainSlopeTile {
     private SlopeConfig slopeConfig;
     private GroundConfig groundConfig;
     private SlopeGeometry slopeGeometry;
-    private SlopeSplattingConfig slopeSplattingConfig;
-
-    public void init(boolean active, SlopeConfig slopeConfig, SlopeSplattingConfig slopeSplattingConfig, GroundConfig groundConfig, SlopeGeometry slopeGeometry) {
-        this.slopeConfig = slopeConfig;
-        this.groundConfig = groundConfig;
-        this.slopeGeometry = slopeGeometry;
-        this.slopeSplattingConfig = slopeSplattingConfig;
-        renderTask = slopeRenderTaskRunner.createRenderTask(this);
-        renderTask.setActive(active);
-    }
 
     public void setActive(boolean active) {
         renderTask.setActive(active);
@@ -43,10 +32,6 @@ public class UiTerrainSlopeTile {
 
     public SlopeGeometry getSlopeGeometry() {
         return slopeGeometry;
-    }
-
-    public SlopeSplattingConfig getSlopeSplattingConfig() {
-        return slopeSplattingConfig;
     }
 
     public GroundConfig getGroundConfig() {

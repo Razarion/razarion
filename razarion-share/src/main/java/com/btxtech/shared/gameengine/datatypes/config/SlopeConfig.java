@@ -31,12 +31,6 @@ public class SlopeConfig implements Config {
     private Integer threeJsMaterial;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
     private Integer shallowWaterThreeJsMaterial;
-    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
-    private Integer outerSlopeThreeJsMaterial;
-    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
-    private Integer innerSlopeThreeJsMaterial;
-    private SlopeSplattingConfig outerSlopeSplattingConfig;
-    private SlopeSplattingConfig innerSlopeSplattingConfig;
 
     public int getId() {
         return id;
@@ -134,38 +128,6 @@ public class SlopeConfig implements Config {
         this.shallowWaterThreeJsMaterial = shallowWaterThreeJsMaterial;
     }
 
-    public Integer getOuterSlopeThreeJsMaterial() {
-        return outerSlopeThreeJsMaterial;
-    }
-
-    public void setOuterSlopeThreeJsMaterial(Integer outerSlopeThreeJsMaterial) {
-        this.outerSlopeThreeJsMaterial = outerSlopeThreeJsMaterial;
-    }
-
-    public Integer getInnerSlopeThreeJsMaterial() {
-        return innerSlopeThreeJsMaterial;
-    }
-
-    public void setInnerSlopeThreeJsMaterial(Integer innerSlopeThreeJsMaterial) {
-        this.innerSlopeThreeJsMaterial = innerSlopeThreeJsMaterial;
-    }
-
-    public SlopeSplattingConfig getOuterSlopeSplattingConfig() {
-        return outerSlopeSplattingConfig;
-    }
-
-    public void setOuterSlopeSplattingConfig(SlopeSplattingConfig outerSlopeSplattingConfig) {
-        this.outerSlopeSplattingConfig = outerSlopeSplattingConfig;
-    }
-
-    public SlopeSplattingConfig getInnerSlopeSplattingConfig() {
-        return innerSlopeSplattingConfig;
-    }
-
-    public void setInnerSlopeSplattingConfig(SlopeSplattingConfig innerSlopeSplattingConfig) {
-        this.innerSlopeSplattingConfig = innerSlopeSplattingConfig;
-    }
-
     public SlopeConfig id(Integer id) {
         this.id = id;
         return this;
@@ -223,26 +185,6 @@ public class SlopeConfig implements Config {
 
     public SlopeConfig shallowWaterThreeJsMaterial(Integer shallowWaterThreeJsMaterial) {
         setShallowWaterThreeJsMaterial(shallowWaterThreeJsMaterial);
-        return this;
-    }
-
-    public SlopeConfig outerSlopeThreeJsMaterial(Integer outerSlopeThreeJsMaterial) {
-        setOuterSlopeThreeJsMaterial(outerSlopeThreeJsMaterial);
-        return this;
-    }
-
-    public SlopeConfig innerSlopeThreeJsMaterial(Integer innerSlopeThreeJsMaterial) {
-        setInnerSlopeThreeJsMaterial(innerSlopeThreeJsMaterial);
-        return this;
-    }
-
-    public SlopeConfig outerSlopeSplattingConfig(SlopeSplattingConfig outerSlopeSplattingConfig) {
-        setOuterSlopeSplattingConfig(outerSlopeSplattingConfig);
-        return this;
-    }
-
-    public SlopeConfig innerSlopeSplattingConfig(SlopeSplattingConfig innerSlopeSplattingConfig) {
-        setInnerSlopeSplattingConfig(innerSlopeSplattingConfig);
         return this;
     }
 

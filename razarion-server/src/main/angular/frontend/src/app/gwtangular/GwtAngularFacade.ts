@@ -142,26 +142,6 @@ export interface SlopeConfig {
   getGroundConfigId(): number;
 
   getWaterConfigId(): number;
-
-  getOuterSlopeSplattingConfig(): SlopeSplattingConfig | null;
-
-  getInnerSlopeSplattingConfig(): SlopeSplattingConfig | null;
-
-  getOuterSlopeThreeJsMaterial(): number | null;
-
-  getInnerSlopeThreeJsMaterial(): number | null;
-}
-
-export interface SlopeSplattingConfig {
-  getTextureId(): number;
-
-  getScale(): number;
-
-  getImpact(): number;
-
-  getBlur(): number;
-
-  getOffset(): number;
 }
 
 export interface DrivewayConfig {
@@ -329,9 +309,7 @@ export interface GroundTerrainTile {
 
 export interface TerrainSlopeTile {
   slopeConfigId: number;
-  outerSlopeGeometry: SlopeGeometry | null;
   centerSlopeGeometry: SlopeGeometry | null;
-  innerSlopeGeometry: SlopeGeometry | null;
 }
 
 export interface SlopeGeometry {
@@ -515,13 +493,7 @@ export interface GenericEditorFrontendProvider {
 
   createConfig(collectionName: string): Promise<GwtAngularPropertyTable>;
 
-  readConfig(collectionName: string, configId: number): Promise<GwtAngularPropertyTable>;
-
-  updateConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
-
   deleteConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
-
-  colladaConvert(gwtAngularPropertyTable: GwtAngularPropertyTable, colladaString: string): Promise<void>;
 
   getPathForCollection(collectionName: string): string;
 }
