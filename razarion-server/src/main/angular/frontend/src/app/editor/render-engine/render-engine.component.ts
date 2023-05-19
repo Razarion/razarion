@@ -209,8 +209,14 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
 
   onCollectAll() {
     this.babylonModelService.dumpAll().then(allBabylonModelsZip => {
-      allBabylonModelsZip.generateAsync({type: "blob"})
-        .then(blob => this.allBabylonModels = blob);
+      allBabylonModelsZip.generateAsync({type: "blob"}, metadata => console.log(`${metadata.percent}%`))
+        .then(blob => this.allBabylonModels = blob)
+        .catch(error => this.messageService.add({
+          severity: 'error',
+          summary: `Exception during Babylon load ${error}`,
+          detail: error,
+          sticky: true
+        }));
     });
   }
 

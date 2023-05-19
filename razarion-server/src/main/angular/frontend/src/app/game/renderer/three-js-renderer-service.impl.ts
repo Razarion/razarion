@@ -75,7 +75,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.scene = new Scene(this.engine);
     this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
     this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
-    this.scene.environmentIntensity = 0.04;
     this.threeJsModelService.setScene(this.scene);
 
     // ----- Keyboard -----
