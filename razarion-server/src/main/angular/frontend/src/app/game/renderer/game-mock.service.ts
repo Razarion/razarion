@@ -270,18 +270,18 @@ export class GameMockService {
   };
 
   threeJsModels: ObjectNameId[] = [new class implements ObjectNameId {
-    id = 8883;
-    internalName = "3D Model Palm Tree";
-
-    toString(): string {
-      return "3D Model Palm Tree (8883)"
-    }
-  }, new class implements ObjectNameId {
-    id = 8881;
+    id = 12;
     internalName = "Stone Pack";
 
     toString(): string {
-      return "Stone Pack (8881)"
+      return `${this.internalName} ${this.id}`;
+    }
+  }, new class implements ObjectNameId {
+    id = 13;
+    internalName = "Tropical Vegetation Pack";
+
+    toString(): string {
+      return `${this.internalName} ${this.id}`;
     }
   }];
 
@@ -617,6 +617,10 @@ export class GameMockService {
 
         getNodeMaterialId(): number | null {
           return threeJsModelConfigJson.nodeMaterialId;
+        }
+
+        isDisabled(): boolean {
+          return threeJsModelConfigJson.disabled;
         }
 
       });

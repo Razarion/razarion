@@ -17,24 +17,24 @@ CREATE TABLE IF NOT EXISTS `TERRAIN_OBJECT` (
 DELETE FROM `TERRAIN_OBJECT`;
 /*!40000 ALTER TABLE `TERRAIN_OBJECT` DISABLE KEYS */;
 INSERT INTO `TERRAIN_OBJECT` (`id`, `internalName`, `radius`, `threeJsModelPackConfig_id`) VALUES
-	(8, 'Stone 12', 3, 11),
-	(9, 'Fern 1', 3, 12),
-	(10, 'Fern 2', 3, 13),
-	(11, 'Leaves', 3, 14),
-	(12, 'Trunk 1', 3, 15),
-	(13, 'Palm', 3, 16),
-	(14, 'Trunk 3', 3, 17),
-	(15, 'Stone 1', 3, 18),
-	(16, 'Stone 2', 3, 19),
-	(17, 'Stone 3', 3, 20),
-	(19, 'Stone 4', 3, 21),
-	(20, 'Stone 5', 3, 22),
-	(21, 'Stone 6', 3, 23),
-	(22, 'Stone 7', 3, 24),
-	(23, 'Stone 8', 3, 25),
-	(24, 'Stone 9', 3, 26),
-	(25, 'Stone 10', 3, 27),
-	(26, 'Stone 11', 3, 28);
+	(8, 'Stone 12', 3, 82),
+	(9, 'Fern 1', 3, 108),
+	(10, 'Fern 2', 3, 109),
+	(11, 'Leaves', 3, 116),
+	(12, 'Trunk 1', 3, 114),
+	(13, 'Palm', 3, 112),
+	(14, 'Trunk 3', 3, 115),
+	(15, 'Stone 1', 3, 84),
+	(16, 'Stone 2', 3, 85),
+	(17, 'Stone 3', 3, 86),
+	(19, 'Stone 4', 3, 87),
+	(20, 'Stone 5', 3, 88),
+	(21, 'Stone 6', 3, 89),
+	(22, 'Stone 7', 3, 90),
+	(23, 'Stone 8', 3, 91),
+	(24, 'Stone 9', 3, 92),
+	(25, 'Stone 10', 3, 94),
+	(26, 'Stone 11', 3, 96);
 /*!40000 ALTER TABLE `TERRAIN_OBJECT` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

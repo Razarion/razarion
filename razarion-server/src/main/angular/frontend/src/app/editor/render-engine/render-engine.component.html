@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="field grid">
-        <label for="selectedBabylonName" class="col-12 mb-2 md:col-2 md:mb-0">ID</label>
+        <label for="selectedBabylonId" class="col-12 mb-2 md:col-2 md:mb-0">ID</label>
         <div class="col-12 md:col-10">
           <input id="selectedBabylonId" value="{{selectedBabylonId}}" disabled="true" type="text"
                  class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
@@ -110,6 +110,48 @@
                     [customUpload]=true
                     (uploadHandler)="onImport($event)">
       </p-fileUpload>
+    </p-panel>
+    <p-panel>
+      <ng-template pTemplate="header">
+        Three.js Model Pack
+      </ng-template>
+      <div class="field grid">
+        <label for="dropDownLoadBabylonModel" class="col-12 mb-2 md:col-2 md:mb-0">Babylon.js Model</label>
+        <div class="col">
+          <p-dropdown id="dropDownLoadBabylonPackModel" [placeholder]="'...'"
+                      [options]="dropDownBabylonModels"
+                      (onChange)="onThreeJsModelPackConfigEvent($event.value)">
+          </p-dropdown>
+        </div>
+      </div>
+      <p-button type="button" styleClass="p-button-sm"
+                [disabled]="!threeJsModelPackMesh"
+                label="Generate under __root__"
+                (onClick)="onGenerateThreeJsModelPack()"></p-button>
+      <p-table [value]="threeJsModelPackConfigs" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Id</th>
+            <th>Internal Name</th>
+            <th>Babylon Path</th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-threeJsModelPackConfig>
+          <tr>
+            <td>{{ threeJsModelPackConfig.id }}</td>
+            <td><input type="text" pInputText [(ngModel)]="threeJsModelPackConfig.internalName"/></td>
+            <td>
+              <p-chips [(ngModel)]="threeJsModelPackConfig.namePath"></p-chips>
+            </td>
+            <td>
+              <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
+                        [disabled]="!threeJsModelPackConfig"
+                        (onClick)="onThreeJsModelPackConfigSave(threeJsModelPackConfig)"></p-button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
     </p-panel>
   </div>
 </div>

@@ -205,6 +205,8 @@ export interface ThreeJsModelConfig {
   getType(): ThreeJsModelConfig.Type
 
   getNodeMaterialId(): number | null;
+
+  isDisabled():boolean;
 }
 
 export namespace ThreeJsModelConfig {

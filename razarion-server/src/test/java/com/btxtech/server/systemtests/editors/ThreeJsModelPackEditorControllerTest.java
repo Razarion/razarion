@@ -9,6 +9,8 @@ import org.junit.After;
 
 import java.util.Arrays;
 
+import static org.junit.Assert.fail;
+
 public class ThreeJsModelPackEditorControllerTest extends AbstractCrudTest<ThreeJsModelPackEditorController, ThreeJsModelPackConfig> {
     public ThreeJsModelPackEditorControllerTest() {
         super(ThreeJsModelPackEditorController.class, ThreeJsModelPackConfig.class);
@@ -25,6 +27,7 @@ public class ThreeJsModelPackEditorControllerTest extends AbstractCrudTest<Three
         registerUpdate(drivewayConfig -> drivewayConfig.namePath(Arrays.asList("xxx", "yyy")));
         registerUpdate(drivewayConfig -> drivewayConfig.scale(new Vertex(0.1, 0.2, 0.3)).rotation(new Vertex(0.12, 0.23, 0.45)));
         registerUpdate(drivewayConfig -> drivewayConfig.position(new Vertex(11, 22, 33)));
+        fail("ThreeJsModelPackEditorController.findByThreeJsModelId() not testes");
     }
 
 }

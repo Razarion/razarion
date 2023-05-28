@@ -7,10 +7,21 @@ import {environment} from 'src/environments/environment';
 import {GameMockService} from "../../game/renderer/game-mock.service";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "../../common";
-import {Mesh, Nullable, Observer, PointerEventTypes, PointerInfo, Scene, SceneLoader} from "@babylonjs/core";
+import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR, URL_THREE_JS_MODEL_PACK_EDITOR} from "../../common";
+import {
+  AbstractMesh,
+  Mesh,
+  Nullable,
+  Observer,
+  PointerEventTypes,
+  PointerInfo,
+  Scene,
+  SceneLoader,
+  Vector3
+} from "@babylonjs/core";
 import {GLTF2Export} from "@babylonjs/serializers";
 import {BabylonModelService} from "../../game/renderer/babylon-model.service";
+import {ThreeJsModelPackConfig} from "../../gwtangular/GwtAngularFacade";
 
 @Component({
   selector: 'render-engine',
@@ -26,6 +37,9 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
   selectedBabylonId: any;
   selectedBabylonClass: any;
   dropDownLoadBabylonModel: any = null;
+  threeJsModelPackConfigs: any[] = [];
+  threeJsModelPackThreeJsModelId: number | null = null;
+  threeJsModelPackMesh: AbstractMesh | null = null;
   allBabylonModels!: Blob;
   terrainCursorXPosition: number | undefined;
   terrainCursorYPosition: number | undefined;
@@ -35,7 +49,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
               private renderEngine: ThreeJsRendererServiceImpl,
-              private http: HttpClient,
+              private httpClient: HttpClient,
               gameMockService: GameMockService,
               private babylonModelService: BabylonModelService
   ) {
@@ -99,7 +113,17 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
   }
 
   private loadGltf(gltfFile: File) {
+    let addedMesh: any;
+    let onNewMeshAdded = (mesh: AbstractMesh) => {
+      addedMesh = mesh;
+    };
+
+    this.renderEngine.getScene().onNewMeshAddedObservable.addOnce(onNewMeshAdded);
+
     const result = SceneLoader.Append('', gltfFile, this.renderEngine.getScene(), (scene: Scene) => {
+        // Set position here, it gets overridden before
+        let position = this.renderEngine.setupCenterGroundPosition();
+        addedMesh.position = new Vector3(position.x, position.y, position.z);
       },
       progress => {
       },
@@ -145,7 +169,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
             'Content-Type': 'application/octet-stream'
           })
         };
-        this.http.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${this.dropDownBabylonModel.id}`, blob, httpOptions)
+        this.httpClient.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${this.dropDownBabylonModel.id}`, blob, httpOptions)
           .subscribe({
             complete: () => this.messageService.add({
               severity: 'success',
@@ -271,4 +295,101 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
     })
   }
 
+  onThreeJsModelPackConfigEvent(threeJsModel: any) {
+    this.threeJsModelPackThreeJsModelId = threeJsModel.id;
+    this.httpClient.post(`${URL_THREE_JS_MODEL_PACK_EDITOR}/findByThreeJsModelId/${threeJsModel.id}`, {})
+      .subscribe({
+        next: (threeJsModelPackConfigs: any) => {
+          this.threeJsModelPackConfigs = threeJsModelPackConfigs;
+          // threeJsModelPackConfigs.forEach((threeJsModelPackConfig: any) => {
+          //   console.log(`"${threeJsModelPackConfig.internalName}" (${threeJsModelPackConfig.id}) ThreeJsModelId: ${threeJsModelPackConfig.threeJsModelId}`)
+          // });
+
+          this.threeJsModelPackMesh = null;
+          let onNewMeshAdded = (abstractMesh: AbstractMesh) => {
+            this.threeJsModelPackMesh = abstractMesh;
+          };
+
+          this.renderEngine.getScene().onNewMeshAddedObservable.addOnce(onNewMeshAdded);
+
+
+          const url = `${URL_THREE_JS_MODEL}/${threeJsModel.id}`;
+          const result = SceneLoader.Append(url, '', this.renderEngine.getScene(), (scene: Scene) => {
+              let position = this.renderEngine.setupCenterGroundPosition();
+              this.threeJsModelPackMesh!.position = new Vector3(position.x, position.y, position.z);
+            },
+            progress => {
+            },
+            (scene: Scene, message: string, exception?: any) => {
+              console.error(`Error loading Babylon file '${message}'. exception: '${exception}'`);
+              this.messageService.add({
+                severity: 'error',
+                summary: `Exception during Babylon load onEditorThreeJsModelPack() ${message}`,
+                detail: exception,
+                sticky: true
+              });
+
+            },
+            ".glb")
+          if (result === null) {
+            console.error("Error loading Babylon");
+            this.messageService.add({
+              severity: 'error',
+              summary: `Error loading Babylon`,
+              sticky: true
+            });
+          }
+
+        },
+        error: (error: any) => {
+          console.error(error);
+          this.messageService.add({
+            severity: 'error',
+            summary: `${error.name}: ${error.status}`,
+            detail: `${error.statusText}`,
+            sticky: true
+          });
+        }
+      })
+
+
+  }
+
+  onGenerateThreeJsModelPack() {
+    const rootName = this.threeJsModelPackMesh!.name;
+    this.threeJsModelPackMesh!.getChildren().forEach(node => {
+      let namePath: string[] = [rootName, node.name];
+      if (!this.findThreeJsModelPack4NamePath(namePath)) {
+        this.httpClient.post(`${URL_THREE_JS_MODEL_PACK_EDITOR}/create`, {})
+          .subscribe({
+            next: (threeJsModelPackConfig: any) => {
+              threeJsModelPackConfig.internalName = node.name;
+              threeJsModelPackConfig.namePath = namePath;
+              threeJsModelPackConfig.threeJsModelId = this.threeJsModelPackThreeJsModelId;
+              this.onThreeJsModelPackConfigSave(threeJsModelPackConfig);
+              this.threeJsModelPackConfigs.push(threeJsModelPackConfig);
+            }
+          })
+      }
+    })
+  }
+
+  private findThreeJsModelPack4NamePath(namePath: string[]) {
+    const namePathString = namePath.toString();
+    return this.threeJsModelPackConfigs.find(threeJsModelPackConfig => threeJsModelPackConfig.toString() === namePathString);
+  }
+
+  onThreeJsModelPackConfigSave(threeJsModelPackConfig: ThreeJsModelPackConfig) {
+    this.httpClient.post(`${URL_THREE_JS_MODEL_PACK_EDITOR}/update`, threeJsModelPackConfig)
+      .subscribe({
+        error: (error: any) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: `Save failed ${error.statusText}`,
+            detail: `${error.statusText}: ${error.status}`,
+            sticky: true
+          });
+        }
+      });
+  }
 }

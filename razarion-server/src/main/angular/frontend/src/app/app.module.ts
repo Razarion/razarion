@@ -69,6 +69,7 @@ import {InputTextareaModule} from "primeng/inputtextarea";
 import {AngleVertexEditorComponent} from "./editor/terrain-editor/angle-vertex-editor.component";
 import {VertexEditorComponent} from "./editor/terrain-editor/vertex-editor.component";
 import {TerrainObjectPositionComponent} from "./editor/terrain-editor/terrain-object-position.component";
+import {ChipsModule} from "primeng/chips";
 
 @NgModule({
   declarations: [
@@ -135,7 +136,8 @@ import {TerrainObjectPositionComponent} from "./editor/terrain-editor/terrain-ob
     ListboxModule,
     ToolbarModule,
     SplitterModule,
-    InputTextareaModule
+    InputTextareaModule,
+    ChipsModule
   ],
   providers: [
     FrontendService, {

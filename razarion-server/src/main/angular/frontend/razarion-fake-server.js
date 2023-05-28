@@ -131,11 +131,31 @@ server.on({
 
 server.on({
   method: 'POST',
-  path: 'rest/editor/Svelte-jsoneditor/update',
+  path: '/rest/editor/Svelte-jsoneditor/update',
   reply: {
     status: 200,
     headers: { "content-type": "application/json" },
     body: '{"value" : -99999}'
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/editor/three-js-model-pack-editor/findByThreeJsModelId/12',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: '[{"id":12,"internalName":"Fern 1 [Tropical Vegetation 1]","threeJsModelId":12,"namePath":["__root__","Sketchfab_model","Vegetation.FBX","RootNode","fern","fern_fern_0"],"position":{"x":0.0,"y":-1.2,"z":0.0},"scale":{"x":0.025,"y":0.025,"z":-0.025},"rotation":{"x":1.5708,"y":0.0,"z":0.0}}]'
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/editor/three-js-model-pack-editor/create',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: '[{"id":13,"internalName":"Fern 1 [Tropical Vegetation 1]","threeJsModelId":12,"namePath":[]}]'
   }
 });
 

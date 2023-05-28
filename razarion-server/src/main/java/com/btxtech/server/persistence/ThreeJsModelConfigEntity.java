@@ -37,6 +37,7 @@ public class ThreeJsModelConfigEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ThreeJsModelConfigEntity nodeMaterial;
+    private boolean disabled;
 
     public Integer getId() {
         return id;
@@ -48,7 +49,8 @@ public class ThreeJsModelConfigEntity {
                 .internalName(internalName)
                 .fbxGuidHint(fbxGuidHint)
                 .type(type)
-                .nodeMaterialId(extractId(nodeMaterial, ThreeJsModelConfigEntity::getId));
+                .nodeMaterialId(extractId(nodeMaterial, ThreeJsModelConfigEntity::getId))
+                .disabled(disabled);
     }
 
     public void from(ThreeJsModelConfig config, ThreeJsModelCrudPersistence threeJsModelCrudPersistence) {
@@ -56,6 +58,7 @@ public class ThreeJsModelConfigEntity {
         fbxGuidHint = config.getFbxGuidHint();
         type = config.getType();
         nodeMaterial = threeJsModelCrudPersistence.getEntity(config.getNodeMaterialId());
+        disabled = config.isDisabled();
     }
 
     public byte[] getData() {

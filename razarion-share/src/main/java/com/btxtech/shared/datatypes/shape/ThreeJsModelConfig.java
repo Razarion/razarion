@@ -10,6 +10,7 @@ public class ThreeJsModelConfig implements Config {
     private String fbxGuidHint;
     private Type type;
     private Integer nodeMaterialId;
+    private boolean disabled;
 
     @Override
     public int getId() {
@@ -54,6 +55,14 @@ public class ThreeJsModelConfig implements Config {
         this.nodeMaterialId = nodeMaterialId;
     }
 
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
     public ThreeJsModelConfig id(int id) {
         setId(id);
         return this;
@@ -76,6 +85,11 @@ public class ThreeJsModelConfig implements Config {
 
     public ThreeJsModelConfig nodeMaterialId(Integer nodeMaterialId) {
         setNodeMaterialId(nodeMaterialId);
+        return this;
+    }
+
+    public ThreeJsModelConfig disabled(boolean disabled) {
+        setDisabled(disabled);
         return this;
     }
 

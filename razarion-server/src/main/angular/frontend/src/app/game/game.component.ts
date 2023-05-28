@@ -89,19 +89,19 @@ export class GameComponent implements OnInit {
             babylonBaseItem.updatePosition();
             babylonBaseItem.updateAngle();
 
-            const pbr = new PBRMetallicRoughnessMaterial("pbr", this.threeJsRendererService.getScene());
-            pbr.baseColor = new Color3(1.0, 0.766, 0.336);
-            pbr.metallic = 1.0;
-            pbr.roughness = 0.0;
-
-            const sphere = MeshBuilder.CreateSphere("TestSphere", {diameter: 4}, this.threeJsRendererService.getScene());
-            sphere.material = pbr;
-            sphere.position. y = 4;
-            sphere.position. x = 8;
-            const plane = MeshBuilder.CreatePlane("TestPlane", {size: 10}, this.threeJsRendererService.getScene());
-            plane.material = pbr;
-            plane.rotation.x = Tools.ToRadians(90);
-            plane.position. y = 0.2;
+            // const pbr = new PBRMetallicRoughnessMaterial("pbr", this.threeJsRendererService.getScene());
+            // pbr.baseColor = new Color3(1.0, 0.766, 0.336);
+            // pbr.metallic = 1.0;
+            // pbr.roughness = 0.0;
+            //
+            // const sphere = MeshBuilder.CreateSphere("TestSphere", {diameter: 4}, this.threeJsRendererService.getScene());
+            // sphere.material = pbr;
+            // sphere.position. y = 4;
+            // sphere.position. x = 8;
+            // const plane = MeshBuilder.CreatePlane("TestPlane", {size: 10}, this.threeJsRendererService.getScene());
+            // plane.material = pbr;
+            // plane.rotation.x = Tools.ToRadians(90);
+            // plane.position. y = 0.2;
             // this.threeJsRendererService.getScene().environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/environment.dds", this.threeJsRendererService.getScene());
 
             // babylonBaseItem.select(true);

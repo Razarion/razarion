@@ -34,14 +34,14 @@ export class BabylonModelService {
   }
 
   init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
-    this.threeJsModelConfigs = threeJsModelConfigs;
+    this.threeJsModelConfigs = threeJsModelConfigs.filter(threeJsModelConfig => !threeJsModelConfig.isDisabled());
     this.gwtAngularService = gwtAngularService;
 
     this.threeJsModelConfigs.forEach(threeJsModelConfig => this.threeJsModelConfigMap.set(threeJsModelConfig.getId(), threeJsModelConfig))
 
     return new Promise<void>((resolve, reject) => {
       try {
-        let loadingCount = threeJsModelConfigs.length;
+        let loadingCount = this.threeJsModelConfigs.length;
 
         function handleResolve() {
           loadingCount--;
@@ -50,7 +50,7 @@ export class BabylonModelService {
           }
         }
 
-        threeJsModelConfigs.forEach(threeJsModelConfig => {
+        this.threeJsModelConfigs.forEach(threeJsModelConfig => {
           try {
             const url = `${URL_THREE_JS_MODEL}/${threeJsModelConfig.getId()}`;
             switch (GwtHelper.gwtIssueStringEnum(threeJsModelConfig.getType(), ThreeJsModelConfig.Type)) {
@@ -245,6 +245,11 @@ export class BabylonModelService {
       getNodeMaterialId(): number | null {
         return null;
       }
+
+      isDisabled(): boolean {
+        return false;
+      }
+
     }, material);
     return material;
   }
