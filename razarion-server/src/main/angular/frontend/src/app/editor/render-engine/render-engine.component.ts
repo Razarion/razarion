@@ -252,8 +252,16 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
   }
 
   onLoad() {
+    let importedMesh: AbstractMesh | null = null;
+    let onNewMeshAdded = (abstractMesh: AbstractMesh) => {
+      importedMesh = abstractMesh;
+    };
+    this.renderEngine.getScene().onNewMeshAddedObservable.addOnce(onNewMeshAdded);
+
     const url = `${URL_THREE_JS_MODEL}/${this.dropDownLoadBabylonModel.id}`;
     const result = SceneLoader.Append(url, '', this.renderEngine.getScene(), (scene: Scene) => {
+        let position = this.renderEngine.setupCenterGroundPosition();
+        importedMesh!.position = new Vector3(position.x, position.y, position.z);
       },
       progress => {
       },

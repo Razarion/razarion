@@ -83,23 +83,34 @@ export class BabylonModelService {
 
     const assetContainer: AssetContainer = this.getAssetContainer(threeJsModelPackConf.getThreeJsModelId());
 
-    let childMesh = null;
+    let childNode = null;
 
     for (let childNod of assetContainer.getNodes()) {
-      childMesh = this.findChildNode(childNod, threeJsModelPackConf.toNamePathAsArray());
-      if (childMesh) {
+      childNode = this.findChildNode(childNod, threeJsModelPackConf.toNamePathAsArray());
+      if (childNode) {
         break;
       }
     }
 
-    if (childMesh == null) {
+    if (childNode == null) {
       throw new Error(`No Mesh for threeJsModelPackConfigId '${threeJsModelPackConfigId}'. Three.js Path  '${threeJsModelPackConf.toNamePathAsArray()}'`);
     }
 
-    const mesh = (<Mesh>childMesh).clone("", parent);
+    if (typeof (<any>childNode).clone !== 'function') {
+      throw new Error(`childNode can not be cloned "${childNode}" typeof childNode = "${typeof childNode}". threeJsModelPackConfigId '${threeJsModelPackConfigId}'. Three.js Path  '${threeJsModelPackConf.toNamePathAsArray()}'`);
+    }
 
-    mesh.receiveShadows = true;
-    mesh.getChildMeshes().forEach(m => m.receiveShadows = true);
+    const mesh = (<any>childNode).clone("", parent);
+
+    if (mesh instanceof Mesh) {
+      (<Mesh>mesh).receiveShadows = true
+    }
+    mesh.getChildren().forEach((m: any) => {
+      if (m instanceof Mesh) {
+        (<Mesh>m).receiveShadows = true
+      }
+    });
+
 
     if (threeJsModelPackConf.getPosition()) {
       mesh.position.set(threeJsModelPackConf.getPosition().getX(),
