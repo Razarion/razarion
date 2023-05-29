@@ -3,10 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
-import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.shared.datatypes.shape.VertexContainerMaterial;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
@@ -24,7 +21,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +37,6 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
         // Init
         ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
         coldGameUiContext.setMeshContainers(loadMeshContainers());
-        List<Shape3D> shape3ds = new ArrayList<>(loadShape3Ds());
-        shape3ds.add(new Shape3D().id(999111).element3Ds(Collections.singletonList(new Element3D().id("element-1").vertexContainers(Collections.emptyList())))); // TODO remove
-        shape3ds.add(new Shape3D().id(26).element3Ds(Collections.singletonList(new Element3D().id("WheelW03").vertexContainers(Collections.singletonList(new VertexContainer().key("26-WheelW03").vertexContainerMaterial(new VertexContainerMaterial())))))); // TODO remove
-        coldGameUiContext.setShape3Ds(shape3ds);
         setMeshContainerId(coldGameUiContext, BUILDER_ITEM_TYPE_ID, "Vehicle_11");
         setupUiEnvironment(coldGameUiContext);
         setupAlarmService();

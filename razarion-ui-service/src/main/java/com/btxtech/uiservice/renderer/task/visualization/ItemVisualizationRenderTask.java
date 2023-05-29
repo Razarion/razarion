@@ -3,7 +3,6 @@ package com.btxtech.uiservice.renderer.task.visualization;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.datatypes.InGameItemVisualization;
 import com.btxtech.uiservice.questvisualization.QuestInGamePlaceVisualization;
 import com.btxtech.uiservice.renderer.AbstractModelRenderTaskRunner;
@@ -24,8 +23,6 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class ItemVisualizationRenderTask extends AbstractModelRenderTaskRunner<InGameItemVisualization> {
     private Logger logger = Logger.getLogger(ItemVisualizationRenderTask.class.getName());
-    @Inject
-    private Shape3DUiService shape3DUiService;
     private boolean active;
     private InGameItemVisualization gameItemVisualization;
     private InGameDirectionVisualization inGameDirectionVisualization;
@@ -138,19 +135,19 @@ public class ItemVisualizationRenderTask extends AbstractModelRenderTaskRunner<I
     }
 
     private void setupRenderer(ModelRenderer<?> modelRenderer, int shape3DId) {
-        Shape3D shape3D = shape3DUiService.getShape3D(shape3DId);
-        for (Element3D element3D : shape3D.getElement3Ds()) {
-            for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> renderComposite = modelRenderer.create();
-                renderComposite.init(vertexContainer);
-                renderComposite.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-                renderComposite.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                renderComposite.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-                modelRenderer.add(RenderUnitControl.TERRAIN_ITEM_VISUALIZATION_IMAGE, renderComposite);
-                renderComposite.fillBuffers();
-            }
-        }
-        add(modelRenderer);
+//  TODO      Shape3D shape3D = shape3DUiService.getShape3D(shape3DId);
+//        for (Element3D element3D : shape3D.getElement3Ds()) {
+//            for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+//                CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> renderComposite = modelRenderer.create();
+//                renderComposite.init(vertexContainer);
+//                renderComposite.setRenderUnit(AbstractVertexContainerRenderUnit.class);
+//                renderComposite.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
+//                renderComposite.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
+//                modelRenderer.add(RenderUnitControl.TERRAIN_ITEM_VISUALIZATION_IMAGE, renderComposite);
+//                renderComposite.fillBuffers();
+//            }
+//        }
+//        add(modelRenderer);
     }
 
 }

@@ -2,7 +2,6 @@ package com.btxtech.uiservice.renderer.task;
 
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.system.alarm.AlarmService;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.annotation.PostConstruct;
@@ -17,8 +16,6 @@ import javax.inject.Singleton;
 @Deprecated
 public class TerrainObjectRenderTaskRunner extends AbstractShape3DRenderTaskRunner {
     // private Logger logger = Logger.getLogger(TerrainObjectRenderTask.class.getName());
-    @Inject
-    private Shape3DUiService shape3DUiService;
     @Inject
     private AlarmService alarmService;
     @Inject

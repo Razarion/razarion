@@ -2,7 +2,6 @@ package com.btxtech.uiservice.renderer.task;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.alarm.AlarmService;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
 
@@ -25,8 +24,6 @@ public class ProjectileRenderTaskRunner extends AbstractShape3DRenderTaskRunner 
     private AlarmService alarmService;
     @Inject
     private ProjectileUiService projectileUiService;
-    @Inject
-    private Shape3DUiService shape3DUiService;
 
     @PostConstruct
     public void postConstruct() {
@@ -42,11 +39,11 @@ public class ProjectileRenderTaskRunner extends AbstractShape3DRenderTaskRunner 
     }
 
     private void setupBaseItemType(BaseItemType baseItemType) {
-        if (baseItemType.getWeaponType().getProjectileShape3DId() != null) {
-            createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemType.getWeaponType().getProjectileShape3DId()),
-                    timeStamp -> projectileUiService.getProjectiles(baseItemType));
-        } else {
-            alarmService.riseAlarm(INVALID_BASE_ITEM, "WeaponType has no projectileShape3DId", baseItemType.getId());
-        }
+//        if (baseItemType.getWeaponType().getProjectileShape3DId() != null) {
+//            createShape3DRenderTasks(shape3DUiService.getShape3D(baseItemType.getWeaponType().getProjectileShape3DId()),
+//                    timeStamp -> projectileUiService.getProjectiles(baseItemType));
+//        } else {
+//            alarmService.riseAlarm(INVALID_BASE_ITEM, "WeaponType has no projectileShape3DId", baseItemType.getId());
+//        }
     }
 }

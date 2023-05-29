@@ -1,8 +1,5 @@
 package com.btxtech.server.systemtests.editors;
 
-import com.btxtech.server.persistence.ColladaEntity;
-import com.btxtech.server.persistence.ColladaMaterialEntity;
-import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.asset.AssetConfigEntity;
 import com.btxtech.server.persistence.asset.MeshContainerEntity;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
@@ -12,10 +9,7 @@ import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
-import com.btxtech.shared.dto.ColdGameUiContext;
-import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.AssetEditorController;
-import com.btxtech.shared.rest.GameUiContextController;
 import com.btxtech.shared.rest.MeshContainerEditorController;
 import com.btxtech.shared.rest.Shape3DController;
 import com.btxtech.shared.rest.Shape3DEditorController;
@@ -112,11 +106,6 @@ public class AssetEditorControllerTest extends AbstractSystemTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path, "assetConfig.json"),
                 assetConfig);
-        // Shape3D
-        GameUiContextController gameUiContextController = setupRestAccess(GameUiContextController.class);
-        ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
-        mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path, "shape3Ds.json"),
-                coldGameUiContext.getShape3Ds());
         // Fbx GUID to Shape3D
         Map<String, Integer> guid2Shape3DId = new HashMap<>();
         RestConnection shape3DEditorControllerRestConnection = new RestConnection(new ObjectMapperResolver(() -> Shape3DConfig.class));

@@ -20,7 +20,6 @@ public class ColdGameUiContext {
     private UserContext userContext;
     private List<LevelUnlockConfig> levelUnlockConfigs;
     private StaticGameConfig staticGameConfig;
-    private List<Shape3D> shape3Ds;
     private List<MeshContainer> meshContainers;
     private List<ParticleShapeConfig> particleShapeConfigs;
     private List<ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs;
@@ -51,14 +50,6 @@ public class ColdGameUiContext {
 
     public void setStaticGameConfig(StaticGameConfig staticGameConfig) {
         this.staticGameConfig = staticGameConfig;
-    }
-
-    public List<Shape3D> getShape3Ds() {
-        return shape3Ds;
-    }
-
-    public void setShape3Ds(List<Shape3D> shape3Ds) {
-        this.shape3Ds = shape3Ds;
     }
 
     public List<MeshContainer> getMeshContainers() {
@@ -129,11 +120,6 @@ public class ColdGameUiContext {
 
     public ColdGameUiContext staticGameConfig(StaticGameConfig staticGameConfig) {
         setStaticGameConfig(staticGameConfig);
-        return this;
-    }
-
-    public ColdGameUiContext shape3Ds(List<Shape3D> shape3Ds) {
-        setShape3Ds(shape3Ds);
         return this;
     }
 

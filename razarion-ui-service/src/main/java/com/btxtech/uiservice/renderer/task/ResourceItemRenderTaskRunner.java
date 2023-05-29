@@ -3,7 +3,6 @@ package com.btxtech.uiservice.renderer.task;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.system.alarm.AlarmService;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 
 import javax.annotation.PostConstruct;
@@ -26,8 +25,6 @@ public class ResourceItemRenderTaskRunner extends AbstractShape3DRenderTaskRunne
     private ItemTypeService itemTypeService;
     @Inject
     private ResourceUiService resourceUiService;
-    @Inject
-    private Shape3DUiService shape3DUiService;
 
     @PostConstruct
     public void postConstruct() {
@@ -35,14 +32,14 @@ public class ResourceItemRenderTaskRunner extends AbstractShape3DRenderTaskRunne
     }
 
     private void setupResourceItemType(ResourceItemType resourceItemType) {
-        if (resourceItemType.getShape3DId() != null) {
-            createShape3DRenderTasks(shape3DUiService.getShape3D(resourceItemType.getShape3DId()),
-                    timeStamp -> resourceUiService.provideModelMatrices(resourceItemType),
-                    null,
-                    null);
-        } else {
-            alarmService.riseAlarm(INVALID_RESOURCE_ITEM, "No shape3DId", resourceItemType.getId());
-        }
+//        if (resourceItemType.getShape3DId() != null) {
+//            createShape3DRenderTasks(shape3DUiService.getShape3D(resourceItemType.getShape3DId()),
+//                    timeStamp -> resourceUiService.provideModelMatrices(resourceItemType),
+//                    null,
+//                    null);
+//        } else {
+//            alarmService.riseAlarm(INVALID_RESOURCE_ITEM, "No shape3DId", resourceItemType.getId());
+//        }
     }
 
 }

@@ -1,9 +1,7 @@
 package com.btxtech.client.renderer.subtask;
 
 import com.btxtech.client.renderer.engine.UniformLocation;
-import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
-import com.btxtech.client.shape3d.ClientShape3DUiService;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
@@ -12,19 +10,12 @@ import com.btxtech.uiservice.renderer.task.AbstractShape3DRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.progress.BuildupState;
 import com.btxtech.uiservice.renderer.task.progress.DemolitionState;
 import com.btxtech.uiservice.renderer.task.progress.ProgressState;
-import jsinterop.base.Js;
 
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import java.util.List;
 
 import static com.btxtech.client.renderer.shaders.Shaders.SHADERS;
-import static com.btxtech.client.renderer.shaders.SkeletonDefines.ALPHA_TO_COVERAGE;
-import static com.btxtech.client.renderer.shaders.SkeletonDefines.BUILDUP_STATE;
-import static com.btxtech.client.renderer.shaders.SkeletonDefines.CHARACTER_REPRESENTING;
-import static com.btxtech.client.renderer.shaders.SkeletonDefines.HEALTH_STATE;
-import static com.btxtech.client.renderer.shaders.SkeletonDefines.TWO_PHONGS;
-import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
+import static com.btxtech.client.renderer.shaders.SkeletonDefines.*;
 
 /**
  * Created by Beat
@@ -33,8 +24,6 @@ import static com.btxtech.client.renderer.shaders.SkeletonDefines.UV;
 @Dependent
 public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexContainer> implements AbstractShape3DRenderTaskRunner.RenderTask {
     // private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
-    @Inject
-    private ClientShape3DUiService shape3DUiService;
     private boolean alphaToCoverage;
     private ProgressState progressState;
     private VertexContainer vertexContainer;
@@ -57,14 +46,10 @@ public class VertexContainerRendererTask extends AbstractWebGlRenderTask<VertexC
 
     @Override
     public void setup(VertexContainer vertexContainer) {
-        setupVec3PositionArray(Js.uncheckedCast(shape3DUiService.getVertexFloat32Array(vertexContainer)));
-        setupVec3Array(WebGlFacade.A_VERTEX_NORMAL, Js.uncheckedCast(shape3DUiService.getNormFloat32Array(vertexContainer)));
-        setupVec2Array(WebGlFacade.A_VERTEX_UV, Js.uncheckedCast(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer)));
 
         AlarmRaiser.onNull(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig(), Alarm.Type.INVALID_VERTEX_CONTAINER, "No PhongMaterialConfig in VertexContainerMaterial: " + vertexContainer.getVertexContainerMaterial().getMaterialName(), null);
         setupPhongMaterial(vertexContainer.getVertexContainerMaterial().getPhongMaterialConfig(), "material");
         if (vertexContainer.getVertexContainerMaterial().getPhongMaterial2Config() != null) {
-            setupVec4Array("vertexColorAttribute", Js.uncheckedCast(shape3DUiService.getVertexColorFloat32Array(vertexContainer)));
             setupPhongMaterial(vertexContainer.getVertexContainerMaterial().getPhongMaterial2Config(), "material2");
         }
         if (vertexContainer.getVertexContainerMaterial().getAlphaToCoverage() != null) {

@@ -5,7 +5,6 @@ import com.btxtech.client.editor.generic.model.Branch;
 import com.btxtech.client.editor.generic.model.GenericPropertyInfoProvider;
 import com.btxtech.client.editor.generic.model.Leaf;
 import com.btxtech.client.editor.generic.model.PropertyEditorSelector;
-import com.btxtech.client.editor.generic.updater.EngineUpdater;
 import com.btxtech.client.shape3d.Shape3DBuffer;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.shape.Shape3D;
@@ -52,8 +51,6 @@ public class GenericEditorFrontendProvider {
     private Instance<Branch> branchInstance;
     @Inject
     private GenericPropertyInfoProvider genericPropertyInfoProvider;
-    @Inject
-    private EngineUpdater engineUpdater;
     private Logger logger = Logger.getLogger(GenericEditorFrontendProvider.class.getName());
 
     @SuppressWarnings("unused") // Called by Angular
@@ -184,7 +181,6 @@ public class GenericEditorFrontendProvider {
                         Shape3DConfig newShape3DConfig = MarshallingWrapper.fromJSON(Global.JSON.stringify(mapOfAny.getAny("shape3DConfig")), Shape3DConfig.class);
                         Shape3D newShape3D = MarshallingWrapper.fromJSON(Global.JSON.stringify(mapOfAny.getAny("shape3D")), Shape3D.class);
 
-                        engineUpdater.onShape3D(newShape3D, newShape3DBuffers);
                         newShape3DConfig.setColladaString(colladaString);
                         config2GwtAngularPropertyTableAndConnect(newShape3DConfig,
                                 Shape3DEditorController.class,
@@ -234,7 +230,6 @@ public class GenericEditorFrontendProvider {
                                                           Promise.PromiseExecutorCallbackFn.ResolveCallbackFn<GwtAngularPropertyTable> resolve,
                                                           Promise.PromiseExecutorCallbackFn.RejectCallbackFn reject) {
         try {
-            engineUpdater.connect(config);
             Branch branch = branchInstance.get();
             branch.init(null, null,
                     (HasProperties) BindableProxyFactory.getBindableProxy(config),
@@ -329,7 +324,6 @@ public class GenericEditorFrontendProvider {
                         javaValue = PropertyEditorSelector.fromSelector(angularTreeNode.data.propertyEditorSelector).convertFromAngular(value,  angularTreeNode.abstractPropertyModel.getPropertyClass());
                     }
                     angularTreeNode.abstractPropertyModel.setPropertyValue(javaValue);
-                    engineUpdater.handleSetValue(gwtAngularPropertyTable.rootBranch.getPropertyValue());
                 } catch (Throwable throwable) {
                     logger.log(Level.SEVERE, "setValue failed", throwable);
                     throw throwable;

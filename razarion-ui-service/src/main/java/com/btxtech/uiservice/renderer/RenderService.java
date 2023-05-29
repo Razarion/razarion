@@ -4,8 +4,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.uiservice.renderer.task.BaseItemPlacerRenderTaskRunner;
-import com.btxtech.uiservice.renderer.task.BaseItemRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.ParticleRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTaskRunner;
@@ -54,18 +52,14 @@ public abstract class RenderService {
 
         addRenderTaskRunner(GroundRenderTaskRunner.class, "Ground");
         addRenderTaskRunner(SlopeRenderTaskRunner.class, "Slope");
-        addRenderTaskRunner(BaseItemPlacerRenderTaskRunner.class, "Base Item Placer");
         addRenderTaskRunner(TerrainObjectRenderTaskRunner.class, "Terrain Object");
         addRenderTaskRunner(ItemMarkerRenderTaskRunner.class, "Item Marker");
-        addRenderTaskRunner(BaseItemRenderTaskRunner.class, "Base Item");
         addRenderTaskRunner(TrailRenderTaskRunner.class, "Trail");
         addRenderTaskRunner(ResourceItemRenderTaskRunner.class, "Resource");
-// TODO       addRenderTaskRunner(BoxItemRenderTask.class, "Box");
         addRenderTaskRunner(WaterRenderTaskRunner.class, "Water");
         addRenderTaskRunner(StatusBarRenderTaskRunner.class, "Status Bar");
         addRenderTaskRunner(ProjectileRenderTaskRunner.class, "Projectile");
         addRenderTaskRunner(SelectionFrameRenderTaskRunner.class, "Selection Frame");
-// TODO       addRenderTaskRunner(ItemVisualizationRenderTask.class, "Tip");
         addRenderTaskRunner(ParticleRenderTaskRunner.class, "Particle");
     }
 

@@ -160,7 +160,6 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
         if (userContext.getLevelId() != null) {
             coldGameUiContext.levelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext, userContext.getLevelId()));
         }
-        coldGameUiContext.shape3Ds(shape3DPersistence.getShape3Ds());
         coldGameUiContext.meshContainers(assetCrudPersistence.readMeshContainers());
         coldGameUiContext.setParticleShapeConfigs(particleShapeCrudPersistence.read());
         coldGameUiContext.setParticleEmitterSequenceConfigs(particleEmitterSequenceCrudPersistence.read());
