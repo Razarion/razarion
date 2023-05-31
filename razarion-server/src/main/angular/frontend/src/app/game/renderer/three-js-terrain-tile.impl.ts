@@ -12,7 +12,7 @@ import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 import {BabylonJsUtils} from "./babylon-js.utils";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
-  private readonly container: Mesh;
+  private readonly container: TransformNode;
 
   constructor(terrainTile: TerrainTile,
               private defaultGroundConfigId: number,
@@ -20,7 +20,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
               private rendererService: ThreeJsRendererServiceImpl,
               private threeJsModelService: BabylonModelService,
               private threeJsWaterRenderService: ThreeJsWaterRenderService) {
-    this.container = new Mesh(`Terrain Tile ${terrainTile.getIndex().toString()}`);
+    this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
         try {

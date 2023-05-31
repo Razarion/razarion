@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {SlopeConfig, TerrainWaterTile, WaterConfig} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {Mesh, NodeMaterial} from "@babylonjs/core";
+import {Mesh, NodeMaterial, TransformNode} from "@babylonjs/core";
 import {BabylonJsUtils} from "./babylon-js.utils";
 import {BabylonModelService} from "./babylon-model.service";
 
@@ -11,7 +11,7 @@ export class ThreeJsWaterRenderService {
               private babylonModelService: BabylonModelService) {
   }
 
-  public setup(terrainWaterTiles: TerrainWaterTile[], container: Mesh): void {
+  public setup(terrainWaterTiles: TerrainWaterTile[], container: TransformNode): void {
     if (!terrainWaterTiles) {
       return;
     }
@@ -29,7 +29,7 @@ export class ThreeJsWaterRenderService {
     });
   }
 
-  private setupWater(positions: Float32Array, waterConfig: WaterConfig, container: Mesh) {
+  private setupWater(positions: Float32Array, waterConfig: WaterConfig, container: TransformNode) {
     const vertexData = BabylonJsUtils.createVertexData(positions)
     const water = new Mesh(`Water ${waterConfig.getInternalName()} (${waterConfig.getId()})`, null);
     vertexData.applyToMesh(water)
@@ -42,7 +42,7 @@ export class ThreeJsWaterRenderService {
     container.getChildren().push(water);
   }
 
-  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, slopeConfig: SlopeConfig, waterConfig: WaterConfig, container: Mesh) {
+  private setupShallowWater(shallowPositions: Float32Array, shallowUvs: Float32Array, slopeConfig: SlopeConfig, waterConfig: WaterConfig, container: TransformNode) {
     const vertexData = BabylonJsUtils.createVertexData(shallowPositions);
     vertexData.uvs = shallowUvs;
 

@@ -17,7 +17,6 @@ import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import {
   Animation,
-  CascadedShadowGenerator,
   Color3,
   CubeTexture,
   DirectionalLight,
@@ -32,6 +31,7 @@ import {
   PointerEventTypes,
   Quaternion,
   Scene,
+  ShadowGenerator,
   Tools,
   TransformNode,
   Vector2,
@@ -58,7 +58,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private scene!: Scene;
   private engine!: Engine;
   private camera!: FreeCamera;
-  private shadowGenerator!: CascadedShadowGenerator;
+  private shadowGenerator!: ShadowGenerator;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
   private directionalLight!: DirectionalLight
@@ -66,6 +66,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private meshContainers!: MeshContainer[];
   private diplomacyMaterialCache: Map<number, Map<Diplomacy, NodeMaterial>> = new Map<number, Map<Diplomacy, NodeMaterial>>();
   private itemMarkerMaterialCache: Map<Diplomacy, SimpleMaterial> = new Map<Diplomacy, SimpleMaterial>();
+  private baseItemContainer!: TransformNode;
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -76,6 +77,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
     this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
     this.threeJsModelService.setScene(this.scene);
+    this.baseItemContainer = new TransformNode("BaseItems");
 
     // ----- Keyboard -----
     const self = this;
@@ -117,9 +119,12 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0.5, -1, 0).normalize(), this.scene);
     this.directionalLight.intensity = 5;
 
-    this.shadowGenerator = new CascadedShadowGenerator(4096, this.directionalLight);
-    this.shadowGenerator.bias = 0.005;
-    // this.shadowGenerator.debug = true;
+    this.shadowGenerator = new ShadowGenerator(4096, this.directionalLight);
+    this.shadowGenerator.bias = 0.0004;
+    this.shadowGenerator.normalBias = 0.4000;
+    this.shadowGenerator.filter = ShadowGenerator.FILTER_PCF;
+    // this.shadowGenerator.usePoissonSampling = true;
+
 
     // ----- Resize listener -----
     new ResizeObserver(entries => {
@@ -172,7 +177,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       const correctedDiplomacy = GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy);
       const threeJsRendererServiceImpl = this;
       return new class implements BabylonBaseItem {
-        private mesh: Mesh;
+        private container: TransformNode;
         private markerDisc: Mesh | null = null;
         private selectActive: boolean = false;
         private hoverActive: boolean = false;
@@ -181,29 +186,21 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         private health: number = 0;
 
         constructor() {
-          if(threeJsModelPackConfigId) {
-            this.mesh = <Mesh>threeJsRendererServiceImpl.threeJsModelService.cloneMesh(threeJsModelPackConfigId, null);
-            this.mesh.name = `${internalName} '${id}')`;
-            try {
-              // If TransformNode is returned, it has no getBoundingInfo() methode
-              this.mesh.getBoundingInfo();
-              threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(this.mesh, true);
-            } catch(error) {
-              this.mesh.getChildMeshes().forEach(childMesh => {
-                threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(childMesh, true);
-              });
-            }
+          if (threeJsModelPackConfigId) {
+            this.container = <Mesh>threeJsRendererServiceImpl.threeJsModelService.cloneMesh(threeJsModelPackConfigId, null);
           } else if (meshContainerId) {
-            this.mesh = threeJsRendererServiceImpl.showMeshContainer(threeJsRendererServiceImpl.meshContainers,
+            this.container = threeJsRendererServiceImpl.showMeshContainer(threeJsRendererServiceImpl.meshContainers,
               GwtHelper.gwtIssueNumber(meshContainerId),
               correctedDiplomacy);
-            this.mesh.name = `${internalName} '${id}')`;
-            threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(this.mesh, true);
           } else {
-            this.mesh = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${internalName}`, {diameter: radius * 2});
+            this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${internalName}`, {diameter: radius * 2});
             console.warn(`No meshContainerId for ${internalName}`)
-            this.mesh.name = `! ${internalName} '${id}')`;
           }
+          this.container.parent = threeJsRendererServiceImpl.baseItemContainer;
+          this.container.name = `${internalName} '${id}')`;
+          this.container.getChildMeshes().forEach(childMesh => {
+            threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(childMesh, true);
+          });
         }
 
         getId(): number {
@@ -235,20 +232,23 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         }
 
         dispose(): void {
-          threeJsRendererServiceImpl.scene.removeMesh(this.mesh);
-          this.mesh.dispose();
+          this.container.getChildMeshes().forEach(childMesh => {
+            threeJsRendererServiceImpl.shadowGenerator.removeShadowCaster(childMesh, true);
+          });
+          threeJsRendererServiceImpl.scene.removeTransformNode(this.container);
+          this.container.dispose();
         }
 
         updatePosition(): void {
           if (this.position) {
-            this.mesh.position.x = this.position.getX();
-            this.mesh.position.y = this.position.getZ();
-            this.mesh.position.z = this.position.getY();
+            this.container.position.x = this.position.getX();
+            this.container.position.y = this.position.getZ();
+            this.container.position.z = this.position.getY();
           }
         }
 
         updateAngle(): void {
-          this.mesh.rotation.y = Tools.ToRadians(90) - this.angle;
+          this.container.rotation.y = Tools.ToRadians(90) - this.angle;
         }
 
         updateHealth(): void {
@@ -269,7 +269,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             if (!this.markerDisc) {
               this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: radius + 0.1});
               let material = threeJsRendererServiceImpl.itemMarkerMaterialCache.get(correctedDiplomacy);
-              if(!material) {
+              if (!material) {
                 material = new SimpleMaterial(`Base Item Marker ${correctedDiplomacy}`, threeJsRendererServiceImpl.scene);
                 material.diffuseColor = ThreeJsRendererServiceImpl.color4Diplomacy(correctedDiplomacy);
                 threeJsRendererServiceImpl.itemMarkerMaterialCache.set(correctedDiplomacy, material);
@@ -277,7 +277,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
               this.markerDisc.material = material;
               this.markerDisc.position.y = 0.01;
               this.markerDisc.rotation.x = Tools.ToRadians(90);
-              this.markerDisc.parent = this.mesh;
+              this.markerDisc.parent = this.container;
             }
           } else {
             if (this.markerDisc) {
@@ -476,14 +476,19 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     // TODO this.scene.add(group);
   }
 
-  addToScene(mesh: Mesh): void {
-    this.scene.addMesh(mesh);
-    this.shadowGenerator.addShadowCaster(mesh, true);
+  addToScene(transformNode: TransformNode): void {
+    this.scene.addTransformNode(transformNode);
+    transformNode.getChildMeshes().forEach(childMesh => {
+      this.shadowGenerator.addShadowCaster(childMesh, true);
+    });
+
   }
 
-  removeFromScene(mesh: Mesh): void {
-    this.scene.removeMesh(mesh);
-    this.shadowGenerator.removeShadowCaster(mesh, true);
+  removeFromScene(transformNode: TransformNode): void {
+    this.scene.removeTransformNode(transformNode);
+    transformNode.getChildMeshes().forEach(childMesh => {
+      this.shadowGenerator.removeShadowCaster(childMesh, true);
+    });
   }
 
   getEngine(): Engine {
@@ -576,7 +581,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     });
   }
 
-  private showMeshContainer(meshContainers: MeshContainer[], id: number, diplomacy: Diplomacy): Mesh {
+  private showMeshContainer(meshContainers: MeshContainer[], id: number, diplomacy: Diplomacy): TransformNode {
     let foundMeshContainer = null;
     for (let meshContainer of meshContainers) {
       if (meshContainer.getId() === id) {
@@ -587,8 +592,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     if (!foundMeshContainer) {
       throw new Error(`No MeshContainer for '${id}'`);
     }
-    let baseItemContainer = new Mesh(`BaseItems '${id}' AssetConfig '${foundMeshContainer.getInternalName()}'`);
-    this.scene.addMesh(baseItemContainer);
+    let baseItemContainer = new TransformNode(`'`);
+    this.scene.addTransformNode(baseItemContainer);
     this.recursivelyFillMeshes(foundMeshContainer!, baseItemContainer, diplomacy);
     return baseItemContainer;
   }
@@ -702,7 +707,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
           let pickPoint = this.setupMeshPickPoint(this.scene.pointerX, this.scene.pointerY);
-          if(!pickPoint) {
+          if (!pickPoint) {
             return;
           }
           this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickPoint.x, pickPoint.z);
@@ -710,7 +715,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         }
         case PointerEventTypes.POINTERUP: {
           let pickPoint = this.setupMeshPickPoint(this.scene.pointerX, this.scene.pointerY);
-          if(!pickPoint) {
+          if (!pickPoint) {
             return;
           }
           this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickPoint.x, pickPoint.z);
