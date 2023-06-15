@@ -1,27 +1,82 @@
 <p-tabView styleClass="tabview-custom">
   <p-tabPanel header="Terrain Objects">
-    <table style="border-spacing: 0; border-collapse: separate; margin: 5px">
-      <tr>
-        <td>New Terrain Object</td>
-        <td>
-          <p-dropdown [options]="terrainObjectConfigs"
-                      [(ngModel)]="selectedTerrainObjectConfig"
-                      optionLabel="name"></p-dropdown>
-        </td>
-      </tr>
-      <tr>
-        <td>Selection</td>
-        <td>{{selectedTerrainObjectInfo}}</td>
-      </tr>
-      <tr>
-        <td colspan="2"><terrain-object-position #terrainObjectPosition></terrain-object-position></td>
-      </tr>
-    </table>
+    <p-divider align="left">
+      <div class="inline-flex align-items-center">
+        <i class="pi pi-plus-circle mr-2"></i>
+        <b>New</b>
+      </div>
+    </p-divider>
+    <div class="field grid align-items-center">
+      <span class="col">Terrain Object</span>
+      <div class="col">
+        <p-dropdown [options]="terrainObjectConfigs"
+                    [(ngModel)]="selectedTerrainObjectConfig"
+                    optionLabel="name"></p-dropdown>
+      </div>
+    </div>
+    <div class="field grid align-items-center">
+      <span class="col">Mouse</span>
+      <div class="col">
+        <p-selectButton [options]="onOffOptions" [(ngModel)]="createTerrainObjectMode" optionLabel="label"
+                        optionValue="value"></p-selectButton>
+      </div>
+    </div>
+
+    <p-divider align="left">
+      <div class="inline-flex align-items-center">
+        <i class="pi pi-cog mr-2"></i>
+        <b>Edit</b>
+      </div>
+    </p-divider>
+
+    <div class="field grid align-items-center">
+      <span class="col">Position</span>
+      <div class="col">
+        <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.positionGizmoEnabled" optionLabel="label"
+                        optionValue="value"></p-selectButton>
+      </div>
+    </div>
+    <div class="field grid align-items-center">
+      <span class="col">Rotation</span>
+      <div class="col">
+        <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.rotationGizmoEnabled " optionLabel="label"
+                        optionValue="value"></p-selectButton>
+      </div>
+    </div>
+    <div class="field grid align-items-center">
+      <span class="col">Scale</span>
+      <div class="col">
+        <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.scaleGizmoEnabled " optionLabel="label"
+                        optionValue="value"></p-selectButton>
+      </div>
+    </div>
+    <terrain-object-position #terrainObjectPosition></terrain-object-position>
+
+    <p-divider align="left">
+      <div class="inline-flex align-items-center">
+        <i class="pi pi-save mr-2"></i>
+        <b>Action</b>
+      </div>
+    </p-divider>
+
+    <div class="field grid align-items-center">
+      <span class="col">Save</span>
+      <div class="col">
+        <p-button icon="pi pi-save" (onClick)="save()"></p-button>
+      </div>
+    </div>
+    <div class="field grid align-items-center">
+      <span class="col">Restart Planet warm</span>
+      <div class="col">
+        <p-button icon="pi pi-power-off" (onClick)="restartPlanetWarm()"></p-button>
+      </div>
+    </div>
+    <div class="field grid align-items-center">
+      <span class="col">Restart Planet cold</span>
+      <div class="col">
+        <p-button icon="pi pi-power-off" (onClick)="restartPlanetCold()"></p-button>
+      </div>
+    </div>
+
   </p-tabPanel>
 </p-tabView>
-
-<p-button type="button"
-          label="Save"
-          icon="pi pi pi-save"
-          styleClass="p-button-sm"
-          (onClick)="save()"></p-button>

@@ -6,6 +6,7 @@ import {
   Diplomacy,
   MeshContainer,
   ShapeTransform,
+  TerrainObjectPosition,
   TerrainTile,
   ThreeJsRendererServiceAccess,
   ThreeJsTerrainTile,
@@ -39,6 +40,7 @@ import {
 } from "@babylonjs/core";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
+import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 
 export class ThreeJsRendererServiceMouseEvent {
   object3D: any = null;
@@ -47,6 +49,18 @@ export class ThreeJsRendererServiceMouseEvent {
   razarionTerrainObjectId: number | null = null;
   razarionTerrainObjectConfigId: number | null = null;
 
+}
+
+export interface RazarionMetadata {
+  type: RazarionMetadataType;
+  id: number | undefined;
+  configId: number | undefined;
+  editorHintTerrainObjectPosition: TerrainObjectPosition | undefined;
+}
+
+export enum RazarionMetadataType {
+  GROUND,
+  TERRAIN_OBJECT
 }
 
 export interface ThreeJsRendererServiceMouseEventListener {
@@ -62,7 +76,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
   private directionalLight!: DirectionalLight
-  private mouseListeners: ThreeJsRendererServiceMouseEventListener[] = [];
   private meshContainers!: MeshContainer[];
   private diplomacyMaterialCache: Map<number, Map<Diplomacy, NodeMaterial>> = new Map<number, Map<Diplomacy, NodeMaterial>>();
   private itemMarkerMaterialCache: Map<Diplomacy, SimpleMaterial> = new Map<Diplomacy, SimpleMaterial>();
@@ -187,7 +200,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
         constructor() {
           if (threeJsModelPackConfigId) {
-            this.container = <Mesh>threeJsRendererServiceImpl.threeJsModelService.cloneMesh(threeJsModelPackConfigId, null);
+            this.container = threeJsRendererServiceImpl.threeJsModelService.cloneMesh(threeJsModelPackConfigId, null);
           } else if (meshContainerId) {
             this.container = threeJsRendererServiceImpl.showMeshContainer(threeJsRendererServiceImpl.meshContainers,
               GwtHelper.gwtIssueNumber(meshContainerId),
@@ -439,49 +452,19 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  addMouseDownHandler(mouseListener: ThreeJsRendererServiceMouseEventListener): void {
-    this.mouseListeners.push(mouseListener)
-  }
-
-  removeMouseDownHandler(mouseListener: ThreeJsRendererServiceMouseEventListener): void {
-    this.mouseListeners = this.mouseListeners.filter(obj => obj !== mouseListener);
-  }
-
-  intersectObjects(mousePosition: Vector2): any {
-    // const raycaster = new Raycaster();
-    // const ndcPointer = new Vector2();
-    // ndcPointer.x = (mousePosition.x / this.renderer.domElement.width) * 2 - 1;
-    // ndcPointer.y = -(mousePosition.y / this.renderer.domElement.height) * 2 + 1;
-    //
-    // raycaster.setFromCamera(ndcPointer, this.camera);
-    // let intersections: Intersection[] = [];
-    // raycaster.intersectObjects(this.scene.children, true, intersections);
-    // if (intersections.length == 0) {
-    //   return null;
-    // }
-    // TODO return intersections[0];
-    return null;
-  }
-
   public setupCenterGroundPosition(): Vector3 {
     return this.setupZeroLevelPosition(0, 0, Matrix.Invert(this.camera.getTransformationMatrix()));
   }
 
-  public addToSceneEditor(scene: Scene) {
-    // let group = new Group();
-    // group.add(scene);
-    // group.name = "Imported";
-    // let groundPos = this.setupCenterGroundPosition();
-    // group.position.set(groundPos.x, groundPos.y, groundPos.z);
-    // TODO this.scene.add(group);
-  }
-
   addToScene(transformNode: TransformNode): void {
     this.scene.addTransformNode(transformNode);
+    this.addShadowCaster(transformNode);
+  }
+
+  addShadowCaster(transformNode: TransformNode): void {
     transformNode.getChildMeshes().forEach(childMesh => {
       this.shadowGenerator.addShadowCaster(childMesh, true);
     });
-
   }
 
   removeFromScene(transformNode: TransformNode): void {
@@ -535,40 +518,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     return this.camera.position.add(direction.multiplyByFloats(distanceToNullLevel, distanceToNullLevel, distanceToNullLevel));
   }
 
-  public setupMeshPickPoint(pointerX: number, pointerY: number): Vector3 | undefined {
-    const pickResult = this.scene.pick(pointerX, pointerY);
-
-    if (!pickResult.hit) {
-      return undefined;
-    }
-    return pickResult.pickedPoint!;
-  }
-
-  private onMousedownEvent(this: ThreeJsRendererServiceImpl, event: any): void {
-    let newMouseEvent = new ThreeJsRendererServiceMouseEvent();
-    let intersection = this.intersectObjects(new Vector2(event.clientX, event.clientY));
-    if (intersection != null) {
-      newMouseEvent.object3D = intersection.object;
-      newMouseEvent.pointOnObject3D = intersection.point;
-      this.recursivelySearchTerrainObject(newMouseEvent.object3D, newMouseEvent);
-    }
-    this.mouseListeners.forEach(mouseListener => mouseListener.onThreeJsRendererServiceMouseEvent(newMouseEvent));
-  }
-
-  private recursivelySearchTerrainObject(object3D: any, newMouseEvent: ThreeJsRendererServiceMouseEvent) {
-    if ((<any>object3D).razarionTerrainObjectId) {
-      newMouseEvent.razarionTerrainObjectId = (<any>object3D).razarionTerrainObjectId;
-    }
-    if ((<any>object3D).razarionTerrainObjectConfigId) {
-      newMouseEvent.razarionTerrainObjectConfigId = (<any>object3D).razarionTerrainObjectConfigId;
-    }
-    if (newMouseEvent.razarionTerrainObjectId || newMouseEvent.razarionTerrainObjectConfigId) {
-      newMouseEvent.razarionTerrainObject3D = object3D;
-      return;
-    }
-    if (object3D.parent != null) {
-      this.recursivelySearchTerrainObject(object3D.parent, newMouseEvent);
-    }
+  public setupMeshPickPoint(): PickingInfo {
+    return this.scene.pick(this.scene.pointerX, this.scene.pointerY);
   }
 
   showInspector() {
@@ -706,27 +657,24 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       }
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
-          let pickPoint = this.setupMeshPickPoint(this.scene.pointerX, this.scene.pointerY);
-          if (!pickPoint) {
-            return;
+          let pickingInfo = this.setupMeshPickPoint();
+          if (pickingInfo.hit) {
+            this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
           }
-          this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickPoint.x, pickPoint.z);
           break;
         }
         case PointerEventTypes.POINTERUP: {
-          let pickPoint = this.setupMeshPickPoint(this.scene.pointerX, this.scene.pointerY);
-          if (!pickPoint) {
-            return;
+          let pickingInfo = this.setupMeshPickPoint();
+          if (pickingInfo.hit) {
+            this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
           }
-          this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickPoint.x, pickPoint.z);
           break;
         }
         case PointerEventTypes.POINTERMOVE: {
-          let pickPoint = this.setupMeshPickPoint(this.scene.pointerX, this.scene.pointerY);
-          if (!pickPoint) {
-            return;
+          let pickingInfo = this.setupMeshPickPoint();
+          if (pickingInfo.hit) {
+            this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, (pointerInfo.event.buttons & 1) === 1);
           }
-          this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickPoint.x, pickPoint.z, (pointerInfo.event.buttons & 1) === 1);
           break;
         }
       }
@@ -786,5 +734,37 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
     return Color3.Gray()
   }
+
+  public static setRazarionMetadata(node: Node, razarionMetadata: RazarionMetadata) {
+    if (!node.metadata) {
+      node.metadata = {};
+    }
+    node.metadata.razarionMetadata = razarionMetadata;
+  }
+
+  public static setRazarionMetadataSimple(node: Node, razarionMetadataType: RazarionMetadataType, id?: number, configId?: number) {
+    ThreeJsRendererServiceImpl.setRazarionMetadata(node, new class implements RazarionMetadata {
+      type = razarionMetadataType;
+      id = id;
+      configId = configId;
+      editorHintTerrainObjectPosition = undefined;
+    });
+  }
+
+  public static getRazarionMetadata(node: Node): RazarionMetadata | undefined {
+    return node.metadata?.razarionMetadata;
+  }
+
+  public static findRazarionMetadataNode(node: Node): Node | undefined {
+    if (node.metadata && node.metadata.razarionMetadata) {
+      return node;
+    }
+    if (node.parent) {
+      return ThreeJsRendererServiceImpl.findRazarionMetadataNode(node.parent);
+    } else {
+      return;
+    }
+  }
+
 }
 

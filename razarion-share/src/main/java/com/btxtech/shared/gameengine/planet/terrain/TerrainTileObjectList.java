@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.nativejs.NativeMatrix;
 import jsinterop.annotations.JsType;
 
 /**

@@ -1,7 +1,6 @@
 import {Component} from "@angular/core";
+import {TransformNode, Vector3} from "@babylonjs/core";
 import {TerrainObjectPosition} from "../../gwtangular/GwtAngularFacade";
-import {GwtInstance} from "../../gwtangular/GwtInstance";
-import {Vector3} from "@babylonjs/core";
 
 @Component({
   selector: 'terrain-object-position',
@@ -10,57 +9,52 @@ import {Vector3} from "@babylonjs/core";
       <tr>
         <td>Position</td>
         <td>
-          <vertex-editor [vertex]="position" (onInput)="positionChanged($event)"></vertex-editor>
+          <vector3-editor [vector3]="position" disabled="!position"></vector3-editor>
         </td>
       </tr>
       <tr>
         <td>Rotation</td>
         <td>
-          <angle-vertex-editor [euler]="rotation" (onInput)="rotationChanged($event)"></angle-vertex-editor>
+          <angle-vertex3-editor [euler]="rotation" disabled="!rotation"></angle-vertex3-editor>
         </td>
       </tr>
       <tr>
         <td>Scale</td>
         <td>
-          <vertex-editor [vertex]="scale" (onInput)="scaleChanged($event)"></vertex-editor>
-        </td>
-      </tr>
-      <tr>
-        <td>Offset</td>
-        <td>
-          <vertex-editor [vertex]="offset" (onInput)="offsetChanged($event)"></vertex-editor>
+          <vector3-editor [vector3]="scale" disabled="!scale"></vector3-editor>
         </td>
       </tr>
     </table>
   `
 })
 export class TerrainObjectPositionComponent {
-  position = new Vector3(0, 0, 0);
-  rotation = new Vector3(0, 0, 0);
-  scale = new Vector3(1, 1, 1);
-  offset = new Vector3(0, 0, 0);
-  terrainObjectPosition!: TerrainObjectPosition;
+  position: Vector3 | null = null;
+  rotation: Vector3 | null = null;
+  scale: Vector3 | null = null;
+  transformNode: TransformNode | null = null;
+  terrainObjectPosition: TerrainObjectPosition | null = null;
 
-  init(object3D: any, terrainObjectPosition: TerrainObjectPosition) {
-    this.position = object3D.position;
-    this.rotation = object3D.rotation;
-    this.scale = object3D.scale;
+  setSelected(transformNode: TransformNode, terrainObjectPosition: TerrainObjectPosition) {
+    this.position = transformNode.position
+    this.rotation = transformNode.rotation;
+    this.scale = transformNode.scaling;
+    this.transformNode = transformNode;
     this.terrainObjectPosition = terrainObjectPosition;
   }
 
-  positionChanged(vector3: Vector3) {
-    this.terrainObjectPosition.setPosition(GwtInstance.newDecimalPosition(vector3.x, vector3.y))
+  getTerrainObjectPosition(): TerrainObjectPosition | null {
+    return this.terrainObjectPosition;
   }
 
-  rotationChanged(euler: Vector3) {
-    this.terrainObjectPosition.setRotation(GwtInstance.newVertex(euler.x, euler.y, euler.z))
+  getTransformNode(): TransformNode | null {
+    return this.transformNode;
   }
 
-  scaleChanged(vector3: Vector3) {
-    this.terrainObjectPosition.setScale(GwtInstance.newVertex(vector3.x, vector3.y, vector3.z))
-  }
-
-  offsetChanged(vector3: Vector3) {
-    this.terrainObjectPosition.setOffset(GwtInstance.newVertex(vector3.x, vector3.y, vector3.z))
+  clearSelection() {
+    this.position = null;
+    this.rotation = null;
+    this.scale = null;
+    this.transformNode = null;
+    this.terrainObjectPosition = null;
   }
 }

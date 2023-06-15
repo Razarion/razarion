@@ -154,6 +154,9 @@ export class GameMockService {
               return 8;
             }
 
+            setId(id: number): void {
+            }
+
             getOffset(): Vertex {
               return GwtInstance.newVertex(0, 0, 0);
             }
@@ -217,6 +220,10 @@ export class GameMockService {
             objectNameIds.push(new class implements ObjectNameId {
               id: number = terrainObjectConfigJson.id;
               internalName: string = terrainObjectConfigJson.internalName;
+
+              toString(): string {
+                return `${this.internalName} (${this.id})`;
+              }
             })
           });
 
@@ -269,21 +276,20 @@ export class GameMockService {
     }
   };
 
-  threeJsModels: ObjectNameId[] = [new class implements ObjectNameId {
-    id = 12;
-    internalName = "Stone Pack";
+  getThreeJsModels(): ObjectNameId[] {
+    let objectNameIds: ObjectNameId[] = [];
+    staticGameConfigJson.threeJsModelConfigs.forEach((threeJsModelJson: any) => {
+      objectNameIds.push(new class implements ObjectNameId {
+        id: number = threeJsModelJson.id;
+        internalName: string = threeJsModelJson.internalName;
 
-    toString(): string {
-      return `${this.internalName} ${this.id}`;
-    }
-  }, new class implements ObjectNameId {
-    id = 13;
-    internalName = "Tropical Vegetation Pack";
-
-    toString(): string {
-      return `${this.internalName} ${this.id}`;
-    }
-  }];
+        toString(): string {
+          return `${this.internalName} (${this.id})`;
+        }
+      })
+    });
+    return objectNameIds;
+  }
 
   constructor(private http: HttpClient) {
   }

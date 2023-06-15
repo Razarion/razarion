@@ -1,8 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {Tools, Vector3} from "@babylonjs/core";
 
 @Component({
-  selector: 'angle-vertex-editor',
+  selector: 'angle-vertex3-editor',
   template: `
     <div class="inline-flex">
       <div class="mr-2">
@@ -29,31 +29,38 @@ import {Tools, Vector3} from "@babylonjs/core";
     </div>
   `
 })
-export class AngleVertexEditorComponent implements OnInit {
-  @Input()
-  euler!: Vector3;
+export class AngleVector3EditorComponent implements OnInit {
   @Output()
   onInput = new EventEmitter<Vector3>();
+  private _euler: Vector3 | null = null;
 
-  x!: number;
-  y!: number;
-  z!: number;
+  x: number | null = null;
+  y: number | null = null;
+  z: number | null = null;
 
-  ngOnInit(): void {
-    if (this.euler) {
+  @Input() set euler(value: Vector3 | null) {
+    this._euler = value;
+    if (this._euler) {
       this.update();
+    } else {
+      this.x = null;
+      this.y = null;
+      this.z = null;
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.update();
+
+  ngOnInit(): void {
+    if (this._euler) {
+      this.update();
+    }
   }
 
   onChangeX(event: any): void {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.euler.x = Tools.ToRadians(event.value);
+    this._euler!.x = Tools.ToRadians(event.value);
     this.updateModel();
   }
 
@@ -61,7 +68,7 @@ export class AngleVertexEditorComponent implements OnInit {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.euler.y = Tools.ToRadians(event.value);
+    this._euler!.y = Tools.ToRadians(event.value);
     this.updateModel();
   }
 
@@ -69,17 +76,17 @@ export class AngleVertexEditorComponent implements OnInit {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.euler.z = Tools.ToRadians(event.value);
+    this._euler!.z = Tools.ToRadians(event.value);
     this.updateModel();
   }
 
   private update(): void {
-    this.x = Tools.ToRadians(this.euler.x);
-    this.y = Tools.ToRadians(this.euler.y);
-    this.z = Tools.ToRadians(this.euler.z);
+    this.x = Tools.ToRadians(this._euler!.x);
+    this.y = Tools.ToRadians(this._euler!.y);
+    this.z = Tools.ToRadians(this._euler!.z);
   }
 
   private updateModel() {
-    this.onInput.emit(this.euler);
+    this.onInput.emit(this._euler!);
   }
 }

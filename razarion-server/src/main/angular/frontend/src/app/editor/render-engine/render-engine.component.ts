@@ -9,7 +9,7 @@ import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR, URL_THREE_JS_MODEL_PACK_EDITOR} from "../../common";
 import {
-  AbstractMesh,
+  AbstractMesh, GizmoManager,
   Mesh,
   Nullable,
   Observer,
@@ -22,6 +22,7 @@ import {
 import {GLTF2Export} from "@babylonjs/serializers";
 import {BabylonModelService} from "../../game/renderer/babylon-model.service";
 import {ThreeJsModelPackConfig} from "../../gwtangular/GwtAngularFacade";
+import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 
 @Component({
   selector: 'render-engine',
@@ -58,7 +59,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
       this.setupSavePanel(selectedBabylonObject)
     });
     if (environment.gwtMock) {
-      this.dropDownBabylonModels = gameMockService.threeJsModels;
+      this.dropDownBabylonModels = gameMockService.getThreeJsModels();
     } else {
       gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().requestObjectNameIds("Three.js Model")
         .then((value: any) => this.dropDownBabylonModels = value,
@@ -80,11 +81,11 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
         return;
       }
       if (pointerInfo.type === PointerEventTypes.POINTERMOVE) {
-        let pickPoint = renderEngine.setupMeshPickPoint(renderEngine.getScene().pointerX, renderEngine.getScene().pointerY);
-        if (pickPoint) {
-          this.terrainCursorXPosition = pickPoint.x;
-          this.terrainCursorYPosition = pickPoint.z;
-          this.terrainCursorZPosition = pickPoint.y;
+        let pickingInfo = renderEngine.setupMeshPickPoint();
+        if (pickingInfo.hit) {
+          this.terrainCursorXPosition = pickingInfo.pickedPoint!.x;
+          this.terrainCursorYPosition = pickingInfo.pickedPoint!.z;
+          this.terrainCursorZPosition = pickingInfo.pickedPoint!.y;
         }
       }
     });

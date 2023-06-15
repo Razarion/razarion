@@ -108,15 +108,14 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
 
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
-                new ThreeJsModelConfig().id(13).internalName("Tropical Pack").type(ThreeJsModelConfig.Type.GLTF),
+                new ThreeJsModelConfig().id(49).internalName("Tropical Vegetation Pack 2").type(ThreeJsModelConfig.Type.GLTF),
+                new ThreeJsModelConfig().id(48).internalName("Rocks and Boulders").type(ThreeJsModelConfig.Type.GLTF),
                 new ThreeJsModelConfig().id(7).internalName("RI Slope").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(15).internalName("Slope Beach").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(11).internalName("Ground Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(5).internalName("Ground").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(22).internalName("Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(23).internalName("Shallow Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(24).internalName("Slope Beach inner").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(25).internalName("Slope Beach outer").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(44).internalName("[VC] Wheels").type(ThreeJsModelConfig.Type.GLTF),
                 new ThreeJsModelConfig().id(42).internalName("[VC] WheelsW").type(ThreeJsModelConfig.Type.GLTF),
                 new ThreeJsModelConfig().id(41).internalName("[VC] Vehicles main part").type(ThreeJsModelConfig.Type.GLTF).nodeMaterialId(46),
@@ -127,26 +126,26 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
         List<ThreeJsModelPackConfig> threeJsModelPackConfigs = Arrays.asList(
                 new ThreeJsModelPackConfig()
-                        .id(1)
-                        .threeJsModelId(13)
-                        .internalName("Pack 13 1")
+                        .id(105)
+                        .threeJsModelId(49)
+                        .internalName("banana_plant")
                         .position(new Vertex(0, 0, 0))
-                        .scale(new Vertex(0.01, 0.01, 0.01))
-                        .rotation(new Vertex(Math.toRadians(90), 0, 0))
-                        .namePath(Arrays.asList("__root__", "Sketchfab_model", "Vegetation.FBX", "RootNode", "trunk03", "trunk03_Material #2_0"))
-//                new ThreeJsModelPackConfig()
-//                        .id(3)
-//                        .threeJsModelId(13)
-//                        .internalName("Pack 13 3")
-//                        .position(new Vertex(0, 0, 0))
-//                        .scale(new Vertex(0.01, 0.01, 0.01))
-//                        .rotation(new Vertex(0, 0, 0))
-//                        .namePath(Arrays.asList("Sketchfab_Scene", "Sketchfab_model", "de49941573ca4a6cb3fbcf3e4d72f085fbx", "RootNode", "Mid_4", "Object_4", "Mid_4_MID_0"))
+                        .scale(new Vertex(1, 1, 1))
+                        .rotation(new Vertex(0, 0, 0))
+                        .namePath(Arrays.asList("__root__", "banana_plant")),
+                new ThreeJsModelPackConfig()
+                        .id(86)
+                        .threeJsModelId(48)
+                        .internalName("Rock1C")
+                        .position(new Vertex(0, 0, 0))
+                        .scale(new Vertex(1, 1, 1))
+                        .rotation(new Vertex(0, 0, 0))
+                        .namePath(Arrays.asList("__root__", "Rock1C"))
         );
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
-        terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1).threeJsModelPackConfigId(1));
-        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(1).threeJsModelPackConfigId(2));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(1).internalName("banana_plant").radius(1).threeJsModelPackConfigId(105));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).internalName("Rock1C").radius(1).threeJsModelPackConfigId(86));
         // terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5).threeJsModelPackConfigId(2));
         // terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10).threeJsModelPackConfigId(3));
 

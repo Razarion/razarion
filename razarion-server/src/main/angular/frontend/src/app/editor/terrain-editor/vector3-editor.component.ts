@@ -2,25 +2,25 @@ import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {Vector3} from "@babylonjs/core";
 
 @Component({
-  selector: 'vertex-editor',
+  selector: 'vector3-editor',
   template: `
     <div class="inline-flex">
       <div class="mr-2">
-        <p-inputNumber [ngModel]="vertex.x" (onInput)="onChangeX($event)"
+        <p-inputNumber [ngModel]="vector3?.x" (onInput)="onChangeX($event)"
                        [prefix]="'x: '" [size]="5"
                        [minFractionDigits]="1" [maxFractionDigits]="6"
                        [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
                        [showButtons]="true"></p-inputNumber>
       </div>
       <div class="mr-2">
-        <p-inputNumber [ngModel]="vertex.y" (onInput)="onChangeY($event)"
+        <p-inputNumber [ngModel]="vector3?.y" (onInput)="onChangeY($event)"
                        [prefix]="'y: '" [size]="5"
                        [minFractionDigits]="1" [maxFractionDigits]="6"
                        [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
                        [showButtons]="true"></p-inputNumber>
       </div>
       <div class="mr-2">
-        <p-inputNumber [ngModel]="vertex.z" (onInput)="onChangeZ($event)"
+        <p-inputNumber [ngModel]="vector3?.z" (onInput)="onChangeZ($event)"
                        [prefix]="'z: '" [size]="5"
                        [minFractionDigits]="1" [maxFractionDigits]="6"
                        [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
@@ -29,9 +29,9 @@ import {Vector3} from "@babylonjs/core";
     </div>
   `
 })
-export class VertexEditorComponent {
+export class Vector3EditorComponent {
   @Input()
-  vertex!: Vector3;
+  vector3: Vector3 | null = null;
   @Output()
   onInput = new EventEmitter<Vector3>();
 
@@ -39,7 +39,7 @@ export class VertexEditorComponent {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.vertex.x = event.value;
+    this.vector3!.x = event.value;
     this.updateModel();
   }
 
@@ -47,7 +47,7 @@ export class VertexEditorComponent {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.vertex.y = event.value;
+    this.vector3!.y = event.value;
     this.updateModel();
   }
 
@@ -55,11 +55,11 @@ export class VertexEditorComponent {
     if (event.value != null && typeof event.value !== "number") {
       return;
     }
-    this.vertex.z = event.value;
+    this.vector3!.z = event.value;
     this.updateModel();
   }
 
   private updateModel() {
-    this.onInput.emit(this.vertex);
+    this.onInput.emit(this.vector3!);
   }
 }

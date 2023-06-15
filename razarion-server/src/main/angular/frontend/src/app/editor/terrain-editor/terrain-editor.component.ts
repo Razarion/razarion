@@ -1,42 +1,95 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {EditorPanel} from "../editor-model";
-import {TerrainEditorService, TerrainObjectPosition} from "../../gwtangular/GwtAngularFacade";
+import {TerrainEditorService, TerrainObjectModel, TerrainObjectPosition} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {MessageService} from "primeng/api";
-import {
-  ThreeJsRendererServiceImpl,
-  ThreeJsRendererServiceMouseEvent,
-  ThreeJsRendererServiceMouseEventListener
-} from "../../game/renderer/three-js-renderer-service.impl";
+import {RazarionMetadataType, ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-service.impl";
 import {BabylonModelService} from "../../game/renderer/babylon-model.service";
 import {TerrainObjectPositionComponent} from "./terrain-object-position.component";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
+import {GizmoManager, Node, PointerEventTypes, TransformNode} from "@babylonjs/core";
+import {ThreeJsTerrainTileImpl} from "../../game/renderer/three-js-terrain-tile.impl";
+import {Observer} from "@babylonjs/core/Misc/observable";
+import {PointerInfo} from "@babylonjs/core/Events/pointerEvents";
+import {Nullable} from "@babylonjs/core/types";
+import {EditorService} from "../editor-service";
 
 @Component({
   selector: 'app-terrain-editor',
   templateUrl: './terrain-editor.component.html'
 })
-export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy, ThreeJsRendererServiceMouseEventListener {
+export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy {
   terrainEditorService: TerrainEditorService;
   terrainObjectConfigs: any[] = [];
   selectedTerrainObjectConfig: any;
-  selectedTerrainObjectInfo: string = '';
+  onOffOptions: any[] = [{label: 'Off', value: false}, {label: 'On', value: true}];
+  createTerrainObjectMode: boolean = false;
   @ViewChild('terrainObjectPosition')
   terrainObjectPositionComponent!: TerrainObjectPositionComponent;
-  terrainObjectPositions: Map<number, TerrainObjectPosition> = new Map<number, TerrainObjectPosition>()
+  private mouseObservable: Nullable<Observer<PointerInfo>> = null;
   private createdTerrainObjects: TerrainObjectPosition[] = [];
   private updatedTerrainObjects: TerrainObjectPosition[] = [];
+  gizmoManager: GizmoManager;
+  private selectionTransformNodeObservable: Nullable<Observer<TransformNode>> = null;
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
               private babylonModelService: BabylonModelService,
-              private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl) {
+              private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl,
+              private editorService: EditorService) {
     super();
     this.terrainEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService();
+    this.gizmoManager = new GizmoManager(threeJsRendererServiceImpl.getScene());
+    this.gizmoManager.positionGizmoEnabled = true;
+    this.gizmoManager.rotationGizmoEnabled = false;
+    this.gizmoManager.scaleGizmoEnabled = false;
+    this.gizmoManager.boundingBoxGizmoEnabled = false;
+
   }
 
   ngOnInit(): void {
-    this.threeJsRendererServiceImpl.addMouseDownHandler(this);
+    this.mouseObservable = this.threeJsRendererServiceImpl.getScene().onPointerObservable.add((pointerInfo) => {
+      if (!this.gwtAngularService.gwtAngularFacade.inputService) {
+        return;
+      }
+      switch (pointerInfo.type) {
+        case PointerEventTypes.POINTERDOWN: {
+          let pickingInfo = this.threeJsRendererServiceImpl.setupMeshPickPoint();
+          if (pickingInfo.hit) {
+            let node = ThreeJsRendererServiceImpl.findRazarionMetadataNode(pickingInfo.pickedMesh!);
+            if (!node) {
+              return;
+            }
+            let razarionMetadata = ThreeJsRendererServiceImpl.getRazarionMetadata(node)!;
+            if (razarionMetadata.type == RazarionMetadataType.TERRAIN_OBJECT) {
+              // Select existing
+              this.selectActiveTerrainObject(<TransformNode>node, false)
+            } else if (razarionMetadata.type == RazarionMetadataType.GROUND) {
+              // Create new while click on ground
+              if (!this.createTerrainObjectMode) {
+                return;
+              }
+              let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.selectedTerrainObjectConfig.objectNameId.id);
+              if (!terrainObjectConfig.getThreeJsModelPackConfigId()) {
+                throw new Error(`TerrainObjectConfig has no threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
+              }
+
+              let terrainObjectModel = new class implements TerrainObjectModel {
+                position = GwtInstance.newVertex(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
+                rotation = GwtInstance.newVertex(0, 0, 0);
+                scale = GwtInstance.newVertex(1, 1, 1);
+                terrainObjectId = -1;
+              }
+              let newTerrainObjectMesh = ThreeJsTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, null);
+              this.threeJsRendererServiceImpl.addShadowCaster(newTerrainObjectMesh);
+              this.selectActiveTerrainObject(<TransformNode>newTerrainObjectMesh, true)
+            }
+          }
+          break;
+        }
+      }
+    });
+
     this.terrainEditorService.getAllTerrainObjects().then(terrainObjects => {
       this.terrainObjectConfigs = [];
       terrainObjects.forEach(terrainObject => {
@@ -44,25 +97,19 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
       });
       this.selectedTerrainObjectConfig = this.terrainObjectConfigs[0];
     });
-    this.terrainEditorService.getTerrainObjectPositions().then(terrainObjectPositions => {
-      this.terrainObjectPositions.clear();
-      terrainObjectPositions.forEach(terrainObjectPosition => this.terrainObjectPositions.set(terrainObjectPosition.getId(), terrainObjectPosition));
-      this.messageService.add({
-        severity: 'success',
-        summary: "Terrain objects loaded"
-      })
-    }).catch(error => {
-      this.messageService.add({
-        severity: 'error',
-        summary: `Load terrain object failed`,
-        detail: error,
-        sticky: true
-      });
-    });
+  }
+
+  private clearGizmos() {
+    this.gizmoManager.attachToNode(null);
+  }
+
+  private setupGizmo(node: Node) {
+    this.clearGizmos();
+    this.gizmoManager.attachToNode(node);
   }
 
   ngOnDestroy(): void {
-    this.threeJsRendererServiceImpl.removeMouseDownHandler(this);
+    this.threeJsRendererServiceImpl.getScene().onPointerObservable.remove(this.mouseObservable);
   }
 
   onSelectedSlopeChange(event: any) {
@@ -77,62 +124,92 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
     this.terrainEditorService.save(this.createdTerrainObjects, this.updatedTerrainObjects)
       .then(okString => {
         this.createdTerrainObjects = [];
+        this.updatedTerrainObjects = [];
+        this.clearSelection();
         this.messageService.add({
           severity: 'success',
           summary: okString
         })
       })
       .catch(error => {
+        console.error(error);
         this.messageService.add({
           severity: 'error',
           summary: `Save terrain failed`,
-          detail: `${JSON.stringify(error)}`,
+          detail: error.message || `${JSON.stringify(error)}`,
           sticky: true
         });
       });
   }
 
-  onThreeJsRendererServiceMouseEvent(threeJsRendererServiceMouseEvent: ThreeJsRendererServiceMouseEvent): void {
-    if (threeJsRendererServiceMouseEvent.razarionTerrainObject3D && (<any>threeJsRendererServiceMouseEvent.razarionTerrainObject3D).razarionNewTerrainObjectPosition) {
-      // New reselected
-      let terrainObjectPosition: TerrainObjectPosition = (<any>threeJsRendererServiceMouseEvent.razarionTerrainObject3D).razarionNewTerrainObjectPosition;
-      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectConfigId());
-      this.selectedTerrainObjectInfo = `Unsaved [${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})]`
-      this.terrainObjectPositionComponent.init(threeJsRendererServiceMouseEvent.razarionTerrainObject3D!, terrainObjectPosition);
-    } else if (threeJsRendererServiceMouseEvent.razarionTerrainObject3D && threeJsRendererServiceMouseEvent.razarionTerrainObjectId) {
-      // Existing selected
-      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(threeJsRendererServiceMouseEvent.razarionTerrainObjectConfigId!);
-      this.selectedTerrainObjectInfo = `Id: ${threeJsRendererServiceMouseEvent.razarionTerrainObjectId} [${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})]`
-      let terrainObjectPosition = this.terrainObjectPositions.get(threeJsRendererServiceMouseEvent.razarionTerrainObjectId!)!;
-      this.terrainObjectPositionComponent.init(threeJsRendererServiceMouseEvent.razarionTerrainObject3D, terrainObjectPosition);
-      if (this.updatedTerrainObjects.findIndex(o => o.getId() === terrainObjectPosition.getId()) === -1) {
-        this.updatedTerrainObjects.push(terrainObjectPosition);
-      }
+  private selectActiveTerrainObject(node: TransformNode, isNew: boolean) {
+    this.setupGizmo(node);
+
+    let terrainObjectPosition: TerrainObjectPosition;
+
+    if (isNew) {
+      terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
+      terrainObjectPosition.setTerrainObjectConfigId(this.selectedTerrainObjectConfig.objectNameId.id);
+      this.updateTerrainObjectPosition(node, terrainObjectPosition);
+      let razarionMetadata = ThreeJsRendererServiceImpl.getRazarionMetadata(node);
+      razarionMetadata!.editorHintTerrainObjectPosition = terrainObjectPosition;
+      this.createdTerrainObjects.push(terrainObjectPosition);
     } else {
-      // Create new
-      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.selectedTerrainObjectConfig.objectNameId.id);
-      this.selectedTerrainObjectInfo = `Created [${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})]`
-      if (terrainObjectConfig.getThreeJsModelPackConfigId() === undefined) {
-        throw new Error(`TerrainObjectConfig has no threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
+      let razarionMetadata = ThreeJsRendererServiceImpl.getRazarionMetadata(node);
+      if (razarionMetadata!.id) {
+        let to = this.findUpdatedTerrainObjectPosition(razarionMetadata!.id);
+        if (!to) {
+          terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
+          terrainObjectPosition.setId(razarionMetadata?.id!);
+          terrainObjectPosition.setTerrainObjectConfigId(razarionMetadata?.configId!);
+          this.updatedTerrainObjects.push(terrainObjectPosition);
+        } else {
+          terrainObjectPosition = to;
+        }
+      } else {
+        terrainObjectPosition = razarionMetadata!.editorHintTerrainObjectPosition!;
       }
-      // if (threeJsRendererServiceMouseEvent.pointOnObject3D) {
-      //   let newObject3D = this.babylonModelService.cloneMesh(terrainObjectConfig.getThreeJsModelPackConfigId());
-      //   newObject3D.position.x = threeJsRendererServiceMouseEvent.pointOnObject3D.x;
-      //   newObject3D.position.y = threeJsRendererServiceMouseEvent.pointOnObject3D.y;
-      //   newObject3D.position.z = threeJsRendererServiceMouseEvent.pointOnObject3D.z;
-      //   (<any>newObject3D).razarionTerrainObjectConfigId = this.selectedTerrainObjectConfig.objectNameId.id;
-      //   // this.threeJsRendererServiceImpl.scene.add(newObject3D);
-      //   let terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
-      //   terrainObjectPosition.setTerrainObjectConfigId(this.selectedTerrainObjectConfig.objectNameId.id);
-      //   terrainObjectPosition.setPosition(GwtInstance.newDecimalPosition(threeJsRendererServiceMouseEvent.pointOnObject3D.x, threeJsRendererServiceMouseEvent.pointOnObject3D.y));
-      //   terrainObjectPosition.setRotation(GwtInstance.newVertex(0, 0, 0));
-      //   terrainObjectPosition.setScale(GwtInstance.newVertex(1, 1, 1));
-      //   terrainObjectPosition.setOffset(GwtInstance.newVertex(0, 0, 0));
-      //   (<any>newObject3D).razarionNewTerrainObjectPosition = terrainObjectPosition;
-      //   this.createdTerrainObjects.push(terrainObjectPosition);
-      //   this.terrainObjectPositionComponent.init(newObject3D, terrainObjectPosition);
-      // }
+      this.updateTerrainObjectPosition(node, terrainObjectPosition);
     }
+
+    if (this.terrainObjectPositionComponent.getTransformNode() !== node) {
+      if (this.selectionTransformNodeObservable) {
+        this.terrainObjectPositionComponent.getTransformNode()!.onAfterWorldMatrixUpdateObservable.remove(this.selectionTransformNodeObservable!);
+      }
+      this.selectionTransformNodeObservable = node.onAfterWorldMatrixUpdateObservable.add(() => {
+        this.updateTerrainObjectPosition(node, terrainObjectPosition);
+      });
+    }
+
+    this.terrainObjectPositionComponent.setSelected(node, terrainObjectPosition);
   }
 
+  private findUpdatedTerrainObjectPosition(id: number): TerrainObjectPosition | undefined {
+    return this.updatedTerrainObjects.find((o) => {
+      return o.getId() === id
+    });
+  }
+
+  private updateTerrainObjectPosition(node: TransformNode, terrainObjectPosition: TerrainObjectPosition) {
+    terrainObjectPosition.setPosition(GwtInstance.newDecimalPosition(node.position.x, node.position.z))
+    terrainObjectPosition.setRotation(GwtInstance.newVertex(node.rotation.x, node.rotation.z, node.rotation.z))
+    terrainObjectPosition.setScale(GwtInstance.newVertex(node.scaling.x, node.scaling.z, node.scaling.z))
+  }
+
+  public clearSelection() {
+    this.clearGizmos();
+    if (this.selectionTransformNodeObservable && this.terrainObjectPositionComponent.getTransformNode()) {
+      this.terrainObjectPositionComponent.getTransformNode()!.onAfterWorldMatrixUpdateObservable.remove(this.selectionTransformNodeObservable!);
+      this.selectionTransformNodeObservable = null;
+    }
+    this.terrainObjectPositionComponent.clearSelection();
+  }
+
+  restartPlanetWarm() {
+    this.editorService.executeServerCommand(EditorService.RESTART_PLANET_WARM);
+  }
+
+  restartPlanetCold() {
+    this.editorService.executeServerCommand(EditorService.RESTART_PLANET_COLD);
+  }
 }

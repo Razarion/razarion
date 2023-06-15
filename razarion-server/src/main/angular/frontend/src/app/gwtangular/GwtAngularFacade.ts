@@ -584,6 +584,8 @@ export interface TerrainEditorService {
 export interface TerrainObjectPosition {
   getId(): number;
 
+  setId(id: number): void;
+
   getTerrainObjectConfigId(): number;
 
   setTerrainObjectConfigId(terrainObjectConfigId: number): void;

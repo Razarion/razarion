@@ -82,12 +82,12 @@ export class GameComponent implements OnInit {
             //   }
             // }, 2);
 
-            let babylonBaseItem = this.threeJsRendererService.createSyncBaseItem(999999, null, 23076, "Vehicle 11", Diplomacy.ENEMY, 2);
-            babylonBaseItem.setPosition(GwtInstance.newVertex(8, 8, 0));
-            babylonBaseItem.setAngle(0);
-
-            babylonBaseItem.updatePosition();
-            babylonBaseItem.updateAngle();
+            // let babylonBaseItem = this.threeJsRendererService.createSyncBaseItem(999999, null, 23076, "Vehicle 11", Diplomacy.ENEMY, 2);
+            // babylonBaseItem.setPosition(GwtInstance.newVertex(8, 8, 0));
+            // babylonBaseItem.setAngle(0);
+            //
+            // babylonBaseItem.updatePosition();
+            // babylonBaseItem.updateAngle();
 
             // const pbr = new PBRMetallicRoughnessMaterial("pbr", this.threeJsRendererService.getScene());
             // pbr.baseColor = new Color3(1.0, 0.766, 0.336);

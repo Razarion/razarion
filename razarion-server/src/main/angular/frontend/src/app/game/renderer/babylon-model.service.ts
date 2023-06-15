@@ -13,7 +13,7 @@ import {
   Node,
   NodeMaterial,
   Scene,
-  SceneLoader
+  SceneLoader, TransformNode
 } from "@babylonjs/core";
 import {GLTFFileLoader} from "@babylonjs/loaders";
 import JSZip from "jszip";
@@ -78,7 +78,7 @@ export class BabylonModelService {
     });
   }
 
-  cloneMesh(threeJsModelPackConfigId: number, parent: Node | null): Node {
+  cloneMesh(threeJsModelPackConfigId: number, parent: Node | null): TransformNode {
     const threeJsModelPackConf = this.gwtAngularService.gwtAngularFacade.threeJsModelPackService.getThreeJsModelPackConfig(threeJsModelPackConfigId);
 
     const assetContainer: AssetContainer = this.getAssetContainer(threeJsModelPackConf.getThreeJsModelId());

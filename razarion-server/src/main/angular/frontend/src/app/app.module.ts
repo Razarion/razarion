@@ -66,10 +66,12 @@ import {ToolbarModule} from "primeng/toolbar";
 import {SplitterModule} from "primeng/splitter";
 import {ThreeJsWaterRenderService} from "./game/renderer/three-js-water-render.service";
 import {InputTextareaModule} from "primeng/inputtextarea";
-import {AngleVertexEditorComponent} from "./editor/terrain-editor/angle-vertex-editor.component";
-import {VertexEditorComponent} from "./editor/terrain-editor/vertex-editor.component";
+import {AngleVector3EditorComponent} from "./editor/terrain-editor/angle-vector3-editor.component";
+import {Vector3EditorComponent} from "./editor/terrain-editor/vector3-editor.component";
 import {TerrainObjectPositionComponent} from "./editor/terrain-editor/terrain-object-position.component";
 import {ChipsModule} from "primeng/chips";
+import {DividerModule} from "primeng/divider";
+import {SelectButtonModule} from "primeng/selectbutton";
 
 @NgModule({
   declarations: [
@@ -99,8 +101,8 @@ import {ChipsModule} from "primeng/chips";
     ImageEditorComponent,
     ImageGalleryItemComponent,
     CollectionSelectorComponent,
-    AngleVertexEditorComponent,
-    VertexEditorComponent,
+    AngleVector3EditorComponent,
+    Vector3EditorComponent,
     TerrainObjectPositionComponent
   ],
   imports: [
@@ -137,7 +139,9 @@ import {ChipsModule} from "primeng/chips";
     ToolbarModule,
     SplitterModule,
     InputTextareaModule,
-    ChipsModule
+    ChipsModule,
+    DividerModule,
+    SelectButtonModule
   ],
   providers: [
     FrontendService, {

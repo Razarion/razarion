@@ -1,15 +1,18 @@
 import {
   SlopeConfig,
   SlopeGeometry,
+  TerrainObjectConfig,
+  TerrainObjectModel,
   TerrainTile,
   ThreeJsTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import {Mesh, NodeMaterial, TransformNode} from "@babylonjs/core";
-import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
+import {Mesh, Node, NodeMaterial, TransformNode} from "@babylonjs/core";
+import {RazarionMetadataType, ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 import {BabylonJsUtils} from "./babylon-js.utils";
+import {Nullable} from "@babylonjs/core/types";
 
 export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   private readonly container: TransformNode;
@@ -27,6 +30,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
           const vertexData = BabylonJsUtils.createVertexData(groundTerrainTile.positions, groundTerrainTile.norms);
           const ground = new Mesh("Ground", null);
           vertexData.applyToMesh(ground)
+          ThreeJsRendererServiceImpl.setRazarionMetadataSimple(ground, RazarionMetadataType.GROUND);
 
           let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
           if (groundConfig.getTopThreeJsMaterial()) {
@@ -70,29 +74,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
           }
           terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
             try {
-              const terrainObjectModelTransform = new TransformNode(`TerrainObjectModel (${terrainObjectModel.terrainObjectId})`);
-              terrainObjectModelTransform.parent = this.container;
-              this.container.getChildren().push(terrainObjectModelTransform);
-              terrainObjectModelTransform.position.set(
-                terrainObjectModel.position.getX(),
-                terrainObjectModel.position.getZ(),
-                terrainObjectModel.position.getY());
-              if (terrainObjectModel.scale) {
-                terrainObjectModelTransform.scaling.set(
-                  terrainObjectModel.scale.getX(),
-                  terrainObjectModel.scale.getZ(),
-                  terrainObjectModel.scale.getY());
-              }
-              if (terrainObjectModel.rotation) {
-                terrainObjectModelTransform.rotationQuaternion = null;
-                terrainObjectModelTransform.rotation.set(
-                  terrainObjectModel.rotation.getX(),
-                  terrainObjectModel.rotation.getZ(),
-                  terrainObjectModel.rotation.getY());
-              }
-              let terrainObjectMesh: Mesh = <Mesh>threeJsModelService.cloneMesh(terrainObjectConfig.getThreeJsModelPackConfigId(), terrainObjectModelTransform);
-              terrainObjectMesh.name = `TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`;
-              terrainObjectMesh.parent = terrainObjectModelTransform;
+              ThreeJsTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, threeJsModelService, this.container);
             } catch (error) {
               console.error(error);
             }
@@ -103,6 +85,35 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
         }
       });
     }
+  }
+
+  public static createTerrainObject(terrainObjectModel: TerrainObjectModel, terrainObjectConfig: TerrainObjectConfig, babylonModelService: BabylonModelService, parent: Nullable<Node>): TransformNode {
+    const terrainObjectModelTransform = new TransformNode(`TerrainObject (${terrainObjectModel.terrainObjectId})`);
+    ThreeJsRendererServiceImpl.setRazarionMetadataSimple(terrainObjectModelTransform, RazarionMetadataType.TERRAIN_OBJECT, terrainObjectModel.terrainObjectId, terrainObjectConfig.getId());
+    terrainObjectModelTransform.setParent(parent);
+    parent?.getChildren().push(terrainObjectModelTransform);
+    terrainObjectModelTransform.position.set(
+      terrainObjectModel.position.getX(),
+      terrainObjectModel.position.getZ(),
+      terrainObjectModel.position.getY());
+    if (terrainObjectModel.scale) {
+      terrainObjectModelTransform.scaling.set(
+        terrainObjectModel.scale.getX(),
+        terrainObjectModel.scale.getZ(),
+        terrainObjectModel.scale.getY());
+    }
+    if (terrainObjectModel.rotation) {
+      terrainObjectModelTransform.rotationQuaternion = null;
+      terrainObjectModelTransform.rotation.set(
+        terrainObjectModel.rotation.getX(),
+        terrainObjectModel.rotation.getZ(),
+        terrainObjectModel.rotation.getY());
+    }
+    let terrainObjectMesh: Mesh = <Mesh>babylonModelService.cloneMesh(terrainObjectConfig.getThreeJsModelPackConfigId(), terrainObjectModelTransform);
+    terrainObjectMesh.name = `TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`;
+    terrainObjectMesh.parent = terrainObjectModelTransform;
+
+    return terrainObjectModelTransform;
   }
 
   addToScene(): void {
