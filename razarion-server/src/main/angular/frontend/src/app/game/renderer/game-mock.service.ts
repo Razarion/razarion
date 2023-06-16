@@ -673,7 +673,7 @@ export class GameMockService {
   private createMeshContainer(meshContainerJson: any): MeshContainer {
     const _this = this;
     return new class implements MeshContainer {
-      getChildrenArray(): MeshContainer[] | null {
+      toChildrenArray(): MeshContainer[] | null {
         if (meshContainerJson.children) {
           let meshContainers: MeshContainer[] = [];
           for (let childMeshContainerJson of meshContainerJson.children) {
@@ -700,7 +700,7 @@ export class GameMockService {
               return meshContainerJson.mesh.element3DId;
             }
 
-            getShapeTransformsArray(): ShapeTransform[] | null {
+            toShapeTransformsArray(): ShapeTransform[] | null {
               if (meshContainerJson.mesh.shapeTransforms) {
                 let shapeTransforms: ShapeTransform[] = [];
                 for (let shapeTransformJson of meshContainerJson.mesh.shapeTransforms) {

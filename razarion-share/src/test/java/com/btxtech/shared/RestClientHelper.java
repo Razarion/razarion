@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class RestClientHelper {
     // public static final String HOST_PORT = "192.168.99.100:32778/test";
     // public static final String HOST_PORT = "www.razarion.com";
-    public static final String HOST_PORT = "localhost:32778";
+    public static final String HOST_PORT = "localhost:8080";
     public static final String HTTP_LOCALHOST_8080 = "http://" + HOST_PORT;
     public static final String REST = HTTP_LOCALHOST_8080 + "/rest/";
     private static final String PLANET_EDITOR_READ_SLOPS = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.PLANET_EDITOR_SERVICE_PATH + "/readTerrainSlopePositions";
@@ -73,15 +73,16 @@ public class RestClientHelper {
         System.out.println("List<DrivewayConfig> drivewayConfigs = Arrays.asList(");
         System.out.println(coldGameUiContext.getStaticGameConfig().getDrivewayConfigs().stream().map(driveway -> "    new DrivewayConfig().id(" + driveway.getId() + ").angle(" + driveway.getAngle() + ")").collect(Collectors.joining(",\n")) + ");");
         System.out.println("// ---------------------------Slope corners---------------------------");
-        printTerrainSlopePosition(terrainSlopePosition, null);
-        System.out.println("setupTerrainTypeService(slopeConfigs, drivewayConfigs, null, null, null, terrainSlopePositions, null, null);");
+        printTerrainSlopePosition(terrainSlopePosition, terrainSlopePosition.getId());
+        System.out.println("setupTerrainTypeService(slopeConfigs, drivewayConfigs, null, null, null, terrainSlopePositions, null, null, null, null);");
         System.out.println("showDisplay();");
+        System.out.println("// --------------------------------End--------------------------------");
     }
 
     private static void printTerrainSlopePosition(TerrainSlopePosition terrainSlopePosition, Integer childNr) {
         if (terrainSlopePosition.getChildren() != null) {
             terrainSlopePosition.getChildren().forEach(child -> {
-                printTerrainSlopePosition(child, 1);
+                printTerrainSlopePosition(child, childNr);
             });
         }
         System.out.println("List<TerrainSlopePosition> " + (childNr != null ? "childTerrainSlopePositions" + childNr : "terrainSlopePositions") + " = Collections.singletonList(new TerrainSlopePosition()");

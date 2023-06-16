@@ -53,7 +53,7 @@ public class MeshContainer implements Config {
     }
 
     @SuppressWarnings("unused")
-    public MeshContainer[] getChildrenArray() {
+    public MeshContainer[] toChildrenArray() {
         if (children == null) {
             return null;
         } else {

@@ -628,10 +628,10 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         meshContainer.getMesh()!.getElement3DId(),
         parent,
         diplomacy,
-        meshContainer.getMesh()!.getShapeTransformsArray());
+        meshContainer.getMesh()!.toShapeTransformsArray());
     }
-    if (meshContainer.getChildrenArray()) {
-      meshContainer!.getChildrenArray()?.forEach(childMeshContainer => {
+    if (meshContainer.toChildrenArray()) {
+      meshContainer!.toChildrenArray()?.forEach(childMeshContainer => {
         this.recursivelyFillMeshes(childMeshContainer, parent, diplomacy);
       })
     }

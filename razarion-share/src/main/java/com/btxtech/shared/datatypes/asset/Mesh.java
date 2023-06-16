@@ -35,7 +35,8 @@ public class Mesh {
         return shapeTransforms;
     }
 
-    public ShapeTransform[] getShapeTransformsArray() {
+    @SuppressWarnings("unused")
+    public ShapeTransform[] toShapeTransformsArray() {
         if(shapeTransforms == null) {
             return null;
         }

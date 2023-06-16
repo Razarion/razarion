@@ -237,7 +237,7 @@ export interface MeshContainer {
 
   getInternalName(): string;
 
-  getChildrenArray(): MeshContainer[] | null;
+  toChildrenArray(): MeshContainer[] | null;
 
   getMesh(): Mesh | null;
 }
@@ -247,7 +247,7 @@ export interface Mesh {
 
   getElement3DId(): string;
 
-  getShapeTransformsArray(): ShapeTransform[] | null;
+  toShapeTransformsArray(): ShapeTransform[] | null;
 }
 
 export interface ShapeTransform {
