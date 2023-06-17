@@ -160,7 +160,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 //                new TerrainObjectPosition().id(8).terrainObjectConfigId(2).position(new DecimalPosition(200, 160)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0))
         );
 
-        setupTerrainTypeService(slopeConfigs, null, waterConfigs, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, groundConfig, threeJsModelConfigs, threeJsModelPackConfigs);
+        setupTerrainTypeService(null, slopeConfigs, null, waterConfigs, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, groundConfig, threeJsModelConfigs, threeJsModelPackConfigs);
 
         // showDisplay();
 

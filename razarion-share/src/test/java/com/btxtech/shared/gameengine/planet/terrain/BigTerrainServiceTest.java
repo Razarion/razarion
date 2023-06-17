@@ -64,7 +64,7 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(5000, 5000));
 
-        setupTerrainTypeService(slopeConfigs, null, waterConfigs, null, planetConfig, terrainSlopePositions, null, null, null, null);
+        setupTerrainTypeService(null, slopeConfigs, null, waterConfigs, null, planetConfig, terrainSlopePositions, null, null, null, null);
     }
 
 

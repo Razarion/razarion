@@ -99,7 +99,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
                 new TerrainObjectPosition().terrainObjectConfigId(3).scale(new Vertex(0.5, 0.5, 0.5)).position(new DecimalPosition(450, 75))
         );
 
-        setupTerrainTypeService(slopeConfigs, null, null, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions, null, null, null);
+        setupTerrainTypeService(null, slopeConfigs, null, null, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions, null, null, null);
     }
 
     protected void testScenario(Scenario scenario) {

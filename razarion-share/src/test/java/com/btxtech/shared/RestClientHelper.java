@@ -34,7 +34,21 @@ public class RestClientHelper {
     private static final String GAME_UI_CONTROL_INPUT = "{\"playbackGameSessionUuid\": null, \"playbackSessionUuid\": null}";
     private static final String FB_USER_ID_TEST = "100003634094139";
 
+    public static TerrainEditorLoad readTerrainEditorLoad(int planetId)  {
+        Client client = ClientBuilder.newClient();
+        return client.target(PLANET_EDITOR_READ_SLOPS + "/" + planetId).request(MediaType.APPLICATION_JSON).get(TerrainEditorLoad.class);
+    }
+    public static ColdGameUiContext readColdGameUiContext(int planetId)  {
+        try {
+            Client client = ClientBuilder.newClient();
+            String string = client.target(URL_GAME_UI_CONTROL).request(MediaType.APPLICATION_JSON).post(Entity.entity(GAME_UI_CONTROL_INPUT, MediaType.APPLICATION_JSON_TYPE), String.class);
+            return new ObjectMapper().readValue(string, ColdGameUiContext.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    @Deprecated
     public static void dumpSlope(int planetId, DecimalPosition containingPosition) throws IOException {
         Client client = ClientBuilder.newClient();
         // Get slope corners

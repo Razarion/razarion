@@ -1,9 +1,12 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.RestClientHelper;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.SlopeShape;
+import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -18,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.btxtech.shared.RestClientHelper.*;
+
 /**
  * Created by Beat
  * on 14.11.2017.
@@ -25,11 +30,25 @@ import java.util.stream.Collectors;
 @Ignore
 public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
 
+    @Test
+    public void readFromServer() {
+        System.out.println("Start Read ColdGameUiContext");
+        ColdGameUiContext coldGameUiContext = readColdGameUiContext(117);
+        System.out.println("Loaded ColdGameUiContext");
+        System.out.println("Start Read TerrainEditorLoad");
+        TerrainEditorLoad terrainEditorLoad = RestClientHelper.readTerrainEditorLoad(117);
+        System.out.println("Loaded TerrainEditorLoad");
+
+        setupTerrainTypeService(coldGameUiContext.getStaticGameConfig(), null, null, null, null, coldGameUiContext.getWarmGameUiContext().getPlanetConfig(), terrainEditorLoad.getSlopes(), terrainEditorLoad.getTerrainObjects(), null, null, null);
+  showDisplay();
+    }
+
+
     private void setup(List<SlopeConfig> slopeConfigs, List<TerrainSlopePosition> terrainSlopePositions) {
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(5120, 512));
 
-        setupTerrainTypeService(slopeConfigs, null, null, null, planetConfig, terrainSlopePositions, null, null, null, null);
+        setupTerrainTypeService(null, slopeConfigs, null, null, null, planetConfig, terrainSlopePositions, null, null, null, null);
 
     }
 
@@ -84,7 +103,7 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
                         GameTestHelper.createTerrainSlopeCorner(248.01029680117085, 372.0660880233647, 31),
                         GameTestHelper.createTerrainSlopeCorner(254.9955059204925, 365.0808789040431, 31),
                         GameTestHelper.createTerrainSlopeCorner(255.0424455596303, 365.1278185431809, 31))));
-        setupTerrainTypeService(slopeConfigs, drivewayConfigs, null, null, null, terrainSlopePositions, null, null, null, null);
+        setupTerrainTypeService(null, slopeConfigs, drivewayConfigs, null, null, null, terrainSlopePositions, null, null, null, null);
         showDisplay();
     }
 

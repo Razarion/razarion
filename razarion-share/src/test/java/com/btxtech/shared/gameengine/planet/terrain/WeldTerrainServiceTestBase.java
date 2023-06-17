@@ -32,7 +32,8 @@ import java.util.stream.Collectors;
 public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     public static int DRIVEWAY_ID_1 = 1;
 
-    protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs,
+    protected void setupTerrainTypeService(StaticGameConfig staticGameConfig,
+                                           List<SlopeConfig> slopeConfigs,
                                            List<DrivewayConfig> drivewayConfigs,
                                            List<WaterConfig> waterConfigs,
                                            List<TerrainObjectConfig> terrainObjectConfigs,
@@ -42,22 +43,24 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
                                            List<GroundConfig> groundConfigs,
                                            List<ThreeJsModelConfig> threeJsModelConfigs,
                                            List<ThreeJsModelPackConfig> threeJsModelPackConfigs) {
-        StaticGameConfig staticGameConfig = FallbackConfig.setupStaticGameConfig();
-        if (groundConfigs == null) {
-            groundConfigs = Collections.singletonList(staticGameConfig.getGroundConfigs().get(0));
+        if (staticGameConfig == null) {
+            staticGameConfig = FallbackConfig.setupStaticGameConfig();
         }
-        staticGameConfig.setGroundConfigs(groundConfigs);
-        staticGameConfig.setSlopeConfigs(slopeConfigs);
+        if (groundConfigs != null) {
+            staticGameConfig.setGroundConfigs(groundConfigs);
+        }
+        if (slopeConfigs != null) {
+            staticGameConfig.setSlopeConfigs(slopeConfigs);
+        }
         if (waterConfigs != null) {
             staticGameConfig.setWaterConfigs(waterConfigs);
-        } else {
-            staticGameConfig.setWaterConfigs(FallbackConfig.setupWaterConfigs());
         }
-        staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
-        if (drivewayConfigs == null) {
-            drivewayConfigs = Collections.singletonList(new DrivewayConfig().id(DRIVEWAY_ID_1).angle(Math.toRadians(20)));
+        if (terrainObjectConfigs != null) {
+            staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
         }
-        staticGameConfig.setDrivewayConfigs(drivewayConfigs);
+        if (drivewayConfigs != null) {
+            staticGameConfig.setDrivewayConfigs(drivewayConfigs);
+        }
         if (planetConfig == null) {
             planetConfig = FallbackConfig.setupPlanetConfig();
         }
