@@ -40,6 +40,7 @@ public class CommonUrl {
     public static final String WARM = "warm";
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";
     public static final String TERRAIN_OBJECT_EDITOR_PATH = "editor/terrain-object";
+    public static final String UPDATE_RADIUS = "update-radius";
     public static final String GROUND_EDITOR_PATH = "editor/ground";
     public static final String THREE_JS_MODEL_EDITOR_PATH = "editor/three-js-model";
     public static final String SLOPE_EDITOR_PATH = "editor/slope";

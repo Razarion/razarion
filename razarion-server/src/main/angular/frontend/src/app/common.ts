@@ -10,6 +10,7 @@ export const URL_MODEL = APPLICATION_PATH + '/model';
 export const URL_THREE_JS_MODEL = GZ_PATH + '/three-js-model';
 export const URL_THREE_JS_MODEL_EDITOR = EDITOR_PATH + '/three-js-model';
 export const URL_THREE_JS_MODEL_PACK_EDITOR = EDITOR_PATH + '/three-js-model-pack-editor';
+export const UPDATE_RADIUS_REST_CALL = EDITOR_PATH + '/terrain-object/update-radius';
 
 export interface FrontendLoginState {
   loggedIn: boolean;

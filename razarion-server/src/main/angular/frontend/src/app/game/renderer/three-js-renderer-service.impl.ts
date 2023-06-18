@@ -42,15 +42,6 @@ import {SimpleMaterial} from "@babylonjs/materials";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 
-export class ThreeJsRendererServiceMouseEvent {
-  object3D: any = null;
-  pointOnObject3D: Vector3 | null = null;
-  razarionTerrainObject3D: any = null;
-  razarionTerrainObjectId: number | null = null;
-  razarionTerrainObjectConfigId: number | null = null;
-
-}
-
 export interface RazarionMetadata {
   type: RazarionMetadataType;
   id: number | undefined;
@@ -62,11 +53,6 @@ export enum RazarionMetadataType {
   GROUND,
   TERRAIN_OBJECT
 }
-
-export interface ThreeJsRendererServiceMouseEventListener {
-  onThreeJsRendererServiceMouseEvent(threeJsRendererServiceMouseEvent: ThreeJsRendererServiceMouseEvent): void;
-}
-
 @Injectable()
 export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
   private scene!: Scene;
@@ -190,7 +176,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       const correctedDiplomacy = GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy);
       const threeJsRendererServiceImpl = this;
       return new class implements BabylonBaseItem {
-        private container: TransformNode;
+        private readonly container: TransformNode;
         private markerDisc: Mesh | null = null;
         private selectActive: boolean = false;
         private hoverActive: boolean = false;
@@ -755,14 +741,14 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     return node.metadata?.razarionMetadata;
   }
 
-  public static findRazarionMetadataNode(node: Node): Node | undefined {
+  public static findRazarionMetadataNode(node: Node): Node | null {
     if (node.metadata && node.metadata.razarionMetadata) {
       return node;
     }
     if (node.parent) {
       return ThreeJsRendererServiceImpl.findRazarionMetadataNode(node.parent);
     } else {
-      return;
+      return null;
     }
   }
 

@@ -38,10 +38,10 @@ INSERT INTO `SLOPE_SHAPE` (`id`, `x`, `y`, `slopeFactor`, `shape_id`, `orderColu
 	(723, 10, -0.8, 0, 22, 5),
 	(724, 12, -1, 0, 22, 6),
 	(725, 14, -1.2, 0, 22, 7),
-	(769, NULL, NULL, 1, 1, 0),
-	(770, 0, 0.5, 1, 1, 1),
-	(771, 0.2, 0.5, 1, 1, 2),
-	(772, 0.2, 0.2, 1, 1, 3);
+	(777, NULL, NULL, 1, 1, 0),
+	(778, 0, 0.5, 1, 1, 1),
+	(779, 0.2, 0.5, 1, 1, 2),
+	(780, 3, 0.2, 1, 1, 3);
 /*!40000 ALTER TABLE `SLOPE_SHAPE` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

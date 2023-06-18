@@ -1,33 +1,48 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {EditorPanel} from "../editor-model";
-import {TerrainEditorService, TerrainObjectModel, TerrainObjectPosition} from "../../gwtangular/GwtAngularFacade";
+import {
+  TerrainEditorService,
+  TerrainObjectConfig,
+  TerrainObjectModel,
+  TerrainObjectPosition
+} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {MessageService} from "primeng/api";
 import {RazarionMetadataType, ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-service.impl";
 import {BabylonModelService} from "../../game/renderer/babylon-model.service";
 import {TerrainObjectPositionComponent} from "./terrain-object-position.component";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
-import {GizmoManager, Node, PointerEventTypes, TransformNode} from "@babylonjs/core";
+import {GizmoManager, Mesh, MeshBuilder, Node, PointerEventTypes, Tools, TransformNode} from "@babylonjs/core";
 import {ThreeJsTerrainTileImpl} from "../../game/renderer/three-js-terrain-tile.impl";
 import {Observer} from "@babylonjs/core/Misc/observable";
 import {PointerInfo} from "@babylonjs/core/Events/pointerEvents";
 import {Nullable} from "@babylonjs/core/types";
 import {EditorService} from "../editor-service";
+import {SimpleMaterial} from "@babylonjs/materials";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {SERVER_GAME_ENGINE_PATH, UPDATE_RADIUS_REST_CALL} from "../../common";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-terrain-editor',
   templateUrl: './terrain-editor.component.html'
 })
 export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy {
+  private readonly discRadiusMaterial: SimpleMaterial;
   terrainEditorService: TerrainEditorService;
   terrainObjectConfigs: any[] = [];
-  selectedTerrainObjectConfig: any;
+  newTerrainObjectConfig: any;
   onOffOptions: any[] = [{label: 'Off', value: false}, {label: 'On', value: true}];
-  createTerrainObjectMode: boolean = false;
+  newTerrainObjectMode: boolean = false;
+  selectedNode: TransformNode | null = null;
+  selectedTerrainObject: TerrainObjectConfig | null = null;
+  selectedRadius: number = 0;
+  selectedRadiusShow: boolean = false;
+  selectedRadiusDisc: Mesh | null = null;
   @ViewChild('terrainObjectPosition')
   terrainObjectPositionComponent!: TerrainObjectPositionComponent;
   private mouseObservable: Nullable<Observer<PointerInfo>> = null;
-  private createdTerrainObjects: TerrainObjectPosition[] = [];
+  private newTerrainObjects: TerrainObjectPosition[] = [];
   private updatedTerrainObjects: TerrainObjectPosition[] = [];
   gizmoManager: GizmoManager;
   private selectionTransformNodeObservable: Nullable<Observer<TransformNode>> = null;
@@ -36,7 +51,8 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
               private messageService: MessageService,
               private babylonModelService: BabylonModelService,
               private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl,
-              private editorService: EditorService) {
+              private editorService: EditorService,
+              private httpClient: HttpClient) {
     super();
     this.terrainEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService();
     this.gizmoManager = new GizmoManager(threeJsRendererServiceImpl.getScene());
@@ -44,7 +60,9 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
     this.gizmoManager.rotationGizmoEnabled = false;
     this.gizmoManager.scaleGizmoEnabled = false;
     this.gizmoManager.boundingBoxGizmoEnabled = false;
-
+    this.discRadiusMaterial = new SimpleMaterial(`Radius`, threeJsRendererServiceImpl.getScene());
+    this.discRadiusMaterial.diffuseColor = Color3.Yellow();
+    this.discRadiusMaterial.backFaceCulling = false;
   }
 
   ngOnInit(): void {
@@ -54,6 +72,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
       }
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
+          this.selectedNode = null;
           let pickingInfo = this.threeJsRendererServiceImpl.setupMeshPickPoint();
           if (pickingInfo.hit) {
             let node = ThreeJsRendererServiceImpl.findRazarionMetadataNode(pickingInfo.pickedMesh!);
@@ -66,10 +85,10 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
               this.selectActiveTerrainObject(<TransformNode>node, false)
             } else if (razarionMetadata.type == RazarionMetadataType.GROUND) {
               // Create new while click on ground
-              if (!this.createTerrainObjectMode) {
+              if (!this.newTerrainObjectMode) {
                 return;
               }
-              let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.selectedTerrainObjectConfig.objectNameId.id);
+              let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.newTerrainObjectConfig.objectNameId.id);
               if (!terrainObjectConfig.getThreeJsModelPackConfigId()) {
                 throw new Error(`TerrainObjectConfig has no threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
               }
@@ -95,7 +114,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
       terrainObjects.forEach(terrainObject => {
         this.terrainObjectConfigs.push({name: terrainObject.toString(), objectNameId: terrainObject})
       });
-      this.selectedTerrainObjectConfig = this.terrainObjectConfigs[0];
+      this.newTerrainObjectConfig = this.terrainObjectConfigs[0];
     });
   }
 
@@ -121,9 +140,9 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   }
 
   save() {
-    this.terrainEditorService.save(this.createdTerrainObjects, this.updatedTerrainObjects)
+    this.terrainEditorService.save(this.newTerrainObjects, this.updatedTerrainObjects)
       .then(okString => {
-        this.createdTerrainObjects = [];
+        this.newTerrainObjects = [];
         this.updatedTerrainObjects = [];
         this.clearSelection();
         this.messageService.add({
@@ -145,15 +164,19 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
   private selectActiveTerrainObject(node: TransformNode, isNew: boolean) {
     this.setupGizmo(node);
 
+    this.selectedNode = node;
     let terrainObjectPosition: TerrainObjectPosition;
 
     if (isNew) {
       terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
-      terrainObjectPosition.setTerrainObjectConfigId(this.selectedTerrainObjectConfig.objectNameId.id);
+      terrainObjectPosition.setTerrainObjectConfigId(this.newTerrainObjectConfig.objectNameId.id);
       this.updateTerrainObjectPosition(node, terrainObjectPosition);
       let razarionMetadata = ThreeJsRendererServiceImpl.getRazarionMetadata(node);
       razarionMetadata!.editorHintTerrainObjectPosition = terrainObjectPosition;
-      this.createdTerrainObjects.push(terrainObjectPosition);
+      this.newTerrainObjects.push(terrainObjectPosition);
+      this.selectedTerrainObject = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.newTerrainObjectConfig.objectNameId.id);
+      this.selectedRadius = this.selectedTerrainObject.getRadius();
+      this.showHideRadius();
     } else {
       let razarionMetadata = ThreeJsRendererServiceImpl.getRazarionMetadata(node);
       if (razarionMetadata!.id) {
@@ -170,6 +193,10 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
         terrainObjectPosition = razarionMetadata!.editorHintTerrainObjectPosition!;
       }
       this.updateTerrainObjectPosition(node, terrainObjectPosition);
+      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(razarionMetadata!.configId!);
+      this.selectedTerrainObject = terrainObjectConfig;
+      this.selectedRadius = this.selectedTerrainObject.getRadius();
+      this.showHideRadius();
     }
 
     if (this.terrainObjectPositionComponent.getTransformNode() !== node) {
@@ -203,6 +230,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
       this.selectionTransformNodeObservable = null;
     }
     this.terrainObjectPositionComponent.clearSelection();
+    this.showHideRadius();
   }
 
   restartPlanetWarm() {
@@ -211,5 +239,55 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
 
   restartPlanetCold() {
     this.editorService.executeServerCommand(EditorService.RESTART_PLANET_COLD);
+  }
+
+  showHideRadius(): void {
+    if (this.selectedRadiusDisc) {
+      this.selectedRadiusDisc.dispose();
+    }
+    if (this.selectedRadiusShow && this.selectedTerrainObject) {
+      this.selectedRadiusDisc = MeshBuilder.CreateDisc("Radius Disc", {radius: 1});
+      this.selectedRadiusDisc.material = this.discRadiusMaterial;
+      this.selectedRadiusDisc.position.y = 0.01;
+      this.selectedRadiusDisc.rotation.x = Tools.ToRadians(90);
+      this.selectedRadiusDisc.scaling.x = this.selectedRadius;
+      this.selectedRadiusDisc.scaling.y = this.selectedRadius;
+      this.selectedRadiusDisc.parent = this.selectedNode;
+    }
+  }
+
+  onSelectedRadiusChange(value: number) {
+    if (this.selectedRadiusDisc) {
+      this.selectedRadiusDisc.scaling.x = value;
+      this.selectedRadiusDisc.scaling.y = value;
+    }
+  }
+
+  saveRadius() {
+    if (!this.selectedTerrainObject) {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Nothing Selected`,
+        sticky: true
+      });
+      return;
+    }
+    const url = `${UPDATE_RADIUS_REST_CALL}/${this.selectedTerrainObject.getId()}/${this.selectedRadius}`
+    this.httpClient.post(url, null).subscribe({
+      next: value => {
+        this.messageService.add({
+          severity: 'success',
+          summary: `Radius updated ${this.selectedTerrainObject?.getInternalName()}`
+        });
+      },
+    error: error => {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Error calling: ${url}`,
+        detail: error,
+        sticky: true
+      });
+    }});
+
   }
 }

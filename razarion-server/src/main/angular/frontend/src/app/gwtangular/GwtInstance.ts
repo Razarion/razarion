@@ -54,6 +54,9 @@ export class GwtInstance {
           return this.id;
         }
 
+        setId(id: number): void {
+        }
+
         getOffset(): Vertex {
           return this.offset;
         }

@@ -70,6 +70,9 @@ public class TerrainShapeManagerSetup {
             tileObjects.put(objectPosition.getTerrainObjectConfigId(), objectPosition);
             // Game engine
             TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectConfigId());
+            if(terrainObjectConfig.getRadius() >= 0.0) {
+                continue;
+            }
             Circle2D terrainObjectCircle = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius() * calculateScale(objectPosition.getScale()));
             ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(terrainObjectCircle);
             for (Index nodeIndex : GeometricUtil.rasterizeCircle(obstacleTerrainObject.getCircle(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {

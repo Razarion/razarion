@@ -344,6 +344,14 @@ export class GameMockService {
             getInternalName(): string {
               return terrainObjectConfigJson.internalName;
             }
+
+            getRadius(): number {
+              return terrainObjectConfigJson.radius;
+            }
+
+            setRadius(radius: number): void {
+            }
+
           }
           return
         });

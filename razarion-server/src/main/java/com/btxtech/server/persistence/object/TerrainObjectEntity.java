@@ -51,6 +51,10 @@ public class TerrainObjectEntity {
         threeJsModelPackConfig = threeJsModelPackCrudPersistence.getEntity(terrainObjectConfig.getThreeJsModelPackConfigId());
     }
 
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

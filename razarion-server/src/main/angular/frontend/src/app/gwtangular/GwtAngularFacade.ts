@@ -127,6 +127,10 @@ export interface TerrainObjectConfig {
 
   getInternalName(): string;
 
+  getRadius(): number;
+
+  setRadius(radius: number): void;
+
   toString(): string;
 }
 
