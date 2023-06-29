@@ -1,15 +1,10 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.persistence.ColladaEntity;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
+import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
+import com.btxtech.server.persistence.ParticleSystemEntity;
 import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
-import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -42,26 +37,15 @@ public class BuilderTypeEntity {
             joinColumns = @JoinColumn(name = "builder"),
             inverseJoinColumns = @JoinColumn(name = "baseItemType"))
     private List<BaseItemTypeEntity> ableToBuilds;
-    @AttributeOverrides({
-            @AttributeOverride(name = "x", column = @Column(name = "animationOriginX")),
-            @AttributeOverride(name = "y", column = @Column(name = "animationOriginY")),
-            @AttributeOverride(name = "z", column = @Column(name = "animationOriginZ")),
-    })
-    private Vertex animationOrigin;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ColladaEntity animationShape3d;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ParticleEmitterSequenceEntity animationParticle;
+    private ParticleSystemEntity particleSystem;
 
     public BuilderType toBuilderType() {
         BuilderType builderType = new BuilderType()
                 .range(buildRange)
                 .progress(progress)
-                .animationOrigin(animationOrigin)
-                .animationShape3dId(extractId(animationShape3d, ColladaEntity::getId))
-                .animationParticleId(extractId(animationParticle, ParticleEmitterSequenceEntity::getId));
+                .particleSystemConfigId(extractId(particleSystem, ParticleSystemEntity::getId));
 
         if (ableToBuilds != null && !ableToBuilds.isEmpty()) {
             List<Integer> ableToBuildIds = new ArrayList<>();
@@ -73,7 +57,7 @@ public class BuilderTypeEntity {
         return builderType;
     }
 
-    public void fromBuilderType(BuilderType builderType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence) {
+    public void fromBuilderType(BuilderType builderType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
         buildRange = builderType.getRange();
         progress = builderType.getProgress();
         if (builderType.getAbleToBuildIds() != null && !builderType.getAbleToBuildIds().isEmpty()) {
@@ -87,9 +71,7 @@ public class BuilderTypeEntity {
         } else {
             ableToBuilds = null;
         }
-        animationOrigin = builderType.getAnimationOrigin();
-        animationShape3d = shape3DPersistence.getEntity(builderType.getAnimationShape3dId());
-        animationParticle = particleEmitterSequenceCrudPersistence.getEntity(builderType.getAnimationParticleId());
+        particleSystem = particleSystemCrudPersistence.getEntity(builderType.getParticleSystemConfigId());
     }
 
     @Override

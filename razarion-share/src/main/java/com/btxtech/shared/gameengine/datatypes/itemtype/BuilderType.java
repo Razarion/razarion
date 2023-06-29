@@ -14,6 +14,9 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import jsinterop.annotations.JsType;
 
 import java.util.List;
 
@@ -22,6 +25,7 @@ import java.util.List;
  * Date: 21.11.2009
  * Time: 23:53:27
  */
+@JsType
 public class BuilderType {
     private double range;
     private double progress;
@@ -29,6 +33,8 @@ public class BuilderType {
     private Vertex animationOrigin;
     private Integer animationShape3dId;
     private Integer animationParticleId;
+    @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
+    private Integer particleSystemConfigId;
 
     public double getRange() {
         return range;
@@ -78,6 +84,14 @@ public class BuilderType {
         this.animationParticleId = animationParticleId;
     }
 
+    public Integer getParticleSystemConfigId() {
+        return particleSystemConfigId;
+    }
+
+    public void setParticleSystemConfigId(Integer particleSystemConfigId) {
+        this.particleSystemConfigId = particleSystemConfigId;
+    }
+
     public BuilderType range(double range) {
         setRange(range);
         return this;
@@ -109,6 +123,11 @@ public class BuilderType {
 
     public BuilderType animationParticleId(Integer animationParticleId) {
         setAnimationParticleId(animationParticleId);
+        return this;
+    }
+
+    public BuilderType particleSystemConfigId(Integer particleSystemConfigId) {
+        setParticleSystemConfigId(particleSystemConfigId);
         return this;
     }
 }

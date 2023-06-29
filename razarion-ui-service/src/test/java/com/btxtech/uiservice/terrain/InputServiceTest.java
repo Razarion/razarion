@@ -65,8 +65,8 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
                 .topLeft(new DecimalPosition(30, 50)));
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
         Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
-        Assert.assertTrue(getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().get(0).isRemoved());
-        Assert.assertTrue(getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().get(1).isRemoved());
+        Assert.assertTrue(getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().get(0).isDisposed());
+        Assert.assertTrue(getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().get(1).isDisposed());
         getThreeJsRendererServiceAccessMock().clear();
 
         callOnViewChanged(new ViewField(0)

@@ -12,9 +12,17 @@ import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.mocks.TestFloat32Array;
+import com.btxtech.shared.mocks.TestFloat32ArraySerializer;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import javafx.scene.paint.Color;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
 
 import static com.btxtech.shared.RestClientHelper.readColdGameUiContext;
 
@@ -26,7 +34,7 @@ import static com.btxtech.shared.RestClientHelper.readColdGameUiContext;
 public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
-    public void readFromServer() {
+    public void readFromServer() throws IOException {
         System.out.println("Start Read ColdGameUiContext");
         ColdGameUiContext coldGameUiContext = readColdGameUiContext(117);
         System.out.println("Loaded ColdGameUiContext");
@@ -34,14 +42,24 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
         TerrainEditorLoad terrainEditorLoad = RestClientHelper.readTerrainEditorLoad(117);
         System.out.println("Loaded TerrainEditorLoad");
 
-        setupTerrainTypeService(coldGameUiContext.getStaticGameConfig(), null, null, null, null, coldGameUiContext.getWarmGameUiContext().getPlanetConfig(), terrainEditorLoad.getSlopes(), terrainEditorLoad.getTerrainObjects(), null, null, null);
+//        System.out.println("Write static-game-config.json");
+//        String directory = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        SimpleModule module = new SimpleModule();
+//        module.addSerializer(TestFloat32Array.class, new TestFloat32ArraySerializer());
+//        objectMapper.registerModule(module);
+//        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+//        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(directory, "static-game-config.json"), coldGameUiContext.getStaticGameConfig());
+
+
+        setupTerrainTypeService(coldGameUiContext.getStaticGameConfig(), null, null, null, null, coldGameUiContext.getWarmGameUiContext().getPlanetConfig(), terrainEditorLoad.getSlopes(), terrainEditorLoad.getTerrainObjects(), null, null, null, null);
         double radius = 1;
         final SingleHolder<DecimalPosition> actorPosition = new SingleHolder<>();
         DecimalPosition target = new DecimalPosition(104, 125.5);
         showDisplay(new MouseMoveCallback().setCallback(position -> {
             try {
                 SimplePath simplePath = setupPath(position, radius, TerrainType.LAND, target);
-                return new Object[]{new PositionMarker().addCircleColor(new Circle2D(position, radius), Color.DARKGRAY),new PositionMarker().addCircleColor(new Circle2D(target, radius), Color.RED), simplePath};
+                return new Object[]{new PositionMarker().addCircleColor(new Circle2D(position, radius), Color.DARKGRAY), new PositionMarker().addCircleColor(new Circle2D(target, radius), Color.RED), simplePath};
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

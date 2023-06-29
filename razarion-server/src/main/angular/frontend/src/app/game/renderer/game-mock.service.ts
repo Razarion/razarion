@@ -14,6 +14,7 @@ import {
   Mesh,
   MeshContainer,
   ObjectNameId,
+  ParticleSystemConfig,
   PerfmonStatistic,
   ShapeTransform,
   SlopeConfig,
@@ -640,6 +641,30 @@ export class GameMockService {
       });
     })
     return threeJsModelConfigs;
+  }
+
+  mockParticleSystemConfigs(): ParticleSystemConfig[] {
+    let particleSystemConfig: ParticleSystemConfig[] = [];
+    staticGameConfigJson.particleSystemConfigs.forEach((particleSystemConfigJson: any) => {
+      particleSystemConfig.push(new class implements ParticleSystemConfig {
+        getThreeJsModelId(): number {
+          return particleSystemConfigJson.threeJsModelId;
+        }
+
+        getEmitterMeshPath(): string[] {
+          return particleSystemConfigJson.emitterMeshPath;
+        }
+
+        getId(): number {
+          return particleSystemConfigJson.id;
+        }
+
+        getInternalName(): string {
+          return particleSystemConfigJson.internalName;
+        }
+      });
+    });
+    return particleSystemConfig;
   }
 
   private setupGeometry(slopeGeometryName: string, terrainSlopeTileJson: any): SlopeGeometry | null {

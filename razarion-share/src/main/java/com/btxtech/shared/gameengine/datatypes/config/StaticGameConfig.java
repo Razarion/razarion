@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundConfig;
+import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
@@ -30,6 +31,7 @@ public class StaticGameConfig {
     private List<DrivewayConfig> drivewayConfigs;
     private List<ThreeJsModelConfig> threeJsModelConfigs;
     private List<ThreeJsModelPackConfig> threeJsModelPackConfigs;
+    private List<ParticleSystemConfig> particleSystemConfigs;
 
     public List<GroundConfig> getGroundConfigs() {
         return groundConfigs;
@@ -119,6 +121,14 @@ public class StaticGameConfig {
         this.threeJsModelConfigs = threeJsModelConfigs;
     }
 
+    public List<ParticleSystemConfig> getParticleSystemConfigs() {
+        return particleSystemConfigs;
+    }
+
+    public void setParticleSystemConfigs(List<ParticleSystemConfig> particleSystemConfigs) {
+        this.particleSystemConfigs = particleSystemConfigs;
+    }
+
     public List<ThreeJsModelPackConfig> getThreeJsModelPackConfigs() {
         return threeJsModelPackConfigs;
     }
@@ -184,6 +194,11 @@ public class StaticGameConfig {
 
     public StaticGameConfig threeJsModelPackConfigs(List<ThreeJsModelPackConfig> threeJsModelPackConfigs) {
         setThreeJsModelPackConfigs(threeJsModelPackConfigs);
+        return this;
+    }
+
+    public StaticGameConfig particleSystemConfigs(List<ParticleSystemConfig> particleSystemConfigs) {
+        setParticleSystemConfigs(particleSystemConfigs);
         return this;
     }
 }

@@ -16,7 +16,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.Diplomacy;
@@ -41,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -57,7 +55,7 @@ import static com.btxtech.shared.utils.MathHelper.clamp;
  */
 @Singleton // This may leads to Errai problems
 public class BaseItemUiService {
-    private Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
+    private final Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -75,13 +73,11 @@ public class BaseItemUiService {
     @Inject
     private UserUiService userUiService;
     @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
-    @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private ThreeJsRendererService threeJsRendererService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
-    private Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
+    private final Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
     private int resources;
     private int houseSpace;
@@ -89,13 +85,12 @@ public class BaseItemUiService {
     private int itemCount;
     private boolean hasRadar;
     private NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
-    private MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
-    private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
-    private Map<Integer, BabylonBaseItem> aliveBabylonBaseItems = new HashMap<>();
-    private MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
-    private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
-    private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
-    private Set<Integer> buildups = new HashSet<>();
+    private final MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
+    private final MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
+    private final Map<Integer, BabylonBaseItem> aliveBabylonBaseItems = new HashMap<>();
+    private final MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
+    private final MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
+    private final MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
     private long lastUpdateTimeStamp;
     private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
     private final List<BabylonBaseItem> selectedBabylonBaseItem = new ArrayList<>();
@@ -128,36 +123,6 @@ public class BaseItemUiService {
         return itemTypeService.getBaseItemTypes();
     }
 
-    public List<ModelMatrices> provideSpawningModelMatrices(BaseItemType baseItemType) {
-        return spawningModelMatrices.get(baseItemType);
-    }
-
-    public List<ModelMatrices> provideBuildupModelMatrices(BaseItemType baseItemType) {
-        return buildupModelMatrices.get(baseItemType);
-    }
-
-    public List<ModelMatrices> provideAliveModelMatrices(BaseItemType baseItemType) {
-        // return aliveBabylonBaseItems.get(baseItemType);
-        return null;
-    }
-
-    public List<ModelMatrices> provideDemolitionModelMatrices(BaseItemType baseItemType) {
-        // return demolitionModelMatrices.get(baseItemType);
-        return null;
-    }
-
-    public List<ModelMatrices> provideHarvestAnimationModelMatrices(BaseItemType baseItemType) {
-        return harvestModelMatrices.get(baseItemType);
-    }
-
-    public List<ModelMatrices> provideBuildAnimationModelMatrices(BaseItemType baseItemType) {
-        return builderModelMatrices.get(baseItemType);
-    }
-
-    public List<ModelMatrices> provideTurretModelMatrices(BaseItemType baseItemType) {
-        return weaponTurretModelMatrices.get(baseItemType);
-    }
-
     public void updateSyncBaseItems(NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos) {
         // May be easier if replaced with SyncItemState and SyncItemMonitor
         lastUpdateTimeStamp = System.currentTimeMillis();
@@ -168,8 +133,6 @@ public class BaseItemUiService {
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
-        Set<Integer> leftoverBuildups = buildups;
-        buildups = new HashSet<>();
         int tmpItemCount = 0;
         int usedHouseSpace = 0;
         boolean radar = false;
@@ -220,11 +183,8 @@ public class BaseItemUiService {
                 BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
                 if (babylonBaseItem == null) {
                     babylonBaseItem = threeJsRendererService.createSyncBaseItem(nativeSyncBaseItemTickInfo.id,
-                            baseItemType.getThreeJsModelPackConfigId(),
-                            baseItemType.getMeshContainerId(),
-                            baseItemType.getInternalName(),
-                            diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo),
-                            baseItemType.getPhysicalAreaConfig().getRadius());
+                            baseItemType,
+                            diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo));
                     aliveBabylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
                     babylonBaseItem.setPosition(NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo));
                     babylonBaseItem.updatePosition();
@@ -232,6 +192,7 @@ public class BaseItemUiService {
                     babylonBaseItem.updateAngle();
                     babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
                     babylonBaseItem.updateHealth();
+                    babylonBaseItem.setBuildingPosition(nativeSyncBaseItemTickInfo.buildingPosition);
                 }
                 leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
 
@@ -290,17 +251,7 @@ public class BaseItemUiService {
                     // TODO harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
                 }
                 // Building
-                if (nativeSyncBaseItemTickInfo.buildingPosition != null) {
-                    // TODO  NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getBuilderType().getAnimationOrigin()), 1.0);
-//  TODO                   NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.buildingPosition, origin);
-//                    builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
-//                    if(baseItemType.getBuilderType().getAnimationParticleId() != null) {
-//                        buildups.add(nativeSyncBaseItemTickInfo.id);
-//                        leftoverBuildups.remove(nativeSyncBaseItemTickInfo.id);
-//                        effectVisualizationService.updateBuildupParticle(nativeSyncBaseItemTickInfo, toVertex(origin), baseItemType, direction);
-//                    }
-                }
-                effectVisualizationService.removeBuildupParticle(leftoverBuildups);
+                babylonBaseItem.setBuildingPosition(nativeSyncBaseItemTickInfo.buildingPosition);
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }

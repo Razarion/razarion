@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Vertex;
  * Created by Beat
  * 07.02.2017.
  */
+@Deprecated
 public class ParticleConfig {
     // private Logger logger = Logger.getLogger(ParticleConfig.class.getName());
     private Integer particleShapeConfigId;

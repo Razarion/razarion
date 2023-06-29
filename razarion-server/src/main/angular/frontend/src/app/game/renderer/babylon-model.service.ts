@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "src/app/common";
-import {ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
+import {ParticleSystemConfig, ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
@@ -13,7 +13,8 @@ import {
   Node,
   NodeMaterial,
   Scene,
-  SceneLoader, TransformNode
+  SceneLoader,
+  TransformNode
 } from "@babylonjs/core";
 import {GLTFFileLoader} from "@babylonjs/loaders";
 import JSZip from "jszip";
@@ -28,13 +29,16 @@ export class BabylonModelService {
   private scene!: Scene;
   private threeJsModelConfigs!: ThreeJsModelConfig[];
   private threeJsModelConfigMap: Map<number, ThreeJsModelConfig> = new Map();
+  private particleSystemConfigs: Map<number, ParticleSystemConfig> = new Map();
+  private particleSystemJson: Map<number, any> = new Map();
 
   constructor(private httpClient: HttpClient, private messageService: MessageService) {
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
   }
 
-  init(threeJsModelConfigs: ThreeJsModelConfig[], gwtAngularService: GwtAngularService): Promise<void> {
+  init(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[], gwtAngularService: GwtAngularService): Promise<void> {
     this.threeJsModelConfigs = threeJsModelConfigs.filter(threeJsModelConfig => !threeJsModelConfig.isDisabled());
+    this.particleSystemConfigs = new Map(particleSystemConfigs.map(p => [p.getId(), p]));
     this.gwtAngularService = gwtAngularService;
 
     this.threeJsModelConfigs.forEach(threeJsModelConfig => this.threeJsModelConfigMap.set(threeJsModelConfig.getId(), threeJsModelConfig))
@@ -59,6 +63,9 @@ export class BabylonModelService {
                 break;
               case ThreeJsModelConfig.Type.NODES_MATERIAL:
                 this.loadNodeMaterial(url, threeJsModelConfig, handleResolve);
+                break;
+              case ThreeJsModelConfig.Type.PARTICLE_SYSTEM_JSON:
+                this.loadParticleSystem(url, threeJsModelConfig, handleResolve);
                 break;
 
               default:
@@ -86,7 +93,7 @@ export class BabylonModelService {
     let childNode = null;
 
     for (let childNod of assetContainer.getNodes()) {
-      childNode = this.findChildNode(childNod, threeJsModelPackConf.toNamePathAsArray());
+      childNode = BabylonModelService.findChildNode(childNod, threeJsModelPackConf.toNamePathAsArray());
       if (childNode) {
         break;
       }
@@ -131,7 +138,7 @@ export class BabylonModelService {
     return mesh;
   }
 
-  private findChildNode(node: Node, namePath: string[]): Node | null {
+  public static findChildNode(node: Node, namePath: string[]): Node | null {
     if (namePath.length == 0) {
       throw new Error("Empty namePath array is not allowed")
     }
@@ -160,7 +167,7 @@ export class BabylonModelService {
             handleResolve();
           }
         },
-        progress => {
+        () => {
         },
         (scene: Scene, message: string, exception?: any) => {
           hasError = true;
@@ -191,6 +198,19 @@ export class BabylonModelService {
     }).catch(reason => {
       console.error(`Load NodeMaterial failed. Node Material: '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})' Reason: ${reason}`);
       handleResolve();
+    })
+  }
+
+  private loadParticleSystem(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
+    this.httpClient.get(url).subscribe({
+      next: (json) => {
+        this.particleSystemJson.set(threeJsModelConfig.getId(), json);
+        handleResolve();
+      },
+      error: (error: any) => {
+        console.error(`Load Particle System failed. '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})' Reason: ${error}`);
+        handleResolve();
+      }
     })
   }
 
@@ -322,7 +342,7 @@ export class BabylonModelService {
   }
 
   dumpAll(): Promise<JSZip> {
-    return new Promise<JSZip>((resolve, reject) => {
+    return new Promise<JSZip>((resolve) => {
       const zip = new JSZip();
       let pending = this.threeJsModelConfigs.length;
       this.threeJsModelConfigs.forEach(babylonModelConfig => {
@@ -364,5 +384,26 @@ export class BabylonModelService {
     }
 
     throw new Error(`No ThreeJsModelConfig for '${id}'`);
+  }
+
+  getParticleSystemConfig(id: number): ParticleSystemConfig {
+    id = GwtHelper.gwtIssueNumber(id);
+
+    let particleSystemConfig = this.particleSystemConfigs.get(id);
+    if (particleSystemConfig) {
+      return particleSystemConfig;
+    }
+
+    throw new Error(`No ParticleSystemConfig for '${id}'`);
+  }
+
+  getParticleSystemJson(id: number): any {
+    id = GwtHelper.gwtIssueNumber(id);
+    let json = this.particleSystemJson.get(id);
+    if (json) {
+      return json;
+    }
+
+    throw new Error(`No ParticleSystemJson.threeJsModelConfig('${id}') JSON found`);
   }
 }

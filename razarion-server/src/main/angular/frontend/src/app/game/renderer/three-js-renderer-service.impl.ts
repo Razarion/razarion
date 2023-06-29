@@ -3,8 +3,10 @@ import {
   BabylonBaseItem,
   BaseItemPlacer,
   BaseItemPlacerPresenter,
+  BaseItemType,
   Diplomacy,
   MeshContainer,
+  NativeVertexDto,
   ShapeTransform,
   TerrainObjectPosition,
   TerrainTile,
@@ -29,6 +31,7 @@ import {
   MeshBuilder,
   Node,
   NodeMaterial,
+  ParticleSystem,
   PointerEventTypes,
   Quaternion,
   Scene,
@@ -171,7 +174,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  createSyncBaseItem(id: number, threeJsModelPackConfigId: number | null, meshContainerId: number | null, internalName: string, diplomacy: Diplomacy, radius: number): BabylonBaseItem {
+  createSyncBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem {
     try {
       const correctedDiplomacy = GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy);
       const threeJsRendererServiceImpl = this;
@@ -183,20 +186,21 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         private position: Vertex | null = null;
         private angle: number = 0;
         private health: number = 0;
+        private buildingParticleSystem: ParticleSystem | null = null;
 
         constructor() {
-          if (threeJsModelPackConfigId) {
-            this.container = threeJsRendererServiceImpl.threeJsModelService.cloneMesh(threeJsModelPackConfigId, null);
-          } else if (meshContainerId) {
+          if (baseItemType.getThreeJsModelPackConfigId()) {
+            this.container = threeJsRendererServiceImpl.threeJsModelService.cloneMesh(baseItemType.getThreeJsModelPackConfigId()!, null);
+          } else if (baseItemType.getMeshContainerId()) {
             this.container = threeJsRendererServiceImpl.showMeshContainer(threeJsRendererServiceImpl.meshContainers,
-              GwtHelper.gwtIssueNumber(meshContainerId),
+              GwtHelper.gwtIssueNumber(baseItemType.getMeshContainerId()),
               correctedDiplomacy);
           } else {
-            this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${internalName}`, {diameter: radius * 2});
-            console.warn(`No meshContainerId for ${internalName}`)
+            this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${baseItemType.getInternalName()} '${baseItemType.getId()}'`, {diameter: baseItemType.getPhysicalAreaConfig().getRadius() * 2});
+            console.warn(`No meshContainerId for ${baseItemType.getInternalName()} '${baseItemType.getId()}'`)
           }
           this.container.parent = threeJsRendererServiceImpl.baseItemContainer;
-          this.container.name = `${internalName} '${id}')`;
+          this.container.name = `${baseItemType.getInternalName()} '${id}')`;
           this.container.getChildMeshes().forEach(childMesh => {
             threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(childMesh, true);
           });
@@ -231,6 +235,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         }
 
         dispose(): void {
+          this.disposeBuildingParticleSystem();
           this.container.getChildMeshes().forEach(childMesh => {
             threeJsRendererServiceImpl.shadowGenerator.removeShadowCaster(childMesh, true);
           });
@@ -266,7 +271,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         private updateMarkedDisk(): void {
           if (this.selectActive || this.hoverActive) {
             if (!this.markerDisc) {
-              this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: radius + 0.1});
+              this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: baseItemType.getPhysicalAreaConfig().getRadius() + 0.1});
               let material = threeJsRendererServiceImpl.itemMarkerMaterialCache.get(correctedDiplomacy);
               if (!material) {
                 material = new SimpleMaterial(`Base Item Marker ${correctedDiplomacy}`, threeJsRendererServiceImpl.scene);
@@ -289,6 +294,65 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             (<SimpleMaterial>this.markerDisc!.material).alpha = 0.6
           } else if (this.hoverActive) {
             (<SimpleMaterial>this.markerDisc!.material).alpha = 0.3
+          }
+        }
+
+        setBuildingPosition(nativeBuildingPosition: NativeVertexDto): void {
+          if (nativeBuildingPosition && this.buildingParticleSystem) {
+            return;
+          }
+          if (!nativeBuildingPosition && !this.buildingParticleSystem) {
+            return;
+          }
+
+          let particleSystemConfigId = baseItemType.getBuilderType()?.getParticleSystemConfigId()
+          if (!particleSystemConfigId) {
+            return;
+          }
+
+          if (!nativeBuildingPosition && this.buildingParticleSystem) {
+            this.disposeBuildingParticleSystem();
+            return;
+          }
+
+          if (nativeBuildingPosition && !this.buildingParticleSystem) {
+            try {
+              let particleSystemConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemConfig(baseItemType.getBuilderType()?.getParticleSystemConfigId()!);
+              const particleJsonConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemJson(particleSystemConfig.getThreeJsModelId());
+              const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath());
+              const buildingPosition = new Vector3(nativeBuildingPosition.x, nativeBuildingPosition.z, nativeBuildingPosition.y);
+
+              this.buildingParticleSystem = ParticleSystem.Parse(particleJsonConfig, threeJsRendererServiceImpl.getScene(), "");
+              emitterMesh.computeWorldMatrix(true);
+              this.buildingParticleSystem.emitter = emitterMesh.absolutePosition;
+              const beam = buildingPosition.subtract(emitterMesh.absolutePosition);
+              const distance = beam.length();
+              const delta = 2;
+              const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
+              const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
+              this.buildingParticleSystem.createPointEmitter(direction1, direction2);
+              this.buildingParticleSystem.minLifeTime = distance
+              this.buildingParticleSystem.maxLifeTime = distance
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
+
+        private findChildMesh(meshPath: string[]): Mesh {
+          for (let childNod of this.container.getChildren()) {
+            let found = BabylonModelService.findChildNode(childNod, meshPath);
+            if (found) {
+              return <Mesh>found;
+            }
+          }
+          throw new Error(`Can not find mesh path '${meshPath}' in '${this.container}'`);
+        }
+
+        private disposeBuildingParticleSystem() {
+          if (this.buildingParticleSystem) {
+            this.buildingParticleSystem!.dispose();
+            this.buildingParticleSystem = null;
           }
         }
       }
@@ -340,6 +404,11 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
         hover(active: boolean): void {
         }
+
+        setBuildingPosition(buildingPosition: NativeVertexDto): void {
+
+        }
+
       }
     }
   }

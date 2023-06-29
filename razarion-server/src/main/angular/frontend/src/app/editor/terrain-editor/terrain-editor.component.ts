@@ -20,7 +20,7 @@ import {Nullable} from "@babylonjs/core/types";
 import {EditorService} from "../editor-service";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {Color3} from "@babylonjs/core/Maths/math.color";
-import {SERVER_GAME_ENGINE_PATH, UPDATE_RADIUS_REST_CALL} from "../../common";
+import {UPDATE_RADIUS_REST_CALL} from "../../common";
 import {HttpClient} from "@angular/common/http";
 
 @Component({
@@ -193,8 +193,7 @@ export class TerrainEditorComponent extends EditorPanel implements OnInit, OnDes
         terrainObjectPosition = razarionMetadata!.editorHintTerrainObjectPosition!;
       }
       this.updateTerrainObjectPosition(node, terrainObjectPosition);
-      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(razarionMetadata!.configId!);
-      this.selectedTerrainObject = terrainObjectConfig;
+      this.selectedTerrainObject = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(razarionMetadata!.configId!);
       this.selectedRadius = this.selectedTerrainObject.getRadius();
       this.showHideRadius();
     }

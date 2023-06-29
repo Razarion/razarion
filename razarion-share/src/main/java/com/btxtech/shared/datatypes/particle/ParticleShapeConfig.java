@@ -10,6 +10,7 @@ import java.util.List;
  * Created by Beat
  * 08.02.2017.
  */
+@Deprecated
 public class ParticleShapeConfig implements Config {
     private int id;
     private String internalName;

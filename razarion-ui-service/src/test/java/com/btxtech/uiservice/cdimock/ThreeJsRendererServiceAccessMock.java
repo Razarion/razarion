@@ -2,7 +2,9 @@ package com.btxtech.uiservice.cdimock;
 
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
 import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
@@ -26,8 +28,8 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
     }
 
     @Override
-    public BabylonBaseItem createSyncBaseItem(int id, Integer threeJsModelPackConfigId, Integer meshContainerId, String internalName, Diplomacy diplomacy, double radius) {
-        BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock(id, diplomacy, radius);
+    public BabylonBaseItem createSyncBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy) {
+        BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock(id, baseItemType, diplomacy);
         babylonBaseItemMocks.add(babylonBaseItemMock);
         return babylonBaseItemMock;
     }
@@ -57,18 +59,18 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
 
     public static class BabylonBaseItemMock implements BabylonBaseItem {
         private final int id;
+        private final BaseItemType baseItemType;
         private final Diplomacy diplomacy;
-        private final double radius;
-        private boolean removed;
+        private boolean disposed;
         private boolean select;
         private boolean hover;
         private Vertex position;
         private double angle;
 
-        public BabylonBaseItemMock(int id, Diplomacy diplomacy, double radius) {
+        public BabylonBaseItemMock(int id, BaseItemType baseItemType, Diplomacy diplomacy) {
             this.id = id;
+            this.baseItemType = baseItemType;
             this.diplomacy = diplomacy;
-            this.radius = radius;
         }
 
         @Override
@@ -78,7 +80,7 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
 
         @Override
         public void dispose() {
-
+            disposed = true;
         }
 
         @Override
@@ -117,6 +119,11 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
         }
 
         @Override
+        public void setBuildingPosition(NativeVertexDto buildingPosition) {
+
+        }
+
+        @Override
         public Vertex getPosition() {
             return position;
         }
@@ -126,17 +133,14 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
             this.position = position;
         }
 
-        public boolean isRemoved() {
-            return removed;
+        public boolean isDisposed() {
+            return disposed;
         }
 
         public Diplomacy getDiplomacy() {
             return diplomacy;
         }
 
-        public double getRadius() {
-            return radius;
-        }
 
         public double getAngle() {
             return angle;
@@ -153,6 +157,10 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
 
         public boolean isHover() {
             return hover;
+        }
+
+        public BaseItemType getBaseItemType() {
+            return baseItemType;
         }
     }
 }

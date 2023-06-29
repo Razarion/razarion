@@ -21,7 +21,7 @@ export abstract class GwtAngularFacade {
 // ---------- Boot ----------
 
 export interface GwtAngularBoot {
-  loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[]): Promise<void>;
+  loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[]): Promise<void>;
 }
 
 // ---------- Common ----------
@@ -50,6 +50,12 @@ export interface Vertex {
   getZ(): number;
 
   toString(): string;
+}
+
+export interface NativeVertexDto {
+  x: number;
+  y: number;
+  z: number;
 }
 
 export interface StatusProvider {
@@ -216,7 +222,8 @@ export interface ThreeJsModelConfig {
 export namespace ThreeJsModelConfig {
   export enum Type {
     GLTF = "GLTF",
-    NODES_MATERIAL = "NODES_MATERIAL"
+    NODES_MATERIAL = "NODES_MATERIAL",
+    PARTICLE_SYSTEM_JSON = "PARTICLE_SYSTEM_JSON"
   }
 }
 
@@ -276,11 +283,37 @@ export interface ShapeTransform {
   getScaleZ(): number;
 }
 
+// ---------- ItemType ----------
+
+export interface ItemType {
+  getId(): number;
+
+  getInternalName(): string;
+
+  getThreeJsModelPackConfigId(): number | null;
+
+  getMeshContainerId(): number | null;
+}
+
+export interface BaseItemType extends ItemType {
+  getPhysicalAreaConfig(): PhysicalAreaConfig;
+
+  getBuilderType(): BuilderType;
+}
+
+export interface PhysicalAreaConfig {
+  getRadius(): number;
+}
+
+export interface BuilderType {
+  getParticleSystemConfigId(): number | null;
+}
+
 // ---------- Renderer ----------
 export interface ThreeJsRendererServiceAccess {
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
 
-  createSyncBaseItem(id: number, threeJsModelPackConfigId: number | null, meshContainerId: number | null, internalName: string, diplomacy: Diplomacy, radius: number): BabylonBaseItem;
+  createSyncBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem;
 
   createProjectile(start: Vertex, destination: Vertex, duration: number): void;
 
@@ -377,6 +410,18 @@ export interface BabylonBaseItem {
   select(active: boolean): void;
 
   hover(active: boolean): void;
+
+  setBuildingPosition(buildingPosition: NativeVertexDto | null): void;
+}
+
+export interface ParticleSystemConfig {
+  getId(): number;
+
+  getInternalName(): string;
+
+  getThreeJsModelId(): number;
+
+  getEmitterMeshPath(): string[];
 }
 
 // ---------- Item Cockpit ----------

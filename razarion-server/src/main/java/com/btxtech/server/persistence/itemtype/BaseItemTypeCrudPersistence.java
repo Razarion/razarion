@@ -3,6 +3,7 @@ package com.btxtech.server.persistence.itemtype;
 import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
+import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.server.persistence.asset.MeshContainerCrudPersistence;
@@ -32,6 +33,8 @@ public class BaseItemTypeCrudPersistence extends AbstractCrudPersistence<BaseIte
     private AudioPersistence audioPersistence;
     @Inject
     private ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence;
+    @Inject
+    private ParticleSystemCrudPersistence particleSystemCrudPersistence;
 
     public BaseItemTypeCrudPersistence() {
         super(BaseItemTypeEntity.class, BaseItemTypeEntity_.id, BaseItemTypeEntity_.internalName);
@@ -44,7 +47,7 @@ public class BaseItemTypeCrudPersistence extends AbstractCrudPersistence<BaseIte
 
     @Override
     protected void fromConfig(BaseItemType baseItemType, BaseItemTypeEntity baseItemTypeEntity) {
-        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, this, shape3DPersistence, particleEmitterSequenceCrudPersistence);
+        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, this, shape3DPersistence, particleEmitterSequenceCrudPersistence, particleSystemCrudPersistence);
         baseItemTypeEntity.setThreeJsModelPackConfigEntity(threeJsModelPackCrudPersistence.getEntity(baseItemType.getThreeJsModelPackConfigId()));
         baseItemTypeEntity.setMeshContainer(meshContainerCrudPersistence.getEntity(baseItemType.getMeshContainerId()));
         baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getEntity(baseItemType.getSpawnShape3DId()));

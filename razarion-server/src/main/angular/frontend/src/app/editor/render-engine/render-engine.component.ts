@@ -9,7 +9,7 @@ import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR, URL_THREE_JS_MODEL_PACK_EDITOR} from "../../common";
 import {
-  AbstractMesh, GizmoManager,
+  AbstractMesh,
   Mesh,
   Nullable,
   Observer,
@@ -21,8 +21,8 @@ import {
 } from "@babylonjs/core";
 import {GLTF2Export} from "@babylonjs/serializers";
 import {BabylonModelService} from "../../game/renderer/babylon-model.service";
-import {ThreeJsModelPackConfig} from "../../gwtangular/GwtAngularFacade";
-import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
+import {ThreeJsModelConfig, ThreeJsModelPackConfig} from "../../gwtangular/GwtAngularFacade";
+import {GwtHelper} from "../../gwtangular/GwtHelper";
 
 @Component({
   selector: 'render-engine',
@@ -164,36 +164,51 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
 
   onSaveSelected() {
     try {
-      this.serializeGltfBlob(this.selectedBabylon).then((blob) => {
-        const httpOptions = {
-          headers: new HttpHeaders({
-            'Content-Type': 'application/octet-stream'
-          })
-        };
-        this.httpClient.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${this.dropDownBabylonModel.id}`, blob, httpOptions)
-          .subscribe({
-            complete: () => this.messageService.add({
-              severity: 'success',
-              summary: 'Save successful'
-            }),
-            error: (error: any) => {
-              this.messageService.add({
-                severity: 'error',
-                summary: `Save failed ${error.statusText}`,
-                detail: `${error.statusText}: ${error.status}`,
-                sticky: true
-              });
-            }
-          })
-      }).catch(reason => {
-        console.warn(reason);
-        this.messageService.add({
-          severity: 'error',
-          summary: `Can not export GLTF`,
-          detail: String(reason),
-          sticky: true
-        });
-      });
+      const type = GwtHelper.gwtIssueStringEnum(this.babylonModelService.getThreeJsModelConfig(this.dropDownBabylonModel.id).getType(), ThreeJsModelConfig.Type);
+      switch (type) {
+        case ThreeJsModelConfig.Type.GLTF:
+          this.serializeGltfBlob(this.selectedBabylon).then((blob) => {
+            const httpOptions = {
+              headers: new HttpHeaders({
+                'Content-Type': 'application/octet-stream'
+              })
+            };
+            this.saveThreeJsModel(blob, httpOptions);
+          }).catch(reason => {
+            console.warn(reason);
+            this.messageService.add({
+              severity: 'error',
+              summary: `Can not export GLTF`,
+              detail: String(reason),
+              sticky: true
+            });
+          });
+          break;
+        case ThreeJsModelConfig.Type.NODES_MATERIAL:
+          this.messageService.add({
+            severity: 'error',
+            summary: `Can not export NodeMaterial`,
+            detail: "Use Babylon.Js NodeMaterial Editor",
+            sticky: true
+          });
+          break;
+        case ThreeJsModelConfig.Type.PARTICLE_SYSTEM_JSON:
+          const str = JSON.stringify(this.selectedBabylon.serialize());
+          const httpOptions = {
+            headers: new HttpHeaders({
+              'Content-Type': 'application/octet-stream'
+            })
+          };
+          this.saveThreeJsModel(new Blob([str]), httpOptions);
+          break;
+        default:
+          this.messageService.add({
+            severity: 'error',
+            summary: `Can not export`,
+            detail: `Unknown Type ${type}`,
+            sticky: true
+          });
+      }
     } catch (error) {
       console.warn(error);
       this.messageService.add({
@@ -203,6 +218,24 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
         sticky: true
       });
     }
+  }
+
+  private saveThreeJsModel(blob: Blob, httpOptions: { headers: HttpHeaders }) {
+    this.httpClient.put(`${URL_THREE_JS_MODEL_EDITOR}/upload/${this.dropDownBabylonModel.id}`, blob, httpOptions)
+      .subscribe({
+        complete: () => this.messageService.add({
+          severity: 'success',
+          summary: 'Save successful'
+        }),
+        error: (error: any) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: `Save failed ${error.statusText}`,
+            detail: `${error.statusText}: ${error.status}`,
+            sticky: true
+          });
+        }
+      })
   }
 
   onDumpSelected() {

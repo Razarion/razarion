@@ -2,6 +2,7 @@ package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.Diplomacy;
 import jsinterop.annotations.JsType;
@@ -10,7 +11,7 @@ import jsinterop.annotations.JsType;
 public interface ThreeJsRendererServiceAccess {
     ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId);
 
-    BabylonBaseItem createSyncBaseItem(int id, Integer threeJsModelPackConfigId, Integer meshContainerId, String internalName, Diplomacy diplomacy, double radius);
+    BabylonBaseItem createSyncBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy);
 
     void createProjectile(Vertex start, Vertex destination, double duration);
 

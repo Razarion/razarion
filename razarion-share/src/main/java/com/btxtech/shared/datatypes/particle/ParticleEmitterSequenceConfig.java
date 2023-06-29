@@ -8,6 +8,7 @@ import java.util.List;
  * Created by Beat
  * 06.02.2017.
  */
+@Deprecated
 public class ParticleEmitterSequenceConfig implements Config {
     private int id;
     private String internalName;

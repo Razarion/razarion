@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.AudioLibraryEntity;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
+import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.asset.MeshContainerEntity;
@@ -207,7 +208,7 @@ public class BaseItemTypeEntity {
         return baseItemType;
     }
 
-    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence) {
+    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
         internalName = baseItemType.getInternalName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
         fixVerticalNorm = baseItemType.getPhysicalAreaConfig().isFixVerticalNorm();
@@ -261,7 +262,7 @@ public class BaseItemTypeEntity {
             if (builderType == null) {
                 builderType = new BuilderTypeEntity();
             }
-            builderType.fromBuilderType(baseItemType.getBuilderType(), baseItemTypeCrudPersistence, shape3DPersistence, particleEmitterSequenceCrudPersistence);
+            builderType.fromBuilderType(baseItemType.getBuilderType(), baseItemTypeCrudPersistence, particleSystemCrudPersistence);
         } else {
             builderType = null;
         }

@@ -1,11 +1,13 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 16.09.2016.
  */
+@JsType
 public class PhysicalAreaConfig {
     private double radius;
     private boolean fixVerticalNorm;

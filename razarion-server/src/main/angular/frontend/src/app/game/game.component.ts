@@ -10,9 +10,14 @@ import {ThreeJsRendererServiceImpl} from './renderer/three-js-renderer-service.i
 import {environment} from 'src/environments/environment';
 import {GameMockService} from './renderer/game-mock.service';
 import {BabylonModelService} from './renderer/babylon-model.service';
-import {Diplomacy} from "../gwtangular/GwtAngularFacade";
+import {
+  BaseItemType,
+  BuilderType,
+  Diplomacy,
+  NativeVertexDto,
+  PhysicalAreaConfig
+} from "../gwtangular/GwtAngularFacade";
 import {GwtInstance} from "../gwtangular/GwtInstance";
-import {Color3, CubeTexture, MeshBuilder, PBRMetallicRoughnessMaterial, Tools} from "@babylonjs/core";
 
 
 @Component({
@@ -50,12 +55,12 @@ export class GameComponent implements OnInit {
       this.gwtAngularService.gwtAngularFacade.threeJsModelPackService = this.gameMockService.mockThreeJsModelPackService;
       this.gameMockService.loadMockStaticGameConfig().then(() => {
         this.gameMockService.loadMockAssetConfig().then(() => {
-          this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gwtAngularService).then(() => {
+          this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
             this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
             this.gameMockService.mockTerrainTile(this.threeJsRendererService);
             this.mainCockpitComponent.show();
             this.threeJsRendererService.initMeshContainers(this.gameMockService.createMeshContainers());
-            this.threeJsRendererService.setViewFieldCenter(0, 0);
+            this.threeJsRendererService.setViewFieldCenter(5, 2);
             // this.threeJsRendererService.createProjectile(new class implements Vertex {
             //   getX(): number {
             //     return 0;
@@ -82,12 +87,54 @@ export class GameComponent implements OnInit {
             //   }
             // }, 2);
 
-            // let babylonBaseItem = this.threeJsRendererService.createSyncBaseItem(999999, null, 23076, "Vehicle 11", Diplomacy.ENEMY, 2);
-            // babylonBaseItem.setPosition(GwtInstance.newVertex(8, 8, 0));
-            // babylonBaseItem.setAngle(0);
-            //
-            // babylonBaseItem.updatePosition();
-            // babylonBaseItem.updateAngle();
+            let baseItemType = new class implements BaseItemType {
+              getBuilderType(): BuilderType {
+                return new class implements BuilderType {
+                  getParticleSystemConfigId(): number | null {
+                    return 1;
+                  }
+                }
+              }
+
+              getId(): number {
+                return 0;
+              }
+
+              getInternalName(): string {
+                return "Builder";
+              }
+
+              getMeshContainerId(): number | null {
+                return 22743;
+              }
+
+              getPhysicalAreaConfig(): PhysicalAreaConfig {
+                return new class implements PhysicalAreaConfig {
+                  getRadius(): number {
+                    return 2;
+                  }
+                };
+              }
+
+              getThreeJsModelPackConfigId(): number | null {
+                return null;
+              }
+
+            };
+
+            let babylonBaseItem = this.threeJsRendererService.createSyncBaseItem(999999, baseItemType, Diplomacy.ENEMY);
+            babylonBaseItem.setPosition(GwtInstance.newVertex(8, 8, 0));
+            babylonBaseItem.setAngle(0);
+
+            babylonBaseItem.updatePosition();
+            babylonBaseItem.updateAngle();
+
+              let buildingPosition: NativeVertexDto = new class implements NativeVertexDto {
+                x = 16;
+                y = 8;
+                z = 0;
+              };
+              babylonBaseItem.setBuildingPosition(buildingPosition);
 
             // const pbr = new PBRMetallicRoughnessMaterial("pbr", this.threeJsRendererService.getScene());
             // pbr.baseColor = new Color3(1.0, 0.766, 0.336);

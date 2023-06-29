@@ -4,6 +4,7 @@ package com.btxtech.shared.datatypes.particle;
  * Created by Beat
  * 05.02.2017.
  */
+@Deprecated
 public class ParticleEmitterConfig<T extends ParticleEmitterConfig<?>> {
     private int id;
     private String internalName;

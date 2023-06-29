@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 import jsinterop.annotations.JsType;
 
 
@@ -31,4 +32,6 @@ public interface BabylonBaseItem {
     void select(boolean active);
 
     void hover(boolean active);
+
+    void setBuildingPosition(NativeVertexDto buildingPosition);
 }

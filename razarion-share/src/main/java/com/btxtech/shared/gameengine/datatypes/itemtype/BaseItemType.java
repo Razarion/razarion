@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import jsinterop.annotations.JsType;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ import java.util.List;
  * Date: 04.12.2009
  * Time: 20:12:06
  */
+@JsType
 public class BaseItemType extends ItemType {
     private PhysicalAreaConfig physicalAreaConfig;
     private int health;

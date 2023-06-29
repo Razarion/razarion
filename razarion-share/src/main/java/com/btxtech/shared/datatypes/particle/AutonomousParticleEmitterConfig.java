@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Vertex;
  * Created by Beat
  * 06.02.2017.
  */
+@Deprecated
 public class AutonomousParticleEmitterConfig extends ParticleEmitterConfig<AutonomousParticleEmitterConfig> {
     // private Logger logger = Logger.getLogger(AutonomousParticleEmitterConfig.class.getName());
     private int startTime;

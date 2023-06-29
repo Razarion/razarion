@@ -17,12 +17,14 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import jsinterop.annotations.JsType;
 
 /**
  * User: beat
  * Date: 17.11.2009
  * Time: 22:50:01
  */
+@JsType
 public abstract class ItemType implements Config {
     private int id;
     private String internalName;

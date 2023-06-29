@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.DrivewayConfig;
@@ -21,7 +22,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManage
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +42,8 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
                                            List<TerrainObjectPosition> terrainObjectPositions,
                                            List<GroundConfig> groundConfigs,
                                            List<ThreeJsModelConfig> threeJsModelConfigs,
-                                           List<ThreeJsModelPackConfig> threeJsModelPackConfigs) {
+                                           List<ThreeJsModelPackConfig> threeJsModelPackConfigs,
+                                           List<ParticleSystemConfig> particleSystemConfigs) {
         if (staticGameConfig == null) {
             staticGameConfig = FallbackConfig.setupStaticGameConfig();
         }
@@ -66,6 +67,7 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
         }
         staticGameConfig.setThreeJsModelConfigs(threeJsModelConfigs);
         staticGameConfig.setThreeJsModelPackConfigs(threeJsModelPackConfigs);
+        staticGameConfig.setParticleSystemConfigs(particleSystemConfigs);
         setupEnvironment(staticGameConfig, planetConfig);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
         getTestNativeTerrainShapeAccess().setTerrainSlopeAndObjectPositions(terrainSlopePositions, terrainObjectPositions);

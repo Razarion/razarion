@@ -43,6 +43,7 @@ public class CommonUrl {
     public static final String UPDATE_RADIUS = "update-radius";
     public static final String GROUND_EDITOR_PATH = "editor/ground";
     public static final String THREE_JS_MODEL_EDITOR_PATH = "editor/three-js-model";
+    public static final String PARTICLE_SYSTEM_EDITOR_PATH = "editor/particle-system";
     public static final String SLOPE_EDITOR_PATH = "editor/slope";
     public static final String DRIVEWAY_EDITOR_PATH = "editor/driveway";
     public static final String WATER_EDITOR_PATH = "editor/water";

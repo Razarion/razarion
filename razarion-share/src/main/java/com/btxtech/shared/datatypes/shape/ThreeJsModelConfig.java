@@ -95,6 +95,7 @@ public class ThreeJsModelConfig implements Config {
 
     public enum Type {
         GLTF,
-        NODES_MATERIAL
+        NODES_MATERIAL,
+        PARTICLE_SYSTEM_JSON
     }
 }

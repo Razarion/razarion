@@ -40,6 +40,8 @@ public class StaticGameConfigPersistence {
     private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
     @Inject
     private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
+    @Inject
+    private ParticleSystemCrudPersistence particleSystemCrudPersistence;
 
     public StaticGameConfig loadStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
@@ -55,6 +57,7 @@ public class StaticGameConfigPersistence {
         staticGameConfig.setInventoryItems(inventoryPersistence.readInventoryItems());
         staticGameConfig.setThreeJsModelConfigs(threeJsModelCrudPersistence.read());
         staticGameConfig.setThreeJsModelPackConfigs(threeJsModelPackCrudPersistence.read());
+        staticGameConfig.setParticleSystemConfigs(particleSystemCrudPersistence.read());
         return staticGameConfig;
     }
 }

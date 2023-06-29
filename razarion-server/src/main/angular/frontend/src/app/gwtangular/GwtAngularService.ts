@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from "@angular/core";
 import { BabylonModelService } from "../game/renderer/babylon-model.service";
-import { GwtAngularBoot, GwtAngularFacade, ThreeJsModelConfig } from "./GwtAngularFacade";
+import {GwtAngularBoot, GwtAngularFacade, ParticleSystemConfig, ThreeJsModelConfig} from "./GwtAngularFacade";
 
 declare global {
   interface Window {
@@ -23,8 +23,8 @@ export class GwtAngularService {
       }
     };
     this.gwtAngularFacade.gwtAngularBoot = new class implements GwtAngularBoot {
-      loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[]) {
-        return threeJsModelService.init(threeJsModelConfigs, self);
+      loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[]) {
+        return threeJsModelService.init(threeJsModelConfigs, particleSystemConfigs, self);
       };
     }
     window.gwtAngularFacade = this.gwtAngularFacade;
