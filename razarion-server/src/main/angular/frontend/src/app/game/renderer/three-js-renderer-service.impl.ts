@@ -339,6 +339,10 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
           }
         }
 
+        setBuildup(buildup: number): void {
+          this.container.scaling.y = buildup;
+        }
+
         private findChildMesh(meshPath: string[]): Mesh {
           for (let childNod of this.container.getChildren()) {
             let found = BabylonModelService.findChildNode(childNod, meshPath);
@@ -407,6 +411,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
         setBuildingPosition(buildingPosition: NativeVertexDto): void {
 
+        }
+
+        setBuildup(buildup: number): void {
         }
 
       }

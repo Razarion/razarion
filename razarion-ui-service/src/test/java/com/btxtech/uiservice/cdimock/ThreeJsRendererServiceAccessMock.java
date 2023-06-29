@@ -124,6 +124,11 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
         }
 
         @Override
+        public void setBuildup(double buildup) {
+
+        }
+
+        @Override
         public Vertex getPosition() {
             return position;
         }

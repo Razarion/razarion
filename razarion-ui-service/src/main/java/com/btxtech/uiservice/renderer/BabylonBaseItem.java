@@ -34,4 +34,6 @@ public interface BabylonBaseItem {
     void hover(boolean active);
 
     void setBuildingPosition(NativeVertexDto buildingPosition);
+
+    void setBuildup(double buildup);
 }

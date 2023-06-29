@@ -252,6 +252,7 @@ public class BaseItemUiService {
                 }
                 // Building
                 babylonBaseItem.setBuildingPosition(nativeSyncBaseItemTickInfo.buildingPosition);
+                babylonBaseItem.setBuildup(nativeSyncBaseItemTickInfo.buildup);
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }

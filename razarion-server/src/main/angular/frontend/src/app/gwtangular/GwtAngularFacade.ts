@@ -412,6 +412,8 @@ export interface BabylonBaseItem {
   hover(active: boolean): void;
 
   setBuildingPosition(buildingPosition: NativeVertexDto | null): void;
+
+  setBuildup(buildup: number): void;
 }
 
 export interface ParticleSystemConfig {
