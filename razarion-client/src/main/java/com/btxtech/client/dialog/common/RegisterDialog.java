@@ -97,7 +97,7 @@ public class RegisterDialog extends Composite implements ModalDialogContent<Void
 
     @Override
     public void onShown() {
-        facebookService.onRegisterButtonShown(modalDialogPanel::close);
+        // TODO facebookService.onRegisterButtonShown(modalDialogPanel::close);
     }
 
     @EventHandler("emailRegisterButton")

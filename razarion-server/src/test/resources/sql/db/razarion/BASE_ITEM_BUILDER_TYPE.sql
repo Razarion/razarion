@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS `BASE_ITEM_BUILDER_TYPE` (
 DELETE FROM `BASE_ITEM_BUILDER_TYPE`;
 /*!40000 ALTER TABLE `BASE_ITEM_BUILDER_TYPE` DISABLE KEYS */;
 INSERT INTO `BASE_ITEM_BUILDER_TYPE` (`id`, `animationOriginX`, `animationOriginY`, `animationOriginZ`, `buildRange`, `progress`, `animationShape3d_id`, `animationParticle_id`, `particleSystem_id`) VALUES
-	(1, 1.63196, 0, 3.04829, 2, 0.01, NULL, NULL, 1),
-	(2, 1.63196, 0, 3.04829, 10, 1, NULL, 6, NULL);
+	(1, 1.63196, 0, 3.04829, 2, 1, NULL, NULL, 1),
+	(2, 1.63196, 0, 3.04829, 2, 1, NULL, 6, 1);
 /*!40000 ALTER TABLE `BASE_ITEM_BUILDER_TYPE` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -106,7 +106,8 @@ export class CollectionSelectorComponent extends EditorPanel {
         label: "Save",
         disabled: this.jsonObject == null,
         command: () => {
-          this.http.post(`${this.url4Collection()}/update`,(<any>this.jsonEditor.get()).json)
+          console.log(this.jsonEditor.get())
+          this.http.post(`${this.url4Collection()}/update`, (<any>this.jsonEditor.get()).json || JSON.parse((<any>this.jsonEditor.get()).text))
             .subscribe(() => {
               this.requestObjectNameId();
               this.messageService.add({
@@ -172,7 +173,6 @@ export class CollectionSelectorComponent extends EditorPanel {
         props: {
           onRenderValue: (renderValueProps: RenderValueProps) => {
 
-            console.info("onRenderValue")
             return renderJSONSchemaEnum(renderValueProps, schema, {}) || renderValue(renderValueProps);
 
             let valueReadOnly = {

@@ -32,11 +32,11 @@ public class ClientPerformanceTrackerService {
     private SimpleScheduledFuture simpleScheduledFuture;
 
     public void start() {
-        if (simpleScheduledFuture != null) {
-            simpleScheduledFuture.cancel();
-            logger.warning("ClientPerformanceTrackerService.start() simpleScheduledFuture != null");
-        }
-        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(SEND_SERVER_INTERVAL, true, this::sendToClient, SimpleExecutorService.Type.PERFMON_SEND_TO_CLIENT);
+//    TODO   if (simpleScheduledFuture != null) {
+//    TODO      simpleScheduledFuture.cancel();
+//    TODO      logger.warning("ClientPerformanceTrackerService.start() simpleScheduledFuture != null");
+//    TODO   }
+//    TODO   simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(SEND_SERVER_INTERVAL, true, this::sendToClient, SimpleExecutorService.Type.PERFMON_SEND_TO_CLIENT);
     }
 
     public void stop() {

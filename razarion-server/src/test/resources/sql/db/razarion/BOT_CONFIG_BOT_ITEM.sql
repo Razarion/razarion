@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `BOT_CONFIG_BOT_ITEM` (
   CONSTRAINT `FKka3ph3evw0vd8qvpafrc8u9q3` FOREIGN KEY (`botEnragementStateConfig`) REFERENCES `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` (`id`),
   CONSTRAINT `FKo3anxwa9qjqljjau19r55097r` FOREIGN KEY (`place_id`) REFERENCES `PLACE_CONFIG` (`id`),
   CONSTRAINT `FKrmnmfvv7eqabotm7aik3kp0vo` FOREIGN KEY (`baseItemTypeEntity_id`) REFERENCES `BASE_ITEM_TYPE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=558 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=592 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `BOT_CONFIG_BOT_ITEM`;
 /*!40000 ALTER TABLE `BOT_CONFIG_BOT_ITEM` DISABLE KEYS */;
@@ -32,20 +32,9 @@ INSERT INTO `BOT_CONFIG_BOT_ITEM` (`id`, `angle`, `count`, `createDirectly`, `id
 	(58, 0, 1, b'1', NULL, b'0', b'0', b'0', NULL, 15, 79, 30),
 	(59, 0, 1, b'1', NULL, b'0', b'1', b'0', NULL, 5, 80, 30),
 	(60, 0, 1, b'1', NULL, b'0', b'1', b'0', NULL, 5, 81, 30),
-	(544, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 5, 627, 187),
-	(545, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 5, 628, 187),
-	(546, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 5, 629, 187),
-	(547, 0, 10, b'1', NULL, b'0', b'0', b'0', 600000, 16, 630, 187),
-	(548, 0, 1, b'1', NULL, b'0', b'0', b'0', NULL, 13, NULL, 188),
-	(549, 0.7853, 1, b'0', NULL, b'0', b'0', b'0', NULL, 22, 632, 188),
-	(550, 0, 1, b'0', NULL, b'0', b'0', b'0', 600000, 15, 633, 188),
-	(551, 0, 2, b'0', NULL, b'0', b'0', b'0', 1000, 16, NULL, 188),
-	(552, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 15, 635, 189),
-	(553, 0, 2, b'0', NULL, b'0', b'0', b'0', 600000, 16, NULL, 189),
-	(554, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 15, 637, 190),
-	(555, 0, 2, b'0', NULL, b'0', b'0', b'0', 600000, 16, NULL, 190),
-	(556, 0, 1, b'1', NULL, b'0', b'0', b'0', 600000, 15, NULL, 191),
-	(557, 0, 2, b'0', NULL, b'0', b'0', b'0', 180000, 16, NULL, 191);
+	(589, 0, 1, b'1', NULL, b'0', b'0', b'0', 60000, 13, NULL, 216),
+	(590, 0, 1, b'0', NULL, b'0', b'0', b'0', 20000, 15, NULL, 216),
+	(591, 0, 3, b'0', NULL, b'0', b'0', b'0', 10000, 16, NULL, 216);
 /*!40000 ALTER TABLE `BOT_CONFIG_BOT_ITEM` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
