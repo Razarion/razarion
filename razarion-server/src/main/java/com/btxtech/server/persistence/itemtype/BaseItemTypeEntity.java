@@ -235,7 +235,7 @@ public class BaseItemTypeEntity {
             if (weaponType == null) {
                 weaponType = new WeaponTypeEntity();
             }
-            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeCrudPersistence, shape3DPersistence, particleEmitterSequenceCrudPersistence);
+            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeCrudPersistence, shape3DPersistence, particleEmitterSequenceCrudPersistence, particleSystemCrudPersistence);
         } else {
             weaponType = null;
         }

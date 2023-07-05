@@ -13,6 +13,7 @@ import {
   Mesh,
   Nullable,
   Observer,
+  ParticleSystem,
   PointerEventTypes,
   PointerInfo,
   Scene,
@@ -55,9 +56,16 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
               private babylonModelService: BabylonModelService
   ) {
     super();
-    renderEngine.getScene().debugLayer.onSelectionChangedObservable.add((selectedBabylonObject: any) => {
-      this.setupSavePanel(selectedBabylonObject)
+    void Promise.all([
+      import("@babylonjs/core/Debug/debugLayer"),
+      import("@babylonjs/inspector"),
+      import("@babylonjs/node-editor")
+    ]).then((_values) => {
+      renderEngine.getScene().debugLayer.onSelectionChangedObservable.add((selectedBabylonObject: any) => {
+        this.setupSavePanel(selectedBabylonObject)
+      });
     });
+
     if (environment.gwtMock) {
       this.dropDownBabylonModels = gameMockService.getThreeJsModels();
     } else {
@@ -286,6 +294,34 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
   }
 
   onLoad() {
+    const type: ThreeJsModelConfig.Type = GwtHelper.gwtIssueStringEnum(this.babylonModelService.getThreeJsModelConfig(this.dropDownLoadBabylonModel.id).getType(), ThreeJsModelConfig.Type);
+    switch (type) {
+      case ThreeJsModelConfig.Type.GLTF:
+        this.loadGltfFromServer();
+        break;
+      case ThreeJsModelConfig.Type.NODES_MATERIAL:
+        this.messageService.add({
+          severity: 'error',
+          summary: `Can not handle NodeMaterial`,
+          sticky: true
+        });
+        break;
+      case ThreeJsModelConfig.Type.PARTICLE_SYSTEM_JSON:
+        this.loadParticleFromServer();
+        break;
+      default:
+        this.messageService.add({
+          severity: 'error',
+          summary: `Can not load ${type}`,
+          sticky: true
+        });
+        break;
+
+
+    }
+  }
+
+  private loadGltfFromServer() {
     let importedMesh: AbstractMesh | null = null;
     let onNewMeshAdded = (abstractMesh: AbstractMesh) => {
       importedMesh = abstractMesh;
@@ -318,6 +354,27 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
         sticky: true
       });
     }
+  }
+
+  private loadParticleFromServer() {
+    const url = `${URL_THREE_JS_MODEL}/${this.dropDownLoadBabylonModel.id}`;
+    this.httpClient.get(url).subscribe({
+      next: (json) => {
+        let particleSystem = ParticleSystem.Parse(json, this.renderEngine.getScene(), "");
+        let position = this.renderEngine.setupCenterGroundPosition();
+        particleSystem.emitter = new Vector3(position.x, position.y, position.z);
+        particleSystem.createPointEmitter(new Vector3(0.1, 1, 0.1), new Vector3(-0.1, 1, -0.1));
+
+      },
+      error: (error: any) => {
+        console.error(`Load Particle System failed: ${this.dropDownLoadBabylonModel.internalName} (${this.dropDownLoadBabylonModel.id}) '${url}'`);
+        this.messageService.add({
+          severity: 'error',
+          summary: `Load Particle System failed: ${this.dropDownLoadBabylonModel.internalName} (${this.dropDownLoadBabylonModel.id}) '${url}' ${error}`,
+          sticky: true
+        });
+      }
+    })
   }
 
   private serializeGltfBlob(mesh: Mesh): Promise<Blob> {

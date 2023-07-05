@@ -36,4 +36,6 @@ public interface BabylonBaseItem {
     void setBuildingPosition(NativeVertexDto buildingPosition);
 
     void setBuildup(double buildup);
+
+    void onProjectileFired(Vertex destination);
 }

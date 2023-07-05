@@ -1,6 +1,8 @@
 package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.ColladaEntity;
+import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
+import com.btxtech.server.persistence.ParticleSystemEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
 import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
@@ -48,7 +50,7 @@ public class WeaponTypeEntity {
     private ColladaEntity projectileShape3D;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ParticleEmitterSequenceEntity muzzleFlashParticle;
+    private ParticleSystemEntity muzzleFlashParticleSystem;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ParticleEmitterSequenceEntity detonationParticle;
@@ -62,7 +64,7 @@ public class WeaponTypeEntity {
                 .detonationRadius(detonationRadius)
                 .reloadTime(reloadTime)
                 .projectileSpeed(projectileSpeed)
-                .muzzleFlashParticleConfigId(extractId(muzzleFlashParticle, ParticleEmitterSequenceEntity::getId))
+                .muzzleFlashParticleSystemConfigId(extractId(muzzleFlashParticleSystem, ParticleSystemEntity::getId))
                 .detonationParticleConfigId(extractId(detonationParticle, ParticleEmitterSequenceEntity::getId))
                 .projectileShape3DId(extractId(projectileShape3D, ColladaEntity::getId));
         if (disallowedItemTypes != null && !disallowedItemTypes.isEmpty()) {
@@ -78,7 +80,7 @@ public class WeaponTypeEntity {
         return weaponType;
     }
 
-    public void fromWeaponType(WeaponType weaponType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence) {
+    public void fromWeaponType(WeaponType weaponType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
         attackRange = weaponType.getRange();
         damage = weaponType.getDamage();
         detonationRadius = weaponType.getDetonationRadius();
@@ -96,7 +98,7 @@ public class WeaponTypeEntity {
         }
         projectileSpeed = weaponType.getProjectileSpeed();
         projectileShape3D = shape3DPersistence.getEntity(weaponType.getProjectileShape3DId());
-        muzzleFlashParticle = particleEmitterSequenceCrudPersistence.getEntity(weaponType.getMuzzleFlashParticleConfigId());
+        muzzleFlashParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getMuzzleFlashParticleSystemConfigId());
         detonationParticle = particleEmitterSequenceCrudPersistence.getEntity(weaponType.getDetonationParticleConfigId());
         if (weaponType.getTurretType() != null) {
             if (turretType == null) {

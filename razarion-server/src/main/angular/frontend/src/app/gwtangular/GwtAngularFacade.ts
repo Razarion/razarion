@@ -299,6 +299,8 @@ export interface BaseItemType extends ItemType {
   getPhysicalAreaConfig(): PhysicalAreaConfig;
 
   getBuilderType(): BuilderType;
+
+  getWeaponType(): WeaponType;
 }
 
 export interface PhysicalAreaConfig {
@@ -307,6 +309,10 @@ export interface PhysicalAreaConfig {
 
 export interface BuilderType {
   getParticleSystemConfigId(): number | null;
+}
+
+export interface WeaponType {
+  getMuzzleFlashParticleSystemConfigId(): number | null;
 }
 
 // ---------- Renderer ----------
@@ -414,6 +420,8 @@ export interface BabylonBaseItem {
   setBuildingPosition(buildingPosition: NativeVertexDto | null): void;
 
   setBuildup(buildup: number): void;
+
+  onProjectileFired(destination: Vertex): void;
 }
 
 export interface ParticleSystemConfig {

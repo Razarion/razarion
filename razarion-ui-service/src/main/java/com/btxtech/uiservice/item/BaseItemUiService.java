@@ -273,6 +273,13 @@ public class BaseItemUiService {
         }
     }
 
+    public void onProjectileFired(int syncBaseItemId, Vertex destination) {
+        BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(syncBaseItemId);
+        if (babylonBaseItem != null) {
+            babylonBaseItem.onProjectileFired(destination);
+        }
+    }
+
     private void updateItemCountOnSideCockpit() {
         cockpitService.onItemCountChanged(itemCount, getMyTotalHouseSpace());
     }

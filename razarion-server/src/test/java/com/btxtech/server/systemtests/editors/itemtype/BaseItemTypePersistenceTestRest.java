@@ -216,7 +216,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         attacker.setI18nName(i18nHelper("Attacker"));
         attacker.setI18nDescription(i18nHelper("Attacks other units"));
         attacker.getPhysicalAreaConfig().radius(2).acceleration(5.0).speed(17.0).angularVelocity(Math.toRadians(60)).endAngleSlowDown(Math.toRadians(150));
-        attacker.setWeaponType(new WeaponType().range(10).damage(1).reloadTime(3).detonationRadius(1).projectileSpeed(17.0).projectileShape3DId(SHAPE_3D_1_ID).muzzleFlashParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).detonationParticleConfigId(PARTICLE_EMITTER_SEQUENCE_3_ID).turretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
+        attacker.setWeaponType(new WeaponType().range(10).damage(1).reloadTime(3).detonationRadius(1).projectileSpeed(17.0).projectileShape3DId(SHAPE_3D_1_ID).muzzleFlashParticleSystemConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).detonationParticleConfigId(PARTICLE_EMITTER_SEQUENCE_3_ID).turretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
         attacker.setBoxPickupRange(2).setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setBuildup(15);
         attacker.setPrice(100).setWreckageShape3DId(SHAPE_3D_3_ID);
     }
@@ -226,7 +226,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         tower.setI18nName(i18nHelper("Tower"));
         tower.setI18nDescription(i18nHelper("Defense tower"));
         tower.getPhysicalAreaConfig().radius(4).fixVerticalNorm(true);
-        tower.setWeaponType(new WeaponType().range(20).damage(1).reloadTime(3).detonationRadius(1).projectileSpeed(40.0).projectileShape3DId(SHAPE_3D_2_ID).muzzleFlashParticleConfigId(PARTICLE_EMITTER_SEQUENCE_2_ID).detonationParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).turretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
+        tower.setWeaponType(new WeaponType().range(20).damage(1).reloadTime(3).detonationRadius(1).projectileSpeed(40.0).projectileShape3DId(SHAPE_3D_2_ID).muzzleFlashParticleSystemConfigId(PARTICLE_EMITTER_SEQUENCE_2_ID).detonationParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).turretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
         tower.setExplosionParticleConfigId(PARTICLE_EMITTER_SEQUENCE_1_ID).setWreckageShape3DId(SHAPE_3D_1_ID).setBuildup(45);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1

@@ -164,6 +164,11 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
             return hover;
         }
 
+        @Override
+        public void onProjectileFired(Vertex destination) {
+
+        }
+
         public BaseItemType getBaseItemType() {
             return baseItemType;
         }

@@ -15,7 +15,8 @@ import {
   BuilderType,
   Diplomacy,
   NativeVertexDto,
-  PhysicalAreaConfig
+  PhysicalAreaConfig,
+  WeaponType
 } from "../gwtangular/GwtAngularFacade";
 import {GwtInstance} from "../gwtangular/GwtInstance";
 
@@ -92,6 +93,14 @@ export class GameComponent implements OnInit {
                 return new class implements BuilderType {
                   getParticleSystemConfigId(): number | null {
                     return 1;
+                  }
+                }
+              }
+
+              getWeaponType(): WeaponType {
+                return new class implements WeaponType {
+                  getMuzzleFlashParticleSystemConfigId(): number | null {
+                    return 2;
                   }
                 }
               }

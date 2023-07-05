@@ -45,7 +45,7 @@ public class EffectVisualizationService {
     private Map<Integer, ParticleEmitterSequenceHandler> buildupBaseItemEntries = new HashMap<>();
 
     public void onProjectileFired(BaseItemType baseItemType, Vertex muzzlePosition, Vertex target) {
-        Integer muzzleFlashParticleEmitterSequenceConfigId = baseItemType.getWeaponType().getMuzzleFlashParticleConfigId();
+        Integer muzzleFlashParticleEmitterSequenceConfigId = baseItemType.getWeaponType().getMuzzleFlashParticleSystemConfigId();
         if (muzzleFlashParticleEmitterSequenceConfigId == null) {
             logger.warning("No muzzleFlashParticleEmitterSequenceConfigId configured for: " + baseItemType);
             return;

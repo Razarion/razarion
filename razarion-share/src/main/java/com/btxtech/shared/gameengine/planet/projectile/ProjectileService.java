@@ -53,7 +53,7 @@ public class ProjectileService {
             projectiles.add(projectile);
         }
 
-        gameLogicService.onProjectileFired(actor, muzzle, target.getSyncPhysicalArea().getPosition3d());
+        gameLogicService.onProjectileFired(actor, target.getSyncPhysicalArea().getPosition3d());
     }
 
     public void tick() {

@@ -361,7 +361,7 @@ public abstract class GameEngineControl {
                 inventoryUiService.onOnBoxPicked((BoxContent) controlPackage.getSingleData());
                 break;
             case PROJECTILE_FIRED:
-                projectileUiService.onProjectileFired((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1), (Vertex) controlPackage.getData(2));
+                baseItemUiService.onProjectileFired((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1));
                 break;
             case PROJECTILE_DETONATION:
                 effectVisualizationService.onProjectileDetonation((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1));

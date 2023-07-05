@@ -127,12 +127,12 @@ public class WorkerMarshaller {
             case PROJECTILE_DETONATION:
             case SINGLE_Z_TERRAIN_ANSWER:
             case ENERGY_CHANGED:
+            case PROJECTILE_FIRED:
                 array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.setAt(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
             // Triple JSON data
             case COMMAND_BUILD:
-            case PROJECTILE_FIRED:
                 array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.setAt(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.setAt(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
@@ -320,7 +320,6 @@ public class WorkerMarshaller {
             case PROJECTILE_FIRED:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), Vertex.class));
-                data.add(fromJson(array[DATA_OFFSET_2].asString(), Vertex.class));
                 break;
             case PROJECTILE_DETONATION:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));

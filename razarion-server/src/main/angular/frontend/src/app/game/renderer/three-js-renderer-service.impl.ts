@@ -7,6 +7,7 @@ import {
   Diplomacy,
   MeshContainer,
   NativeVertexDto,
+  ParticleSystemConfig,
   ShapeTransform,
   TerrainObjectPosition,
   TerrainTile,
@@ -318,21 +319,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
           if (nativeBuildingPosition && !this.buildingParticleSystem) {
             try {
               let particleSystemConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemConfig(baseItemType.getBuilderType()?.getParticleSystemConfigId()!);
-              const particleJsonConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemJson(particleSystemConfig.getThreeJsModelId());
-              const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath());
               const buildingPosition = new Vector3(nativeBuildingPosition.x, nativeBuildingPosition.z, nativeBuildingPosition.y);
-
-              this.buildingParticleSystem = ParticleSystem.Parse(particleJsonConfig, threeJsRendererServiceImpl.getScene(), "");
-              emitterMesh.computeWorldMatrix(true);
-              this.buildingParticleSystem.emitter = emitterMesh.absolutePosition;
-              const beam = buildingPosition.subtract(emitterMesh.absolutePosition);
-              const distance = beam.length();
-              const delta = 2;
-              const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
-              const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
-              this.buildingParticleSystem.createPointEmitter(direction1, direction2);
-              this.buildingParticleSystem.minLifeTime = distance
-              this.buildingParticleSystem.maxLifeTime = distance
+              this.buildingParticleSystem = this.createParticleSystem(particleSystemConfig, buildingPosition, true);
             } catch (e) {
               console.error(e);
             }
@@ -341,6 +329,15 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
         setBuildup(buildup: number): void {
           this.container.scaling.y = buildup;
+        }
+
+        onProjectileFired(destination: Vertex): void {
+          if (!baseItemType.getWeaponType().getMuzzleFlashParticleSystemConfigId()) {
+            console.warn(`No MuzzleFlashParticleSystemConfigId for ${baseItemType.getInternalName()} '${baseItemType.getId()}'`);
+            return;
+          }
+          let particleSystemConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemConfig(baseItemType.getWeaponType().getMuzzleFlashParticleSystemConfigId()!);
+          this.createParticleSystem(particleSystemConfig, new Vector3(destination.getX(), destination.getZ(), destination.getY()), false);
         }
 
         private findChildMesh(meshPath: string[]): Mesh {
@@ -358,6 +355,27 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             this.buildingParticleSystem!.dispose();
             this.buildingParticleSystem = null;
           }
+        }
+
+        private createParticleSystem(particleSystemConfig: ParticleSystemConfig, destination: Vector3, stretchToDestination: boolean): ParticleSystem {
+          const particleJsonConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemJson(particleSystemConfig.getThreeJsModelId());
+          const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath());
+
+          const particleSystem = ParticleSystem.Parse(particleJsonConfig, threeJsRendererServiceImpl.getScene(), "");
+          emitterMesh.computeWorldMatrix(true);
+          particleSystem.emitter = emitterMesh.absolutePosition;
+          const beam = destination.subtract(emitterMesh.absolutePosition);
+          const delta = 2;
+          const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
+          const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
+          particleSystem.createPointEmitter(direction1, direction2);
+          if (stretchToDestination) {
+            const distance = beam.length();
+            particleSystem.minLifeTime = distance;
+            particleSystem.maxLifeTime = distance;
+          }
+
+          return particleSystem;
         }
       }
     } catch (error) {
@@ -414,6 +432,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         }
 
         setBuildup(buildup: number): void {
+        }
+
+        onProjectileFired(destination: Vertex): void {
         }
 
       }

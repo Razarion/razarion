@@ -14,6 +14,10 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import jsinterop.annotations.JsType;
+
 import java.util.List;
 
 /**
@@ -21,6 +25,7 @@ import java.util.List;
  * Date: 17.11.2009
  * Time: 23:13:22
  */
+@JsType
 public class WeaponType {
     private double range;
     private int damage;
@@ -29,7 +34,8 @@ public class WeaponType {
     private List<Integer> disallowedItemTypes;
     private Double projectileSpeed; // Meter per second
     private Integer projectileShape3DId;
-    private Integer muzzleFlashParticleConfigId;
+    @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
+    private Integer muzzleFlashParticleSystemConfigId;
     private Integer detonationParticleConfigId;
     private TurretType turretType;
 
@@ -89,12 +95,12 @@ public class WeaponType {
         this.projectileShape3DId = projectileShape3DId;
     }
 
-    public Integer getMuzzleFlashParticleConfigId() {
-        return muzzleFlashParticleConfigId;
+    public Integer getMuzzleFlashParticleSystemConfigId() {
+        return muzzleFlashParticleSystemConfigId;
     }
 
-    public void setMuzzleFlashParticleConfigId(Integer muzzleFlashParticleConfigId) {
-        this.muzzleFlashParticleConfigId = muzzleFlashParticleConfigId;
+    public void setMuzzleFlashParticleSystemConfigId(Integer muzzleFlashParticleSystemConfigId) {
+        this.muzzleFlashParticleSystemConfigId = muzzleFlashParticleSystemConfigId;
     }
 
     public Integer getDetonationParticleConfigId() {
@@ -148,8 +154,8 @@ public class WeaponType {
         return this;
     }
 
-    public WeaponType muzzleFlashParticleConfigId(Integer muzzleFlashParticleConfigId) {
-        setMuzzleFlashParticleConfigId(muzzleFlashParticleConfigId);
+    public WeaponType muzzleFlashParticleSystemConfigId(Integer muzzleFlashParticleConfigId) {
+        setMuzzleFlashParticleSystemConfigId(muzzleFlashParticleConfigId);
         return this;
     }
 

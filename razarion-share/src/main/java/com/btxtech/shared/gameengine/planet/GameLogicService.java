@@ -116,8 +116,8 @@ public class GameLogicService {
     public void onSyncFactoryStopped(SyncBaseItem syncBaseItem) {
     }
 
-    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex muzzlePosition, Vertex target) {
-        gameLogicListener.ifPresent(listener -> listener.onProjectileFired(syncBaseItem.getItemType().getId(), muzzlePosition, target));
+    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex target) {
+        gameLogicListener.ifPresent(listener -> listener.onProjectileFired(syncBaseItem, target));
     }
 
     public void onProjectileDetonation(SyncBaseItem syncBaseItem, Vertex position) {

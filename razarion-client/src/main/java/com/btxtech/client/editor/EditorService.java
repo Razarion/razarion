@@ -29,18 +29,6 @@ public class EditorService {
     private ExceptionHandler exceptionHandler;
 
     public void openEditorMenu() {
-        try {
-            modalDialogManager.show("Editor Menu",
-                    ClientModalDialogManagerImpl.Type.QUEUE_ABLE,
-                    EditorMenuDialog.class,
-                    null,
-                    null,
-                    null,
-                    (Integer) null,
-                    DialogButton.Button.CLOSE);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
     }
 
     public void activateFallbackEditorMenuButton() {

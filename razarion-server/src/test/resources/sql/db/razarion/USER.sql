@@ -28,13 +28,13 @@ CREATE TABLE IF NOT EXISTS `USER` (
   KEY `FKas5w8de0ic1qgeo8edbs89ffy` (`level_id`),
   CONSTRAINT `FKas5w8de0ic1qgeo8edbs89ffy` FOREIGN KEY (`level_id`) REFERENCES `LEVEL` (`id`),
   CONSTRAINT `FKtr8la4tg31fj84o5q5wepu6ai` FOREIGN KEY (`activeQuest_id`) REFERENCES `QUEST` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=620 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=847 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `USER`;
 /*!40000 ALTER TABLE `USER` DISABLE KEYS */;
 INSERT INTO `USER` (`id`, `admin`, `crystals`, `email`, `facebookUserId`, `locale`, `name`, `passwordHash`, `registerDate`, `verificationDoneDate`, `verificationId`, `verificationStartedDate`, `verificationTimedOutDate`, `xp`, `activeQuest_id`, `level_id`) VALUES
-  (591, b'1', 0, 'admin@admin.com', NULL, NULL, NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, NULL),
-  (592, b'0', 0, 'user@user.com', NULL, NULL, NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, NULL);
+	(591, b'1', 0, 'admin@admin.com', NULL, NULL, NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, 265),
+	(592, b'0', 0, 'user@user.com', NULL, NULL, NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, 265);
 /*!40000 ALTER TABLE `USER` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
