@@ -10,15 +10,15 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
  * Time: 08:08
  */
 public class Projectile {
-    private SyncBaseItem actor;
-    private Vertex start;
-    private Vertex target;
+    private final SyncBaseItem actor;
+    private final Vertex start;
+    private final Vertex target;
+    private final double tickDistance;
     private Vertex position;
-    private double tickDistance;
 
-    Projectile(SyncBaseItem actor, Vertex start, Vertex target) {
+    Projectile(SyncBaseItem actor, Vertex target) {
         this.actor = actor;
-        this.start = start;
+        this.start = actor.getSyncPhysicalArea().getPosition3d();
         this.target = target;
         position = start;
         tickDistance = actor.getSyncWeapon().getWeaponType().getProjectileSpeed() * PlanetService.TICK_FACTOR;

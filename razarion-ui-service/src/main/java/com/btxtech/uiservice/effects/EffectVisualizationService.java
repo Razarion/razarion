@@ -63,15 +63,6 @@ public class EffectVisualizationService {
         playParticle(System.currentTimeMillis(), position, null, detonationParticleEmitterSequenceConfigId);
     }
 
-    public void onSyncBaseItemsExplode(NativeSimpleSyncBaseItemTickInfo[] nativeSimpleSyncBaseItemTickInfos) {
-        long timeStamp = System.currentTimeMillis();
-        for (NativeSimpleSyncBaseItemTickInfo nativeSimpleSyncBaseItemTickInfo : nativeSimpleSyncBaseItemTickInfos) {
-            if (!nativeSimpleSyncBaseItemTickInfo.contained) {
-                onSyncBaseItemExplode(nativeSimpleSyncBaseItemTickInfo, timeStamp);
-            }
-        }
-    }
-
     public void baseItemRemoved(int[] removeSyncBaseItemIds) {
         for (int syncBaseItemId : removeSyncBaseItemIds) {
             removeBuildingDemolitionEffect(syncBaseItemId);

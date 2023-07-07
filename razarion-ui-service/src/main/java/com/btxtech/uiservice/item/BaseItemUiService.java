@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
@@ -277,6 +278,17 @@ public class BaseItemUiService {
         BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(syncBaseItemId);
         if (babylonBaseItem != null) {
             babylonBaseItem.onProjectileFired(destination);
+        }
+    }
+
+    public void onSyncBaseItemsExplode(NativeSimpleSyncBaseItemTickInfo[] nativeSimpleSyncBaseItemTickInfos) {
+        for (NativeSimpleSyncBaseItemTickInfo nativeSimpleSyncBaseItemTickInfo : nativeSimpleSyncBaseItemTickInfos) {
+            if (!nativeSimpleSyncBaseItemTickInfo.contained) {
+                BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSimpleSyncBaseItemTickInfo.id);
+                if (babylonBaseItem != null) {
+                    babylonBaseItem.onExplode();
+                }
+            }
         }
     }
 

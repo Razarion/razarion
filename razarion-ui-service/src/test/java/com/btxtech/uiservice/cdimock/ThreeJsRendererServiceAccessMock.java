@@ -35,11 +35,6 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
     }
 
     @Override
-    public void createProjectile(Vertex start, Vertex destination, double duration) {
-        logger.warning("createProjectile()");
-    }
-
-    @Override
     public void setViewFieldCenter(double x, double y) {
         logger.warning("setViewFieldCenter()");
     }
@@ -166,6 +161,11 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
 
         @Override
         public void onProjectileFired(Vertex destination) {
+
+        }
+
+        @Override
+        public void onExplode() {
 
         }
 

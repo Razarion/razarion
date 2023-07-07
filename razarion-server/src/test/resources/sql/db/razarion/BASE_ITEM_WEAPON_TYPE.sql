@@ -32,11 +32,11 @@ CREATE TABLE IF NOT EXISTS `BASE_ITEM_WEAPON_TYPE` (
 DELETE FROM `BASE_ITEM_WEAPON_TYPE`;
 /*!40000 ALTER TABLE `BASE_ITEM_WEAPON_TYPE` DISABLE KEYS */;
 INSERT INTO `BASE_ITEM_WEAPON_TYPE` (`id`, `attackRange`, `damage`, `detonationRadius`, `projectileSpeed`, `reloadTime`, `projectileShape3D_id`, `turretType_id`, `detonationParticle_id`, `muzzleFlashParticle_id`, `muzzleFlashParticleSystem_id`) VALUES
-	(1, 10, 10, 1, 50, 1, 6, 1, 3, 4, 2),
+	(1, 10, 10, 1, 30, 1, 6, 1, 3, 4, 2),
 	(2, 20, 30, 2, 47, 2, 6, 2, 3, 4, NULL),
 	(3, 15, 12, 1, 50, 1, 6, 3, 3, 4, NULL),
 	(4, 15, 12, 1, 50, 1, 6, 4, 3, 4, NULL),
-	(5, 10, 10, 1, 50, 1, 6, 5, 3, 4, 2),
+	(5, 10, 10, 1, 30, 1, 6, 5, 3, 4, 2),
 	(6, 20, 20, 2, 50, 1, 6, 6, 3, 4, NULL),
 	(7, 20, 30, 2, 47, 2, 6, 7, 3, 4, NULL);
 /*!40000 ALTER TABLE `BASE_ITEM_WEAPON_TYPE` ENABLE KEYS */;

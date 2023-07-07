@@ -99,6 +99,9 @@ export class GameComponent implements OnInit {
 
               getWeaponType(): WeaponType {
                 return new class implements WeaponType {
+                  getProjectileSpeed(): number | null {
+                    return 30;
+                  }
                   getMuzzleFlashParticleSystemConfigId(): number | null {
                     return 2;
                   }

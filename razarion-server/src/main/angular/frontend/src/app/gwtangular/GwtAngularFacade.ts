@@ -313,6 +313,8 @@ export interface BuilderType {
 
 export interface WeaponType {
   getMuzzleFlashParticleSystemConfigId(): number | null;
+
+  getProjectileSpeed(): number | null;
 }
 
 // ---------- Renderer ----------
@@ -320,8 +322,6 @@ export interface ThreeJsRendererServiceAccess {
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
 
   createSyncBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem;
-
-  createProjectile(start: Vertex, destination: Vertex, duration: number): void;
 
   setViewFieldCenter(x: number, y: number): void;
 
@@ -422,6 +422,8 @@ export interface BabylonBaseItem {
   setBuildup(buildup: number): void;
 
   onProjectileFired(destination: Vertex): void;
+
+  onExplode(): void;
 }
 
 export interface ParticleSystemConfig {

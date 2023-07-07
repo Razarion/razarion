@@ -236,15 +236,15 @@ public abstract class GameEngineControl {
     private void onTickUpdate(NativeTickInfo nativeTickInfo) {
         perfmonService.onEntered(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
         try {
+            if (nativeTickInfo.killedSyncBaseItems != null) {
+                selectionHandler.baseItemRemoved(nativeTickInfo.killedSyncBaseItems);
+                baseItemUiService.onSyncBaseItemsExplode(nativeTickInfo.killedSyncBaseItems);
+            }
             baseItemUiService.updateSyncBaseItems(nativeTickInfo.updatedNativeSyncBaseItemTickInfos);
             gameUiControl.setGameInfo(nativeTickInfo);
             if (nativeTickInfo.removeSyncBaseItemIds != null) {
                 selectionHandler.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
                 effectVisualizationService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
-            }
-            if (nativeTickInfo.killedSyncBaseItems != null) {
-                selectionHandler.baseItemRemoved(nativeTickInfo.killedSyncBaseItems);
-                effectVisualizationService.onSyncBaseItemsExplode(nativeTickInfo.killedSyncBaseItems);
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

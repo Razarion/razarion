@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
@@ -12,8 +11,6 @@ public interface ThreeJsRendererServiceAccess {
     ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId);
 
     BabylonBaseItem createSyncBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy);
-
-    void createProjectile(Vertex start, Vertex destination, double duration);
 
     void setViewFieldCenter(double x, double y);
 

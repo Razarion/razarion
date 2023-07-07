@@ -32,6 +32,7 @@ import {
   MeshBuilder,
   Node,
   NodeMaterial,
+  ParticleHelper,
   ParticleSystem,
   PointerEventTypes,
   Quaternion,
@@ -70,6 +71,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private diplomacyMaterialCache: Map<number, Map<Diplomacy, NodeMaterial>> = new Map<number, Map<Diplomacy, NodeMaterial>>();
   private itemMarkerMaterialCache: Map<Diplomacy, SimpleMaterial> = new Map<Diplomacy, SimpleMaterial>();
   private baseItemContainer!: TransformNode;
+  private projectileMaterial!: SimpleMaterial;
 
   constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -81,6 +83,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
     this.threeJsModelService.setScene(this.scene);
     this.baseItemContainer = new TransformNode("BaseItems");
+    this.projectileMaterial = new SimpleMaterial("Projectile", this.scene);
+    this.projectileMaterial.diffuseColor = new Color3(0, 0, 0);
 
     // ----- Keyboard -----
     const self = this;
@@ -320,7 +324,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             try {
               let particleSystemConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemConfig(baseItemType.getBuilderType()?.getParticleSystemConfigId()!);
               const buildingPosition = new Vector3(nativeBuildingPosition.x, nativeBuildingPosition.z, nativeBuildingPosition.y);
-              this.buildingParticleSystem = this.createParticleSystem(particleSystemConfig, buildingPosition, true);
+              const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath())
+              emitterMesh.computeWorldMatrix(true);
+              this.buildingParticleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, buildingPosition, true);
             } catch (e) {
               console.error(e);
             }
@@ -336,8 +342,24 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             console.warn(`No MuzzleFlashParticleSystemConfigId for ${baseItemType.getInternalName()} '${baseItemType.getId()}'`);
             return;
           }
+          const correctDestination = new Vector3(destination.getX(), destination.getZ(), destination.getY());
           let particleSystemConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemConfig(baseItemType.getWeaponType().getMuzzleFlashParticleSystemConfigId()!);
-          this.createParticleSystem(particleSystemConfig, new Vector3(destination.getX(), destination.getZ(), destination.getY()), false);
+          const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath());
+          emitterMesh.computeWorldMatrix(true);
+          const particleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, correctDestination, false);
+          particleSystem.disposeOnStop = true;
+
+          this.createProjectile(emitterMesh.absolutePosition, correctDestination);
+        }
+
+        onExplode(): void {
+          ParticleHelper.CreateAsync("explosion", threeJsRendererServiceImpl.scene).then((set) => {
+            set.systems.forEach(s => {
+              s.disposeOnStop = true;
+            });
+            set.emitterNode = this.container.position;
+            set.start();
+          });
         }
 
         private findChildMesh(meshPath: string[]): Mesh {
@@ -357,12 +379,60 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
           }
         }
 
-        private createParticleSystem(particleSystemConfig: ParticleSystemConfig, destination: Vector3, stretchToDestination: boolean): ParticleSystem {
+        private createProjectile(start: Vector3, destination: Vector3): void {
+          if (!baseItemType.getWeaponType().getProjectileSpeed()) {
+            return;
+          }
+          const projectileSpeed = GwtHelper.gwtIssueNumber(baseItemType.getWeaponType().getProjectileSpeed());
+          if (projectileSpeed <= 0.0) {
+            return;
+          }
+
+          const mesh = MeshBuilder.CreateSphere("Projectile", {
+            diameter: 0.2,
+            segments: 1
+          }, threeJsRendererServiceImpl.scene);
+          mesh.material = threeJsRendererServiceImpl.projectileMaterial;
+
+          const frameRate = 1;
+          const xSlide = new Animation("Projectile",
+            "position",
+            frameRate,
+            Animation.ANIMATIONTYPE_VECTOR3,
+            Animation.ANIMATIONLOOPMODE_CONSTANT);
+
+          const keyFrames = [];
+
+          keyFrames.push({
+            frame: 0,
+            value: start
+          });
+
+          keyFrames.push({
+            frame: 1,
+            value: destination
+          });
+
+          xSlide.setKeys(keyFrames);
+
+          mesh.animations.push(xSlide);
+
+
+          let animatable = threeJsRendererServiceImpl.scene.beginAnimation(mesh,
+            0,
+            1,
+            false,
+            projectileSpeed / start.subtract(destination).length());
+          animatable.onAnimationEnd = () => {
+            threeJsRendererServiceImpl.scene.removeMesh(mesh);
+            mesh.dispose();
+          };
+        }
+
+        private createParticleSystem(particleSystemConfig: ParticleSystemConfig, emitterMesh: Mesh, destination: Vector3, stretchToDestination: boolean): ParticleSystem {
           const particleJsonConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemJson(particleSystemConfig.getThreeJsModelId());
-          const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath());
 
           const particleSystem = ParticleSystem.Parse(particleJsonConfig, threeJsRendererServiceImpl.getScene(), "");
-          emitterMesh.computeWorldMatrix(true);
           particleSystem.emitter = emitterMesh.absolutePosition;
           const beam = destination.subtract(emitterMesh.absolutePosition);
           const delta = 2;
@@ -437,43 +507,11 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         onProjectileFired(destination: Vertex): void {
         }
 
+        onExplode(): void {
+        }
+
       }
     }
-  }
-
-  createProjectile(start: Vertex, destination: Vertex, duration: number): void {
-    const box = MeshBuilder.CreateSphere("Projectile", {diameter: 0.1, segments: 1}, this.scene);
-
-    const frameRate = 1;
-    const xSlide = new Animation("Projectile",
-      "position",
-      frameRate,
-      Animation.ANIMATIONTYPE_VECTOR3,
-      Animation.ANIMATIONLOOPMODE_CONSTANT);
-
-    const keyFrames = [];
-
-    keyFrames.push({
-      frame: 0,
-      value: new Vector3(start.getX(), start.getZ(), start.getY())
-    });
-
-    keyFrames.push({
-      frame: 1,
-      value: new Vector3(destination.getX(), destination.getZ(), destination.getY())
-    });
-
-    xSlide.setKeys(keyFrames);
-
-    box.animations.push(xSlide);
-
-    let animatable = this.scene.beginAnimation(box, 0, 1, false, 1.0 / duration);
-    animatable.onAnimationEnd = () => {
-      this.scene.removeMesh(box);
-      box.dispose();
-    };
-
-
   }
 
 

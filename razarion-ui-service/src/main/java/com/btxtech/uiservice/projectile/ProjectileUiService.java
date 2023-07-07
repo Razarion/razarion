@@ -38,19 +38,6 @@ public class ProjectileUiService {
         modelMatrices.clear();
     }
 
-    public void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex target) {
-        BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
-
-        double duration = muzzlePosition.distance(target) / baseItemType.getWeaponType().getProjectileSpeed();
-        threeJsRendererService.createProjectile(muzzlePosition, target, duration);
-
-        ProjectileUi projectileUi = new ProjectileUi(baseItemType, muzzlePosition, target, baseItemType.getWeaponType().getProjectileSpeed());
-        synchronized (projectiles) {
-            projectiles.add(projectileUi);
-        }
-        effectVisualizationService.onProjectileFired(baseItemType, muzzlePosition, target);
-    }
-
     public void preRender(long timeStamp) {
         MapList<BaseItemType, ModelMatrices> modelMatricesTmp = new MapList<>();
         synchronized (projectiles) {

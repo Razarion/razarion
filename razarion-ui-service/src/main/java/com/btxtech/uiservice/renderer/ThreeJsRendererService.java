@@ -27,10 +27,6 @@ public class ThreeJsRendererService {
         return threeJsRendererServiceAccess.createSyncBaseItem(id, baseItemType, diplomacy);
     }
 
-    public void createProjectile(Vertex start, Vertex destination, double duration) {
-        threeJsRendererServiceAccess.createProjectile(start, destination, duration);
-    }
-
     public void executeViewFieldConfig(ViewFieldConfig viewFieldConfig, Optional<Runnable> completionCallback) {
         if (viewFieldConfig.getToPosition() == null) {
             LOG.warning("Can only execute ViewFieldConfig with to-position");

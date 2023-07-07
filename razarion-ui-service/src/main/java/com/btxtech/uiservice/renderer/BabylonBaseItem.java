@@ -38,4 +38,6 @@ public interface BabylonBaseItem {
     void setBuildup(double buildup);
 
     void onProjectileFired(Vertex destination);
+
+    void onExplode();
 }
