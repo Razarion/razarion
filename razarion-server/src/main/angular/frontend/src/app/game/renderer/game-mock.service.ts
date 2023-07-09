@@ -37,13 +37,12 @@ import {
   Vertex,
   WaterConfig
 } from "src/app/gwtangular/GwtAngularFacade";
-import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 import {HttpClient} from "@angular/common/http";
 import * as Stats from 'stats.js';
 import {GwtInstance} from "../../gwtangular/GwtInstance";
+import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 
 let staticGameConfigJson: any = {};
-let allElement3DIdModelMatricesJson: any = {};
 
 @Injectable()
 export class GameMockService {
@@ -99,33 +98,6 @@ export class GameMockService {
             id = -99999;
             internalName = "Svelte-jsoneditor";
           }]);
-        }
-
-        requestObjectNameId(collectionName: string, configId: number): Promise<ObjectNameId> {
-          throw new Error("Method not implemented.");
-        }
-
-        createConfig(collectionName: string): Promise<GwtAngularPropertyTable> {
-          throw new Error("Method not implemented.");
-        }
-
-        readConfig(collectionName: string, configId: number): Promise<GwtAngularPropertyTable> {
-          return Promise.resolve(new class implements GwtAngularPropertyTable {
-            configId = -99999;
-            rootTreeNodes = [];
-          });
-        }
-
-        updateConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void> {
-          throw new Error("Method not implemented.");
-        }
-
-        deleteConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void> {
-          throw new Error("Method not implemented.");
-        }
-
-        colladaConvert(gwtAngularPropertyTable: GwtAngularPropertyTable, colladaString: string): Promise<void> {
-          throw new Error("Method not implemented.");
         }
 
         getPathForCollection(collectionName: string): string {
@@ -193,12 +165,6 @@ export class GameMockService {
             setTerrainObjectConfigId(terrainObjectConfigId: number): void {
             }
           }]);
-        }
-
-        activate(): void {
-        }
-
-        deactivate(): void {
         }
 
         getAllDriveways(): Promise<ObjectNameId[]> {
@@ -304,15 +270,6 @@ export class GameMockService {
     });
   }
 
-  loadElement3DIdModelMatrices(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.http.get<TerrainTile[]>("/gwt-mock/element-3D-Id_model-matrices").subscribe((value: any) => {
-        allElement3DIdModelMatricesJson = value;
-        resolve(value);
-      });
-    });
-  }
-
   loadMockAssetConfig(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.http.get<TerrainTile[]>("/gwt-mock/unity-asset-converter-test-asset-config").subscribe((value: any) => {
@@ -325,8 +282,6 @@ export class GameMockService {
   mockTerrainTypeService(): TerrainTypeService {
     let _this = this;
     return new class implements TerrainTypeService {
-      terrainTypeService = this;
-
       getTerrainObjectConfig(terrainObjectConfigId: number): TerrainObjectConfig {
         let terrainObjectConfig: TerrainObjectConfig | null = null;
         staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
@@ -384,14 +339,6 @@ export class GameMockService {
 
             getGroundConfigId(): number {
               return slopeConfigJson.groundConfigId;
-            }
-
-            getInnerSlopeThreeJsMaterial(): number | null {
-              return slopeConfigJson.innerSlopeThreeJsMaterial;
-            }
-
-            getOuterSlopeThreeJsMaterial(): number | null {
-              return slopeConfigJson.outerSlopeThreeJsMaterial;
             }
 
             getWaterConfigId(): number {
@@ -554,9 +501,7 @@ export class GameMockService {
             for (const [key, terrainSlopeTileJson] of Object.entries(terrainTileJson.terrainSlopeTiles)) {
               terrainSlopeTiles.push(new class implements TerrainSlopeTile {
                 slopeConfigId: number = <number>(<any>terrainSlopeTileJson)["slopeConfigId"];
-                outerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("outerSlopeGeometry", <any>terrainSlopeTileJson);
                 centerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("centerSlopeGeometry", <any>terrainSlopeTileJson);
-                innerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("innerSlopeGeometry", <any>terrainSlopeTileJson);
               });
             }
             return terrainSlopeTiles;

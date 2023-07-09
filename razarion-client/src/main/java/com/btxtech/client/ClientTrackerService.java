@@ -27,8 +27,6 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.TrackerService;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
@@ -59,17 +57,13 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private static final String WINDOW_CLOSE = "Window closed -> move to DB";
     private static final String START_UUID = "uuid";
     private static final int DETAILED_TRACKING_DELAY = 1000 * 10;
-    private Logger logger = Logger.getLogger(ClientTrackerService.class.getName());
+    private final Logger logger = Logger.getLogger(ClientTrackerService.class.getName());
     @Inject
     private Caller<TrackerProvider> trackingProvider;
     @Inject
     private Boot boot;
     @Inject
     private SimpleExecutorService detailedExecutionService;
-    @Inject
-    private Camera camera;
-    @Inject
-    private ProjectionTransformation projectionTransformation;
     @Inject
     private GameCanvas gameCanvas;
     @Inject
@@ -207,7 +201,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         }
         CameraTracking cameraTracking = new CameraTracking();
         initDetailedTracking(cameraTracking);
-        cameraTracking.setPosition(camera.getPosition().toXY()).setFovY(projectionTransformation.getFovY());
+        //cameraTracking.setPosition(camera.getPosition().toXY()).setFovY(projectionTransformation.getFovY());
         trackingContainer.addCameraTracking(cameraTracking);
     }
 

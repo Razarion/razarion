@@ -10,8 +10,6 @@ import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
 import com.btxtech.shared.rest.MeshContainerEditorController;
-import com.btxtech.shared.rest.ParticleEmitterSequenceEditorController;
-import com.btxtech.shared.rest.ParticleShapeEditorController;
 import com.btxtech.shared.rest.ParticleSystemEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
 import com.btxtech.shared.rest.ResourceItemTypeEditorController;
@@ -41,8 +39,6 @@ public enum CollectionReferenceType {
     TERRAIN_OBJECT(TerrainObjectEditorController.class, "Terrain Object", CommonUrl.TERRAIN_OBJECT_EDITOR_PATH),
     BASE_ITEM(BaseItemTypeEditorController.class, "Base Item", CommonUrl.BASE_ITEM_TYPE_EDITOR_PATH),
     RESOURCE_ITEM(ResourceItemTypeEditorController.class, "Resource Item", CommonUrl.RESOURCE_ITEM_TYPE_EDITOR_PATH),
-    PARTICLE_SHAPE(ParticleShapeEditorController.class, "Particle Shape", CommonUrl.PARTICLE_SHAPE_EDITOR_PATH),
-    PARTICLE_EMITTER_SEQUENCE(ParticleEmitterSequenceEditorController.class, "Particle Emitter Sequence", CommonUrl.PARTICLE_EMITTER_SEQUENCE_EDITOR_PATH),
     SERVER_GAME_ENGINE(ServerGameEngineEditorController.class, "Server Game Engine", CommonUrl.SERVER_GAME_ENGINE_EDITOR_PATH),
     THREE_JS_MODEL(ThreeJsModelEditorController.class, "Three.js Model", CommonUrl.THREE_JS_MODEL_EDITOR_PATH),
     THREE_JS_MODEL_PACK(ThreeJsModelPackEditorController.class, "Three.js Model Pack", CommonUrl.THREE_JS_MODEL_PACK_EDITOR_PATH),

@@ -303,6 +303,10 @@ export interface BaseItemType extends ItemType {
   getWeaponType(): WeaponType;
 }
 
+export interface ResourceItemType extends ItemType {
+  getRadius(): number;
+}
+
 export interface PhysicalAreaConfig {
   getRadius(): number;
 }
@@ -321,7 +325,9 @@ export interface WeaponType {
 export interface ThreeJsRendererServiceAccess {
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
 
-  createSyncBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem;
+  createBabylonBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem;
+
+  createBabylonResourceItem(id: number, resourceItemType: ResourceItemType): BabylonResourceItem;
 
   setViewFieldCenter(x: number, y: number): void;
 
@@ -343,7 +349,8 @@ export interface TerrainTile {
 export enum Diplomacy {
   OWN = "OWN",
   FRIEND = "FRIEND",
-  ENEMY = "ENEMY"
+  ENEMY = "ENEMY",
+  RESOURCE = "RESOURCE"
 }
 
 export interface GroundTerrainTile {
@@ -389,8 +396,7 @@ export interface ThreeJsTerrainTile {
   removeFromScene(): void;
 }
 
-export interface BabylonBaseItem {
-
+export interface BabylonItem {
   getId(): number;
 
   dispose(): void;
@@ -407,15 +413,17 @@ export interface BabylonBaseItem {
 
   updateAngle(): void;
 
+  select(active: boolean): void;
+
+  hover(active: boolean): void;
+}
+
+export interface BabylonBaseItem extends BabylonItem {
   getHealth(): number;
 
   setHealth(health: number): void;
 
   updateHealth(): void;
-
-  select(active: boolean): void;
-
-  hover(active: boolean): void;
 
   setBuildingPosition(buildingPosition: NativeVertexDto | null): void;
 
@@ -424,6 +432,10 @@ export interface BabylonBaseItem {
   onProjectileFired(destination: Vertex): void;
 
   onExplode(): void;
+}
+
+export interface BabylonResourceItem extends BabylonItem {
+
 }
 
 export interface ParticleSystemConfig {
@@ -551,12 +563,6 @@ export interface GenericEditorFrontendProvider {
   collectionNames(): string[];
 
   requestObjectNameIds(collectionName: string): Promise<ObjectNameId[]>;
-
-  requestObjectNameId(collectionName: string, configId: number): Promise<ObjectNameId>;
-
-  createConfig(collectionName: string): Promise<GwtAngularPropertyTable>;
-
-  deleteConfig(collectionName: string, gwtAngularPropertyTable: GwtAngularPropertyTable): Promise<void>;
 
   getPathForCollection(collectionName: string): string;
 }

@@ -1,12 +1,9 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.annotation.PostConstruct;
@@ -37,10 +34,6 @@ public class TerrainScrollHandler {
     @Inject
     private SimpleExecutorService simpleExecutorService;
     @Inject
-    private Camera camera;
-    @Inject
-    private ProjectionTransformation projectionTransformation;
-    @Inject
     private ViewService viewService;
     private ScrollDirection scrollDirectionXKey = ScrollDirection.STOP;
     private ScrollDirection scrollDirectionYKey = ScrollDirection.STOP;
@@ -51,7 +44,6 @@ public class TerrainScrollHandler {
     private boolean scrollDisabled;
     private SimpleScheduledFuture simpleScheduledFuture;
     private SimpleScheduledFuture moveHandler;
-    private Rectangle2D planetRect;
     private long lastAutoScrollTimeStamp;
 
     @PostConstruct
@@ -60,7 +52,6 @@ public class TerrainScrollHandler {
     }
 
     public void setPlanetSize(DecimalPosition size) {
-        planetRect = new Rectangle2D(DecimalPosition.NULL, size);
     }
 
     public void cleanup() {
@@ -76,13 +67,6 @@ public class TerrainScrollHandler {
         this.scrollDisabled = scrollDisabled;
         if (scrollDisabled) {
             simpleScheduledFuture.cancel();
-            if (bottomWidth != null) {
-                projectionTransformation.setViewFieldBottomWidth(bottomWidth);
-            } else {
-                projectionTransformation.setViewFieldBottomWidthFromCurrent();
-            }
-        } else {
-            projectionTransformation.setViewFieldBottomWidth(null);
         }
     }
 
@@ -100,43 +84,6 @@ public class TerrainScrollHandler {
             }
             executeAutoScroll();
         }
-    }
-
-    public void handleMouseMoveScroll(int x, int y, int width, int height) {
-        if (scrollDisabled) {
-            return;
-        }
-
-        ScrollDirection tmpScrollDirectionX = ScrollDirection.STOP;
-        ScrollDirection tmpScrollDirectionY = ScrollDirection.STOP;
-        if (x < SCROLL_AUTO_MOUSE_DETECTION_WIDTH) {
-            tmpScrollDirectionX = ScrollDirection.LEFT;
-        } else if (x > width - SCROLL_AUTO_MOUSE_DETECTION_WIDTH) {
-            tmpScrollDirectionX = ScrollDirection.RIGHT;
-        }
-
-        if (y < SCROLL_AUTO_MOUSE_DETECTION_WIDTH) {
-            tmpScrollDirectionY = ScrollDirection.TOP;
-        } else if (y > height - SCROLL_AUTO_MOUSE_DETECTION_WIDTH) {
-            tmpScrollDirectionY = ScrollDirection.BOTTOM;
-        }
-        executeAutoScrollMouse(tmpScrollDirectionX, tmpScrollDirectionY);
-    }
-
-    public void executeAutoScrollMouse(ScrollDirection tmpScrollDirectionX, ScrollDirection tmpScrollDirectionY) {
-        if (scrollDisabled) {
-            return;
-        }
-
-        if (tmpScrollDirectionX != scrollDirectionXMouse || tmpScrollDirectionY != scrollDirectionYMouse) {
-            scrollDirectionXMouse = tmpScrollDirectionX;
-            scrollDirectionYMouse = tmpScrollDirectionY;
-            executeAutoScroll();
-        }
-    }
-
-    public void onFovChanged() {
-        moveDelta(DecimalPosition.NULL);
     }
 
     private void executeAutoScroll() {
@@ -239,24 +186,11 @@ public class TerrainScrollHandler {
     }
 
     private void moveViewFiled(DecimalPosition viewFieldPosition) {
-        DecimalPosition correctedViewFiled = clampToViewField(viewFieldPosition);
-        camera.setTranslateXY(projectionTransformation.viewFieldCenterToCamera(correctedViewFiled, 0));
-    }
-
-    private DecimalPosition clampToViewField(DecimalPosition viewFieldCenterPosition) {
-        if (planetRect.contains(viewFieldCenterPosition)) {
-            return viewFieldCenterPosition;
-        }
-        return planetRect.getNearestPoint(viewFieldCenterPosition);
     }
 
     private double setupScrollDistance(double scrollSpeed) {
         double distance = (System.currentTimeMillis() - lastAutoScrollTimeStamp) / 1000.0 * scrollSpeed;
         lastAutoScrollTimeStamp = System.currentTimeMillis();
         return distance;
-    }
-
-    public boolean isScrollDisabled() {
-        return scrollDisabled;
     }
 }

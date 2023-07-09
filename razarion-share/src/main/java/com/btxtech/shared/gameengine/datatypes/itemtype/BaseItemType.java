@@ -49,7 +49,6 @@ public class BaseItemType extends ItemType {
     @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer spawnShape3DId;
     private Integer spawnAudioId;
-    private Integer explosionParticleConfigId;
     private List<DemolitionStepEffect> demolitionStepEffects;
     @CollectionReference(CollectionReferenceType.SHAPE_3D)
     private Integer wreckageShape3DId;
@@ -257,15 +256,6 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType setSpawnAudioId(Integer spawnAudioId) {
         this.spawnAudioId = spawnAudioId;
-        return this;
-    }
-
-    public Integer getExplosionParticleConfigId() {
-        return explosionParticleConfigId;
-    }
-
-    public BaseItemType setExplosionParticleConfigId(Integer explosionParticleConfigId) {
-        this.explosionParticleConfigId = explosionParticleConfigId;
         return this;
     }
 

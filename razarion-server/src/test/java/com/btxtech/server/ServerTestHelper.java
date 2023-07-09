@@ -31,9 +31,6 @@ import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
-import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
-import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
-import com.btxtech.server.persistence.particle.ParticleShapeEntity;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
 import com.btxtech.server.persistence.quest.ConditionConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
@@ -160,14 +157,6 @@ public class ServerTestHelper {
     public static int SHAPE_3D_1_ID;
     public static int SHAPE_3D_2_ID;
     public static int SHAPE_3D_3_ID;
-    // Particle Shapes
-    public static int PARTICLE_SHAPE_1_ID;
-    public static int PARTICLE_SHAPE_2_ID;
-    public static int PARTICLE_SHAPE_3_ID;
-    // Particle Emitter sequences
-    public static int PARTICLE_EMITTER_SEQUENCE_1_ID;
-    public static int PARTICLE_EMITTER_SEQUENCE_2_ID;
-    public static int PARTICLE_EMITTER_SEQUENCE_3_ID;
     // Ground
     public static int GROUND_1_ID;
     public static int GROUND_2_ID;
@@ -428,17 +417,16 @@ public class ServerTestHelper {
         ItemTypePersistence itemTypePersistence = EasyMock.createNiceMock(ItemTypePersistence.class);
         BaseItemTypeCrudPersistence baseItemTypeCrudPersistence = EasyMock.createNiceMock(BaseItemTypeCrudPersistence.class);
         Shape3DCrudPersistence shape3DPersistence = EasyMock.createNiceMock(Shape3DCrudPersistence.class);
-        ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence = EasyMock.createNiceMock(ParticleEmitterSequenceCrudPersistence.class);
         ParticleSystemCrudPersistence particleSystemCrudPersistence = EasyMock.createNiceMock(ParticleSystemCrudPersistence.class);
-        EasyMock.replay(itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleEmitterSequenceCrudPersistence, particleSystemCrudPersistence);
-        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleEmitterSequenceCrudPersistence, particleSystemCrudPersistence);
+        EasyMock.replay(itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleSystemCrudPersistence);
+        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleSystemCrudPersistence);
         persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
     }
 
     private int createResourceItemTypeEntity(ResourceItemType resourceItemType) {
         ResourceItemTypeEntity resourceItemTypeEntity = new ResourceItemTypeEntity();
-        resourceItemTypeEntity.fromResourceItemType(resourceItemType);
+        resourceItemTypeEntity.fromResourceItemType(resourceItemType, null);
         persistInTransaction(resourceItemTypeEntity);
         return resourceItemTypeEntity.getId();
     }
@@ -531,17 +519,9 @@ public class ServerTestHelper {
     }
 
     protected void setupParticleEmitterSequences() {
-        PARTICLE_EMITTER_SEQUENCE_1_ID = persistInTransaction(new ParticleEmitterSequenceEntity()).getId();
-        PARTICLE_EMITTER_SEQUENCE_2_ID = persistInTransaction(new ParticleEmitterSequenceEntity()).getId();
-        PARTICLE_EMITTER_SEQUENCE_3_ID = persistInTransaction(new ParticleEmitterSequenceEntity()).getId();
-        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(ParticleEmitterSequenceEntity.class)));
     }
 
     protected void setupParticleShapes() {
-        PARTICLE_SHAPE_1_ID = persistInTransaction(new ParticleShapeEntity()).getId();
-        PARTICLE_SHAPE_2_ID = persistInTransaction(new ParticleShapeEntity()).getId();
-        PARTICLE_SHAPE_3_ID = persistInTransaction(new ParticleShapeEntity()).getId();
-        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(ParticleShapeEntity.class)));
     }
 
     public void setupPlanetDb() {

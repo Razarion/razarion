@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
 import com.btxtech.uiservice.renderer.ViewField;
@@ -22,6 +21,6 @@ public class TerrainUiServiceTest extends WeldUiBaseIntegrationTest {
         viewField.setBottomRight(new DecimalPosition(40, 0));
         viewField.setTopRight(new DecimalPosition(50, 50));
         viewField.setTopLeft(new DecimalPosition(0, 50));
-        terrainUiService.onViewChanged(viewField);
+        terrainUiService.onViewChanged(viewField, viewField.calculateAabbRectangle());
     }
 }

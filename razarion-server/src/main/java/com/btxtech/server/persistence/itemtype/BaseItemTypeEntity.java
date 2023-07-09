@@ -8,8 +8,6 @@ import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.asset.MeshContainerEntity;
-import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
-import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
@@ -82,9 +80,6 @@ public class BaseItemTypeEntity {
     private double dropBoxPossibility;
     private double boxPickupRange;
     private Integer unlockCrystals;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ParticleEmitterSequenceEntity explosionParticle;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity buildupTexture;
@@ -195,9 +190,6 @@ public class BaseItemTypeEntity {
         if (specialType != null) {
             baseItemType.setSpecialType(specialType.toSpecialType());
         }
-        if (explosionParticle != null) {
-            baseItemType.setExplosionParticleConfigId(explosionParticle.getId());
-        }
         if (demolitionStepEffectEntities != null && !demolitionStepEffectEntities.isEmpty()) {
             List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
             for (DemolitionStepEffectEntity stepEffectEntity : demolitionStepEffectEntities) {
@@ -208,7 +200,7 @@ public class BaseItemTypeEntity {
         return baseItemType;
     }
 
-    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
+    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
         internalName = baseItemType.getInternalName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
         fixVerticalNorm = baseItemType.getPhysicalAreaConfig().isFixVerticalNorm();
@@ -229,13 +221,12 @@ public class BaseItemTypeEntity {
         dropBoxPossibility = baseItemType.getDropBoxPossibility();
         boxPickupRange = baseItemType.getBoxPickupRange();
         unlockCrystals = baseItemType.getUnlockCrystals();
-        explosionParticle = particleEmitterSequenceCrudPersistence.getEntity(baseItemType.getExplosionParticleConfigId());
 
         if (baseItemType.getWeaponType() != null) {
             if (weaponType == null) {
                 weaponType = new WeaponTypeEntity();
             }
-            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeCrudPersistence, shape3DPersistence, particleEmitterSequenceCrudPersistence, particleSystemCrudPersistence);
+            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeCrudPersistence, shape3DPersistence, particleSystemCrudPersistence);
         } else {
             weaponType = null;
         }
@@ -314,13 +305,6 @@ public class BaseItemTypeEntity {
             demolitionStepEffectEntities = new ArrayList<>();
         }
         demolitionStepEffectEntities.clear();
-        if (baseItemType.getDemolitionStepEffects() != null) {
-            for (DemolitionStepEffect demolitionStepEffect : baseItemType.getDemolitionStepEffects()) {
-                DemolitionStepEffectEntity demolitionStepEffectEntity = new DemolitionStepEffectEntity();
-                demolitionStepEffectEntity.fromDemolitionStepEffect(demolitionStepEffect, particleEmitterSequenceCrudPersistence);
-                demolitionStepEffectEntities.add(demolitionStepEffectEntity);
-            }
-        }
     }
 
     public void setThreeJsModelPackConfigEntity(ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity) {

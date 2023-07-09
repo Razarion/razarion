@@ -36,7 +36,6 @@ public class WeaponType {
     private Integer projectileShape3DId;
     @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
     private Integer muzzleFlashParticleSystemConfigId;
-    private Integer detonationParticleConfigId;
     private TurretType turretType;
 
     public double getRange() {
@@ -103,14 +102,6 @@ public class WeaponType {
         this.muzzleFlashParticleSystemConfigId = muzzleFlashParticleSystemConfigId;
     }
 
-    public Integer getDetonationParticleConfigId() {
-        return detonationParticleConfigId;
-    }
-
-    public void setDetonationParticleConfigId(Integer detonationParticleConfigId) {
-        this.detonationParticleConfigId = detonationParticleConfigId;
-    }
-
     public TurretType getTurretType() {
         return turretType;
     }
@@ -156,11 +147,6 @@ public class WeaponType {
 
     public WeaponType muzzleFlashParticleSystemConfigId(Integer muzzleFlashParticleConfigId) {
         setMuzzleFlashParticleSystemConfigId(muzzleFlashParticleConfigId);
-        return this;
-    }
-
-    public WeaponType detonationParticleConfigId(Integer detonationParticleConfigId) {
-        setDetonationParticleConfigId(detonationParticleConfigId);
         return this;
     }
 

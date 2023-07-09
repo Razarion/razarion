@@ -1,7 +1,5 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
-import com.btxtech.server.persistence.particle.ParticleEmitterSequenceEntity;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionParticleConfig;
 
@@ -9,15 +7,10 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -29,9 +22,6 @@ public class DemolitionStepEffectParticleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ParticleEmitterSequenceEntity particle;
     @AttributeOverrides({
             @AttributeOverride(name = "x", column = @Column(name = "positionX")),
             @AttributeOverride(name = "y", column = @Column(name = "positionY")),
@@ -41,13 +31,10 @@ public class DemolitionStepEffectParticleEntity {
 
     public DemolitionParticleConfig toDemolitionParticleConfig() {
         return new DemolitionParticleConfig()
-                .particleConfigId(extractId(particle, ParticleEmitterSequenceEntity::getId))
                 .position(position);
     }
 
-    public void fromDemolitionParticleConfig(DemolitionParticleConfig demolitionParticleConfig, ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence) {
-        particle = particleEmitterSequenceCrudPersistence.getEntity(demolitionParticleConfig.getParticleConfigId());
-        position = demolitionParticleConfig.getPosition();
+    public void fromDemolitionParticleConfig() {
     }
 
     @Override

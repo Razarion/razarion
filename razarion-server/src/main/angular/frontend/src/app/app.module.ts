@@ -44,7 +44,6 @@ import {CrashPanelComponent} from "./editor/crash-panel/crash-panel.component";
 import {TableModule} from 'primeng/table';
 import {CommonModule, DatePipe, DecimalPipe} from "@angular/common";
 import {ServerPanelComponent} from "./editor/server-panel/server-panel.component";
-import {Polygon2dEditorComponent} from "./editor/common/polygon-2d-editor.component";
 import {BackupRestoreComponent} from "./editor/backup-restore/backup-restore.component";
 import {TerrainEditorComponent} from './editor/terrain-editor/terrain-editor.component';
 import {TabViewModule} from 'primeng/tabview';
@@ -92,7 +91,6 @@ import {SelectButtonModule} from "primeng/selectbutton";
     RenderEngineComponent,
     CrashPanelComponent,
     ServerPanelComponent,
-    Polygon2dEditorComponent,
     BackupRestoreComponent,
     TerrainEditorComponent,
     ImageTypePipe,

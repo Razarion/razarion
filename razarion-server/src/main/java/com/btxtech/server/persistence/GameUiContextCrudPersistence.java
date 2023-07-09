@@ -10,8 +10,6 @@ import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity_;
-import com.btxtech.server.persistence.particle.ParticleEmitterSequenceCrudPersistence;
-import com.btxtech.server.persistence.particle.ParticleShapeCrudPersistence;
 import com.btxtech.server.persistence.scene.BotAttackCommandEntity;
 import com.btxtech.server.persistence.scene.BotHarvestCommandEntity;
 import com.btxtech.server.persistence.scene.BotKillBotCommandEntity;
@@ -75,12 +73,6 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.NO_GAME_UI_CONTROL_CONF
 public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUiContextConfig, GameUiContextEntity> {
     @PersistenceContext
     private EntityManager entityManager;
-    @Inject
-    private Shape3DCrudPersistence shape3DPersistence;
-    @Inject
-    private ParticleShapeCrudPersistence particleShapeCrudPersistence;
-    @Inject
-    private ParticleEmitterSequenceCrudPersistence particleEmitterSequenceCrudPersistence;
     @Inject
     private StaticGameConfigPersistence staticGameConfigPersistence;
     @Inject
@@ -161,8 +153,6 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             coldGameUiContext.levelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext, userContext.getLevelId()));
         }
         coldGameUiContext.meshContainers(assetCrudPersistence.readMeshContainers());
-        coldGameUiContext.setParticleShapeConfigs(particleShapeCrudPersistence.read());
-        coldGameUiContext.setParticleEmitterSequenceConfigs(particleEmitterSequenceCrudPersistence.read());
         coldGameUiContext.audioConfig(setupAudioConfig());
         coldGameUiContext.gameTipVisualConfig(setupGameTipVisualConfig());
         coldGameUiContext.inGameQuestVisualConfig(setupInGameQuestVisualConfig());

@@ -134,7 +134,7 @@ export class GameComponent implements OnInit {
 
             };
 
-            let babylonBaseItem = this.threeJsRendererService.createSyncBaseItem(999999, baseItemType, Diplomacy.ENEMY);
+            let babylonBaseItem = this.threeJsRendererService.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
             babylonBaseItem.setPosition(GwtInstance.newVertex(8, 8, 0));
             babylonBaseItem.setAngle(0);
 

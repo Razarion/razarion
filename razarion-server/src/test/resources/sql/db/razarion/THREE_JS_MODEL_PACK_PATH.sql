@@ -100,7 +100,13 @@ INSERT INTO `THREE_JS_MODEL_PACK_PATH` (`threeJsModelPackConfig`, `namePath`, `o
 	(131, '__root__', 0),
 	(131, 'Building_15', 1),
 	(132, '__root__', 0),
-	(132, 'Building_16', 1);
+	(132, 'Building_16', 1),
+	(133, '__root__', 0),
+	(133, 'Sketchfab_model', 1),
+	(133, '3893910b47dc4cc9869f89138ff74a23.fbx', 2),
+	(133, 'RootNode', 3),
+	(133, 'PilhaCristal3', 4),
+	(133, 'PilhaCristal3_Pilha_Cristal_0', 5);
 /*!40000 ALTER TABLE `THREE_JS_MODEL_PACK_PATH` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

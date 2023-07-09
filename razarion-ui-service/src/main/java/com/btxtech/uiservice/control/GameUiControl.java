@@ -19,11 +19,9 @@ import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
-import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.cockpit.ChatUiService;
@@ -32,8 +30,6 @@ import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.cockpit.TopRightCockpit;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.unlock.UnlockUiService;
@@ -44,11 +40,9 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -59,7 +53,7 @@ import java.util.logging.Logger;
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
 public class GameUiControl { // Equivalent worker class is PlanetService
     private static final long HOME_SCROLL_TIMEOUT = 5000;
-    private Logger logger = Logger.getLogger(GameUiControl.class.getName());
+    private final Logger logger = Logger.getLogger(GameUiControl.class.getName());
     @Inject
     private Instance<Scene> sceneInstance;
     @Inject
@@ -97,10 +91,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private PlaybackControl playbackControl;
     @Inject
-    private Camera camera;
-    @Inject
-    private ProjectionTransformation projectionTransformation;
-    @Inject
     private UnlockUiService unlockUiService;
     private ColdGameUiContext coldGameUiContext;
     private int nextSceneNumber;
@@ -112,8 +102,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private GameEngineMode gameEngineMode;
     private int consuming;
     private int generating;
-    private long lastHomeScroll;
-    private Collection<SyncBaseItemSimpleDto> visitedHomeItems = new ArrayList<>();
     private QuestConfig serverQuest;
     private QuestProgressInfo serverQuestProgress;
 
@@ -454,31 +442,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public boolean isSellSuppressed() {
         return currentScene != null && currentScene.getSceneConfig().isSuppressSell() != null && currentScene.getSceneConfig().isSuppressSell();
-    }
-
-    public void scrollToHome() {
-        if (terrainScrollHandler.isScrollDisabled()) {
-            return;
-        }
-        if (System.currentTimeMillis() > lastHomeScroll + HOME_SCROLL_TIMEOUT) {
-            visitedHomeItems.clear();
-        }
-        lastHomeScroll = System.currentTimeMillis();
-        Collection<SyncBaseItemSimpleDto> myItems = baseItemUiService.findMyItems();
-        if (myItems.isEmpty()) {
-            return;
-        }
-        Optional<SyncBaseItemSimpleDto> optional = myItems.stream().filter(syncBaseItemSimpleDto -> !visitedHomeItems.contains(syncBaseItemSimpleDto)).findFirst();
-        SyncBaseItemSimpleDto itemToScrollTo;
-        if (optional.isPresent()) {
-            itemToScrollTo = optional.get();
-        } else {
-            visitedHomeItems.clear();
-            itemToScrollTo = CollectionUtils.getFirst(myItems);
-        }
-        DecimalPosition cameraPosition = projectionTransformation.viewFieldCenterToCamera(itemToScrollTo.getPosition2d(), 0);
-        camera.setTranslateXY(cameraPosition.getX(), cameraPosition.getY());
-        visitedHomeItems.add(itemToScrollTo);
     }
 
     public GameEngineMode getGameEngineMode() {

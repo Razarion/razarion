@@ -1,7 +1,9 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.renderer.ViewField;
 import jsinterop.annotations.JsType;
@@ -17,6 +19,8 @@ public class InputService {
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
+    private ResourceUiService resourceUiService;
+    @Inject
     private TerrainMouseHandler terrainMouseHandler;
 
     @SuppressWarnings("unused") // Called by Angular
@@ -26,8 +30,10 @@ public class InputService {
                 .bottomRight(new DecimalPosition(bottomRightX, bottomRightY))
                 .topRight(new DecimalPosition(topRightX, topRightY))
                 .topLeft(new DecimalPosition(topLeftX, topLeftY));
-        terrainUiService.onViewChanged(viewField);
-        baseItemUiService.onViewChanged(viewField);
+        Rectangle2D viewFieldAabb = viewField.calculateAabbRectangle();
+        terrainUiService.onViewChanged(viewField, viewFieldAabb);
+        baseItemUiService.onViewChanged(viewField, viewFieldAabb);
+        resourceUiService.onViewChanged(viewField, viewFieldAabb);
     }
 
     @SuppressWarnings("unused") // Called by Babylonjs

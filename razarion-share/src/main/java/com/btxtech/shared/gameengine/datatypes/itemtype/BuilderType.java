@@ -13,7 +13,6 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import jsinterop.annotations.JsType;
@@ -30,9 +29,6 @@ public class BuilderType {
     private double range;
     private double progress;
     private List<Integer> ableToBuildIds;
-    private Vertex animationOrigin;
-    private Integer animationShape3dId;
-    private Integer animationParticleId;
     @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
     private Integer particleSystemConfigId;
 
@@ -60,30 +56,6 @@ public class BuilderType {
         this.ableToBuildIds = ableToBuildIds;
     }
 
-    public Vertex getAnimationOrigin() {
-        return animationOrigin;
-    }
-
-    public void setAnimationOrigin(Vertex animationOrigin) {
-        this.animationOrigin = animationOrigin;
-    }
-
-    public Integer getAnimationShape3dId() {
-        return animationShape3dId;
-    }
-
-    public void setAnimationShape3dId(Integer animationShape3dId) {
-        this.animationShape3dId = animationShape3dId;
-    }
-
-    public Integer getAnimationParticleId() {
-        return animationParticleId;
-    }
-
-    public void setAnimationParticleId(Integer animationParticleId) {
-        this.animationParticleId = animationParticleId;
-    }
-
     public Integer getParticleSystemConfigId() {
         return particleSystemConfigId;
     }
@@ -107,23 +79,8 @@ public class BuilderType {
         return this;
     }
 
-    public BuilderType animationOrigin(Vertex animationOrigin) {
-        setAnimationOrigin(animationOrigin);
-        return this;
-    }
-
-    public BuilderType animationShape3dId(Integer animationShape3dId) {
-        setAnimationShape3dId(animationShape3dId);
-        return this;
-    }
-
     public boolean checkAbleToBuild(int itemTypeId) {
         return ableToBuildIds.contains(itemTypeId);
-    }
-
-    public BuilderType animationParticleId(Integer animationParticleId) {
-        setAnimationParticleId(animationParticleId);
-        return this;
     }
 
     public BuilderType particleSystemConfigId(Integer particleSystemConfigId) {

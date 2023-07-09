@@ -3,5 +3,6 @@ package com.btxtech.uiservice;
 public enum Diplomacy {
     OWN,
     FRIEND,
-    ENEMY
+    ENEMY,
+    RESOURCE
 }

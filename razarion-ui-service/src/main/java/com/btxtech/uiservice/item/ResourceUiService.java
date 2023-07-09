@@ -1,26 +1,22 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.renderer.BabylonResourceItem;
+import com.btxtech.uiservice.renderer.ThreeJsRendererService;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.renderer.ViewService;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -29,28 +25,22 @@ import java.util.logging.Logger;
  * 06.01.2017.
  */
 @ApplicationScoped
-public class ResourceUiService implements ViewService.ViewFieldListener {
-    private Logger logger = Logger.getLogger(ResourceUiService.class.getName());
+public class ResourceUiService {
+    private final Logger logger = Logger.getLogger(ResourceUiService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
-    @Inject
-    private ViewService viewService;
+    private ThreeJsRendererService threeJsRendererService;
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
-    private final MapList<ResourceItemType, ModelMatrices> resourceModelMatrices = new MapList<>();
     private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
-
-    @PostConstruct
-    public void init() {
-        viewService.addViewFieldListeners(this);
-    }
+    private final Map<Integer, BabylonResourceItem> babylonResourceItem = new HashMap<>();
+    private ViewField viewField;
+    private Rectangle2D viewFieldAabb;
 
     public void clear() {
         resources.clear();
-        resourceModelMatrices.clear();
         syncStaticItemSetPositionMonitor = null;
     }
 
@@ -63,7 +53,7 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
         if (syncStaticItemSetPositionMonitor != null) {
             syncStaticItemSetPositionMonitor.add(syncResourceItem);
         }
-        setupModelMatrices();
+        updateBabylonResourceItems();
     }
 
     public void removeResource(int id) {
@@ -78,7 +68,7 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
         if (syncStaticItemSetPositionMonitor != null) {
             syncStaticItemSetPositionMonitor.remove(resource);
         }
-        setupModelMatrices();
+        updateBabylonResourceItems();
     }
 
     public SyncResourceItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
@@ -122,23 +112,28 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
         return result;
     }
 
-    public List<ModelMatrices> provideModelMatrices(ResourceItemType resourceItemType) {
-        return resourceModelMatrices.get(resourceItemType);
-    }
-
-    private void setupModelMatrices() {
-        synchronized (resourceModelMatrices) {
-            resourceModelMatrices.clear();
-            Rectangle2D aabb = viewService.getCurrentAabb();
-            if (aabb == null) {
-                return;
-            }
-            for (SyncResourceItemSimpleDto resourceItem : resources.values()) {
-                if (aabb.contains(resourceItem.getPosition2d())) {
-                    ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resourceItem.getItemTypeId());
-                    resourceModelMatrices.put(resourceItemType, new ModelMatrices(resourceItem.getModel(), nativeMatrixFactory));
+    private void updateBabylonResourceItems() {
+        if (viewFieldAabb == null) {
+            return;
+        }
+        synchronized (resources) {
+            resources.forEach((id, syncResourceItemSimpleDto) -> {
+                ResourceItemType resourceItemType = itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId());
+                if (viewFieldAabb.adjoinsCircleExclusive(syncResourceItemSimpleDto.getPosition2d(), resourceItemType.getRadius())) {
+                    BabylonResourceItem visibleResource = babylonResourceItem.remove(syncResourceItemSimpleDto.getId());
+                    if (visibleResource == null) {
+                        visibleResource = threeJsRendererService.createBabylonResourceItem(syncResourceItemSimpleDto.getId(), resourceItemType);
+                        visibleResource.setPosition(syncResourceItemSimpleDto.getPosition3d());
+                        visibleResource.updatePosition();
+                        babylonResourceItem.put(syncResourceItemSimpleDto.getId(), visibleResource);
+                    }
+                } else {
+                    BabylonResourceItem visibleResource = babylonResourceItem.remove(syncResourceItemSimpleDto.getId());
+                    if (visibleResource != null) {
+                        visibleResource.dispose();
+                    }
                 }
-            }
+            });
         }
     }
 
@@ -160,13 +155,17 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
         if (syncStaticItemSetPositionMonitor != null) {
             throw new IllegalStateException("ResourceUiService.createSyncItemSetPositionMonitor() syncStaticItemSetPositionMonitor != null");
         }
-        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(resources.values(), viewService.getCurrentViewField(), () -> syncStaticItemSetPositionMonitor = null);
+        if (viewField == null) {
+            throw new IllegalStateException("ResourceUiService.createSyncItemSetPositionMonitor() viewField != null");
+        }
+        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(resources.values(), viewField, () -> syncStaticItemSetPositionMonitor = null);
         return syncStaticItemSetPositionMonitor;
     }
 
-    @Override
-    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
-        setupModelMatrices();
+    public void onViewChanged(ViewField viewField, Rectangle2D viewFieldAabb) {
+        this.viewField = viewField;
+        this.viewFieldAabb = viewFieldAabb;
+        updateBabylonResourceItems();
         if (syncStaticItemSetPositionMonitor != null) {
             syncStaticItemSetPositionMonitor.onViewChanged(viewField);
         }

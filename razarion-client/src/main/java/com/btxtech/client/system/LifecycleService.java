@@ -27,7 +27,6 @@ import com.btxtech.uiservice.item.ItemMarkerService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.mouse.CursorService;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
-import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -58,7 +57,7 @@ import java.util.logging.Logger;
 public class LifecycleService {
     private static final int WATCHDOG_DELAY = 5000;
     private static final int RESTART_DELAY = 3000;
-    private Logger logger = Logger.getLogger(LifecycleService.class.getName());
+    private final Logger logger = Logger.getLogger(LifecycleService.class.getName());
     @Inject
     private Boot boot;
     @Inject
@@ -87,8 +86,6 @@ public class LifecycleService {
     private TerrainMouseHandler terrainMouseHandler;
     @Inject
     private CursorService cursorService;
-    @Inject
-    private ParticleService particleService;
     @Inject
     private ProjectileUiService projectileUiService;
     @Inject
@@ -201,7 +198,6 @@ public class LifecycleService {
         itemMarkerService.clear();
         terrainMouseHandler.clear();
         cursorService.clear();
-        particleService.clear();
         projectileUiService.clear();
         trailService.clear();
         terrainUiService.clear();

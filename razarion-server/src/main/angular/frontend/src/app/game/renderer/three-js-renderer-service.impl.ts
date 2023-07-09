@@ -1,26 +1,24 @@
 import {Injectable} from "@angular/core";
 import {
   BabylonBaseItem,
+  BabylonResourceItem,
   BaseItemPlacer,
   BaseItemPlacerPresenter,
   BaseItemType,
   Diplomacy,
   MeshContainer,
-  NativeVertexDto,
-  ParticleSystemConfig,
+  ResourceItemType,
   ShapeTransform,
   TerrainObjectPosition,
   TerrainTile,
   ThreeJsRendererServiceAccess,
-  ThreeJsTerrainTile,
-  Vertex
+  ThreeJsTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import {
-  Animation,
   Color3,
   CubeTexture,
   DirectionalLight,
@@ -32,8 +30,6 @@ import {
   MeshBuilder,
   Node,
   NodeMaterial,
-  ParticleHelper,
-  ParticleSystem,
   PointerEventTypes,
   Quaternion,
   Scene,
@@ -46,6 +42,8 @@ import {
 import {SimpleMaterial} from "@babylonjs/materials";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
+import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
+import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -63,17 +61,36 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   private scene!: Scene;
   private engine!: Engine;
   private camera!: FreeCamera;
-  private shadowGenerator!: ShadowGenerator;
+  public shadowGenerator!: ShadowGenerator;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
   private directionalLight!: DirectionalLight
-  private meshContainers!: MeshContainer[];
+  public meshContainers!: MeshContainer[];
   private diplomacyMaterialCache: Map<number, Map<Diplomacy, NodeMaterial>> = new Map<number, Map<Diplomacy, NodeMaterial>>();
-  private itemMarkerMaterialCache: Map<Diplomacy, SimpleMaterial> = new Map<Diplomacy, SimpleMaterial>();
-  private baseItemContainer!: TransformNode;
-  private projectileMaterial!: SimpleMaterial;
+  public readonly itemMarkerMaterialCache: Map<Diplomacy, SimpleMaterial> = new Map<Diplomacy, SimpleMaterial>();
+  public baseItemContainer!: TransformNode;
+  public resourceItemContainer!: TransformNode;
+  public projectileMaterial!: SimpleMaterial;
 
-  constructor(private gwtAngularService: GwtAngularService, private threeJsModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+  constructor(private gwtAngularService: GwtAngularService, private babylonModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+  }
+
+  public static color4Diplomacy(diplomacy: Diplomacy): Color3 {
+    switch (diplomacy) {
+      case Diplomacy.OWN:
+        return Color3.Green()
+      case Diplomacy.ENEMY:
+        return Color3.Red()
+      case Diplomacy.FRIEND:
+        return Color3.Yellow()
+      case Diplomacy.RESOURCE:
+        return Color3.Blue()
+    }
+    return Color3.Gray()
+  }
+
+  initMeshContainers(meshContainers: MeshContainer[]): void {
+    this.meshContainers = meshContainers;
   }
 
   internalSetup(canvas: HTMLCanvasElement) {
@@ -81,8 +98,9 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.scene = new Scene(this.engine);
     this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
     this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
-    this.threeJsModelService.setScene(this.scene);
-    this.baseItemContainer = new TransformNode("BaseItems");
+    this.babylonModelService.setScene(this.scene);
+    this.baseItemContainer = new TransformNode("Base Items");
+    this.resourceItemContainer = new TransformNode("Resource Items");
     this.projectileMaterial = new SimpleMaterial("Projectile", this.scene);
     this.projectileMaterial.diffuseColor = new Color3(0, 0, 0);
 
@@ -160,17 +178,13 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     });
   }
 
-  initMeshContainers(meshContainers: MeshContainer[]): void {
-    this.meshContainers = meshContainers;
-  }
-
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile {
     try {
       return new ThreeJsTerrainTileImpl(terrainTile,
         defaultGroundConfigId,
         this.gwtAngularService,
         this,
-        this.threeJsModelService,
+        this.babylonModelService,
         this.threeJsWaterRenderService);
     } catch (e) {
       console.error(`Error createTerrainTile() with index ${terrainTile.getIndex()}`)
@@ -179,341 +193,18 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     }
   }
 
-  createSyncBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem {
+  createBabylonBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem {
     try {
-      const correctedDiplomacy = GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy);
-      const threeJsRendererServiceImpl = this;
-      return new class implements BabylonBaseItem {
-        private readonly container: TransformNode;
-        private markerDisc: Mesh | null = null;
-        private selectActive: boolean = false;
-        private hoverActive: boolean = false;
-        private position: Vertex | null = null;
-        private angle: number = 0;
-        private health: number = 0;
-        private buildingParticleSystem: ParticleSystem | null = null;
-
-        constructor() {
-          if (baseItemType.getThreeJsModelPackConfigId()) {
-            this.container = threeJsRendererServiceImpl.threeJsModelService.cloneMesh(baseItemType.getThreeJsModelPackConfigId()!, null);
-          } else if (baseItemType.getMeshContainerId()) {
-            this.container = threeJsRendererServiceImpl.showMeshContainer(threeJsRendererServiceImpl.meshContainers,
-              GwtHelper.gwtIssueNumber(baseItemType.getMeshContainerId()),
-              correctedDiplomacy);
-          } else {
-            this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${baseItemType.getInternalName()} '${baseItemType.getId()}'`, {diameter: baseItemType.getPhysicalAreaConfig().getRadius() * 2});
-            console.warn(`No meshContainerId for ${baseItemType.getInternalName()} '${baseItemType.getId()}'`)
-          }
-          this.container.parent = threeJsRendererServiceImpl.baseItemContainer;
-          this.container.name = `${baseItemType.getInternalName()} '${id}')`;
-          this.container.getChildMeshes().forEach(childMesh => {
-            threeJsRendererServiceImpl.shadowGenerator.addShadowCaster(childMesh, true);
-          });
-        }
-
-        getId(): number {
-          return id;
-        }
-
-        getAngle(): number {
-          return this.angle;
-        }
-
-        getHealth(): number {
-          return this.angle;
-        }
-
-        getPosition(): Vertex | null {
-          return this.position;
-        }
-
-        setAngle(angle: number): void {
-          this.angle = angle;
-        }
-
-        setHealth(health: number): void {
-          this.health = health;
-        }
-
-        setPosition(position: Vertex): void {
-          this.position = position;
-        }
-
-        dispose(): void {
-          this.disposeBuildingParticleSystem();
-          this.container.getChildMeshes().forEach(childMesh => {
-            threeJsRendererServiceImpl.shadowGenerator.removeShadowCaster(childMesh, true);
-          });
-          threeJsRendererServiceImpl.scene.removeTransformNode(this.container);
-          this.container.dispose();
-        }
-
-        updatePosition(): void {
-          if (this.position) {
-            this.container.position.x = this.position.getX();
-            this.container.position.y = this.position.getZ();
-            this.container.position.z = this.position.getY();
-          }
-        }
-
-        updateAngle(): void {
-          this.container.rotation.y = Tools.ToRadians(90) - this.angle;
-        }
-
-        updateHealth(): void {
-        }
-
-        select(active: boolean): void {
-          this.selectActive = active;
-          this.updateMarkedDisk();
-        }
-
-        hover(active: boolean): void {
-          this.hoverActive = active;
-          this.updateMarkedDisk();
-        }
-
-        private updateMarkedDisk(): void {
-          if (this.selectActive || this.hoverActive) {
-            if (!this.markerDisc) {
-              this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: baseItemType.getPhysicalAreaConfig().getRadius() + 0.1});
-              let material = threeJsRendererServiceImpl.itemMarkerMaterialCache.get(correctedDiplomacy);
-              if (!material) {
-                material = new SimpleMaterial(`Base Item Marker ${correctedDiplomacy}`, threeJsRendererServiceImpl.scene);
-                material.diffuseColor = ThreeJsRendererServiceImpl.color4Diplomacy(correctedDiplomacy);
-                threeJsRendererServiceImpl.itemMarkerMaterialCache.set(correctedDiplomacy, material);
-              }
-              this.markerDisc.material = material;
-              this.markerDisc.position.y = 0.01;
-              this.markerDisc.rotation.x = Tools.ToRadians(90);
-              this.markerDisc.parent = this.container;
-            }
-          } else {
-            if (this.markerDisc) {
-              this.markerDisc.dispose();
-              this.markerDisc = null;
-            }
-          }
-
-          if (this.selectActive) {
-            (<SimpleMaterial>this.markerDisc!.material).alpha = 0.6
-          } else if (this.hoverActive) {
-            (<SimpleMaterial>this.markerDisc!.material).alpha = 0.3
-          }
-        }
-
-        setBuildingPosition(nativeBuildingPosition: NativeVertexDto): void {
-          if (nativeBuildingPosition && this.buildingParticleSystem) {
-            return;
-          }
-          if (!nativeBuildingPosition && !this.buildingParticleSystem) {
-            return;
-          }
-
-          let particleSystemConfigId = baseItemType.getBuilderType()?.getParticleSystemConfigId()
-          if (!particleSystemConfigId) {
-            return;
-          }
-
-          if (!nativeBuildingPosition && this.buildingParticleSystem) {
-            this.disposeBuildingParticleSystem();
-            return;
-          }
-
-          if (nativeBuildingPosition && !this.buildingParticleSystem) {
-            try {
-              let particleSystemConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemConfig(baseItemType.getBuilderType()?.getParticleSystemConfigId()!);
-              const buildingPosition = new Vector3(nativeBuildingPosition.x, nativeBuildingPosition.z, nativeBuildingPosition.y);
-              const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath())
-              emitterMesh.computeWorldMatrix(true);
-              this.buildingParticleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, buildingPosition, true);
-            } catch (e) {
-              console.error(e);
-            }
-          }
-        }
-
-        setBuildup(buildup: number): void {
-          this.container.scaling.y = buildup;
-        }
-
-        onProjectileFired(destination: Vertex): void {
-          if (!baseItemType.getWeaponType().getMuzzleFlashParticleSystemConfigId()) {
-            console.warn(`No MuzzleFlashParticleSystemConfigId for ${baseItemType.getInternalName()} '${baseItemType.getId()}'`);
-            return;
-          }
-          const correctDestination = new Vector3(destination.getX(), destination.getZ(), destination.getY());
-          let particleSystemConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemConfig(baseItemType.getWeaponType().getMuzzleFlashParticleSystemConfigId()!);
-          const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath());
-          emitterMesh.computeWorldMatrix(true);
-          const particleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, correctDestination, false);
-          particleSystem.disposeOnStop = true;
-
-          this.createProjectile(emitterMesh.absolutePosition, correctDestination);
-        }
-
-        onExplode(): void {
-          ParticleHelper.CreateAsync("explosion", threeJsRendererServiceImpl.scene).then((set) => {
-            set.systems.forEach(s => {
-              s.disposeOnStop = true;
-            });
-            set.emitterNode = this.container.position;
-            set.start();
-          });
-        }
-
-        private findChildMesh(meshPath: string[]): Mesh {
-          for (let childNod of this.container.getChildren()) {
-            let found = BabylonModelService.findChildNode(childNod, meshPath);
-            if (found) {
-              return <Mesh>found;
-            }
-          }
-          throw new Error(`Can not find mesh path '${meshPath}' in '${this.container}'`);
-        }
-
-        private disposeBuildingParticleSystem() {
-          if (this.buildingParticleSystem) {
-            this.buildingParticleSystem!.dispose();
-            this.buildingParticleSystem = null;
-          }
-        }
-
-        private createProjectile(start: Vector3, destination: Vector3): void {
-          if (!baseItemType.getWeaponType().getProjectileSpeed()) {
-            return;
-          }
-          const projectileSpeed = GwtHelper.gwtIssueNumber(baseItemType.getWeaponType().getProjectileSpeed());
-          if (projectileSpeed <= 0.0) {
-            return;
-          }
-
-          const mesh = MeshBuilder.CreateSphere("Projectile", {
-            diameter: 0.2,
-            segments: 1
-          }, threeJsRendererServiceImpl.scene);
-          mesh.material = threeJsRendererServiceImpl.projectileMaterial;
-
-          const frameRate = 1;
-          const xSlide = new Animation("Projectile",
-            "position",
-            frameRate,
-            Animation.ANIMATIONTYPE_VECTOR3,
-            Animation.ANIMATIONLOOPMODE_CONSTANT);
-
-          const keyFrames = [];
-
-          keyFrames.push({
-            frame: 0,
-            value: start
-          });
-
-          keyFrames.push({
-            frame: 1,
-            value: destination
-          });
-
-          xSlide.setKeys(keyFrames);
-
-          mesh.animations.push(xSlide);
-
-
-          let animatable = threeJsRendererServiceImpl.scene.beginAnimation(mesh,
-            0,
-            1,
-            false,
-            projectileSpeed / start.subtract(destination).length());
-          animatable.onAnimationEnd = () => {
-            threeJsRendererServiceImpl.scene.removeMesh(mesh);
-            mesh.dispose();
-          };
-        }
-
-        private createParticleSystem(particleSystemConfig: ParticleSystemConfig, emitterMesh: Mesh, destination: Vector3, stretchToDestination: boolean): ParticleSystem {
-          const particleJsonConfig = threeJsRendererServiceImpl.threeJsModelService.getParticleSystemJson(particleSystemConfig.getThreeJsModelId());
-
-          const particleSystem = ParticleSystem.Parse(particleJsonConfig, threeJsRendererServiceImpl.getScene(), "");
-          particleSystem.emitter = emitterMesh.absolutePosition;
-          const beam = destination.subtract(emitterMesh.absolutePosition);
-          const delta = 2;
-          const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
-          const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
-          particleSystem.createPointEmitter(direction1, direction2);
-          if (stretchToDestination) {
-            const distance = beam.length();
-            particleSystem.minLifeTime = distance;
-            particleSystem.maxLifeTime = distance;
-          }
-
-          return particleSystem;
-        }
-      }
+      return new BabylonBaseItemImpl(id,
+        baseItemType,
+        GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy),
+        this,
+        this.babylonModelService);
     } catch (error) {
       console.error(error);
-      return new class implements BabylonBaseItem {
-        getAngle(): number {
-          return 0;
-        }
-
-        getHealth(): number {
-          return 0;
-        }
-
-        getPosition(): Vertex | null {
-          return null;
-        }
-
-        setAngle(angle: number): void {
-        }
-
-        setHealth(health: number): void {
-        }
-
-        setPosition(position: Vertex): void {
-        }
-
-        getId(): number {
-          return id;
-        }
-
-        setup(): void {
-        }
-
-        dispose(): void {
-        }
-
-        updateAngle(): void {
-        }
-
-        updateHealth(): void {
-        }
-
-        updatePosition(): void {
-        }
-
-        select(active: boolean): void {
-        }
-
-        hover(active: boolean): void {
-        }
-
-        setBuildingPosition(buildingPosition: NativeVertexDto): void {
-
-        }
-
-        setBuildup(buildup: number): void {
-        }
-
-        onProjectileFired(destination: Vertex): void {
-        }
-
-        onExplode(): void {
-        }
-
-      }
+      return BabylonBaseItemImpl.createDummy(id);
     }
   }
-
 
   setViewFieldCenter(x: number, y: number): void {
     let currentViewFieldCenter = this.setupCenterGroundPosition();
@@ -595,10 +286,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     });
   }
 
-  getEngine(): Engine {
-    return this.engine;
-  }
-
   getScene(): Scene {
     return this.scene;
   }
@@ -653,7 +340,19 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     });
   }
 
-  private showMeshContainer(meshContainers: MeshContainer[], id: number, diplomacy: Diplomacy): TransformNode {
+  createBabylonResourceItem(id: number, resourceItemType: ResourceItemType): BabylonResourceItem {
+    try {
+      return new BabylonResourceItemImpl(id,
+        resourceItemType,
+        this,
+        this.babylonModelService);
+    } catch (error) {
+      console.error(error);
+      return BabylonResourceItemImpl.createDummy(id);
+    }
+  }
+
+  public showMeshContainer(meshContainers: MeshContainer[], id: number, diplomacy: Diplomacy): TransformNode {
     let foundMeshContainer = null;
     for (let meshContainer of meshContainers) {
       if (meshContainer.getId() === id) {
@@ -668,79 +367,6 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     this.scene.addTransformNode(baseItemContainer);
     this.recursivelyFillMeshes(foundMeshContainer!, baseItemContainer, diplomacy);
     return baseItemContainer;
-  }
-
-
-  private createMesh(threeJsModelId: number, element3DId: string, parent: Node, diplomacy: Diplomacy, shapeTransforms: ShapeTransform[] | null) {
-    let assetContainer = this.threeJsModelService.getAssetContainer(threeJsModelId);
-    let threeJsModelConfig = this.threeJsModelService.getThreeJsModelConfig(threeJsModelId);
-
-    let childMesh = null;
-    for (let childNod of assetContainer.getNodes()) {
-      childMesh = this.findChildNode(childNod, element3DId);
-      if (childMesh) {
-        break;
-      }
-    }
-    if (childMesh) {
-      let childParent: Node = parent;
-      let mesh = (<Mesh>childMesh!).clone(`${element3DId} '${threeJsModelId}'`);
-      if (shapeTransforms) {
-        for (let shapeTransform of shapeTransforms) {
-          const transform: TransformNode = new TransformNode(`${element3DId} '${threeJsModelId}'`);
-          transform.ignoreNonUniformScaling = true;
-          transform.position.x = shapeTransform.getTranslateX();
-          transform.position.y = shapeTransform.getTranslateY();
-          transform.position.z = shapeTransform.getTranslateZ();
-          transform.rotationQuaternion = new Quaternion(shapeTransform.getRotateX(),
-            shapeTransform.getRotateY(),
-            shapeTransform.getRotateZ(),
-            shapeTransform.getRotateW());
-          // Strange unity behavior
-          transform.scaling.x = (mesh.position.x < 0 ? -1 : 1) * shapeTransform.getScaleX();
-          transform.scaling.y = shapeTransform.getScaleY();
-          transform.scaling.z = shapeTransform.getScaleZ();
-          transform.parent = childParent;
-          childParent = transform;
-        }
-      }
-      if (threeJsModelConfig.getNodeMaterialId()) {
-        let diplomacyCache = this.diplomacyMaterialCache.get(threeJsModelConfig.getNodeMaterialId()!);
-        if (!diplomacyCache) {
-          diplomacyCache = new Map<Diplomacy, NodeMaterial>();
-          this.diplomacyMaterialCache.set(threeJsModelConfig.getNodeMaterialId()!, diplomacyCache)
-        }
-        let cachedMaterial = diplomacyCache.get(diplomacy);
-        if (!cachedMaterial) {
-          cachedMaterial = this.threeJsModelService.getNodeMaterial(threeJsModelConfig.getNodeMaterialId()!).clone(`${threeJsModelConfig.getNodeMaterialId()} '${diplomacy}'`);
-          const diplomacyColorNode = (<NodeMaterial>cachedMaterial).getBlockByPredicate(block => {
-            return "DiplomacyColor" === block.name;
-          });
-          if (diplomacyColorNode) {
-            (<InputBlock>diplomacyColorNode).value = ThreeJsRendererServiceImpl.color4Diplomacy(diplomacy);
-          }
-          diplomacyCache.set(diplomacy, cachedMaterial);
-        }
-        mesh.material = cachedMaterial;
-        mesh.hasVertexAlpha = false;
-      }
-      mesh.parent = childParent;
-      // console.log(`${element3DId} '${threeJsModelId}' ${mesh.position}`)
-
-      mesh.position.x = 0;
-      mesh.position.y = 0;
-      mesh.position.z = 0;
-      // this.shadowGenerator.addShadowCaster(mesh, true);
-      // mesh.rotationQuaternion = null;
-      // mesh.rotation.x = 0;
-      // mesh.rotation.y = 0;
-      // mesh.rotation.z = 0;
-      // mesh.scaling.x = 1;
-      // mesh.scaling.y = 1;
-      // mesh.scaling.z = 1;
-    } else {
-      console.warn(`Can not find element3DId '${element3DId}' in threeJsModelId '${threeJsModelId}'.`)
-    }
   }
 
   private recursivelyFillMeshes(meshContainer: MeshContainer, parent: Node, diplomacy: Diplomacy) {
@@ -817,7 +443,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
         this.updatePosition(disc, baseItemPlacer);
         disc.position.y = 0.1;
         material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
-        disc.onBeforeRenderObservable.add(eventData => {
+        disc.onBeforeRenderObservable.add(() => {
           if (disc) {
             this.updatePosition(disc, baseItemPlacer);
             material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
@@ -844,16 +470,76 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
     };
   }
 
-  public static color4Diplomacy(diplomacy: Diplomacy): Color3 {
-    switch (diplomacy) {
-      case Diplomacy.OWN:
-        return Color3.Green()
-      case Diplomacy.ENEMY:
-        return Color3.Red()
-      case Diplomacy.FRIEND:
-        return Color3.Yellow()
+  private createMesh(threeJsModelId: number, element3DId: string, parent: Node, diplomacy: Diplomacy, shapeTransforms: ShapeTransform[] | null) {
+    let assetContainer = this.babylonModelService.getAssetContainer(threeJsModelId);
+    let threeJsModelConfig = this.babylonModelService.getThreeJsModelConfig(threeJsModelId);
+
+    let childMesh = null;
+    for (let childNod of assetContainer.getNodes()) {
+      childMesh = this.findChildNode(childNod, element3DId);
+      if (childMesh) {
+        break;
+      }
     }
-    return Color3.Gray()
+    if (childMesh) {
+      let childParent: Node = parent;
+      let mesh = (<Mesh>childMesh!).clone(`${element3DId} '${threeJsModelId}'`);
+      if (shapeTransforms) {
+        for (let shapeTransform of shapeTransforms) {
+          const transform: TransformNode = new TransformNode(`${element3DId} '${threeJsModelId}'`);
+          transform.ignoreNonUniformScaling = true;
+          transform.position.x = shapeTransform.getTranslateX();
+          transform.position.y = shapeTransform.getTranslateY();
+          transform.position.z = shapeTransform.getTranslateZ();
+          transform.rotationQuaternion = new Quaternion(shapeTransform.getRotateX(),
+            shapeTransform.getRotateY(),
+            shapeTransform.getRotateZ(),
+            shapeTransform.getRotateW());
+          // Strange unity behavior
+          transform.scaling.x = (mesh.position.x < 0 ? -1 : 1) * shapeTransform.getScaleX();
+          transform.scaling.y = shapeTransform.getScaleY();
+          transform.scaling.z = shapeTransform.getScaleZ();
+          transform.parent = childParent;
+          childParent = transform;
+        }
+      }
+      if (threeJsModelConfig.getNodeMaterialId()) {
+        let diplomacyCache = this.diplomacyMaterialCache.get(threeJsModelConfig.getNodeMaterialId()!);
+        if (!diplomacyCache) {
+          diplomacyCache = new Map<Diplomacy, NodeMaterial>();
+          this.diplomacyMaterialCache.set(threeJsModelConfig.getNodeMaterialId()!, diplomacyCache)
+        }
+        let cachedMaterial = diplomacyCache.get(diplomacy);
+        if (!cachedMaterial) {
+          cachedMaterial = this.babylonModelService.getNodeMaterial(threeJsModelConfig.getNodeMaterialId()!).clone(`${threeJsModelConfig.getNodeMaterialId()} '${diplomacy}'`);
+          const diplomacyColorNode = (<NodeMaterial>cachedMaterial).getBlockByPredicate(block => {
+            return "DiplomacyColor" === block.name;
+          });
+          if (diplomacyColorNode) {
+            (<InputBlock>diplomacyColorNode).value = ThreeJsRendererServiceImpl.color4Diplomacy(diplomacy);
+          }
+          diplomacyCache.set(diplomacy, cachedMaterial);
+        }
+        mesh.material = cachedMaterial;
+        mesh.hasVertexAlpha = false;
+      }
+      mesh.parent = childParent;
+      // console.log(`${element3DId} '${threeJsModelId}' ${mesh.position}`)
+
+      mesh.position.x = 0;
+      mesh.position.y = 0;
+      mesh.position.z = 0;
+      // this.shadowGenerator.addShadowCaster(mesh, true);
+      // mesh.rotationQuaternion = null;
+      // mesh.rotation.x = 0;
+      // mesh.rotation.y = 0;
+      // mesh.rotation.z = 0;
+      // mesh.scaling.x = 1;
+      // mesh.scaling.y = 1;
+      // mesh.scaling.z = 1;
+    } else {
+      console.warn(`Can not find element3DId '${element3DId}' in threeJsModelId '${threeJsModelId}'.`)
+    }
   }
 
   public static setRazarionMetadata(node: Node, razarionMetadata: RazarionMetadata) {

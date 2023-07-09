@@ -46,8 +46,6 @@ public class MeshRenderTest extends WeldUiBaseIntegrationTest {
 
         getWeldBean(TerrainUiService.class).setLoaded();
 
-        setCamera(274, 100, 0);
-
         RenderService renderService = getWeldBean(RenderService.class);
         renderService.setup();
 

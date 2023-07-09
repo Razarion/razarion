@@ -1,8 +1,9 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.persistence.ColladaEntity;
-import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
+import com.btxtech.server.persistence.ImageLibraryEntity;
+import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
+import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
@@ -19,6 +20,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
+
 /**
  * Created by Beat
  * 04.10.2016.
@@ -30,9 +33,6 @@ public class ResourceItemTypeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String internalName;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ColladaEntity shape3DId;
     private double radius;
     @Enumerated(EnumType.STRING)
     private TerrainType terrainType;
@@ -45,17 +45,23 @@ public class ResourceItemTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity thumbnail;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity;
 
     public Integer getId() {
         return id;
     }
 
     public ResourceItemType toResourceItemType() {
-        ResourceItemType resourceItemType = new ResourceItemType();
-        resourceItemType.setRadius(radius).setAmount(amount).setFixVerticalNorm(fixVerticalNorm).setTerrainType(terrainType).id(id).internalName(internalName);
-        if (shape3DId != null) {
-            resourceItemType.setShape3DId(shape3DId.getId());
-        }
+        ResourceItemType resourceItemType = (ResourceItemType) new ResourceItemType()
+                .setRadius(radius)
+                .setAmount(amount)
+                .setFixVerticalNorm(fixVerticalNorm)
+                .setTerrainType(terrainType)
+                .id(id)
+                .internalName(internalName)
+                .threeJsModelPackConfigId(extractId(threeJsModelPackConfigEntity, ThreeJsModelPackConfigEntity::getId));
         if (i18nName != null) {
             resourceItemType.setI18nName(i18nName.toI18nString());
         }
@@ -68,7 +74,7 @@ public class ResourceItemTypeEntity {
         return resourceItemType;
     }
 
-    public void fromResourceItemType(ResourceItemType resourceItemType) {
+    public void fromResourceItemType(ResourceItemType resourceItemType, ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence) {
         internalName = resourceItemType.getInternalName();
         radius = resourceItemType.getRadius();
         fixVerticalNorm = resourceItemType.isFixVerticalNorm();
@@ -76,10 +82,7 @@ public class ResourceItemTypeEntity {
         amount = resourceItemType.getAmount();
         i18nName = I18nBundleEntity.fromI18nStringSafe(resourceItemType.getI18nName(), i18nName);
         i18nDescription = I18nBundleEntity.fromI18nStringSafe(resourceItemType.getI18nDescription(), i18nDescription);
-    }
-
-    public void setShape3DId(ColladaEntity shape3DId) {
-        this.shape3DId = shape3DId;
+        threeJsModelPackConfigEntity = threeJsModelPackCrudPersistence.getEntity(resourceItemType.getThreeJsModelPackConfigId());
     }
 
     public void setThumbnail(ImageLibraryEntity thumbnail) {

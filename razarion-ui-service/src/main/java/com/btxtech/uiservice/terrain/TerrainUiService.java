@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.WaterConfig;
@@ -74,8 +75,8 @@ public class TerrainUiService {
         cacheTerrainTiles.clear();
     }
 
-    public void onViewChanged(ViewField viewField) {
-        Collection<Index> display = GeometricUtil.rasterizeTerrainViewField(viewField.calculateAabbRectangle(), viewField.toPolygon());
+    public void onViewChanged(ViewField viewField, Rectangle2D viewFieldAabb) {
+        Collection<Index> display = GeometricUtil.rasterizeTerrainViewField(viewFieldAabb, viewField.toPolygon());
 
         Map<Index, UiTerrainTile> newDisplayTerrainTiles = new HashMap<>();
         for (Index index : display) {

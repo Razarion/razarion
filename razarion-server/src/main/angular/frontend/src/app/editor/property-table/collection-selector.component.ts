@@ -36,7 +36,7 @@ export class CollectionSelectorComponent extends EditorPanel {
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
-              private http: HttpClient) {
+              private httpClient: HttpClient) {
     super();
   }
 
@@ -63,7 +63,7 @@ export class CollectionSelectorComponent extends EditorPanel {
       menuObjectNameIds.push({
         label: displayObjectName,
         command: () => {
-          this.http.get(`${this.url4Collection()}/read/${objectNameId.id}`)
+          this.httpClient.get(`${this.url4Collection()}/read/${objectNameId.id}`)
             .subscribe((jsonObject: any) => {
               this.initJsonEditor();
               this.jsonEditor.set({json: jsonObject});
@@ -71,7 +71,7 @@ export class CollectionSelectorComponent extends EditorPanel {
               this.updateDeleteSaveDisableState();
               this.items[0].label = displayObjectName;
               this.selectedDisplayObjectName = displayObjectName;
-            })
+            });
         }
       });
     })
@@ -84,21 +84,25 @@ export class CollectionSelectorComponent extends EditorPanel {
       {
         label: "New",
         command: () => {
-          this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider()
-            .createConfig((<GenericPropertyEditorModel>this.editorModel).collectionName).then(
-            value => {
-              this.jsonObject = value;
-              this.selectedDisplayObjectName = `? (${value.configId})`;
-              this.requestObjectNameId();
-            },
-            reason => {
-              this.messageService.add({
-                severity: 'error',
-                summary: `Can not create config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
-                detail: reason,
-                sticky: true
-              });
-              console.error(reason);
+          this.httpClient.post(`${this.url4Collection()}/create`, {})
+            .subscribe({
+              next: (jsonObject: any) => {
+                this.initJsonEditor();
+                this.jsonEditor.set({json: jsonObject});
+                this.jsonObject = jsonObject;
+                this.updateDeleteSaveDisableState();
+                this.items[0].label = jsonObject.internalName;
+                this.selectedDisplayObjectName = `? '${jsonObject.id}'`;
+                this.requestObjectNameId();
+              }, error: (error) => {
+                console.error(error);
+                this.messageService.add({
+                  severity: 'error',
+                  summary: `Can not create config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
+                  detail: error,
+                  sticky: true
+                });
+              }
             });
         }
       },
@@ -107,7 +111,7 @@ export class CollectionSelectorComponent extends EditorPanel {
         disabled: this.jsonObject == null,
         command: () => {
           console.log(this.jsonEditor.get())
-          this.http.post(`${this.url4Collection()}/update`, (<any>this.jsonEditor.get()).json || JSON.parse((<any>this.jsonEditor.get()).text))
+          this.httpClient.post(`${this.url4Collection()}/update`, (<any>this.jsonEditor.get()).json || JSON.parse((<any>this.jsonEditor.get()).text))
             .subscribe(() => {
               this.requestObjectNameId();
               this.messageService.add({
@@ -121,7 +125,7 @@ export class CollectionSelectorComponent extends EditorPanel {
         label: "Delete",
         disabled: this.jsonObject == null,
         command: () => {
-          this.http.delete(`${this.url4Collection()}/delete/${this.jsonObject.id}`)
+          this.httpClient.delete(`${this.url4Collection()}/delete/${this.jsonObject.getId()}`)
             .subscribe(() => {
               this.requestObjectNameId();
               this.messageService.add({

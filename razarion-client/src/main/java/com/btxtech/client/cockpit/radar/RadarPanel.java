@@ -2,9 +2,6 @@ package com.btxtech.client.cockpit.radar;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.google.gwt.dom.client.Element;
@@ -36,10 +33,6 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     // private Logger logger = Logger.getLogger(RadarPanel.class.getName());
     @Inject
     private ViewService viewService;
-    @Inject
-    private Camera camera;
-    @Inject
-    private ProjectionTransformation projectionTransformation;
     @DataField
     private Element miniTerrainElement = (Element) Browser.getDocument().createCanvasElement();
     @DataField
@@ -85,8 +78,8 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
 
     private void onMouseDown(MouseEvent mouseEvent) {
         DecimalPosition viewCenter = miniViewField.canvasToReal(new DecimalPosition(mouseEvent.getOffsetX(), mouseEvent.getOffsetY()));
-        DecimalPosition cameraPosition = projectionTransformation.viewFieldCenterToCamera(viewCenter, 0);
-        camera.setTranslateXY(cameraPosition.getX(), cameraPosition.getY());
+        // TODO DecimalPosition cameraPosition = projectionTransformation.viewFieldCenterToCamera(viewCenter, 0);
+        // TODO camera.setTranslateXY(cameraPosition.getX(), cameraPosition.getY());
     }
 
     @Override

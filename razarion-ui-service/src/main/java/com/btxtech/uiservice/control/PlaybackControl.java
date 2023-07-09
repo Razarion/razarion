@@ -19,8 +19,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -32,10 +30,6 @@ import java.util.logging.Logger;
  */
 public abstract class PlaybackControl {
     private Logger logger = Logger.getLogger(PlaybackControl.class.getName());
-    @Inject
-    private Camera camera;
-    @Inject
-    private ProjectionTransformation projectionTransformation;
     @Inject
     private SimpleExecutorService simpleExecutorService;
     @Inject
@@ -120,9 +114,6 @@ public abstract class PlaybackControl {
         onNextAction(nextDetailedTracking);
         try {
             if (nextDetailedTracking instanceof CameraTracking) {
-                CameraTracking cameraTracking = (CameraTracking) nextDetailedTracking;
-                camera.setTranslateXY(cameraTracking.getPosition().getX(), cameraTracking.getPosition().getY());
-                projectionTransformation.setFovY(cameraTracking.getFovY());
             } else if (nextDetailedTracking instanceof BrowserWindowTracking) {
                 BrowserWindowTracking browserWindowTracking = (BrowserWindowTracking) nextDetailedTracking;
                 setCanvasPlaybackDimension(browserWindowTracking.getDimension());

@@ -15,7 +15,9 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import jsinterop.annotations.JsType;
 
+@JsType
 public class ResourceItemType extends ItemType {
     private double radius;
     private boolean fixVerticalNorm;

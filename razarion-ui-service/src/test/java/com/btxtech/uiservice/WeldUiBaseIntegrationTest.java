@@ -19,10 +19,7 @@ import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.i18n.I18nConstants;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.easymock.EasyMock;
 import org.jboss.weld.environment.se.Weld;
@@ -56,36 +53,7 @@ public class WeldUiBaseIntegrationTest {
     }
 
     protected void callOnViewChanged(ViewField viewField) {
-        getWeldBean(BaseItemUiService.class).onViewChanged(viewField);
-    }
-
-    @Deprecated// See callOnViewChanged
-    protected void setCamera(double translateX, double translateY) {
-        Camera camera = getWeldBean(Camera.class);
-        camera.setTranslateXY(translateX, translateY);
-    }
-
-    @Deprecated// See callOnViewChanged
-    protected void setCamera(double translateX, double translateY, double rotateX) {
-        Camera camera = getWeldBean(Camera.class);
-        camera.setTranslateXY(translateX, translateY);
-        camera.setRotateX(rotateX);
-        getWeldBean(ViewService.class).onViewChanged();
-    }
-
-    @Deprecated// See callOnViewChanged
-    protected void setCamera(double translateX, double translateY, double translateZ, double rotateX, double rotateZ) {
-        Camera camera = getWeldBean(Camera.class);
-        camera.setTranslateX(translateX);
-        camera.setTranslateY(translateY);
-        camera.setTranslateZ(translateZ);
-        camera.setRotateX(rotateX);
-        camera.setRotateZ(rotateZ);
-    }
-
-    @Deprecated// See callOnViewChanged
-    protected ProjectionTransformation getProjectionTransformation() {
-        return getWeldBean(ProjectionTransformation.class);
+        getWeldBean(BaseItemUiService.class).onViewChanged(viewField, viewField.calculateAabbRectangle());
     }
 
     protected TerrainUiService getTerrainUiService() {

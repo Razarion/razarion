@@ -2,9 +2,6 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
-import com.btxtech.shared.datatypes.particle.ParticleEmitterSequenceConfig;
-import com.btxtech.shared.datatypes.particle.ParticleShapeConfig;
-import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
@@ -21,8 +18,6 @@ public class ColdGameUiContext {
     private List<LevelUnlockConfig> levelUnlockConfigs;
     private StaticGameConfig staticGameConfig;
     private List<MeshContainer> meshContainers;
-    private List<ParticleShapeConfig> particleShapeConfigs;
-    private List<ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs;
     private AudioConfig audioConfig;
     private GameTipVisualConfig gameTipVisualConfig;
     private InGameQuestVisualConfig inGameQuestVisualConfig;
@@ -58,22 +53,6 @@ public class ColdGameUiContext {
 
     public void setMeshContainers(List<MeshContainer> meshContainers) {
         this.meshContainers = meshContainers;
-    }
-
-    public List<ParticleShapeConfig> getParticleShapeConfigs() {
-        return particleShapeConfigs;
-    }
-
-    public void setParticleShapeConfigs(List<ParticleShapeConfig> particleShapeConfigs) {
-        this.particleShapeConfigs = particleShapeConfigs;
-    }
-
-    public List<ParticleEmitterSequenceConfig> getParticleEmitterSequenceConfigs() {
-        return particleEmitterSequenceConfigs;
-    }
-
-    public void setParticleEmitterSequenceConfigs(List<ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs) {
-        this.particleEmitterSequenceConfigs = particleEmitterSequenceConfigs;
     }
 
     public AudioConfig getAudioConfig() {
@@ -125,16 +104,6 @@ public class ColdGameUiContext {
 
     public ColdGameUiContext meshContainers(List<MeshContainer> meshContainers) {
         setMeshContainers(meshContainers);
-        return this;
-    }
-
-    public ColdGameUiContext particleShapeConfigs(List<ParticleShapeConfig> particleShapeConfigs) {
-        setParticleShapeConfigs(particleShapeConfigs);
-        return this;
-    }
-
-    public ColdGameUiContext particleEmitterSequenceConfigs(List<ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs) {
-        setParticleEmitterSequenceConfigs(particleEmitterSequenceConfigs);
         return this;
     }
 

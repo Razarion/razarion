@@ -20,13 +20,13 @@ CREATE TABLE IF NOT EXISTS `BOT_CONFIG` (
   PRIMARY KEY (`id`),
   KEY `FKpevo4xbk12x450abbpwgsdoj4` (`realm_id`),
   CONSTRAINT `FKpevo4xbk12x450abbpwgsdoj4` FOREIGN KEY (`realm_id`) REFERENCES `PLACE_CONFIG` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=223 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=225 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `BOT_CONFIG`;
 /*!40000 ALTER TABLE `BOT_CONFIG` DISABLE KEYS */;
 INSERT INTO `BOT_CONFIG` (`id`, `actionDelay`, `autoAttack`, `auxiliaryId`, `internalName`, `maxActiveMs`, `maxInactiveMs`, `minActiveMs`, `minInactiveMs`, `name`, `npc`, `realm_id`) VALUES
 	(31, 1000, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', NULL),
-	(222, 3000, b'1', NULL, 'Outpost Mini 1', NULL, NULL, NULL, NULL, 'Raza Outpost Mini', b'0', 697);
+	(224, 3000, b'1', NULL, 'Outpost Mini 1', NULL, NULL, NULL, NULL, 'Raza Outpost Mini', b'0', 699);
 /*!40000 ALTER TABLE `BOT_CONFIG` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
