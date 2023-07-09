@@ -4,17 +4,11 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.uiservice.renderer.task.ParticleRenderTaskRunner;
-import com.btxtech.uiservice.renderer.task.ProjectileRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTaskRunner;
-import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.TrailRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.selection.ItemMarkerRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTaskRunner;
 import com.btxtech.uiservice.renderer.task.selection.StatusBarRenderTaskRunner;
-import com.btxtech.uiservice.renderer.task.simple.GroundRenderTaskRunner;
-import com.btxtech.uiservice.renderer.task.simple.SlopeRenderTaskRunner;
-import com.btxtech.uiservice.renderer.task.simple.WaterRenderTaskRunner;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -50,17 +44,11 @@ public abstract class RenderService {
         internalSetup();
         renderTaskRunners.clear();
 
-        addRenderTaskRunner(GroundRenderTaskRunner.class, "Ground");
-        addRenderTaskRunner(SlopeRenderTaskRunner.class, "Slope");
-        addRenderTaskRunner(TerrainObjectRenderTaskRunner.class, "Terrain Object");
         addRenderTaskRunner(ItemMarkerRenderTaskRunner.class, "Item Marker");
         addRenderTaskRunner(TrailRenderTaskRunner.class, "Trail");
         addRenderTaskRunner(ResourceItemRenderTaskRunner.class, "Resource");
-        addRenderTaskRunner(WaterRenderTaskRunner.class, "Water");
         addRenderTaskRunner(StatusBarRenderTaskRunner.class, "Status Bar");
-        addRenderTaskRunner(ProjectileRenderTaskRunner.class, "Projectile");
         addRenderTaskRunner(SelectionFrameRenderTaskRunner.class, "Selection Frame");
-        addRenderTaskRunner(ParticleRenderTaskRunner.class, "Particle");
     }
 
     private void addRenderTaskRunner(Class<? extends AbstractRenderTaskRunner> clazz, String name) {
