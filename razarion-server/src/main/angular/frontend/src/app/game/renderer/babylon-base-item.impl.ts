@@ -15,6 +15,7 @@ import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   private health: number = 0;
   private buildingParticleSystem: ParticleSystem | null = null;
+  private harvestingParticleSystem: ParticleSystem | null = null;
 
   constructor(id: number, private baseItemType: BaseItemType, diplomacy: Diplomacy, rendererService: ThreeJsRendererServiceImpl, babylonModelService: BabylonModelService) {
     super(id, baseItemType, diplomacy, rendererService, babylonModelService, rendererService.baseItemContainer);
@@ -72,6 +73,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
       }
 
+      setHarvestingPosition(harvestingPosition: NativeVertexDto | null): void {
+      }
+
       setBuildup(buildup: number): void {
       }
 
@@ -86,6 +90,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   dispose() {
     this.disposeBuildingParticleSystem();
+    this.disposeHarvestingParticleSystem();
     super.dispose();
   }
 
@@ -129,11 +134,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     });
   }
 
-  setBuildingPosition(nativeBuildingPosition: NativeVertexDto): void {
-    if (nativeBuildingPosition && this.buildingParticleSystem) {
+  setBuildingPosition(razarionBuildingPosition: NativeVertexDto): void {
+    if (razarionBuildingPosition && this.buildingParticleSystem) {
       return;
     }
-    if (!nativeBuildingPosition && !this.buildingParticleSystem) {
+    if (!razarionBuildingPosition && !this.buildingParticleSystem) {
       return;
     }
 
@@ -142,18 +147,49 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       return;
     }
 
-    if (!nativeBuildingPosition && this.buildingParticleSystem) {
+    if (!razarionBuildingPosition && this.buildingParticleSystem) {
       this.disposeBuildingParticleSystem();
       return;
     }
 
-    if (nativeBuildingPosition && !this.buildingParticleSystem) {
+    if (razarionBuildingPosition && !this.buildingParticleSystem) {
       try {
         let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getBuilderType()?.getParticleSystemConfigId()!);
-        const buildingPosition = new Vector3(nativeBuildingPosition.x, nativeBuildingPosition.z, nativeBuildingPosition.y);
+        const buildingPosition = new Vector3(razarionBuildingPosition.x, razarionBuildingPosition.z, razarionBuildingPosition.y);
         const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath())
         emitterMesh.computeWorldMatrix(true);
         this.buildingParticleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, buildingPosition, true);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+
+  setHarvestingPosition(razarionHarvestingPosition: NativeVertexDto | null): void {
+    if (razarionHarvestingPosition && this.harvestingParticleSystem) {
+      return;
+    }
+    if (!razarionHarvestingPosition && !this.harvestingParticleSystem) {
+      return;
+    }
+
+    let particleSystemConfigId = this.baseItemType.getHarvesterType()?.getParticleSystemConfigId()
+    if (!particleSystemConfigId) {
+      return;
+    }
+
+    if (!razarionHarvestingPosition && this.harvestingParticleSystem) {
+      this.disposeHarvestingParticleSystem();
+      return;
+    }
+
+    if (razarionHarvestingPosition && !this.harvestingParticleSystem) {
+      try {
+        let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getHarvesterType()?.getParticleSystemConfigId()!);
+        const harvestingPosition = new Vector3(razarionHarvestingPosition.x, razarionHarvestingPosition.z, razarionHarvestingPosition.y);
+        const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath())
+        emitterMesh.computeWorldMatrix(true);
+        this.harvestingParticleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, harvestingPosition, true);
       } catch (e) {
         console.error(e);
       }
@@ -164,6 +200,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (this.buildingParticleSystem) {
       this.buildingParticleSystem!.dispose();
       this.buildingParticleSystem = null;
+    }
+  }
+
+  private disposeHarvestingParticleSystem() {
+    if (this.harvestingParticleSystem) {
+      this.harvestingParticleSystem!.dispose();
+      this.harvestingParticleSystem = null;
     }
   }
 

@@ -1,13 +1,9 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.persistence.ColladaEntity;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
+import com.btxtech.server.persistence.ParticleSystemEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -29,32 +27,21 @@ public class HarvesterTypeEntity {
     private Integer id;
     private int harvestRange;
     private double progress;
-    @AttributeOverrides({
-            @AttributeOverride(name = "x", column = @Column(name = "animationOriginX")),
-            @AttributeOverride(name = "y", column = @Column(name = "animationOriginY")),
-            @AttributeOverride(name = "z", column = @Column(name = "animationOriginZ")),
-    })
-    private Vertex animationOrigin;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ColladaEntity animationShape3d;
+    private ParticleSystemEntity particleSystem;
 
     public HarvesterType toHarvesterType() {
-        HarvesterType harvesterType = new HarvesterType().setRange(harvestRange).setProgress(progress);
-        if (animationOrigin != null) {
-            harvesterType.setAnimationOrigin(animationOrigin);
-        }
-        if (animationShape3d != null) {
-            harvesterType.setAnimationShape3dId(animationShape3d.getId());
-        }
-        return harvesterType;
+        return new HarvesterType()
+                .range(harvestRange)
+                .progress(progress)
+                .particleSystemConfigId(extractId(particleSystem, ParticleSystemEntity::getId));
     }
 
-    public void fromHarvesterType(HarvesterType harvesterType, Shape3DCrudPersistence shape3DPersistence) {
+    public void fromHarvesterType(HarvesterType harvesterType, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
         harvestRange = harvesterType.getRange();
         progress = harvesterType.getProgress();
-        animationOrigin = harvesterType.getAnimationOrigin();
-        animationShape3d = shape3DPersistence.getEntity(harvesterType.getAnimationShape3dId());
+        particleSystem = particleSystemCrudPersistence.getEntity(harvesterType.getParticleSystemConfigId());
     }
 
     @Override

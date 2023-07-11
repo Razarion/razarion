@@ -13,24 +13,31 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import jsinterop.annotations.JsType;
 
 /**
  * User: beat
  * Date: 17.11.2009
  * Time: 23:23:38
  */
+@JsType
 public class HarvesterType {
     private int range;
     private double progress;
-    private Vertex animationOrigin;
-    private Integer animationShape3dId;
+    @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
+    private Integer particleSystemConfigId;
 
     public int getRange() {
         return range;
     }
 
-    public HarvesterType setRange(int range) {
+    public void setRange(int range) {
+        this.range = range;
+    }
+
+    public HarvesterType range(int range) {
         this.range = range;
         return this;
     }
@@ -39,26 +46,25 @@ public class HarvesterType {
         return progress;
     }
 
-    public HarvesterType setProgress(double progress) {
+    public void setProgress(double progress) {
+        this.progress = progress;
+    }
+
+    public HarvesterType progress(double progress) {
         this.progress = progress;
         return this;
     }
 
-    public Vertex getAnimationOrigin() {
-        return animationOrigin;
+    public Integer getParticleSystemConfigId() {
+        return particleSystemConfigId;
     }
 
-    public HarvesterType setAnimationOrigin(Vertex animationOrigin) {
-        this.animationOrigin = animationOrigin;
-        return this;
+    public void setParticleSystemConfigId(Integer particleSystemConfigId) {
+        this.particleSystemConfigId = particleSystemConfigId;
     }
 
-    public Integer getAnimationShape3dId() {
-        return animationShape3dId;
-    }
-
-    public HarvesterType setAnimationShape3dId(Integer animationShape3dId) {
-        this.animationShape3dId = animationShape3dId;
+    public HarvesterType particleSystemConfigId(Integer particleSystemConfigId) {
+        setParticleSystemConfigId(particleSystemConfigId);
         return this;
     }
 }

@@ -301,6 +301,8 @@ export interface BaseItemType extends ItemType {
   getBuilderType(): BuilderType;
 
   getWeaponType(): WeaponType;
+
+  getHarvesterType(): HarvesterType;
 }
 
 export interface ResourceItemType extends ItemType {
@@ -319,6 +321,10 @@ export interface WeaponType {
   getMuzzleFlashParticleSystemConfigId(): number | null;
 
   getProjectileSpeed(): number | null;
+}
+
+export interface HarvesterType {
+  getParticleSystemConfigId(): number | null;
 }
 
 // ---------- Renderer ----------
@@ -426,6 +432,8 @@ export interface BabylonBaseItem extends BabylonItem {
   updateHealth(): void;
 
   setBuildingPosition(buildingPosition: NativeVertexDto | null): void;
+
+  setHarvestingPosition(harvestingPosition: NativeVertexDto | null): void;
 
   setBuildup(buildup: number): void;
 

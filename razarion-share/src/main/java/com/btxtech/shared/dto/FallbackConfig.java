@@ -176,7 +176,7 @@ public final class FallbackConfig {
         BaseItemType harvester = new BaseItemType();
         harvester.setHealth(17).setBuildup(18).id(HARVESTER_ITEM_TYPE_ID).internalName("Harvester test");
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(1.5).angularVelocity(Math.toRadians(40)).radius(2).speed(15.0));
-        harvester.setHarvesterType(new HarvesterType().setProgress(2.0).setRange(2));
+        harvester.setHarvesterType(new HarvesterType().progress(2.0).range(2));
         baseItemTypes.add(harvester);
     }
 
@@ -184,7 +184,7 @@ public final class FallbackConfig {
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(10).setBuildup(5).id(SHIP_HARVESTER_ITEM_TYPE_ID).internalName("Ship harvester test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).acceleration(1.5).angularVelocity(Math.toRadians(20)).radius(2.5).speed(15.0));
-        attacker.setHarvesterType(new HarvesterType().setRange(10).setProgress(2.0).setAnimationOrigin(new Vertex(1, 0, 0)).setAnimationShape3dId(999111));
+        attacker.setHarvesterType(new HarvesterType().range(10).progress(2.0));
         baseItemTypes.add(attacker);
     }
 

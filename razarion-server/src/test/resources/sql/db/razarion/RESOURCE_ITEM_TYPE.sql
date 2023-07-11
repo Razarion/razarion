@@ -33,7 +33,7 @@ DELETE FROM `RESOURCE_ITEM_TYPE`;
 /*!40000 ALTER TABLE `RESOURCE_ITEM_TYPE` DISABLE KEYS */;
 INSERT INTO `RESOURCE_ITEM_TYPE` (`id`, `amount`, `fixVerticalNorm`, `internalName`, `radius`, `terrainType`, `i18nDescription_id`, `i18nName_id`, `shape3DId_id`, `thumbnail_id`, `threeJsModelPackConfigEntity_id`) VALUES
 	(1, 100000, b'1', 'Start razarion', 3, 'LAND', 55, 54, 4, 80, NULL),
-	(2, 1000, b'1', 'Noob', 3, 'LAND', 225, 224, NULL, 80, 133);
+	(2, 1000, b'1', 'Noob', 0.8, 'LAND', 225, 224, NULL, 80, 133);
 /*!40000 ALTER TABLE `RESOURCE_ITEM_TYPE` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -364,7 +364,7 @@ public class ServerTestHelper {
         BaseItemType harvester = new BaseItemType();
         harvester.setHealth(10).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Harvester");
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(40.0).speed(80.0).angularVelocity(Math.toRadians(30)).radius(2));
-        harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4));
+        harvester.setHarvesterType(new HarvesterType().progress(10).range(4));
         BASE_ITEM_TYPE_HARVESTER_ID = createBaseItemTypeEntity(harvester);
 
         BaseItemType attacker = new BaseItemType();

@@ -18,7 +18,9 @@ INSERT INTO `PARTICLE_SYSTEM_EMITTER_MESH_PATH` (`particleSystem`, `emitterMeshP
 	(1, 'Cannon00 \'41\'', 0),
 	(1, 'Cannon00 \'41\'.Cannon00', 1),
 	(2, 'Cannon07 \'41\'', 0),
-	(2, 'Cannon07 \'41\'.Cannon07', 1);
+	(2, 'Cannon07 \'41\'.Cannon07', 1),
+	(3, 'Body12 \'41\'', 0),
+	(3, 'Body12 \'41\'.Body12', 1);
 /*!40000 ALTER TABLE `PARTICLE_SYSTEM_EMITTER_MESH_PATH` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -15,6 +15,8 @@ public interface BabylonBaseItem extends BabylonItem {
 
     void setBuildingPosition(NativeVertexDto buildingPosition);
 
+    void setHarvestingPosition(NativeVertexDto harvestingPosition);
+
     void setBuildup(double buildup);
 
     void onProjectileFired(Vertex destination);

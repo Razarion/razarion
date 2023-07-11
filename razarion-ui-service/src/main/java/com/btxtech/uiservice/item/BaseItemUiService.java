@@ -94,7 +94,7 @@ public class BaseItemUiService {
     private final MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
     private long lastUpdateTimeStamp;
     private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
-    private final List<BabylonBaseItem> selectedBabylonBaseItem = new ArrayList<>();
+    private final List<BabylonBaseItem> selectedBabylonBaseItems = new ArrayList<>();
     private BabylonBaseItem hoverBabylonBaseItem;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
@@ -116,7 +116,7 @@ public class BaseItemUiService {
         weaponTurretModelMatrices.clear();
         lastUpdateTimeStamp = 0;
         syncBaseItemSetPositionMonitor = null;
-        selectedBabylonBaseItem.clear();
+        selectedBabylonBaseItems.clear();
         hoverBabylonBaseItem = null;
     }
 
@@ -194,6 +194,7 @@ public class BaseItemUiService {
                     babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
                     babylonBaseItem.updateHealth();
                     babylonBaseItem.setBuildingPosition(nativeSyncBaseItemTickInfo.buildingPosition);
+                    babylonBaseItem.setHarvestingPosition(nativeSyncBaseItemTickInfo.harvestingResourcePosition);
                 }
                 leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
 
@@ -245,13 +246,7 @@ public class BaseItemUiService {
                     }
                 }
 
-                // Harvesting
-                if (nativeSyncBaseItemTickInfo.harvestingResourcePosition != null) {
-                    // NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getHarvesterType().getAnimationOrigin()), 1.0);
-                    // NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.harvestingResourcePosition, origin);
-                    // TODO harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
-                }
-                // Building
+                babylonBaseItem.setHarvestingPosition(nativeSyncBaseItemTickInfo.harvestingResourcePosition);
                 babylonBaseItem.setBuildingPosition(nativeSyncBaseItemTickInfo.buildingPosition);
                 babylonBaseItem.setBuildup(nativeSyncBaseItemTickInfo.buildup);
             } catch (Throwable t) {
@@ -634,8 +629,8 @@ public class BaseItemUiService {
     }
 
     public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
-        selectedBabylonBaseItem.forEach(babylonBaseItem -> babylonBaseItem.select(false));
-        selectedBabylonBaseItem.clear();
+        selectedBabylonBaseItems.forEach(babylonBaseItem -> babylonBaseItem.select(false));
+        selectedBabylonBaseItems.clear();
 
         if (selectionEvent.getType() == SelectionEvent.Type.OWN) {
             selectionEvent.getSelectedGroup().getItems().stream()
@@ -643,13 +638,13 @@ public class BaseItemUiService {
                     .map(id -> aliveBabylonBaseItems.get(id))
                     .filter(Objects::nonNull)
                     .forEach(babylonBaseItem -> {
-                        selectedBabylonBaseItem.add(babylonBaseItem);
+                        selectedBabylonBaseItems.add(babylonBaseItem);
                         babylonBaseItem.select(true);
                     });
         } else if (selectionEvent.getType() == SelectionEvent.Type.OTHER) {
             BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(selectionEvent.getSelectedOther().getId());
             if (babylonBaseItem != null) {
-                selectedBabylonBaseItem.add(babylonBaseItem);
+                selectedBabylonBaseItems.add(babylonBaseItem);
                 babylonBaseItem.select(true);
             }
         }

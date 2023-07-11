@@ -72,11 +72,6 @@ public class TerrainMouseHandler {
 
     public void onMouseMove(DecimalPosition terrainPosition, boolean primaryButtonDown) {
         try {
-//  TODO          if (editorMouseListener != null) {
-//                editorMouseListener.onMouseMove(terrainPosition, primaryButtonDown);
-//                return;
-//            }
-
             if (baseItemPlacerService.isActive()) {
                 baseItemPlacerService.onMouseMoveEvent(terrainPosition);
                 return;
@@ -97,7 +92,7 @@ public class TerrainMouseHandler {
                 SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition);
                 if (syncResourceItem != null) {
                     cursorService.handleMouseOverResourceItem();
-                    baseItemUiService.onHover(syncResourceItem);
+                    resourceUiService.onHover(syncResourceItem);
                     return;
                 }
                 SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition);
@@ -108,6 +103,7 @@ public class TerrainMouseHandler {
                 }
                 cursorService.handleMouseOverTerrain(terrainPosition);
                 baseItemUiService.onHover(null);
+                resourceUiService.onHover(null);
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

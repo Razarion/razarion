@@ -126,6 +126,11 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
         }
 
         @Override
+        public void setHarvestingPosition(NativeVertexDto harvestingPosition) {
+
+        }
+
+        @Override
         public void setBuildup(double buildup) {
 
         }

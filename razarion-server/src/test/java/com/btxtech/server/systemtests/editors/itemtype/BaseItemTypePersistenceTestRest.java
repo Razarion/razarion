@@ -206,7 +206,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         harvester.setI18nName(i18nHelper("Harvester"));
         harvester.setI18nDescription(i18nHelper("Collects resources"));
         harvester.getPhysicalAreaConfig().radius(3).acceleration(5.0).speed(15.0).angularVelocity(Math.toRadians(60)).startAngleSlowDown(Math.toRadians(40));
-        harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(3).setAnimationShape3dId(SHAPE_3D_3_ID).setAnimationOrigin(new Vertex(2.5, 0, 1.25)));
+        harvester.setHarvesterType(new HarvesterType().progress(10).range(3));
         harvester.setBoxPickupRange(2).setBuildup(20);
         harvester.setPrice(100).setWreckageShape3DId(SHAPE_3D_2_ID);
     }

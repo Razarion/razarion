@@ -7,17 +7,21 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.ThreeJsRendererService;
 import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -38,6 +42,8 @@ public class ResourceUiService {
     private final Map<Integer, BabylonResourceItem> babylonResourceItem = new HashMap<>();
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
+    private BabylonResourceItem selectedBabylonBaseItem;
+    private BabylonResourceItem hoverBabylonResourceItem;
 
     public void clear() {
         resources.clear();
@@ -117,23 +123,28 @@ public class ResourceUiService {
             return;
         }
         synchronized (resources) {
+            Set<Integer> unused = new HashSet<>(babylonResourceItem.keySet());
             resources.forEach((id, syncResourceItemSimpleDto) -> {
                 ResourceItemType resourceItemType = itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId());
                 if (viewFieldAabb.adjoinsCircleExclusive(syncResourceItemSimpleDto.getPosition2d(), resourceItemType.getRadius())) {
-                    BabylonResourceItem visibleResource = babylonResourceItem.remove(syncResourceItemSimpleDto.getId());
+                    BabylonResourceItem visibleResource = babylonResourceItem.get(id);
                     if (visibleResource == null) {
-                        visibleResource = threeJsRendererService.createBabylonResourceItem(syncResourceItemSimpleDto.getId(), resourceItemType);
+                        visibleResource = threeJsRendererService.createBabylonResourceItem(id, resourceItemType);
                         visibleResource.setPosition(syncResourceItemSimpleDto.getPosition3d());
                         visibleResource.updatePosition();
-                        babylonResourceItem.put(syncResourceItemSimpleDto.getId(), visibleResource);
+                        babylonResourceItem.put(id, visibleResource);
+                    } else {
+                        unused.remove(id);
                     }
                 } else {
-                    BabylonResourceItem visibleResource = babylonResourceItem.remove(syncResourceItemSimpleDto.getId());
+                    BabylonResourceItem visibleResource = babylonResourceItem.remove(id);
                     if (visibleResource != null) {
                         visibleResource.dispose();
+                        unused.remove(id);
                     }
                 }
             });
+            unused.forEach(id -> babylonResourceItem.remove(id).dispose());
         }
     }
 
@@ -173,5 +184,36 @@ public class ResourceUiService {
 
     public SyncResourceItemSimpleDto getSyncResourceItemSimpleDto4IdPlayback(int resourceItemId) {
         return resources.get(resourceItemId);
+    }
+
+    public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+        if (selectedBabylonBaseItem != null) {
+            selectedBabylonBaseItem.select(false);
+            selectedBabylonBaseItem = null;
+        }
+        if (selectionEvent.getType() == SelectionEvent.Type.OTHER && selectionEvent.getSelectedOther() instanceof SyncResourceItemSimpleDto) {
+            selectedBabylonBaseItem = babylonResourceItem.get(selectionEvent.getSelectedOther().getId());
+            if (selectedBabylonBaseItem != null) {
+                selectedBabylonBaseItem.select(true);
+            }
+        }
+    }
+
+    public void onHover(SyncResourceItemSimpleDto syncItem) {
+        if (hoverBabylonResourceItem == null && syncItem != null) {
+            hoverBabylonResourceItem = babylonResourceItem.get(syncItem.getId());
+            if (hoverBabylonResourceItem != null) {
+                hoverBabylonResourceItem.hover(true);
+            }
+        } else if (hoverBabylonResourceItem != null && syncItem == null) {
+            hoverBabylonResourceItem.hover(false);
+            hoverBabylonResourceItem = null;
+        } else if (hoverBabylonResourceItem != null && hoverBabylonResourceItem.getId() != syncItem.getId()) {
+            hoverBabylonResourceItem.hover(false);
+            hoverBabylonResourceItem = babylonResourceItem.get(syncItem.getId());
+            if (hoverBabylonResourceItem != null) {
+                hoverBabylonResourceItem.hover(true);
+            }
+        }
     }
 }

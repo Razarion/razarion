@@ -244,7 +244,7 @@ public class BaseItemTypeEntity {
             if (harvesterType == null) {
                 harvesterType = new HarvesterTypeEntity();
             }
-            harvesterType.fromHarvesterType(baseItemType.getHarvesterType(), shape3DPersistence);
+            harvesterType.fromHarvesterType(baseItemType.getHarvesterType(), particleSystemCrudPersistence);
         } else {
             harvesterType = null;
         }

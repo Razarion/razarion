@@ -13,7 +13,7 @@ import {BabylonModelService} from './renderer/babylon-model.service';
 import {
   BaseItemType,
   BuilderType,
-  Diplomacy,
+  Diplomacy, HarvesterType,
   NativeVertexDto,
   PhysicalAreaConfig,
   WeaponType
@@ -93,6 +93,14 @@ export class GameComponent implements OnInit {
                 return new class implements BuilderType {
                   getParticleSystemConfigId(): number | null {
                     return 1;
+                  }
+                }
+              }
+
+              getHarvesterType(): HarvesterType {
+                return new class implements HarvesterType {
+                  getParticleSystemConfigId(): number | null {
+                    return 2;
                   }
                 }
               }
