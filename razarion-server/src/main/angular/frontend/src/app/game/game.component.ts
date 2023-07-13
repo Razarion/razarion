@@ -13,8 +13,8 @@ import {BabylonModelService} from './renderer/babylon-model.service';
 import {
   BaseItemType,
   BuilderType,
-  Diplomacy, HarvesterType,
-  NativeVertexDto,
+  Diplomacy,
+  HarvesterType,
   PhysicalAreaConfig,
   WeaponType
 } from "../gwtangular/GwtAngularFacade";
@@ -149,12 +149,16 @@ export class GameComponent implements OnInit {
             babylonBaseItem.updatePosition();
             babylonBaseItem.updateAngle();
 
-              let buildingPosition: NativeVertexDto = new class implements NativeVertexDto {
-                x = 16;
-                y = 8;
-                z = 0;
-              };
-              babylonBaseItem.setBuildingPosition(buildingPosition);
+            // let buildingPosition: NativeVertexDto = new class implements NativeVertexDto {
+            //   x = 16;
+            //   y = 8;
+            //   z = 0;
+            // };
+            // babylonBaseItem.setBuildingPosition(buildingPosition);
+
+            babylonBaseItem.onExplode();
+            setInterval(() => babylonBaseItem.onExplode(), 4000)
+
 
             // const pbr = new PBRMetallicRoughnessMaterial("pbr", this.threeJsRendererService.getScene());
             // pbr.baseColor = new Color3(1.0, 0.766, 0.336);

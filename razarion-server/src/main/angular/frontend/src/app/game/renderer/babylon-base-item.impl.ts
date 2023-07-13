@@ -126,10 +126,15 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   onExplode(): void {
     ParticleHelper.CreateAsync("explosion", this.rendererService.getScene()).then((set) => {
+      const scale = 0.3;
       set.systems.forEach(s => {
         s.disposeOnStop = true;
+        s.minSize *= scale;
+        s.maxSize *= scale;
+        s.minEmitPower *= scale;
+        s.maxEmitPower *= scale;
       });
-      set.emitterNode = this.getContainer().position;
+      set.emitterNode = this.getContainer().position.clone();
       set.start();
     });
   }

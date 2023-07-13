@@ -41,7 +41,7 @@ import javax.inject.Inject;
  */
 public class SyncFactory extends SyncBaseAbility {
     private static final double GIVE_UP_RELAY_MIN = Math.toRadians(5);
-    private static final double RELAY_POINT_DISTANCE = 10;
+    private static final double RELAY_POINT_DISTANCE = 2;
     // private Logger log = Logger.getLogger(SyncFactory.class.getName());
     @Inject
     private GameLogicService gameLogicService;

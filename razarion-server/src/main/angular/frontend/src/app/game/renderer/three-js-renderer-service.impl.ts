@@ -136,7 +136,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
 
     // -----  Camera -----
     //this.camera = new Camera("Main Cam", new Vector3(0, -10, 20), this.scene);
-    this.camera = new FreeCamera("Camera", new Vector3(0, 20, -10), this.scene);
+    this.camera = new FreeCamera("Camera", new Vector3(0, 30, -35), this.scene);
     this.camera.maxZ = 500;
     this.camera.setTarget(new Vector3(0, 0, 0));
 
