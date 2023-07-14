@@ -89,9 +89,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
 
     @Transactional
     public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
-        SlavePlanetConfig slavePlanetConfig = new SlavePlanetConfig();
-        slavePlanetConfig.setStartRegion(serverGameEngineConfigEntity().findStartRegion(levelCrudPersistence.getLevelNumber4Id(levelId)));
-        return slavePlanetConfig;
+        return serverGameEngineConfigEntity().findSlavePlanetConfig4Level(levelCrudPersistence.getLevelNumber4Id(levelId));
     }
 
     @Transactional

@@ -19,6 +19,8 @@ public class EditorFrontendProvider {
     private PerfmonService perfmonService;
     @Inject
     private GameEngineControl gameEngineControl;
+    @Inject
+    private TerrainEditorService terrainEditorService;
 
     @SuppressWarnings("unused") // Called by Angular
     public GenericEditorFrontendProvider getGenericEditorFrontendProvider() {
@@ -34,4 +36,10 @@ public class EditorFrontendProvider {
     public Promise<PerfmonStatistic[]> getWorkerPerfmonStatistics() {
         return new Promise<>((resolve, reject) -> gameEngineControl.perfmonRequest(perfmonStatistics -> resolve.onInvoke(perfmonStatistics.toArray(new PerfmonStatistic[0]))));
     }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public TerrainEditorService getTerrainEditorService() {
+        return terrainEditorService;
+    }
+
 }

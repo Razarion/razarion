@@ -289,7 +289,11 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         DecimalPosition position = null;
         if (coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion() != null) {
-            position = GeometricUtil.findFreeRandomPosition(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion(), null);
+            if (coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getNoBaseViewPosition() != null) {
+                position = coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getNoBaseViewPosition();
+            } else {
+                position = GeometricUtil.findFreeRandomPosition(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion(), null);
+            }
             sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield").setViewFieldConfig(new ViewFieldConfig().toPosition(position)));
         } else {
             logger.warning("No StartRegion defined. Scroll to 0:0 position");

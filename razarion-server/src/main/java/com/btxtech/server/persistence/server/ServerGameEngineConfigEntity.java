@@ -7,11 +7,11 @@ import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
-import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
+import com.btxtech.shared.dto.SlavePlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
@@ -33,9 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.btxtech.server.persistence.PersistenceUtil.extractId;
-import static com.btxtech.server.persistence.PersistenceUtil.fromConfigs;
-import static com.btxtech.server.persistence.PersistenceUtil.toConfigList;
+import static com.btxtech.server.persistence.PersistenceUtil.*;
 
 /**
  * Created by Beat
@@ -152,7 +150,7 @@ public class ServerGameEngineConfigEntity {
         this.planetEntity = planetEntity;
     }
 
-    public Polygon2D findStartRegion(int levelNumber) {
+    public SlavePlanetConfig findSlavePlanetConfig4Level(int levelNumber) {
         if (startRegionConfigs == null) {
             return null;
         }
@@ -169,7 +167,9 @@ public class ServerGameEngineConfigEntity {
         if (result == null) {
             return null;
         }
-        return result.getStartRegion();
+        return new SlavePlanetConfig()
+                .startRegion(result.getStartRegion())
+                .noBaseViewPosition(result.getNoBaseViewPosition());
     }
 
     public List<ServerLevelQuestEntity> getServerQuestEntities() {

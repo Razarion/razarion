@@ -652,8 +652,6 @@ export interface TerrainEditorService {
 
   // --- Terrain Object Mode
   getAllTerrainObjects(): Promise<ObjectNameId[]>;
-
-  getTerrainObjectPositions(): Promise<TerrainObjectPosition[]>;
 }
 
 export interface TerrainObjectPosition {

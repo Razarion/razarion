@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 
 /**
@@ -11,6 +12,7 @@ public class StartRegionConfig {
     private String internalName;
     private Integer minimalLevelId;
     private Polygon2D region;
+    private DecimalPosition noBaseViewPosition;
 
     public int getId() {
         return id;
@@ -44,6 +46,14 @@ public class StartRegionConfig {
         this.region = region;
     }
 
+    public DecimalPosition getNoBaseViewPosition() {
+        return noBaseViewPosition;
+    }
+
+    public void setNoBaseViewPosition(DecimalPosition noBaseViewPosition) {
+        this.noBaseViewPosition = noBaseViewPosition;
+    }
+
     public StartRegionConfig id(int id) {
         setId(id);
         return this;
@@ -61,6 +71,11 @@ public class StartRegionConfig {
 
     public StartRegionConfig region(Polygon2D region) {
         setRegion(region);
+        return this;
+    }
+
+    public StartRegionConfig noBaseViewPosition(DecimalPosition noBaseViewPosition) {
+        setNoBaseViewPosition(noBaseViewPosition);
         return this;
     }
 }

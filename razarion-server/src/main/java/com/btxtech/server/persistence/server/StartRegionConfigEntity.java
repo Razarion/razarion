@@ -6,7 +6,10 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.StartRegionConfig;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -37,6 +40,11 @@ public class StartRegionConfigEntity {
     @CollectionTable(name = "SERVER_START_REGION_CONFIG_POLYGON", joinColumns = @JoinColumn(name = "startRegionConfigEntityId"))
     @OrderColumn(name = "orderColumn")
     private List<DecimalPosition> startRegion;
+    @AttributeOverrides({
+            @AttributeOverride(name = "x", column = @Column(name = "noBaseViewPositionX")),
+            @AttributeOverride(name = "y", column = @Column(name = "noBaseViewPositionY")),
+    })
+    private DecimalPosition noBaseViewPosition;
     @OneToOne(fetch = FetchType.LAZY)
     private LevelEntity minimalLevel;
 
@@ -52,12 +60,17 @@ public class StartRegionConfigEntity {
         }
     }
 
+    public DecimalPosition getNoBaseViewPosition() {
+        return noBaseViewPosition;
+    }
+
     public StartRegionConfig toStartRegionConfig() {
         return new StartRegionConfig()
                 .id(id)
                 .internalName(internalName)
                 .minimalLevelId(extractId(minimalLevel, LevelEntity::getId))
-                .region(getStartRegion());
+                .region(getStartRegion())
+                .noBaseViewPosition(noBaseViewPosition);
     }
 
     public void fromStartRegionConfig(StartRegionConfig startRegionConfig, LevelCrudPersistence levelCrudPersistence) {
@@ -71,6 +84,7 @@ public class StartRegionConfigEntity {
         if (startRegionConfig.getRegion() != null) {
             this.startRegion.addAll(startRegionConfig.getRegion().getCorners());
         }
+        noBaseViewPosition = startRegionConfig.getNoBaseViewPosition();
     }
 
     @Override
