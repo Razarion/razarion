@@ -23,11 +23,7 @@ DELETE FROM `TERRAIN_SLOPE_POSITION`;
 /*!40000 ALTER TABLE `TERRAIN_SLOPE_POSITION` DISABLE KEYS */;
 INSERT INTO `TERRAIN_SLOPE_POSITION` (`id`, `inverted`, `slopeConfigEntity_id`, `parentTerrainSlopePosition`, `planet`) VALUES
 	(1, b'0', 1, NULL, 117),
-	(20, b'0', 22, NULL, 117),
-	(21, b'0', 1, NULL, 117),
-	(22, b'0', 1, 21, NULL),
-	(23, b'0', 23, 21, NULL),
-	(25, b'0', 25, 21, NULL);
+	(20, b'0', 22, NULL, 117);
 /*!40000 ALTER TABLE `TERRAIN_SLOPE_POSITION` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

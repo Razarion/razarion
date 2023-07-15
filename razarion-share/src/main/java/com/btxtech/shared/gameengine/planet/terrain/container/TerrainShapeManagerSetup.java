@@ -70,7 +70,7 @@ public class TerrainShapeManagerSetup {
             tileObjects.put(objectPosition.getTerrainObjectConfigId(), objectPosition);
             // Game engine
             TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectConfigId());
-            if(terrainObjectConfig.getRadius() >= 0.0) {
+            if(terrainObjectConfig.getRadius() <= 0.0) {
                 continue;
             }
             Circle2D terrainObjectCircle = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius() * calculateScale(objectPosition.getScale()));

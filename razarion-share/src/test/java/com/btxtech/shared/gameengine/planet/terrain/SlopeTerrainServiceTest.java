@@ -59,13 +59,13 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeConfig> slopeConfigs = Collections.singletonList(new SlopeConfig()
                 .id(1)
                 .horizontalSpace(5)
-                .outerLineGameEngine(0.1)
-                .innerLineGameEngine(0.2)
+                .outerLineGameEngine(0)
+                .innerLineGameEngine(0.8)
                 .slopeShapes(Arrays.asList(
                         new SlopeShape().slopeFactor(1),
                         new SlopeShape().position(new DecimalPosition(0.1, 5)).slopeFactor(1),
                         new SlopeShape().position(new DecimalPosition(0.2, 10)).slopeFactor(0.7),
-                        new SlopeShape().position(new DecimalPosition(0.3, 20)).slopeFactor(0.7))));
+                        new SlopeShape().position(new DecimalPosition(0.8, 20)).slopeFactor(0.7))));
 
         List<TerrainSlopePosition> terrainSlopePositions = Collections.singletonList(new TerrainSlopePosition()
                 .id(1)

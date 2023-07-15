@@ -125,7 +125,7 @@ export class CollectionSelectorComponent extends EditorPanel {
         label: "Delete",
         disabled: this.jsonObject == null,
         command: () => {
-          this.httpClient.delete(`${this.url4Collection()}/delete/${this.jsonObject.getId()}`)
+          this.httpClient.delete(`${this.url4Collection()}/delete/${this.jsonObject.id}`)
             .subscribe(() => {
               this.requestObjectNameId();
               this.messageService.add({

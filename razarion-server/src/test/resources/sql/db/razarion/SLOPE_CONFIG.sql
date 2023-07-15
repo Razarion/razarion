@@ -42,10 +42,8 @@ CREATE TABLE IF NOT EXISTS `SLOPE_CONFIG` (
 DELETE FROM `SLOPE_CONFIG`;
 /*!40000 ALTER TABLE `SLOPE_CONFIG` DISABLE KEYS */;
 INSERT INTO `SLOPE_CONFIG` (`id`, `coastDelimiterLineGameEngine`, `horizontalSpace`, `innerLineGameEngine`, `internalName`, `interpolateNorm`, `outerLineGameEngine`, `shallowWaterDistortionStrength`, `shallowWaterDurationSeconds`, `shallowWaterScale`, `groundConfig_id`, `shallowWaterDistortionId`, `shallowWaterStencilId`, `shallowWaterTextureId`, `waterConfig_id`, `threeJsMaterial_id`, `shallowWaterThreeJsMaterial_id`) VALUES
-	(1, 0, 5, 2.5, 'Razar Industries', b'0', 0.05, NULL, NULL, NULL, 253, NULL, NULL, NULL, NULL, 7, NULL),
-	(22, 5, 2, 7, 'Ocean Beach', b'1', 3, 0.5, 10, 14, 254, 110, 109, 108, 10, 15, 23),
-	(23, 0.5, 6, 1, 'Razar Poison Pool', b'0', 0, NULL, NULL, NULL, 255, NULL, NULL, NULL, 11, 20, NULL),
-	(25, 0, 5, 1.5, 'Razar Industries inverted', b'0', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 7, NULL);
+	(1, 0, 5, 1, 'Razar Industries', b'0', 0, NULL, NULL, NULL, 253, NULL, NULL, NULL, NULL, 7, NULL),
+	(22, 5, 2, 7, 'Ocean Beach', b'1', 3, 0.5, 10, 14, 254, 110, 109, 108, 10, 15, 23);
 /*!40000 ALTER TABLE `SLOPE_CONFIG` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

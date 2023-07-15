@@ -56,8 +56,7 @@ DELETE FROM `GROUND_CONFIG`;
 INSERT INTO `GROUND_CONFIG` (`id`, `bottomBumpMapDepth`, `bottomScale`, `bottomShininess`, `bottomSpecularStrength`, `internalName`, `splattingBlur`, `splattingOffset`, `splattingScale1`, `splattingScale2`, `topBumpMapDepth`, `topScale`, `topShininess`, `topSpecularStrength`, `bottomBumpMapId`, `bottomTextureId`, `splattingTextureId`, `topBumpMapId`, `topTextureId`, `bottomNormalMapDepth`, `topNormalMapDepth`, `bottomNormalMapId`, `topNormalMapId`, `bottomMaterial_id`, `topMaterial_id`) VALUES
 	(252, 0.8, 50, 5, 0.5, 'Grass Dirt', 0.2, 0.5, 50, 1000, 0.2, 50, 3, 0.5, 129, 128, 101, 98, 97, 0.3, NULL, 133, NULL, NULL, 5),
 	(253, NULL, NULL, NULL, NULL, 'Razar Industries', NULL, NULL, NULL, NULL, 0.3, 10, 3, 0.5, NULL, NULL, NULL, NULL, 136, NULL, 0.1, NULL, 137, NULL, 6),
-	(254, NULL, NULL, NULL, NULL, 'Ocean Ground', NULL, NULL, NULL, NULL, 1, 700, 30, 1, NULL, NULL, NULL, 28, 111, NULL, NULL, NULL, NULL, NULL, 11),
-	(255, NULL, NULL, NULL, NULL, 'Razar Poison Pool', NULL, NULL, NULL, NULL, NULL, 20, 1, 1, NULL, NULL, NULL, NULL, 140, NULL, 0.1, NULL, 137, NULL, 21);
+	(254, NULL, NULL, NULL, NULL, 'Ocean Ground', NULL, NULL, NULL, NULL, 1, 700, 30, 1, NULL, NULL, NULL, 28, 111, NULL, NULL, NULL, NULL, NULL, 11);
 /*!40000 ALTER TABLE `GROUND_CONFIG` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
