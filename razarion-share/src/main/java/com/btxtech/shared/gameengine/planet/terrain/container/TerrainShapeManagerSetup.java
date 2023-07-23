@@ -13,7 +13,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
@@ -126,8 +125,7 @@ public class TerrainShapeManagerSetup {
 
     private Slope setupSlope(TerrainSlopePosition terrainSlopePosition, double groundHeight) {
         SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(terrainSlopePosition.getSlopeConfigId());
-        WaterConfig waterConfig = slopeConfig.hasWaterConfigId() ? terrainTypeService.getWaterConfig(slopeConfig.getWaterConfigId()) : null;
-        Slope slope = new Slope(terrainSlopePosition.getId(), slopeConfig, waterConfig, terrainSlopePosition.isInverted(), terrainSlopePosition.getPolygon(), groundHeight, terrainTypeService);
+        Slope slope = new Slope(terrainSlopePosition.getId(), slopeConfig, terrainSlopePosition.isInverted(), terrainSlopePosition.getPolygon(), groundHeight, terrainTypeService);
         setupSlopeChildren(slope, terrainSlopePosition.getChildren(), slope.getInnerGroundHeight());
         return slope;
     }

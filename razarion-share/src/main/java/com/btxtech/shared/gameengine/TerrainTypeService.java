@@ -39,6 +39,15 @@ public class TerrainTypeService {
         setDrivewayConfigs(staticGameConfig.getDrivewayConfigs());
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public double calculateGroundHeight(int slopeConfigId) {
+        SlopeConfig slopeConfig = getSlopeConfig(slopeConfigId);
+        if (slopeConfig.hasWaterConfigId()) {
+            return getWaterConfig(slopeConfig.getWaterConfigId()).getGroundLevel();
+        }
+        return slopeConfig.getSlopeShapes().get(slopeConfig.getSlopeShapes().size() - 1).getPosition().getY();
+    }
+
     private void setGroundConfigs(Collection<GroundConfig> groundConfigs) {
         this.groundConfigs.clear();
         if (groundConfigs != null) {

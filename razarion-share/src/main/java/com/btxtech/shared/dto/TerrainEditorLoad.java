@@ -7,6 +7,7 @@ import java.util.List;
  * Created by Beat
  * on 11.09.2017.
  */
+@Deprecated
 public class TerrainEditorLoad {
     private List<TerrainSlopePosition> slopes;
     private List<TerrainObjectPosition> terrainObjects = new ArrayList<>();

@@ -34,6 +34,7 @@ import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.btxtech.uiservice.user.UserUiService;
+import jsinterop.annotations.JsType;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -51,6 +52,7 @@ import java.util.logging.Logger;
  * 05.07.2016.
  */
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
+@JsType
 public class GameUiControl { // Equivalent worker class is PlanetService
     private static final long HOME_SCROLL_TIMEOUT = 5000;
     private final Logger logger = Logger.getLogger(GameUiControl.class.getName());

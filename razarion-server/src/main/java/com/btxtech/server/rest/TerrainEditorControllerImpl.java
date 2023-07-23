@@ -3,12 +3,13 @@ package com.btxtech.server.rest;
 import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.shared.dto.PlanetVisualConfig;
-import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -21,12 +22,9 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
     private PlanetCrudPersistence planetCrudPersistence;
 
     @Override
-    public TerrainEditorLoad readTerrainEditorLoad(int planetId) {
+    public List<TerrainSlopePosition> readTerrainSlopePositions(int planetId) {
         try {
-            TerrainEditorLoad terrainEditorLoad = new TerrainEditorLoad();
-            terrainEditorLoad.setSlopes(planetCrudPersistence.getTerrainSlopePositions(planetId));
-            terrainEditorLoad.setTerrainObjects(planetCrudPersistence.getTerrainObjectPositions(planetId));
-            return terrainEditorLoad;
+            return planetCrudPersistence.getTerrainSlopePositions(planetId);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

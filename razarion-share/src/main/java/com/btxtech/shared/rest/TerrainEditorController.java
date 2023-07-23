@@ -2,8 +2,8 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.PlanetVisualConfig;
-import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -22,7 +23,7 @@ public interface TerrainEditorController {
     @GET
     @Path("readTerrainSlopePositions/{planetId}")
     @Produces(MediaType.APPLICATION_JSON)
-    TerrainEditorLoad readTerrainEditorLoad(@PathParam("planetId") int planetId);
+    List<TerrainSlopePosition> readTerrainSlopePositions(@PathParam("planetId") int planetId);
 
     @PUT
     @Path("updateTerrain/{planetId}")

@@ -10,6 +10,7 @@ import {
   ResourceItemType,
   ShapeTransform,
   TerrainObjectPosition,
+  TerrainSlopePosition,
   TerrainTile,
   ThreeJsRendererServiceAccess,
   ThreeJsTerrainTile
@@ -50,11 +51,14 @@ export interface RazarionMetadata {
   id: number | undefined;
   configId: number | undefined;
   editorHintTerrainObjectPosition: TerrainObjectPosition | undefined;
+  editorHintSlopePolygon: Vector2[] | undefined;
+  editorHintSlopePosition: TerrainSlopePosition | undefined;
 }
 
 export enum RazarionMetadataType {
   GROUND,
-  TERRAIN_OBJECT
+  TERRAIN_OBJECT,
+  EDITOR_SLOPE
 }
 @Injectable()
 export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
@@ -555,6 +559,8 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       id = id;
       configId = configId;
       editorHintTerrainObjectPosition = undefined;
+      editorHintSlopePolygon = undefined;
+      editorHintSlopePosition = undefined;
     });
   }
 

@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
@@ -20,6 +21,8 @@ import javax.inject.Inject;
 
 @ApplicationScoped
 public class GwtAngularService {
+    @Inject
+    private GameUiControl gameUiControl;
     @Inject
     private EditorFrontendProvider editorFrontendProvider;
     @Inject
@@ -42,6 +45,7 @@ public class GwtAngularService {
 
     public void init() {
         gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMapOfAny>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
+        gwtAngularFacade.gameUiControl = gameUiControl;
         gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
         gwtAngularFacade.statusProvider = statusProvider;
         gwtAngularFacade.inputService = inputService;

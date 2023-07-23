@@ -13,8 +13,6 @@ public class TerrainSlopePosition {
     private boolean inverted;
     private List<TerrainSlopeCorner> polygon;
     private List<TerrainSlopePosition> children;
-    private Integer editorParentId;
-
     public Integer getId() {
         return id;
     }
@@ -51,14 +49,6 @@ public class TerrainSlopePosition {
         this.children = children;
     }
 
-    public Integer getEditorParentId() {
-        return editorParentId;
-    }
-
-    public void setEditorParentId(Integer editorParentId) {
-        this.editorParentId = editorParentId;
-    }
-
     public TerrainSlopePosition id(Integer id) {
         this.id = id;
         return this;
@@ -81,11 +71,6 @@ public class TerrainSlopePosition {
 
     public TerrainSlopePosition children(List<TerrainSlopePosition> children) {
         setChildren(children);
-        return this;
-    }
-
-    public TerrainSlopePosition editorParentId(Integer editorParentId) {
-        setEditorParentId(editorParentId);
         return this;
     }
 

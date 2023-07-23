@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
  */
 public class SlopeModeler {
     // private Logger logger = Logger.getLogger(ShapeTemplate.class.getName());
-    public static CalculatedSlopeData sculpt(SlopeConfig slopeConfig, WaterConfig waterConfig) {
+    public static CalculatedSlopeData sculpt(SlopeConfig slopeConfig, double height) {
 
 //        double[][] fractalField = ???
 //        SlopeNode[][] slopeNodes = new SlopeNode[segments][rows];
@@ -38,7 +37,6 @@ public class SlopeModeler {
 //        slopeConfig.setSlopeNodes(slopeNodes);
 
         List<SlopeShape> slopeShapes = slopeConfig.getSlopeShapes();
-        double height = waterConfig != null ? waterConfig.getGroundLevel() : slopeShapes.get(slopeShapes.size() - 1).getPosition().getY();
 
         return new CalculatedSlopeData()
                 .slopeShapes(slopeShapes)

@@ -4,6 +4,7 @@ import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.Config;
+import jsinterop.annotations.JsType;
 
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import java.util.Map;
  * Created by Beat
  * 05.07.2016.
  */
+@JsType
 public class PlanetConfig implements Config {
     private int id;
     private String internalName;

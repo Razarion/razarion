@@ -30,6 +30,7 @@
     "@babylonjs/serializers": "^5.38.0",
     "@types/stats.js": "^0.17.0",
     "chart.js": "^3.7.0",
+    "earcut": "^2.2.4",
     "jszip": "^3.10.1",
     "lil-gui": "^0.16.1",
     "mock-http-server": "^1.4.5",

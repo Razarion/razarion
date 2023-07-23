@@ -1,0 +1,112 @@
+<p-divider align="left">
+  <div class="inline-flex align-items-center">
+    <i class="pi pi-plus-circle mr-2"></i>
+    <b>New</b>
+  </div>
+</p-divider>
+<div class="field grid align-items-center">
+  <span class="col">Terrain Object</span>
+  <div class="col">
+    <p-dropdown [options]="terrainObjectConfigs"
+                [(ngModel)]="newTerrainObjectConfig"
+                optionLabel="name"></p-dropdown>
+  </div>
+</div>
+<div class="field grid align-items-center">
+  <span class="col">Mouse</span>
+  <div class="col">
+    <p-selectButton [options]="onOffOptions" [(ngModel)]="newTerrainObjectMode" optionLabel="label"
+                    optionValue="value"></p-selectButton>
+  </div>
+</div>
+
+<p-divider align="left">
+  <div class="inline-flex align-items-center">
+    <i class="pi pi-cog mr-2"></i>
+    <b>Edit</b>
+  </div>
+</p-divider>
+
+<div class="field grid align-items-center">
+  <span class="col">TerrainObject</span>
+  <div class="col">
+    <span *ngIf="selectedTerrainObject">{{selectedTerrainObject.getInternalName()}} '{{selectedTerrainObject.getId()}}
+      '</span>
+  </div>
+</div>
+
+<div class="field grid align-items-center">
+  <span class="col">Radius</span>
+  <div class="col">
+    <p-inputNumber [(ngModel)]="selectedRadius"
+                   (onInput)="onSelectedRadiusChange($event.value)"
+                   [size]="5"
+                   [step]=0.1
+                   [minFractionDigits]="1"
+                   [maxFractionDigits]="6"
+                   [incrementButtonClass]="'p-button-text'"
+                   [decrementButtonClass]="'p-button-text'"
+                   [showButtons]="true"></p-inputNumber>
+    <p-button icon="pi pi-save" (onClick)="saveRadius()"></p-button>
+  </div>
+</div>
+
+<div class="field grid align-items-center">
+  <span class="col">Show Radius</span>
+  <div class="col">
+    <p-selectButton [options]="onOffOptions"
+                    [(ngModel)]="selectedRadiusShow"
+                    (onChange)="showHideRadius()"
+                    optionLabel="label"
+                    optionValue="value"></p-selectButton>
+  </div>
+</div>
+
+<div class="field grid align-items-center">
+  <span class="col">Position</span>
+  <div class="col">
+    <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.positionGizmoEnabled" optionLabel="label"
+                    optionValue="value"></p-selectButton>
+  </div>
+</div>
+<div class="field grid align-items-center">
+  <span class="col">Rotation</span>
+  <div class="col">
+    <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.rotationGizmoEnabled " optionLabel="label"
+                    optionValue="value"></p-selectButton>
+  </div>
+</div>
+<div class="field grid align-items-center">
+  <span class="col">Scale</span>
+  <div class="col">
+    <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.scaleGizmoEnabled " optionLabel="label"
+                    optionValue="value"></p-selectButton>
+  </div>
+</div>
+<terrain-object-position #terrainObjectPosition></terrain-object-position>
+
+<p-divider align="left">
+  <div class="inline-flex align-items-center">
+    <i class="pi pi-save mr-2"></i>
+    <b>Action</b>
+  </div>
+</p-divider>
+
+<div class="field grid align-items-center">
+  <span class="col">Save</span>
+  <div class="col">
+    <p-button icon="pi pi-save" (onClick)="save()"></p-button>
+  </div>
+</div>
+<div class="field grid align-items-center">
+  <span class="col">Restart Planet warm</span>
+  <div class="col">
+    <p-button icon="pi pi-power-off" (onClick)="restartPlanetWarm()"></p-button>
+  </div>
+</div>
+<div class="field grid align-items-center">
+  <span class="col">Restart Planet cold</span>
+  <div class="col">
+    <p-button icon="pi pi-power-off" (onClick)="restartPlanetCold()"></p-button>
+  </div>
+</div>

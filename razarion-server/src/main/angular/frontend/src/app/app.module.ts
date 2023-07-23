@@ -71,6 +71,8 @@ import {TerrainObjectPositionComponent} from "./editor/terrain-editor/terrain-ob
 import {ChipsModule} from "primeng/chips";
 import {DividerModule} from "primeng/divider";
 import {SelectButtonModule} from "primeng/selectbutton";
+import {ObjectEditorComponent} from "./editor/terrain-editor/object-editor.component";
+import {SlopeEditorComponent} from "./editor/terrain-editor/slope-editor.component";
 
 @NgModule({
   declarations: [
@@ -93,6 +95,8 @@ import {SelectButtonModule} from "primeng/selectbutton";
     ServerPanelComponent,
     BackupRestoreComponent,
     TerrainEditorComponent,
+    ObjectEditorComponent,
+    SlopeEditorComponent,
     ImageTypePipe,
     FormatFileSizePipe,
     RadToDegreePipe,

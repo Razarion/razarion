@@ -156,13 +156,14 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
                     .map(terrainSlopeCorner -> new TerrainSlopeCornerEntity()
                             .position(terrainSlopeCorner.getPosition())
                             .drivewayConfigEntity(drivewayCrudPersistence.getEntity(terrainSlopeCorner.getSlopeDrivewayId()))).collect(Collectors.toList()));
-            if (terrainSlopePosition.getEditorParentId() != null) {
-                TerrainSlopePositionEntity parent = entityManager.find(TerrainSlopePositionEntity.class, terrainSlopePosition.getEditorParentId());
-                parent.addChild(terrainSlopePositionEntity);
-                entityManager.persist(parent);
-            } else {
-                terrainSlopePositionEntities.add(terrainSlopePositionEntity);
-            }
+            // TODO
+//            if (terrainSlopePosition.getEditorParentId() != null) {
+//                TerrainSlopePositionEntity parent = entityManager.find(TerrainSlopePositionEntity.class, terrainSlopePosition.getEditorParentId());
+//                parent.addChild(terrainSlopePositionEntity);
+//                entityManager.persist(parent);
+//            } else {
+//                terrainSlopePositionEntities.add(terrainSlopePositionEntity);
+//            }
         }
         PlanetEntity planetEntity = getEntity(planetId);
         planetEntity.getTerrainSlopePositionEntities().addAll(terrainSlopePositionEntities);

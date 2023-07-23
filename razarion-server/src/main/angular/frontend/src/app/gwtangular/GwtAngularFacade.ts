@@ -4,6 +4,7 @@ import {TreeNode} from "primeng/api";
 
 export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
+  gameUiControl!: GameUiControl;
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
   baseItemPlacerPresenter!: BaseItemPlacerPresenter;
@@ -25,6 +26,11 @@ export interface GwtAngularBoot {
 }
 
 // ---------- Common ----------
+
+export interface GameUiControl {
+  getPlanetConfig(): PlanetConfig;
+}
+
 
 export interface Index {
   getX(): number;
@@ -50,6 +56,11 @@ export interface Vertex {
   getZ(): number;
 
   toString(): string;
+}
+
+export interface JsonDecimalPosition {
+  x: number;
+  y: number;
 }
 
 export interface NativeVertexDto {
@@ -115,6 +126,8 @@ export interface TerrainTypeService {
   getGroundConfig(groundConfigId: number): GroundConfig;
 
   getWaterConfig(waterConfigId: number): WaterConfig;
+
+  calculateGroundHeight(slopeConfigId: number): number;
 }
 
 export interface ThreeJsModelPackService {
@@ -126,6 +139,11 @@ export interface AssetService {
 }
 
 // ---------- Configs ----------
+
+export interface PlanetConfig {
+  getId(): number;
+}
+
 export interface TerrainObjectConfig {
   getThreeJsModelPackConfigId(): number;
 
@@ -652,6 +670,21 @@ export interface TerrainEditorService {
 
   // --- Terrain Object Mode
   getAllTerrainObjects(): Promise<ObjectNameId[]>;
+}
+
+
+export interface TerrainSlopePosition {
+  id: number | null;
+  slopeConfigId: number;
+  inverted: boolean;
+  polygon: TerrainSlopeCorner[];
+  children: TerrainSlopePosition[];
+  editorParentId: number | null; // Only on Angular side
+}
+
+export interface TerrainSlopeCorner {
+  position: JsonDecimalPosition;
+  slopeDrivewayId: number | null;
 }
 
 export interface TerrainObjectPosition {

@@ -1,4 +1,5 @@
-import {Color3, StandardMaterial, VertexData} from "@babylonjs/core";
+import {Color3, StandardMaterial, Vector2, VertexData} from "@babylonjs/core";
+import {DecimalPosition, TerrainSlopeCorner} from "../../gwtangular/GwtAngularFacade";
 
 export class BabylonJsUtils {
 
@@ -42,6 +43,20 @@ export class BabylonJsUtils {
     material.specularColor = new Color3(1, 0, 0);
     material.backFaceCulling = false; // Camera looking in negative z direction. https://doc.babylonjs.com/features/featuresDeepDive/mesh/creation/custom/custom#visibility
     return material;
+  }
+
+  static toVertex2Array(decimalPositions: DecimalPosition[]): Vector2[] {
+    const vector2s: any[] = [];
+    decimalPositions.forEach(decimalPosition =>
+      vector2s.push(new Vector2(decimalPosition.getX(), decimalPosition.getY())));
+    return vector2s;
+  }
+
+  static toVertex2ArrayFromTerrainSlopeCorner(terrainSlopeCorners: TerrainSlopeCorner[]): Vector2[] {
+    const vector2s: any[] = [];
+    terrainSlopeCorners.forEach(terrainSlopeCorner =>
+      vector2s.push(new Vector2(terrainSlopeCorner.position.x, terrainSlopeCorner.position.y)));
+    return vector2s;
   }
 
 }

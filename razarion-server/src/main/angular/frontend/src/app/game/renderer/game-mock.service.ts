@@ -4,11 +4,11 @@ import {
   DecimalPosition,
   DrivewayConfig,
   EditorFrontendProvider,
+  GameUiControl,
   GenericEditorFrontendProvider,
   GroundConfig,
   GroundSplattingConfig,
   GroundTerrainTile,
-  GwtAngularPropertyTable,
   Index,
   InputService,
   Mesh,
@@ -16,6 +16,7 @@ import {
   ObjectNameId,
   ParticleSystemConfig,
   PerfmonStatistic,
+  PlanetConfig,
   ShapeTransform,
   SlopeConfig,
   SlopeGeometry,
@@ -47,6 +48,17 @@ let staticGameConfigJson: any = {};
 @Injectable()
 export class GameMockService {
   public unityAssetConverterTestAssetConfig: any = {};
+  gameUiControl: GameUiControl = new class implements GameUiControl {
+    getPlanetConfig(): PlanetConfig {
+      return new class implements PlanetConfig {
+        getId(): number {
+          return 1;
+        }
+
+      };
+    }
+  };
+
   inputService: InputService = new class implements InputService {
     onMouseDown(x: number, y: number): void {
       // console.info(`Terrain Position ${x}:${y} (mouse down)`);
@@ -282,6 +294,10 @@ export class GameMockService {
   mockTerrainTypeService(): TerrainTypeService {
     let _this = this;
     return new class implements TerrainTypeService {
+      calculateGroundHeight(slopeConfigId: number): number {
+        return 1;
+      }
+
       getTerrainObjectConfig(terrainObjectConfigId: number): TerrainObjectConfig {
         let terrainObjectConfig: TerrainObjectConfig | null = null;
         staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {

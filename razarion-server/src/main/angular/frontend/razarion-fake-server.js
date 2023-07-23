@@ -154,12 +154,32 @@ server.on({
   path: '/rest/editor/three-js-model-pack-editor/create',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: '[{"id":13,"internalName":"Fern 1 [Tropical Vegetation 1]","threeJsModelId":12,"namePath":[]}]'
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/planeteditor/readTerrainSlopePositions/1',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '[{"id":1,"slopeConfigId":1,"inverted":false,"editorParentId":null, "polygon": [{"position": {"x": 20, "y": 20}, "slopeDrivewayId": null},{"position": {"x": 50, "y": 20}, "slopeDrivewayId": null},{"position": {"x": 50, "y": 50}, "slopeDrivewayId": null},{"position": {"x": 20, "y": 50}, "slopeDrivewayId": null}]}]'
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/slope/getObjectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '[{"id":1,"internalName":"Beach"},{"id":2,"internalName":"Razar Industries"}]'
   }
 });
 
 
 server.start(function () {
-    console.info("Razarion fake server is running on port: " + PORT);
+  console.info("Razarion fake server is running on port: " + PORT);
 });

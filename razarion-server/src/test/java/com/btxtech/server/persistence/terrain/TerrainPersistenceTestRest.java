@@ -3,7 +3,6 @@ package com.btxtech.server.persistence.terrain;
 import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.rest.TerrainEditorControllerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -45,9 +44,8 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
     @Test
     public void testSlopeCrud() {
         // Verify empty
-        TerrainEditorLoad terrainEditorLoad = terrainEditorController.readTerrainEditorLoad(PLANET_1_ID);
-        Assert.assertTrue(terrainEditorLoad.getSlopes().isEmpty());
-        Assert.assertTrue(terrainEditorLoad.getTerrainObjects().isEmpty());
+        List<TerrainSlopePosition> terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
+        Assert.assertTrue(terrainSlopePositions.isEmpty());
         // Create
         TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
         List<TerrainSlopePosition> expectedTerrainSlopePosition = new ArrayList<>();
@@ -58,11 +56,10 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
         terrainEditorUpdate.setCreatedSlopes(expectedTerrainSlopePosition);
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify
-        terrainEditorLoad = terrainEditorController.readTerrainEditorLoad(PLANET_1_ID);
-        Assert.assertTrue(terrainEditorLoad.getTerrainObjects().isEmpty());
+        terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
         ObjectComparatorIgnore.add(TerrainSlopePosition.class, "id");
-        int firstSlopeId = terrainEditorLoad.getSlopes().get(0).getId();
-        ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainEditorLoad.getSlopes());
+        int firstSlopeId = terrainSlopePositions.get(0).getId();
+        ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainSlopePositions);
         ObjectComparatorIgnore.clear();
         // Modify
         terrainEditorUpdate = new TerrainEditorUpdate();
@@ -75,29 +72,25 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
         terrainEditorUpdate.setUpdatedSlopes(expectedTerrainSlopePosition);
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify
-        terrainEditorLoad = terrainEditorController.readTerrainEditorLoad(PLANET_1_ID);
-        Assert.assertTrue(terrainEditorLoad.getTerrainObjects().isEmpty());
-        ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainEditorLoad.getSlopes());
+        terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
+        ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainSlopePositions);
         // Add child
         terrainEditorUpdate = new TerrainEditorUpdate();
         List<TerrainSlopePosition> expectedChildTerrainSlopePosition = new ArrayList<>();
         terrainSlopePosition = new TerrainSlopePosition();
         terrainSlopePosition.slopeConfigId(SLOPE_LAND_CONFIG_ENTITY_1);
-        terrainSlopePosition.editorParentId(firstSlopeId);
         terrainSlopePosition.inverted(true);
         terrainSlopePosition.polygon(Arrays.asList(createTSC(200, 300, null), createTSC(200, 400, null), createTSC(300, 500, null)));
         expectedChildTerrainSlopePosition.add(terrainSlopePosition);
         terrainEditorUpdate.setCreatedSlopes(expectedChildTerrainSlopePosition);
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify
-        terrainEditorLoad = terrainEditorController.readTerrainEditorLoad(PLANET_1_ID);
-        Assert.assertTrue(terrainEditorLoad.getTerrainObjects().isEmpty());
-        expectedChildTerrainSlopePosition.get(0).editorParentId(null);
+        terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
         expectedTerrainSlopePosition.get(0).children(expectedChildTerrainSlopePosition);
         ObjectComparatorIgnore.add(TerrainSlopePosition.class, "id");
-        ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainEditorLoad.getSlopes());
+        ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainSlopePositions);
         ObjectComparatorIgnore.clear();
-        int firstSlopeChildId = terrainEditorLoad.getSlopes().get(0).getChildren().get(0).getId();
+        int firstSlopeChildId = terrainSlopePositions.get(0).getChildren().get(0).getId();
         // Update child
         terrainEditorUpdate = new TerrainEditorUpdate();
         expectedChildTerrainSlopePosition = new ArrayList<>();
@@ -110,27 +103,24 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
         terrainEditorUpdate.setUpdatedSlopes(expectedChildTerrainSlopePosition);
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify
-        terrainEditorLoad = terrainEditorController.readTerrainEditorLoad(PLANET_1_ID);
-        Assert.assertTrue(terrainEditorLoad.getTerrainObjects().isEmpty());
+        terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
         expectedTerrainSlopePosition.get(0).children(expectedChildTerrainSlopePosition);
-        ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainEditorLoad.getSlopes());
+        ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainSlopePositions);
         // Remove child
         terrainEditorUpdate = new TerrainEditorUpdate();
         terrainEditorUpdate.setDeletedSlopeIds(Collections.singletonList(firstSlopeChildId));
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify
-        terrainEditorLoad = terrainEditorController.readTerrainEditorLoad(PLANET_1_ID);
-        Assert.assertTrue(terrainEditorLoad.getTerrainObjects().isEmpty());
+        terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
         expectedTerrainSlopePosition.get(0).children(null);
-        ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainEditorLoad.getSlopes());
+        ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainSlopePositions);
         // Remove
         terrainEditorUpdate = new TerrainEditorUpdate();
         terrainEditorUpdate.setDeletedSlopeIds(Collections.singletonList(firstSlopeId));
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify empty
-        terrainEditorLoad = terrainEditorController.readTerrainEditorLoad(PLANET_1_ID);
-        Assert.assertTrue(terrainEditorLoad.getSlopes().isEmpty());
-        Assert.assertTrue(terrainEditorLoad.getTerrainObjects().isEmpty());
+        terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
+        Assert.assertTrue(terrainSlopePositions.isEmpty());
     }
 
     static TerrainSlopeCorner createTSC(double x, double y, Integer slopeDrivewayId) {

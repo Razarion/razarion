@@ -50,6 +50,7 @@ export class GameComponent implements OnInit {
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
+      this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
       this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
       this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
       this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
@@ -156,8 +157,8 @@ export class GameComponent implements OnInit {
             // };
             // babylonBaseItem.setBuildingPosition(buildingPosition);
 
-            babylonBaseItem.onExplode();
-            setInterval(() => babylonBaseItem.onExplode(), 4000)
+            // babylonBaseItem.onExplode();
+            // setInterval(() => babylonBaseItem.onExplode(), 4000)
 
 
             // const pbr = new PBRMetallicRoughnessMaterial("pbr", this.threeJsRendererService.getScene());

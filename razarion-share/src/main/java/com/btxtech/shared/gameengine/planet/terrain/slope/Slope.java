@@ -40,10 +40,10 @@ public class Slope {
     private ObstacleFactoryContext obstacleFactoryContext = new ObstacleFactoryContext();
     private DrivewayGameEngineHandler drivewayGameEngineHandler = new DrivewayGameEngineHandler();
 
-    public Slope(int slopeId, SlopeConfig slopeConfig, WaterConfig waterConfig, boolean inverted, List<TerrainSlopeCorner> corners, double outerGroundHeight, TerrainTypeService terrainTypeService) {
+    public Slope(int slopeId, SlopeConfig slopeConfig, boolean inverted, List<TerrainSlopeCorner> corners, double outerGroundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
         this.slopeConfig = slopeConfig;
-        calculatedSlopeData = SlopeModeler.sculpt(slopeConfig, waterConfig);
+        calculatedSlopeData = SlopeModeler.sculpt(slopeConfig, terrainTypeService.calculateGroundHeight(slopeConfig.getId()));
         this.terrainTypeService = terrainTypeService;
         this.inverted = inverted;
         this.outerGroundHeight = outerGroundHeight;

@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitFrontend;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerPresenter;
 import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
@@ -18,6 +19,7 @@ import jsinterop.annotations.JsType;
 @JsType(isNative = true)
 public abstract class GwtAngularFacade {
     public GwtAngularBoot gwtAngularBoot;  // Initialized by Angular
+    public GameUiControl gameUiControl; // Initialized by GWT
     public MainCockpit mainCockpit; // Initialized by Angular
     public ItemCockpitFrontend itemCockpitFrontend; // Initialized by Angular
     public BaseItemPlacerPresenter baseItemPlacerPresenter; // Initialized by Angular
