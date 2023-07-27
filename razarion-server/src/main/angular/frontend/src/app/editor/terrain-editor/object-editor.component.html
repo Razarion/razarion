@@ -65,22 +65,32 @@
 <div class="field grid align-items-center">
   <span class="col">Position</span>
   <div class="col">
-    <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.positionGizmoEnabled" optionLabel="label"
-                    optionValue="value"></p-selectButton>
+    <p-selectButton
+      *ngIf="gizmoManager"
+      [options]="onOffOptions"
+      [(ngModel)]="gizmoManager.positionGizmoEnabled" optionLabel="label"
+      optionValue="value"></p-selectButton>
   </div>
 </div>
 <div class="field grid align-items-center">
   <span class="col">Rotation</span>
   <div class="col">
-    <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.rotationGizmoEnabled " optionLabel="label"
-                    optionValue="value"></p-selectButton>
+    <p-selectButton
+      *ngIf="gizmoManager"
+      [options]="onOffOptions"
+      [(ngModel)]="gizmoManager.rotationGizmoEnabled" optionLabel="label"
+      optionValue="value"></p-selectButton>
   </div>
 </div>
 <div class="field grid align-items-center">
   <span class="col">Scale</span>
   <div class="col">
-    <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.scaleGizmoEnabled " optionLabel="label"
-                    optionValue="value"></p-selectButton>
+    <p-selectButton
+      *ngIf="gizmoManager"
+      [options]="onOffOptions"
+      [(ngModel)]="gizmoManager.scaleGizmoEnabled"
+      optionLabel="label"
+      optionValue="value"></p-selectButton>
   </div>
 </div>
 <terrain-object-position #terrainObjectPosition></terrain-object-position>

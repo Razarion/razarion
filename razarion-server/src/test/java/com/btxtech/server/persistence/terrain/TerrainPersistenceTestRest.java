@@ -53,7 +53,7 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
         terrainSlopePosition.slopeConfigId(SLOPE_LAND_CONFIG_ENTITY_1);
         terrainSlopePosition.polygon(Arrays.asList(createTSC(100, 200, null), createTSC(300, 200, null), createTSC(300, 500, null), createTSC(100, 500, null)));
         expectedTerrainSlopePosition.add(terrainSlopePosition);
-        terrainEditorUpdate.setCreatedSlopes(expectedTerrainSlopePosition);
+        // TODO terrainEditorUpdate.setCreatedSlopes(expectedTerrainSlopePosition);
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify
         terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
@@ -69,7 +69,7 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
         terrainSlopePosition.slopeConfigId(SLOPE_WATER_CONFIG_ENTITY_2);
         terrainSlopePosition.polygon(Arrays.asList(createTSC(100, 200, null), createTSC(300, 200, null), createTSC(400, 500, null), createTSC(800, 500, null), createTSC(100, 500, null)));
         expectedTerrainSlopePosition.add(terrainSlopePosition);
-        terrainEditorUpdate.setUpdatedSlopes(expectedTerrainSlopePosition);
+        // TODO terrainEditorUpdate.setUpdatedSlopes(expectedTerrainSlopePosition);
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify
         terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
@@ -82,7 +82,7 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
         terrainSlopePosition.inverted(true);
         terrainSlopePosition.polygon(Arrays.asList(createTSC(200, 300, null), createTSC(200, 400, null), createTSC(300, 500, null)));
         expectedChildTerrainSlopePosition.add(terrainSlopePosition);
-        terrainEditorUpdate.setCreatedSlopes(expectedChildTerrainSlopePosition);
+        // TODO terrainEditorUpdate.setCreatedSlopes(expectedChildTerrainSlopePosition);
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify
         terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
@@ -100,7 +100,7 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
         terrainSlopePosition.inverted(false);
         terrainSlopePosition.polygon(Arrays.asList(createTSC(201, 301, null), createTSC(201, 401, null), createTSC(300, 500, null), createTSC(302, 503, null)));
         expectedChildTerrainSlopePosition.add(terrainSlopePosition);
-        terrainEditorUpdate.setUpdatedSlopes(expectedChildTerrainSlopePosition);
+        // TODO terrainEditorUpdate.setUpdatedSlopes(expectedChildTerrainSlopePosition);
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify
         terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
@@ -108,7 +108,7 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
         ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainSlopePositions);
         // Remove child
         terrainEditorUpdate = new TerrainEditorUpdate();
-        terrainEditorUpdate.setDeletedSlopeIds(Collections.singletonList(firstSlopeChildId));
+        // TODO terrainEditorUpdate.setDeletedSlopeIds(Collections.singletonList(firstSlopeChildId));
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify
         terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);
@@ -116,7 +116,7 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
         ReflectionAssert.assertReflectionEquals(expectedTerrainSlopePosition, terrainSlopePositions);
         // Remove
         terrainEditorUpdate = new TerrainEditorUpdate();
-        terrainEditorUpdate.setDeletedSlopeIds(Collections.singletonList(firstSlopeId));
+        // TODO terrainEditorUpdate.setDeletedSlopeIds(Collections.singletonList(firstSlopeId));
         terrainEditorController.updateTerrain(PLANET_1_ID, terrainEditorUpdate);
         // Verify empty
         terrainSlopePositions = terrainEditorController.readTerrainSlopePositions(PLANET_1_ID);

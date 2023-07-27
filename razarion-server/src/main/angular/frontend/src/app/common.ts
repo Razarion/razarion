@@ -13,7 +13,8 @@ export const URL_THREE_JS_MODEL_PACK_EDITOR = EDITOR_PATH + '/three-js-model-pac
 export const UPDATE_RADIUS_REST_CALL = EDITOR_PATH + '/terrain-object/update-radius';
 export const SLOPE_EDITOR_PATH = EDITOR_PATH + '/slope';
 export const TERRAIN_EDITOR = APPLICATION_PATH + "/planeteditor";
-export const READ_TERRAIN_SLOPE_POSITIONS = TERRAIN_EDITOR + "/readTerrainSlopePositions/";
+export const READ_TERRAIN_SLOPE_POSITIONS = TERRAIN_EDITOR + "/readTerrainSlopePositions";
+export const UPDATE_SLOPES_TERRAIN_EDITOR = TERRAIN_EDITOR + "/updateSlopes";
 
 export interface FrontendLoginState {
   loggedIn: boolean;

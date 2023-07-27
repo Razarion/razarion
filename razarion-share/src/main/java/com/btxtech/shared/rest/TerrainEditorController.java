@@ -2,6 +2,7 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.shared.dto.SlopeTerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
@@ -20,6 +21,12 @@ import java.util.List;
  */
 @Path(CommonUrl.PLANET_EDITOR_SERVICE_PATH)
 public interface TerrainEditorController {
+
+    @PUT
+    @Path("updateSlopes/{planetId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updateSlopes(@PathParam("planetId") int planetId, SlopeTerrainEditorUpdate slopeTerrainEditorUpdate);
+
     @GET
     @Path("readTerrainSlopePositions/{planetId}")
     @Produces(MediaType.APPLICATION_JSON)

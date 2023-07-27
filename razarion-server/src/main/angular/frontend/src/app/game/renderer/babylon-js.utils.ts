@@ -59,4 +59,15 @@ export class BabylonJsUtils {
     return vector2s;
   }
 
+  static toTerrainSlopeCornerFromVertex2Array(vector2s: Vector2[]): TerrainSlopeCorner[] {
+    const terrainSlopeCorners: any[] = [];
+    vector2s.forEach(vector2 => terrainSlopeCorners.push(
+      new class implements TerrainSlopeCorner {
+        position = {x: vector2.x, y: vector2.y};
+        slopeDrivewayId = null;
+
+      }));
+    return terrainSlopeCorners;
+  }
+
 }

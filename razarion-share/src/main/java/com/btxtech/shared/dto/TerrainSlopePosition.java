@@ -13,6 +13,8 @@ public class TerrainSlopePosition {
     private boolean inverted;
     private List<TerrainSlopeCorner> polygon;
     private List<TerrainSlopePosition> children;
+    private Integer editorParentIdIfCreated; // Filled in Angular slope editor
+
     public Integer getId() {
         return id;
     }
@@ -47,6 +49,14 @@ public class TerrainSlopePosition {
 
     public void setChildren(List<TerrainSlopePosition> children) {
         this.children = children;
+    }
+
+    public Integer getEditorParentIdIfCreated() {
+        return editorParentIdIfCreated;
+    }
+
+    public void setEditorParentIdIfCreated(Integer editorParentIdIfCreated) {
+        this.editorParentIdIfCreated = editorParentIdIfCreated;
     }
 
     public TerrainSlopePosition id(Integer id) {

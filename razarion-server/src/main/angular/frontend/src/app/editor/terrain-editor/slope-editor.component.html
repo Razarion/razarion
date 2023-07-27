@@ -5,7 +5,7 @@
   </div>
 </p-divider>
 <div class="field grid align-items-center">
-  <span class="col">Terrain Object</span>
+  <span class="col">Slope</span>
   <div class="col">
     <p-dropdown [options]="slopeConfigs"
                 [(ngModel)]="newSlopeConfigId">
@@ -28,22 +28,61 @@
 </p-divider>
 
 <div class="field grid align-items-center">
-  <span class="col">selectedTerrainSlopePosition</span>
+  <span class="col">Selection</span>
   <div class="col">
-    {{selectedTerrainSlopePosition}}
+    <span *ngIf="selectedTerrainSlopePosition">
+    {{gwtAngularService.gwtAngularFacade.terrainTypeService.getSlopeConfig(selectedTerrainSlopePosition.slopeConfigId!).getInternalName()
+    + " '"
+    + gwtAngularService.gwtAngularFacade.terrainTypeService.getSlopeConfig(selectedTerrainSlopePosition.slopeConfigId!).getId()
+    + "'"}}
+      </span>
   </div>
 </div>
 
 <div class="field grid align-items-center">
-  <span class="col">selectedTerrainSlopePolygon</span>
+  <span class="col">Click to add corner</span>
   <div class="col">
-    <span *ngIf="selectedTerrainSlopePolygon">{{selectedTerrainSlopePolygon.length}} corners</span>
+    <p-selectButton [options]="onOffOptions" [(ngModel)]="clickToAddCornerMode" optionLabel="label"
+                    optionValue="value"></p-selectButton>
   </div>
 </div>
 
 <div class="field grid align-items-center">
-  <span class="col">selectedTerrainSlopeMesh</span>
+  <span class="col">Corners</span>
   <div class="col">
-    {{selectedTerrainSlopeMesh}}
+    <span *ngIf="selectedTerrainSlopePolygon">{{selectedTerrainSlopePolygon.length}}</span>
+  </div>
+</div>
+
+<div class="field grid align-items-center">
+  <span class="col">Height</span>
+  <div class="col">
+    <span *ngIf="selectedTerrainSlopeMesh">{{selectedTerrainSlopeMesh.position.y - SELECTION_BOOST}}</span>
+  </div>
+</div>
+
+<p-divider align="left">
+  <div class="inline-flex align-items-center">
+    <i class="pi pi-save mr-2"></i>
+    <b>Action</b>
+  </div>
+</p-divider>
+
+<div class="field grid align-items-center">
+  <span class="col">Save</span>
+  <div class="col">
+    <p-button icon="pi pi-save" (onClick)="save()"></p-button>
+  </div>
+</div>
+<div class="field grid align-items-center">
+  <span class="col">Restart Planet warm</span>
+  <div class="col">
+    <p-button icon="pi pi-power-off" (onClick)="restartPlanetWarm()"></p-button>
+  </div>
+</div>
+<div class="field grid align-items-center">
+  <span class="col">Restart Planet cold</span>
+  <div class="col">
+    <p-button icon="pi pi-power-off" (onClick)="restartPlanetCold()"></p-button>
   </div>
 </div>

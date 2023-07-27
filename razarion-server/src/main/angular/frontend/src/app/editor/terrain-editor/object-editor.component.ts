@@ -58,6 +58,7 @@ export class ObjectEditorComponent implements OnInit {
     this.gizmoManager.rotationGizmoEnabled = false;
     this.gizmoManager.scaleGizmoEnabled = false;
     this.gizmoManager.boundingBoxGizmoEnabled = false;
+    this.gizmoManager.usePointerToAttachGizmos = false;
     this.discRadiusMaterial = new SimpleMaterial(`Radius`, threeJsRendererServiceImpl.getScene());
     this.discRadiusMaterial.diffuseColor = Color3.Yellow();
     this.discRadiusMaterial.backFaceCulling = false;

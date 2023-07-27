@@ -171,7 +171,7 @@ server.on({
 
 server.on({
   method: 'GET',
-  path: '/rest/editor/slope/getObjectNameIds',
+  path: '/rest/editor/slope/objectNameIds',
   reply: {
     status: 200,
     headers: {"content-type": "application/json"},

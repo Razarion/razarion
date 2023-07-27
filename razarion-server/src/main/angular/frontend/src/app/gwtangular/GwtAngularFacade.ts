@@ -623,23 +623,6 @@ export interface ObjectNameId {
   toString(): string;
 }
 
-export interface AngularTreeNodeData {
-  name: string;
-  value: any;
-  options: string[];
-  propertyEditorSelector: string;
-  nullable: boolean;
-  deleteAllowed: boolean;
-  createAllowed: boolean;
-  canHaveChildren: boolean;
-
-  onCreate(gwtAngularPropertyTable: GwtAngularPropertyTable, createOption: any): void;
-
-  onDelete(gwtAngularPropertyTable: GwtAngularPropertyTable): void;
-
-  setValue(value: any): void;
-}
-
 export interface TerrainEditorService {
   save(createdTerrainObjects: TerrainObjectPosition[], updatedTerrainObjects: TerrainObjectPosition[]): Promise<string>;
 
@@ -679,12 +662,18 @@ export interface TerrainSlopePosition {
   inverted: boolean;
   polygon: TerrainSlopeCorner[];
   children: TerrainSlopePosition[];
-  editorParentId: number | null; // Only on Angular side
+  editorParentIdIfCreated: number | null; // Only on Angular side
 }
 
 export interface TerrainSlopeCorner {
   position: JsonDecimalPosition;
   slopeDrivewayId: number | null;
+}
+
+export interface SlopeTerrainEditorUpdate {
+  createdSlopes: TerrainSlopePosition[];
+  updatedSlopes: TerrainSlopePosition[];
+  deletedSlopeIds: number[];
 }
 
 export interface TerrainObjectPosition {

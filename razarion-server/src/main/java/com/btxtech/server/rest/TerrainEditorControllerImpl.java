@@ -2,13 +2,20 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.shared.dto.SlopeTerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
@@ -32,20 +39,33 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
     }
 
     @Override
+    @SecurityCheck
+    public void updateSlopes(int planetId, SlopeTerrainEditorUpdate slopeTerrainEditorUpdate) {
+        try {
+            // Check if terrain is valid
+            // this does not make any sense terrainShapeService.setupTerrainShapeDryRun(planetId, slopeTerrainEditorUpdate);
+
+            if (slopeTerrainEditorUpdate.getCreatedSlopes() != null && !slopeTerrainEditorUpdate.getCreatedSlopes().isEmpty()) {
+                planetCrudPersistence.createTerrainSlopePositions(planetId, slopeTerrainEditorUpdate.getCreatedSlopes());
+            }
+            if (slopeTerrainEditorUpdate.getUpdatedSlopes() != null && !slopeTerrainEditorUpdate.getUpdatedSlopes().isEmpty()) {
+                planetCrudPersistence.updateTerrainSlopePositions(planetId, slopeTerrainEditorUpdate.getUpdatedSlopes());
+            }
+            if (slopeTerrainEditorUpdate.getDeletedSlopeIds() != null && !slopeTerrainEditorUpdate.getDeletedSlopeIds().isEmpty()) {
+                planetCrudPersistence.deleteTerrainSlopePositions(planetId, slopeTerrainEditorUpdate.getDeletedSlopeIds());
+            }
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @SecurityCheck
     public void updateTerrain(int planetId, TerrainEditorUpdate terrainEditorUpdate) {
         try {
             // Check if terrain is valid
             // this does not make any sense terrainShapeService.setupTerrainShapeDryRun(planetId, terrainEditorUpdate);
-
-            if (terrainEditorUpdate.getCreatedSlopes() != null && !terrainEditorUpdate.getCreatedSlopes().isEmpty()) {
-                planetCrudPersistence.createTerrainSlopePositions(planetId, terrainEditorUpdate.getCreatedSlopes());
-            }
-            if (terrainEditorUpdate.getUpdatedSlopes() != null && !terrainEditorUpdate.getUpdatedSlopes().isEmpty()) {
-                planetCrudPersistence.updateTerrainSlopePositions(planetId, terrainEditorUpdate.getUpdatedSlopes());
-            }
-            if (terrainEditorUpdate.getDeletedSlopeIds() != null && !terrainEditorUpdate.getDeletedSlopeIds().isEmpty()) {
-                planetCrudPersistence.deleteTerrainSlopePositions(planetId, terrainEditorUpdate.getDeletedSlopeIds());
-            }
 
             if (terrainEditorUpdate.getCreatedTerrainObjects() != null && !terrainEditorUpdate.getCreatedTerrainObjects().isEmpty()) {
                 planetCrudPersistence.createTerrainObjectPositions(planetId, terrainEditorUpdate.getCreatedTerrainObjects());
@@ -63,6 +83,7 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
     }
 
     @Override
+    @SecurityCheck
     public void updatePlanetVisualConfig(int planetId, PlanetVisualConfig planetVisualConfig) {
         try {
             planetCrudPersistence.updatePlanetVisualConfig(planetId, planetVisualConfig);
@@ -73,6 +94,7 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
     }
 
     @Override
+    @SecurityCheck
     public void updateMiniMapImage(int planetId, String dataUrl) {
         try {
             DataUrlDecoder dataUrlDecoder = new DataUrlDecoder(dataUrl);

@@ -155,15 +155,15 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
             terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon().stream()
                     .map(terrainSlopeCorner -> new TerrainSlopeCornerEntity()
                             .position(terrainSlopeCorner.getPosition())
-                            .drivewayConfigEntity(drivewayCrudPersistence.getEntity(terrainSlopeCorner.getSlopeDrivewayId()))).collect(Collectors.toList()));
-            // TODO
-//            if (terrainSlopePosition.getEditorParentId() != null) {
-//                TerrainSlopePositionEntity parent = entityManager.find(TerrainSlopePositionEntity.class, terrainSlopePosition.getEditorParentId());
-//                parent.addChild(terrainSlopePositionEntity);
-//                entityManager.persist(parent);
-//            } else {
-//                terrainSlopePositionEntities.add(terrainSlopePositionEntity);
-//            }
+                            .drivewayConfigEntity(drivewayCrudPersistence.getEntity(terrainSlopeCorner.getSlopeDrivewayId())))
+                    .collect(Collectors.toList()));
+            if (terrainSlopePosition.getEditorParentIdIfCreated() != null) {
+                TerrainSlopePositionEntity parent = entityManager.find(TerrainSlopePositionEntity.class, terrainSlopePosition.getEditorParentIdIfCreated());
+                parent.addChild(terrainSlopePositionEntity);
+                entityManager.persist(parent);
+            } else {
+                terrainSlopePositionEntities.add(terrainSlopePositionEntity);
+            }
         }
         PlanetEntity planetEntity = getEntity(planetId);
         planetEntity.getTerrainSlopePositionEntities().addAll(terrainSlopePositionEntities);

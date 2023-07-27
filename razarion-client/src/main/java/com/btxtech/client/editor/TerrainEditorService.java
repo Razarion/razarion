@@ -33,11 +33,6 @@ public class TerrainEditorService {
     @SuppressWarnings("unused") // Called by Angular
     public Promise<String> save(TerrainObjectPosition[] createdTerrainObjects, TerrainObjectPosition[] updatedTerrainObjects) {
         TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
-        terrainEditorUpdate.setCreatedSlopes(new ArrayList<>());
-        terrainEditorUpdate.setUpdatedSlopes(new ArrayList<>());
-        terrainEditorUpdate.setDeletedSlopeIds(new ArrayList<>());
-
-        // setupChangedSlopes(terrainEditorUpdate);
         terrainEditorUpdate.setCreatedTerrainObjects(Arrays.asList(createdTerrainObjects));
         terrainEditorUpdate.setUpdatedTerrainObjects(Arrays.asList(updatedTerrainObjects));
         terrainEditorUpdate.setDeletedTerrainObjectsIds(new ArrayList<>());
