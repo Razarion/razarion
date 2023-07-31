@@ -1,5 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {READ_TERRAIN_SLOPE_POSITIONS, SLOPE_EDITOR_PATH, UPDATE_SLOPES_TERRAIN_EDITOR} from "../../common";
+import {
+  DRIVEWAY_EDITOR_PATH,
+  READ_TERRAIN_SLOPE_POSITIONS,
+  SLOPE_EDITOR_PATH,
+  UPDATE_SLOPES_TERRAIN_EDITOR
+} from "../../common";
 import {HttpClient} from "@angular/common/http";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {MessageService} from "primeng/api";
@@ -47,7 +52,8 @@ export class SlopeEditorComponent implements OnInit {
 
   private readonly cornerDiscMaterial;
   minCornerSelectionDistance = 5;
-  private draggableCorner: DraggableCorner | undefined;
+  driveways: any[] = [];
+  draggableCorner: DraggableCorner | undefined;
   private slopeTerrainEditorUpdate: SlopeTerrainEditorUpdate | undefined;
   private highlightLayer: HighlightLayer;
 
@@ -90,6 +96,11 @@ export class SlopeEditorComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadSlopeObjectNameIds();
+    this.loadDrivewayNameIds();
+  }
+
+  private loadSlopeObjectNameIds() {
     this.slopeConfigs = [];
     const url = `${SLOPE_EDITOR_PATH}/objectNameIds`;
     this.httpClient.get<ObjectNameId[]>(url).subscribe({
@@ -104,6 +115,32 @@ export class SlopeEditorComponent implements OnInit {
         console.error(error);
         this.messageService.add({
           severity: 'Slope Load Error',
+          summary: `Error getObjectNameIds: ${url}`,
+          detail: error,
+          sticky: true
+        });
+      }
+    });
+  }
+
+  private loadDrivewayNameIds() {
+    this.driveways = [];
+    const url = `${DRIVEWAY_EDITOR_PATH}/objectNameIds`;
+    this.httpClient.get<ObjectNameId[]>(url).subscribe({
+      next: objectNameIds => {
+        objectNameIds.forEach(objectNameId => this.driveways.push({
+          label: `${objectNameId.internalName} '${objectNameId.id}'`,
+          value: objectNameId.id,
+        }));
+        this.driveways.push({
+          label: `-`,
+          value: null,
+        })
+      },
+      error: error => {
+        console.error(error);
+        this.messageService.add({
+          severity: 'Driveway Load Error',
           summary: `Error getObjectNameIds: ${url}`,
           detail: error,
           sticky: true
@@ -171,9 +208,9 @@ export class SlopeEditorComponent implements OnInit {
           if (this.clickToAddCornerMode && this.selectedTerrainSlopePosition) {
             // Add new corner
             this.selectedTerrainSlopeMesh!.dispose();
-            SlopeEditorComponent.addPointToPolygon(new Vector2(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z), this.selectedTerrainSlopePolygon!);
+            SlopeEditorComponent.addPointToPolygon(new Vector2(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z), this.selectedTerrainSlopePolygon!, this.selectedTerrainSlopePosition);
             this.selectedTerrainSlopeMesh = this.createPolygonMesh(this.selectedTerrainSlopePolygon!, this.selectedTerrainSlopePosition);
-            this.selectedTerrainSlopePosition!.polygon = BabylonJsUtils.toTerrainSlopeCornerFromVertex2Array(this.selectedTerrainSlopePolygon!);
+            BabylonJsUtils.updateTerrainSlopeCornerFromVertex2Array(this.selectedTerrainSlopePolygon!, this.selectedTerrainSlopePosition);
             this.updateHighlight();
             this.onSelectionEdited();
             return;
@@ -279,12 +316,16 @@ export class SlopeEditorComponent implements OnInit {
     return null;
   }
 
-  public static addPointToPolygon(point: Vector2, polygon: Vector2[]) {
+  public static addPointToPolygon(point: Vector2, polygon: Vector2[], selectedTerrainSlopePosition: TerrainSlopePosition) {
     let index = SlopeEditorComponent.projectPointToPolygon(point, polygon);
     if (!index && index !== 0) {
       throw new Error("Invalid Polygon");
     }
     polygon.splice(index, 0, point);
+    selectedTerrainSlopePosition.polygon.splice(index, 0, new class implements TerrainSlopeCorner {
+      position = {x: point.x, y: point.y};
+      slopeDrivewayId = null;
+    });
   }
 
   public static getCorrectedIndex(index: number, listSize: number): number {
@@ -376,10 +417,10 @@ export class SlopeEditorComponent implements OnInit {
       if (this.draggableCorner) {
         if (this.draggableCorner.index !== index) {
           this.draggableCorner.dispose();
-          this.draggableCorner = this.createDraggableCorner(index!, corner, height, this.minCornerSelectionDistance * 0.1);
+          this.draggableCorner = this.createDraggableCorner(index!, this.selectedTerrainSlopePosition?.polygon[index!]!, corner, height, this.minCornerSelectionDistance * 0.1);
         }
       } else {
-        this.draggableCorner = this.createDraggableCorner(index!, corner, height, this.minCornerSelectionDistance * 0.1);
+        this.draggableCorner = this.createDraggableCorner(index!, this.selectedTerrainSlopePosition?.polygon[index!]!, corner, height, this.minCornerSelectionDistance * 0.1);
       }
     }
     return !!corner;
@@ -395,16 +436,14 @@ export class SlopeEditorComponent implements OnInit {
     }
   }
 
-  private createDraggableCorner(index: number, corner: Vector2, height: number, radius: number) {
+  private createDraggableCorner(index: number, terrainSlopeCorner: TerrainSlopeCorner, corner: Vector2, height: number, radius: number) {
     let slopeEditorComponent = this;
     return new class extends DraggableCorner {
-      private readonly disc;
       private readonly xGizmo;
       private readonly yGizmo;
 
       constructor() {
-        super(index);
-        this.disc = MeshBuilder.CreateDisc("Slope Editor Corner", {radius: radius});
+        super(MeshBuilder.CreateDisc("Slope Editor Corner", {radius: radius}), terrainSlopeCorner, index);
         this.disc.material = slopeEditorComponent.cornerDiscMaterial;
         this.disc.position.x = corner.x;
         this.disc.position.y = height;
@@ -427,7 +466,7 @@ export class SlopeEditorComponent implements OnInit {
           slopeEditorComponent.selectedTerrainSlopeMesh = slopeEditorComponent.createPolygonMesh(slopeEditorComponent.selectedTerrainSlopePolygon!, slopeEditorComponent.selectedTerrainSlopePosition!);
           slopeEditorComponent.onSelectionEdited();
           slopeEditorComponent.updateHighlight();
-          slopeEditorComponent.selectedTerrainSlopePosition!.polygon = BabylonJsUtils.toTerrainSlopeCornerFromVertex2Array(slopeEditorComponent.selectedTerrainSlopePolygon!);
+          BabylonJsUtils.updateTerrainSlopeCornerFromVertex2Array(slopeEditorComponent.selectedTerrainSlopePolygon!, slopeEditorComponent.selectedTerrainSlopePosition!);
         });
       }
 
@@ -437,6 +476,17 @@ export class SlopeEditorComponent implements OnInit {
         this.yGizmo.dispose();
       }
     }
+  }
+
+  deleteCorner() {
+    this.selectedTerrainSlopePolygon!.splice(this.draggableCorner!.index, 1);
+    this.selectedTerrainSlopePosition!.polygon.splice(this.draggableCorner!.index, 1);
+    this.clearDraggableCorner();
+
+    this.selectedTerrainSlopeMesh!.dispose();
+    this.selectedTerrainSlopeMesh = this.createPolygonMesh(this.selectedTerrainSlopePolygon!, this.selectedTerrainSlopePosition!);
+
+    this.updateHighlight();
   }
 
   private findParentSlope(center: Vector2): number | null {
@@ -505,10 +555,10 @@ export class SlopeEditorComponent implements OnInit {
 }
 
 abstract class DraggableCorner {
-  readonly index: number;
+  public readonly disc;
 
-  protected constructor(index: number) {
-    this.index = index;
+  protected constructor(disc: Mesh, public terrainSlopeCorner: TerrainSlopeCorner, readonly index: number) {
+    this.disc = disc;
   }
 
   abstract dispose(): void;

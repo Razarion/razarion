@@ -23,7 +23,7 @@
 <p-divider align="left">
   <div class="inline-flex align-items-center">
     <i class="pi pi-cog mr-2"></i>
-    <b>Edit</b>
+    <b>Edit Slope</b>
   </div>
 </p-divider>
 
@@ -59,6 +59,49 @@
   <div class="col">
     <span *ngIf="selectedTerrainSlopeMesh">{{selectedTerrainSlopeMesh.position.y - SELECTION_BOOST}}</span>
   </div>
+</div>
+
+<p-divider align="left">
+  <div class="inline-flex align-items-center">
+    <i class="pi pi-cog mr-2"></i>
+    <b>Edit Corner</b>
+  </div>
+</p-divider>
+
+<div class="field grid align-items-center">
+  <span class="col">Position</span>
+  <div class="col">
+    <div class="inline-flex" *ngIf="draggableCorner">
+      <p-inputNumber [(ngModel)]="draggableCorner.disc!.position.x"
+                     [prefix]="'x: '" [size]="5"
+                     [minFractionDigits]="1" [maxFractionDigits]="6"
+                     [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                     [showButtons]="true"></p-inputNumber>
+      <p-inputNumber [(ngModel)]="draggableCorner.disc!.position.z"
+                     [prefix]="'y: '" [size]="5"
+                     [minFractionDigits]="1" [maxFractionDigits]="6"
+                     [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                     [showButtons]="true"></p-inputNumber>
+    </div>
+  </div>
+</div>
+
+<div class="field grid align-items-center">
+  <span class="col">Delete Corner</span>
+  <div class="col">
+    <p-button
+      icon="pi pi-times"
+      (onClick)="deleteCorner()"
+      *ngIf="draggableCorner"></p-button>
+  </div>
+</div>
+
+<div class="field grid align-items-center">
+  <span class="col">Driveway</span>
+  <p-dropdown *ngIf="draggableCorner"
+              [options]="driveways"
+              [(ngModel)]="draggableCorner.terrainSlopeCorner!.slopeDrivewayId">
+  </p-dropdown>
 </div>
 
 <p-divider align="left">

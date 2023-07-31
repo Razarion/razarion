@@ -1,5 +1,5 @@
 import {Color3, StandardMaterial, Vector2, VertexData} from "@babylonjs/core";
-import {DecimalPosition, TerrainSlopeCorner} from "../../gwtangular/GwtAngularFacade";
+import {DecimalPosition, TerrainSlopeCorner, TerrainSlopePosition} from "../../gwtangular/GwtAngularFacade";
 
 export class BabylonJsUtils {
 
@@ -59,15 +59,11 @@ export class BabylonJsUtils {
     return vector2s;
   }
 
-  static toTerrainSlopeCornerFromVertex2Array(vector2s: Vector2[]): TerrainSlopeCorner[] {
-    const terrainSlopeCorners: any[] = [];
-    vector2s.forEach(vector2 => terrainSlopeCorners.push(
-      new class implements TerrainSlopeCorner {
-        position = {x: vector2.x, y: vector2.y};
-        slopeDrivewayId = null;
-
-      }));
-    return terrainSlopeCorners;
+  static updateTerrainSlopeCornerFromVertex2Array(vector2s: Vector2[], terrainSlopePosition: TerrainSlopePosition): void {
+    for (let i = 0; i < vector2s.length; i++) {
+      const vector2 = vector2s[i];
+      terrainSlopePosition.polygon[i].position = {x: vector2.x, y: vector2.y};
+    }
   }
 
 }

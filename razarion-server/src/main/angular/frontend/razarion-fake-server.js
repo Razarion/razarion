@@ -165,7 +165,7 @@ server.on({
   reply: {
     status: 200,
     headers: {"content-type": "application/json"},
-    body: '[{"id":1,"slopeConfigId":1,"inverted":false,"editorParentId":null, "polygon": [{"position": {"x": 20, "y": 20}, "slopeDrivewayId": null},{"position": {"x": 50, "y": 20}, "slopeDrivewayId": null},{"position": {"x": 50, "y": 50}, "slopeDrivewayId": null},{"position": {"x": 20, "y": 50}, "slopeDrivewayId": null}]}]'
+    body: '[{"id":1,"slopeConfigId":1,"inverted":false,"editorParentIdIfCreated":null, "polygon": [{"position": {"x": 20, "y": 20}, "slopeDrivewayId": 1},{"position": {"x": 50, "y": 20}, "slopeDrivewayId": 1},{"position": {"x": 50, "y": 50}, "slopeDrivewayId": null},{"position": {"x": 20, "y": 50}, "slopeDrivewayId": null}]}]'
   }
 });
 
@@ -176,6 +176,16 @@ server.on({
     status: 200,
     headers: {"content-type": "application/json"},
     body: '[{"id":1,"internalName":"Beach"},{"id":2,"internalName":"Razar Industries"}]'
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/driveway/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '[{"id":1,"internalName":"Driveway 1"},{"id":2,"internalName":"Driveway 2"}]'
   }
 });
 
