@@ -13,6 +13,8 @@ import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
 
 export class BabylonItemImpl implements BabylonItem {
+  static readonly SELECT_ALPHA: number = 0.3;
+  static readonly HOVER_ALPHA: number = 0.6;
   private readonly container: TransformNode;
   private position: Vertex | null = null;
   private angle: number = 0;
@@ -106,8 +108,12 @@ export class BabylonItemImpl implements BabylonItem {
     throw new Error(`Can not find mesh path '${meshPath}' in '${this.getContainer()}'`);
   }
 
+  isSelectOdHove(): boolean {
+    return this.selectActive || this.hoverActive;
+  }
+
   private updateMarkedDisk(): void {
-    if (this.selectActive || this.hoverActive) {
+    if (this.isSelectOdHove()) {
       if (!this.markerDisc) {
         this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: this.getRadius() + 0.1});
         let material = this.rendererService.itemMarkerMaterialCache.get(this.diplomacy);
@@ -129,9 +135,9 @@ export class BabylonItemImpl implements BabylonItem {
     }
 
     if (this.selectActive) {
-      (<SimpleMaterial>this.markerDisc!.material).alpha = 0.6
+      (<SimpleMaterial>this.markerDisc!.material).alpha = BabylonItemImpl.HOVER_ALPHA;
     } else if (this.hoverActive) {
-      (<SimpleMaterial>this.markerDisc!.material).alpha = 0.3
+      (<SimpleMaterial>this.markerDisc!.material).alpha = BabylonItemImpl.SELECT_ALPHA;
     }
   }
 

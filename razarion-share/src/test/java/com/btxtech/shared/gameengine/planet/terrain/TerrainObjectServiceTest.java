@@ -123,7 +123,8 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 new ThreeJsModelConfig().id(45).internalName("[VC] Tracks").type(ThreeJsModelConfig.Type.GLTF),
                 new ThreeJsModelConfig().id(43).internalName("[VC] Bumpers1").type(ThreeJsModelConfig.Type.GLTF),
                 new ThreeJsModelConfig().id(46).internalName("[VC] Node Material Vehicles main part").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(50).internalName("Buildup Beam").type(ThreeJsModelConfig.Type.PARTICLE_SYSTEM_JSON)
+                new ThreeJsModelConfig().id(50).internalName("Buildup Beam").type(ThreeJsModelConfig.Type.PARTICLE_SYSTEM_JSON),
+                new ThreeJsModelConfig().id(54).internalName("Status Material").type(ThreeJsModelConfig.Type.NODES_MATERIAL)
         );
 
         List<ThreeJsModelPackConfig> threeJsModelPackConfigs = Arrays.asList(

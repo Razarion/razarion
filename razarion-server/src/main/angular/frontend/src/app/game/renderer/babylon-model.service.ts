@@ -197,6 +197,9 @@ export class BabylonModelService {
       handleResolve();
     }).catch(reason => {
       console.error(`Load NodeMaterial failed. Node Material: '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})' Reason: ${reason}`);
+      let nodeMaterial = new NodeMaterial(`FAILED '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})'`)
+      nodeMaterial.inspectableCustomProperties = this.setupEditorProperties(threeJsModelConfig, nodeMaterial);
+      this.nodeMaterials.set(threeJsModelConfig.getId(), nodeMaterial);
       handleResolve();
     })
   }

@@ -1,4 +1,15 @@
-import {Animation, Mesh, MeshBuilder, ParticleHelper, ParticleSystem, Vector3} from "@babylonjs/core";
+import {
+  Animation,
+  InputBlock,
+  Mesh,
+  MeshBuilder,
+  NodeMaterial,
+  ParticleHelper,
+  ParticleSystem,
+  TransformNode,
+  UtilityLayerRenderer,
+  Vector3
+} from "@babylonjs/core";
 import {
   BabylonBaseItem,
   BaseItemType,
@@ -16,9 +27,26 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private health: number = 0;
   private buildingParticleSystem: ParticleSystem | null = null;
   private harvestingParticleSystem: ParticleSystem | null = null;
+  private constructing: Mesh | undefined;
+  private progress: number = 0;
+  private readonly utilLayer: UtilityLayerRenderer;
+  private readonly constructingMaterial: NodeMaterial;
+  private readonly PROGRESS_BAR_NODE_MATERIAL_ID = 54;
 
   constructor(id: number, private baseItemType: BaseItemType, diplomacy: Diplomacy, rendererService: ThreeJsRendererServiceImpl, babylonModelService: BabylonModelService) {
     super(id, baseItemType, diplomacy, rendererService, babylonModelService, rendererService.baseItemContainer);
+
+    this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
+    // Setup constructing material
+    this.constructingMaterial = this.babylonModelService.getNodeMaterial(this.PROGRESS_BAR_NODE_MATERIAL_ID);
+    let progressBlock = this.constructingMaterial.getBlockByName("progress");
+    if (progressBlock) {
+      this.constructingMaterial.onBindObservable.add((mesh: any) => {
+        (<InputBlock>progressBlock).value = (<any>mesh).progress;
+      });
+    } else {
+      console.warn(`Progress block not found in NodeMaterial ${this.PROGRESS_BAR_NODE_MATERIAL_ID}`)
+    }
   }
 
   public static createDummy(id: number): BabylonBaseItem {
@@ -79,6 +107,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       setBuildup(buildup: number): void {
       }
 
+      setConstructing(progress: number): void {
+      }
+
       onProjectileFired(destination: Vertex): void {
       }
 
@@ -107,6 +138,35 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   setBuildup(buildup: number): void {
     this.getContainer().scaling.y = buildup;
+  }
+
+  setConstructing(progress: number): void {
+    this.progress = progress;
+    this.handleConstructing();
+    if (this.constructing) {
+      (<any>this.constructing).progress = this.progress;
+    }
+  }
+
+  handleConstructing(): void {
+    if (this.isSelectOdHove() && this.progress > 0) {
+      if (!this.constructing) {
+        this.constructing = MeshBuilder.CreatePlane("Status", {
+          width: this.baseItemType.getPhysicalAreaConfig().getRadius() * 2,
+          height: this.baseItemType.getPhysicalAreaConfig().getRadius() * 0.08
+        }, this.utilLayer.utilityLayerScene);
+
+        this.constructing.position.y = 0.5 + this.baseItemType.getPhysicalAreaConfig().getRadius();
+        this.constructing.parent = this.getContainer();
+        this.constructing.billboardMode = TransformNode.BILLBOARDMODE_ALL;
+        this.constructing.material = this.constructingMaterial;
+      }
+    } else {
+      if (this.constructing) {
+        this.constructing.dispose();
+        this.constructing = undefined;
+      }
+    }
   }
 
   onProjectileFired(destination: Vertex): void {

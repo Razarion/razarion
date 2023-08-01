@@ -455,6 +455,8 @@ export interface BabylonBaseItem extends BabylonItem {
 
   setBuildup(buildup: number): void;
 
+  setConstructing(progress: number): void;
+
   onProjectileFired(destination: Vertex): void;
 
   onExplode(): void;

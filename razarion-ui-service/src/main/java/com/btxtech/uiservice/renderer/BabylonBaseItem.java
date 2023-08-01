@@ -19,6 +19,8 @@ public interface BabylonBaseItem extends BabylonItem {
 
     void setBuildup(double buildup);
 
+    void setConstructing(double progress);
+
     void onProjectileFired(Vertex destination);
 
     void onExplode();

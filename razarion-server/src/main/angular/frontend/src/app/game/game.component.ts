@@ -150,6 +150,10 @@ export class GameComponent implements OnInit {
             babylonBaseItem.updatePosition();
             babylonBaseItem.updateAngle();
 
+            babylonBaseItem.select(true);
+
+            setInterval(() =>  babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
+
             // let buildingPosition: NativeVertexDto = new class implements NativeVertexDto {
             //   x = 16;
             //   y = 8;

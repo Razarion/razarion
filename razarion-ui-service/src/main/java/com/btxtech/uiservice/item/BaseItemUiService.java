@@ -249,6 +249,7 @@ public class BaseItemUiService {
                 babylonBaseItem.setHarvestingPosition(nativeSyncBaseItemTickInfo.harvestingResourcePosition);
                 babylonBaseItem.setBuildingPosition(nativeSyncBaseItemTickInfo.buildingPosition);
                 babylonBaseItem.setBuildup(nativeSyncBaseItemTickInfo.buildup);
+                babylonBaseItem.setConstructing(nativeSyncBaseItemTickInfo.constructing);
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }
