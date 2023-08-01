@@ -443,11 +443,7 @@ export interface BabylonItem {
 }
 
 export interface BabylonBaseItem extends BabylonItem {
-  getHealth(): number;
-
   setHealth(health: number): void;
-
-  updateHealth(): void;
 
   setBuildingPosition(buildingPosition: NativeVertexDto | null): void;
 

@@ -7,11 +7,7 @@ import jsinterop.annotations.JsType;
 
 @JsType(isNative = true)
 public interface BabylonBaseItem extends BabylonItem {
-    double getHealth();
-
     void setHealth(double health);
-
-    void updateHealth();
 
     void setBuildingPosition(NativeVertexDto buildingPosition);
 

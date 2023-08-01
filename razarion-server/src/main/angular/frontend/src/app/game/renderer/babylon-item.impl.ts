@@ -108,12 +108,12 @@ export class BabylonItemImpl implements BabylonItem {
     throw new Error(`Can not find mesh path '${meshPath}' in '${this.getContainer()}'`);
   }
 
-  isSelectOdHove(): boolean {
+  isSelectOrHove(): boolean {
     return this.selectActive || this.hoverActive;
   }
 
   private updateMarkedDisk(): void {
-    if (this.isSelectOdHove()) {
+    if (this.isSelectOrHove()) {
       if (!this.markerDisc) {
         this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: this.getRadius() + 0.1});
         let material = this.rendererService.itemMarkerMaterialCache.get(this.diplomacy);

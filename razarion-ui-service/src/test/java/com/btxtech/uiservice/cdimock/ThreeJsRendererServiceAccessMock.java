@@ -96,17 +96,7 @@ public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceA
         }
 
         @Override
-        public double getHealth() {
-            return 0;
-        }
-
-        @Override
         public void setHealth(double health) {
-
-        }
-
-        @Override
-        public void updateHealth() {
 
         }
 

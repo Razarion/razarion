@@ -191,10 +191,6 @@ public class BaseItemUiService {
                     babylonBaseItem.updatePosition();
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
                     babylonBaseItem.updateAngle();
-                    babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
-                    babylonBaseItem.updateHealth();
-                    babylonBaseItem.setBuildingPosition(nativeSyncBaseItemTickInfo.buildingPosition);
-                    babylonBaseItem.setHarvestingPosition(nativeSyncBaseItemTickInfo.harvestingResourcePosition);
                 }
                 leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
 
@@ -214,11 +210,6 @@ public class BaseItemUiService {
                 if (babylonBaseItem.getAngle() != nativeSyncBaseItemTickInfo.angle) {
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
                     babylonBaseItem.updateAngle();
-                }
-
-                if (babylonBaseItem.getHealth() != nativeSyncBaseItemTickInfo.health) {
-                    babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
-                    babylonBaseItem.updateHealth();
                 }
 
                 if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
@@ -246,6 +237,7 @@ public class BaseItemUiService {
                     }
                 }
 
+                babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
                 babylonBaseItem.setHarvestingPosition(nativeSyncBaseItemTickInfo.harvestingResourcePosition);
                 babylonBaseItem.setBuildingPosition(nativeSyncBaseItemTickInfo.buildingPosition);
                 babylonBaseItem.setBuildup(nativeSyncBaseItemTickInfo.buildup);
