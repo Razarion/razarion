@@ -26,7 +26,7 @@ DELETE FROM `BOT_CONFIG`;
 /*!40000 ALTER TABLE `BOT_CONFIG` DISABLE KEYS */;
 INSERT INTO `BOT_CONFIG` (`id`, `actionDelay`, `autoAttack`, `auxiliaryId`, `internalName`, `maxActiveMs`, `maxInactiveMs`, `minActiveMs`, `minInactiveMs`, `name`, `npc`, `realm_id`) VALUES
 	(31, 1000, b'0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', NULL),
-	(232, 3000, b'1', NULL, 'Outpost Mini 1', NULL, NULL, NULL, NULL, 'Raza Outpost Mini', b'0', 715);
+	(237, 3000, b'1', NULL, 'Outpost Mini 1', NULL, NULL, NULL, NULL, 'Raza Outpost Mini', b'0', 731);
 /*!40000 ALTER TABLE `BOT_CONFIG` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

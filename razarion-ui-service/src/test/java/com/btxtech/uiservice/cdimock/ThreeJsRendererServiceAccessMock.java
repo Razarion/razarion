@@ -9,7 +9,7 @@ import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
-import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
+import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.ThreeJsTerrainTile;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @ApplicationScoped
-public class ThreeJsRendererServiceAccessMock implements ThreeJsRendererServiceAccess {
+public class ThreeJsRendererServiceAccessMock implements BabylonRenderServiceAccess {
     private final List<BabylonBaseItemMock> babylonBaseItemMocks = new ArrayList<>();
 
     private final Logger logger = Logger.getLogger(ThreeJsRendererServiceAccessMock.class.getName());

@@ -9,7 +9,7 @@ import {BackupRestoreComponent} from "../backup-restore/backup-restore.component
 import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component";
 import {ImageEditorComponent} from "../image-editor/image-editor.component";
 import {CollectionSelectorComponent} from "../property-table/collection-selector.component";
-import {ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-service.impl";
+import {BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
 
 @Component({
   selector: 'editor-dialog',
@@ -24,7 +24,7 @@ export class EditorDialogComponent {
   @Input("mainCockpitComponent")
   mainCockpitComponent!: MainCockpitComponent;
 
-  constructor(private gwtAngularService: GwtAngularService, private renderService: ThreeJsRendererServiceImpl) {
+  constructor(private gwtAngularService: GwtAngularService, private renderService: BabylonRenderServiceAccessImpl) {
     this.editors.set("Babylon.js", RenderEngineComponent)
     this.editors.set("Server Control", ServerPanelComponent)
     this.editors.set("Backup Restore", BackupRestoreComponent)

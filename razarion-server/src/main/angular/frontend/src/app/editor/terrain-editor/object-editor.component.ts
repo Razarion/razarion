@@ -7,7 +7,7 @@ import {
 } from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {MessageService} from "primeng/api";
-import {RazarionMetadataType, ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-service.impl";
+import {RazarionMetadataType, BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
 import {BabylonModelService} from "../../game/renderer/babylon-model.service";
 import {TerrainObjectPositionComponent} from "./terrain-object-position.component";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
@@ -49,7 +49,7 @@ export class ObjectEditorComponent implements OnInit {
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
               private babylonModelService: BabylonModelService,
-              private threeJsRendererServiceImpl: ThreeJsRendererServiceImpl,
+              private threeJsRendererServiceImpl: BabylonRenderServiceAccessImpl,
               private editorService: EditorService,
               private httpClient: HttpClient) {
     this.terrainEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService();
@@ -85,11 +85,11 @@ export class ObjectEditorComponent implements OnInit {
           this.selectedNode = null;
           let pickingInfo = this.threeJsRendererServiceImpl.setupMeshPickPoint();
           if (pickingInfo.hit) {
-            let node = ThreeJsRendererServiceImpl.findRazarionMetadataNode(pickingInfo.pickedMesh!);
+            let node = BabylonRenderServiceAccessImpl.findRazarionMetadataNode(pickingInfo.pickedMesh!);
             if (!node) {
               return;
             }
-            let razarionMetadata = ThreeJsRendererServiceImpl.getRazarionMetadata(node)!;
+            let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(node)!;
             if (razarionMetadata.type == RazarionMetadataType.TERRAIN_OBJECT) {
               // Select existing
               this.selectActiveTerrainObject(<TransformNode>node, false)
@@ -174,14 +174,14 @@ export class ObjectEditorComponent implements OnInit {
       terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
       terrainObjectPosition.setTerrainObjectConfigId(this.newTerrainObjectConfig.objectNameId.id);
       this.updateTerrainObjectPosition(node, terrainObjectPosition);
-      let razarionMetadata = ThreeJsRendererServiceImpl.getRazarionMetadata(node);
+      let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(node);
       razarionMetadata!.editorHintTerrainObjectPosition = terrainObjectPosition;
       this.newTerrainObjects.push(terrainObjectPosition);
       this.selectedTerrainObject = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.newTerrainObjectConfig.objectNameId.id);
       this.selectedRadius = this.selectedTerrainObject.getRadius();
       this.showHideRadius();
     } else {
-      let razarionMetadata = ThreeJsRendererServiceImpl.getRazarionMetadata(node);
+      let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(node);
       if (razarionMetadata!.id) {
         let to = this.findUpdatedTerrainObjectPosition(razarionMetadata!.id);
         if (!to) {

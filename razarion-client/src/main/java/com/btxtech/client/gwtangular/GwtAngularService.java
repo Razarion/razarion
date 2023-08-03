@@ -7,8 +7,8 @@ import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
+import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
-import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
 import com.btxtech.uiservice.terrain.InputService;
 import elemental2.dom.DomGlobal;
@@ -66,7 +66,7 @@ public class GwtAngularService {
     }
 
     @Produces
-    public ThreeJsRendererServiceAccess threeJsRendererServiceAccess() {
+    public BabylonRenderServiceAccess threeJsRendererServiceAccess() {
         return gwtAngularFacade.threeJsRendererServiceAccess;
     }
 

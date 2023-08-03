@@ -10,7 +10,7 @@ import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import {Mesh, Node, NodeMaterial, TransformNode} from "@babylonjs/core";
-import {RazarionMetadataType, ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
+import {RazarionMetadataType, BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonJsUtils} from "./babylon-js.utils";
 import {Nullable} from "@babylonjs/core/types";
 
@@ -20,7 +20,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
   constructor(terrainTile: TerrainTile,
               private defaultGroundConfigId: number,
               private gwtAngularService: GwtAngularService,
-              private rendererService: ThreeJsRendererServiceImpl,
+              private rendererService: BabylonRenderServiceAccessImpl,
               private threeJsModelService: BabylonModelService,
               private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
@@ -30,7 +30,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
           const vertexData = BabylonJsUtils.createVertexData(groundTerrainTile.positions, groundTerrainTile.norms);
           const ground = new Mesh("Ground", null);
           vertexData.applyToMesh(ground)
-          ThreeJsRendererServiceImpl.setRazarionMetadataSimple(ground, RazarionMetadataType.GROUND);
+          BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(ground, RazarionMetadataType.GROUND);
 
           let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
           if (groundConfig.getTopThreeJsMaterial()) {
@@ -89,7 +89,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
 
   public static createTerrainObject(terrainObjectModel: TerrainObjectModel, terrainObjectConfig: TerrainObjectConfig, babylonModelService: BabylonModelService, parent: Nullable<Node>): TransformNode {
     const terrainObjectModelTransform = new TransformNode(`TerrainObject (${terrainObjectModel.terrainObjectId})`);
-    ThreeJsRendererServiceImpl.setRazarionMetadataSimple(terrainObjectModelTransform, RazarionMetadataType.TERRAIN_OBJECT, terrainObjectModel.terrainObjectId, terrainObjectConfig.getId());
+    BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(terrainObjectModelTransform, RazarionMetadataType.TERRAIN_OBJECT, terrainObjectModel.terrainObjectId, terrainObjectConfig.getId());
     terrainObjectModelTransform.setParent(parent);
     parent?.getChildren().push(terrainObjectModelTransform);
     terrainObjectModelTransform.position.set(

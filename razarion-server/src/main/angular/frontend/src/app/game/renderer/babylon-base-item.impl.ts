@@ -21,7 +21,7 @@ import {
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {BabylonItemImpl} from "./babylon-item.impl";
 import {BabylonModelService} from "./babylon-model.service";
-import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   private buildingParticleSystem: ParticleSystem | null = null;
@@ -35,7 +35,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private readonly PROGRESS_BAR_NODE_MATERIAL_ID = 54;
   private readonly HEALTH_BAR_NODE_MATERIAL_ID = 55;
 
-  constructor(id: number, private baseItemType: BaseItemType, diplomacy: Diplomacy, rendererService: ThreeJsRendererServiceImpl, babylonModelService: BabylonModelService) {
+  constructor(id: number, private baseItemType: BaseItemType, diplomacy: Diplomacy, rendererService: BabylonRenderServiceAccessImpl, babylonModelService: BabylonModelService) {
     super(id, baseItemType, diplomacy, rendererService, babylonModelService, rendererService.baseItemContainer);
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());

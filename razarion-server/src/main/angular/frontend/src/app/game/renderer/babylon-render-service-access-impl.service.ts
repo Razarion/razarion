@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {
   BabylonBaseItem,
+  BabylonRenderServiceAccess,
   BabylonResourceItem,
   BaseItemPlacer,
   BaseItemPlacerPresenter,
@@ -12,7 +13,6 @@ import {
   TerrainObjectPosition,
   TerrainSlopePosition,
   TerrainTile,
-  ThreeJsRendererServiceAccess,
   ThreeJsTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
 import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
@@ -45,6 +45,7 @@ import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
+import {SelectionFrame} from "./selection-frame";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -60,8 +61,9 @@ export enum RazarionMetadataType {
   TERRAIN_OBJECT,
   EDITOR_SLOPE
 }
+
 @Injectable()
-export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess {
+export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAccess {
   private scene!: Scene;
   private engine!: Engine;
   private camera!: FreeCamera;
@@ -75,6 +77,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   public baseItemContainer!: TransformNode;
   public resourceItemContainer!: TransformNode;
   public projectileMaterial!: SimpleMaterial;
+  private selectionFrame!: SelectionFrame;
 
   constructor(private gwtAngularService: GwtAngularService, private babylonModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -165,6 +168,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       }
     }).observe(this.canvas);
 
+    this.selectionFrame = new SelectionFrame(this.scene);
     this.setupPointerInteraction();
 
     // ----- Render loop -----
@@ -408,6 +412,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       }
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
+          this.selectionFrame.onPointerDown(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
             this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
@@ -415,6 +420,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
           break;
         }
         case PointerEventTypes.POINTERUP: {
+          this.selectionFrame.onPointerUp(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
             this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
@@ -422,6 +428,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
           break;
         }
         case PointerEventTypes.POINTERMOVE: {
+          this.selectionFrame.onPointerMove(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
             this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, (pointerInfo.event.buttons & 1) === 1);
@@ -520,7 +527,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
             return "DiplomacyColor" === block.name;
           });
           if (diplomacyColorNode) {
-            (<InputBlock>diplomacyColorNode).value = ThreeJsRendererServiceImpl.color4Diplomacy(diplomacy);
+            (<InputBlock>diplomacyColorNode).value = BabylonRenderServiceAccessImpl.color4Diplomacy(diplomacy);
           }
           diplomacyCache.set(diplomacy, cachedMaterial);
         }
@@ -554,7 +561,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
   }
 
   public static setRazarionMetadataSimple(node: Node, razarionMetadataType: RazarionMetadataType, id?: number, configId?: number) {
-    ThreeJsRendererServiceImpl.setRazarionMetadata(node, new class implements RazarionMetadata {
+    BabylonRenderServiceAccessImpl.setRazarionMetadata(node, new class implements RazarionMetadata {
       type = razarionMetadataType;
       id = id;
       configId = configId;
@@ -573,7 +580,7 @@ export class ThreeJsRendererServiceImpl implements ThreeJsRendererServiceAccess 
       return node;
     }
     if (node.parent) {
-      return ThreeJsRendererServiceImpl.findRazarionMetadataNode(node.parent);
+      return BabylonRenderServiceAccessImpl.findRazarionMetadataNode(node.parent);
     } else {
       return null;
     }

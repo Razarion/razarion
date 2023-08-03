@@ -55,7 +55,7 @@ import {ImageEditorComponent} from './editor/image-editor/image-editor.component
 import {ImageGalleryItemComponent, ImageTypePipe} from "./editor/image-editor/image-gallery-item.component";
 import {FileUploadModule} from 'primeng/fileupload';
 import {RadToDegreePipe} from "./common/pipes/rad-to-degree-pipe";
-import {ThreeJsRendererServiceImpl} from './game/renderer/three-js-renderer-service.impl';
+import {BabylonRenderServiceAccessImpl} from './game/renderer/babylon-render-service-access-impl.service';
 import {GameMockService} from './game/renderer/game-mock.service';
 import {BabylonModelService} from './game/renderer/babylon-model.service';
 import {CollectionSelectorComponent} from "./editor/property-table/collection-selector.component";
@@ -155,7 +155,7 @@ import {SlopeEditorComponent} from "./editor/terrain-editor/slope-editor.compone
     EditorService,
     DatePipe,
     DecimalPipe,
-    ThreeJsRendererServiceImpl,
+    BabylonRenderServiceAccessImpl,
     ThreeJsWaterRenderService,
     GameMockService,
     BabylonModelService

@@ -41,7 +41,7 @@ import {
 import {HttpClient} from "@angular/common/http";
 import * as Stats from 'stats.js';
 import {GwtInstance} from "../../gwtangular/GwtInstance";
-import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 
 let staticGameConfigJson: any = {};
 
@@ -488,7 +488,7 @@ export class GameMockService {
     }
   }
 
-  mockTerrainTile(threeJsRendererService: ThreeJsRendererServiceImpl) {
+  mockTerrainTile(threeJsRendererService: BabylonRenderServiceAccessImpl) {
     const _this = this;
     this.http.get<TerrainTile[]>("/gwt-mock/terrain-tiles").subscribe((terrainTileJsonArray: any[]) => {
       for (let i in terrainTileJsonArray) {

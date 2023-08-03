@@ -7,8 +7,8 @@ import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitFrontend;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerPresenter;
+import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
-import com.btxtech.uiservice.renderer.ThreeJsRendererServiceAccess;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
 import com.btxtech.uiservice.terrain.InputService;
 import jsinterop.annotations.JsType;
@@ -25,7 +25,7 @@ public abstract class GwtAngularFacade {
     public BaseItemPlacerPresenter baseItemPlacerPresenter; // Initialized by Angular
     public EditorFrontendProvider editorFrontendProvider;  // Initialized by GWT
     public StatusProvider statusProvider; // Initialized by GWT
-    public ThreeJsRendererServiceAccess threeJsRendererServiceAccess; // Initialized by Angular
+    public BabylonRenderServiceAccess threeJsRendererServiceAccess; // Initialized by Angular
     public InputService inputService; // Initialized by GWT
     public TerrainTypeService terrainTypeService; // Initialized by GWT
     public ThreeJsModelPackService threeJsModelPackService; // Initialized by GWT

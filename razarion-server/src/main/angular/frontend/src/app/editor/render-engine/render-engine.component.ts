@@ -1,7 +1,7 @@
 import {EditorPanel} from "../editor-model";
 import {Component, OnDestroy, ViewChild} from "@angular/core";
 import {MessageService} from "primeng/api";
-import {ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-service.impl";
+import {BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
 import {FileUpload} from "primeng/fileupload/fileupload";
 import {environment} from 'src/environments/environment';
 import {GameMockService} from "../../game/renderer/game-mock.service";
@@ -50,7 +50,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
-              private renderEngine: ThreeJsRendererServiceImpl,
+              private renderEngine: BabylonRenderServiceAccessImpl,
               private httpClient: HttpClient,
               gameMockService: GameMockService,
               private babylonModelService: BabylonModelService

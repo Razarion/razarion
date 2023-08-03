@@ -32,9 +32,10 @@ INSERT INTO `BOT_CONFIG_BOT_ITEM` (`id`, `angle`, `count`, `createDirectly`, `id
 	(58, 0, 1, b'1', NULL, b'0', b'0', b'0', NULL, 15, 79, 30),
 	(59, 0, 1, b'1', NULL, b'0', b'1', b'0', NULL, 5, 80, 30),
 	(60, 0, 1, b'1', NULL, b'0', b'1', b'0', NULL, 5, 81, 30),
-	(619, 0, 1, b'1', NULL, b'0', b'0', b'0', 60000, 13, NULL, 226),
-	(620, 0, 1, b'0', NULL, b'0', b'0', b'0', 20000, 15, NULL, 226),
-	(621, 0, 3, b'0', NULL, b'0', b'0', b'0', 10000, 16, NULL, 226);
+	(634, 0, 1, b'1', NULL, b'0', b'0', b'0', 60000, 13, 732, 231),
+	(635, 0, 1, b'0', NULL, b'0', b'0', b'0', 20000, 15, 733, 231),
+	(636, 0, 1, b'0', NULL, b'0', b'0', b'0', 20000, 22, 734, 231),
+	(637, 0, 1, b'0', NULL, b'0', b'0', b'0', 10000, 16, NULL, 231);
 /*!40000 ALTER TABLE `BOT_CONFIG_BOT_ITEM` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

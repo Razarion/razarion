@@ -47,8 +47,6 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class SelectionHandler {
-    private Logger logger = Logger.getLogger(SelectionHandler.class.getName());
-    // private Logger logger = Logger.getLogger(SelectionHandler.class.getName());
     @Inject
     private Event<SelectionEvent> selectionEventEventTrigger;
     @Inject
@@ -83,8 +81,6 @@ public class SelectionHandler {
     }
 
     public void selectRectangle(Rectangle2D rectangle) {
-        logger.severe("rectangle: " + rectangle);
-
         Collection<SyncBaseItemSimpleDto> selectedBaseItems = baseItemUiService.findItemsInRect(rectangle);
         if (!selectedBaseItems.isEmpty()) {
             onBaseItemsSelected(selectedBaseItems);

@@ -17,7 +17,7 @@ public class ThreeJsRendererService {
     private static final Logger LOG = Logger.getLogger(ThreeJsRendererService.class.getName());
 
     @Inject
-    private ThreeJsRendererServiceAccess threeJsRendererServiceAccess;
+    private BabylonRenderServiceAccess threeJsRendererServiceAccess;
 
     public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfig) {
         return threeJsRendererServiceAccess.createTerrainTile(terrainTile, defaultGroundConfig);

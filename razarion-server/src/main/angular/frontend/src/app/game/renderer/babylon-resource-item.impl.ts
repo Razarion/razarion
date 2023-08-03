@@ -1,10 +1,10 @@
 import {BabylonItemImpl} from "./babylon-item.impl";
 import {BabylonResourceItem, Diplomacy, ResourceItemType, Vertex} from "../../gwtangular/GwtAngularFacade";
-import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonModelService} from "./babylon-model.service";
 
 export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonResourceItem {
-  constructor(id: number, private resourceItemType: ResourceItemType, rendererService: ThreeJsRendererServiceImpl, babylonModelService: BabylonModelService) {
+  constructor(id: number, private resourceItemType: ResourceItemType, rendererService: BabylonRenderServiceAccessImpl, babylonModelService: BabylonModelService) {
     super(id, resourceItemType, Diplomacy.RESOURCE, rendererService, babylonModelService, rendererService.resourceItemContainer);
   }
 

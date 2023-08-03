@@ -14,7 +14,7 @@ import {
   TerrainSlopeCorner,
   TerrainSlopePosition
 } from "../../gwtangular/GwtAngularFacade";
-import {RazarionMetadataType, ThreeJsRendererServiceImpl} from "../../game/renderer/three-js-renderer-service.impl";
+import {RazarionMetadataType, BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
 import {
   AxisDragGizmo,
   HighlightLayer,
@@ -61,7 +61,7 @@ export class SlopeEditorComponent implements OnInit {
   constructor(private httpClient: HttpClient,
               public gwtAngularService: GwtAngularService,
               private messageService: MessageService,
-              private renderService: ThreeJsRendererServiceImpl,
+              private renderService: BabylonRenderServiceAccessImpl,
               private editorService: EditorService) {
     const url = `${READ_TERRAIN_SLOPE_POSITIONS}/${gwtAngularService.gwtAngularFacade.gameUiControl.getPlanetConfig().getId()}`;
     this.httpClient.get(url).subscribe({
@@ -218,7 +218,7 @@ export class SlopeEditorComponent implements OnInit {
 
           // Select TerrainSlopePosition
           let pickedMesh = pickingInfo.pickedMesh;
-          let razarionMetadata = ThreeJsRendererServiceImpl.getRazarionMetadata(pickedMesh!);
+          let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(pickedMesh!);
           if (razarionMetadata && razarionMetadata.editorHintSlopePosition) {
             if (razarionMetadata.editorHintSlopePosition === this.selectedTerrainSlopePosition) {
               this.selectNearestCorner(this.selectedTerrainSlopePolygon!, this.selectedTerrainSlopeMesh!.position.y, new Vector2(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z));
@@ -282,8 +282,8 @@ export class SlopeEditorComponent implements OnInit {
     const polygonMesh = polygonMeshBuilder.build();
     polygonMesh.material = new SimpleMaterial("Slope", this.renderService.getScene());
     polygonMesh.position.y = height + this.SELECTION_BOOST;
-    ThreeJsRendererServiceImpl.setRazarionMetadataSimple(polygonMesh, RazarionMetadataType.EDITOR_SLOPE); // TODO set config id
-    let razarionMetadata = ThreeJsRendererServiceImpl.getRazarionMetadata(polygonMesh);
+    BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(polygonMesh, RazarionMetadataType.EDITOR_SLOPE); // TODO set config id
+    let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(polygonMesh);
     razarionMetadata!.editorHintSlopePolygon = polygon;
     razarionMetadata!.editorHintSlopePosition = terrainSlopePosition;
     return polygonMesh;

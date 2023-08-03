@@ -6,7 +6,7 @@ import {EditorModel} from "../editor/editor-model";
 import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
 import {MainCockpitComponent} from "./cockpit/main/main-cockpit.component";
 import {CrashPanelComponent} from "../editor/crash-panel/crash-panel.component";
-import {ThreeJsRendererServiceImpl} from './renderer/three-js-renderer-service.impl';
+import {BabylonRenderServiceAccessImpl} from './renderer/babylon-render-service-access-impl.service';
 import {environment} from 'src/environments/environment';
 import {GameMockService} from './renderer/game-mock.service';
 import {BabylonModelService} from './renderer/babylon-model.service';
@@ -39,7 +39,7 @@ export class GameComponent implements OnInit {
   constructor(private frontendService: FrontendService,
               private router: Router,
     private gwtAngularService: GwtAngularService,
-    private threeJsRendererService: ThreeJsRendererServiceImpl,
+    private threeJsRendererService: BabylonRenderServiceAccessImpl,
     private threeJsModelService: BabylonModelService,
     private gameMockService: GameMockService) {
   }

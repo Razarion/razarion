@@ -10,7 +10,7 @@ export abstract class GwtAngularFacade {
   baseItemPlacerPresenter!: BaseItemPlacerPresenter;
   editorFrontendProvider!: EditorFrontendProvider;
   statusProvider!: StatusProvider;
-  threeJsRendererServiceAccess!: ThreeJsRendererServiceAccess;
+  threeJsRendererServiceAccess!: BabylonRenderServiceAccess;
   inputService!: InputService;
   terrainTypeService!: TerrainTypeService;
   threeJsModelPackService!: ThreeJsModelPackService;
@@ -346,7 +346,7 @@ export interface HarvesterType {
 }
 
 // ---------- Renderer ----------
-export interface ThreeJsRendererServiceAccess {
+export interface BabylonRenderServiceAccess {
   createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
 
   createBabylonBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem;

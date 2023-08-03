@@ -10,7 +10,7 @@ import {
 } from "../../gwtangular/GwtAngularFacade";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {BabylonModelService} from "./babylon-model.service";
-import {ThreeJsRendererServiceImpl} from "./three-js-renderer-service.impl";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
@@ -22,7 +22,7 @@ export class BabylonItemImpl implements BabylonItem {
   private selectActive: boolean = false;
   private hoverActive: boolean = false;
 
-  constructor(private id: number, private itemType: ItemType, protected diplomacy: Diplomacy, protected rendererService: ThreeJsRendererServiceImpl, protected babylonModelService: BabylonModelService, parent: TransformNode) {
+  constructor(private id: number, private itemType: ItemType, protected diplomacy: Diplomacy, protected rendererService: BabylonRenderServiceAccessImpl, protected babylonModelService: BabylonModelService, parent: TransformNode) {
     if (itemType.getThreeJsModelPackConfigId()) {
       this.container = this.babylonModelService.cloneMesh(itemType.getThreeJsModelPackConfigId()!, null);
     } else if (itemType.getMeshContainerId()) {
@@ -119,7 +119,7 @@ export class BabylonItemImpl implements BabylonItem {
         let material = this.rendererService.itemMarkerMaterialCache.get(this.diplomacy);
         if (!material) {
           material = new SimpleMaterial(`Base Item Marker ${this.diplomacy}`, this.rendererService.getScene());
-          material.diffuseColor = ThreeJsRendererServiceImpl.color4Diplomacy(this.diplomacy);
+          material.diffuseColor = BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy);
           this.rendererService.itemMarkerMaterialCache.set(this.diplomacy, material);
         }
         this.markerDisc.material = material;
