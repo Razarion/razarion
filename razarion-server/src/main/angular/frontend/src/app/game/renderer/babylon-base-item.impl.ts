@@ -24,49 +24,21 @@ import {BabylonModelService} from "./babylon-model.service";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
+  private readonly PROGRESS_BAR_NODE_MATERIAL_ID = 54;
+  private readonly HEALTH_BAR_NODE_MATERIAL_ID = 55;
   private buildingParticleSystem: ParticleSystem | null = null;
   private harvestingParticleSystem: ParticleSystem | null = null;
   private progressBar: Mesh | undefined;
   private healthBar: Mesh | undefined;
   private progress: number = 0;
   private readonly utilLayer: UtilityLayerRenderer;
-  private readonly progressBarMaterial: NodeMaterial;
-  private readonly healthBarMaterial: NodeMaterial;
-  private readonly PROGRESS_BAR_NODE_MATERIAL_ID = 54;
-  private readonly HEALTH_BAR_NODE_MATERIAL_ID = 55;
+  private healthInputBlock: InputBlock | undefined;
+  private progressInputBlock: InputBlock | undefined;
 
   constructor(id: number, private baseItemType: BaseItemType, diplomacy: Diplomacy, rendererService: BabylonRenderServiceAccessImpl, babylonModelService: BabylonModelService) {
     super(id, baseItemType, diplomacy, rendererService, babylonModelService, rendererService.baseItemContainer);
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
-    this.progressBarMaterial = this.setupProgressBarMaterial();
-    this.healthBarMaterial = this.setupHealthBarMaterial();
-  }
-
-  private setupProgressBarMaterial(): NodeMaterial {
-    let progressBarMaterial = this.babylonModelService.getNodeMaterial(this.PROGRESS_BAR_NODE_MATERIAL_ID);
-    let progressBlock = progressBarMaterial.getBlockByName("progress");
-    if (progressBlock) {
-      progressBarMaterial.onBindObservable.add((mesh: any) => {
-        (<InputBlock>progressBlock).value = (<any>mesh).progress;
-      });
-    } else {
-      console.warn(`Progress block not found in NodeMaterial ${this.PROGRESS_BAR_NODE_MATERIAL_ID}`)
-    }
-    return progressBarMaterial;
-  }
-
-  private setupHealthBarMaterial(): NodeMaterial {
-    let healthBarMaterial = this.babylonModelService.getNodeMaterial(this.HEALTH_BAR_NODE_MATERIAL_ID);
-    let healthBlock = healthBarMaterial.getBlockByName("health");
-    if (healthBlock) {
-      healthBarMaterial.onBindObservable.add((mesh: any) => {
-        (<InputBlock>healthBlock).value = (<any>mesh).health;
-      });
-    } else {
-      console.warn(`Health block not found in NodeMaterial ${this.HEALTH_BAR_NODE_MATERIAL_ID}`)
-    }
-    return healthBarMaterial;
   }
 
   public static createDummy(id: number): BabylonBaseItem {
@@ -135,6 +107,14 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   dispose() {
     this.disposeBuildingParticleSystem();
     this.disposeHarvestingParticleSystem();
+    if (this.healthBar) {
+      this.healthBar.material!.dispose()
+      this.healthBar = undefined;
+    }
+    if (this.progressBar) {
+      this.progressBar.material!.dispose()
+      this.progressBar = undefined;
+    }
     super.dispose();
   }
 
@@ -147,13 +127,22 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.healthBar.position.y = 0.5 + this.baseItemType.getPhysicalAreaConfig().getRadius() - this.baseItemType.getPhysicalAreaConfig().getRadius() * 0.08;
       this.healthBar.parent = this.getContainer();
       this.healthBar.billboardMode = TransformNode.BILLBOARDMODE_ALL;
-      this.healthBar.material = this.healthBarMaterial;
-      (<any>this.healthBar).health = health;
+      let nodeMaterial = this.babylonModelService.getNodeMaterial(this.HEALTH_BAR_NODE_MATERIAL_ID);
+      this.healthBar.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
+      this.healthInputBlock = <InputBlock>(<NodeMaterial>this.healthBar.material).getBlockByName("health");
+      if (this.healthInputBlock) {
+        this.healthInputBlock.value = health;
+      } else {
+        console.warn(`Health block not found in NodeMaterial ${this.HEALTH_BAR_NODE_MATERIAL_ID}`)
+      }
     } else if (!this.isSelectOrHove() && this.healthBar) {
+      this.healthBar.material!.dispose()
       this.healthBar.dispose()
       this.healthBar = undefined;
     } else if (this.isSelectOrHove() && this.healthBar) {
-      (<any>this.healthBar).health = health;
+      if (this.healthInputBlock) {
+        this.healthInputBlock.value = health;
+      }
     }
   }
 
@@ -164,8 +153,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   setConstructing(progress: number): void {
     this.progress = progress;
     this.handleConstructing();
-    if (this.progressBar) {
-      (<any>this.progressBar).progress = this.progress;
+    if (this.progressInputBlock) {
+      this.progressInputBlock.value = this.progress;
     }
   }
 
@@ -180,10 +169,16 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         this.progressBar.position.y = 0.5 + this.baseItemType.getPhysicalAreaConfig().getRadius();
         this.progressBar.parent = this.getContainer();
         this.progressBar.billboardMode = TransformNode.BILLBOARDMODE_ALL;
-        this.progressBar.material = this.progressBarMaterial;
+        let nodeMaterial = this.babylonModelService.getNodeMaterial(this.PROGRESS_BAR_NODE_MATERIAL_ID);
+        this.progressBar.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
+        this.progressInputBlock = <InputBlock>(<NodeMaterial>this.progressBar.material).getBlockByName("progress");
+        if (!this.progressInputBlock) {
+          console.warn(`Health block not found in NodeMaterial ${this.HEALTH_BAR_NODE_MATERIAL_ID}`)
+        }
       }
     } else {
       if (this.progressBar) {
+        this.progressBar.material!.dispose();
         this.progressBar.dispose();
         this.progressBar = undefined;
       }

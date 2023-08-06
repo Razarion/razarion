@@ -143,20 +143,54 @@ export class GameComponent implements OnInit {
 
             };
 
-            let babylonBaseItem = this.threeJsRendererService.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
-            babylonBaseItem.setPosition(GwtInstance.newVertex(8, 8, 0));
-            babylonBaseItem.setAngle(0);
+            {
+              let babylonBaseItem1 = this.threeJsRendererService.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
+              babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
+              babylonBaseItem1.setAngle(0);
 
-            babylonBaseItem.updatePosition();
-            babylonBaseItem.updateAngle();
+              babylonBaseItem1.updatePosition();
+              babylonBaseItem1.updateAngle();
 
-            babylonBaseItem.select(true);
+              babylonBaseItem1.select(true);
 
-            babylonBaseItem.setHealth(0.5);
+              babylonBaseItem1.setConstructing(0.01);
+              babylonBaseItem1.setHealth(0.99);
 
-            setInterval(() =>  babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
-            setInterval(() =>  babylonBaseItem.setHealth((Date.now() % 10000) / 10000), 200);
+              // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
+              // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
+            }
+            {
+              let babylonBaseItem2 = this.threeJsRendererService.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
+              babylonBaseItem2.setPosition(GwtInstance.newVertex(8, 14, 0));
+              babylonBaseItem2.setAngle(0);
 
+              babylonBaseItem2.updatePosition();
+              babylonBaseItem2.updateAngle();
+
+              babylonBaseItem2.select(true);
+
+              babylonBaseItem2.setConstructing(0.33);
+              babylonBaseItem2.setHealth(0.66);
+
+              setInterval(() => babylonBaseItem2.setConstructing((Date.now() % 5000) / 5000), 500);
+              setInterval(() => babylonBaseItem2.setHealth((Date.now() % 10000) / 10000), 2000);
+            }
+            {
+              let babylonBaseItem3 = this.threeJsRendererService.createBabylonBaseItem(999997, baseItemType, Diplomacy.ENEMY);
+              babylonBaseItem3.setPosition(GwtInstance.newVertex(8, 20, 0));
+              babylonBaseItem3.setAngle(0);
+
+              babylonBaseItem3.updatePosition();
+              babylonBaseItem3.updateAngle();
+
+              babylonBaseItem3.select(true);
+
+              babylonBaseItem3.setConstructing(0.99);
+              babylonBaseItem3.setHealth(0.01);
+
+              // setInterval(() => babylonBaseItem3.setConstructing((Date.now() % 5000) / 5000), 500);
+              // setInterval(() => babylonBaseItem3.setHealth(1.0 - ((Date.now() + 1000) % 10000) / 10000), 2000);
+            }
             // let buildingPosition: NativeVertexDto = new class implements NativeVertexDto {
             //   x = 16;
             //   y = 8;
