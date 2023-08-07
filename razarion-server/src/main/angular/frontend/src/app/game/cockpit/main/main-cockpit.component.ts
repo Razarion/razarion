@@ -9,6 +9,7 @@ import {MainCockpit, RadarState, Rectangle} from "../../../gwtangular/GwtAngular
 })
 export class MainCockpitComponent implements MainCockpit {
   showCockpit: boolean = false;
+  admin: boolean = false;
   editorDialog: boolean = false;
   levelNumber!: number;
   xp!: number;
@@ -23,8 +24,9 @@ export class MainCockpitComponent implements MainCockpit {
   constructor(private zone: NgZone) {
   }
 
-  show(): void {
+  show(admin: boolean): void {
     this.zone.run(() => {
+      this.admin = admin;
       this.showCockpit = true;
     });
   }

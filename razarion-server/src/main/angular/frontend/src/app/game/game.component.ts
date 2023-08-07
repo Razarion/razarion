@@ -60,7 +60,7 @@ export class GameComponent implements OnInit {
           this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
             this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
             this.gameMockService.mockTerrainTile(this.threeJsRendererService);
-            this.mainCockpitComponent.show();
+            this.mainCockpitComponent.show(true);
             this.threeJsRendererService.initMeshContainers(this.gameMockService.createMeshContainers());
             this.threeJsRendererService.setViewFieldCenter(5, 2);
             // this.threeJsRendererService.createProjectile(new class implements Vertex {

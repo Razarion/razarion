@@ -26,7 +26,7 @@ public class MainCockpitService {
     }
 
     public void show(UserContext userContext) {
-        sideCockpit.show();
+        sideCockpit.show(userContext.isAdmin());
         updateLevelAndXp(userContext);
     }
 

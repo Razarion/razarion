@@ -88,7 +88,7 @@ public class WeldUiBaseIntegrationTest {
         getWeldBean(ItemCockpitService.class).init(getWeldBean(TestItemCockpitFrontend.class));
         getWeldBean(MainCockpitService.class).init(new MainCockpit() {
             @Override
-            public void show() {
+            public void show(boolean admin) {
 
             }
 

@@ -23,7 +23,7 @@
   <div class="mb-2" *ngIf="radarState">
     Radar State: {{radarState}}
   </div>
-  <div class="mb-2">
+  <div class="mb-2" *ngIf="admin">
     <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
               (onClick)="this.editorDialog = true"></p-button>
   </div>

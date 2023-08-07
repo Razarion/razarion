@@ -24,7 +24,7 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
   }
 
   displayOwnSingleType(count: number, ownItemCockpit: OwnItemCockpit): void {
-    this.zone.run(() => {
+    setTimeout(()=> { // p-carousel strange behavior with this.zone.run()
       this.showCockpit = true;
       this.ownItemCockpit = ownItemCockpit;
       this.ownMultipleIteCockpits = undefined;

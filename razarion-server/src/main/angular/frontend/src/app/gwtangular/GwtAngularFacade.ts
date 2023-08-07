@@ -480,7 +480,7 @@ export enum RadarState {
 }
 
 export interface MainCockpit {
-  show(): void;
+  show(admin: boolean): void;
 
   hide(): void;
 

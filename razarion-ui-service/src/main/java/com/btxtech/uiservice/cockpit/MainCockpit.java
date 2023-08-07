@@ -10,7 +10,7 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true)
 public interface MainCockpit {
-    void show();
+    void show(boolean admin);
 
     void hide();
 
