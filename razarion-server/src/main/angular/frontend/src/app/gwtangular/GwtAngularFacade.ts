@@ -5,6 +5,7 @@ import {TreeNode} from "primeng/api";
 export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
   gameUiControl!: GameUiControl;
+  angularCursorService!: AngularCursorService;
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
   baseItemPlacerPresenter!: BaseItemPlacerPresenter;
@@ -477,6 +478,24 @@ export enum RadarState {
   NONE,
   NO_POWER,
   WORKING
+}
+
+export enum CursorType {
+  GO = "GO",
+  ATTACK = "ATTACK",
+  COLLECT = "COLLECT",
+  LOAD = "LOAD",
+  UNLOAD = "UNLOAD",
+  FINALIZE_BUILD = "FINALIZE_BUILD",
+  PICKUP = "PICKUP"
+}
+
+export interface AngularCursorService {
+  setDefaultCursor(): void;
+
+  setPointerCursor(): void;
+
+  setCursor(cursorType: CursorType, allowed: boolean): void;
 }
 
 export interface MainCockpit {

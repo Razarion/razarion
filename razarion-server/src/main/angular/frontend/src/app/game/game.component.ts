@@ -1,4 +1,4 @@
-﻿import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+﻿import {Component, ElementRef, HostBinding, OnInit, ViewChild} from '@angular/core';
 import {FrontendService} from "../service/frontend.service";
 import {NavigationStart, Router} from "@angular/router";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
@@ -11,14 +11,17 @@ import {environment} from 'src/environments/environment';
 import {GameMockService} from './renderer/game-mock.service';
 import {BabylonModelService} from './renderer/babylon-model.service';
 import {
+  AngularCursorService,
   BaseItemType,
   BuilderType,
+  CursorType,
   Diplomacy,
   HarvesterType,
   PhysicalAreaConfig,
   WeaponType
 } from "../gwtangular/GwtAngularFacade";
 import {GwtInstance} from "../gwtangular/GwtInstance";
+import {GwtHelper} from "../gwtangular/GwtHelper";
 
 
 @Component({
@@ -35,6 +38,7 @@ export class GameComponent implements OnInit {
   // TODO @ViewChild('loadingCover', {static: true})
   // TODO loadingCover?: OverlayPanel;
   editorModels: EditorModel[] = [];
+  @HostBinding("style.--cursor") cursor: string = '';
 
   constructor(private frontendService: FrontendService,
               private router: Router,
@@ -233,12 +237,12 @@ export class GameComponent implements OnInit {
           });
         });
       });
-    } else {
-      this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
-      this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
-      this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
-      this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.threeJsRendererService.createBaseItemPlacerPresenter();
     }
+    this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
+    this.gwtAngularService.gwtAngularFacade.angularCursorService = this.createAngularCursorService();
+    this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
+    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
+    this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.threeJsRendererService.createBaseItemPlacerPresenter();
 
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game
@@ -325,5 +329,47 @@ export class GameComponent implements OnInit {
     this.editorModels.splice(this.editorModels.indexOf(editorModel), 1);
   }
 
+  private createAngularCursorService(): AngularCursorService {
+    let gameComponent = this;
+    return new class implements AngularCursorService {
+      setCursor(cursorType: CursorType, allowed: boolean): void {
+        cursorType = GwtHelper.gwtIssueStringEnum(cursorType, CursorType);
+        switch (cursorType) {
+          case CursorType.GO:
+            if(allowed) {
+              gameComponent.cursor = "url(\"/assets/cursors/go.png\"), auto"
+            } else {
+              gameComponent.cursor = "url(\"/assets/cursors/go-no.png\"), auto"
+            }
+            break;
+          case CursorType.ATTACK:
+            if(allowed) {
+              gameComponent.cursor = "url(\"/assets/cursors/attack.png\"), auto"
+            } else {
+              gameComponent.cursor = "url(\"/assets/cursors/attack-no.png\"), auto"
+            }
+            break;
+          case CursorType.COLLECT:
+            if(allowed) {
+              gameComponent.cursor = "url(\"/assets/cursors/collect.png\"), auto"
+            } else {
+              gameComponent.cursor = "url(\"/assets/cursors/collect-no.png\"), auto"
+            }
+            break;
+          default:
+            gameComponent.cursor = "default"
+             console.warn(`Unknown cursorType ${cursorType}`)
+        }
+      }
+
+      setDefaultCursor(): void {
+        gameComponent.cursor = "default"
+      }
+
+      setPointerCursor(): void {
+        gameComponent.cursor = "pointer"
+      }
+    }
+  }
 }
 

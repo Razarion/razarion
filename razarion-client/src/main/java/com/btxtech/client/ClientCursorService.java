@@ -1,9 +1,11 @@
 package com.btxtech.client;
 
+import com.btxtech.client.gwtangular.AngularCursorService;
 import com.btxtech.uiservice.mouse.CursorService;
 import com.btxtech.uiservice.mouse.CursorType;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -11,20 +13,38 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class ClientCursorService extends CursorService {
-    // private Logger logger = Logger.getLogger(ClientCursorService.class.getName());
+    private final Logger logger = Logger.getLogger(ClientCursorService.class.getName());
+
+    private AngularCursorService angularCursorService;
+
+    public void init(AngularCursorService angularCursorService) {
+        this.angularCursorService = angularCursorService;
+    }
 
     @Override
     protected void setDefaultCursorInternal() {
-        // TODO gameCanvas.setCursor("default");
+        if (this.angularCursorService != null) {
+            this.angularCursorService.setDefaultCursor();
+        } else {
+            logger.warning("No angularCursorService setDefaultCursor()");
+        }
     }
 
     @Override
     protected void setPointerCursorInternal() {
-        // TODO gameCanvas.setCursor("pointer");
+        if (this.angularCursorService != null) {
+            this.angularCursorService.setPointerCursor();
+        } else {
+            logger.warning("No angularCursorService setPointerCursor()");
+        }
     }
 
     @Override
     protected void setCursorInternal(CursorType cursorType, boolean allowed) {
-        // TODO gameCanvas.setCursor("url('" + StaticResourcePath.getCursorPath(cursorType.getName(allowed)) + "') " + cursorType.getHotSpotX(allowed) + " " + cursorType.getHotSpotY(allowed) + ", " + cursorType.getAlternativeDefault(allowed));
+        if (this.angularCursorService != null) {
+            this.angularCursorService.setCursor(cursorType, allowed);
+        } else {
+            logger.warning("No angularCursorService setCursor(" + cursorType + ", " + allowed + ")");
+        }
     }
 }

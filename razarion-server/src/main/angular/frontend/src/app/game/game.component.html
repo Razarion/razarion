@@ -1,6 +1,6 @@
 ﻿<div class="flex card-container overflow-hidden align-items-stretch" [style]="{height:'100%'}">
   <div #canvasDiv [style]="{width: '100%', height:'100%'}">
-    <canvas #canvas [style]="{width: '100%', height:'100%'}"></canvas>
+    <canvas #canvas class="canvas"></canvas>
   </div>
   <div class="flex-none flex align-items-center justify-content-center" *ngFor="let editorModel of editorModels">
     <app-editor-panel [editorModel]="editorModel" [gameComponent]="getGameComponent()"

@@ -1,12 +1,33 @@
-﻿.info {
+﻿.main {
+  display: table;
+  height: 100%;
+  width: 100%;
+  background: url('/assets/BackGround.jpg');
+  margin: 0;
+}
+
+.middle {
+  display: table-cell;
+  vertical-align: middle;
+  background: url('/assets/HomePage.jpg') center no-repeat;
+}
+
+.middleCenter {
+  width: 1000px;
+  height: 400px;
+  margin: auto;
+  position: relative;
+}
+
+.info {
   left: -25px;
   top: -45px;
   width: 290px;
-  height: 370px;
+  height: 405px;
   position: absolute;
   border: 8px solid transparent;
-  background-image: url('/images/DialogBackground.png');
-  border-image-source: url('/images/Border.png');
+  background-image: url('/assets/DialogBackground.png');
+  border-image-source: url('/assets/Border.png');
   border-image-slice: 8;
   border-image-repeat: repeat;
   box-shadow: 3px 3px 15px 1px #000;
@@ -44,8 +65,8 @@
   top: 370px;
   position: absolute;
   border: 8px solid transparent;
-  background-image: url('/images/DialogBackground.png');
-  border-image-source: url('/images/Border.png');
+  background-image: url('/assets/DialogBackground.png');
+  border-image-source: url('/assets/Border.png');
   border-image-slice: 8;
   border-image-repeat: repeat;
   box-shadow: 3px 3px 15px 1px #000;
