@@ -18,20 +18,20 @@ import java.util.function.Function;
 public class MainCockpitService {
     @Inject
     private LevelService levelService;
-    private MainCockpit sideCockpit;
+    private MainCockpit mainCockpit;
     private Function<Integer, Rectangle> inventoryPositionProvider;
 
     public void init(MainCockpit sideCockpit) {
-        this.sideCockpit = sideCockpit;
+        this.mainCockpit = sideCockpit;
     }
 
     public void show(UserContext userContext) {
-        sideCockpit.show(userContext.isAdmin());
+        mainCockpit.show(userContext.isAdmin());
         updateLevelAndXp(userContext);
     }
 
     public void hide() {
-        sideCockpit.hide();
+        mainCockpit.hide();
     }
 
     public void updateLevelAndXp(UserContext userContext) {
@@ -39,20 +39,20 @@ public class MainCockpitService {
             return;
         }
         LevelConfig levelConfig = levelService.getLevel(userContext.getLevelId());
-        sideCockpit.displayXps(userContext.getXp(), levelConfig.getXp2LevelUp());
-        sideCockpit.displayLevel(levelConfig.getNumber());
+        mainCockpit.displayXps(userContext.getXp(), levelConfig.getXp2LevelUp());
+        mainCockpit.displayLevel(levelConfig.getNumber());
     }
 
     public void updateResource(int resource) {
-        sideCockpit.displayResources(resource);
+        mainCockpit.displayResources(resource);
     }
 
     public Rectangle getInventoryButtonLocation() {
-        return sideCockpit.getInventoryDialogButtonLocation();
+        return mainCockpit.getInventoryDialogButtonLocation();
     }
 
     public Rectangle getScrollHomeButtonLocation() {
-        return sideCockpit.getScrollHomeButtonLocation();
+        return mainCockpit.getScrollHomeButtonLocation();
     }
 
     public Rectangle getInventoryUseButtonLocation(int inventoryItemId) {
@@ -71,14 +71,14 @@ public class MainCockpitService {
     }
 
     public void onItemCountChanged(int itemCount, int houseSpace) {
-        sideCockpit.displayItemCount(itemCount, houseSpace);
+        mainCockpit.displayItemCount(itemCount, houseSpace);
     }
 
     public void onEnergyChanged(int consuming, int generating) {
-        sideCockpit.displayEnergy(consuming, generating);
+        mainCockpit.displayEnergy(consuming, generating);
     }
 
     public void showRadar(GameUiControl.RadarState radarState) {
-        sideCockpit.showRadar(radarState);
+        mainCockpit.showRadar(radarState);
     }
 }

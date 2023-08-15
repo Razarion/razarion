@@ -131,10 +131,13 @@ public class ServerLevelQuestService implements QuestListener {
             userService.persistXp(userId, newXp);
             clientSystemConnectionService.onXpChanged(userId, newXp);
         }
-        // Activate next quest
-        QuestConfig newQuest = null;
         userService.addCompletedServerQuest(userId, questConfig);
-        newQuest = userService.getAndSaveNewQuest(userId);
+        // Activate next quest
+        activateNextPossibleQuest(userId);
+    }
+
+    public void activateNextPossibleQuest(int userId) {
+        QuestConfig newQuest = userService.getAndSaveNewQuest(userId);
         if (newQuest != null) {
             historyPersistence.get().onQuest(userId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
             clientSystemConnectionService.onQuestActivated(userId, newQuest);

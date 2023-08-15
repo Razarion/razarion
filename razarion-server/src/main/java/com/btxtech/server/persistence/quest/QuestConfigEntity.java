@@ -53,18 +53,18 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
     }
 
     public QuestConfig toQuestConfig(Locale locale) {
-        QuestConfig questConfig = new QuestConfig().setId(id).setInternalName(internalName).setXp(xp).setRazarion(razarion).setCrystal(crystal);
+        QuestConfig questConfig = new QuestConfig().id(id).internalName(internalName).xp(xp).razarion(razarion).crystal(crystal);
         if (title != null) {
-            questConfig.setTitle(title.getString(locale));
+            questConfig.title(title.getString(locale));
         }
         if (description != null) {
-            questConfig.setDescription(description.getString(locale));
+            questConfig.description(description.getString(locale));
         }
         if (passedMessage != null) {
-            questConfig.setPassedMessage(passedMessage.getString(locale));
+            questConfig.passedMessage(passedMessage.getString(locale));
         }
         if (conditionConfigEntity != null) {
-            questConfig.setConditionConfig(conditionConfigEntity.toQuestConfig()).setHidePassedDialog(hidePassedDialog);
+            questConfig.setConditionConfig(conditionConfigEntity.toQuestConfig()).hidePassedDialog(hidePassedDialog);
         }
         return questConfig;
     }

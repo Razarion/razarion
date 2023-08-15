@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import jsinterop.annotations.JsType;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
@@ -17,6 +18,7 @@ import java.util.List;
  * Created by Beat
  * 15.07.2016.
  */
+@JsType
 @Singleton
 public class ItemTypeService {
     private final HashMap<Integer, BaseItemType> baseItemTypes = new HashMap<>();

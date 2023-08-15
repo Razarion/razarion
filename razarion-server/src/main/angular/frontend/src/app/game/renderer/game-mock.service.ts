@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {
   Alarm,
+  BaseItemType, BuilderType,
   DecimalPosition,
   DrivewayConfig,
   EditorFrontendProvider,
@@ -8,15 +9,17 @@ import {
   GenericEditorFrontendProvider,
   GroundConfig,
   GroundSplattingConfig,
-  GroundTerrainTile,
+  GroundTerrainTile, HarvesterType, I18nString,
   Index,
   InputService,
+  ItemTypeService,
   Mesh,
   MeshContainer,
   ObjectNameId,
   ParticleSystemConfig,
-  PerfmonStatistic,
+  PerfmonStatistic, PhysicalAreaConfig,
   PlanetConfig,
+  ResourceItemType,
   ShapeTransform,
   SlopeConfig,
   SlopeGeometry,
@@ -36,7 +39,7 @@ import {
   ThreeJsModelPackService,
   ThreeJsTerrainTile,
   Vertex,
-  WaterConfig
+  WaterConfig, WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
 import {HttpClient} from "@angular/common/http";
 import * as Stats from 'stats.js';
@@ -449,6 +452,90 @@ export class GameMockService {
       }
     }
   };
+
+  mockItemTypeService(): ItemTypeService {
+    return new class implements ItemTypeService {
+      getBaseItemType(baseItemTypeId: number): BaseItemType {
+        return new class implements BaseItemType {
+          getBuilderType(): BuilderType | null {
+            return null;
+          }
+
+          getHarvesterType(): HarvesterType | null {
+            return null;
+          }
+
+          getI18nName(): I18nString {
+            return new class implements I18nString {
+              getString(language: string): string {
+                return "I18nString";
+              }
+            };
+          }
+
+          getId(): number {
+            return 1;
+          }
+
+          getInternalName(): string {
+            return "InternalName";
+          }
+
+          getMeshContainerId(): number | null {
+            return null;
+          }
+
+          getPhysicalAreaConfig(): PhysicalAreaConfig {
+            return new class implements PhysicalAreaConfig {
+              getRadius(): number {
+                return 3;
+              }
+            };
+          }
+
+          getThreeJsModelPackConfigId(): number | null {
+            return null;
+          }
+
+          getWeaponType(): WeaponType| null {
+            return null;
+          }
+        }
+      }
+
+      getResourceItemType(resourceItemTypeId: number): ResourceItemType {
+        return new class implements ResourceItemType {
+          getI18nName(): I18nString {
+            return new class implements I18nString {
+              getString(language: string): string {
+                return "I18nString";
+              }
+            };
+          }
+
+          getId(): number {
+            return 0;
+          }
+
+          getInternalName(): string {
+            return "";
+          }
+
+          getMeshContainerId(): number | null {
+            return null;
+          }
+
+          getRadius(): number {
+            return 0;
+          }
+
+          getThreeJsModelPackConfigId(): number | null {
+            return null;
+          }
+        }
+      }
+    }
+  }
 
   mockThreeJsModelPackService: ThreeJsModelPackService = new class implements ThreeJsModelPackService {
     getThreeJsModelPackConfig(id: number): ThreeJsModelPackConfig {

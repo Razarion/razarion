@@ -2,11 +2,14 @@ package com.btxtech.client.gwtangular;
 
 import com.btxtech.client.ClientCursorService;
 import com.btxtech.client.editor.EditorFrontendProvider;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
+import com.btxtech.uiservice.cockpit.QuestCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
@@ -31,6 +34,8 @@ public class GwtAngularService {
     @Inject
     private ItemCockpitService itemCockpitService;
     @Inject
+    private QuestCockpitService questCockpitService;
+    @Inject
     private ClientCursorService clientCursorService;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
@@ -41,6 +46,8 @@ public class GwtAngularService {
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
+    private ItemTypeService itemTypeService;
+    @Inject
     private ThreeJsModelPackService threeJsModelPackService;
     @Inject
     private AssetService assetService;
@@ -49,14 +56,17 @@ public class GwtAngularService {
     public void init() {
         gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMapOfAny>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
         gwtAngularFacade.gameUiControl = gameUiControl;
+        gwtAngularFacade.language = I18nHelper.getLanguage();
         gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
         gwtAngularFacade.statusProvider = statusProvider;
         gwtAngularFacade.inputService = inputService;
         gwtAngularFacade.terrainTypeService = terrainTypeService;
+        gwtAngularFacade.itemTypeService = itemTypeService;
         gwtAngularFacade.threeJsModelPackService = threeJsModelPackService;
         gwtAngularFacade.assetService = assetService;
         cockpitService.init(gwtAngularFacade.mainCockpit);
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
+        questCockpitService.init(gwtAngularFacade.questCockpit);
         clientCursorService.init(gwtAngularFacade.angularCursorService);
         baseItemPlacerService.init(gwtAngularFacade.baseItemPlacerPresenter);
     }

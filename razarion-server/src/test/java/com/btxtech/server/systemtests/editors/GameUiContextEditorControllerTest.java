@@ -294,7 +294,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
     }
 
     private void setResources(SceneConfig sceneConfig) {
-        sceneConfig.setInternalName("setup: add resources");
+        sceneConfig.internalName("setup: add resources");
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
         // Outpost
         resourceItemTypePositions.add(new ResourceItemPosition().setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setPosition(new DecimalPosition(212, 144)).setRotationZ(Math.toRadians(0)));
@@ -304,7 +304,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         resourceItemTypePositions.add(new ResourceItemPosition().setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setPosition(new DecimalPosition(108, 254)).setRotationZ(Math.toRadians(80)));
         resourceItemTypePositions.add(new ResourceItemPosition().setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setPosition(new DecimalPosition(120, 252)).setRotationZ(Math.toRadians(160)));
 
-        sceneConfig.setResourceItemTypePositions(resourceItemTypePositions);
+        sceneConfig.resourceItemTypePositions(resourceItemTypePositions);
     }
 
     private void setNpcBot(SceneConfig sceneConfig) {
@@ -321,7 +321,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         botConfigs.add(new BotConfig().auxiliaryId(NPC_BOT_OUTPOST_AUX).actionDelay(3000).botEnragementStateConfigs(botEnragementStateConfigs).name("Roger").npc(true));
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
         botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotAuxiliaryId(NPC_BOT_OUTPOST_AUX).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setResourceSelection(new PlaceConfig().position(new DecimalPosition(212, 144))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID));
-        sceneConfig.setInternalName("setup: add NPC bot").setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs);
+        sceneConfig.internalName("setup: add NPC bot").botConfigs(botConfigs).botHarvestCommandConfigs(botHarvestCommandConfigs);
     }
 
     private void setEnemyBot(SceneConfig sceneConfig) {
@@ -343,12 +343,12 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
 
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().auxiliaryId(ENEMY_BOT_AUX).actionDelay(3000).botEnragementStateConfigs(botEnragementStateConfigs).name("Razar Industries").npc(false));
-        sceneConfig.setInternalName("setup: add enemy bot").setBotConfigs(botConfigs).setViewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(270, 275)).cameraLocked(true).bottomWidth(120.0));
+        sceneConfig.internalName("setup: add enemy bot").botConfigs(botConfigs).viewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(270, 275)).cameraLocked(true).bottomWidth(120.0));
     }
 
     private void setScrollOverTerrain(SceneConfig sceneConfig) {
-        sceneConfig.setInternalName("script: scroll over terrain").setIntroText("Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.");
-        sceneConfig.setViewFieldConfig(new ViewFieldConfig().fromPosition(new DecimalPosition(270, 275)).toPosition(new DecimalPosition(116, 84)).speed(50.0).cameraLocked(true).bottomWidth(120.0));
+        sceneConfig.internalName("script: scroll over terrain").introText("Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.");
+        sceneConfig.viewFieldConfig(new ViewFieldConfig().fromPosition(new DecimalPosition(270, 275)).toPosition(new DecimalPosition(116, 84)).speed(50.0).cameraLocked(true).bottomWidth(120.0));
     }
 
     private void setBotSpawnScene(SceneConfig sceneConfigs) {
@@ -358,7 +358,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         botItems.add(new BotItemConfig().baseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(116, 100))).noRebuild(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().auxiliaryId(NPC_BOT_INSTRUCTOR_AUX).actionDelay(3000).botEnragementStateConfigs(botEnragementStateConfigs).name("Kenny").npc(true));
-        sceneConfigs.setInternalName("script: npc bot spawn").setBotConfigs(botConfigs).setIntroText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen.").setDuration(3000);
+        sceneConfigs.internalName("script: npc bot spawn").botConfigs(botConfigs).introText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen.").duration(3000);
     }
 
     private void setUserSpawnScene(SceneConfig sceneConfigs) {
@@ -372,14 +372,14 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(135, 85));
 
-        sceneConfigs.setInternalName("user: spawn 1").setGameTipConfig(gameTipConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(conditionConfig).setXp(1).setPassedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quests geben Erfahrungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten Level. Im oberen linken Bereich siehst du deine Erfahrungspunkte."));
+        sceneConfigs.internalName("user: spawn 1").gameTipConfig(gameTipConfig).wait4QuestPassedDialog(true).startPointPlacerConfig(baseItemPlacerConfig).questConfig(new QuestConfig().title("Platzieren").description("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(conditionConfig).xp(1).passedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quests geben Erfahrungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten Level. Im oberen linken Bereich siehst du deine Erfahrungspunkte."));
     }
 
     private void setBotMoveScene(SceneConfig sceneConfig) {
         ViewFieldConfig viewFieldConfig = new ViewFieldConfig().toPosition(new DecimalPosition(205, 102)).speed(50.0).cameraLocked(true);
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotAuxiliaryId(NPC_BOT_INSTRUCTOR_AUX).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setTargetPosition(new DecimalPosition(188, 90)));
-        sceneConfig.setInternalName("script: npc bot move").setViewFieldConfig(viewFieldConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten");
+        sceneConfig.internalName("script: npc bot move").viewFieldConfig(viewFieldConfig).botMoveCommandConfigs(botMoveCommandConfigs).introText("Folge mir zum Vorposten");
     }
 
     private void setUserMoveScene(SceneConfig sceneConfig) {
@@ -393,21 +393,21 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER_ID);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(180, 108));
 
-        sceneConfig.setInternalName("user: move").setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true);
+        sceneConfig.internalName("user: move").questConfig(new QuestConfig().title("Fahre zu Vorposten").description("Folge Kenny und Fahre zum Vorposten. Bewege deine Einheit zum markierten Bereich").xp(1).setConditionConfig(conditionConfig)).gameTipConfig(gameTipConfig).wait4LevelUpDialog(true);
     }
 
     private void setNpcHarvestAttack(SceneConfig sceneConfig) {
-        sceneConfig.setInternalName("script: bot harvest attack");
-        sceneConfig.setViewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(212, 144)).speed(50.0).cameraLocked(true));
+        sceneConfig.internalName("script: bot harvest attack");
+        sceneConfig.viewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(212, 144)).speed(50.0).cameraLocked(true));
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setTargetSelection(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(190, 124, 40, 40))));
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setTargetSelection(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(190, 124, 40, 40))));
-        sceneConfig.setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(7000).setIntroText("Hilfe wir werden angegriffen");
+        sceneConfig.botAttackCommandConfigs(botAttackCommandConfigs).duration(7000).introText("Hilfe wir werden angegriffen");
     }
 
     private void setFindEnemyBase(SceneConfig sceneConfig) {
         // Scroll Quest
-        ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setXp(1).setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(250, 290, 10, 10)).setXp(1).setPassedMessage("Gratuliere, du hast die gegnerische Basis gefunden");
+        ScrollUiQuest scrollUiQuest = new ScrollUiQuest().xp(1).title("Finde Gegenerbasis").description("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(250, 290, 10, 10)).xp(1).passedMessage("Gratuliere, du hast die gegnerische Basis gefunden");
         // div
         ViewFieldConfig viewFieldConfig = new ViewFieldConfig().cameraLocked(false);
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
@@ -417,7 +417,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         gameTipConfig.setTip(GameTipConfig.Tip.SCROLL);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(270, 310));
 
-        sceneConfig.setInternalName("user: find enemy base").setGameTipConfig(gameTipConfig).setViewFieldConfig(viewFieldConfig).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true).setBotHarvestCommandConfigs(botHarvestCommandConfigs);
+        sceneConfig.internalName("user: find enemy base").gameTipConfig(gameTipConfig).viewFieldConfig(viewFieldConfig).scrollUiQuest(scrollUiQuest).wait4QuestPassedDialog(true).botHarvestCommandConfigs(botHarvestCommandConfigs);
     }
 
     private void setPickBoxTask(SceneConfig sceneConfig) {
@@ -425,14 +425,14 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         List<BoxItemPosition> boxItemPositions = new ArrayList<>();
         boxItemPositions.add(new BoxItemPosition().setBoxItemTypeId(BOX_ITEM_TYPE_ID).setPosition(new DecimalPosition(180, 120)));
         // Pick box quest
-        QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Nimm die Box").setDescription("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
+        QuestConfig questConfig = new QuestConfig().xp(1).title("Nimm die Box").description("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.PICK_BOX);
         gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER_ID);
         gameTipConfig.setBoxItemTypeId(BOX_ITEM_TYPE_ID);
 
-        sceneConfig.setInternalName("user: pick box").setGameTipConfig(gameTipConfig).setBoxItemPositions(boxItemPositions).setQuestConfig(questConfig).setWait4QuestPassedDialog(true);
+        sceneConfig.internalName("user: pick box").gameTipConfig(gameTipConfig).boxItemPositions(boxItemPositions).questConfig(questConfig).wait4QuestPassedDialog(true);
     }
 
     private void setBoxSpawnTask(SceneConfig sceneConfig) {
@@ -447,21 +447,21 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         gameTipConfig.setTip(GameTipConfig.Tip.SPAN_INVENTORY_ITEM);
         gameTipConfig.setInventoryItemId(INVENTORY_ITEM_1_ID);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(216, 125));
-        sceneConfig.setInternalName("user: box spawn").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setXp(1).setTitle("Benutze Inventar").setDescription("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true).setBotMoveCommandConfigs(botMoveCommandConfigs);
+        sceneConfig.internalName("user: box spawn").gameTipConfig(gameTipConfig).questConfig(new QuestConfig().xp(1).title("Benutze Inventar").description("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).wait4QuestPassedDialog(true).botMoveCommandConfigs(botMoveCommandConfigs);
     }
 
     private void setAttackTask(SceneConfig sceneConfig) {
         // Attack quest
         Map<Integer, Integer> attackItemTypeCount = new HashMap<>();
         attackItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER_ID, 1);
-        QuestConfig questConfig = new QuestConfig().setXp(10).setTitle("Zerstöre die Abbaufahrzeuge").setDescription("Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(attackItemTypeCount)));
+        QuestConfig questConfig = new QuestConfig().xp(10).title("Zerstöre die Abbaufahrzeuge").description("Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(attackItemTypeCount)));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.ATTACK);
         gameTipConfig.setActor(BASE_ITEM_TYPE_ATTACKER_ID);
         gameTipConfig.setPlaceConfig(new PlaceConfig().polygon2D(new Rectangle2D(194, 133, 50, 50).toPolygon()));
 
-        sceneConfig.setInternalName("user: kill bot harvester").setQuestConfig(questConfig).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true);
+        sceneConfig.internalName("user: kill bot harvester").questConfig(questConfig).gameTipConfig(gameTipConfig).wait4LevelUpDialog(true);
     }
 
     private void setEnemyKillTask(SceneConfig sceneConfig) {
@@ -471,13 +471,13 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         // Kill human command
         List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
         botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setSpawnPoint(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(213, 209, 80, 70))));
-        sceneConfig.setInternalName("script: enemy bot destroy user").setBotKillHumanCommandConfigs(botKillHumanCommandConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setIntroText("Hilfe, Razar Industries greift uns an").setDuration(4000);
+        sceneConfig.internalName("script: enemy bot destroy user").botKillHumanCommandConfigs(botKillHumanCommandConfigs).botKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).introText("Hilfe, Razar Industries greift uns an").duration(4000);
     }
 
     private void setNpcEscapeTask(SceneConfig sceneConfig) {
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotAuxiliaryId(NPC_BOT_INSTRUCTOR_AUX).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setTargetPosition(new DecimalPosition(48, 110)));
-        sceneConfig.setInternalName("script: escape npc bot").setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Baue dich neu auf und zerstöre Razar Industries.").setDuration(3000);
+        sceneConfig.internalName("script: escape npc bot").botMoveCommandConfigs(botMoveCommandConfigs).introText("Baue dich neu auf und zerstöre Razar Industries.").duration(3000);
     }
 
     private void setUserSpawnScene2(SceneConfig sceneConfig) {
@@ -503,7 +503,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
         killBotCommandConfigs.add(new KillBotCommandConfig().setBotAuxiliaryId(NPC_BOT_INSTRUCTOR_AUX));
         // Build factory Quest
-        sceneConfig.setInternalName("user: spawn 2").setGameTipConfig(gameTipConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Basis").setDescription("Platziere deinen Bulldozer und baue eine Basis auf um Razarion Industries zu besiegen.").setHidePassedDialog(true).setConditionConfig(conditionConfig).setXp(0)).setKillBotCommandConfigs(killBotCommandConfigs).setBotConfigs(botConfigs);
+        sceneConfig.internalName("user: spawn 2").gameTipConfig(gameTipConfig).startPointPlacerConfig(baseItemPlacerConfig).questConfig(new QuestConfig().title("Baue eine Basis").description("Platziere deinen Bulldozer und baue eine Basis auf um Razarion Industries zu besiegen.").hidePassedDialog(true).setConditionConfig(conditionConfig).xp(0)).killBotCommandConfigs(killBotCommandConfigs).botConfigs(botConfigs);
     }
 
     private void setBuildFactoryTask(SceneConfig sceneConfig) {
@@ -518,7 +518,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_FACTORY_ID);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(112, 285));
 
-        sceneConfig.setInternalName("user: build factory").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Baue eine Fabrik mit deinem Bulldozer").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true);
+        sceneConfig.internalName("user: build factory").gameTipConfig(gameTipConfig).questConfig(new QuestConfig().title("Baue eine Fabrik").description("Baue eine Fabrik mit deinem Bulldozer").setConditionConfig(conditionConfig).xp(10)).wait4QuestPassedDialog(true);
     }
 
     private void setFactorizeHarvesterTask(SceneConfig sceneConfig) {
@@ -535,7 +535,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY_ID);
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID);
 
-        sceneConfig.setInternalName("user: fabricate harvester").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs);
+        sceneConfig.internalName("user: fabricate harvester").gameTipConfig(gameTipConfig).questConfig(new QuestConfig().title("Baue ein Harvester").description("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig).xp(10)).wait4QuestPassedDialog(true).killBotCommandConfigs(killBotCommandConfigs);
     }
 
     private void setHarvestTask(SceneConfig sceneConfig) {
@@ -547,7 +547,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         gameTipConfig.setActor(BASE_ITEM_TYPE_HARVESTER_ID);
         gameTipConfig.setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID);
         gameTipConfig.setPlaceConfig(new PlaceConfig().position(new DecimalPosition(108, 254)));
-        sceneConfig.setInternalName("user: harvest").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).setXp(10)).setWait4LevelUpDialog(true);
+        sceneConfig.internalName("user: harvest").gameTipConfig(gameTipConfig).questConfig(new QuestConfig().title("Sammle Razarion").description("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).xp(10)).wait4LevelUpDialog(true);
     }
 
     private void setBuildViperTask(SceneConfig sceneConfig) {
@@ -560,14 +560,14 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY_ID);
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID);
 
-        sceneConfig.setInternalName("user: build viper 1").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue ein Viper in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true);
+        sceneConfig.internalName("user: build viper 1").gameTipConfig(gameTipConfig).questConfig(new QuestConfig().title("Bauen").description("Baue ein Viper in deiner Fabrik").setConditionConfig(conditionConfig).xp(10)).wait4QuestPassedDialog(true);
     }
 
     private void setNpcAttackTowerCommand(SceneConfig sceneConfig) {
         // Attack command
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotAuxiliaryId(NPC_BOT_OUTPOST_2_AUX).setTargetItemTypeId(BASE_ITEM_TYPE_TOWER_ID).setTargetSelection(new PlaceConfig().position(new DecimalPosition(190, 242))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID));
-        sceneConfig.setInternalName("script: npc bot attacks tower").setIntroText("Komm, greiffen wir an!").setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(5000).setViewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(190, 242)).speed(50.0));
+        sceneConfig.internalName("script: npc bot attacks tower").introText("Komm, greiffen wir an!").botAttackCommandConfigs(botAttackCommandConfigs).duration(5000).viewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(190, 242)).speed(50.0));
     }
 
     private void setBuildViperTask2(SceneConfig sceneConfig) {
@@ -581,7 +581,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY_ID);
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID);
 
-        sceneConfig.setInternalName("user: build viper 2").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue zwei Vipers in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true);
+        sceneConfig.internalName("user: build viper 2").gameTipConfig(gameTipConfig).questConfig(new QuestConfig().title("Bauen").description("Baue zwei Vipers in deiner Fabrik").setConditionConfig(conditionConfig).xp(10)).wait4QuestPassedDialog(true);
     }
 
     private void setKillTower(SceneConfig sceneConfig) {
@@ -594,26 +594,26 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         gameTipConfig.setActor(BASE_ITEM_TYPE_ATTACKER_ID);
         gameTipConfig.setPlaceConfig(new PlaceConfig().position(new DecimalPosition(190, 242)));
 
-        sceneConfig.setInternalName("user: kill tower").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Zerstöre Turm").setDescription("Nimm deine 3 Vipers und zerstöre den Turm").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true);
+        sceneConfig.internalName("user: kill tower").gameTipConfig(gameTipConfig).questConfig(new QuestConfig().title("Zerstöre Turm").description("Nimm deine 3 Vipers und zerstöre den Turm").setConditionConfig(conditionConfig).xp(10)).wait4QuestPassedDialog(true);
     }
 
 
     private void addMiscellaneous(List<SceneConfig> sceneConfigs) {
-        sceneConfigs.add(new SceneConfig().setInternalName("script: fade out"));
+        sceneConfigs.add(new SceneConfig().internalName("script: fade out"));
 
-        SceneConfig sceneConfig = new SceneConfig().setInternalName("script: scroll to user").setIntroText("Fahre deine Einheit zum Vorposten");
-        sceneConfig.setViewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(160, 100)).speed(50.0).cameraLocked(true));
+        SceneConfig sceneConfig = new SceneConfig().internalName("script: scroll to user").introText("Fahre deine Einheit zum Vorposten");
+        sceneConfig.viewFieldConfig(new ViewFieldConfig().toPosition(new DecimalPosition(160, 100)).speed(50.0).cameraLocked(true));
         sceneConfigs.add(sceneConfig);
 
-        sceneConfigs.add(new SceneConfig().setInternalName("setWaitForBaseLostDialog").setWaitForBaseLostDialog(true));
-        sceneConfigs.add(new SceneConfig().setInternalName("setWaitForBaseCreated").setWaitForBaseCreated(true));
-        sceneConfigs.add(new SceneConfig().setInternalName("setWait4LevelUpDialog").setWait4LevelUpDialog(true));
-        sceneConfigs.add(new SceneConfig().setInternalName("setWait4QuestPassedDialog").setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().internalName("setWaitForBaseLostDialog").waitForBaseLostDialog(true));
+        sceneConfigs.add(new SceneConfig().internalName("setWaitForBaseCreated").waitForBaseCreated(true));
+        sceneConfigs.add(new SceneConfig().internalName("setWait4LevelUpDialog").wait4LevelUpDialog(true));
+        sceneConfigs.add(new SceneConfig().internalName("setWait4QuestPassedDialog").wait4QuestPassedDialog(true));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("script: explain harvest").setIntroText("Du brauchst viel Razarion um eine Armee zu bauen").setDuration(3000));
+        sceneConfigs.add(new SceneConfig().internalName("script: explain harvest").introText("Du brauchst viel Razarion um eine Armee zu bauen").duration(3000));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("script: npc too weak").setIntroText("Der Turm ist zu stark, wir brauchen eine grössere Armee").setDuration(2000));
+        sceneConfigs.add(new SceneConfig().internalName("script: npc too weak").introText("Der Turm ist zu stark, wir brauchen eine grössere Armee").duration(2000));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: kill bot").setQuestConfig(new QuestConfig().setXp(20).setTitle("Kill Razar Industries").setDescription("Vertreibe Razar Industries von diesem Planeten").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BASE_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)))).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().internalName("user: kill bot").questConfig(new QuestConfig().xp(20).title("Kill Razar Industries").description("Vertreibe Razar Industries von diesem Planeten").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BASE_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)))).wait4QuestPassedDialog(true));
     }
 }

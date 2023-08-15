@@ -19,6 +19,12 @@
   <item-cockpit #itemCockpitContainer></item-cockpit>
 </p-sidebar>
 
+<p-sidebar [appendTo]="canvasDiv" [visible]="questCockpitContainer.showCockpit" [modal]="false" [showCloseIcon]="false"
+           position="right"
+           [style]="{height:'auto', width:'auto', position: 'absolute'}">
+    <quest-cockpit #questCockpitContainer></quest-cockpit>
+</p-sidebar>
+
 <p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog" (onShow)="editorDialogComponent.onShow()">
   <editor-dialog #editorDialogComponent [mainCockpitComponent]="mainCockpit"
                  [gameComponent]="getGameComponent()"></editor-dialog>

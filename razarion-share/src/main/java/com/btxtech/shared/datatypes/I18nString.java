@@ -1,6 +1,9 @@
 package com.btxtech.shared.datatypes;
 
 
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +12,7 @@ import java.util.Map;
  * Date: 13.01.13
  * Time: 13:14
  */
+@JsType
 public class I18nString {
     public static final String DEFAULT = "DEFAULT"; // Errai Jackson JSON marshaller can not handle enum as Map keys
     public static final String DE = "DE"; // Errai Jackson JSON marshaller can not handle enum as Map keys
@@ -31,9 +35,11 @@ public class I18nString {
     /**
      * Used by GWT
      */
+    @JsIgnore
     public I18nString() {
     }
 
+    @JsIgnore
     public I18nString(Map<String, String> localizedStrings) {
         this.localizedStrings = localizedStrings;
     }

@@ -1,0 +1,12 @@
+<div class="flex flex-column">
+  <div *ngIf="questDescriptionConfig?.getTitle()" class="flex font-bold bg-primary-reverse w-12rem m-0 p-0">
+    <H3>{{questDescriptionConfig?.getTitle()}}</H3>
+  </div>
+  <div *ngIf="questDescriptionConfig?.getDescription()"
+       class="flex bg-primary-reverse  m-0 p-0">{{questDescriptionConfig?.getDescription()}}
+  </div>
+
+  <div *ngFor="let progressRow of progressTable"
+       class="flex bg-primary-reverse  m-0 p-0">{{progressRow}}
+  </div>
+</div>

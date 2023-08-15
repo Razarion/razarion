@@ -37,7 +37,7 @@ public class SceneConfig {
     private GameTipConfig gameTipConfig;
     private boolean removeLoadingCover;
 
-    public Integer getId() {
+    public Integer id() {
         return id;
     }
 
@@ -50,7 +50,7 @@ public class SceneConfig {
         return internalName;
     }
 
-    public SceneConfig setInternalName(String internalName) {
+    public SceneConfig internalName(String internalName) {
         this.internalName = internalName;
         return this;
     }
@@ -59,7 +59,7 @@ public class SceneConfig {
         return introText;
     }
 
-    public SceneConfig setIntroText(String introText) {
+    public SceneConfig introText(String introText) {
         this.introText = introText;
         return this;
     }
@@ -68,7 +68,7 @@ public class SceneConfig {
         return viewFieldConfig;
     }
 
-    public SceneConfig setViewFieldConfig(ViewFieldConfig viewFieldConfig) {
+    public SceneConfig viewFieldConfig(ViewFieldConfig viewFieldConfig) {
         this.viewFieldConfig = viewFieldConfig;
         return this;
     }
@@ -77,7 +77,7 @@ public class SceneConfig {
         return suppressSell;
     }
 
-    public SceneConfig setSuppressSell(Boolean suppressSell) {
+    public SceneConfig suppressSell(Boolean suppressSell) {
         this.suppressSell = suppressSell;
         return this;
     }
@@ -86,7 +86,7 @@ public class SceneConfig {
         return questConfig;
     }
 
-    public SceneConfig setQuestConfig(QuestConfig questConfig) {
+    public SceneConfig questConfig(QuestConfig questConfig) {
         this.questConfig = questConfig;
         return this;
     }
@@ -95,7 +95,7 @@ public class SceneConfig {
         return botConfigs;
     }
 
-    public SceneConfig setBotConfigs(List<BotConfig> botConfigs) {
+    public SceneConfig botConfigs(List<BotConfig> botConfigs) {
         this.botConfigs = botConfigs;
         return this;
     }
@@ -104,7 +104,7 @@ public class SceneConfig {
         return botMoveCommandConfigs;
     }
 
-    public SceneConfig setBotMoveCommandConfigs(List<BotMoveCommandConfig> botMoveCommandConfigs) {
+    public SceneConfig botMoveCommandConfigs(List<BotMoveCommandConfig> botMoveCommandConfigs) {
         this.botMoveCommandConfigs = botMoveCommandConfigs;
         return this;
     }
@@ -113,7 +113,7 @@ public class SceneConfig {
         return botHarvestCommandConfigs;
     }
 
-    public SceneConfig setBotHarvestCommandConfigs(List<BotHarvestCommandConfig> botHarvestCommandConfigs) {
+    public SceneConfig botHarvestCommandConfigs(List<BotHarvestCommandConfig> botHarvestCommandConfigs) {
         this.botHarvestCommandConfigs = botHarvestCommandConfigs;
         return this;
     }
@@ -122,7 +122,7 @@ public class SceneConfig {
         return botAttackCommandConfigs;
     }
 
-    public SceneConfig setBotAttackCommandConfigs(List<BotAttackCommandConfig> botAttackCommandConfigs) {
+    public SceneConfig botAttackCommandConfigs(List<BotAttackCommandConfig> botAttackCommandConfigs) {
         this.botAttackCommandConfigs = botAttackCommandConfigs;
         return this;
     }
@@ -131,7 +131,7 @@ public class SceneConfig {
         return botKillOtherBotCommandConfigs;
     }
 
-    public SceneConfig setBotKillOtherBotCommandConfigs(List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs) {
+    public SceneConfig botKillOtherBotCommandConfigs(List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs) {
         this.botKillOtherBotCommandConfigs = botKillOtherBotCommandConfigs;
         return this;
     }
@@ -140,7 +140,7 @@ public class SceneConfig {
         return botKillHumanCommandConfigs;
     }
 
-    public SceneConfig setBotKillHumanCommandConfigs(List<BotKillHumanCommandConfig> botKillHumanCommandConfigs) {
+    public SceneConfig botKillHumanCommandConfigs(List<BotKillHumanCommandConfig> botKillHumanCommandConfigs) {
         this.botKillHumanCommandConfigs = botKillHumanCommandConfigs;
         return this;
     }
@@ -149,7 +149,7 @@ public class SceneConfig {
         return botRemoveOwnItemCommandConfigs;
     }
 
-    public SceneConfig setBotRemoveOwnItemCommandConfigs(List<BotRemoveOwnItemCommandConfig> botRemoveOwnItemCommandConfigs) {
+    public SceneConfig botRemoveOwnItemCommandConfigs(List<BotRemoveOwnItemCommandConfig> botRemoveOwnItemCommandConfigs) {
         this.botRemoveOwnItemCommandConfigs = botRemoveOwnItemCommandConfigs;
         return this;
     }
@@ -158,7 +158,7 @@ public class SceneConfig {
         return killBotCommandConfigs;
     }
 
-    public SceneConfig setKillBotCommandConfigs(List<KillBotCommandConfig> killBotCommandConfigs) {
+    public SceneConfig killBotCommandConfigs(List<KillBotCommandConfig> killBotCommandConfigs) {
         this.killBotCommandConfigs = killBotCommandConfigs;
         return this;
     }
@@ -167,7 +167,7 @@ public class SceneConfig {
         return startPointPlacerConfig;
     }
 
-    public SceneConfig setStartPointPlacerConfig(BaseItemPlacerConfig startPointPlacerConfig) {
+    public SceneConfig startPointPlacerConfig(BaseItemPlacerConfig startPointPlacerConfig) {
         this.startPointPlacerConfig = startPointPlacerConfig;
         return this;
     }
@@ -176,7 +176,7 @@ public class SceneConfig {
         return wait4QuestPassedDialog;
     }
 
-    public SceneConfig setWait4QuestPassedDialog(Boolean wait4QuestPassedDialog) {
+    public SceneConfig wait4QuestPassedDialog(Boolean wait4QuestPassedDialog) {
         this.wait4QuestPassedDialog = wait4QuestPassedDialog;
         return this;
     }
@@ -185,7 +185,7 @@ public class SceneConfig {
         return wait4LevelUpDialog;
     }
 
-    public SceneConfig setWait4LevelUpDialog(Boolean wait4LevelUpDialog) {
+    public SceneConfig wait4LevelUpDialog(Boolean wait4LevelUpDialog) {
         this.wait4LevelUpDialog = wait4LevelUpDialog;
         return this;
     }
@@ -194,7 +194,7 @@ public class SceneConfig {
         return waitForBaseLostDialog;
     }
 
-    public SceneConfig setWaitForBaseLostDialog(Boolean waitForBaseLostDialog) {
+    public SceneConfig waitForBaseLostDialog(Boolean waitForBaseLostDialog) {
         this.waitForBaseLostDialog = waitForBaseLostDialog;
         return this;
     }
@@ -203,7 +203,7 @@ public class SceneConfig {
         return waitForBaseCreated;
     }
 
-    public SceneConfig setWaitForBaseCreated(Boolean waitForBaseCreated) {
+    public SceneConfig waitForBaseCreated(Boolean waitForBaseCreated) {
         this.waitForBaseCreated = waitForBaseCreated;
         return this;
     }
@@ -212,7 +212,7 @@ public class SceneConfig {
         return processServerQuests;
     }
 
-    public SceneConfig setProcessServerQuests(Boolean processServerQuests) {
+    public SceneConfig processServerQuests(Boolean processServerQuests) {
         this.processServerQuests = processServerQuests;
         return this;
     }
@@ -221,7 +221,7 @@ public class SceneConfig {
         return resourceItemTypePositions;
     }
 
-    public SceneConfig setResourceItemTypePositions(List<ResourceItemPosition> resourceItemTypePositions) {
+    public SceneConfig resourceItemTypePositions(List<ResourceItemPosition> resourceItemTypePositions) {
         this.resourceItemTypePositions = resourceItemTypePositions;
         return this;
     }
@@ -230,7 +230,7 @@ public class SceneConfig {
         return duration;
     }
 
-    public SceneConfig setDuration(Integer duration) {
+    public SceneConfig duration(Integer duration) {
         this.duration = duration;
         return this;
     }
@@ -239,7 +239,7 @@ public class SceneConfig {
         return scrollUiQuest;
     }
 
-    public SceneConfig setScrollUiQuest(ScrollUiQuest scrollUiQuest) {
+    public SceneConfig scrollUiQuest(ScrollUiQuest scrollUiQuest) {
         this.scrollUiQuest = scrollUiQuest;
         return this;
     }
@@ -248,7 +248,7 @@ public class SceneConfig {
         return boxItemPositions;
     }
 
-    public SceneConfig setBoxItemPositions(List<BoxItemPosition> boxItemPositions) {
+    public SceneConfig boxItemPositions(List<BoxItemPosition> boxItemPositions) {
         this.boxItemPositions = boxItemPositions;
         return this;
     }
@@ -257,7 +257,7 @@ public class SceneConfig {
         return gameTipConfig;
     }
 
-    public SceneConfig setGameTipConfig(GameTipConfig gameTipConfig) {
+    public SceneConfig gameTipConfig(GameTipConfig gameTipConfig) {
         this.gameTipConfig = gameTipConfig;
         return this;
     }
@@ -266,8 +266,108 @@ public class SceneConfig {
         return removeLoadingCover;
     }
 
-    public SceneConfig setRemoveLoadingCover(boolean removeLoadingCover) {
+    public SceneConfig removeLoadingCover(boolean removeLoadingCover) {
         this.removeLoadingCover = removeLoadingCover;
         return this;
+    }
+
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
+    }
+
+    public void setIntroText(String introText) {
+        this.introText = introText;
+    }
+
+    public void setQuestConfig(QuestConfig questConfig) {
+        this.questConfig = questConfig;
+    }
+
+    public void setViewFieldConfig(ViewFieldConfig viewFieldConfig) {
+        this.viewFieldConfig = viewFieldConfig;
+    }
+
+    public void setSuppressSell(Boolean suppressSell) {
+        this.suppressSell = suppressSell;
+    }
+
+    public void setBotConfigs(List<BotConfig> botConfigs) {
+        this.botConfigs = botConfigs;
+    }
+
+    public void setBotMoveCommandConfigs(List<BotMoveCommandConfig> botMoveCommandConfigs) {
+        this.botMoveCommandConfigs = botMoveCommandConfigs;
+    }
+
+    public void setBotHarvestCommandConfigs(List<BotHarvestCommandConfig> botHarvestCommandConfigs) {
+        this.botHarvestCommandConfigs = botHarvestCommandConfigs;
+    }
+
+    public void setBotAttackCommandConfigs(List<BotAttackCommandConfig> botAttackCommandConfigs) {
+        this.botAttackCommandConfigs = botAttackCommandConfigs;
+    }
+
+    public void setBotKillOtherBotCommandConfigs(List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs) {
+        this.botKillOtherBotCommandConfigs = botKillOtherBotCommandConfigs;
+    }
+
+    public void setBotKillHumanCommandConfigs(List<BotKillHumanCommandConfig> botKillHumanCommandConfigs) {
+        this.botKillHumanCommandConfigs = botKillHumanCommandConfigs;
+    }
+
+    public void setBotRemoveOwnItemCommandConfigs(List<BotRemoveOwnItemCommandConfig> botRemoveOwnItemCommandConfigs) {
+        this.botRemoveOwnItemCommandConfigs = botRemoveOwnItemCommandConfigs;
+    }
+
+    public void setKillBotCommandConfigs(List<KillBotCommandConfig> killBotCommandConfigs) {
+        this.killBotCommandConfigs = killBotCommandConfigs;
+    }
+
+    public void setStartPointPlacerConfig(BaseItemPlacerConfig startPointPlacerConfig) {
+        this.startPointPlacerConfig = startPointPlacerConfig;
+    }
+
+    public void setWait4LevelUpDialog(Boolean wait4LevelUpDialog) {
+        this.wait4LevelUpDialog = wait4LevelUpDialog;
+    }
+
+    public void setWait4QuestPassedDialog(Boolean wait4QuestPassedDialog) {
+        this.wait4QuestPassedDialog = wait4QuestPassedDialog;
+    }
+
+    public void setWaitForBaseLostDialog(Boolean waitForBaseLostDialog) {
+        this.waitForBaseLostDialog = waitForBaseLostDialog;
+    }
+
+    public void setWaitForBaseCreated(Boolean waitForBaseCreated) {
+        this.waitForBaseCreated = waitForBaseCreated;
+    }
+
+    public void setProcessServerQuests(Boolean processServerQuests) {
+        this.processServerQuests = processServerQuests;
+    }
+
+    public void setResourceItemTypePositions(List<ResourceItemPosition> resourceItemTypePositions) {
+        this.resourceItemTypePositions = resourceItemTypePositions;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public void setScrollUiQuest(ScrollUiQuest scrollUiQuest) {
+        this.scrollUiQuest = scrollUiQuest;
+    }
+
+    public void setBoxItemPositions(List<BoxItemPosition> boxItemPositions) {
+        this.boxItemPositions = boxItemPositions;
+    }
+
+    public void setGameTipConfig(GameTipConfig gameTipConfig) {
+        this.gameTipConfig = gameTipConfig;
+    }
+
+    public void setRemoveLoadingCover(boolean removeLoadingCover) {
+        this.removeLoadingCover = removeLoadingCover;
     }
 }

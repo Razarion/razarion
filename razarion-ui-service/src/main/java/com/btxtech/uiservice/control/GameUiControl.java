@@ -27,7 +27,7 @@ import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
-import com.btxtech.uiservice.cockpit.TopRightCockpit;
+import com.btxtech.uiservice.cockpit.QuestCockpitService;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.system.boot.Boot;
@@ -63,7 +63,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private MainCockpitService cockpitService;
     @Inject
-    private TopRightCockpit topRightCockpit;
+    private QuestCockpitService questCockpitService;
     @Inject
     private ChatUiService chatUiService;
     @Inject
@@ -151,14 +151,14 @@ public class GameUiControl { // Equivalent worker class is PlanetService
                 trackerService.startDetailedTracking(getPlanetConfig().getId());
             }
             scenes = coldGameUiContext.getWarmGameUiContext().getSceneConfigs();
-            topRightCockpit.setBotSceneIndicationInfos(null);
+            questCockpitService.setBotSceneIndicationInfos(null);
         } else if (gameEngineMode == GameEngineMode.SLAVE) {
-            topRightCockpit.setBotSceneIndicationInfos(coldGameUiContext.getWarmGameUiContext().getBotSceneIndicationInfos());
+            questCockpitService.setBotSceneIndicationInfos(coldGameUiContext.getWarmGameUiContext().getBotSceneIndicationInfos());
             return; // Scene started if slave synchronized (from GameEngine)
         } else if (gameEngineMode == GameEngineMode.PLAYBACK) {
             scenes = setupPlaybackScenes();
             playbackControl.start(coldGameUiContext.getWarmGameUiContext().getPlaybackGameUiControlConfig());
-            topRightCockpit.setBotSceneIndicationInfos(null);
+            questCockpitService.setBotSceneIndicationInfos(null);
         } else {
             throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiContext.getWarmGameUiContext().getGameEngineMode());
         }
@@ -281,9 +281,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private List<SceneConfig> setupSlaveExistingScenes(DecimalPosition scrollToPosition) {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
 
-        sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet fade out").setRemoveLoadingCover(true));
-        sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield").setViewFieldConfig(new ViewFieldConfig().toPosition(scrollToPosition)));
-        sceneConfigs.add(new SceneConfig().setInternalName("script: Process Server Quests").setProcessServerQuests(true));
+        sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet fade out").removeLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet viewfield").viewFieldConfig(new ViewFieldConfig().toPosition(scrollToPosition)));
+        sceneConfigs.add(new SceneConfig().internalName("script: Process Server Quests").processServerQuests(true));
         return sceneConfigs;
     }
 
@@ -296,25 +296,25 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             } else {
                 position = GeometricUtil.findFreeRandomPosition(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion(), null);
             }
-            sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield").setViewFieldConfig(new ViewFieldConfig().toPosition(position)));
+            sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet viewfield").viewFieldConfig(new ViewFieldConfig().toPosition(position)));
         } else {
             logger.warning("No StartRegion defined. Scroll to 0:0 position");
-            sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield default").setViewFieldConfig(new ViewFieldConfig().toPosition(DecimalPosition.NULL)));
+            sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet viewfield default").viewFieldConfig(new ViewFieldConfig().toPosition(DecimalPosition.NULL)));
         }
         // Set camera Position
         // Fade out
-        sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet fade out").setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet fade out").removeLoadingCover(true));
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0).setSuggestedPosition(position);
         baseItemPlacerConfig.setAllowedArea(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion());
-        sceneConfigs.add(new SceneConfig().setInternalName("Multiplayer wait for base created").setWaitForBaseCreated(true).setStartPointPlacerConfig(baseItemPlacerConfig));
-        sceneConfigs.add(new SceneConfig().setInternalName("script: Process Server Quests").setProcessServerQuests(true));
+        sceneConfigs.add(new SceneConfig().internalName("Multiplayer wait for base created").waitForBaseCreated(true).startPointPlacerConfig(baseItemPlacerConfig));
+        sceneConfigs.add(new SceneConfig().internalName("script: Process Server Quests").processServerQuests(true));
         return sceneConfigs;
     }
 
     private List<SceneConfig> setupPlaybackScenes() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        sceneConfigs.add(new SceneConfig().setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().removeLoadingCover(true));
         return sceneConfigs;
     }
 
@@ -398,7 +398,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void onServerBotSceneIndicationChange(List<BotSceneIndicationInfo> botSceneIndicationInfos) {
-        topRightCockpit.setBotSceneIndicationInfos(botSceneIndicationInfos);
+        questCockpitService.setBotSceneIndicationInfos(botSceneIndicationInfos);
     }
 
     public boolean hasActiveServerQuest() {
@@ -439,8 +439,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             scenes = new ArrayList<>();
             BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0);
             baseItemPlacerConfig.setAllowedArea(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion());
-            scenes.add(new SceneConfig().setInternalName("Multiplayer wait for base created").setWaitForBaseCreated(true).setStartPointPlacerConfig(baseItemPlacerConfig));
-            scenes.add(new SceneConfig().setInternalName("script: Process Server Quests").setProcessServerQuests(true));
+            scenes.add(new SceneConfig().internalName("Multiplayer wait for base created").waitForBaseCreated(true).startPointPlacerConfig(baseItemPlacerConfig));
+            scenes.add(new SceneConfig().internalName("script: Process Server Quests").processServerQuests(true));
             nextSceneNumber = 0;
             runScene();
         }

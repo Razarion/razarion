@@ -94,12 +94,6 @@ public enum ConditionTrigger {
         }
     };
 
-    public enum Type {
-        BASE_ITEM,
-        INVENTORY_ITEM,
-        COUNT
-    }
-
     private boolean comparisonNeeded;
 
     ConditionTrigger(boolean comparisonNeeded) {

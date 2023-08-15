@@ -133,123 +133,123 @@ public class SceneEntity implements ObjectNameIdProvider {
     }
 
     public SceneConfig toSceneConfig(Locale locale) {
-        SceneConfig sceneConfig = new SceneConfig().setId(id).setInternalName(internalName);
+        SceneConfig sceneConfig = new SceneConfig().setId(id).internalName(internalName);
         if (i18nIntroText != null) {
-            sceneConfig.setIntroText(i18nIntroText.getString(locale));
+            sceneConfig.introText(i18nIntroText.getString(locale));
         }
         if (questConfig != null) {
-            sceneConfig.setQuestConfig(questConfig.toQuestConfig(locale));
+            sceneConfig.questConfig(questConfig.toQuestConfig(locale));
         }
-        sceneConfig.setViewFieldConfig(viewFieldConfig);
+        sceneConfig.viewFieldConfig(viewFieldConfig);
         if (botConfigEntities != null && !botConfigEntities.isEmpty()) {
             List<BotConfig> botConfigs = new ArrayList<>();
             for (BotConfigEntity botConfigEntity : botConfigEntities) {
                 botConfigs.add(botConfigEntity.toBotConfig());
             }
-            sceneConfig.setBotConfigs(botConfigs);
+            sceneConfig.botConfigs(botConfigs);
         }
-        sceneConfig.setSuppressSell(suppressSell);
+        sceneConfig.suppressSell(suppressSell);
         if (botMoveCommandEntities != null && !botMoveCommandEntities.isEmpty()) {
             List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
             for (BotMoveCommandEntity botMoveCommandEntity : botMoveCommandEntities) {
                 botMoveCommandConfigs.add(botMoveCommandEntity.toBotMoveCommandConfig());
             }
-            sceneConfig.setBotMoveCommandConfigs(botMoveCommandConfigs);
+            sceneConfig.botMoveCommandConfigs(botMoveCommandConfigs);
         }
         if (botHarvestCommandEntities != null && !botHarvestCommandEntities.isEmpty()) {
             List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
             for (BotHarvestCommandEntity botHarvestCommandEntity : botHarvestCommandEntities) {
                 botHarvestCommandConfigs.add(botHarvestCommandEntity.toBotHarvestCommandConfig());
             }
-            sceneConfig.setBotHarvestCommandConfigs(botHarvestCommandConfigs);
+            sceneConfig.botHarvestCommandConfigs(botHarvestCommandConfigs);
         }
         if (botAttackCommandEntities != null && !botAttackCommandEntities.isEmpty()) {
             List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
             for (BotAttackCommandEntity botAttackCommandEntity : botAttackCommandEntities) {
                 botAttackCommandConfigs.add(botAttackCommandEntity.toBotAttackCommandConfig());
             }
-            sceneConfig.setBotAttackCommandConfigs(botAttackCommandConfigs);
+            sceneConfig.botAttackCommandConfigs(botAttackCommandConfigs);
         }
         if (botKillOtherBotCommandEntities != null && !botKillOtherBotCommandEntities.isEmpty()) {
             List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs = new ArrayList<>();
             for (BotKillOtherBotCommandEntity botKillOtherBotCommandEntity : botKillOtherBotCommandEntities) {
                 botKillOtherBotCommandConfigs.add(botKillOtherBotCommandEntity.toBotKillOtherBotCommandConfig());
             }
-            sceneConfig.setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs);
+            sceneConfig.botKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs);
         }
         if (botKillHumanCommandEntities != null && !botKillHumanCommandEntities.isEmpty()) {
             List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
             for (BotKillHumanCommandEntity botKillHumanCommandEntity : botKillHumanCommandEntities) {
                 botKillHumanCommandConfigs.add(botKillHumanCommandEntity.toBotKillHumanCommandConfig());
             }
-            sceneConfig.setBotKillHumanCommandConfigs(botKillHumanCommandConfigs);
+            sceneConfig.botKillHumanCommandConfigs(botKillHumanCommandConfigs);
         }
         if (botRemoveOwnItemCommandEntities != null && !botRemoveOwnItemCommandEntities.isEmpty()) {
             List<BotRemoveOwnItemCommandConfig> botRemoveOwnItemCommandConfigs = new ArrayList<>();
             for (BotRemoveOwnItemCommandEntity botRemoveOwnItemCommandEntity : botRemoveOwnItemCommandEntities) {
                 botRemoveOwnItemCommandConfigs.add(botRemoveOwnItemCommandEntity.toBotRemoveOwnItemCommandConfig());
             }
-            sceneConfig.setBotRemoveOwnItemCommandConfigs(botRemoveOwnItemCommandConfigs);
+            sceneConfig.botRemoveOwnItemCommandConfigs(botRemoveOwnItemCommandConfigs);
         }
         if (killBotCommandEntities != null && !killBotCommandEntities.isEmpty()) {
             List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
             for (BotKillBotCommandEntity botKillBotCommandEntity : killBotCommandEntities) {
                 killBotCommandConfigs.add(botKillBotCommandEntity.toKillBotCommandConfig());
             }
-            sceneConfig.setKillBotCommandConfigs(killBotCommandConfigs);
+            sceneConfig.killBotCommandConfigs(killBotCommandConfigs);
         }
         if (startPointPlacerEntity != null) {
-            sceneConfig.setStartPointPlacerConfig(startPointPlacerEntity.toStartPointPlacerConfig());
+            sceneConfig.startPointPlacerConfig(startPointPlacerEntity.toStartPointPlacerConfig());
         }
         if (wait4LevelUpDialog != null) {
-            sceneConfig.setWait4LevelUpDialog(wait4LevelUpDialog);
+            sceneConfig.wait4LevelUpDialog(wait4LevelUpDialog);
         }
         if (wait4QuestPassedDialog != null) {
-            sceneConfig.setWait4QuestPassedDialog(wait4QuestPassedDialog);
+            sceneConfig.wait4QuestPassedDialog(wait4QuestPassedDialog);
         }
         if (waitForBaseLostDialog != null) {
-            sceneConfig.setWaitForBaseLostDialog(waitForBaseLostDialog);
+            sceneConfig.waitForBaseLostDialog(waitForBaseLostDialog);
         }
         if (waitForBaseCreated != null) {
-            sceneConfig.setWaitForBaseCreated(waitForBaseCreated);
+            sceneConfig.waitForBaseCreated(waitForBaseCreated);
         }
         if (resourceItemPositionEntities != null && !resourceItemPositionEntities.isEmpty()) {
             List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
             for (ResourceItemPositionEntity resourceItemPositionEntity : resourceItemPositionEntities) {
                 resourceItemTypePositions.add(resourceItemPositionEntity.toResourceItemPosition());
             }
-            sceneConfig.setResourceItemTypePositions(resourceItemTypePositions);
+            sceneConfig.resourceItemTypePositions(resourceItemTypePositions);
         }
-        sceneConfig.setDuration(duration);
+        sceneConfig.duration(duration);
 
         if (scrollUiQuestTargetRectangle != null && scrollUiQuestI18nTitle != null) {
-            ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setScrollTargetRectangle(scrollUiQuestTargetRectangle).setTitle(scrollUiQuestI18nTitle.getString(locale));
+            ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setScrollTargetRectangle(scrollUiQuestTargetRectangle).title(scrollUiQuestI18nTitle.getString(locale));
             if (scrollUiQuestI18nDescription != null) {
-                scrollUiQuest.setDescription(scrollUiQuestI18nDescription.getString(locale));
+                scrollUiQuest.description(scrollUiQuestI18nDescription.getString(locale));
             }
             if (scrollUiQuestI18nPassedMessage != null) {
-                scrollUiQuest.setPassedMessage(scrollUiQuestI18nPassedMessage.getString(locale));
+                scrollUiQuest.passedMessage(scrollUiQuestI18nPassedMessage.getString(locale));
             }
             if (scrollUiQuestI18nHidePassedDialog != null) {
-                scrollUiQuest.setHidePassedDialog(scrollUiQuestI18nHidePassedDialog);
+                scrollUiQuest.hidePassedDialog(scrollUiQuestI18nHidePassedDialog);
             }
-            scrollUiQuest.setXp(scrollUiQuestXp);
-            scrollUiQuest.setRazarion(scrollUiQuestRazarion);
-            scrollUiQuest.setCrystal(scrollUiQuestCrystal);
-            sceneConfig.setScrollUiQuest(scrollUiQuest);
+            scrollUiQuest.xp(scrollUiQuestXp);
+            scrollUiQuest.razarion(scrollUiQuestRazarion);
+            scrollUiQuest.crystal(scrollUiQuestCrystal);
+            sceneConfig.scrollUiQuest(scrollUiQuest);
         }
         if (boxItemPositionEntities != null && !boxItemPositionEntities.isEmpty()) {
             List<BoxItemPosition> boxItemPositions = new ArrayList<>();
             for (BoxItemPositionEntity boxItemPositionEntity : boxItemPositionEntities) {
                 boxItemPositions.add(boxItemPositionEntity.toBoxItemPosition());
             }
-            sceneConfig.setBoxItemPositions(boxItemPositions);
+            sceneConfig.boxItemPositions(boxItemPositions);
         }
         if (gameTipConfigEntity != null) {
-            sceneConfig.setGameTipConfig(gameTipConfigEntity.toGameTipConfig());
+            sceneConfig.gameTipConfig(gameTipConfigEntity.toGameTipConfig());
         }
         if (removeLoadingCover != null) {
-            sceneConfig.setRemoveLoadingCover(removeLoadingCover);
+            sceneConfig.removeLoadingCover(removeLoadingCover);
         }
         return sceneConfig;
     }

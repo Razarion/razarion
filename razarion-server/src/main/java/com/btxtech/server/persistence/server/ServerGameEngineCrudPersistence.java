@@ -79,12 +79,12 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
 
     @Override
     protected ServerGameEngineConfig toConfig(ServerGameEngineConfigEntity entity) {
-        return entity.toServerGameEngineConfig();
+        return entity.toServerGameEngineConfig(Locale.GERMAN);
     }
 
     @Override
     protected void fromConfig(ServerGameEngineConfig config, ServerGameEngineConfigEntity entity) {
-        entity.fromServerGameEngineConfig(config, planetCrudPersistence, resourceItemTypeCrudPersistence, levelCrudPersistence, baseItemTypeCrudPersistence);
+        entity.fromServerGameEngineConfig(config, planetCrudPersistence, resourceItemTypeCrudPersistence, levelCrudPersistence, baseItemTypeCrudPersistence, itemTypePersistence, Locale.GERMAN);
     }
 
     @Transactional
@@ -218,62 +218,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
             throw new IllegalArgumentException("The user is not allowed to activate a quest due to wrong level. questLevelEntity: " + questLevelEntity + " userLevelEntity: " + userLevelEntity);
         }
         return entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(locale);
-    }
-
-    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> getServerLevelQuestCrud() {
-        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> crud = serverLevelQuestCrudInstance.get();
-        crud.setRootProvider(this::serverGameEngineConfigEntity).setParentProvider(entityManager1 -> serverGameEngineConfigEntity());
-        crud.setEntitiesGetter((entityManager) -> serverGameEngineConfigEntity().getServerQuestEntities());
-        crud.setEntitiesSetter((entityManager, serverLevelQuestEntities) -> serverGameEngineConfigEntity().setServerQuestEntities(serverLevelQuestEntities));
-        crud.setEntityIdProvider(ServerLevelQuestEntity::getId).setConfigIdProvider(ServerLevelQuestConfig::getId);
-        crud.setConfigGenerator(ServerLevelQuestEntity::toServerLevelQuestConfig);
-        crud.setEntityFactory(ServerLevelQuestEntity::new);
-        crud.setEntityFiller((serverLevelQuestEntity, serverLevelQuestConfig) -> {
-            serverLevelQuestEntity.setInternalName(serverLevelQuestConfig.getInternalName());
-            serverLevelQuestEntity.setMinimalLevel(levelCrudPersistence.getEntity(serverLevelQuestConfig.getMinimalLevelId()));
-        });
-        return crud;
-    }
-
-    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> getServerQuestCrud(int serverLevelQuestEntityId, Locale locale) {
-        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> crud = serverQuestCrudInstance.get();
-        crud.setRootProvider(this::serverGameEngineConfigEntity);
-        crud.setParentProvider(entityManager -> entityManager.find(ServerLevelQuestEntity.class, serverLevelQuestEntityId));
-        crud.setEntitiesGetter(ServerLevelQuestEntity::getQuestConfigs).setEntitiesSetter(ServerLevelQuestEntity::setQuestConfigs);
-        crud.setEntityIdProvider(QuestConfigEntity::getId).setConfigIdProvider(QuestConfig::getId);
-        crud.setConfigGenerator(questConfigEntity -> questConfigEntity.toQuestConfig(locale));
-        crud.setEntityFactory(QuestConfigEntity::new);
-        crud.setEntityFiller((questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, questConfig, locale));
-        crud.setAdditionalDelete((entityManager, integer) -> entityManager.remove(entityManager.find(QuestConfigEntity.class, integer)));
-        return crud;
-    }
-
-    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig> getBotSceneConfigCrud() {
-        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig> crud = botSceneConfigCrud.get();
-        crud.setRootProvider(this::serverGameEngineConfigEntity).setParentProvider(entityManager -> serverGameEngineConfigEntity());
-        crud.setEntitiesGetter((entityManager) -> serverGameEngineConfigEntity().getBotSceneConfigEntities());
-        crud.setEntitiesSetter((entityManager, botConfigs) -> serverGameEngineConfigEntity().setBotSceneConfigEntities(botConfigs));
-        crud.setEntityIdProvider(BotSceneConfigEntity::getId).setConfigIdProvider(BotSceneConfig::getId);
-        crud.setConfigGenerator(BotSceneConfigEntity::toBotSceneConfig);
-        crud.setEntityFactory(BotSceneConfigEntity::new);
-        crud.setEntityFiller((botSceneConfigEntity, botSceneConfig) -> {
-            botSceneConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, entityManager, botSceneConfig);
-        });
-        return crud;
-    }
-
-    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig> getBoxRegionConfigCrud() {
-        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig> crud = boxRegionCrud.get();
-        crud.setRootProvider(this::serverGameEngineConfigEntity).setParentProvider(entityManager -> serverGameEngineConfigEntity());
-        crud.setEntitiesGetter((entityManager) -> serverGameEngineConfigEntity().getServerBoxRegionConfigEntities());
-        crud.setEntitiesSetter((entityManager, boxRegionConfigEntities) -> serverGameEngineConfigEntity().setServerBoxRegionConfigEntities(boxRegionConfigEntities));
-        crud.setEntityIdProvider(ServerBoxRegionConfigEntity::getId).setConfigIdProvider(BoxRegionConfig::getId);
-        crud.setConfigGenerator(ServerBoxRegionConfigEntity::toBoxRegionConfig);
-        crud.setEntityFactory(ServerBoxRegionConfigEntity::new);
-        crud.setEntityFiller((serverBoxRegionConfigEntity, boxRegionConfig) -> {
-            serverBoxRegionConfigEntity.fromBoxRegionConfig(itemTypePersistence, boxRegionConfig);
-        });
-        return crud;
     }
 
     private ServerGameEngineConfigEntity serverGameEngineConfigEntity() {

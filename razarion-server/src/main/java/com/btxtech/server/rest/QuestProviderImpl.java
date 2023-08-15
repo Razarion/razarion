@@ -40,4 +40,13 @@ public class QuestProviderImpl implements QuestProvider {
             throw e;
         }
     }
+    @Override
+    public void activateNextPossibleQuest() {
+        try {
+            serverLevelQuestService.activateNextPossibleQuest(sessionHolder.getPlayerSession().getUserContext().getUserId());
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
 }

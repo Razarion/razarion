@@ -39,6 +39,7 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -254,6 +255,7 @@ public class UserService {
         UserEntity userEntity = new UserEntity();
         userEntity.setLevel(levelCrudPersistence.getStarterLevel());
         userEntity.setLevelUnlockEntities(levelCrudPersistence.getStartUnlockedItemLimit());
+        userEntity.setCreationDate(new Date());
         decorator.accept(userEntity);
         entityManager.persist(userEntity);
         return userEntity;

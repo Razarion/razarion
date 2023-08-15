@@ -53,6 +53,8 @@ public class UserEntity {
     private String facebookUserId;
     @Column(columnDefinition = "DATETIME(3)")
     private Date registerDate;
+    @Column(columnDefinition = "DATETIME(3)")
+    private Date creationDate;
     private boolean admin;
     @ManyToOne(fetch = FetchType.LAZY)
     private LevelEntity level;
@@ -304,6 +306,10 @@ public class UserEntity {
 
     public Date getVerificationTimedOutDate() {
         return verificationTimedOutDate;
+    }
+
+    public void setCreationDate(Date creationDateDate) {
+        this.creationDate = creationDateDate;
     }
 
     public UserContext.RegisterState createRegisterState() {

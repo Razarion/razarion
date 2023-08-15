@@ -14,14 +14,21 @@ import {
   AngularCursorService,
   BaseItemType,
   BuilderType,
+  ComparisonConfig,
+  ConditionConfig,
+  ConditionTrigger,
   CursorType,
   Diplomacy,
-  HarvesterType,
+  HarvesterType, I18nString,
+  OwnItemCockpit,
   PhysicalAreaConfig,
+  QuestConfig,
+  QuestProgressInfo,
   WeaponType
 } from "../gwtangular/GwtAngularFacade";
 import {GwtInstance} from "../gwtangular/GwtInstance";
 import {GwtHelper} from "../gwtangular/GwtHelper";
+import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
 
 
 @Component({
@@ -35,6 +42,8 @@ export class GameComponent implements OnInit {
   mainCockpitComponent!: MainCockpitComponent;
   @ViewChild('itemCockpitContainer', {static: true})
   itemCockpitContainer!: ItemCockpitComponent;
+  @ViewChild('questCockpitContainer', {static: true})
+  questCockpitContainer!: QuestCockpitComponent;
   // TODO @ViewChild('loadingCover', {static: true})
   // TODO loadingCover?: OverlayPanel;
   editorModels: EditorModel[] = [];
@@ -42,10 +51,10 @@ export class GameComponent implements OnInit {
 
   constructor(private frontendService: FrontendService,
               private router: Router,
-    private gwtAngularService: GwtAngularService,
-    private threeJsRendererService: BabylonRenderServiceAccessImpl,
-    private threeJsModelService: BabylonModelService,
-    private gameMockService: GameMockService) {
+              private gwtAngularService: GwtAngularService,
+              private threeJsRendererService: BabylonRenderServiceAccessImpl,
+              private threeJsModelService: BabylonModelService,
+              private gameMockService: GameMockService) {
   }
 
   ngOnInit(): void {
@@ -63,6 +72,7 @@ export class GameComponent implements OnInit {
         this.gameMockService.loadMockAssetConfig().then(() => {
           this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
             this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
+            this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
             this.gameMockService.mockTerrainTile(this.threeJsRendererService);
             this.mainCockpitComponent.show(true);
             this.threeJsRendererService.initMeshContainers(this.gameMockService.createMeshContainers());
@@ -94,6 +104,13 @@ export class GameComponent implements OnInit {
             // }, 2);
 
             let baseItemType = new class implements BaseItemType {
+              getI18nName(): I18nString {
+                return new class implements I18nString {
+                  getString(language: string): string {
+                    return "I18nString";
+                  }
+                };
+              }
               getBuilderType(): BuilderType {
                 return new class implements BuilderType {
                   getParticleSystemConfigId(): number | null {
@@ -234,6 +251,78 @@ export class GameComponent implements OnInit {
             // }
             // setTimeout(move, 100)
 
+            this.itemCockpitContainer.displayOwnSingleType(1, new class implements OwnItemCockpit {
+              buildupItemInfos = null;
+              imageUrl = "/xxxxx";
+              itemTypeDescr = "Builds Units";
+              itemTypeName = "Factory";
+
+              sellHandler(): void {
+              }
+
+            });
+
+            this.questCockpitContainer.showQuestSideBar(new class implements QuestConfig {
+                getConditionConfig(): ConditionConfig | null {
+                  return new class implements ConditionConfig {
+                    getConditionTrigger(): ConditionTrigger {
+                      return ConditionTrigger.SYNC_ITEM_POSITION;
+                    }
+
+                    getComparisonConfig(): ComparisonConfig {
+                      return new class implements ComparisonConfig {
+                        getCount(): number | null {
+                          return null;
+                        }
+
+                        getTimeSeconds(): number | null {
+                          return null;
+                        }
+
+                        toTypeCountAngular(): number[][] {
+                          return [[1, 2], [2, 3]];
+                        }
+
+                      };
+                    }
+                  };
+                }
+
+                getId(): number {
+                  return 0;
+                }
+
+                getInternalName(): string {
+                  return "";
+                }
+
+                getTitle(): string {
+                  return "Build";
+                }
+
+                getDescription(): string {
+                  return "Build a Factory";
+                }
+
+              }, new class implements QuestProgressInfo {
+                getBotBasesInformation(): string | null {
+                  return null;
+                }
+
+                getCount(): number | null {
+                  return 1;
+                }
+
+                getSecondsRemaining(): number | null {
+                  return null;
+                }
+
+                toTypeCountAngular(): number[][] {
+                  return [];
+                }
+
+              },
+              false)
           });
         });
       });
@@ -242,6 +331,7 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.gwtAngularFacade.angularCursorService = this.createAngularCursorService();
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
+    this.gwtAngularService.gwtAngularFacade.questCockpit = this.questCockpitContainer;
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.threeJsRendererService.createBaseItemPlacerPresenter();
 
     // Prevent running game in the background if someone press the browser history navigation button

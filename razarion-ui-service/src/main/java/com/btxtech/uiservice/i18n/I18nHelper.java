@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.i18n;
 
 import com.btxtech.shared.datatypes.I18nString;
+import jsinterop.annotations.JsType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -8,6 +9,7 @@ import com.btxtech.shared.datatypes.I18nString;
  * Date: 03.01.13
  * Time: 14:53
  */
+@JsType
 public class I18nHelper {
     private static I18nConstants constants;
     private static String language = "default";

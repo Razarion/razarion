@@ -135,7 +135,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
 
     private SceneEntity getOrCreate(SceneConfig sceneConfig, List<SceneEntity> entities) {
         return entities.stream()
-                .filter(sceneEntity -> sceneEntity.getId().equals(sceneConfig.getId()))
+                .filter(sceneEntity -> sceneEntity.getId().equals(sceneConfig.id()))
                 .findFirst()
                 .orElse(new SceneEntity());
     }

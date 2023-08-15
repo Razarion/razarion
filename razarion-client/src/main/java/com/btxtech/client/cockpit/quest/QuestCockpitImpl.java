@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Deprecated
 @Singleton
-public class TopRightCockpitImpl /* TODO implements TopRightCockpit */ {
+public class QuestCockpitImpl /* implements QuestCockpit*/ {
     // private Logger logger = Logger.getLogger(TopRightCockpitImpl.class.getName());
     @Inject
     private Instance<TopRightCockpitWidget> instance;

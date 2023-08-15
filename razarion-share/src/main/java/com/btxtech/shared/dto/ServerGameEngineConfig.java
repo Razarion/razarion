@@ -11,6 +11,7 @@ public class ServerGameEngineConfig implements Config {
     private List<ResourceRegionConfig> resourceRegionConfigs;
     private List<StartRegionConfig> startRegionConfigs;
     private List<BotConfig> botConfigs;
+    private List<ServerLevelQuestConfig> serverLevelQuestConfigs;
 
     @Override
     public int getId() {
@@ -64,6 +65,14 @@ public class ServerGameEngineConfig implements Config {
         return this;
     }
 
+    public List<ServerLevelQuestConfig> getServerLevelQuestConfigs() {
+        return serverLevelQuestConfigs;
+    }
+
+    public void setServerLevelQuestConfigs(List<ServerLevelQuestConfig> serverLevelQuestConfigs) {
+        this.serverLevelQuestConfigs = serverLevelQuestConfigs;
+    }
+
     public ServerGameEngineConfig internalName(String internalName) {
         setInternalName(internalName);
         return this;
@@ -86,6 +95,11 @@ public class ServerGameEngineConfig implements Config {
 
     public ServerGameEngineConfig botConfigs(List<BotConfig> botConfigs) {
         setBotConfigs(botConfigs);
+        return this;
+    }
+
+    public ServerGameEngineConfig serverLevelQuestConfig(List<ServerLevelQuestConfig> serverLevelQuestConfigs) {
+        setServerLevelQuestConfigs(serverLevelQuestConfigs);
         return this;
     }
 }

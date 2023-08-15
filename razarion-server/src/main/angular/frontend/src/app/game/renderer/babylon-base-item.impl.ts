@@ -186,12 +186,12 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   onProjectileFired(destination: Vertex): void {
-    if (!this.baseItemType.getWeaponType().getMuzzleFlashParticleSystemConfigId()) {
+    if (!this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()) {
       console.warn(`No MuzzleFlashParticleSystemConfigId for ${this.baseItemType.getInternalName()} '${this.baseItemType.getId()}'`);
       return;
     }
     const correctDestination = new Vector3(destination.getX(), destination.getZ(), destination.getY());
-    let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getWeaponType().getMuzzleFlashParticleSystemConfigId()!);
+    let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()!);
     const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath());
     emitterMesh.computeWorldMatrix(true);
     const particleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, correctDestination, false);
@@ -292,10 +292,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   private createProjectile(start: Vector3, destination: Vector3): void {
-    if (!this.baseItemType.getWeaponType().getProjectileSpeed()) {
+    if (!this.baseItemType.getWeaponType()!.getProjectileSpeed()) {
       return;
     }
-    const projectileSpeed = GwtHelper.gwtIssueNumber(this.baseItemType.getWeaponType().getProjectileSpeed());
+    const projectileSpeed = GwtHelper.gwtIssueNumber(this.baseItemType.getWeaponType()!.getProjectileSpeed());
     if (projectileSpeed <= 0.0) {
       return;
     }

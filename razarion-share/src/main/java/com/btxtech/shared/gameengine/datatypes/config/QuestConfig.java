@@ -1,9 +1,12 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import jsinterop.annotations.JsType;
+
 /**
  * Created by Beat
  * 21.09.2016.
  */
+@JsType
 public class QuestConfig extends QuestDescriptionConfig<QuestConfig> {
     private ConditionConfig conditionConfig;
 

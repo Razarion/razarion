@@ -24,4 +24,8 @@ public interface QuestProvider {
     @POST
     @Path("activateQuest")
     void activateQuest(int questId);
+
+    @POST
+    @Path("activateNextPossibleQuest")
+    void activateNextPossibleQuest();
 }

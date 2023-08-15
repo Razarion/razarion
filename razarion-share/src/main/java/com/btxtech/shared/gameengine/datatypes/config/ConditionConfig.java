@@ -14,13 +14,14 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
 
-import java.io.Serializable;
+import jsinterop.annotations.JsType;
 
 /**
  * User: beat
  * Date: 27.12.2010
  * Time: 22:59:16
  */
+@JsType
 public class ConditionConfig {
     private ConditionTrigger conditionTrigger;
     private ComparisonConfig comparisonConfig;

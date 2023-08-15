@@ -1,5 +1,8 @@
 package com.btxtech.server.persistence.server;
 
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -15,11 +18,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import java.util.List;
+import java.util.Locale;
+
+import static com.btxtech.server.persistence.PersistenceUtil.*;
 
 /**
  * Created by Beat
@@ -45,32 +50,25 @@ public class ServerLevelQuestEntity implements ObjectNameIdProvider {
         return id;
     }
 
-    public void setInternalName(String internalName) {
-        this.internalName = internalName;
-    }
-
-    public List<QuestConfigEntity> getQuestConfigs() {
-        return questConfigs;
-    }
-
-    public void setQuestConfigs(List<QuestConfigEntity> questConfigs) {
-        this.questConfigs = questConfigs;
-    }
-
     public LevelEntity getMinimalLevel() {
         return minimalLevel;
     }
 
-    public void setMinimalLevel(LevelEntity minimalLevel) {
-        this.minimalLevel = minimalLevel;
+    public ServerLevelQuestConfig toServerLevelQuestConfig(Locale locale) {
+        return new ServerLevelQuestConfig()
+                .id(id)
+                .internalName(internalName)
+                .minimalLevelId(extractId(minimalLevel, LevelEntity::getId))
+                .questConfigs(toConfigList(questConfigs, questConfigEntity -> questConfigEntity.toQuestConfig(locale)));
     }
 
-    public ServerLevelQuestConfig toServerLevelQuestConfig() {
-        ServerLevelQuestConfig serverLevelQuestConfig = new ServerLevelQuestConfig().setId(id).setInternalName(internalName);
-        if (minimalLevel != null) {
-            serverLevelQuestConfig.setMinimalLevelId(minimalLevel.getId());
-        }
-        return serverLevelQuestConfig;
+    public void fromServerLevelQuestConfig(ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ServerLevelQuestConfig serverLevelQuestConfig, LevelCrudPersistence levelCrudPersistence, Locale locale) {
+        internalName = serverLevelQuestConfig.getInternalName();
+        minimalLevel = levelCrudPersistence.getEntity(serverLevelQuestConfig.getMinimalLevelId());
+        questConfigs = fromConfigs(questConfigs,
+                serverLevelQuestConfig.getQuestConfigs(),
+                QuestConfigEntity::new,
+                (questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, questConfig, locale));
     }
 
     @Override
@@ -95,4 +93,5 @@ public class ServerLevelQuestEntity implements ObjectNameIdProvider {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
+
 }

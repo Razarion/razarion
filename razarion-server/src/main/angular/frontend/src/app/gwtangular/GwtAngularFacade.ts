@@ -5,15 +5,18 @@ import {TreeNode} from "primeng/api";
 export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
   gameUiControl!: GameUiControl;
+  language!: string;
   angularCursorService!: AngularCursorService;
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
+  questCockpit!: QuestCockpit;
   baseItemPlacerPresenter!: BaseItemPlacerPresenter;
   editorFrontendProvider!: EditorFrontendProvider;
   statusProvider!: StatusProvider;
   threeJsRendererServiceAccess!: BabylonRenderServiceAccess;
   inputService!: InputService;
   terrainTypeService!: TerrainTypeService;
+  itemTypeService!: ItemTypeService;
   threeJsModelPackService!: ThreeJsModelPackService;
   assetService!: AssetService;
 
@@ -88,6 +91,10 @@ export interface Rectangle {
 
 }
 
+export interface I18nString {
+  getString(language: string): string;
+}
+
 export interface NativeMatrix {
   getColumnMajorFloat32Array(): Float32Array;
 }
@@ -115,6 +122,12 @@ export interface InputService {
 
   onMouseUp(x: number, y: number): void;
 
+}
+
+export interface ItemTypeService {
+  getResourceItemType(resourceItemTypeId: number): ResourceItemType;
+
+  getBaseItemType(baseItemTypeId: number): BaseItemType;
 }
 
 export interface TerrainTypeService {
@@ -309,6 +322,8 @@ export interface ItemType {
 
   getInternalName(): string;
 
+  getI18nName(): I18nString;
+
   getThreeJsModelPackConfigId(): number | null;
 
   getMeshContainerId(): number | null;
@@ -317,11 +332,11 @@ export interface ItemType {
 export interface BaseItemType extends ItemType {
   getPhysicalAreaConfig(): PhysicalAreaConfig;
 
-  getBuilderType(): BuilderType;
+  getBuilderType(): BuilderType | null;
 
-  getWeaponType(): WeaponType;
+  getWeaponType(): WeaponType | null;
 
-  getHarvesterType(): HarvesterType;
+  getHarvesterType(): HarvesterType | null;
 }
 
 export interface ResourceItemType extends ItemType {
@@ -344,6 +359,57 @@ export interface WeaponType {
 
 export interface HarvesterType {
   getParticleSystemConfigId(): number | null;
+}
+
+// ---------- Quest ----------
+
+export interface QuestDescriptionConfig {
+  getId(): number;
+
+  getInternalName(): string;
+
+  getTitle(): string;
+
+  getDescription(): string;
+}
+
+export interface QuestConfig extends QuestDescriptionConfig {
+  getConditionConfig(): ConditionConfig | null
+}
+
+export interface QuestProgressInfo {
+  getCount(): number | null;
+
+  toTypeCountAngular(): number[][]; // Key Item Type, Value count
+
+  getSecondsRemaining(): number | null;
+
+  getBotBasesInformation(): string | null;
+
+}
+
+export interface ConditionConfig {
+  getConditionTrigger(): ConditionTrigger;
+
+  getComparisonConfig(): ComparisonConfig;
+}
+
+export enum ConditionTrigger {
+  SYNC_ITEM_KILLED = "SYNC_ITEM_KILLED",
+  HARVEST = "HARVEST",
+  SYNC_ITEM_CREATED = "SYNC_ITEM_CREATED",
+  BASE_KILLED = "BASE_KILLED",
+  SYNC_ITEM_POSITION = "SYNC_ITEM_POSITION",
+  BOX_PICKED = "BOX_PICKED",
+  INVENTORY_ITEM_PLACED = "INVENTORY_ITEM_PLACED"
+}
+
+export interface ComparisonConfig {
+  getCount(): number | null;
+
+  toTypeCountAngular(): number[][]; // Key Item Type, Value count
+
+  getTimeSeconds(): number | null;
 }
 
 // ---------- Renderer ----------
@@ -552,6 +618,16 @@ export interface BuildupItemCockpit {
   onBuild(): void;
 
   setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void;
+}
+
+export interface QuestCockpit {
+  showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, questProgressInfo: QuestProgressInfo | null, showQuestSelectionButton: boolean): void;
+
+  setShowQuestInGameVisualisation(): void;
+
+  onQuestProgress(questProgressInfo: QuestProgressInfo | null): void;
+
+  setBotSceneIndicationInfos(): void;
 }
 
 export interface BaseItemPlacerPresenter {

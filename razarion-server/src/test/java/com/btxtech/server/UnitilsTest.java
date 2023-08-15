@@ -90,8 +90,8 @@ public class UnitilsTest {
         botConfigs.add(new BotConfig().id(botId).actionDelay(3000).botEnragementStateConfigs(botEnragementStateConfigs).name("Roger").npc(true));
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
         botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotAuxiliaryId(23).setResourceItemTypeId(54).setResourceSelection(new PlaceConfig().position(new DecimalPosition(212, 144))).setHarvesterItemTypeId(17));
-        sceneConfigs.add(new SceneConfig().setInternalName("user: spawn 1").setWait4QuestPassedDialog(true).setQuestConfig(new QuestConfig().setId(questId).setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setXp(1).setPassedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quests geben Erfahrungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten Level. Im oberen linken Bereich siehst du deine Erfahrungspunkte.")));
-        sceneConfigs.add(new SceneConfig().setInternalName("setup: add NPC bot").setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
+        sceneConfigs.add(new SceneConfig().internalName("user: spawn 1").wait4QuestPassedDialog(true).questConfig(new QuestConfig().id(questId).title("Platzieren").description("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").xp(1).passedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quests geben Erfahrungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten Level. Im oberen linken Bereich siehst du deine Erfahrungspunkte.")));
+        sceneConfigs.add(new SceneConfig().internalName("setup: add NPC bot").botConfigs(botConfigs).botHarvestCommandConfigs(botHarvestCommandConfigs));
         return sceneConfigs;
     }
 

@@ -2,12 +2,14 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 24.10.2016.
  */
-public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements ObjectNameIdProvider {
+@JsType
+public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> implements ObjectNameIdProvider {
     private Integer id;
     private String internalName;
     private String title;
@@ -22,7 +24,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
         return id;
     }
 
-    public T setId(int id) {
+    public T id(int id) {
         this.id = id;
         return (T) this;
     }
@@ -31,7 +33,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
         return internalName;
     }
 
-    public T setInternalName(String internalName) {
+    public T internalName(String internalName) {
         this.internalName = internalName;
         return (T) this;
     }
@@ -40,7 +42,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
         return title;
     }
 
-    public T setTitle(String title) {
+    public T title(String title) {
         this.title = title;
         return (T) this;
     }
@@ -49,7 +51,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
         return description;
     }
 
-    public T setDescription(String description) {
+    public T description(String description) {
         this.description = description;
         return (T) this;
     }
@@ -58,7 +60,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
         return xp;
     }
 
-    public T setXp(int xp) {
+    public T xp(int xp) {
         this.xp = xp;
         return (T) this;
     }
@@ -67,7 +69,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
         return razarion;
     }
 
-    public T setRazarion(int razarion) {
+    public T razarion(int razarion) {
         this.razarion = razarion;
         return (T) this;
     }
@@ -76,7 +78,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
         return crystal;
     }
 
-    public T setCrystal(int crystal) {
+    public T crystal(int crystal) {
         this.crystal = crystal;
         return (T) this;
     }
@@ -85,7 +87,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
         return passedMessage;
     }
 
-    public T setPassedMessage(String passedMessage) {
+    public T passedMessage(String passedMessage) {
         this.passedMessage = passedMessage;
         return (T) this;
     }
@@ -94,7 +96,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
         return hidePassedDialog;
     }
 
-    public T setHidePassedDialog(boolean hidePassedDialog) {
+    public T hidePassedDialog(boolean hidePassedDialog) {
         this.hidePassedDialog = hidePassedDialog;
         return (T) this;
     }
@@ -102,5 +104,37 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements
     @Override
     public ObjectNameId createObjectNameId() {
         return new ObjectNameId(id, internalName);
+    }
+
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
+    }
+
+    public void setRazarion(int razarion) {
+        this.razarion = razarion;
+    }
+
+    public void setCrystal(int crystal) {
+        this.crystal = crystal;
+    }
+
+    public void setPassedMessage(String passedMessage) {
+        this.passedMessage = passedMessage;
+    }
+
+    public void setHidePassedDialog(boolean hidePassedDialog) {
+        this.hidePassedDialog = hidePassedDialog;
     }
 }

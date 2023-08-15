@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import jsinterop.annotations.JsType;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ import java.util.Set;
  * Date: 01.01.2011
  * Time: 14:04:29
  */
+@JsType
 public class ComparisonConfig {
     private Integer count;
     private Map<Integer, Integer> typeCount;
@@ -41,6 +44,23 @@ public class ComparisonConfig {
 
     public Map<Integer, Integer> getTypeCount() {
         return typeCount;
+    }
+
+    /**
+     *
+     * @return Key Item Type, Value count
+     */
+    public Integer[][] toTypeCountAngular() {
+        if (typeCount == null) {
+            return null;
+        }
+
+        Integer[][] types = new Integer[typeCount.size()][];
+        int index = 0;
+        for (Map.Entry<Integer, Integer> entry : typeCount.entrySet()) {
+            types[index++] = new Integer[]{entry.getKey(), entry.getValue()};
+        }
+        return types;
     }
 
     public ComparisonConfig setTypeCount(Map<Integer, Integer> typeCount) {
