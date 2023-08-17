@@ -39,7 +39,7 @@ public class AudioPersistence {
 
     @Transactional
     public AudioItemConfig getAudioItemConfig(int id) {
-        return getAudioLibraryEntity(id).toAudioConfig();
+        return getAudioLibraryEntity(id).toAudioItemConfig();
     }
 
     @Transactional
@@ -63,7 +63,7 @@ public class AudioPersistence {
         List<AudioLibraryEntity> images = entityManager.createQuery(userSelect).getResultList();
         List<AudioItemConfig> items = new ArrayList<>();
         for (AudioLibraryEntity image : images) {
-            items.add(image.toAudioConfig());
+            items.add(image.toAudioItemConfig());
         }
         return items;
     }

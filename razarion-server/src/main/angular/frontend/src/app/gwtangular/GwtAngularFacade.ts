@@ -510,6 +510,8 @@ export interface BabylonItem {
 }
 
 export interface BabylonBaseItem extends BabylonItem {
+  getBaseItemType(): BaseItemType;
+
   setHealth(health: number): void;
 
   setBuildingPosition(buildingPosition: NativeVertexDto | null): void;

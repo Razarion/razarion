@@ -11,7 +11,7 @@ export class FrontendService {
   private language: string = "";
   private resolve: any;
   private fbTimerId: number = 0;
-  private loggedIn: boolean = false;
+  private loggedIn?: boolean;
   private cookieAllowed: boolean = false;
   private fbScriptLoadedCallbacks: any[] = [];
 
@@ -52,7 +52,7 @@ export class FrontendService {
   }
 
   autoLogin(): Promise<boolean> {
-    if (this.loggedIn != null) {
+    if (this.loggedIn) {
       return Promise.resolve(this.loggedIn);
     }
     return new Promise((resolve) => {

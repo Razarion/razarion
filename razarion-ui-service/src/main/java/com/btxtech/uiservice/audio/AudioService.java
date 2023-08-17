@@ -54,10 +54,14 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
         this.audioConfig = gameUiControlInitEvent.getColdGameUiContext().getAudioConfig();
     }
 
-    public void onDialogOpened(Integer audioId) {
-        if (audioId != null) {
-            playAudio(audioId);
+    public void playAudioSafe(Integer audioItemConfigId) {
+        if (audioItemConfigId != null) {
+            playAudio(audioItemConfigId);
         }
+    }
+
+    public void onDialogOpened(Integer audioId) {
+        playAudioSafe(audioId);
     }
 
     public void onDialogClosed() {
@@ -83,10 +87,6 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
                 playAudio(audioId);
             }
         }
-    }
-
-    public void onParticle(int audioId) {
-        playAudio(audioId);
     }
 
     public void onCommandSent() {

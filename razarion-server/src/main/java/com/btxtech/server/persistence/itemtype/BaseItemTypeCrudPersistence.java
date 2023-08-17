@@ -44,7 +44,7 @@ public class BaseItemTypeCrudPersistence extends AbstractCrudPersistence<BaseIte
 
     @Override
     protected void fromConfig(BaseItemType baseItemType, BaseItemTypeEntity baseItemTypeEntity) {
-        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, this, shape3DPersistence, particleSystemCrudPersistence);
+        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, this, audioPersistence, particleSystemCrudPersistence);
         baseItemTypeEntity.setThreeJsModelPackConfigEntity(threeJsModelPackCrudPersistence.getEntity(baseItemType.getThreeJsModelPackConfigId()));
         baseItemTypeEntity.setMeshContainer(meshContainerCrudPersistence.getEntity(baseItemType.getMeshContainerId()));
         baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getEntity(baseItemType.getSpawnShape3DId()));

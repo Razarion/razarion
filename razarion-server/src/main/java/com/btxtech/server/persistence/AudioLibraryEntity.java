@@ -45,7 +45,7 @@ public class AudioLibraryEntity {
         this.size = size;
     }
 
-    AudioItemConfig toAudioConfig() {
+    AudioItemConfig toAudioItemConfig() {
         return new AudioItemConfig().setId(id).setInternalName(internalName).setSize((int) size).setType(type);
     }
 

@@ -43,6 +43,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   public static createDummy(id: number): BabylonBaseItem {
     return new class implements BabylonBaseItem {
+      getBaseItemType(): BaseItemType {
+        return <any>{}
+      }
+
       dispose(): void {
       }
 
@@ -116,6 +120,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.progressBar = undefined;
     }
     super.dispose();
+  }
+
+  getBaseItemType(): BaseItemType {
+    return this.baseItemType;
   }
 
   setHealth(health: number): void {

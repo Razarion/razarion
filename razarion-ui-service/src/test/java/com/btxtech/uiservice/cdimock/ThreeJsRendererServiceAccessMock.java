@@ -176,6 +176,7 @@ public class ThreeJsRendererServiceAccessMock implements BabylonRenderServiceAcc
 
         }
 
+        @Override
         public BaseItemType getBaseItemType() {
             return baseItemType;
         }

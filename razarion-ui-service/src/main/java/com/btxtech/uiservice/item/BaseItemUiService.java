@@ -22,6 +22,7 @@ import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -77,6 +78,8 @@ public class BaseItemUiService {
     private ExceptionHandler exceptionHandler;
     @Inject
     private ThreeJsRendererService threeJsRendererService;
+    @Inject
+    private AudioService audioService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private final Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
@@ -266,6 +269,7 @@ public class BaseItemUiService {
         BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(syncBaseItemId);
         if (babylonBaseItem != null) {
             babylonBaseItem.onProjectileFired(destination);
+            audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getWeaponType().getMuzzleFlashAudioItemConfigId());
         }
     }
 
@@ -275,6 +279,7 @@ public class BaseItemUiService {
                 BabylonBaseItem babylonBaseItem = aliveBabylonBaseItems.get(nativeSimpleSyncBaseItemTickInfo.id);
                 if (babylonBaseItem != null) {
                     babylonBaseItem.onExplode();
+                    audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getExplosionAudioItemConfigId());
                 }
             }
         }

@@ -1,9 +1,9 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.persistence.ColladaEntity;
+import com.btxtech.server.persistence.AudioLibraryEntity;
+import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.ParticleSystemEntity;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 
 import javax.persistence.CascadeType;
@@ -45,7 +45,7 @@ public class WeaponTypeEntity {
     private Double projectileSpeed; // Meter per second
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ColladaEntity projectileShape3D;
+    private AudioLibraryEntity muzzleFlashAudioLibraryEntity;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ParticleSystemEntity muzzleFlashParticleSystem;
@@ -60,7 +60,7 @@ public class WeaponTypeEntity {
                 .reloadTime(reloadTime)
                 .projectileSpeed(projectileSpeed)
                 .muzzleFlashParticleSystemConfigId(extractId(muzzleFlashParticleSystem, ParticleSystemEntity::getId))
-                .projectileShape3DId(extractId(projectileShape3D, ColladaEntity::getId));
+                .muzzleFlashAudioItemConfigId(extractId(muzzleFlashAudioLibraryEntity, AudioLibraryEntity::getId));
         if (disallowedItemTypes != null && !disallowedItemTypes.isEmpty()) {
             List<Integer> disallowedIds = new ArrayList<>();
             for (BaseItemTypeEntity baseItemTypeEntity : disallowedItemTypes) {
@@ -74,7 +74,7 @@ public class WeaponTypeEntity {
         return weaponType;
     }
 
-    public void fromWeaponType(WeaponType weaponType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
+    public void fromWeaponType(WeaponType weaponType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, AudioPersistence audioPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
         attackRange = weaponType.getRange();
         damage = weaponType.getDamage();
         detonationRadius = weaponType.getDetonationRadius();
@@ -91,7 +91,7 @@ public class WeaponTypeEntity {
             disallowedItemTypes = null;
         }
         projectileSpeed = weaponType.getProjectileSpeed();
-        projectileShape3D = shape3DPersistence.getEntity(weaponType.getProjectileShape3DId());
+        muzzleFlashAudioLibraryEntity = audioPersistence.getAudioLibraryEntity(weaponType.getMuzzleFlashAudioItemConfigId());
         muzzleFlashParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getMuzzleFlashParticleSystemConfigId());
         if (weaponType.getTurretType() != null) {
             if (turretType == null) {

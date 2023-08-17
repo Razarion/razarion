@@ -1,6 +1,7 @@
 package com.btxtech.server;
 
 import com.btxtech.server.persistence.AudioLibraryEntity;
+import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
@@ -417,9 +418,10 @@ public class ServerTestHelper {
         ItemTypePersistence itemTypePersistence = EasyMock.createNiceMock(ItemTypePersistence.class);
         BaseItemTypeCrudPersistence baseItemTypeCrudPersistence = EasyMock.createNiceMock(BaseItemTypeCrudPersistence.class);
         Shape3DCrudPersistence shape3DPersistence = EasyMock.createNiceMock(Shape3DCrudPersistence.class);
+        AudioPersistence audioPersistence = EasyMock.createNiceMock(AudioPersistence.class);
         ParticleSystemCrudPersistence particleSystemCrudPersistence = EasyMock.createNiceMock(ParticleSystemCrudPersistence.class);
         EasyMock.replay(itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleSystemCrudPersistence);
-        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleSystemCrudPersistence);
+        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, baseItemTypeCrudPersistence, audioPersistence, particleSystemCrudPersistence);
         persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
     }

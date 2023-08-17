@@ -1,11 +1,11 @@
 package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.AudioLibraryEntity;
+import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.asset.MeshContainerEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -29,6 +29,8 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -111,13 +113,21 @@ public class BaseItemTypeEntity {
     @JoinColumn(name = "baseItemType", nullable = false)
     @OrderColumn(name = "orderColumn")
     private List<DemolitionStepEffectEntity> demolitionStepEffectEntities;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private AudioLibraryEntity explosionAudioLibraryEntity;
 
     public Integer getId() {
         return id;
     }
 
     public BaseItemType toBaseItemType() {
-        BaseItemType baseItemType = new BaseItemType().setPrice(price).setXpOnKilling(xpOnKilling).setDropBoxPossibility(dropBoxPossibility);
+        BaseItemType baseItemType = new BaseItemType()
+                .setPrice(price)
+                .setXpOnKilling(xpOnKilling)
+                .setDropBoxPossibility(dropBoxPossibility)
+                .explosionAudioItemConfigId(extractId(explosionAudioLibraryEntity, AudioLibraryEntity::getId));
+        ;
         if (dropBoxItemTypeEntity != null) {
             baseItemType.setDropBoxItemTypeId(dropBoxItemTypeEntity.getId());
         }
@@ -200,7 +210,7 @@ public class BaseItemTypeEntity {
         return baseItemType;
     }
 
-    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, Shape3DCrudPersistence shape3DPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
+    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, AudioPersistence audioPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
         internalName = baseItemType.getInternalName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
         fixVerticalNorm = baseItemType.getPhysicalAreaConfig().isFixVerticalNorm();
@@ -221,12 +231,13 @@ public class BaseItemTypeEntity {
         dropBoxPossibility = baseItemType.getDropBoxPossibility();
         boxPickupRange = baseItemType.getBoxPickupRange();
         unlockCrystals = baseItemType.getUnlockCrystals();
+        explosionAudioLibraryEntity = audioPersistence.getAudioLibraryEntity(baseItemType.getExplosionAudioItemConfigId());
 
         if (baseItemType.getWeaponType() != null) {
             if (weaponType == null) {
                 weaponType = new WeaponTypeEntity();
             }
-            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeCrudPersistence, shape3DPersistence, particleSystemCrudPersistence);
+            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeCrudPersistence, audioPersistence, particleSystemCrudPersistence);
         } else {
             weaponType = null;
         }

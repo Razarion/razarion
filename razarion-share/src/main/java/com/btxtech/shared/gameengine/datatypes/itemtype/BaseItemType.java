@@ -56,6 +56,8 @@ public class BaseItemType extends ItemType {
     private Integer demolitionImageId;
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer buildupTextureId;
+    private Integer explosionAudioItemConfigId;
+
 
     public PhysicalAreaConfig getPhysicalAreaConfig() {
         return physicalAreaConfig;
@@ -318,6 +320,19 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType setBuildupTextureId(Integer buildupTextureId) {
         this.buildupTextureId = buildupTextureId;
+        return this;
+    }
+
+    public Integer getExplosionAudioItemConfigId() {
+        return explosionAudioItemConfigId;
+    }
+
+    public void setExplosionAudioItemConfigId(Integer explosionAudioItemConfigId) {
+        this.explosionAudioItemConfigId = explosionAudioItemConfigId;
+    }
+
+    public BaseItemType explosionAudioItemConfigId(Integer explosionAudioItemConfigId) {
+        setExplosionAudioItemConfigId(explosionAudioItemConfigId);
         return this;
     }
 

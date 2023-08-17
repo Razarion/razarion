@@ -33,10 +33,10 @@ public class WeaponType {
     private double reloadTime;
     private List<Integer> disallowedItemTypes;
     private Double projectileSpeed; // Meter per second
-    private Integer projectileShape3DId;
     @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
     private Integer muzzleFlashParticleSystemConfigId;
     private TurretType turretType;
+    private Integer muzzleFlashAudioItemConfigId;
 
     public double getRange() {
         return range;
@@ -86,12 +86,12 @@ public class WeaponType {
         this.projectileSpeed = projectileSpeed;
     }
 
-    public Integer getProjectileShape3DId() {
-        return projectileShape3DId;
+    public Integer getMuzzleFlashAudioItemConfigId() {
+        return muzzleFlashAudioItemConfigId;
     }
 
-    public void setProjectileShape3DId(Integer projectileShape3DId) {
-        this.projectileShape3DId = projectileShape3DId;
+    public void setMuzzleFlashAudioItemConfigId(Integer muzzleFlashAudioItemConfigId) {
+        this.muzzleFlashAudioItemConfigId = muzzleFlashAudioItemConfigId;
     }
 
     public Integer getMuzzleFlashParticleSystemConfigId() {
@@ -140,8 +140,8 @@ public class WeaponType {
         return this;
     }
 
-    public WeaponType projectileShape3DId(Integer projectileShape3DId) {
-        setProjectileShape3DId(projectileShape3DId);
+    public WeaponType muzzleFlashAudioItemConfigId(Integer muzzleFlashAudioItemConfigId) {
+        setMuzzleFlashAudioItemConfigId(muzzleFlashAudioItemConfigId);
         return this;
     }
 
