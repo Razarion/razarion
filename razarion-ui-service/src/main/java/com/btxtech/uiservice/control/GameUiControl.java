@@ -54,7 +54,6 @@ import java.util.logging.Logger;
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
 @JsType
 public class GameUiControl { // Equivalent worker class is PlanetService
-    private static final long HOME_SCROLL_TIMEOUT = 5000;
     private final Logger logger = Logger.getLogger(GameUiControl.class.getName());
     @Inject
     private Instance<Scene> sceneInstance;

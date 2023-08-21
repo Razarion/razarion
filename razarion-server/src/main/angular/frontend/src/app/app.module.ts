@@ -74,6 +74,10 @@ import {SelectButtonModule} from "primeng/selectbutton";
 import {ObjectEditorComponent} from "./editor/terrain-editor/object-editor.component";
 import {SlopeEditorComponent} from "./editor/terrain-editor/slope-editor.component";
 import {QuestCockpitComponent} from "./game/cockpit/quest/quest-cockpit.component";
+import {ServerQuestEditorComponent} from "./editor/server-quest-editor/server-quest-editor.component";
+import {AccordionModule} from "primeng/accordion";
+import { BaseItemTypeCountComponent } from './editor/common/base-item-type-count/base-item-type-count.component';
+import { BaseItemTypeComponent } from './editor/common/base-item-type/base-item-type.component';
 
 @NgModule({
   declarations: [
@@ -107,47 +111,50 @@ import {QuestCockpitComponent} from "./game/cockpit/quest/quest-cockpit.componen
     CollectionSelectorComponent,
     AngleVector3EditorComponent,
     Vector3EditorComponent,
-    TerrainObjectPositionComponent
+    TerrainObjectPositionComponent,
+    ServerQuestEditorComponent,
+    BaseItemTypeCountComponent,
+    BaseItemTypeComponent
   ],
-    imports: [
-        BrowserModule,
-        HttpClientModule,
-        FormsModule,
-        AppRoutingModule,
-        TreeTableModule,
-        ButtonModule,
-        BrowserAnimationsModule,
-        SidebarModule,
-        DialogModule,
-        DropdownModule,
-        MenubarModule,
-        ToastModule,
-        InputTextModule,
-        InputNumberModule,
-        InputSwitchModule,
-        CarouselModule,
-        ChartModule,
-        RadioButtonModule,
-        TableModule,
-        TabViewModule,
-        CheckboxModule,
-        SliderModule,
-        DataViewModule,
-        FileUploadModule,
-        CommonModule,
-        CardModule,
-        PanelModule,
-        TreeModule,
-        OverlayPanelModule,
-        ListboxModule,
-        ToolbarModule,
-        SplitterModule,
-        InputTextareaModule,
-        ChipsModule,
-        DividerModule,
-        SelectButtonModule,
-        CommonModule
-    ],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    FormsModule,
+    AppRoutingModule,
+    TreeTableModule,
+    ButtonModule,
+    BrowserAnimationsModule,
+    SidebarModule,
+    DialogModule,
+    DropdownModule,
+    MenubarModule,
+    ToastModule,
+    InputTextModule,
+    InputNumberModule,
+    InputSwitchModule,
+    CarouselModule,
+    ChartModule,
+    RadioButtonModule,
+    TableModule,
+    TabViewModule,
+    CheckboxModule,
+    SliderModule,
+    DataViewModule,
+    FileUploadModule,
+    CommonModule,
+    CardModule,
+    PanelModule,
+    TreeModule,
+    OverlayPanelModule,
+    ListboxModule,
+    ToolbarModule,
+    SplitterModule,
+    InputTextareaModule,
+    ChipsModule,
+    DividerModule,
+    SelectButtonModule,
+    AccordionModule
+  ],
   providers: [
     FrontendService, {
       provide: ErrorHandler,

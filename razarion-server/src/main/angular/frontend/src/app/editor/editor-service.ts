@@ -1,8 +1,9 @@
 import {ComponentFactoryResolver, Injectable, Type} from "@angular/core";
-import {SERVER_GAME_ENGINE_PATH} from "../common";
+import {BASE_ITEM_TYPE_EDITOR_PATH, SERVER_GAME_ENGINE_EDITOR, SERVER_GAME_ENGINE_PATH} from "../common";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
+import {ObjectNameId, ServerGameEngineConfig} from "../generated/razarion-share";
 
 export class ServerCommand {
   constructor(public name: string, public methodUrl: string) {
@@ -32,7 +33,7 @@ export class EditorService {
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private gwtAngularService: GwtAngularService,
-              private http: HttpClient,
+              private httpClient: HttpClient,
               private messageService: MessageService) {
   }
 
@@ -57,7 +58,7 @@ export class EditorService {
 
   executeServerCommand(serverCommand: ServerCommand) {
     const url = SERVER_GAME_ENGINE_PATH + "/" + serverCommand.methodUrl
-    this.http.post(url, null).subscribe(value => {
+    this.httpClient.post(url, null).subscribe(value => {
         this.messageService.add({
           severity: 'success',
           summary: serverCommand.name
@@ -71,6 +72,43 @@ export class EditorService {
           sticky: true
         });
       });
+  }
+
+  readServerGameEngineConfig(): Promise<ServerGameEngineConfig> {
+    let id = 3; // TODO get actual ServerGameEngineConfig
+    return new Promise((resolve) => {
+      this.httpClient.get(`${SERVER_GAME_ENGINE_EDITOR}/read/${id}`).subscribe({
+        next: (serverGameEngineConfig: any) => {
+          resolve(serverGameEngineConfig);
+        },
+        error: (err: any) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: `Loading SERVER_GAME_ENGINE failed`,
+            detail: `${JSON.stringify(err)}`,
+            sticky: true
+          });
+        }
+      });
+    });
+  }
+
+  readBaseItemTypeObjectNameIds(): Promise<ObjectNameId[]> {
+    return new Promise((resolve) => {
+      this.httpClient.get(`${BASE_ITEM_TYPE_EDITOR_PATH}/objectNameIds`).subscribe({
+        next: (objectNameIds: any) => {
+          resolve(objectNameIds);
+        },
+        error: (err: any) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: `Loading BaseItemTypes failed`,
+            detail: `${JSON.stringify(err)}`,
+            sticky: true
+          });
+        }
+      });
+    });
   }
 
 }

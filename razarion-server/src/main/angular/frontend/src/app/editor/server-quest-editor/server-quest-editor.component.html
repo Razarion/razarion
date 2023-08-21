@@ -1,0 +1,109 @@
+<div class="field grid align-items-center">
+  <span class="col">Id</span>
+  <div class="col">
+    {{serverGameEngineConfig?.id}}
+  </div>
+</div>
+<div class="field grid align-items-center">
+  <span class="col">Internal name</span>
+  <div class="col">
+    {{serverGameEngineConfig?.internalName}}
+  </div>
+</div>
+<div class="field grid align-items-center">
+  <span class="col">Planet Id</span>
+  <div class="col">
+    {{serverGameEngineConfig?.planetConfigId}}
+  </div>
+</div>
+<div class="grid">
+  <div class="col">Save</div>
+  <div class="col">
+    <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
+              (onClick)="onSave()"></p-button>
+  </div>
+</div>
+
+<p-accordion *ngIf="serverGameEngineConfig?.serverLevelQuestConfigs" [style]="{width:'500px'}">
+  <p-accordionTab *ngFor="let serverLevelQuestConfig of serverGameEngineConfig?.serverLevelQuestConfigs">
+    <ng-template pTemplate="header">
+      {{serverLevelQuestConfig.internalName}} ({{serverLevelQuestConfig.id}})
+    </ng-template>
+    <div class="field grid align-items-center">
+      <span class="col">Internal name</span>
+      <div class="col">
+        {{serverLevelQuestConfig.internalName}}
+      </div>
+    </div>
+    <div class="field grid align-items-center">
+      <span class="col">Minimal level (id)</span>
+      <div class="col">
+        {{serverLevelQuestConfig.minimalLevelId}}
+      </div>
+    </div>
+    <p-accordion *ngIf="serverLevelQuestConfig.questConfigs">
+      <p-accordionTab *ngFor="let questConfig of serverLevelQuestConfig.questConfigs">
+        <ng-template pTemplate="header">
+          {{questConfig.title}} ({{questConfig.id}})
+        </ng-template>
+        <div class="field grid align-items-center">
+          <span class="col">Title</span>
+          <div class="col">
+            <input [(ngModel)]="questConfig.title" type="text"
+                   class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+          </div>
+        </div>
+        <div class="field grid align-items-center">
+          <span class="col">Description</span>
+          <div class="col">
+            <input [(ngModel)]="questConfig.description" type="text"
+                   class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+          </div>
+        </div>
+        <p-divider align="left">
+          <div class="inline-flex align-items-center">
+            <i class="pi pi-cog mr-2"></i>
+            <b>Condition</b>
+          </div>
+        </p-divider>
+        <div class="field grid align-items-center">
+          <span class="col">Trigger</span>
+          <div class="col">
+            <p-dropdown [placeholder]="'...'"
+                        [options]="CONDITION_TRIGGERS"
+                        [(ngModel)]="questConfig.conditionConfig.conditionTrigger"
+                        [style]="{width:'100%'}">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="field grid align-items-center">
+          <span class="col">Count</span>
+          <div class="col">
+            <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.count" type="text"
+                   class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+          </div>
+        </div>
+        <div class="field grid align-items-center">
+          <span class="col">Type Count</span>
+          <div class="col">
+            <base-item-type-count [(baseItemTypeCount)]="questConfig.conditionConfig.comparisonConfig.typeCount"></base-item-type-count>
+          </div>
+        </div>
+        <div class="field grid align-items-center">
+          <span class="col">Time Seconds</span>
+          <div class="col">
+            <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.timeSeconds" type="text"
+                   class="bg-primary-reverse text-base text-color p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+          </div>
+        </div>
+        <div class="field grid align-items-center">
+          <span class="col">Place</span>
+          <div class="col">
+            <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.placeConfig" type="text"
+                   class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+          </div>
+        </div>
+      </p-accordionTab>
+    </p-accordion>
+  </p-accordionTab>
+</p-accordion>

@@ -1,0 +1,33 @@
+<p-table [value]="baseItemTypeCountArray">
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="white-space: nowrap">Item Type</th>
+      <th>Count</th>
+      <th>
+        <p-button icon="pi pi-plus" styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+                  title="Delete"
+                  (onClick)="onCreate()">
+        </p-button>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-typeCount>
+    <tr>
+      <td>
+        <base-item-type [(baseItemTypeId)]="typeCount.baseItemTypeId" (onChangeEmitter)="onChange()"></base-item-type>
+      </td>
+      <td>
+        <input
+          [(ngModel)]="typeCount.count"
+          (input)="onChange()"
+          class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"/>
+      </td>
+      <td>
+        <p-button icon="pi pi-times" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                  title="Delete"
+                  (onClick)="onDelete(typeCount.baseItemTypeId)">
+        </p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

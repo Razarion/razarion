@@ -10,6 +10,7 @@ import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component
 import {ImageEditorComponent} from "../image-editor/image-editor.component";
 import {CollectionSelectorComponent} from "../property-table/collection-selector.component";
 import {BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
+import {ServerQuestEditorComponent} from "../server-quest-editor/server-quest-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -47,6 +48,11 @@ export class EditorDialogComponent {
   openTerrainEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
+  }
+
+  openQuestEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Quest Editor", ServerQuestEditorComponent));
   }
 
   openImageEditor() {

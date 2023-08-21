@@ -189,6 +189,28 @@ server.on({
   }
 });
 
+const serverGameEngineJson = require("./server-game-engine.json");
+server.on({
+  method: 'GET',
+  path: '/rest/editor/server-game-engine/read/3',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(serverGameEngineJson)
+  }
+});
+
+const baseItemTypeJson = require("./base_item_type.json");
+server.on({
+  method: 'GET',
+  path: '/rest/editor/base_item_type/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(baseItemTypeJson)
+  }
+});
+
 
 server.start(function () {
   console.info("Razarion fake server is running on port: " + PORT);
