@@ -19,7 +19,8 @@ import {
   ConditionTrigger,
   CursorType,
   Diplomacy,
-  HarvesterType, I18nString,
+  HarvesterType,
+  I18nString,
   OwnItemCockpit,
   PhysicalAreaConfig,
   QuestConfig,
@@ -29,6 +30,7 @@ import {
 import {GwtInstance} from "../gwtangular/GwtInstance";
 import {GwtHelper} from "../gwtangular/GwtHelper";
 import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
+import {ServerQuestEditorComponent} from "../editor/server-quest-editor/server-quest-editor.component";
 
 
 @Component({
@@ -63,229 +65,83 @@ export class GameComponent implements OnInit {
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
-      this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
-      this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
-      this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
-      this.gwtAngularService.gwtAngularFacade.threeJsModelPackService = this.gameMockService.mockThreeJsModelPackService;
-      this.gameMockService.loadMockStaticGameConfig().then(() => {
-        this.gameMockService.loadMockAssetConfig().then(() => {
-          this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
-            this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
-            this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
-            this.gameMockService.mockTerrainTile(this.threeJsRendererService);
-            this.mainCockpitComponent.show(true);
-            this.threeJsRendererService.initMeshContainers(this.gameMockService.createMeshContainers());
-            this.threeJsRendererService.setViewFieldCenter(5, 2);
-            // this.threeJsRendererService.createProjectile(new class implements Vertex {
-            //   getX(): number {
-            //     return 0;
-            //   }
-            //
-            //   getY(): number {
-            //     return 0;
-            //   }
-            //
-            //   getZ(): number {
-            //     return 0;
-            //   }
-            // }, new class implements Vertex {
-            //   getX(): number {
-            //     return 8;
-            //   }
-            //
-            //   getY(): number {
-            //     return 4;
-            //   }
-            //
-            //   getZ(): number {
-            //     return 1;
-            //   }
-            // }, 2);
+      let runGwtMock = true;
+      if (runGwtMock) {
+        this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
+        this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
+        this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
+        this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
+        this.gwtAngularService.gwtAngularFacade.threeJsModelPackService = this.gameMockService.mockThreeJsModelPackService;
+        this.gameMockService.loadMockStaticGameConfig().then(() => {
+          this.gameMockService.loadMockAssetConfig().then(() => {
+            this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
+              this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
+              this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
+              this.gameMockService.mockTerrainTile(this.threeJsRendererService);
+              this.mainCockpitComponent.show(true);
+              this.threeJsRendererService.initMeshContainers(this.gameMockService.createMeshContainers());
+              this.threeJsRendererService.setViewFieldCenter(5, 2);
+              // this.threeJsRendererService.createProjectile(new class implements Vertex {
+              //   getX(): number {
+              //     return 0;
+              //   }
+              //
+              //   getY(): number {
+              //     return 0;
+              //   }
+              //
+              //   getZ(): number {
+              //     return 0;
+              //   }
+              // }, new class implements Vertex {
+              //   getX(): number {
+              //     return 8;
+              //   }
+              //
+              //   getY(): number {
+              //     return 4;
+              //   }
+              //
+              //   getZ(): number {
+              //     return 1;
+              //   }
+              // }, 2);
 
-            let baseItemType = new class implements BaseItemType {
-              getI18nName(): I18nString {
-                return new class implements I18nString {
-                  getString(language: string): string {
-                    return "I18nString";
-                  }
-                };
-              }
-              getBuilderType(): BuilderType {
-                return new class implements BuilderType {
-                  getParticleSystemConfigId(): number | null {
-                    return 1;
-                  }
-                }
-              }
-
-              getHarvesterType(): HarvesterType {
-                return new class implements HarvesterType {
-                  getParticleSystemConfigId(): number | null {
-                    return 2;
-                  }
-                }
-              }
-
-              getWeaponType(): WeaponType {
-                return new class implements WeaponType {
-                  getProjectileSpeed(): number | null {
-                    return 30;
-                  }
-                  getMuzzleFlashParticleSystemConfigId(): number | null {
-                    return 2;
-                  }
-                }
-              }
-
-              getId(): number {
-                return 0;
-              }
-
-              getInternalName(): string {
-                return "Builder";
-              }
-
-              getMeshContainerId(): number | null {
-                return 22743;
-              }
-
-              getPhysicalAreaConfig(): PhysicalAreaConfig {
-                return new class implements PhysicalAreaConfig {
-                  getRadius(): number {
-                    return 2;
-                  }
-                };
-              }
-
-              getThreeJsModelPackConfigId(): number | null {
-                return null;
-              }
-
-            };
-
-            {
-              let babylonBaseItem1 = this.threeJsRendererService.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
-              babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
-              babylonBaseItem1.setAngle(0);
-
-              babylonBaseItem1.updatePosition();
-              babylonBaseItem1.updateAngle();
-
-              babylonBaseItem1.select(true);
-
-              babylonBaseItem1.setConstructing(0.01);
-              babylonBaseItem1.setHealth(0.99);
-
-              // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
-              // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
-            }
-            {
-              let babylonBaseItem2 = this.threeJsRendererService.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
-              babylonBaseItem2.setPosition(GwtInstance.newVertex(8, 14, 0));
-              babylonBaseItem2.setAngle(0);
-
-              babylonBaseItem2.updatePosition();
-              babylonBaseItem2.updateAngle();
-
-              babylonBaseItem2.select(true);
-
-              babylonBaseItem2.setConstructing(0.33);
-              babylonBaseItem2.setHealth(0.66);
-
-              setInterval(() => babylonBaseItem2.setConstructing((Date.now() % 5000) / 5000), 500);
-              setInterval(() => babylonBaseItem2.setHealth((Date.now() % 10000) / 10000), 2000);
-            }
-            {
-              let babylonBaseItem3 = this.threeJsRendererService.createBabylonBaseItem(999997, baseItemType, Diplomacy.ENEMY);
-              babylonBaseItem3.setPosition(GwtInstance.newVertex(8, 20, 0));
-              babylonBaseItem3.setAngle(0);
-
-              babylonBaseItem3.updatePosition();
-              babylonBaseItem3.updateAngle();
-
-              babylonBaseItem3.select(true);
-
-              babylonBaseItem3.setConstructing(0.99);
-              babylonBaseItem3.setHealth(0.01);
-
-              // setInterval(() => babylonBaseItem3.setConstructing((Date.now() % 5000) / 5000), 500);
-              // setInterval(() => babylonBaseItem3.setHealth(1.0 - ((Date.now() + 1000) % 10000) / 10000), 2000);
-            }
-            // let buildingPosition: NativeVertexDto = new class implements NativeVertexDto {
-            //   x = 16;
-            //   y = 8;
-            //   z = 0;
-            // };
-            // babylonBaseItem.setBuildingPosition(buildingPosition);
-
-            // babylonBaseItem.onExplode();
-            // setInterval(() => babylonBaseItem.onExplode(), 4000)
-
-
-            // const pbr = new PBRMetallicRoughnessMaterial("pbr", this.threeJsRendererService.getScene());
-            // pbr.baseColor = new Color3(1.0, 0.766, 0.336);
-            // pbr.metallic = 1.0;
-            // pbr.roughness = 0.0;
-            //
-            // const sphere = MeshBuilder.CreateSphere("TestSphere", {diameter: 4}, this.threeJsRendererService.getScene());
-            // sphere.material = pbr;
-            // sphere.position. y = 4;
-            // sphere.position. x = 8;
-            // const plane = MeshBuilder.CreatePlane("TestPlane", {size: 10}, this.threeJsRendererService.getScene());
-            // plane.material = pbr;
-            // plane.rotation.x = Tools.ToRadians(90);
-            // plane.position. y = 0.2;
-            // this.threeJsRendererService.getScene().environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/environment.dds", this.threeJsRendererService.getScene());
-
-            // babylonBaseItem.select(true);
-            // let i = 0.1;
-            // let move = () => {
-            //   babylonBaseItem.updatePosition(271, 290 + i, 0, 0)
-            //   i += 0.1
-            //   if (i > 2) {
-            //     babylonBaseItem.select(false);
-            //     return;
-            //   }
-            //   setTimeout(move, 100)
-            // }
-            // setTimeout(move, 100)
-
-            this.itemCockpitContainer.displayOwnSingleType(1, new class implements OwnItemCockpit {
-              buildupItemInfos = null;
-              imageUrl = "/xxxxx";
-              itemTypeDescr = "Builds Units";
-              itemTypeName = "Factory";
-
-              sellHandler(): void {
-              }
-
-            });
-
-            this.questCockpitContainer.showQuestSideBar(new class implements QuestConfig {
-                getConditionConfig(): ConditionConfig | null {
-                  return new class implements ConditionConfig {
-                    getConditionTrigger(): ConditionTrigger {
-                      return ConditionTrigger.SYNC_ITEM_POSITION;
-                    }
-
-                    getComparisonConfig(): ComparisonConfig {
-                      return new class implements ComparisonConfig {
-                        getCount(): number | null {
-                          return null;
-                        }
-
-                        getTimeSeconds(): number | null {
-                          return null;
-                        }
-
-                        toTypeCountAngular(): number[][] {
-                          return [[1, 2], [2, 3]];
-                        }
-
-                      };
+              let baseItemType = new class implements BaseItemType {
+                getI18nName(): I18nString {
+                  return new class implements I18nString {
+                    getString(language: string): string {
+                      return "I18nString";
                     }
                   };
+                }
+
+                getBuilderType(): BuilderType {
+                  return new class implements BuilderType {
+                    getParticleSystemConfigId(): number | null {
+                      return 1;
+                    }
+                  }
+                }
+
+                getHarvesterType(): HarvesterType {
+                  return new class implements HarvesterType {
+                    getParticleSystemConfigId(): number | null {
+                      return 2;
+                    }
+                  }
+                }
+
+                getWeaponType(): WeaponType {
+                  return new class implements WeaponType {
+                    getProjectileSpeed(): number | null {
+                      return 30;
+                    }
+
+                    getMuzzleFlashParticleSystemConfigId(): number | null {
+                      return 2;
+                    }
+                  }
                 }
 
                 getId(): number {
@@ -293,39 +149,194 @@ export class GameComponent implements OnInit {
                 }
 
                 getInternalName(): string {
-                  return "";
+                  return "Builder";
                 }
 
-                getTitle(): string {
-                  return "Build";
+                getMeshContainerId(): number | null {
+                  return 22743;
                 }
 
-                getDescription(): string {
-                  return "Build a Factory";
+                getPhysicalAreaConfig(): PhysicalAreaConfig {
+                  return new class implements PhysicalAreaConfig {
+                    getRadius(): number {
+                      return 2;
+                    }
+                  };
                 }
 
-              }, new class implements QuestProgressInfo {
-                getBotBasesInformation(): string | null {
+                getThreeJsModelPackConfigId(): number | null {
                   return null;
                 }
 
-                getCount(): number | null {
-                  return 1;
+              };
+
+              {
+                let babylonBaseItem1 = this.threeJsRendererService.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
+                babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
+                babylonBaseItem1.setAngle(0);
+
+                babylonBaseItem1.updatePosition();
+                babylonBaseItem1.updateAngle();
+
+                babylonBaseItem1.select(true);
+
+                babylonBaseItem1.setConstructing(0.01);
+                babylonBaseItem1.setHealth(0.99);
+
+                // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
+                // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
+              }
+              {
+                let babylonBaseItem2 = this.threeJsRendererService.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
+                babylonBaseItem2.setPosition(GwtInstance.newVertex(8, 14, 0));
+                babylonBaseItem2.setAngle(0);
+
+                babylonBaseItem2.updatePosition();
+                babylonBaseItem2.updateAngle();
+
+                babylonBaseItem2.select(true);
+
+                babylonBaseItem2.setConstructing(0.33);
+                babylonBaseItem2.setHealth(0.66);
+
+                setInterval(() => babylonBaseItem2.setConstructing((Date.now() % 5000) / 5000), 500);
+                setInterval(() => babylonBaseItem2.setHealth((Date.now() % 10000) / 10000), 2000);
+              }
+              {
+                let babylonBaseItem3 = this.threeJsRendererService.createBabylonBaseItem(999997, baseItemType, Diplomacy.ENEMY);
+                babylonBaseItem3.setPosition(GwtInstance.newVertex(8, 20, 0));
+                babylonBaseItem3.setAngle(0);
+
+                babylonBaseItem3.updatePosition();
+                babylonBaseItem3.updateAngle();
+
+                babylonBaseItem3.select(true);
+
+                babylonBaseItem3.setConstructing(0.99);
+                babylonBaseItem3.setHealth(0.01);
+
+                // setInterval(() => babylonBaseItem3.setConstructing((Date.now() % 5000) / 5000), 500);
+                // setInterval(() => babylonBaseItem3.setHealth(1.0 - ((Date.now() + 1000) % 10000) / 10000), 2000);
+              }
+              // let buildingPosition: NativeVertexDto = new class implements NativeVertexDto {
+              //   x = 16;
+              //   y = 8;
+              //   z = 0;
+              // };
+              // babylonBaseItem.setBuildingPosition(buildingPosition);
+
+              // babylonBaseItem.onExplode();
+              // setInterval(() => babylonBaseItem.onExplode(), 4000)
+
+
+              // const pbr = new PBRMetallicRoughnessMaterial("pbr", this.threeJsRendererService.getScene());
+              // pbr.baseColor = new Color3(1.0, 0.766, 0.336);
+              // pbr.metallic = 1.0;
+              // pbr.roughness = 0.0;
+              //
+              // const sphere = MeshBuilder.CreateSphere("TestSphere", {diameter: 4}, this.threeJsRendererService.getScene());
+              // sphere.material = pbr;
+              // sphere.position. y = 4;
+              // sphere.position. x = 8;
+              // const plane = MeshBuilder.CreatePlane("TestPlane", {size: 10}, this.threeJsRendererService.getScene());
+              // plane.material = pbr;
+              // plane.rotation.x = Tools.ToRadians(90);
+              // plane.position. y = 0.2;
+              // this.threeJsRendererService.getScene().environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/environment.dds", this.threeJsRendererService.getScene());
+
+              // babylonBaseItem.select(true);
+              // let i = 0.1;
+              // let move = () => {
+              //   babylonBaseItem.updatePosition(271, 290 + i, 0, 0)
+              //   i += 0.1
+              //   if (i > 2) {
+              //     babylonBaseItem.select(false);
+              //     return;
+              //   }
+              //   setTimeout(move, 100)
+              // }
+              // setTimeout(move, 100)
+
+              this.itemCockpitContainer.displayOwnSingleType(1, new class implements OwnItemCockpit {
+                buildupItemInfos = null;
+                imageUrl = "/xxxxx";
+                itemTypeDescr = "Builds Units";
+                itemTypeName = "Factory";
+
+                sellHandler(): void {
                 }
 
-                getSecondsRemaining(): number | null {
-                  return null;
-                }
+              });
 
-                toTypeCountAngular(): number[][] {
-                  return [];
-                }
+              this.questCockpitContainer.showQuestSideBar(new class implements QuestConfig {
+                  getConditionConfig(): ConditionConfig | null {
+                    return new class implements ConditionConfig {
+                      getConditionTrigger(): ConditionTrigger {
+                        return ConditionTrigger.SYNC_ITEM_POSITION;
+                      }
 
-              },
-              false)
+                      getComparisonConfig(): ComparisonConfig {
+                        return new class implements ComparisonConfig {
+                          getCount(): number | null {
+                            return null;
+                          }
+
+                          getTimeSeconds(): number | null {
+                            return null;
+                          }
+
+                          toTypeCountAngular(): number[][] {
+                            return [[1, 2], [2, 3]];
+                          }
+
+                        };
+                      }
+                    };
+                  }
+
+                  getId(): number {
+                    return 0;
+                  }
+
+                  getInternalName(): string {
+                    return "";
+                  }
+
+                  getTitle(): string {
+                    return "Build";
+                  }
+
+                  getDescription(): string {
+                    return "Build a Factory";
+                  }
+
+                }, new class implements QuestProgressInfo {
+                  getBotBasesInformation(): string | null {
+                    return null;
+                  }
+
+                  getCount(): number | null {
+                    return 1;
+                  }
+
+                  getSecondsRemaining(): number | null {
+                    return null;
+                  }
+
+                  toTypeCountAngular(): number[][] {
+                    return [];
+                  }
+
+                },
+                false)
+            });
           });
         });
-      });
+      } else {
+        this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
+        this.mainCockpitComponent.show(true);
+        this.addEditorModel(new EditorModel("Quest Editor", ServerQuestEditorComponent));
+      }
     }
     this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
     this.gwtAngularService.gwtAngularFacade.angularCursorService = this.createAngularCursorService();

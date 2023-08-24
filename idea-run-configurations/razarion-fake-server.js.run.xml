@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="razarion-fake-server.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="razarion-fake-server.js" working-dir="$PROJECT_DIR$/razarion-server/src/main/angular/frontend">
+  <configuration default="false" name="razarion-fake-server.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="razarion-fake-server.js" working-dir="$PROJECT_DIR$/razarion-server/src/main/angular/frontend/razarion-fake-server">
     <method v="2" />
   </configuration>
 </component>

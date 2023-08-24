@@ -404,7 +404,14 @@
                 "4": 1
               },
               "timeSeconds": null,
-              "placeConfig": null,
+              "placeConfig": {
+                "polygon2D": null,
+                "position": {
+                  "x": 10,
+                  "y": 8
+                },
+                "radius": 2
+              },
               "botIds": null
             }
           }

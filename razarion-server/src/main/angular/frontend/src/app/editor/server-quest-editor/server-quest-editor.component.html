@@ -99,8 +99,7 @@
         <div class="field grid align-items-center">
           <span class="col">Place</span>
           <div class="col">
-            <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.placeConfig" type="text"
-                   class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+            <place-config [(placeConfig)]="questConfig.conditionConfig.comparisonConfig.placeConfig"></place-config>
           </div>
         </div>
       </p-accordionTab>

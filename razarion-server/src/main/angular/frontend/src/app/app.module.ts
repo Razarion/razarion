@@ -76,8 +76,10 @@ import {SlopeEditorComponent} from "./editor/terrain-editor/slope-editor.compone
 import {QuestCockpitComponent} from "./game/cockpit/quest/quest-cockpit.component";
 import {ServerQuestEditorComponent} from "./editor/server-quest-editor/server-quest-editor.component";
 import {AccordionModule} from "primeng/accordion";
-import { BaseItemTypeCountComponent } from './editor/common/base-item-type-count/base-item-type-count.component';
-import { BaseItemTypeComponent } from './editor/common/base-item-type/base-item-type.component';
+import {BaseItemTypeCountComponent} from './editor/common/base-item-type-count/base-item-type-count.component';
+import {BaseItemTypeComponent} from './editor/common/base-item-type/base-item-type.component';
+import {PlaceConfigComponent} from './editor/common/place-config/place-config.component';
+import {ToggleButtonModule} from "primeng/togglebutton";
 
 @NgModule({
   declarations: [
@@ -114,7 +116,8 @@ import { BaseItemTypeComponent } from './editor/common/base-item-type/base-item-
     TerrainObjectPositionComponent,
     ServerQuestEditorComponent,
     BaseItemTypeCountComponent,
-    BaseItemTypeComponent
+    BaseItemTypeComponent,
+    PlaceConfigComponent
   ],
   imports: [
     BrowserModule,
@@ -153,7 +156,8 @@ import { BaseItemTypeComponent } from './editor/common/base-item-type/base-item-
     ChipsModule,
     DividerModule,
     SelectButtonModule,
-    AccordionModule
+    AccordionModule,
+    ToggleButtonModule
   ],
   providers: [
     FrontendService, {

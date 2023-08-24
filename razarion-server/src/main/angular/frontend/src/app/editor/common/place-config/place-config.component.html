@@ -1,0 +1,71 @@
+<div class="border-1 border-solid border-gray-400">
+  <div class="grid flex-nowrap">
+    <div class="col">
+      <p-button icon="pi pi-globe" styleClass="p-button-rounded p-button-text p-button-sm p-button-info"
+                title="Delete">
+      </p-button>
+      <p-button icon="pi pi-eye" styleClass="p-button-rounded p-button-text p-button-sm p-button-info"
+                title="Delete">
+      </p-button>
+    </div>
+    <div class="col">
+      <p-button icon="pi pi-times" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                title="Delete">
+      </p-button>
+    </div>
+  </div>
+  <div class="grid flex-nowrap">
+    <div class="col">
+      <p-toggleButton [ngModel]="locationMode"
+                      (onChange)="locationMode=$event.checked; $event.checked ? editPolygonButton.checked=false : editLocationButton.checked=false; $event.checked ? onEditPolygonButton(false):onEditLocationButton(false)"
+                      onIcon="pi pi-map-marker"
+                      offIcon="pi pi-map-marker"
+                      styleClass="p-button-sm p-button-text"></p-toggleButton>
+    </div>
+    <div class="col">
+      <p-toggleButton #editLocationButton
+                      (onChange)="onEditLocationButton($event.checked)"
+                      [disabled]="!locationMode" onLabel="Stop" offLabel="Edit"
+                      styleClass="p-button-sm p-button-text"></p-toggleButton>
+    </div>
+    <div class="col-10">
+      <div class="inline-flex">
+        <p-inputNumber [(ngModel)]="locationPositionX"
+                       (onInput)="locationPositionX = $event.value"
+                       [prefix]="'x: '" [size]="3"
+                       [disabled]="!locationMode"
+                       [minFractionDigits]="1" [maxFractionDigits]="6"
+                       [allowEmpty]="false"></p-inputNumber>
+        <p-inputNumber [(ngModel)]="locationPositionY"
+                       (onInput)="locationPositionY = $event.value"
+                       [prefix]="'y: '" [size]="3"
+                       [disabled]="!locationMode"
+                       [minFractionDigits]="1" [maxFractionDigits]="6"
+                       [allowEmpty]="false"></p-inputNumber>
+        <p-inputNumber [(ngModel)]="locationRadius"
+                       (onInput)="locationRadius = $event.value"
+                       [prefix]="'r: '" [size]="3"
+                       [disabled]="!locationMode"
+                       [minFractionDigits]="1" [maxFractionDigits]="6"></p-inputNumber>
+      </div>
+    </div>
+  </div>
+  <div class="grid flex-nowrap">
+    <div class="col">
+      <p-toggleButton [ngModel]="!locationMode"
+                      (onChange)="locationMode=!$event.checked; $event.checked ? editLocationButton.checked=false : editPolygonButton.checked=false; $event.checked ? onEditLocationButton(false):onEditPolygonButton(false)"
+                      onIcon="pi pi-pencil"
+                      offIcon="pi pi-pencil"
+                      styleClass="p-button-sm p-button-text"></p-toggleButton>
+    </div>
+    <div class="col">
+      <p-toggleButton #editPolygonButton
+                      [disabled]="locationMode"
+                      (onChange)="onEditPolygonButton($event.checked)"
+                      onLabel="Stop" offLabel="Edit" styleClass="p-button-sm p-button-text"></p-toggleButton>
+    </div>
+    <div class="col-10">
+      10 Points
+    </div>
+  </div>
+</div>
