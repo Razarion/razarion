@@ -38,6 +38,7 @@ import {EditorService} from "../editor-service";
   templateUrl: './slope-editor.component.html'
 })
 export class SlopeEditorComponent implements OnInit {
+  public static readonly EAR_CUT = require('earcut');// Import not working
   readonly SELECTION_BOOST = 0.01;
   slopeConfigs: any[] = [];
   newSlopeConfigId: number | undefined;
@@ -48,7 +49,6 @@ export class SlopeEditorComponent implements OnInit {
   selectedTerrainSlopePosition: TerrainSlopePosition | undefined;
   selectedTerrainSlopePolygon: Vector2[] | undefined;
   selectedTerrainSlopeMesh: Mesh | undefined;
-  private static readonly EAR_CUT = require('earcut');// Import not working
 
   private readonly cornerDiscMaterial;
   minCornerSelectionDistance = 5;

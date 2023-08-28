@@ -1,15 +1,25 @@
-<div class="border-1 border-solid border-gray-400">
+<p-button *ngIf="!this.placeConfig"
+          icon="pi pi-plus"
+          styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+          title="Create"
+          (onClick)="onCreateClicked()">
+</p-button>
+<div class="border-1 border-solid border-gray-400" *ngIf="this.placeConfig">
   <div class="grid flex-nowrap">
     <div class="col">
-      <p-button icon="pi pi-globe" styleClass="p-button-rounded p-button-text p-button-sm p-button-info"
-                title="Delete">
+      <p-button icon="pi pi-eye"
+                styleClass="p-button-rounded p-button-text p-button-sm p-button-info"
+                title="Show">
       </p-button>
-      <p-button icon="pi pi-eye" styleClass="p-button-rounded p-button-text p-button-sm p-button-info"
-                title="Delete">
+      <p-button icon="pi pi-globe"
+                styleClass="p-button-rounded p-button-text p-button-sm p-button-info"
+                title="Scroll to">
       </p-button>
     </div>
     <div class="col">
-      <p-button icon="pi pi-times" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+      <p-button icon="pi pi-times"
+                styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                (onClick)="onDeleteClicked()"
                 title="Delete">
       </p-button>
     </div>
@@ -20,12 +30,14 @@
                       (onChange)="locationMode=$event.checked; $event.checked ? editPolygonButton.checked=false : editLocationButton.checked=false; $event.checked ? onEditPolygonButton(false):onEditLocationButton(false)"
                       onIcon="pi pi-map-marker"
                       offIcon="pi pi-map-marker"
+                      title="Location"
                       styleClass="p-button-sm p-button-text"></p-toggleButton>
     </div>
     <div class="col">
       <p-toggleButton #editLocationButton
                       (onChange)="onEditLocationButton($event.checked)"
                       [disabled]="!locationMode" onLabel="Stop" offLabel="Edit"
+                      title="Edit"
                       styleClass="p-button-sm p-button-text"></p-toggleButton>
     </div>
     <div class="col-10">
@@ -56,16 +68,37 @@
                       (onChange)="locationMode=!$event.checked; $event.checked ? editLocationButton.checked=false : editPolygonButton.checked=false; $event.checked ? onEditLocationButton(false):onEditPolygonButton(false)"
                       onIcon="pi pi-pencil"
                       offIcon="pi pi-pencil"
+                      title="Polygon"
                       styleClass="p-button-sm p-button-text"></p-toggleButton>
     </div>
     <div class="col">
       <p-toggleButton #editPolygonButton
                       [disabled]="locationMode"
                       (onChange)="onEditPolygonButton($event.checked)"
+                      title="Edit"
                       onLabel="Stop" offLabel="Edit" styleClass="p-button-sm p-button-text"></p-toggleButton>
     </div>
-    <div class="col-10">
-      10 Points
+    <div class="col">
+      <p-toggleButton [ngModel]="polygonVisualization?.vertexAddMode"
+                      (onChange)="polygonVisualization && (polygonVisualization.vertexAddMode = $event.checked); $event.checked?polygonVisualization!.vertexDeleteMode = false : {}"
+                      [disabled]="!polygonVisualization"
+                      onIcon="pi pi-plus-circle"
+                      offIcon="pi pi-plus-circle"
+                      title="Add vertex mode"
+                      styleClass="p-button-sm p-button-text"></p-toggleButton>
+    </div>
+    <div class="col">
+      <p-toggleButton [ngModel]="polygonVisualization?.vertexDeleteMode"
+                      (onChange)="polygonVisualization && (polygonVisualization.vertexDeleteMode = $event.checked); $event.checked?polygonVisualization!.vertexAddMode = false : {}"
+                      [disabled]="!polygonVisualization"
+                      onIcon="pi pi-minus-circle"
+                      offIcon="pi pi-minus-circle"
+                      title="Remove vertex mode"
+                      styleClass="p-button-sm p-button-text"></p-toggleButton>
+    </div>
+    <div class="col-8">
+      {{(polygonVisualization?.placeConfig?.polygon2D?.corners?.length || 0) < 3 ? "-" : polygonVisualization!.placeConfig.polygon2D!.corners.length}}
+      Vertices
     </div>
   </div>
 </div>

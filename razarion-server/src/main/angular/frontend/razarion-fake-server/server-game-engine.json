@@ -434,7 +434,30 @@
                 "3": 3
               },
               "timeSeconds": null,
-              "placeConfig": null,
+              "placeConfig": {
+                "polygon2D": {
+                  "corners": [
+                    {
+                      "x": 2,
+                      "y": 2
+                    },
+                    {
+                      "x": 10,
+                      "y": 2
+                    },
+                    {
+                      "x": 10,
+                      "y": 8
+                    },
+                    {
+                      "x": 3,
+                      "y": 8
+                    }
+                  ]
+                },
+                "position": null,
+                "radius": null
+              },
               "botIds": null
             }
           }

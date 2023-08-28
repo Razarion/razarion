@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.InsideCheckResult;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.system.Nullable;
 
 /**
  * Created by Beat
@@ -15,27 +16,27 @@ public class PlaceConfig {
     private DecimalPosition position;
     private Double radius;
 
-    public Polygon2D getPolygon2D() {
+    public @Nullable Polygon2D getPolygon2D() {
         return polygon2D;
     }
 
-    public void setPolygon2D(Polygon2D polygon2D) {
+    public void setPolygon2D(@Nullable Polygon2D polygon2D) {
         this.polygon2D = polygon2D;
     }
 
-    public DecimalPosition getPosition() {
+    public @Nullable DecimalPosition getPosition() {
         return position;
     }
 
-    public void setPosition(DecimalPosition position) {
+    public void setPosition(@Nullable DecimalPosition position) {
         this.position = position;
     }
 
-    public Double getRadius() {
+    public @Nullable Double getRadius() {
         return radius;
     }
 
-    public void setRadius(Double radius) {
+    public void setRadius(@Nullable Double radius) {
         this.radius = radius;
     }
 

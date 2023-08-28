@@ -45,13 +45,6 @@ export class BabylonJsUtils {
     return material;
   }
 
-  static toVertex2Array(decimalPositions: DecimalPosition[]): Vector2[] {
-    const vector2s: any[] = [];
-    decimalPositions.forEach(decimalPosition =>
-      vector2s.push(new Vector2(decimalPosition.getX(), decimalPosition.getY())));
-    return vector2s;
-  }
-
   static toVertex2ArrayFromTerrainSlopeCorner(terrainSlopeCorners: TerrainSlopeCorner[]): Vector2[] {
     const vector2s: any[] = [];
     terrainSlopeCorners.forEach(terrainSlopeCorner =>

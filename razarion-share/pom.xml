@@ -96,6 +96,7 @@
                     <outputFile>../razarion-server/src/main/angular/frontend/src/app/generated/razarion-share.d.ts
                     </outputFile>
                     <mapEnum>asEnum</mapEnum>
+                    <nullableAnnotations>com.btxtech.shared.system.Nullable</nullableAnnotations>
                 </configuration>
             </plugin>
         </plugins>
