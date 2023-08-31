@@ -46,7 +46,8 @@ public class StartPointPlacerEntity {
         }
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setSuggestedPosition(suggestedPosition).setEnemyFreeRadius(enemyFreeRadius);
         if (allowedArea != null && !allowedArea.isEmpty()) {
-            baseItemPlacerConfig.setAllowedArea(new Polygon2D(allowedArea));
+            // TODO baseItemPlacerConfig.setAllowedArea(new Polygon2D(allowedArea));
+            throw new UnsupportedOperationException("...TODO...");
         }
         return baseItemPlacerConfig;
     }
@@ -58,7 +59,8 @@ public class StartPointPlacerEntity {
                 allowedArea = new ArrayList<>();
             }
             allowedArea.clear();
-            allowedArea.addAll(startPointPlacerConfig.getAllowedArea().getCorners());
+            // TODO  allowedArea.addAll(startPointPlacerConfig.getAllowedArea().getCorners());
+            throw new UnsupportedOperationException("...TODO...");
         } else {
             allowedArea = null;
         }

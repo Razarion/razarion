@@ -1,9 +1,10 @@
 <p-dropdown *ngIf="!readOnly"
             [placeholder]="'...'"
-            [options]="baseItemTypeOptions"
-            [(ngModel)]="baseItemTypeId"
+            [options]="resourceItemTypeOptions"
+            [(ngModel)]="resourceItemTypeId"
             (onChange)="onChange()"
             optionLabel="name"
             optionValue="id">
 </p-dropdown>
 <span *ngIf="readOnly">{{getCurrentName()}}</span>
+

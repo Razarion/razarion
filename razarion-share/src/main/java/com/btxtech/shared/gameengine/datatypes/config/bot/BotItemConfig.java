@@ -1,9 +1,10 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.system.Nullable;
 
 /**
  * User: beat
@@ -23,11 +24,11 @@ public class BotItemConfig {
     private boolean noRebuild;
     private Integer rePopTime;
 
-    public Integer getBaseItemTypeId() {
+    public @Nullable Integer getBaseItemTypeId() {
         return baseItemTypeId;
     }
 
-    public void setBaseItemTypeId(Integer baseItemTypeId) {
+    public void setBaseItemTypeId(@Nullable Integer baseItemTypeId) {
         this.baseItemTypeId = baseItemTypeId;
     }
 
@@ -55,11 +56,11 @@ public class BotItemConfig {
         this.noSpawn = noSpawn;
     }
 
-    public PlaceConfig getPlace() {
+    public @Nullable PlaceConfig getPlace() {
         return place;
     }
 
-    public void setPlace(PlaceConfig place) {
+    public void setPlace(@Nullable PlaceConfig place) {
         this.place = place;
     }
 

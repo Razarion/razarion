@@ -17,6 +17,33 @@
   <div class="mr-2 editor-category">
     <div class="flex flex-column">
       <div class="mb-2">
+        <h3>Planet</h3>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Terrain Editor" icon="pi pi-cog" styleClass="p-button-sm"
+                  (onClick)="openTerrainEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Quests" icon="pi pi-cog" styleClass="p-button-sm"
+                  (onClick)="openQuestEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Bots" icon="pi pi-cog" styleClass="p-button-sm"
+                  (onClick)="openBotEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Start Regions" icon="pi pi-cog" styleClass="p-button-sm"
+                  (onClick)="openStartRegionEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Resource Regions" icon="pi pi-cog" styleClass="p-button-sm"
+                  (onClick)="openResourceRegionEditor()"></p-button>
+      </div>
+    </div>
+  </div>
+  <div class="mr-2 editor-category">
+    <div class="flex flex-column">
+      <div class="mb-2">
         <h3>Configuration</h3>
       </div>
       <div class="mb-2" *ngFor="let collectionName of collectionNames;">
@@ -26,21 +53,6 @@
       <div class="mb-2">
         <p-button type="button" label="Image" icon="pi pi-cog" styleClass="p-button-sm"
                   (onClick)="openImageEditor()"></p-button>
-      </div>
-    </div>
-  </div>
-  <div class="mr-2 editor-category">
-    <div class="flex flex-column">
-      <div class="mb-2">
-        <h3>Current Planet</h3>
-      </div>
-      <div class="mb-2">
-        <p-button type="button" label="Terrain Editor" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openTerrainEditor()"></p-button>
-      </div>
-      <div class="mb-2">
-        <p-button type="button" label="Quests" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openQuestEditor()"></p-button>
       </div>
     </div>
   </div>

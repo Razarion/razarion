@@ -2,6 +2,8 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.system.Nullable;
 
 /**
  * Created by Beat
@@ -11,7 +13,7 @@ public class StartRegionConfig {
     private int id;
     private String internalName;
     private Integer minimalLevelId;
-    private Polygon2D region;
+    private PlaceConfig region;
     private DecimalPosition noBaseViewPosition;
 
     public int getId() {
@@ -30,27 +32,27 @@ public class StartRegionConfig {
         this.internalName = internalName;
     }
 
-    public Integer getMinimalLevelId() {
+    public @Nullable Integer getMinimalLevelId() {
         return minimalLevelId;
     }
 
-    public void setMinimalLevelId(Integer minimalLevelId) {
+    public void setMinimalLevelId(@Nullable Integer minimalLevelId) {
         this.minimalLevelId = minimalLevelId;
     }
 
-    public Polygon2D getRegion() {
+    public @Nullable PlaceConfig getRegion() {
         return region;
     }
 
-    public void setRegion(Polygon2D region) {
+    public void setRegion(@Nullable PlaceConfig region) {
         this.region = region;
     }
 
-    public DecimalPosition getNoBaseViewPosition() {
+    public @Nullable DecimalPosition getNoBaseViewPosition() {
         return noBaseViewPosition;
     }
 
-    public void setNoBaseViewPosition(DecimalPosition noBaseViewPosition) {
+    public void setNoBaseViewPosition(@Nullable DecimalPosition noBaseViewPosition) {
         this.noBaseViewPosition = noBaseViewPosition;
     }
 
@@ -69,7 +71,7 @@ public class StartRegionConfig {
         return this;
     }
 
-    public StartRegionConfig region(Polygon2D region) {
+    public StartRegionConfig region(PlaceConfig region) {
         setRegion(region);
         return this;
     }

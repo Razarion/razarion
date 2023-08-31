@@ -16,6 +16,7 @@ package com.btxtech.shared.dto;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.system.Nullable;
 
 
 /**
@@ -64,19 +65,19 @@ public class ResourceRegionConfig {
         this.minDistanceToItems = minDistanceToItems;
     }
 
-    public Integer getResourceItemTypeId() {
+    public @Nullable Integer getResourceItemTypeId() {
         return resourceItemTypeId;
     }
 
-    public void setResourceItemTypeId(Integer resourceItemTypeId) {
+    public void setResourceItemTypeId(@Nullable Integer resourceItemTypeId) {
         this.resourceItemTypeId = resourceItemTypeId;
     }
 
-    public PlaceConfig getRegion() {
+    public @Nullable PlaceConfig getRegion() {
         return region;
     }
 
-    public void setRegion(PlaceConfig region) {
+    public void setRegion(@Nullable PlaceConfig region) {
         this.region = region;
     }
 

@@ -1,27 +1,24 @@
 package com.btxtech.server.persistence.server;
 
+import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.StartRegionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
-import javax.persistence.CollectionTable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
@@ -36,10 +33,8 @@ public class StartRegionConfigEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String internalName;
-    @ElementCollection
-    @CollectionTable(name = "SERVER_START_REGION_CONFIG_POLYGON", joinColumns = @JoinColumn(name = "startRegionConfigEntityId"))
-    @OrderColumn(name = "orderColumn")
-    private List<DecimalPosition> startRegion;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private PlaceConfigEntity startRegion;
     @AttributeOverrides({
             @AttributeOverride(name = "x", column = @Column(name = "noBaseViewPositionX")),
             @AttributeOverride(name = "y", column = @Column(name = "noBaseViewPositionY")),
@@ -52,9 +47,9 @@ public class StartRegionConfigEntity {
         return minimalLevel;
     }
 
-    public Polygon2D getStartRegion() {
-        if (startRegion != null && !startRegion.isEmpty()) {
-            return new Polygon2D(startRegion);
+    public PlaceConfig getStartRegion() {
+        if (startRegion != null) {
+            return startRegion.toPlaceConfig();
         } else {
             return null;
         }
@@ -76,13 +71,11 @@ public class StartRegionConfigEntity {
     public void fromStartRegionConfig(StartRegionConfig startRegionConfig, LevelCrudPersistence levelCrudPersistence) {
         internalName = startRegionConfig.getInternalName();
         minimalLevel = levelCrudPersistence.getEntity(startRegionConfig.getMinimalLevelId());
-        if (this.startRegion == null) {
-            this.startRegion = new ArrayList<>();
-        } else {
-            this.startRegion.clear();
-        }
         if (startRegionConfig.getRegion() != null) {
-            this.startRegion.addAll(startRegionConfig.getRegion().getCorners());
+            startRegion = new PlaceConfigEntity();
+            startRegion.fromPlaceConfig(startRegionConfig.getRegion());
+        } else {
+            startRegion = null;
         }
         noBaseViewPosition = startRegionConfig.getNoBaseViewPosition();
     }

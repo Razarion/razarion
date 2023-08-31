@@ -293,7 +293,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             if (coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getNoBaseViewPosition() != null) {
                 position = coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getNoBaseViewPosition();
             } else {
-                position = GeometricUtil.findFreeRandomPosition(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion(), null);
+                position = GeometricUtil.findFreeRandomPosition(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion());
             }
             sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet viewfield").viewFieldConfig(new ViewFieldConfig().toPosition(position)));
         } else {

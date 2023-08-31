@@ -11,7 +11,7 @@ export class BaseItemTypeCountComponent implements OnInit {
   baseItemTypeCount?: { [index: string]: number };
   @Output()
   baseItemTypeCountChange = new EventEmitter<{ [index: string]: number }>();
-  baseItemTypeCountArray: { baseItemTypeId: string, count: string }[] = [];
+  baseItemTypeCountArray: { baseItemTypeId: number, count: number }[] = [];
 
   constructor(private messageService: MessageService) {
   }
@@ -20,7 +20,7 @@ export class BaseItemTypeCountComponent implements OnInit {
     this.baseItemTypeCountArray = [];
     if (this.baseItemTypeCount) {
       Object.keys(this.baseItemTypeCount).forEach(id => {
-        this.baseItemTypeCountArray.push({baseItemTypeId: id, count: this.baseItemTypeCount![id].toString()});
+        this.baseItemTypeCountArray.push({baseItemTypeId: parseInt(id), count: this.baseItemTypeCount![id]});
       })
     }
   }
@@ -28,7 +28,7 @@ export class BaseItemTypeCountComponent implements OnInit {
   onChange() {
     let baseItemTypeCountChange: { [index: string]: number } = {};
     this.baseItemTypeCountArray.forEach(value => {
-      let intValue = parseInt(value.count);
+      let intValue = value.count;
       if (isNaN(intValue)) {
         this.messageService.add({
           severity: 'Invalid number',
@@ -44,13 +44,13 @@ export class BaseItemTypeCountComponent implements OnInit {
     this.baseItemTypeCountChange.emit(baseItemTypeCountChange);
   }
 
-  onDelete(baseItemTypeId: string) {
+  onDelete(baseItemTypeId: number) {
     this.baseItemTypeCountArray.splice(this.baseItemTypeCountArray.findIndex(e => e.baseItemTypeId === baseItemTypeId), 1);
     this.onChange();
   }
 
   onCreate() {
-    this.baseItemTypeCountArray.push({baseItemTypeId: "", count: "1"})
+    this.baseItemTypeCountArray.push({baseItemTypeId: NaN, count: 1})
     this.onChange();
   }
 }

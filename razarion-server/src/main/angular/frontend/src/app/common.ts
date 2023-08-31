@@ -1,5 +1,3 @@
-import {ServerGameEngineConfig} from "./generated/razarion-share";
-
 export const APPLICATION_PATH = '/rest';
 export const GZ_PATH = APPLICATION_PATH + '/gz';
 export const EDITOR_PATH = APPLICATION_PATH + '/editor';
@@ -16,7 +14,9 @@ export const UPDATE_RADIUS_REST_CALL = EDITOR_PATH + '/terrain-object/update-rad
 export const SLOPE_EDITOR_PATH = EDITOR_PATH + '/slope';
 export const DRIVEWAY_EDITOR_PATH = EDITOR_PATH + '/driveway';
 export const SERVER_GAME_ENGINE_EDITOR = EDITOR_PATH + '/server-game-engine'
-export const BASE_ITEM_TYPE_EDITOR_PATH = EDITOR_PATH +  '/base_item_type';
+export const BASE_ITEM_TYPE_EDITOR_PATH = EDITOR_PATH + '/base_item_type';
+export const RESOURCE_ITEM_TYPE_EDITOR_PATH = EDITOR_PATH + '/resource_item_type';
+export const LEVEL_EDITOR_PATH = EDITOR_PATH + '/level';
 export const TERRAIN_EDITOR = APPLICATION_PATH + "/planeteditor";
 export const READ_TERRAIN_SLOPE_POSITIONS = TERRAIN_EDITOR + "/readTerrainSlopePositions";
 export const UPDATE_SLOPES_TERRAIN_EDITOR = TERRAIN_EDITOR + "/updateSlopes";

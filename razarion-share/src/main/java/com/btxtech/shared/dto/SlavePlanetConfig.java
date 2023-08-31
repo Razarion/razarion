@@ -2,24 +2,25 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 /**
  * Created by Beat
  * 09.05.2017.
  */
 public class SlavePlanetConfig {
-    private Polygon2D startRegion;
+    private PlaceConfig startRegion;
     private DecimalPosition noBaseViewPosition;
 
-    public Polygon2D getStartRegion() {
+    public PlaceConfig getStartRegion() {
         return startRegion;
     }
 
-    public void setStartRegion(Polygon2D startRegion) {
+    public void setStartRegion(PlaceConfig startRegion) {
         this.startRegion = startRegion;
     }
 
-    public SlavePlanetConfig startRegion(Polygon2D startRegion) {
+    public SlavePlanetConfig startRegion(PlaceConfig startRegion) {
         setStartRegion(startRegion);
         return this;
     }

@@ -1,33 +1,16 @@
-<div class="field grid align-items-center">
-  <span class="col">Id</span>
-  <div class="col">
-    {{serverGameEngineConfig?.id}}
-  </div>
-</div>
-<div class="field grid align-items-center">
-  <span class="col">Internal name</span>
-  <div class="col">
-    {{serverGameEngineConfig?.internalName}}
-  </div>
-</div>
-<div class="field grid align-items-center">
-  <span class="col">Planet Id</span>
-  <div class="col">
-    {{serverGameEngineConfig?.planetConfigId}}
-  </div>
-</div>
 <div class="grid">
-  <div class="col">Save</div>
   <div class="col">
     <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
               (onClick)="onSave()"></p-button>
   </div>
 </div>
-
 <p-accordion *ngIf="serverGameEngineConfig?.serverLevelQuestConfigs" [style]="{width:'500px'}">
   <p-accordionTab *ngFor="let serverLevelQuestConfig of serverGameEngineConfig?.serverLevelQuestConfigs">
     <ng-template pTemplate="header">
-      {{serverLevelQuestConfig.internalName}} ({{serverLevelQuestConfig.id}})
+      {{serverLevelQuestConfig.internalName}}
+      (
+      <level [(levelId)]="serverLevelQuestConfig.minimalLevelId" [readOnly]="true"></level>
+      )
     </ng-template>
     <div class="field grid align-items-center">
       <span class="col">Internal name</span>
@@ -38,7 +21,7 @@
     <div class="field grid align-items-center">
       <span class="col">Minimal level (id)</span>
       <div class="col">
-        {{serverLevelQuestConfig.minimalLevelId}}
+        <level [(levelId)]="serverLevelQuestConfig.minimalLevelId"></level>
       </div>
     </div>
     <p-accordion *ngIf="serverLevelQuestConfig.questConfigs">

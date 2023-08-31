@@ -7,6 +7,8 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.system.Nullable;
 
+import java.util.Collection;
+
 /**
  * Created by Beat
  * 23.07.2016.
@@ -114,12 +116,26 @@ public class PlaceConfig {
 
     public boolean checkInside(DecimalPosition position) {
         if (this.position != null) {
-            return this.position.equalsDelta(position);
+            if (radius != null) {
+                return position.getDistance(this.position) < radius;
+            } else {
+                return this.position.equalsDelta(position);
+            }
         } else if (polygon2D != null) {
             return polygon2D.isInside(position);
         } else {
             throw new IllegalStateException("Invalid PlaceConfig");
         }
+    }
+
+    /**
+     * Returns false if one of the given positions is not inside this PlaceConfig
+     *
+     * @param positions given positions
+     * @return true if all positions are inside this PlaceConfig
+     */
+    public boolean checkInside(Collection<DecimalPosition> positions) {
+        return positions.stream().allMatch(this::checkInside);
     }
 
     public boolean checkAdjoins(Rectangle2D rectangle2D) {

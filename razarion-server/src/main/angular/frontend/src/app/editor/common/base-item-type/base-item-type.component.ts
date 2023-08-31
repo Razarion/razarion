@@ -1,34 +1,41 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
 
 @Component({
   selector: 'base-item-type',
-  templateUrl: './base-item-type.component.html',
-  styleUrls: ['./base-item-type.component.scss']
+  templateUrl: './base-item-type.component.html'
 })
-export class BaseItemTypeComponent implements OnInit {
+export class BaseItemTypeComponent {
   @Input("baseItemTypeId")
-  baseItemTypeId?: string;
+  baseItemTypeId: number | null = null;
   @Output()
-  baseItemTypeIdChange = new EventEmitter<string>();
+  baseItemTypeIdChange = new EventEmitter<number | null>();
   @Output()
   onChangeEmitter = new EventEmitter<void>();
-  baseItemTypeOptions: { name: string, id: string }[] = [];
+  @Input("readOnly")
+  readOnly: boolean = false;
+  baseItemTypeOptions: { name: string, id: number }[] = [];
 
   constructor(private editorService: EditorService) {
     editorService.readBaseItemTypeObjectNameIds().then(objectNameIds => {
       this.baseItemTypeOptions = [];
       objectNameIds.forEach(objectNameId => {
-        this.baseItemTypeOptions.push({name: objectNameId.internalName, id: objectNameId.id.toString()});
+        this.baseItemTypeOptions.push({name: objectNameId.internalName, id: objectNameId.id});
       });
     })
-  }
-
-  ngOnInit(): void {
   }
 
   onChange() {
     this.baseItemTypeIdChange.emit(this.baseItemTypeId);
     this.onChangeEmitter.emit()
+  }
+
+  getCurrentName(): string {
+    if (this.baseItemTypeId) {
+      return this.baseItemTypeOptions.find(value => value.id === this.baseItemTypeId)?.name || "";
+    } else {
+      return "";
+    }
+
   }
 }

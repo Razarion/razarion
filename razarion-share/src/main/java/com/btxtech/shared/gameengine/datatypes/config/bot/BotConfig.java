@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes.config.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.system.Nullable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,11 +68,11 @@ public class BotConfig {
         this.actionDelay = actionDelay;
     }
 
-    public PlaceConfig getRealm() {
+    public @Nullable PlaceConfig getRealm() {
         return realm;
     }
 
-    public void setRealm(PlaceConfig realm) {
+    public void setRealm(@Nullable PlaceConfig realm) {
         this.realm = realm;
     }
 

@@ -80,6 +80,12 @@ import {BaseItemTypeCountComponent} from './editor/common/base-item-type-count/b
 import {BaseItemTypeComponent} from './editor/common/base-item-type/base-item-type.component';
 import {PlaceConfigComponent} from './editor/common/place-config/place-config.component';
 import {ToggleButtonModule} from "primeng/togglebutton";
+import { ServerBotEditorComponent } from './editor/server-bot-editor/server-bot-editor.component';
+import {LevelComponent} from "./editor/common/level/level.component";
+import { ServerStartRegionComponent } from './editor/server-start-region/server-start-region.component';
+import { DecimalPositionComponent } from './editor/common/decimal-position/decimal-position.component';
+import {ServerResourceRegionComponent} from "./editor/server-resource-region/server-resource-region.component";
+import { ResourceItemTypeComponent } from './editor/common/resource-item-type/resource-item-type.component';
 
 @NgModule({
   declarations: [
@@ -117,7 +123,13 @@ import {ToggleButtonModule} from "primeng/togglebutton";
     ServerQuestEditorComponent,
     BaseItemTypeCountComponent,
     BaseItemTypeComponent,
-    PlaceConfigComponent
+    PlaceConfigComponent,
+    ServerBotEditorComponent,
+    LevelComponent,
+    ServerStartRegionComponent,
+    DecimalPositionComponent,
+    ServerResourceRegionComponent,
+    ResourceItemTypeComponent,
   ],
   imports: [
     BrowserModule,

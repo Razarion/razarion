@@ -1,0 +1,114 @@
+<div [style]="{width:'500px'}">
+  <div class="grid">
+    <div class="col-1">
+      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
+                (onClick)="onSave()"></p-button>
+    </div>
+    <div class="col-11">
+      <p-dropdown [options]="serverGameEngineConfig ? serverGameEngineConfig!.botConfigs:[]"
+                  [(ngModel)]="selectedBot"
+                  optionLabel="internalName"></p-dropdown>
+    </div>
+  </div>
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-cog mr-2"></i>
+      <b>Configuration</b>
+    </div>
+  </p-divider>
+  <div class="grid">
+    <span class="col-3">Id</span>
+    <div class="col-9">
+      <p-inputNumber [disabled]="true" inputId="integeronly" [(ngModel)]="selectedBot&&selectedBot.id"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid">
+    <span class="col-3">Internal name</span>
+    <div class="col-9">
+      <input [(ngModel)]="selectedBot&&selectedBot.internalName"
+             type="text"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+  </div>
+  <div class="grid">
+    <span class="col-3">Name</span>
+    <div class="col-9">
+      <input [(ngModel)]="selectedBot&&selectedBot.name"
+             type="text"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+  </div>
+  <div class="grid">
+    <span class="col-3">Realm</span>
+    <div class="col-9">
+      <place-config *ngIf="selectedBot" [(placeConfig)]="selectedBot!.realm"></place-config>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="col-12">
+      <p-accordion *ngIf="selectedBot?.botEnragementStateConfigs">
+        <p-accordionTab *ngFor="let botEnragementStateConfig of selectedBot!.botEnragementStateConfigs">
+          <ng-template pTemplate="header">
+            {{botEnragementStateConfig.name}}
+          </ng-template>
+          <div class="grid">
+            <span class="col-3">Name</span>
+            <div class="col-9">
+              <input [(ngModel)]="botEnragementStateConfig.name"
+                     type="text"
+                     class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+            </div>
+          </div>
+          <div class="grid">
+            <span class="col-3">Kills to enrage up</span>
+            <div class="col-9">
+              <p-inputNumber inputId="integeronly" [(ngModel)]="botEnragementStateConfig.enrageUpKills"></p-inputNumber>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="col-12">
+              <p-accordion *ngIf="botEnragementStateConfig?.botItems">
+                <p-accordionTab *ngFor="let botItem of botEnragementStateConfig!.botItems">
+                  <ng-template pTemplate="header">
+                    <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId" [readOnly]="true"></base-item-type>
+                  </ng-template>
+                  <div class="grid">
+                    <span class="col-3">Base Item</span>
+                    <div class="col-9">
+                      <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId"></base-item-type>
+                    </div>
+                  </div>
+                  <div class="grid">
+                    <span class="col-3">Kills to enrage up</span>
+                    <div class="col-9">
+                      <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.count"></p-inputNumber>
+                    </div>
+                  </div>
+                  <div class="grid">
+                    <span class="col-3">Create directly</span>
+                    <div class="col-9">
+                      <p-checkbox [(ngModel)]="botItem.createDirectly" [binary]="true"></p-checkbox>
+                    </div>
+                  </div>
+                  <div class="grid">
+                    <span class="col-3">Re pop time [ms]</span>
+                    <div class="col-9">
+                      <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.rePopTime"></p-inputNumber>
+                    </div>
+                  </div>
+                  <div class="grid">
+                    <span class="col-3">Spawn place</span>
+                    <div class="col-9">
+                      <place-config [(placeConfig)]="botItem.place"></place-config>
+                    </div>
+                  </div>
+                </p-accordionTab>
+              </p-accordion>
+            </div>
+          </div>
+        </p-accordionTab>
+      </p-accordion>
+    </div>
+  </div>
+</div>

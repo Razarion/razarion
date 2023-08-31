@@ -1,6 +1,7 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.system.Nullable;
 
 import java.util.List;
 
@@ -32,11 +33,11 @@ public class ServerLevelQuestConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Integer getMinimalLevelId() {
+    public @Nullable Integer getMinimalLevelId() {
         return minimalLevelId;
     }
 
-    public ServerLevelQuestConfig minimalLevelId(Integer minimalLevelId) {
+    public ServerLevelQuestConfig minimalLevelId(@Nullable Integer minimalLevelId) {
         this.minimalLevelId = minimalLevelId;
         return this;
     }

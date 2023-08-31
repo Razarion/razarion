@@ -4,7 +4,7 @@ import {EditorService} from "../editor-service";
 import {ConditionTrigger, ServerGameEngineConfig} from "../../generated/razarion-share";
 
 @Component({
-  selector: 'app-server-quest-editor',
+  selector: 'server-quest-editor',
   templateUrl: './server-quest-editor.component.html',
   styleUrls: ['./server-quest-editor.component.scss']
 })

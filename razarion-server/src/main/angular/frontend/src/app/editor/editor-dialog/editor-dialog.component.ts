@@ -11,6 +11,9 @@ import {ImageEditorComponent} from "../image-editor/image-editor.component";
 import {CollectionSelectorComponent} from "../property-table/collection-selector.component";
 import {BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
 import {ServerQuestEditorComponent} from "../server-quest-editor/server-quest-editor.component";
+import {ServerBotEditorComponent} from "../server-bot-editor/server-bot-editor.component";
+import {ServerStartRegionComponent} from "../server-start-region/server-start-region.component";
+import {ServerResourceRegionComponent} from "../server-resource-region/server-resource-region.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -53,6 +56,21 @@ export class EditorDialogComponent {
   openQuestEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Quest Editor", ServerQuestEditorComponent));
+  }
+
+  openBotEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Bot Editor", ServerBotEditorComponent));
+  }
+
+  openStartRegionEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Start Region Editor", ServerStartRegionComponent));
+  }
+
+  openResourceRegionEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Resource Region Editor", ServerResourceRegionComponent));
   }
 
   openImageEditor() {

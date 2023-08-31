@@ -1,0 +1,14 @@
+<div class="inline-flex">
+<p-inputNumber [(ngModel)]="x"
+               (onInput)="onX($event.value)"
+               [prefix]="'x: '" [size]="3"
+               [disabled]="readOnly"
+               [minFractionDigits]="1" [maxFractionDigits]="6"
+               [allowEmpty]="true"></p-inputNumber>
+<p-inputNumber [(ngModel)]="y"
+               (onInput)="onY($event.value)"
+               [prefix]="'y: '" [size]="3"
+               [disabled]="readOnly"
+               [minFractionDigits]="1" [maxFractionDigits]="6"
+               [allowEmpty]="true"></p-inputNumber>
+</div>

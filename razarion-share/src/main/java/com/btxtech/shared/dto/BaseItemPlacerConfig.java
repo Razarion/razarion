@@ -4,6 +4,7 @@ import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 /**
  * User: beat
@@ -16,7 +17,7 @@ public class BaseItemPlacerConfig {
     private int baseItemTypeId;
     private int baseItemCount;
     private Double enemyFreeRadius;
-    private Polygon2D allowedArea;
+    private PlaceConfig allowedArea;
 
     public int getBaseItemTypeId() {
         return baseItemTypeId;
@@ -54,12 +55,13 @@ public class BaseItemPlacerConfig {
         return this;
     }
 
-    public Polygon2D getAllowedArea() {
+    public PlaceConfig getAllowedArea() {
         return allowedArea;
     }
 
-    public BaseItemPlacerConfig setAllowedArea(Polygon2D allowedArea) {
+    public BaseItemPlacerConfig setAllowedArea(PlaceConfig allowedArea) {
         this.allowedArea = allowedArea;
         return this;
     }
+
 }

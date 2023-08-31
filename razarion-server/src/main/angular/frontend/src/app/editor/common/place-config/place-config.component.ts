@@ -28,7 +28,7 @@ import {Color3} from "@babylonjs/core/Maths/math.color";
 export class PlaceConfigComponent implements OnInit {
   static readonly NEW_POLYGON_HALF_LENGTH = 4;
   @Input("placeConfig")
-  placeConfig?: PlaceConfig;
+  placeConfig: PlaceConfig | null = null;
   @Output()
   placeConfigChange = new EventEmitter<PlaceConfig>();
   locationMode = false
@@ -110,7 +110,7 @@ export class PlaceConfigComponent implements OnInit {
   }
 
   onDeleteClicked() {
-    this.placeConfig = undefined;
+    this.placeConfig = null;
     this.placeConfigChange.emit(undefined);
   }
 

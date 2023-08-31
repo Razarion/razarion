@@ -12,6 +12,7 @@ import com.btxtech.shared.datatypes.TerrainTriangleCorner;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Triangle3D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionCanNotBeFoundException;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
@@ -281,6 +282,20 @@ public class GeometricUtil {
             return possiblePosition;
         }
         throw new PositionCanNotBeFoundException();
+    }
+
+    public static DecimalPosition findFreeRandomPosition(PlaceConfig placeConfig) {
+        if (placeConfig.getPolygon2D() != null) {
+            return GeometricUtil.findFreeRandomPosition(placeConfig.getPolygon2D(), null);
+        } else if (placeConfig.getPosition() != null) {
+            if (placeConfig.getRadius() != null) {
+                return GeometricUtil.findFreeRandomPosition(placeConfig.getPosition(), placeConfig.getRadius(), null);
+            } else {
+                return placeConfig.getPosition();
+            }
+        } else {
+            throw new IllegalArgumentException("Illegal PlaceConfig: to find a random place, a polygon or a position must be set");
+        }
     }
 
     public static List<Vertex> generatePlane(Vertex bl, Vertex br, Vertex tr, Vertex tl) {

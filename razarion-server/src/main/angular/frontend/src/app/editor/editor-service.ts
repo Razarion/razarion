@@ -1,5 +1,10 @@
 import {ComponentFactoryResolver, Injectable, Type} from "@angular/core";
-import {BASE_ITEM_TYPE_EDITOR_PATH, SERVER_GAME_ENGINE_EDITOR, SERVER_GAME_ENGINE_PATH} from "../common";
+import {
+  BASE_ITEM_TYPE_EDITOR_PATH,
+  LEVEL_EDITOR_PATH, RESOURCE_ITEM_TYPE_EDITOR_PATH,
+  SERVER_GAME_ENGINE_EDITOR,
+  SERVER_GAME_ENGINE_PATH
+} from "../common";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
@@ -102,7 +107,24 @@ export class EditorService {
         error: (err: any) => {
           this.messageService.add({
             severity: 'error',
-            summary: `Loading BaseItemTypes failed`,
+            summary: `Loading base item types failed`,
+            detail: `${JSON.stringify(err)}`,
+            sticky: true
+          });
+        }
+      });
+    });
+  }
+  readResourceItemTypeObjectNameIds(): Promise<ObjectNameId[]> {
+    return new Promise((resolve) => {
+      this.httpClient.get(`${RESOURCE_ITEM_TYPE_EDITOR_PATH}/objectNameIds`).subscribe({
+        next: (objectNameIds: any) => {
+          resolve(objectNameIds);
+        },
+        error: (err: any) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: `Loading resource item types failed`,
             detail: `${JSON.stringify(err)}`,
             sticky: true
           });
@@ -111,4 +133,21 @@ export class EditorService {
     });
   }
 
+  readLevelObjectNameIds(): Promise<ObjectNameId[]> {
+    return new Promise((resolve) => {
+      this.httpClient.get(`${LEVEL_EDITOR_PATH}/objectNameIds`).subscribe({
+        next: (objectNameIds: any) => {
+          resolve(objectNameIds);
+        },
+        error: (err: any) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: `Loading level failed`,
+            detail: `${JSON.stringify(err)}`,
+            sticky: true
+          });
+        }
+      });
+    });
+  }
 }

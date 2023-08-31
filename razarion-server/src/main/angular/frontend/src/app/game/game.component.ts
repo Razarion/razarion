@@ -31,6 +31,7 @@ import {GwtInstance} from "../gwtangular/GwtInstance";
 import {GwtHelper} from "../gwtangular/GwtHelper";
 import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
 import {ServerQuestEditorComponent} from "../editor/server-quest-editor/server-quest-editor.component";
+import {ServerBotEditorComponent} from "../editor/server-bot-editor/server-bot-editor.component";
 
 
 @Component({
@@ -335,7 +336,7 @@ export class GameComponent implements OnInit {
       } else {
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.mainCockpitComponent.show(true);
-        this.addEditorModel(new EditorModel("Quest Editor", ServerQuestEditorComponent));
+        this.addEditorModel(new EditorModel("Bot Editor", ServerBotEditorComponent));
       }
     }
     this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
@@ -424,6 +425,7 @@ export class GameComponent implements OnInit {
 
   addEditorModel(editorModel: EditorModel) {
     this.editorModels.push(editorModel);
+    this.questCockpitContainer.showCockpit = false;
   }
 
   removeEditorModel(editorModel: EditorModel) {

@@ -209,6 +209,28 @@ server.on({
     headers: {"content-type": "application/json"},
     body: JSON.stringify(baseItemTypeJson)
   }
+
+});
+const levelJson = require("./level.json");
+server.on({
+  method: 'GET',
+  path: '/rest/editor/level/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(levelJson)
+  }
+});
+
+const resourceJson = require("./resource_item_type.json");
+server.on({
+  method: 'GET',
+  path: '/rest/editor/resource_item_type/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(resourceJson)
+  }
 });
 
 

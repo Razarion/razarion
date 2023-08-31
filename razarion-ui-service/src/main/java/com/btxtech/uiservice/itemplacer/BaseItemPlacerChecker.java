@@ -4,6 +4,7 @@ package com.btxtech.uiservice.itemplacer;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -33,7 +34,7 @@ public class BaseItemPlacerChecker {
     private boolean isItemsOk;
     private boolean isEnemiesOk;
     private BaseItemType baseItemType;
-    private Polygon2D allowedArea;
+    private PlaceConfig allowedArea;
     private double enemyFreeRadius;
 
     public void init(BaseItemType baseItemType, BaseItemPlacerConfig baseItemPlacerConfig) {
@@ -44,7 +45,7 @@ public class BaseItemPlacerChecker {
 
     public void check(DecimalPosition position) {
         Collection<DecimalPosition> absoluteItemPositions = setupAbsolutePositions(position);
-        isAllowedAreaOk = allowedArea == null || allowedArea.isInside(absoluteItemPositions);
+        isAllowedAreaOk = allowedArea == null || allowedArea.checkInside(absoluteItemPositions);
         isEnemiesOk = false;
         if (isAllowedAreaOk) {
             isEnemiesOk = !baseItemUiService.hasEnemyForSpawn(position, enemyFreeRadius);

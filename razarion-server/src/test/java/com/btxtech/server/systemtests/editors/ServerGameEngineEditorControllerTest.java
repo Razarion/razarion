@@ -51,13 +51,13 @@ public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<Serve
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.planetConfigId(PLANET_1_ID));
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.planetConfigId(PLANET_2_ID).setResourceRegionConfigs(Collections.singletonList(
                 new ResourceRegionConfig().region(new PlaceConfig().position(new DecimalPosition(1, 1)).radius(9.0)))), idSuppressor);
-        registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.startRegionConfigs(Collections.singletonList(new StartRegionConfig().minimalLevelId(LEVEL_1_ID).internalName("xxxx").region(new Polygon2D(Arrays.asList(new DecimalPosition(1, 1),
+        registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.startRegionConfigs(Collections.singletonList(new StartRegionConfig().minimalLevelId(LEVEL_1_ID).internalName("xxxx").region(new PlaceConfig().polygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(1, 1),
                 new DecimalPosition(2, 1),
-                new DecimalPosition(2, 2)))))),
+                new DecimalPosition(2, 2))))))),
                 idSuppressor);
-        registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.getStartRegionConfigs().add(new StartRegionConfig().minimalLevelId(LEVEL_2_ID).internalName("yyy").region(new Polygon2D(Arrays.asList(new DecimalPosition(10, 10),
+        registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.getStartRegionConfigs().add(new StartRegionConfig().minimalLevelId(LEVEL_2_ID).internalName("yyy").region(new PlaceConfig().polygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(10, 10),
                 new DecimalPosition(20, 10),
-                new DecimalPosition(20, 20))))),
+                new DecimalPosition(20, 20)))))),
                 idSuppressor);
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.botConfigs(Collections.singletonList(
                 new BotConfig().botEnragementStateConfigs(Collections.singletonList(
