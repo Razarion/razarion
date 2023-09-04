@@ -233,6 +233,7 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
       .subscribe({
         complete: () => this.messageService.add({
           severity: 'success',
+          life: 300,
           summary: 'Save successful'
         }),
         error: (error: any) => {

@@ -179,28 +179,20 @@ public class ServerGameEngineConfigEntity {
                 .noBaseViewPosition(result.getNoBaseViewPosition());
     }
 
+    public List<ServerResourceRegionConfigEntity> getResourceRegionConfigs() {
+        return resourceRegionConfigs;
+    }
+
+    public List<StartRegionConfigEntity> getStartRegionConfigs() {
+        return startRegionConfigs;
+    }
+
+    public List<BotConfigEntity> getBotConfigEntities() {
+        return botConfigs;
+    }
+
     public List<ServerLevelQuestEntity> getServerQuestEntities() {
         return serverQuestEntities;
-    }
-
-    public void setServerQuestEntities(List<ServerLevelQuestEntity> serverQuestEntities) {
-        this.serverQuestEntities = serverQuestEntities;
-    }
-
-    public List<BotSceneConfigEntity> getBotSceneConfigEntities() {
-        return botSceneConfigs;
-    }
-
-    public void setBotSceneConfigEntities(List<BotSceneConfigEntity> botSceneConfigs) {
-        this.botSceneConfigs = botSceneConfigs;
-    }
-
-    public List<ServerBoxRegionConfigEntity> getServerBoxRegionConfigEntities() {
-        return boxRegionConfigs;
-    }
-
-    public void setServerBoxRegionConfigEntities(List<ServerBoxRegionConfigEntity> boxRegionConfigs) {
-        this.boxRegionConfigs = boxRegionConfigs;
     }
 
     @Override

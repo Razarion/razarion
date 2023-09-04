@@ -11,6 +11,7 @@ import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.TerrainObjectCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
+import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
@@ -212,7 +213,7 @@ public class ServerTestHelper {
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
     private EntityTransaction entityTransaction;
-    private List<List<CleanupAfterTest>> cleanupAfterTests = new ArrayList<>();
+    private final List<List<CleanupAfterTest>> cleanupAfterTests = new ArrayList<>();
     @Inject
     private UserService userService;
     @Inject
@@ -309,6 +310,8 @@ public class ServerTestHelper {
     }
 
     protected SlopeConfigEntity createLandSlopeConfig() {
+        ThreeJsModelCrudPersistence threeJsModelCrudPersistence = EasyMock.createNiceMock(ThreeJsModelCrudPersistence.class);
+        EasyMock.replay(threeJsModelCrudPersistence);
         SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
         slopeConfigEntity.fromSlopeConfig(new SlopeConfig()
                         .horizontalSpace(5)
@@ -320,7 +323,7 @@ public class ServerTestHelper {
                 EasyMock.createNiceMock(ImagePersistence.class),
                 null,
                 null,
-                EasyMock.createNiceMock(ThreeJsModelCrudPersistence.class));
+                threeJsModelCrudPersistence);
         return slopeConfigEntity;
     }
 
@@ -420,15 +423,17 @@ public class ServerTestHelper {
         Shape3DCrudPersistence shape3DPersistence = EasyMock.createNiceMock(Shape3DCrudPersistence.class);
         AudioPersistence audioPersistence = EasyMock.createNiceMock(AudioPersistence.class);
         ParticleSystemCrudPersistence particleSystemCrudPersistence = EasyMock.createNiceMock(ParticleSystemCrudPersistence.class);
-        EasyMock.replay(itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleSystemCrudPersistence);
+        EasyMock.replay(itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleSystemCrudPersistence, audioPersistence);
         baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, baseItemTypeCrudPersistence, audioPersistence, particleSystemCrudPersistence);
         persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
     }
 
     private int createResourceItemTypeEntity(ResourceItemType resourceItemType) {
+        ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence = EasyMock.createNiceMock(ThreeJsModelPackCrudPersistence.class);
+        EasyMock.replay(threeJsModelPackCrudPersistence);
         ResourceItemTypeEntity resourceItemTypeEntity = new ResourceItemTypeEntity();
-        resourceItemTypeEntity.fromResourceItemType(resourceItemType, null);
+        resourceItemTypeEntity.fromResourceItemType(resourceItemType, threeJsModelPackCrudPersistence);
         persistInTransaction(resourceItemTypeEntity);
         return resourceItemTypeEntity.getId();
     }

@@ -24,10 +24,13 @@ CREATE TABLE IF NOT EXISTS `QUEST` (
   CONSTRAINT `FKg8ekfv29livdwri9llb7p620p` FOREIGN KEY (`conditionConfigEntity_id`) REFERENCES `QUEST_CONDITION` (`id`),
   CONSTRAINT `FKmbk4qf213aih41banidutli49` FOREIGN KEY (`title_id`) REFERENCES `I18N_BUNDLE` (`id`),
   CONSTRAINT `FKmllgre0tlj3i2od98hfmfj9ry` FOREIGN KEY (`passedMessage_id`) REFERENCES `I18N_BUNDLE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `QUEST`;
 /*!40000 ALTER TABLE `QUEST` DISABLE KEYS */;
+INSERT INTO `QUEST` (`id`, `crystal`, `hidePassedDialog`, `internalName`, `razarion`, `xp`, `conditionConfigEntity_id`, `description_id`, `passedMessage_id`, `title_id`) VALUES
+	(17, 0, b'0', NULL, 0, 0, 15, 411, NULL, 412),
+	(18, 0, b'0', NULL, 0, 0, 16, 413, NULL, 414);
 /*!40000 ALTER TABLE `QUEST` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -330,6 +330,7 @@ export class BabylonModelService {
       .subscribe({
         complete: () => this.messageService.add({
           severity: 'success',
+          life: 300,
           summary: 'Save successful'
         }),
         error: (error: any) => {

@@ -5,8 +5,7 @@ import {BotConfig, ServerGameEngineConfig} from "../../generated/razarion-share"
 
 @Component({
   selector: 'server-bot-editor',
-  templateUrl: './server-bot-editor.component.html',
-  styleUrls: ['./server-bot-editor.component.scss']
+  templateUrl: './server-bot-editor.component.html'
 })
 export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig?: ServerGameEngineConfig;
@@ -23,6 +22,6 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   }
 
   onSave() {
-
+    this.editorService.updateBotConfig(this.serverGameEngineConfig?.botConfigs)
   }
 }

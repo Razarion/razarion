@@ -32,7 +32,7 @@ public class ConditionConfigEntity {
     private ComparisonConfigEntity comparisonConfig;
 
     public ConditionConfig toQuestConfig() {
-        return new ConditionConfig().setConditionTrigger(conditionTrigger).setComparisonConfig(comparisonConfig.toComparisonConfig());
+        return new ConditionConfig().conditionTrigger(conditionTrigger).comparisonConfig(comparisonConfig.toComparisonConfig());
     }
 
     public void fromConditionConfig(ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ConditionConfig conditionConfig) {

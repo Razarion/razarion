@@ -4,7 +4,6 @@ import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity_;
-import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
@@ -17,14 +16,15 @@ import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
+import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.SlavePlanetConfig;
+import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -35,12 +35,17 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -64,14 +69,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     private ItemTypePersistence itemTypePersistence;
     @Inject
     private LevelCrudPersistence levelCrudPersistence;
-    @Inject
-    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig>> serverLevelQuestCrudInstance;
-    @Inject
-    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig>> serverQuestCrudInstance;
-    @Inject
-    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig>> botSceneConfigCrud;
-    @Inject
-    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig>> boxRegionCrud;
 
     public ServerGameEngineCrudPersistence() {
         super(ServerGameEngineConfigEntity.class, ServerGameEngineConfigEntity_.id, ServerGameEngineConfigEntity_.internalName);
@@ -226,5 +223,84 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         }
+    }
+
+    @Transactional
+    public void updateResourceRegionConfig(int serverGameEngineConfigId, List<ResourceRegionConfig> resourceRegionConfigs) {
+        updateChildren(serverGameEngineConfigId,
+                resourceRegionConfigs,
+                ServerGameEngineConfigEntity::getResourceRegionConfigs,
+                ResourceRegionConfig::getId,
+                (resourceRegionConfig, serverResourceRegionConfigEntity) -> serverResourceRegionConfigEntity.fromResourceRegionConfig(resourceItemTypeCrudPersistence, resourceRegionConfig),
+                ServerResourceRegionConfigEntity::new,
+                ServerResourceRegionConfigEntity::getId);
+    }
+
+    @Transactional
+    public void updateStartRegionConfig(int serverGameEngineConfigId, List<StartRegionConfig> startRegionConfigs) {
+        updateChildren(serverGameEngineConfigId,
+                startRegionConfigs,
+                ServerGameEngineConfigEntity::getStartRegionConfigs,
+                StartRegionConfig::getId,
+                (startRegionConfig, startRegionConfigEntity) -> startRegionConfigEntity.fromStartRegionConfig(startRegionConfig, levelCrudPersistence),
+                StartRegionConfigEntity::new,
+                StartRegionConfigEntity::getId);
+    }
+
+    @Transactional
+    public void updateBotConfig(int serverGameEngineConfigId, List<BotConfig> botConfigs) {
+        updateChildren(serverGameEngineConfigId,
+                botConfigs,
+                ServerGameEngineConfigEntity::getBotConfigEntities,
+                BotConfig::getId,
+                (botConfig, botConfigEntity) -> botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, botConfig),
+                BotConfigEntity::new,
+                BotConfigEntity::getId);
+    }
+
+    @Transactional
+    public void updateServerLevelQuestConfig(int serverGameEngineConfigId, List<ServerLevelQuestConfig> serverLevelQuestConfigs) {
+        updateChildren(serverGameEngineConfigId,
+                serverLevelQuestConfigs,
+                ServerGameEngineConfigEntity::getServerQuestEntities,
+                ServerLevelQuestConfig::getId,
+                (serverLevelQuestConfig, serverLevelQuestEntity) -> serverLevelQuestEntity.fromServerLevelQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence, Locale.GERMAN),
+                ServerLevelQuestEntity::new,
+                ServerLevelQuestEntity::getId);
+    }
+
+    private <C, E> void updateChildren(int serverGameEngineConfigId,
+                                       List<C> childConfigs,
+                                       Function<ServerGameEngineConfigEntity, List<E>> getChildren,
+                                       Function<C, Integer> getChildId,
+                                       BiConsumer<C, E> fromConfig,
+                                       Supplier<E> entityGenerator,
+                                       Function<E, Integer> getEntityId) {
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
+        if (serverGameEngineConfigEntity.getId() != serverGameEngineConfigId) {
+            throw new RuntimeException("ServerGameEngineConfigEntity not found " + serverGameEngineConfigId);
+        }
+
+        Map<Integer, E> dbMap = getChildren.apply(serverGameEngineConfigEntity).stream()
+                .collect(Collectors.toMap(getEntityId, Function.identity()));
+
+        Set<Integer> updated = new HashSet<>();
+        Collection<E> created = new ArrayList<>();
+        childConfigs.forEach(childConfig -> {
+            if (getChildId.apply(childConfig) != null && dbMap.containsKey(getChildId.apply(childConfig))) {
+
+                fromConfig.accept(childConfig, dbMap.get(getChildId.apply(childConfig)));
+                updated.add(getChildId.apply(childConfig));
+            } else {
+                E entity = entityGenerator.get();
+                fromConfig.accept(childConfig, entity);
+                created.add(entity);
+            }
+        });
+
+        getChildren.apply(serverGameEngineConfigEntity).removeIf(e -> !updated.contains(getEntityId.apply(e)));
+        getChildren.apply(serverGameEngineConfigEntity).addAll(created);
+
+        entityManager.merge(serverGameEngineConfigEntity);
     }
 }

@@ -43,6 +43,10 @@ public class StartRegionConfigEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private LevelEntity minimalLevel;
 
+    public Integer getId() {
+        return id;
+    }
+
     public LevelEntity getMinimalLevel() {
         return minimalLevel;
     }

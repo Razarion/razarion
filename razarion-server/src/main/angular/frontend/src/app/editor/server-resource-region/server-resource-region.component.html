@@ -4,10 +4,17 @@
       <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
                 (onClick)="onSave()"></p-button>
     </div>
-    <div class="col-11">
+    <div class="col-3">
       <p-dropdown [options]="serverGameEngineConfig ? serverGameEngineConfig!.resourceRegionConfigs:[]"
                   [(ngModel)]="selectedResourceRegion"
                   optionLabel="internalName"></p-dropdown>
+    </div>
+    <div class="col-8">
+      <p-button type="button"
+                label="{{EditorService.RESTART_RESOURCE_REGIONS.name}}"
+                icon="pi pi-cog"
+                styleClass="p-button-sm"
+                (onClick)="editorService.executeServerCommand(EditorService.RESTART_RESOURCE_REGIONS)"></p-button>
     </div>
   </div>
   <p-divider align="left">

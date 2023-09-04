@@ -34,7 +34,7 @@ public class SyncItemTypeKilledTypeCountTest extends AbstractQuestServiceTest {
         Map<Integer, Integer> typeCount = new HashMap<>();
         typeCount.put(FallbackConfig.FACTORY_ITEM_TYPE_ID, 1);
         typeCount.put(FallbackConfig.BUILDER_ITEM_TYPE_ID, 1);
-        QuestConfig questConfig = new QuestConfig().id(9001).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
+        QuestConfig questConfig = new QuestConfig().id(9001).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
         getQuestService().addQuestListener(createQuestListener());
         getQuestService().activateCondition(humanBaseContext.getPlayerBaseFull().getUserId(), questConfig);
         // showDisplay();
@@ -78,7 +78,7 @@ public class SyncItemTypeKilledTypeCountTest extends AbstractQuestServiceTest {
         Map<Integer, Integer> typeCount = new HashMap<>();
         typeCount.put(FallbackConfig.FACTORY_ITEM_TYPE_ID, 1);
         typeCount.put(FallbackConfig.BUILDER_ITEM_TYPE_ID, 1);
-        QuestConfig questConfig = new QuestConfig().id(9001).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setBotIds(Arrays.asList(botFactory.getBotId(), botBuilder.getBotId()))));
+        QuestConfig questConfig = new QuestConfig().id(9001).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setBotIds(Arrays.asList(botFactory.getBotId(), botBuilder.getBotId()))));
         getQuestService().addQuestListener(createQuestListener());
         getQuestService().activateCondition(humanBaseContext.getPlayerBaseFull().getUserId(), questConfig);
         String expectedBotBasesInformation = "setupFactoryBot id:" + botFactory.getBotId() + ", setupBuilderBot id:" + botBuilder.getBotId();

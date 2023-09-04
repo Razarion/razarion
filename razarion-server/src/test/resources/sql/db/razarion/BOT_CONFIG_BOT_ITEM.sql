@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `BOT_CONFIG_BOT_ITEM` (
   CONSTRAINT `FKka3ph3evw0vd8qvpafrc8u9q3` FOREIGN KEY (`botEnragementStateConfig`) REFERENCES `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` (`id`),
   CONSTRAINT `FKo3anxwa9qjqljjau19r55097r` FOREIGN KEY (`place_id`) REFERENCES `PLACE_CONFIG` (`id`),
   CONSTRAINT `FKrmnmfvv7eqabotm7aik3kp0vo` FOREIGN KEY (`baseItemTypeEntity_id`) REFERENCES `BASE_ITEM_TYPE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=622 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=698 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `BOT_CONFIG_BOT_ITEM`;
 /*!40000 ALTER TABLE `BOT_CONFIG_BOT_ITEM` DISABLE KEYS */;
@@ -32,10 +32,10 @@ INSERT INTO `BOT_CONFIG_BOT_ITEM` (`id`, `angle`, `count`, `createDirectly`, `id
 	(58, 0, 1, b'1', NULL, b'0', b'0', b'0', NULL, 15, 79, 30),
 	(59, 0, 1, b'1', NULL, b'0', b'1', b'0', NULL, 5, 80, 30),
 	(60, 0, 1, b'1', NULL, b'0', b'1', b'0', NULL, 5, 81, 30),
-	(634, 0, 1, b'1', NULL, b'0', b'0', b'0', 60000, 13, 732, 231),
-	(635, 0, 1, b'0', NULL, b'0', b'0', b'0', 20000, 15, 733, 231),
-	(636, 0, 1, b'0', NULL, b'0', b'0', b'0', 20000, 22, 734, 231),
-	(637, 0, 1, b'0', NULL, b'0', b'0', b'0', 10000, 16, NULL, 231);
+	(694, 0, 1, b'1', NULL, b'0', b'0', b'0', 60000, 13, 807, 246),
+	(695, 0, 1, b'0', NULL, b'0', b'0', b'0', 20000, 15, 808, 246),
+	(696, 0, 1, b'0', NULL, b'0', b'0', b'0', 20000, 22, 809, 246),
+	(697, 0, 1, b'0', NULL, b'0', b'0', b'0', 10000, 16, NULL, 246);
 /*!40000 ALTER TABLE `BOT_CONFIG_BOT_ITEM` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

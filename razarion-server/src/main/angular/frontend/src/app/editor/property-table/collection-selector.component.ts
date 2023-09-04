@@ -116,6 +116,7 @@ export class CollectionSelectorComponent extends EditorPanel {
               this.requestObjectNameId();
               this.messageService.add({
                 severity: 'success',
+                life: 300,
                 summary: 'Saved'
               });
             });
@@ -130,6 +131,7 @@ export class CollectionSelectorComponent extends EditorPanel {
               this.requestObjectNameId();
               this.messageService.add({
                 severity: 'success',
+                life: 300,
                 summary: 'Deleted'
               });
             });

@@ -5,8 +5,7 @@ import {ConditionTrigger, ServerGameEngineConfig} from "../../generated/razarion
 
 @Component({
   selector: 'server-quest-editor',
-  templateUrl: './server-quest-editor.component.html',
-  styleUrls: ['./server-quest-editor.component.scss']
+  templateUrl: './server-quest-editor.component.html'
 })
 export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig?: ServerGameEngineConfig;
@@ -31,6 +30,6 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   }
 
   onSave() {
-    console.info(this.serverGameEngineConfig)
+    this.editorService.updateServerLevelQuestConfig(this.serverGameEngineConfig?.serverLevelQuestConfigs)
   }
 }

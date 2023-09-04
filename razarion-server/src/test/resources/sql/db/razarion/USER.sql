@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS `USER` (
   `xp` int(11) NOT NULL,
   `activeQuest_id` int(11) DEFAULT NULL,
   `level_id` int(11) DEFAULT NULL,
+  `creationDate` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_g6y5gdrvhgx350bvnhhok8us2` (`name`),
   KEY `IDXoj5g1ob8tb6gn928mukpbqat1` (`facebookUserId`),
@@ -28,13 +29,17 @@ CREATE TABLE IF NOT EXISTS `USER` (
   KEY `FKas5w8de0ic1qgeo8edbs89ffy` (`level_id`),
   CONSTRAINT `FKas5w8de0ic1qgeo8edbs89ffy` FOREIGN KEY (`level_id`) REFERENCES `LEVEL` (`id`),
   CONSTRAINT `FKtr8la4tg31fj84o5q5wepu6ai` FOREIGN KEY (`activeQuest_id`) REFERENCES `QUEST` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=847 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=887 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `USER`;
 /*!40000 ALTER TABLE `USER` DISABLE KEYS */;
-INSERT INTO `USER` (`id`, `admin`, `crystals`, `email`, `facebookUserId`, `locale`, `name`, `passwordHash`, `registerDate`, `verificationDoneDate`, `verificationId`, `verificationStartedDate`, `verificationTimedOutDate`, `xp`, `activeQuest_id`, `level_id`) VALUES
-	(591, b'1', 0, 'admin@admin.com', NULL, NULL, NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, 265),
-	(592, b'0', 0, 'user@user.com', NULL, NULL, NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, 265);
+INSERT INTO `USER` (`id`, `admin`, `crystals`, `email`, `facebookUserId`, `locale`, `name`, `passwordHash`, `registerDate`, `verificationDoneDate`, `verificationId`, `verificationStartedDate`, `verificationTimedOutDate`, `xp`, `activeQuest_id`, `level_id`, `creationDate`) VALUES
+	(591, b'1', 0, 'admin@admin.com', NULL, 'de_DE', NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, 265, NULL),
+	(592, b'0', 0, 'user@user.com', NULL, NULL, NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, 265, NULL),
+	(883, b'0', 0, NULL, NULL, 'de_DE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 265, '2023-08-13 14:51:03.461'),
+	(884, b'0', 0, NULL, NULL, 'de_DE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 265, '2023-08-15 18:19:53.249'),
+	(885, b'0', 0, NULL, NULL, 'de_DE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 265, '2023-08-15 20:14:23.084'),
+	(886, b'0', 0, NULL, NULL, 'de_DE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 18, 265, '2023-08-15 20:39:23.891');
 /*!40000 ALTER TABLE `USER` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

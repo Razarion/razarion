@@ -150,6 +150,7 @@ export class ObjectEditorComponent implements OnInit {
         this.clearSelection();
         this.messageService.add({
           severity: 'success',
+          life: 300,
           summary: okString
         })
       })
@@ -279,6 +280,7 @@ export class ObjectEditorComponent implements OnInit {
       next: value => {
         this.messageService.add({
           severity: 'success',
+          life: 300,
           summary: `Radius updated ${this.selectedTerrainObject?.getInternalName()}`
         });
       },

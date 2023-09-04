@@ -718,7 +718,11 @@ INSERT INTO `I18N_BUNDLE_STRING` (`bundle`, `i18nString`, `locale`) VALUES
 	(377, 'Harvest 300', 'DE'),
 	(377, 'Harvest 300', 'EN'),
 	(378, 'ZerstÃƒÆ’Ã‚Â¶re 2 Badgers', 'DE'),
-	(378, 'Kill 2 Badgers', 'EN');
+	(378, 'Kill 2 Badgers', 'EN'),
+	(411, 'Baue eine Fabrik', 'DE'),
+	(412, 'Fabrik', 'DE'),
+	(413, 'Baue drei Vipers', 'DE'),
+	(414, 'Viper', 'DE');
 /*!40000 ALTER TABLE `I18N_BUNDLE_STRING` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

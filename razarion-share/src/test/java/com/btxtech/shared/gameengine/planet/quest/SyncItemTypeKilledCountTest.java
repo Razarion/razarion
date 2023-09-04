@@ -29,7 +29,7 @@ public class SyncItemTypeKilledCountTest extends AbstractQuestServiceTest {
         PlayerBaseFull botBase3 = setupHarvesterBot(1, Polygon2D.fromRectangle(270, 180, 10, 10));
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         // Create and activate quest
-        QuestConfig questConfig = new QuestConfig().id(9001).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(3)));
+        QuestConfig questConfig = new QuestConfig().id(9001).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().setCount(3)));
         getQuestService().addQuestListener(createQuestListener());
         getQuestService().activateCondition(humanBaseContext.getPlayerBaseFull().getUserId(), questConfig);
         // showDisplay();
@@ -71,7 +71,7 @@ public class SyncItemTypeKilledCountTest extends AbstractQuestServiceTest {
         PlayerBaseFull botBase3 = setupHarvesterBot(1, Polygon2D.fromRectangle(270, 180, 10, 10));
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         // Create and activate quest
-        QuestConfig questConfig = new QuestConfig().id(9002).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1).setBotIds(Collections.singletonList(botBase3.getBotId()))));
+        QuestConfig questConfig = new QuestConfig().id(9002).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().setCount(1).setBotIds(Collections.singletonList(botBase3.getBotId()))));
         getQuestService().addQuestListener(createQuestListener());
         getQuestService().activateCondition(humanBaseContext.getPlayerBaseFull().getUserId(), questConfig);
         String expectedBotBasesInformation = "TestTargetHarvesterBot id:" + botBase3.getBotId();

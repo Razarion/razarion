@@ -11,17 +11,20 @@ CREATE TABLE IF NOT EXISTS `SERVER_START_REGION_CONFIG` (
   `serverGameEngineId` int(11) NOT NULL,
   `noBaseViewPositionX` double DEFAULT NULL,
   `noBaseViewPositionY` double DEFAULT NULL,
+  `startRegion_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKcx3jju02ngtbbckiw9feme1ll` (`minimalLevel_id`),
   KEY `FKj80ya6k3q8yb33ul57239yuvw` (`serverGameEngineId`),
+  KEY `FKfrt3g41qivy00dkgbj8likvbk` (`startRegion_id`),
   CONSTRAINT `FKcx3jju02ngtbbckiw9feme1ll` FOREIGN KEY (`minimalLevel_id`) REFERENCES `LEVEL` (`id`),
+  CONSTRAINT `FKfrt3g41qivy00dkgbj8likvbk` FOREIGN KEY (`startRegion_id`) REFERENCES `PLACE_CONFIG` (`id`),
   CONSTRAINT `FKj80ya6k3q8yb33ul57239yuvw` FOREIGN KEY (`serverGameEngineId`) REFERENCES `SERVER_GAME_ENGINE_CONFIG` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4;
 
 DELETE FROM `SERVER_START_REGION_CONFIG`;
 /*!40000 ALTER TABLE `SERVER_START_REGION_CONFIG` DISABLE KEYS */;
-INSERT INTO `SERVER_START_REGION_CONFIG` (`id`, `internalName`, `minimalLevel_id`, `serverGameEngineId`, `noBaseViewPositionX`, `noBaseViewPositionY`) VALUES
-	(107, 'Start', 265, 3, 140, 85);
+INSERT INTO `SERVER_START_REGION_CONFIG` (`id`, `internalName`, `minimalLevel_id`, `serverGameEngineId`, `noBaseViewPositionX`, `noBaseViewPositionY`, `startRegion_id`) VALUES
+	(122, 'Start', 265, 3, 140, 85, NULL);
 /*!40000 ALTER TABLE `SERVER_START_REGION_CONFIG` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

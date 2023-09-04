@@ -64,7 +64,7 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
             questConfig.passedMessage(passedMessage.getString(locale));
         }
         if (conditionConfigEntity != null) {
-            questConfig.setConditionConfig(conditionConfigEntity.toQuestConfig()).hidePassedDialog(hidePassedDialog);
+            questConfig.conditionConfig(conditionConfigEntity.toQuestConfig()).hidePassedDialog(hidePassedDialog);
         }
         return questConfig;
     }

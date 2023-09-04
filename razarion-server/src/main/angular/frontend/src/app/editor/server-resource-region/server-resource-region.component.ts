@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {ResourceRegionConfig, ServerGameEngineConfig} from "../../generated/razarion-share";
 import {EditorService} from "../editor-service";
@@ -11,7 +11,7 @@ export class ServerResourceRegionComponent extends EditorPanel implements OnInit
   serverGameEngineConfig?: ServerGameEngineConfig;
   selectedResourceRegion?: ResourceRegionConfig;
 
-  constructor(private editorService: EditorService) {
+  constructor(public editorService: EditorService) {
     super();
   }
 
@@ -22,6 +22,9 @@ export class ServerResourceRegionComponent extends EditorPanel implements OnInit
   }
 
   onSave() {
-
+    this.editorService.updateResourceRegionConfig(this.serverGameEngineConfig?.resourceRegionConfigs)
   }
+
+
+  protected readonly EditorService = EditorService;
 }

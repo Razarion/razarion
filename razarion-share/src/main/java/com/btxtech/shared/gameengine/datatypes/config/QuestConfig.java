@@ -14,8 +14,12 @@ public class QuestConfig extends QuestDescriptionConfig<QuestConfig> {
         return conditionConfig;
     }
 
-    public QuestConfig setConditionConfig(ConditionConfig conditionConfig) {
+    public void setConditionConfig(ConditionConfig conditionConfig) {
         this.conditionConfig = conditionConfig;
+    }
+
+    public QuestConfig conditionConfig(ConditionConfig conditionConfig) {
+        setConditionConfig(conditionConfig);
         return this;
     }
 

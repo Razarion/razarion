@@ -529,6 +529,7 @@ export class SlopeEditorComponent implements OnInit {
         this.createSlopeTerrainEditorUpdate();
         this.messageService.add({
           severity: 'success',
+          life: 300,
           summary: `Slope saved`
         });
       },

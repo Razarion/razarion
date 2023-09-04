@@ -30,8 +30,12 @@ public class ConditionConfig {
         return conditionTrigger;
     }
 
-    public ConditionConfig setConditionTrigger(ConditionTrigger conditionTrigger) {
+    public void setConditionTrigger(ConditionTrigger conditionTrigger) {
         this.conditionTrigger = conditionTrigger;
+    }
+
+    public ConditionConfig conditionTrigger(ConditionTrigger conditionTrigger) {
+        setConditionTrigger(conditionTrigger);
         return this;
     }
 
@@ -39,8 +43,12 @@ public class ConditionConfig {
         return comparisonConfig;
     }
 
-    public ConditionConfig setComparisonConfig(ComparisonConfig comparisonConfig) {
+    public void setComparisonConfig(ComparisonConfig comparisonConfig) {
         this.comparisonConfig = comparisonConfig;
+    }
+
+    public ConditionConfig comparisonConfig(ComparisonConfig comparisonConfig) {
+        setComparisonConfig(comparisonConfig);
         return this;
     }
 }

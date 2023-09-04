@@ -22,6 +22,6 @@ export class ServerStartRegionComponent extends EditorPanel implements OnInit {
   }
 
   onSave() {
-
+    this.editorService.updateStartRegionConfig(this.serverGameEngineConfig?.startRegionConfigs)
   }
 }

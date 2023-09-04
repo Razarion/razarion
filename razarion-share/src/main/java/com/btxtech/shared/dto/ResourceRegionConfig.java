@@ -25,7 +25,7 @@ import com.btxtech.shared.system.Nullable;
  * Time: 22:07:56
  */
 public class ResourceRegionConfig {
-    private int id;
+    private Integer id;
     private String internalName;
     private int count;
     private double minDistanceToItems;
@@ -33,7 +33,7 @@ public class ResourceRegionConfig {
     private Integer resourceItemTypeId;
     private PlaceConfig region;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

@@ -17,36 +17,37 @@
     </div>
   </p-divider>
   <div class="grid">
-    <span class="col-3">Id</span>
-    <div class="col-9">
+    <span class="col-4">Id</span>
+    <div class="col-8">
       <p-inputNumber [disabled]="true" inputId="integeronly"
                      [(ngModel)]="selectedStartRegion&&selectedStartRegion.id"></p-inputNumber>
     </div>
   </div>
   <div class="grid">
-    <span class="col-3">Internal name</span>
-    <div class="col-9">
+    <span class="col-4">Internal name</span>
+    <div class="col-8">
       <input [(ngModel)]="selectedStartRegion&&selectedStartRegion.internalName"
              type="text"
              class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
   </div>
   <div class="grid">
-    <span class="col-3">Minimal level</span>
-    <div class="col-9">
+    <span class="col-4">Minimal level</span>
+    <div class="col-8">
       <level *ngIf="selectedStartRegion" [(levelId)]="selectedStartRegion.minimalLevelId"></level>
     </div>
   </div>
   <div class="grid">
-    <span class="col-3">Region</span>
-    <div class="col-9">
+    <span class="col-4">Region</span>
+    <div class="col-8">
       <place-config *ngIf="selectedStartRegion" [(placeConfig)]="selectedStartRegion.region"></place-config>
     </div>
   </div>
   <div class="grid">
-    <span class="col-3">No base view position</span>
-    <div class="col-9">
-      <decimal-position *ngIf="selectedStartRegion" [(decimalPosition)]="selectedStartRegion.noBaseViewPosition"></decimal-position>
+    <span class="col-4">No base view position</span>
+    <div class="col-8">
+      <decimal-position *ngIf="selectedStartRegion"
+                        [(decimalPosition)]="selectedStartRegion.noBaseViewPosition"></decimal-position>
     </div>
   </div>
 </div>

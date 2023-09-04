@@ -38,6 +38,7 @@ export class BackupRestoreComponent extends EditorPanel implements OnInit {
       .subscribe(backupPlanetOverviews => {
           this.messageService.add({
             severity: 'success',
+            life: 300,
             summary: 'Backup successful'
           });
           this.setBackupBaseOverviews(backupPlanetOverviews);
@@ -58,6 +59,7 @@ export class BackupRestoreComponent extends EditorPanel implements OnInit {
         .subscribe(value => {
             this.messageService.add({
               severity: 'success',
+              life: 300,
               summary: `Restored to ${new DatePipe("en-US").transform(backupBaseOverview.date, 'dd.MM.yyyy HH:mm:ss')}`
             });
           },
@@ -78,6 +80,7 @@ export class BackupRestoreComponent extends EditorPanel implements OnInit {
         .subscribe(backupPlanetOverviews => {
             this.messageService.add({
               severity: 'success',
+              life: 300,
               summary: `Deleted backup ${new DatePipe("en-US").transform(backupBaseOverview.date, 'dd.MM.yyyy HH:mm:ss')}`
             });
             this.setBackupBaseOverviews(backupPlanetOverviews);

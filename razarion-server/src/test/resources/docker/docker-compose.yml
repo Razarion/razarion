@@ -11,6 +11,7 @@ services:
 #      - ./stage/wildfly:/tmp/stage
   db:
     image: mariadb
+#    image: db_dev
     container_name: db
     restart: always
     environment:

@@ -1,14 +1,22 @@
 import {ComponentFactoryResolver, Injectable, Type} from "@angular/core";
 import {
   BASE_ITEM_TYPE_EDITOR_PATH,
-  LEVEL_EDITOR_PATH, RESOURCE_ITEM_TYPE_EDITOR_PATH,
+  LEVEL_EDITOR_PATH,
+  RESOURCE_ITEM_TYPE_EDITOR_PATH,
   SERVER_GAME_ENGINE_EDITOR,
   SERVER_GAME_ENGINE_PATH
 } from "../common";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
-import {ObjectNameId, ServerGameEngineConfig} from "../generated/razarion-share";
+import {
+  BotConfig,
+  ObjectNameId,
+  ResourceRegionConfig,
+  ServerGameEngineConfig,
+  ServerLevelQuestConfig,
+  StartRegionConfig
+} from "../generated/razarion-share";
 
 export class ServerCommand {
   constructor(public name: string, public methodUrl: string) {
@@ -17,6 +25,7 @@ export class ServerCommand {
 
 @Injectable()
 export class EditorService {
+  static readonly SERVER_GAME_ENGINE_ID = 3; // TODO read from game engine
   static RESTART_BOTS: ServerCommand = new ServerCommand("Restart Bots", "restartBots");
   static RELOAD_STATIC: ServerCommand = new ServerCommand("Reload Static", "reloadStatic");
   static RESTART_RESOURCE_REGIONS: ServerCommand = new ServerCommand("Restart Resource Regions", "restartResourceRegions");
@@ -66,6 +75,7 @@ export class EditorService {
     this.httpClient.post(url, null).subscribe(value => {
         this.messageService.add({
           severity: 'success',
+          life: 300,
           summary: serverCommand.name
         });
       },
@@ -80,9 +90,8 @@ export class EditorService {
   }
 
   readServerGameEngineConfig(): Promise<ServerGameEngineConfig> {
-    let id = 3; // TODO get actual ServerGameEngineConfig
     return new Promise((resolve) => {
-      this.httpClient.get(`${SERVER_GAME_ENGINE_EDITOR}/read/${id}`).subscribe({
+      this.httpClient.get(`${SERVER_GAME_ENGINE_EDITOR}/read/${EditorService.SERVER_GAME_ENGINE_ID}`).subscribe({
         next: (serverGameEngineConfig: any) => {
           resolve(serverGameEngineConfig);
         },
@@ -95,6 +104,43 @@ export class EditorService {
           });
         }
       });
+    });
+  }
+
+  updateResourceRegionConfig(resourceRegionConfigs: ResourceRegionConfig[] | undefined) {
+    this.updateChildConfig(resourceRegionConfigs, "resourceRegionConfig");
+  }
+
+  updateStartRegionConfig(startRegionConfigs: StartRegionConfig[] | undefined) {
+    this.updateChildConfig(startRegionConfigs, "startRegionConfig");
+  }
+
+  updateBotConfig(botConfigs: BotConfig[] | undefined) {
+    this.updateChildConfig(botConfigs, "botConfig");
+  }
+
+  updateServerLevelQuestConfig(serverLevelQuestConfig: ServerLevelQuestConfig[] | undefined) {
+    this.updateChildConfig(serverLevelQuestConfig, "serverLevelQuestConfig");
+  }
+
+  private updateChildConfig(configs: any[] | undefined, configName: string) {
+    let url = `${SERVER_GAME_ENGINE_EDITOR}/update/${configName}/${EditorService.SERVER_GAME_ENGINE_ID}`;
+    this.httpClient.post(url, configs).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          life: 300,
+          summary: 'Saved'
+        });
+      },
+      error: (err: any) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Failed saving ${url}`,
+          detail: `${JSON.stringify(err)}`,
+          sticky: true
+        });
+      }
     });
   }
 
