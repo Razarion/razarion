@@ -30,7 +30,7 @@ public interface GameTestContent {
     }
 
     static QuestConfig createItemCountCreatedQuest() {
-        return new QuestConfig().id(QUEST_CONFIG_1_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().setCount(10)));
+        return new QuestConfig().id(QUEST_CONFIG_1_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().count(10)));
     }
 
     static QuestConfig createItemTypeCountCreatedQuest() {
@@ -41,7 +41,7 @@ public interface GameTestContent {
         typeCount.put(FallbackConfig.GENERATOR_ITEM_TYPE_ID, 6);
         typeCount.put(FallbackConfig.CONSUMER_ITEM_TYPE_ID, 6);
         typeCount.put(FallbackConfig.HARVESTER_ITEM_TYPE_ID, 3);
-        return new QuestConfig().id(QUEST_CONFIG_2_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
+        return new QuestConfig().id(QUEST_CONFIG_2_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(typeCount)));
     }
 
     static QuestConfig createItemTypeCountCreatedQuest2() {
@@ -49,7 +49,7 @@ public interface GameTestContent {
         typeCount.put(FallbackConfig.FACTORY_ITEM_TYPE_ID, 1);
         typeCount.put(FallbackConfig.ATTACKER_ITEM_TYPE_ID, 2);
         typeCount.put(FallbackConfig.HARVESTER_ITEM_TYPE_ID, 1);
-        return new QuestConfig().id(QUEST_CONFIG_3_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
+        return new QuestConfig().id(QUEST_CONFIG_3_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(typeCount)));
     }
 
     static QuestConfig createNoPositionQuest() {
@@ -57,18 +57,18 @@ public interface GameTestContent {
         typeCount.put(FallbackConfig.BUILDER_ITEM_TYPE_ID, 1);
         typeCount.put(FallbackConfig.FACTORY_ITEM_TYPE_ID, 1);
         typeCount.put(FallbackConfig.ATTACKER_ITEM_TYPE_ID, 7);
-        return new QuestConfig().id(QUEST_CONFIG_4_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).comparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
+        return new QuestConfig().id(QUEST_CONFIG_4_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).comparisonConfig(new ComparisonConfig().typeCount(typeCount)));
     }
 
     static QuestConfig createPositionQuest() {
         Map<Integer, Integer> typeCount = new HashMap<>();
         typeCount.put(FallbackConfig.ATTACKER_ITEM_TYPE_ID, 3);
-        return new QuestConfig().id(QUEST_CONFIG_5_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).comparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setPlaceConfig(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(130, 130, 100, 40)))));
+        return new QuestConfig().id(QUEST_CONFIG_5_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).comparisonConfig(new ComparisonConfig().typeCount(typeCount).placeConfig(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(130, 130, 100, 40)))));
     }
 
     static QuestConfig createPositionTimeQuest() {
         Map<Integer, Integer> typeCount = new HashMap<>();
         typeCount.put(FallbackConfig.ATTACKER_ITEM_TYPE_ID, 2);
-        return new QuestConfig().id(QUEST_CONFIG_5_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).comparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setPlaceConfig(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(130, 130, 100, 40))).setTimeSeconds(60)));
+        return new QuestConfig().id(QUEST_CONFIG_5_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).comparisonConfig(new ComparisonConfig().typeCount(typeCount).placeConfig(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(130, 130, 100, 40))).timeSeconds(60)));
     }
 }

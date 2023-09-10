@@ -52,15 +52,15 @@ public class ComparisonConfigEntity {
     private List<BotConfigEntity> bots;
 
     public ComparisonConfig toComparisonConfig() {
-        ComparisonConfig comparisonConfig = new ComparisonConfig().setCount(count).setTimeSeconds(time);
+        ComparisonConfig comparisonConfig = new ComparisonConfig().count(count).timeSeconds(time);
         if (typeCount != null && !typeCount.isEmpty()) {
-            comparisonConfig.setTypeCount(typeCount.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().getId(), Map.Entry::getValue, (a, b) -> b)));
+            comparisonConfig.typeCount(typeCount.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().getId(), Map.Entry::getValue, (a, b) -> b)));
         }
         if (bots != null && !bots.isEmpty()) {
-            comparisonConfig.setBotIds(bots.stream().map(BotConfigEntity::getId).collect(Collectors.toList()));
+            comparisonConfig.botIds(bots.stream().map(BotConfigEntity::getId).collect(Collectors.toList()));
         }
         if (placeConfig != null) {
-            comparisonConfig.setPlaceConfig(placeConfig.toPlaceConfig());
+            comparisonConfig.placeConfig(placeConfig.toPlaceConfig());
         }
         return comparisonConfig;
     }

@@ -32,6 +32,7 @@ import {GwtHelper} from "../gwtangular/GwtHelper";
 import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
 import {ServerQuestEditorComponent} from "../editor/server-quest-editor/server-quest-editor.component";
 import {ServerBotEditorComponent} from "../editor/server-bot-editor/server-bot-editor.component";
+import {ServerStartRegionComponent} from "../editor/server-start-region/server-start-region.component";
 
 
 @Component({
@@ -66,7 +67,7 @@ export class GameComponent implements OnInit {
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = true;
+      let runGwtMock = false;
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
@@ -336,7 +337,7 @@ export class GameComponent implements OnInit {
       } else {
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.mainCockpitComponent.show(true);
-        this.addEditorModel(new EditorModel("Bot Editor", ServerBotEditorComponent));
+        this.addEditorModel(new EditorModel("??? Editor", ServerStartRegionComponent));
       }
     }
     this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;

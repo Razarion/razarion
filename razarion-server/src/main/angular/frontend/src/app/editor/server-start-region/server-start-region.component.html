@@ -1,5 +1,5 @@
-<div [style]="{width:'500px'}">
-  <div class="grid">
+<div [style]="{width:'600px'}">
+  <div class="grid grid-razarion-editor">
     <div class="col-1">
       <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
                 (onClick)="onSave()"></p-button>
@@ -16,14 +16,14 @@
       <b>Configuration</b>
     </div>
   </p-divider>
-  <div class="grid">
+  <div class="grid grid-razarion-editor">
     <span class="col-4">Id</span>
     <div class="col-8">
       <p-inputNumber [disabled]="true" inputId="integeronly"
                      [(ngModel)]="selectedStartRegion&&selectedStartRegion.id"></p-inputNumber>
     </div>
   </div>
-  <div class="grid">
+  <div class="grid grid-razarion-editor">
     <span class="col-4">Internal name</span>
     <div class="col-8">
       <input [(ngModel)]="selectedStartRegion&&selectedStartRegion.internalName"
@@ -31,19 +31,19 @@
              class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
   </div>
-  <div class="grid">
+  <div class="grid grid-razarion-editor">
     <span class="col-4">Minimal level</span>
     <div class="col-8">
       <level *ngIf="selectedStartRegion" [(levelId)]="selectedStartRegion.minimalLevelId"></level>
     </div>
   </div>
-  <div class="grid">
+  <div class="grid grid-razarion-editor">
     <span class="col-4">Region</span>
     <div class="col-8">
       <place-config *ngIf="selectedStartRegion" [(placeConfig)]="selectedStartRegion.region"></place-config>
     </div>
   </div>
-  <div class="grid">
+  <div class="grid grid-razarion-editor">
     <span class="col-4">No base view position</span>
     <div class="col-8">
       <decimal-position *ngIf="selectedStartRegion"

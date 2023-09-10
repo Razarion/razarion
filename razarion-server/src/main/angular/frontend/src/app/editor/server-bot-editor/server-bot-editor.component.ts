@@ -11,7 +11,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig?: ServerGameEngineConfig;
   selectedBot?: BotConfig;
 
-  constructor(private editorService: EditorService) {
+  constructor(public editorService: EditorService) {
     super();
   }
 
@@ -24,4 +24,6 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   onSave() {
     this.editorService.updateBotConfig(this.serverGameEngineConfig?.botConfigs)
   }
+
+  protected readonly EditorService = EditorService;
 }

@@ -224,7 +224,7 @@ public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<Serve
                 .questConfigs(Collections.singletonList(new QuestConfig()
                         .internalName("QuestConfig")
                         .conditionConfig(new ConditionConfig()
-                                .comparisonConfig(new ComparisonConfig().setCount(11))
+                                .comparisonConfig(new ComparisonConfig().count(11))
                                 .conditionTrigger(ConditionTrigger.HARVEST)))));
 
 
@@ -243,7 +243,7 @@ public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<Serve
                 .questConfigs(Collections.singletonList(new QuestConfig()
                         .internalName("QuestConfig2")
                         .conditionConfig(new ConditionConfig()
-                                .comparisonConfig(new ComparisonConfig().setCount(21))
+                                .comparisonConfig(new ComparisonConfig().count(21))
                                 .conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED)))));
 
         getCrudToBeTested().updateServerLevelQuestConfig(serverGameEngineConfig.getId(), serverLevelQuestConfigs);

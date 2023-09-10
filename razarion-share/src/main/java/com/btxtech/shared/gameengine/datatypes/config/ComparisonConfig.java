@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 import java.util.HashSet;
@@ -33,19 +34,6 @@ public class ComparisonConfig {
     private PlaceConfig placeConfig;
     private List<Integer> botIds;
 
-    public Integer getCount() {
-        return count;
-    }
-
-    public ComparisonConfig setCount(Integer count) {
-        this.count = count;
-        return this;
-    }
-
-    public Map<Integer, Integer> getTypeCount() {
-        return typeCount;
-    }
-
     /**
      *
      * @return Key Item Type, Value count
@@ -63,43 +51,76 @@ public class ComparisonConfig {
         return types;
     }
 
-    public ComparisonConfig setTypeCount(Map<Integer, Integer> typeCount) {
-        this.typeCount = typeCount;
-        return this;
-    }
-
-    public Integer getTimeSeconds() {
-        return timeSeconds;
-    }
-
-    public ComparisonConfig setTimeSeconds(Integer timeSeconds) {
-        this.timeSeconds = timeSeconds;
-        return this;
-    }
-
-    public PlaceConfig getPlaceConfig() {
-        return placeConfig;
-    }
-
-    public ComparisonConfig setPlaceConfig(PlaceConfig placeConfig) {
-        this.placeConfig = placeConfig;
-        return this;
-    }
-
-    public List<Integer> getBotIds() {
-        return botIds;
-    }
-
-    public ComparisonConfig setBotIds(List<Integer> botIds) {
-        this.botIds = botIds;
-        return this;
-    }
-
     public Set<Integer> toBotIdSet() {
         if (botIds != null) {
             return new HashSet<>(botIds);
         } else {
             return null;
         }
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
+    public Map<Integer, Integer> getTypeCount() {
+        return typeCount;
+    }
+
+    public void setTypeCount(Map<Integer, Integer> typeCount) {
+        this.typeCount = typeCount;
+    }
+
+    public Integer getTimeSeconds() {
+        return timeSeconds;
+    }
+
+    public void setTimeSeconds(Integer timeSeconds) {
+        this.timeSeconds = timeSeconds;
+    }
+
+    public @Nullable PlaceConfig getPlaceConfig() {
+        return placeConfig;
+    }
+
+    public void setPlaceConfig(@Nullable PlaceConfig placeConfig) {
+        this.placeConfig = placeConfig;
+    }
+
+    public List<Integer> getBotIds() {
+        return botIds;
+    }
+
+    public void setBotIds(List<Integer> botIds) {
+        this.botIds = botIds;
+    }
+
+    public ComparisonConfig count(Integer count) {
+        setCount(count);
+        return this;
+    }
+
+    public ComparisonConfig typeCount(Map<Integer, Integer> typeCount) {
+        setTypeCount(typeCount);
+        return this;
+    }
+
+    public ComparisonConfig timeSeconds(Integer timeSeconds) {
+        setTimeSeconds(timeSeconds);
+        return this;
+    }
+
+    public ComparisonConfig placeConfig(PlaceConfig placeConfig) {
+        setPlaceConfig(placeConfig);
+        return this;
+    }
+
+    public ComparisonConfig botIds(List<Integer> botIds) {
+        setBotIds(botIds);
+        return this;
     }
 }

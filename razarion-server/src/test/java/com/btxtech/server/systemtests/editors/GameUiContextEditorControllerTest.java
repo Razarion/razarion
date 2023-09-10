@@ -365,7 +365,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0).setSuggestedPosition(new DecimalPosition(135, 85));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
-        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(buildupItemTypeCount));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.START_PLACER);
@@ -385,7 +385,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
     private void setUserMoveScene(SceneConfig sceneConfig) {
         Map<Integer, Integer> itemTypeCount = new HashMap<>();
         itemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
-        ComparisonConfig comparisonConfig = new ComparisonConfig().setTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(175, 103, 10, 10)));
+        ComparisonConfig comparisonConfig = new ComparisonConfig().typeCount(itemTypeCount).placeConfig(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(175, 103, 10, 10)));
         ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).comparisonConfig(comparisonConfig);
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
@@ -425,7 +425,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         List<BoxItemPosition> boxItemPositions = new ArrayList<>();
         boxItemPositions.add(new BoxItemPosition().setBoxItemTypeId(BOX_ITEM_TYPE_ID).setPosition(new DecimalPosition(180, 120)));
         // Pick box quest
-        QuestConfig questConfig = new QuestConfig().xp(1).title("Nimm die Box").description("Eine Box wurde gesichtet. Sammle sie auf").conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.BOX_PICKED).comparisonConfig(new ComparisonConfig().setCount(1)));
+        QuestConfig questConfig = new QuestConfig().xp(1).title("Nimm die Box").description("Eine Box wurde gesichtet. Sammle sie auf").conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.BOX_PICKED).comparisonConfig(new ComparisonConfig().count(1)));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.PICK_BOX);
@@ -437,7 +437,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
 
     private void setBoxSpawnTask(SceneConfig sceneConfig) {
         // Use inventory item quest
-        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().setCount(1));
+        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().count(1));
         // Move attackers away
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setTargetPosition(new DecimalPosition(255, 244)));
@@ -454,7 +454,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         // Attack quest
         Map<Integer, Integer> attackItemTypeCount = new HashMap<>();
         attackItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER_ID, 1);
-        QuestConfig questConfig = new QuestConfig().xp(10).title("Zerstöre die Abbaufahrzeuge").description("Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge").conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().setTypeCount(attackItemTypeCount)));
+        QuestConfig questConfig = new QuestConfig().xp(10).title("Zerstöre die Abbaufahrzeuge").description("Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge").conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().typeCount(attackItemTypeCount)));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.ATTACK);
@@ -492,7 +492,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0).setAllowedArea(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(80, 260, 50, 50)));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
-        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(buildupItemTypeCount));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.START_PLACER);
@@ -510,7 +510,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         // Build factory Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY_ID, 1);
-        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(buildupItemTypeCount));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.BUILD);
@@ -525,7 +525,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         // Build Harvester Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER_ID, 1);
-        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(buildupItemTypeCount));
         // Kill NPC_BOT_OUTPOST_AUX
         List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
         killBotCommandConfigs.add(new KillBotCommandConfig().setBotAuxiliaryId(NPC_BOT_OUTPOST_AUX));
@@ -540,7 +540,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
 
     private void setHarvestTask(SceneConfig sceneConfig) {
         // Harvest quest
-        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.HARVEST).comparisonConfig(new ComparisonConfig().setCount(30));
+        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.HARVEST).comparisonConfig(new ComparisonConfig().count(30));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.HARVEST);
@@ -554,7 +554,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         // Build viper
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER_ID, 1);
-        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(buildupItemTypeCount));
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.FABRICATE);
         gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY_ID);
@@ -574,7 +574,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         // Build viper
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER_ID, 2);
-        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(buildupItemTypeCount));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.FABRICATE);
@@ -587,7 +587,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
     private void setKillTower(SceneConfig sceneConfig) {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_TOWER_ID, 1);
-        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().typeCount(buildupItemTypeCount));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.ATTACK);
@@ -614,6 +614,6 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
 
         sceneConfigs.add(new SceneConfig().internalName("script: npc too weak").introText("Der Turm ist zu stark, wir brauchen eine grössere Armee").duration(2000));
 
-        sceneConfigs.add(new SceneConfig().internalName("user: kill bot").questConfig(new QuestConfig().xp(20).title("Kill Razar Industries").description("Vertreibe Razar Industries von diesem Planeten").conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.BASE_KILLED).comparisonConfig(new ComparisonConfig().setCount(1)))).wait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().internalName("user: kill bot").questConfig(new QuestConfig().xp(20).title("Kill Razar Industries").description("Vertreibe Razar Industries von diesem Planeten").conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.BASE_KILLED).comparisonConfig(new ComparisonConfig().count(1)))).wait4QuestPassedDialog(true));
     }
 }

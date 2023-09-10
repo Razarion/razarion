@@ -5,7 +5,7 @@
               url="{{getUploadUrl()}}"
               (onError)="onUploadError($event)"
               (onUpload)="requestAllImages()"></p-fileUpload>
-<div class="grid" style="width:620px">
+<div class="grid grid-razarion-editor" style="width:620px">
   <div class="col-fixed"  style="border: 1px solid #64b5f6" *ngFor="let imageGalleryItem of imageGalleryItems">
     <image-gallery-item [image-gallery-item]="imageGalleryItem"></image-gallery-item>
     <div class="inline-flex">

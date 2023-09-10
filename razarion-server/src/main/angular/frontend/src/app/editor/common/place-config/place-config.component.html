@@ -1,103 +1,79 @@
-<p-button *ngIf="!this.placeConfig"
-          icon="pi pi-plus"
-          styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
-          title="Create"
-          (onClick)="onCreateClicked()">
-</p-button>
-<div class="border-1 border-solid border-gray-400" *ngIf="this.placeConfig">
-  <div class="grid flex-nowrap">
-    <div class="col">
-      <p-button icon="pi pi-eye"
-                styleClass="p-button-rounded p-button-text p-button-sm p-button-info"
-                title="Show">
+<div class="border-1 border-solid border-gray-400">
+  <div class="grid grid-nogutter">
+    <div class="col-fixed" style="width:17em">
+      <p-dropdown [options]="types"
+                  [(ngModel)]="selectedType"
+                  (onChange)="selectedTypeChanged()"
+                  optionLabel="name"
+                  [showClear]="true"
+                  placeholder="Select"
+                  class="bg-primary-reverse">
+        <ng-template pTemplate="selectedItem">
+          <div class="flex align-items-center gap-2" *ngIf="selectedType">
+            <span [ngClass]="[selectedType.icon]" class="pi"></span>
+            <div>{{ selectedType.name }}</div>
+          </div>
+        </ng-template>
+        <ng-template let-type pTemplate="item">
+          <div class="flex align-items-center gap-2">
+            <span [ngClass]="[type.icon]" class="pi"></span>
+            <div>{{ type.name }}</div>
+          </div>
+        </ng-template>
+      </p-dropdown>
+      <p-button icon="pi pi-arrow-circle-down"
+                [disabled]="!placeConfig?.polygon2D && !placeConfig?.position"
+                styleClass="p-button-text p-button-sm"
+                title="Scroll to"
+                (onClick)="onScrollTo()">
       </p-button>
-      <p-button icon="pi pi-globe"
-                styleClass="p-button-rounded p-button-text p-button-sm p-button-info"
-                title="Scroll to">
-      </p-button>
-    </div>
-    <div class="col">
-      <p-button icon="pi pi-times"
-                styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                (onClick)="onDeleteClicked()"
-                title="Delete">
-      </p-button>
-    </div>
-  </div>
-  <div class="grid flex-nowrap">
-    <div class="col">
-      <p-toggleButton [ngModel]="locationMode"
-                      (onChange)="locationMode=$event.checked; $event.checked ? editPolygonButton.checked=false : editLocationButton.checked=false; $event.checked ? onEditPolygonButton(false):onEditLocationButton(false)"
-                      onIcon="pi pi-map-marker"
-                      offIcon="pi pi-map-marker"
-                      title="Location"
-                      styleClass="p-button-sm p-button-text"></p-toggleButton>
-    </div>
-    <div class="col">
-      <p-toggleButton #editLocationButton
-                      (onChange)="onEditLocationButton($event.checked)"
-                      [disabled]="!locationMode" onLabel="Stop" offLabel="Edit"
-                      title="Edit"
-                      styleClass="p-button-sm p-button-text"></p-toggleButton>
-    </div>
-    <div class="col-10">
-      <div class="inline-flex">
-        <p-inputNumber [(ngModel)]="locationPositionX"
-                       (onInput)="locationPositionX = $event.value"
-                       [prefix]="'x: '" [size]="3"
-                       [disabled]="!locationMode"
-                       [minFractionDigits]="1" [maxFractionDigits]="6"
-                       [allowEmpty]="false"></p-inputNumber>
-        <p-inputNumber [(ngModel)]="locationPositionY"
-                       (onInput)="locationPositionY = $event.value"
-                       [prefix]="'y: '" [size]="3"
-                       [disabled]="!locationMode"
-                       [minFractionDigits]="1" [maxFractionDigits]="6"
-                       [allowEmpty]="false"></p-inputNumber>
-        <p-inputNumber [(ngModel)]="locationRadius"
-                       (onInput)="locationRadius = $event.value"
-                       [prefix]="'r: '" [size]="3"
-                       [disabled]="!locationMode"
-                       [minFractionDigits]="1" [maxFractionDigits]="6"></p-inputNumber>
-      </div>
-    </div>
-  </div>
-  <div class="grid flex-nowrap">
-    <div class="col">
-      <p-toggleButton [ngModel]="!locationMode"
-                      (onChange)="locationMode=!$event.checked; $event.checked ? editLocationButton.checked=false : editPolygonButton.checked=false; $event.checked ? onEditLocationButton(false):onEditPolygonButton(false)"
+      <p-toggleButton onIcon="pi pi-eye"
+                      offIcon="pi pi-eye"
+                      styleClass="p-button-text p-button-sm"
+                      title="Visible"
+                      [disabled]="!placeConfig"
+                      [(ngModel)]="visible"
+                      (onChange)="onVisibilityChange()">
+      </p-toggleButton>
+      <p-toggleButton [(ngModel)]="editable"
+                      (onChange)="onEditButton($event.checked)"
+                      [disabled]="!visible"
                       onIcon="pi pi-pencil"
                       offIcon="pi pi-pencil"
-                      title="Polygon"
-                      styleClass="p-button-sm p-button-text"></p-toggleButton>
-    </div>
-    <div class="col">
-      <p-toggleButton #editPolygonButton
-                      [disabled]="locationMode"
-                      (onChange)="onEditPolygonButton($event.checked)"
                       title="Edit"
-                      onLabel="Stop" offLabel="Edit" styleClass="p-button-sm p-button-text"></p-toggleButton>
+                      styleClass="p-button-sm p-button-text p-togglebutton-warning"></p-toggleButton>
     </div>
-    <div class="col">
+    <div class="col" *ngIf="selectedType?.type === Type.LOCATION">
+      <p-inputNumber [(ngModel)]="locationPositionX"
+                     (onInput)="locationPositionX = $event.value"
+                     [prefix]="'x: '" [size]="3"
+                     [minFractionDigits]="1" [maxFractionDigits]="6"></p-inputNumber>
+      <p-inputNumber [(ngModel)]="locationPositionY"
+                     (onInput)="locationPositionY = $event.value"
+                     [prefix]="'y: '" [size]="3"
+                     [minFractionDigits]="1" [maxFractionDigits]="6"></p-inputNumber>
+      <p-inputNumber [(ngModel)]="locationRadius"
+                     [placeholder]="'radius'"
+                     (onInput)="locationRadius = $event.value"
+                     [prefix]="'r: '" [size]="3"
+                     [minFractionDigits]="1" [maxFractionDigits]="6"></p-inputNumber>
+    </div>
+    <div class="col" *ngIf="selectedType?.type === Type.POLYGON">
       <p-toggleButton [ngModel]="polygonVisualization?.vertexAddMode"
                       (onChange)="polygonVisualization && (polygonVisualization.vertexAddMode = $event.checked); $event.checked?polygonVisualization!.vertexDeleteMode = false : {}"
-                      [disabled]="!polygonVisualization"
+                      [disabled]="!editable"
                       onIcon="pi pi-plus-circle"
                       offIcon="pi pi-plus-circle"
                       title="Add vertex mode"
-                      styleClass="p-button-sm p-button-text"></p-toggleButton>
-    </div>
-    <div class="col">
+                      styleClass="p-button-sm p-button-text p-togglebutton-warning"></p-toggleButton>
       <p-toggleButton [ngModel]="polygonVisualization?.vertexDeleteMode"
                       (onChange)="polygonVisualization && (polygonVisualization.vertexDeleteMode = $event.checked); $event.checked?polygonVisualization!.vertexAddMode = false : {}"
-                      [disabled]="!polygonVisualization"
+                      [disabled]="!editable"
                       onIcon="pi pi-minus-circle"
                       offIcon="pi pi-minus-circle"
                       title="Remove vertex mode"
-                      styleClass="p-button-sm p-button-text"></p-toggleButton>
-    </div>
-    <div class="col-8">
-      {{(polygonVisualization?.placeConfig?.polygon2D?.corners?.length || 0) < 3 ? "-" : polygonVisualization!.placeConfig.polygon2D!.corners.length}}
+                      styleClass="p-button-sm p-button-text p-togglebutton-warning"></p-toggleButton>
+      {{(placeConfig?.polygon2D?.corners?.length || 0) < 3 ? "-" : placeConfig!.polygon2D!.corners.length}}
       Vertices
     </div>
   </div>
