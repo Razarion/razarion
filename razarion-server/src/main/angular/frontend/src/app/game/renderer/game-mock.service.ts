@@ -81,7 +81,6 @@ export class GameMockService {
   };
 
   statusProvider: StatusProvider = new class implements StatusProvider {
-    stats: Stats | null = null;
 
     getClientAlarms(): Alarm[] {
       return [];
@@ -90,15 +89,6 @@ export class GameMockService {
     requestServerAlarms(): Promise<Alarm[]> {
       throw new Error("Method not implemented.");
     }
-
-    setStats(stats: Stats | null): void {
-      this.stats = stats;
-    }
-
-    getStats(): Stats | null {
-      return this.stats;
-    }
-
   };
 
   editorFrontendProvider: EditorFrontendProvider = new class implements EditorFrontendProvider {

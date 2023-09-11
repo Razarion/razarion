@@ -2,13 +2,13 @@ import {Type} from "@angular/core";
 import {MainCockpitComponent} from "../game/cockpit/main/main-cockpit.component";
 
 export class EditorModel {
-  constructor(public name: string, public editorComponent: Type<any>) {
+  constructor(public name: string, public editorComponent: Type<any>, public childComponent?: Type<any>) {
   }
 }
 
 export class GenericPropertyEditorModel extends EditorModel {
-  constructor(public editorComponent: Type<any>, public collectionName: string) {
-    super(collectionName, editorComponent);
+  constructor(public editorComponent: Type<any>, public collectionName: string, childComponent?: Type<any>) {
+    super(collectionName, editorComponent, childComponent);
   }
 }
 

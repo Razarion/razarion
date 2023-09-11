@@ -23,7 +23,7 @@ public class StatusProvider {
     private Caller<AlarmServiceController> alarmServiceControllerCaller;
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
-    private Stats stats;
+    // TODO private Stats stats;
 
     @SuppressWarnings("unused") // Called by Angular
     public Alarm[] getClientAlarms() {
@@ -37,13 +37,13 @@ public class StatusProvider {
                         exceptionHandler.restErrorHandler("AlarmServiceController")).getAlarms());
     }
 
-    @SuppressWarnings("unused") // Called by Angular
-    public Stats getStats() {
-        return stats;
-    }
+    // TODO @SuppressWarnings("unused") // Called by Angular
+    // TODO public Stats getStats() {
+    // TODO     return stats;
+    // TODO }
 
-    @SuppressWarnings("unused") // Called by Angular
-    public void setStats(Stats stats) {
-        this.stats = stats;
-    }
+    // TODO @SuppressWarnings("unused") // Called by Angular
+    // TODO public void setStats(Stats stats) {
+    // TODO     this.stats = stats;
+    // TODO }
 }

@@ -77,10 +77,6 @@ export interface StatusProvider {
   getClientAlarms(): Alarm[];
 
   requestServerAlarms(): Promise<Alarm[]>;
-
-  setStats(stats: Stats | null): void;
-
-  getStats(): Stats | null;
 }
 
 export interface Callback {

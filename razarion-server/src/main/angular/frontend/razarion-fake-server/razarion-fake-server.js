@@ -233,6 +233,37 @@ server.on({
   }
 });
 
+const slopesJson = require("./slopes.json");
+server.on({
+  method: 'GET',
+  path: '/rest/editor/slope/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(slopesJson.objectNameIds)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/slope/read/1',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(slopesJson._1)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/slope/read/22',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(slopesJson._22)
+  }
+});
+
 
 server.start(function () {
   console.info("Razarion fake server is running on port: " + PORT);

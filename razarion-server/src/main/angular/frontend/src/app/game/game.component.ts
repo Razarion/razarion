@@ -33,6 +33,8 @@ import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
 import {ServerQuestEditorComponent} from "../editor/server-quest-editor/server-quest-editor.component";
 import {ServerBotEditorComponent} from "../editor/server-bot-editor/server-bot-editor.component";
 import {ServerStartRegionComponent} from "../editor/server-start-region/server-start-region.component";
+import {SlopeEditorComponent} from "../editor/crud-editors/slope-editor/slope-editor.component";
+import {CrudContainerComponent} from "../editor/crud-editors/crud-container/crud-container.component";
 
 
 @Component({
@@ -337,7 +339,7 @@ export class GameComponent implements OnInit {
       } else {
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.mainCockpitComponent.show(true);
-        this.addEditorModel(new EditorModel("??? Editor", ServerStartRegionComponent));
+        this.addEditorModel(new EditorModel("??? Editor", CrudContainerComponent, SlopeEditorComponent));
       }
     }
     this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;

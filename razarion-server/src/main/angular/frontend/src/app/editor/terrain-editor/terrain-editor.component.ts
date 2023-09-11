@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {ObjectEditorComponent} from "./object-editor.component";
-import {SlopeEditorComponent} from "./slope-editor.component";
+import {SlopeTerrainEditorComponent} from "./slope-terrain-editor.component";
 
 @Component({
   selector: 'terrain-editor',
@@ -10,8 +10,8 @@ import {SlopeEditorComponent} from "./slope-editor.component";
 export class TerrainEditorComponent extends EditorPanel implements AfterViewInit {
   @ViewChild("objectEditor")
   objectEditor!: ObjectEditorComponent;
-  @ViewChild("slopeEditor")
-  slopeEditor!: SlopeEditorComponent;
+  @ViewChild("slopeTerrainEditor")
+  slopeTerrainEditor!: SlopeTerrainEditorComponent;
 
   ngAfterViewInit(): void {
     this.onTabViewChangeEvent(0);
@@ -20,10 +20,10 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
   onTabViewChangeEvent(index: number) {
     if (index === 0) {
       this.objectEditor.activate();
-      this.slopeEditor.deactivate();
+      this.slopeTerrainEditor.deactivate();
     } else {
       this.objectEditor.deactivate();
-      this.slopeEditor.activate();
+      this.slopeTerrainEditor.activate();
     }
   }
 }

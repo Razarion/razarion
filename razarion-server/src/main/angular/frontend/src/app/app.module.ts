@@ -72,7 +72,7 @@ import {ChipsModule} from "primeng/chips";
 import {DividerModule} from "primeng/divider";
 import {SelectButtonModule} from "primeng/selectbutton";
 import {ObjectEditorComponent} from "./editor/terrain-editor/object-editor.component";
-import {SlopeEditorComponent} from "./editor/terrain-editor/slope-editor.component";
+import {SlopeTerrainEditorComponent} from "./editor/terrain-editor/slope-terrain-editor.component";
 import {QuestCockpitComponent} from "./game/cockpit/quest/quest-cockpit.component";
 import {ServerQuestEditorComponent} from "./editor/server-quest-editor/server-quest-editor.component";
 import {AccordionModule} from "primeng/accordion";
@@ -80,12 +80,14 @@ import {BaseItemTypeCountComponent} from './editor/common/base-item-type-count/b
 import {BaseItemTypeComponent} from './editor/common/base-item-type/base-item-type.component';
 import {PlaceConfigComponent} from './editor/common/place-config/place-config.component';
 import {ToggleButtonModule} from "primeng/togglebutton";
-import { ServerBotEditorComponent } from './editor/server-bot-editor/server-bot-editor.component';
+import {ServerBotEditorComponent} from './editor/server-bot-editor/server-bot-editor.component';
 import {LevelComponent} from "./editor/common/level/level.component";
-import { ServerStartRegionComponent } from './editor/server-start-region/server-start-region.component';
-import { DecimalPositionComponent } from './editor/common/decimal-position/decimal-position.component';
+import {ServerStartRegionComponent} from './editor/server-start-region/server-start-region.component';
+import {DecimalPositionComponent} from './editor/common/decimal-position/decimal-position.component';
 import {ServerResourceRegionComponent} from "./editor/server-resource-region/server-resource-region.component";
-import { ResourceItemTypeComponent } from './editor/common/resource-item-type/resource-item-type.component';
+import {ResourceItemTypeComponent} from './editor/common/resource-item-type/resource-item-type.component';
+import {SlopeEditorComponent} from "./editor/crud-editors/slope-editor/slope-editor.component";
+import {CrudContainerComponent} from './editor/crud-editors/crud-container/crud-container.component';
 
 @NgModule({
   declarations: [
@@ -110,7 +112,7 @@ import { ResourceItemTypeComponent } from './editor/common/resource-item-type/re
     BackupRestoreComponent,
     TerrainEditorComponent,
     ObjectEditorComponent,
-    SlopeEditorComponent,
+    SlopeTerrainEditorComponent,
     ImageTypePipe,
     FormatFileSizePipe,
     RadToDegreePipe,
@@ -130,6 +132,8 @@ import { ResourceItemTypeComponent } from './editor/common/resource-item-type/re
     DecimalPositionComponent,
     ServerResourceRegionComponent,
     ResourceItemTypeComponent,
+    SlopeEditorComponent,
+    CrudContainerComponent,
   ],
   imports: [
     BrowserModule,

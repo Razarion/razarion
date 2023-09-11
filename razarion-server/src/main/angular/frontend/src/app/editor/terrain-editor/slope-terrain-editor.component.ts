@@ -34,10 +34,10 @@ import {pointInPolygon} from "geometric";
 import {EditorService} from "../editor-service";
 
 @Component({
-  selector: 'slope-editor',
-  templateUrl: './slope-editor.component.html'
+  selector: 'slope-terrain-editor',
+  templateUrl: './slope-terrain-editor.component.html'
 })
-export class SlopeEditorComponent implements OnInit {
+export class SlopeTerrainEditorComponent implements OnInit {
   public static readonly EAR_CUT = require('earcut');// Import not working
   readonly SELECTION_BOOST = 0.01;
   slopeConfigs: any[] = [];
@@ -208,7 +208,7 @@ export class SlopeEditorComponent implements OnInit {
           if (this.clickToAddCornerMode && this.selectedTerrainSlopePosition) {
             // Add new corner
             this.selectedTerrainSlopeMesh!.dispose();
-            SlopeEditorComponent.addPointToPolygon(new Vector2(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z), this.selectedTerrainSlopePolygon!, this.selectedTerrainSlopePosition);
+            SlopeTerrainEditorComponent.addPointToPolygon(new Vector2(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z), this.selectedTerrainSlopePolygon!, this.selectedTerrainSlopePosition);
             this.selectedTerrainSlopeMesh = this.createPolygonMesh(this.selectedTerrainSlopePolygon!, this.selectedTerrainSlopePosition);
             BabylonJsUtils.updateTerrainSlopeCornerFromVertex2Array(this.selectedTerrainSlopePolygon!, this.selectedTerrainSlopePosition);
             this.updateHighlight();
@@ -278,7 +278,7 @@ export class SlopeEditorComponent implements OnInit {
       parentTerrainSlopePosition = this.findParent(parentTerrainSlopePosition);
     }
 
-    const polygonMeshBuilder = new PolygonMeshBuilder(`Editor Slope`, polygon, this.renderService.getScene(), SlopeEditorComponent.EAR_CUT);
+    const polygonMeshBuilder = new PolygonMeshBuilder(`Editor Slope`, polygon, this.renderService.getScene(), SlopeTerrainEditorComponent.EAR_CUT);
     const polygonMesh = polygonMeshBuilder.build();
     polygonMesh.material = new SimpleMaterial("Slope", this.renderService.getScene());
     polygonMesh.position.y = height + this.SELECTION_BOOST;
@@ -317,7 +317,7 @@ export class SlopeEditorComponent implements OnInit {
   }
 
   public static addPointToPolygon(point: Vector2, polygon: Vector2[], selectedTerrainSlopePosition: TerrainSlopePosition) {
-    let index = SlopeEditorComponent.projectPointToPolygon(point, polygon);
+    let index = SlopeTerrainEditorComponent.projectPointToPolygon(point, polygon);
     if (!index && index !== 0) {
       throw new Error("Invalid Polygon");
     }
@@ -337,7 +337,7 @@ export class SlopeEditorComponent implements OnInit {
   }
 
   public static getArrayCorrectedIndex(index: number, array: any[]): any {
-    return array[SlopeEditorComponent.getCorrectedIndex(index, array.length)];
+    return array[SlopeTerrainEditorComponent.getCorrectedIndex(index, array.length)];
   }
 
   public static projectPointOnLine(point: Vector2, lineStart: Vector2, lineEnd: Vector2): Vector2 {
@@ -351,8 +351,8 @@ export class SlopeEditorComponent implements OnInit {
     const t = ((point.x - lineStart.x) * line[0] + (point.y - lineStart.y) * line[1]) / lineLengthSquared;
     let x = lineStart.x + t * line[0];
     let y = lineStart.y + t * line[1];
-    x = SlopeEditorComponent.clamp(x, Math.min(lineStart.x, lineEnd.x), Math.max(lineStart.x, lineEnd.x))
-    y = SlopeEditorComponent.clamp(y, Math.min(lineStart.y, lineEnd.y), Math.max(lineStart.y, lineEnd.y))
+    x = SlopeTerrainEditorComponent.clamp(x, Math.min(lineStart.x, lineEnd.x), Math.max(lineStart.x, lineEnd.x))
+    y = SlopeTerrainEditorComponent.clamp(y, Math.min(lineStart.y, lineEnd.y), Math.max(lineStart.y, lineEnd.y))
     return new Vector2(x, y);
   }
 
@@ -368,9 +368,9 @@ export class SlopeEditorComponent implements OnInit {
 
     for (let i = 0; i < polygon.length; i++) {
       const currentLineStart = polygon[i];
-      const currentLineEnd = SlopeEditorComponent.getArrayCorrectedIndex(i + 1, polygon);
+      const currentLineEnd = SlopeTerrainEditorComponent.getArrayCorrectedIndex(i + 1, polygon);
 
-      const projectedPoint = SlopeEditorComponent.projectPointOnLine(point, currentLineStart, currentLineEnd);
+      const projectedPoint = SlopeTerrainEditorComponent.projectPointOnLine(point, currentLineStart, currentLineEnd);
 
       const distanceSquared = (point.x - projectedPoint.x) * (point.x - projectedPoint.x) +
         (point.y - projectedPoint.y) * (point.y - projectedPoint.y);
@@ -385,7 +385,7 @@ export class SlopeEditorComponent implements OnInit {
     if (index == null) {
       return null;
     }
-    return SlopeEditorComponent.getCorrectedIndex(index + 1, polygon.length);
+    return SlopeTerrainEditorComponent.getCorrectedIndex(index + 1, polygon.length);
   }
 
   private createPolygonMeshes(terrainSlopePositions: TerrainSlopePosition[]) {
@@ -437,14 +437,14 @@ export class SlopeEditorComponent implements OnInit {
   }
 
   private createDraggableCorner(index: number, terrainSlopeCorner: TerrainSlopeCorner, corner: Vector2, height: number, radius: number) {
-    let slopeEditorComponent = this;
+    let slopeTerrainEditorComponent = this;
     return new class extends DraggableCorner {
       private readonly xGizmo;
       private readonly yGizmo;
 
       constructor() {
         super(MeshBuilder.CreateDisc("Slope Editor Corner", {radius: radius}), terrainSlopeCorner, index);
-        this.disc.material = slopeEditorComponent.cornerDiscMaterial;
+        this.disc.material = slopeTerrainEditorComponent.cornerDiscMaterial;
         this.disc.position.x = corner.x;
         this.disc.position.y = height;
         this.disc.position.z = corner.y;
@@ -461,12 +461,12 @@ export class SlopeEditorComponent implements OnInit {
         this.yGizmo.updateGizmoPositionToMatchAttachedMesh = true;
 
         this.disc.onAfterWorldMatrixUpdateObservable.add(() => {
-          slopeEditorComponent.selectedTerrainSlopeMesh!.dispose();
-          slopeEditorComponent.selectedTerrainSlopePolygon![index!] = new Vector2(this.disc.position.x, this.disc.position.z);
-          slopeEditorComponent.selectedTerrainSlopeMesh = slopeEditorComponent.createPolygonMesh(slopeEditorComponent.selectedTerrainSlopePolygon!, slopeEditorComponent.selectedTerrainSlopePosition!);
-          slopeEditorComponent.onSelectionEdited();
-          slopeEditorComponent.updateHighlight();
-          BabylonJsUtils.updateTerrainSlopeCornerFromVertex2Array(slopeEditorComponent.selectedTerrainSlopePolygon!, slopeEditorComponent.selectedTerrainSlopePosition!);
+          slopeTerrainEditorComponent.selectedTerrainSlopeMesh!.dispose();
+          slopeTerrainEditorComponent.selectedTerrainSlopePolygon![index!] = new Vector2(this.disc.position.x, this.disc.position.z);
+          slopeTerrainEditorComponent.selectedTerrainSlopeMesh = slopeTerrainEditorComponent.createPolygonMesh(slopeTerrainEditorComponent.selectedTerrainSlopePolygon!, slopeTerrainEditorComponent.selectedTerrainSlopePosition!);
+          slopeTerrainEditorComponent.onSelectionEdited();
+          slopeTerrainEditorComponent.updateHighlight();
+          BabylonJsUtils.updateTerrainSlopeCornerFromVertex2Array(slopeTerrainEditorComponent.selectedTerrainSlopePolygon!, slopeTerrainEditorComponent.selectedTerrainSlopePosition!);
         });
       }
 

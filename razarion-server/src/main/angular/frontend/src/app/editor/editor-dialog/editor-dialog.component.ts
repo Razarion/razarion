@@ -14,6 +14,8 @@ import {ServerQuestEditorComponent} from "../server-quest-editor/server-quest-ed
 import {ServerBotEditorComponent} from "../server-bot-editor/server-bot-editor.component";
 import {ServerStartRegionComponent} from "../server-start-region/server-start-region.component";
 import {ServerResourceRegionComponent} from "../server-resource-region/server-resource-region.component";
+import {CrudContainerComponent} from "../crud-editors/crud-container/crud-container.component";
+import {SlopeEditorComponent} from "../crud-editors/slope-editor/slope-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -71,6 +73,11 @@ export class EditorDialogComponent {
   openResourceRegionEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Resource Region Editor", ServerResourceRegionComponent));
+  }
+
+  openSlopeEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Slope Editor", CrudContainerComponent, SlopeEditorComponent));
   }
 
   openImageEditor() {

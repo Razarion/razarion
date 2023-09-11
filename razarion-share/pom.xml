@@ -91,6 +91,7 @@
                         <class>com.btxtech.shared.gameengine.datatypes.config.QuestConfig</class>
                         <class>com.btxtech.shared.dto.ServerGameEngineConfig</class>
                         <class>com.btxtech.shared.dto.ObjectNameId</class>
+                        <class>com.btxtech.shared.gameengine.datatypes.config.SlopeConfig</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-server/src/main/angular/frontend/src/app/generated/razarion-share.d.ts
