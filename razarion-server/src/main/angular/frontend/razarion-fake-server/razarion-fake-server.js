@@ -264,6 +264,47 @@ server.on({
   }
 });
 
+server.on({
+  method: 'GET',
+  path: '/rest/editor/ground/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: "[]"
+  }
+});
+
+const waterJson = require("./waters.json");
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/water/read/10',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(waterJson._10)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/water/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(waterJson.objectNameIds)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/three-js-model/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: "[]"
+  }
+});
 
 server.start(function () {
   console.info("Razarion fake server is running on port: " + PORT);

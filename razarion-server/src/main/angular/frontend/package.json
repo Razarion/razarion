@@ -30,6 +30,7 @@
     "@babylonjs/serializers": "^5.38.0",
     "@types/stats.js": "^0.17.0",
     "chart.js": "^3.7.0",
+    "chartjs-plugin-dragdata": "^2.2.5",
     "earcut": "^2.2.4",
     "geometric": "^2.5.4",
     "jszip": "^3.10.1",

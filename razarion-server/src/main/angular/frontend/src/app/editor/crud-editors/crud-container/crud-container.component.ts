@@ -4,6 +4,14 @@ import {MenuItem, MessageService} from "primeng/api";
 import {HttpClient} from "@angular/common/http";
 import {ObjectNameId} from "../../../generated/razarion-share";
 
+export interface CrudContainerChild<T> {
+  init(config: T): void;
+
+  exportConfig(): T;
+
+  getId(): number;
+}
+
 @Component({
   selector: 'crud-container',
   templateUrl: './crud-container.component.html'
@@ -12,6 +20,7 @@ export class CrudContainerComponent extends EditorPanel {
   @ViewChild("configContainer", {read: ViewContainerRef})
   configContainer!: ViewContainerRef;
   editorUrl?: string;
+  private crudContainerChild: CrudContainerChild<any> | null = null;
 
   items: MenuItem[] = [
     {
@@ -61,7 +70,6 @@ export class CrudContainerComponent extends EditorPanel {
             .subscribe({
               next: (configObject: any) => {
                 this.displayConfigComponent(configObject);
-                this.updateDeleteSaveDisableState();
                 this.items[0].label = displayObjectName;
                 this.selectedDisplayObjectName = displayObjectName;
               },
@@ -89,13 +97,10 @@ export class CrudContainerComponent extends EditorPanel {
         command: () => {
           this.httpClient.post(`${this.editorUrl}/create`, {})
             .subscribe({
-              next: (jsonObject: any) => {
-                // TODO this.initJsonEditor();
-                // TODO this.jsonEditor.set({json: jsonObject});
-                // TODO this.jsonObject = jsonObject;
-                this.updateDeleteSaveDisableState();
-                this.items[0].label = jsonObject.internalName;
-                this.selectedDisplayObjectName = `? '${jsonObject.id}'`;
+              next: (configObject: any) => {
+                this.displayConfigComponent(configObject);
+                this.items[0].label = configObject.internalName;
+                this.selectedDisplayObjectName = `? '${configObject.id}'`;
                 this.requestObjectNameId();
               }, error: (error) => {
                 console.error(error);
@@ -111,34 +116,46 @@ export class CrudContainerComponent extends EditorPanel {
       },
       {
         label: "Save",
-        // TODO disabled: this.jsonObject == null,
-        // command: () => {
-        //   console.log(this.jsonEditor.get())
-        //   this.httpClient.post(`${this.url4Collection()}/update`, (<any>this.jsonEditor.get()).json || JSON.parse((<any>this.jsonEditor.get()).text))
-        //     .subscribe(() => {
-        //       this.requestObjectNameId();
-        //       this.messageService.add({
-        //         severity: 'success',
-        //         life: 300,
-        //         summary: 'Saved'
-        //       });
-        //     });
-        // }
+        disabled: !this.crudContainerChild,
+        command: () => {
+          this.httpClient.post(`${this.editorUrl}/update`, this.crudContainerChild!.exportConfig()).subscribe({
+            next: (objectNameIds: any) => {
+              this.messageService.add({
+                severity: 'success',
+                life: 300,
+                summary: 'Saved'
+              });
+              this.setupMenuItems(objectNameIds);
+            },
+            error: (error: any) => {
+              this.messageService.add({
+                severity: 'error',
+                summary: `Error loading objectNameIds for: ${this.editorUrl}`,
+                detail: error.message,
+                sticky: true
+              });
+              console.error(error);
+            }
+          });
+        }
       },
       {
         label: "Delete",
-        // TODO disabled: this.jsonObject == null,
-        // command: () => {
-        //   this.httpClient.delete(`${this.url4Collection()}/delete/${this.jsonObject.id}`)
-        //     .subscribe(() => {
-        //       this.requestObjectNameId();
-        //       this.messageService.add({
-        //         severity: 'success',
-        //         life: 300,
-        //         summary: 'Deleted'
-        //       });
-        //     });
-        // }
+        disabled: !this.crudContainerChild,
+        command: () => {
+          this.httpClient.delete(`${this.editorUrl}/delete/${this.crudContainerChild?.getId()}`)
+            .subscribe(() => {
+              this.requestObjectNameId();
+              this.displayConfigComponent(null);
+              this.items[0].label = 'Select...';
+              this.selectedDisplayObjectName = null;
+              this.messageService.add({
+                severity: 'success',
+                life: 300,
+                summary: 'Deleted'
+              });
+            });
+        }
       }
     ];
   }
@@ -161,30 +178,38 @@ export class CrudContainerComponent extends EditorPanel {
   }
 
   private updateDeleteSaveDisableState() {
-    // TODO this.items[2].disabled = this.jsonObject == null;
-    // TODO this.items[3].disabled = this.jsonObject == null;
+    this.items[2].disabled = !this.crudContainerChild;
+    this.items[3].disabled = !this.crudContainerChild;
     this.items = [...this.items];
   }
 
   private displayConfigComponent(configObject: any) {
-    // Promise solves Angular problem
-    // Uncaught Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'undefined'. Current value: '[object Object]'. It seems like the view has been created after its parent and its children have been dirty checked. Has it been created in a change detection hook?. Find more at https://angular.io/errors/NG0100
-    Promise.resolve().then(() => {
-      try {
-        this.configContainer.clear();
-        const factory = this.resolver.resolveComponentFactory(this.editorModel.childComponent!);
-        let componentRef = this.configContainer.createComponent(factory);
-        componentRef.instance.init(configObject);
-      } catch (error) {
-        this.messageService.add({
-          severity: 'error',
-          summary: `Can not open editor: ${this.editorUrl}`,
-          detail: String(error),
-          sticky: true
-        });
-        console.error(error);
-        throw error;
-      }
-    });
+    if (configObject) {
+      // Promise solves Angular problem
+      // Uncaught Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'undefined'. Current value: '[object Object]'. It seems like the view has been created after its parent and its children have been dirty checked. Has it been created in a change detection hook?. Find more at https://angular.io/errors/NG0100
+      Promise.resolve().then(() => {
+        try {
+          this.configContainer.clear();
+          const factory = this.resolver.resolveComponentFactory(this.editorModel.childComponent!);
+          let componentRef = this.configContainer.createComponent(factory);
+          this.crudContainerChild = componentRef.instance;
+          this.crudContainerChild!.init(configObject);
+          this.updateDeleteSaveDisableState();
+        } catch (error) {
+          this.messageService.add({
+            severity: 'error',
+            summary: `Can not open editor: ${this.editorUrl}`,
+            detail: String(error),
+            sticky: true
+          });
+          console.error(error);
+          throw error;
+        }
+      });
+    } else {
+      this.configContainer.clear();
+      this.crudContainerChild = null;
+      this.updateDeleteSaveDisableState();
+    }
   }
 }

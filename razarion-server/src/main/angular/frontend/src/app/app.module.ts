@@ -88,6 +88,9 @@ import {ServerResourceRegionComponent} from "./editor/server-resource-region/ser
 import {ResourceItemTypeComponent} from './editor/common/resource-item-type/resource-item-type.component';
 import {SlopeEditorComponent} from "./editor/crud-editors/slope-editor/slope-editor.component";
 import {CrudContainerComponent} from './editor/crud-editors/crud-container/crud-container.component';
+import { GroundComponent } from './editor/common/ground/ground.component';
+import { WaterComponent } from './editor/common/water/water.component';
+import { BabylonModelComponent } from './editor/common/babylon-material/babylon-model.component';
 
 @NgModule({
   declarations: [
@@ -134,6 +137,9 @@ import {CrudContainerComponent} from './editor/crud-editors/crud-container/crud-
     ResourceItemTypeComponent,
     SlopeEditorComponent,
     CrudContainerComponent,
+    GroundComponent,
+    WaterComponent,
+    BabylonModelComponent,
   ],
   imports: [
     BrowserModule,

@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 import java.util.List;
@@ -56,11 +57,11 @@ public class SlopeConfig implements Config {
         this.slopeShapes = slopeShapes;
     }
 
-    public Integer getThreeJsMaterial() {
+    public @Nullable Integer getThreeJsMaterial() {
         return threeJsMaterial;
     }
 
-    public void setThreeJsMaterial(Integer threeJsMaterial) {
+    public void setThreeJsMaterial(@Nullable Integer threeJsMaterial) {
         this.threeJsMaterial = threeJsMaterial;
     }
 
@@ -96,19 +97,19 @@ public class SlopeConfig implements Config {
         this.horizontalSpace = horizontalSpace;
     }
 
-    public Integer getGroundConfigId() {
+    public @Nullable Integer getGroundConfigId() {
         return groundConfigId;
     }
 
-    public void setGroundConfigId(Integer groundConfigId) {
+    public void setGroundConfigId(@Nullable Integer groundConfigId) {
         this.groundConfigId = groundConfigId;
     }
 
-    public Integer getWaterConfigId() {
+    public @Nullable Integer getWaterConfigId() {
         return waterConfigId;
     }
 
-    public void setWaterConfigId(Integer waterConfigId) {
+    public void setWaterConfigId(@Nullable Integer waterConfigId) {
         this.waterConfigId = waterConfigId;
     }
 
@@ -120,11 +121,11 @@ public class SlopeConfig implements Config {
         this.interpolateNorm = interpolateNorm;
     }
 
-    public Integer getShallowWaterThreeJsMaterial() {
+    public @Nullable Integer getShallowWaterThreeJsMaterial() {
         return shallowWaterThreeJsMaterial;
     }
 
-    public void setShallowWaterThreeJsMaterial(Integer shallowWaterThreeJsMaterial) {
+    public void setShallowWaterThreeJsMaterial(@Nullable Integer shallowWaterThreeJsMaterial) {
         this.shallowWaterThreeJsMaterial = shallowWaterThreeJsMaterial;
     }
 

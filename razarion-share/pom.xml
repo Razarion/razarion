@@ -92,6 +92,7 @@
                         <class>com.btxtech.shared.dto.ServerGameEngineConfig</class>
                         <class>com.btxtech.shared.dto.ObjectNameId</class>
                         <class>com.btxtech.shared.gameengine.datatypes.config.SlopeConfig</class>
+                        <class>com.btxtech.shared.dto.WaterConfig</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-server/src/main/angular/frontend/src/app/generated/razarion-share.d.ts

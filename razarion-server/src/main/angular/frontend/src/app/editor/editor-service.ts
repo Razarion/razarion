@@ -1,10 +1,13 @@
 import {ComponentFactoryResolver, Injectable, Type} from "@angular/core";
 import {
   BASE_ITEM_TYPE_EDITOR_PATH,
+  GROUND_EDITOR_PATH,
   LEVEL_EDITOR_PATH,
   RESOURCE_ITEM_TYPE_EDITOR_PATH,
   SERVER_GAME_ENGINE_EDITOR,
-  SERVER_GAME_ENGINE_PATH
+  SERVER_GAME_ENGINE_PATH,
+  URL_THREE_JS_MODEL_EDITOR,
+  WATER_EDITOR_PATH
 } from "../common";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {HttpClient} from "@angular/common/http";
@@ -15,7 +18,7 @@ import {
   ResourceRegionConfig,
   ServerGameEngineConfig,
   ServerLevelQuestConfig,
-  StartRegionConfig
+  StartRegionConfig, WaterConfig
 } from "../generated/razarion-share";
 
 export class ServerCommand {
@@ -145,33 +148,44 @@ export class EditorService {
   }
 
   readBaseItemTypeObjectNameIds(): Promise<ObjectNameId[]> {
-    return new Promise((resolve) => {
-      this.httpClient.get(`${BASE_ITEM_TYPE_EDITOR_PATH}/objectNameIds`).subscribe({
-        next: (objectNameIds: any) => {
-          resolve(objectNameIds);
-        },
-        error: (err: any) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: `Loading base item types failed`,
-            detail: `${JSON.stringify(err)}`,
-            sticky: true
-          });
-        }
-      });
-    });
+    return this.readObjectNameIds(BASE_ITEM_TYPE_EDITOR_PATH);
   }
+
   readResourceItemTypeObjectNameIds(): Promise<ObjectNameId[]> {
+    return this.readObjectNameIds(RESOURCE_ITEM_TYPE_EDITOR_PATH);
+  }
+
+  readLevelObjectNameIds(): Promise<ObjectNameId[]> {
+    return this.readObjectNameIds(LEVEL_EDITOR_PATH);
+  }
+
+  readGroundObjectNameIds(): Promise<ObjectNameId[]> {
+    return this.readObjectNameIds(GROUND_EDITOR_PATH);
+  }
+
+  readWaterObjectNameIds(): Promise<ObjectNameId[]> {
+    return this.readObjectNameIds(WATER_EDITOR_PATH);
+  }
+
+  readWater(id: number): Promise<WaterConfig> {
+    return this.readConfig(WATER_EDITOR_PATH, id);
+  }
+
+  readBabylonMaterialObjectNameIds(): Promise<ObjectNameId[]> {
+    return this.readObjectNameIds(URL_THREE_JS_MODEL_EDITOR);
+  }
+
+  readObjectNameIds(editorUrl: string): Promise<ObjectNameId[]> {
     return new Promise((resolve) => {
-      this.httpClient.get(`${RESOURCE_ITEM_TYPE_EDITOR_PATH}/objectNameIds`).subscribe({
+      this.httpClient.get(`${editorUrl}/objectNameIds`).subscribe({
         next: (objectNameIds: any) => {
           resolve(objectNameIds);
         },
         error: (err: any) => {
           this.messageService.add({
             severity: 'error',
-            summary: `Loading resource item types failed`,
-            detail: `${JSON.stringify(err)}`,
+            summary: `Loading objectNameId ${editorUrl}`,
+            detail: err.message,
             sticky: true
           });
         }
@@ -179,21 +193,22 @@ export class EditorService {
     });
   }
 
-  readLevelObjectNameIds(): Promise<ObjectNameId[]> {
+  readConfig(editorUrl: string, id: number): Promise<any> {
     return new Promise((resolve) => {
-      this.httpClient.get(`${LEVEL_EDITOR_PATH}/objectNameIds`).subscribe({
-        next: (objectNameIds: any) => {
-          resolve(objectNameIds);
+      this.httpClient.get(`${editorUrl}/read/${id}`).subscribe({
+        next: (config: any) => {
+          resolve(config);
         },
         error: (err: any) => {
           this.messageService.add({
             severity: 'error',
-            summary: `Loading level failed`,
-            detail: `${JSON.stringify(err)}`,
+            summary: `Reading id: ${id} ${editorUrl}`,
+            detail: err.message,
             sticky: true
           });
         }
       });
     });
   }
+
 }

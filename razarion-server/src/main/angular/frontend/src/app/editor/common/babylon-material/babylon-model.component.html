@@ -1,0 +1,10 @@
+<p-dropdown *ngIf="!readOnly"
+            [placeholder]="'...'"
+            [options]="babylonModelOptions"
+            [(ngModel)]="babylonModelId"
+            (onChange)="onChange()"
+            optionLabel="name"
+            optionValue="id">
+</p-dropdown>
+<span *ngIf="readOnly">{{getCurrentName()}}</span>
+
