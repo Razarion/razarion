@@ -2,9 +2,13 @@ import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {SLOPE_EDITOR_PATH} from "../../../common";
 import {SlopeConfig, SlopeShape} from "../../../generated/razarion-share";
 import 'chartjs-plugin-dragdata'
+import 'chartjs-plugin-zoom';
+import zoomPlugin from 'chartjs-plugin-zoom';
+import {Chart} from 'chart.js';
 import {UIChart} from "primeng/chart/chart";
 import {EditorService} from "../../editor-service";
 import {CrudContainerChild} from "../crud-container/crud-container.component";
+import {Vector2} from "@babylonjs/core";
 
 @Component({
   selector: 'slope-editor',
@@ -21,8 +25,10 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
   insertMode: boolean = false;
   deleteMode: boolean = false;
   private waterLevel?: number;
+  length?: number;
 
   constructor(private editorService: EditorService) {
+    Chart.register(zoomPlugin);
   }
 
   init(slopeConfig: SlopeConfig) {
@@ -61,8 +67,10 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
               "x": 0,
               "y": 0
             });
-      })
+      });
     }
+    this.calculateLength(shapes);
+
     this.data = {
       datasets: [
         {
@@ -80,6 +88,7 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
     };
 
     this.options = {
+      aspectRatio: 1,
       layout: {
         padding: {
           left: 20,
@@ -91,6 +100,7 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
       scales: {
         x: {
           beginAtZero: true,
+          max: 20,
           grid: {
             color: '#333333'
           }
@@ -98,6 +108,7 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
         },
         y: {
           beginAtZero: true,
+          max: 20,
           grid: {
             color: '#333333'
           }
@@ -120,11 +131,26 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
             if (this.deleteMode) {
               this.uiChart!.chart.data.datasets[datasetIndex].data.splice(index, 1);
               this.uiChart!.chart.update();
+              this.calculateLength(this.uiChart!.chart.data.datasets[0].data);
               return false;
             }
             return true;
           },
+          onDragEnd: (event: any, datasetIndex: any, index: any, value: any) => {
+            this.calculateLength(this.uiChart!.chart.data.datasets[0].data);
+          },
 
+        },
+        zoom: {
+          zoom: {
+            wheel: {
+              enabled: true,
+            },
+            pinch: {
+              enabled: true
+            },
+            mode: 'xy',
+          }
         }
       }
     }
@@ -156,7 +182,6 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
           ctx.restore();
         },
       }];
-
   }
 
   ngAfterViewInit() {
@@ -168,14 +193,27 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
 
       let value = this.calculateFromPixel(event);
       chart.data.labels.push('');
-      chart.data.datasets[0].data.push({x: value.x, y: value.y});
+      if (chart.data.datasets[0].data.length === 0) {
+        chart.data.datasets[0].data.push({x: 0, y: 0});
+      } else {
+        chart.data.datasets[0].data.push({x: value.x, y: value.y});
+      }
 
       chart.update();
+      this.calculateLength(chart.data.datasets[0].data);
     });
   }
 
   public updateChart() {
     this.uiChart!.chart.update();
+  }
+
+  restartPlanetWarm() {
+    this.editorService.executeServerCommand(EditorService.RESTART_PLANET_WARM);
+  }
+
+  restartPlanetCold() {
+    this.editorService.executeServerCommand(EditorService.RESTART_PLANET_COLD);
   }
 
   private calculateFromPixel(event: any): { x: number, y: number } {
@@ -189,6 +227,19 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
     return {
       x: this.uiChart!.chart.scales.x.getPixelForValue(x),
       y: this.uiChart!.chart.scales.y.getPixelForValue(y)
+    }
+  }
+
+  private calculateLength(data: any[]) {
+    if (data && data.length > 1) {
+      this.length = 0;
+      for (let i = 0; i < data.length - 1; i++) {
+        this.length += new Vector2(data[i].x, data[i].y)
+          .subtract(new Vector2(data[i + 1].x, data[i + 1].y))
+          .length();
+      }
+    } else {
+      this.length = undefined;
     }
   }
 }

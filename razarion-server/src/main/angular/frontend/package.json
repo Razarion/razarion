@@ -31,6 +31,7 @@
     "@types/stats.js": "^0.17.0",
     "chart.js": "^3.7.0",
     "chartjs-plugin-dragdata": "^2.2.5",
+    "chartjs-plugin-zoom": "^2.0.1",
     "earcut": "^2.2.4",
     "geometric": "^2.5.4",
     "jszip": "^3.10.1",

@@ -119,13 +119,13 @@ export class CrudContainerComponent extends EditorPanel {
         disabled: !this.crudContainerChild,
         command: () => {
           this.httpClient.post(`${this.editorUrl}/update`, this.crudContainerChild!.exportConfig()).subscribe({
-            next: (objectNameIds: any) => {
+            next: () => {
               this.messageService.add({
                 severity: 'success',
                 life: 300,
                 summary: 'Saved'
               });
-              this.setupMenuItems(objectNameIds);
+              this.requestObjectNameId();
             },
             error: (error: any) => {
               this.messageService.add({
