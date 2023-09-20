@@ -91,6 +91,7 @@ import {CrudContainerComponent} from './editor/crud-editors/crud-container/crud-
 import { GroundComponent } from './editor/common/ground/ground.component';
 import { WaterComponent } from './editor/common/water/water.component';
 import { BabylonModelComponent } from './editor/common/babylon-material/babylon-model.component';
+import { DrivewayEditorComponent } from './editor/crud-editors/driveway-editor/driveway-editor.component';
 
 @NgModule({
   declarations: [
@@ -140,6 +141,7 @@ import { BabylonModelComponent } from './editor/common/babylon-material/babylon-
     GroundComponent,
     WaterComponent,
     BabylonModelComponent,
+    DrivewayEditorComponent,
   ],
   imports: [
     BrowserModule,

@@ -314,9 +314,9 @@ public class DecimalPosition {
     }
 
     @JsIgnore
-    public DecimalPosition rotateCounterClock(DecimalPosition center, double angel) {
-        double sinus = Math.sin(angel);
-        double cosines = Math.cos(angel);
+    public DecimalPosition rotateCounterClock(DecimalPosition center, double angle) {
+        double sinus = Math.sin(angle);
+        double cosines = Math.cos(angle);
         return rotateCounterClock(center, sinus, cosines);
     }
 

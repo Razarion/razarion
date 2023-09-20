@@ -16,6 +16,7 @@ import {ServerStartRegionComponent} from "../server-start-region/server-start-re
 import {ServerResourceRegionComponent} from "../server-resource-region/server-resource-region.component";
 import {CrudContainerComponent} from "../crud-editors/crud-container/crud-container.component";
 import {SlopeEditorComponent} from "../crud-editors/slope-editor/slope-editor.component";
+import {DrivewayEditorComponent} from "../crud-editors/driveway-editor/driveway-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -78,6 +79,11 @@ export class EditorDialogComponent {
   openSlopeEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Slope Editor", CrudContainerComponent, SlopeEditorComponent));
+  }
+
+  openDrivewayEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Driveway Editor", CrudContainerComponent, DrivewayEditorComponent));
   }
 
   openImageEditor() {
