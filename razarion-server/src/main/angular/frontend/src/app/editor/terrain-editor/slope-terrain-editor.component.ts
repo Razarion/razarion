@@ -14,12 +14,16 @@ import {
   TerrainSlopeCorner,
   TerrainSlopePosition
 } from "../../gwtangular/GwtAngularFacade";
-import {RazarionMetadataType, BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
+import {
+  BabylonRenderServiceAccessImpl,
+  RazarionMetadataType
+} from "../../game/renderer/babylon-render-service-access-impl.service";
 import {
   AxisDragGizmo,
   HighlightLayer,
   Mesh,
   MeshBuilder,
+  Node,
   PointerEventTypes,
   PolygonMeshBuilder,
   Tools,
@@ -148,6 +152,61 @@ export class SlopeTerrainEditorComponent implements OnInit {
       }
     });
   }
+
+  deleteSlope() {
+    if (this.selectedTerrainSlopePosition!.id) {
+      if (!this.slopeTerrainEditorUpdate!.deletedSlopeIds.includes(this.selectedTerrainSlopePosition!.id)) {
+        this.slopeTerrainEditorUpdate!.deletedSlopeIds.push(this.selectedTerrainSlopePosition!.id);
+      }
+    } else {
+      let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(this.selectedTerrainSlopeMesh!);
+      this.slopeTerrainEditorUpdate!.createdSlopes.splice(this.slopeTerrainEditorUpdate!.createdSlopes.indexOf(razarionMetadata!.editorHintSlopePosition!), 1)
+    }
+
+    this.deleteChildSlopes(this.selectedTerrainSlopeMesh!);
+
+    this.selectedTerrainSlopeMesh!.dispose();
+    this.selectedTerrainSlopeMesh = undefined;
+  }
+
+  deleteChildSlopes(slope: Mesh) {
+    let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(slope);
+    if (!razarionMetadata || !razarionMetadata!.editorHintSlopePosition || !razarionMetadata!.editorHintSlopePosition!.children) {
+      return;
+    }
+    razarionMetadata!.editorHintSlopePosition!.children.forEach(childTerrainSlopePosition => {
+      let childSlopeMesh = this.findSlopeMesh4TerrainSlopePosition(childTerrainSlopePosition);
+      if (childSlopeMesh) {
+        this.deleteChildSlopes(childSlopeMesh);
+        childSlopeMesh!.dispose();
+      }
+    });
+  }
+
+  private findSlopeMesh4TerrainSlopePosition(terrainSlopePosition: TerrainSlopePosition, node?: Node): Mesh | undefined {
+    if (!node) {
+      return <Mesh>this.renderService.getScene().meshes.find(mesh => {
+        this.findSlopeMesh4TerrainSlopePosition(terrainSlopePosition, mesh);
+      });
+    }
+    let metadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(node)
+    if (metadata && metadata.editorHintSlopePosition === terrainSlopePosition) {
+      return <Mesh>node;
+    }
+
+    if (node.getChildren) {
+      const children = node.getChildren();
+      for (const child of children) {
+        let found = this.findSlopeMesh4TerrainSlopePosition(terrainSlopePosition, child);
+        if (found) {
+          return found;
+        }
+      }
+    }
+
+    return undefined
+  }
+
 
   activate() {
     this.createPolygonMeshes(this.terrainSlopePositions);
@@ -492,27 +551,27 @@ export class SlopeTerrainEditorComponent implements OnInit {
   private findParentSlope(center: Vector2): number | null {
     for (const terrainSlopePosition of this.terrainSlopePositions) {
       if (this.isInside(center, terrainSlopePosition.polygon)) {
-        return this.findParentSlope4Root(center, terrainSlopePosition);
+        return this.findNearestParentSlope(center, terrainSlopePosition);
       }
     }
     return null;
   }
 
-  private findParentSlope4Root(center: Vector2, root: TerrainSlopePosition): number | null {
-    if (root.children) {
-      for (const child of root.children) {
-        let slopeId = this.findParentSlope4Root(center, child);
+  private findNearestParentSlope(center: Vector2, parent: TerrainSlopePosition): number | null {
+    if (parent.children) {
+      for (const child of parent.children) {
+        let slopeId = this.findNearestParentSlope(center, child);
         if (slopeId) {
           return slopeId;
         }
       }
-      if (this.isInside(center, root.polygon)) {
-        return root.id;
+      if (this.isInside(center, parent.polygon)) {
+        return parent.id;
       } else {
         return null;
       }
     } else {
-      return null;
+      return parent.id;
     }
   }
 
