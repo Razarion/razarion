@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.btxtech.shared.dto.FallbackConfig.DRIVEWAY_ID_ID;
+
 /**
  * Created by Beat
  * 03.04.2017.
@@ -32,8 +34,8 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 null,
                 GameTestHelper.createTerrainSlopeCorner(50, 40, null),
                 GameTestHelper.createTerrainSlopeCorner(103, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(103, 60, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(103, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(103, 60, DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(103, 90, DRIVEWAY_ID_ID), // driveway
                 GameTestHelper.createTerrainSlopeCorner(103, 110, null),
                 GameTestHelper.createTerrainSlopeCorner(50, 110, null));
         // showDisplay();

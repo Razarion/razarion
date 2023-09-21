@@ -41,8 +41,8 @@ public class TerrainSlopeTileBuilder {
         polygon2Segment = TerrainUtil.setupSegmentLookup(slopeConfig.getSlopeShapes());
     }
 
-    public void addVertex(int x, int y, Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor) {
-        mesh[x][y] = new SlopeVertex(vertex, uv, uvTermination, slopeFactor);
+    public void addVertex(int x, int y, Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor, double drivewayHeightFactor) {
+        mesh[x][y] = new SlopeVertex(vertex, uv, uvTermination, slopeFactor, drivewayHeightFactor);
     }
 
     public TerrainSlopeTile generate() {
@@ -96,9 +96,15 @@ public class TerrainSlopeTileBuilder {
                         double slopeFactorBL = mesh[x][y].getSlopeFactor();
 
                         Vertex norm = vertexBL.cross(vertexBR, vertexTL).normalize(1.0);
-                        insertTriangleCorner(vertexBL, interpolateNorm ? normBLInterpolated : norm, uvBL, slopeFactorBL, segment);
-                        insertTriangleCorner(vertexBR, interpolateNorm ? normBRInterpolated : norm, uvBR, slopeFactorBR, segment);
-                        insertTriangleCorner(vertexTL, interpolateNorm ? normTLInterpolated : norm, uvTL, slopeFactorTL, segment);
+                        if (checkFlatDriveway(x, y)) {
+                            this.terrainTileBuilder.addGroundTriangleCorner(vertexBL, norm, null);
+                            this.terrainTileBuilder.addGroundTriangleCorner(vertexBR, norm, null);
+                            this.terrainTileBuilder.addGroundTriangleCorner(vertexTL, norm, null);
+                        } else {
+                            insertTriangleCorner(vertexBL, interpolateNorm ? normBLInterpolated : norm, uvBL, slopeFactorBL, segment);
+                            insertTriangleCorner(vertexBR, interpolateNorm ? normBRInterpolated : norm, uvBR, slopeFactorBR, segment);
+                            insertTriangleCorner(vertexTL, interpolateNorm ? normTLInterpolated : norm, uvTL, slopeFactorTL, segment);
+                        }
                     }
 
                     if (triangle2Valid) {
@@ -106,9 +112,15 @@ public class TerrainSlopeTileBuilder {
                         double slopeFactorTR = mesh[x + 1][y + 1].getSlopeFactor();
 
                         Vertex norm = vertexTR.cross(vertexTL, vertexBR).normalize(1.0);
-                        insertTriangleCorner(vertexBR, interpolateNorm ? normBRInterpolated : norm, uvBR, slopeFactorBR, segment);
-                        insertTriangleCorner(vertexTR, interpolateNorm ? normTRInterpolated : norm, uvTR, slopeFactorTR, segment);
-                        insertTriangleCorner(vertexTL, interpolateNorm ? normTLInterpolated : norm, uvTL, slopeFactorTL, segment);
+                        if (checkFlatDriveway(x, y)) {
+                            this.terrainTileBuilder.addGroundTriangleCorner(vertexBR, norm, null);
+                            this.terrainTileBuilder.addGroundTriangleCorner(vertexTR, norm, null);
+                            this.terrainTileBuilder.addGroundTriangleCorner(vertexTL, norm, null);
+                        } else {
+                            insertTriangleCorner(vertexBR, interpolateNorm ? normBRInterpolated : norm, uvBR, slopeFactorBR, segment);
+                            insertTriangleCorner(vertexTR, interpolateNorm ? normTRInterpolated : norm, uvTR, slopeFactorTR, segment);
+                            insertTriangleCorner(vertexTL, interpolateNorm ? normTLInterpolated : norm, uvTL, slopeFactorTL, segment);
+                        }
                     }
                 } catch (Throwable t) {
                     exceptionHandler.handleException(t);
@@ -208,17 +220,26 @@ public class TerrainSlopeTileBuilder {
         INNER
     }
 
+    private boolean checkFlatDriveway(int x, int y) {
+        return mesh[x][y].getDrivewayHeightFactor() == 0.0 &&
+                mesh[x + 1][y].getDrivewayHeightFactor() == 0.0 &&
+                mesh[x + 1][y + 1].getDrivewayHeightFactor() == 0.0 &&
+                mesh[x][y + 1].getDrivewayHeightFactor() == 0.0;
+    }
+
     private class SlopeVertex {
         private final Vertex vertex;
         private final DecimalPosition uv;
         private final DecimalPosition uvTermination;
         private final double slopeFactor;
+        private final double drivewayHeightFactor;
 
-        public SlopeVertex(Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor) {
+        public SlopeVertex(Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor, double drivewayHeightFactor) {
             this.vertex = vertex;
             this.uv = uv;
             this.uvTermination = uvTermination;
             this.slopeFactor = slopeFactor;
+            this.drivewayHeightFactor = drivewayHeightFactor;
         }
 
         public DecimalPosition getUv() {
@@ -239,6 +260,10 @@ public class TerrainSlopeTileBuilder {
 
         public double getSlopeFactor() {
             return slopeFactor;
+        }
+
+        public double getDrivewayHeightFactor() {
+            return drivewayHeightFactor;
         }
     }
 }

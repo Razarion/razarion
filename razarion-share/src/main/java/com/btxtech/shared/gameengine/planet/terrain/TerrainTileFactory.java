@@ -160,15 +160,15 @@ public class TerrainTileFactory {
         addGroundRectangle(terrainTileBuilder, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, groundId);
     }
 
-    private void addGroundRectangle(TerrainTileBuilder terrainTileBuilder, Vertex vertexBL, Vertex vertexBR, Vertex vertexTR, Vertex vertexTL, Vertex normBL, Vertex normBR, Vertex normTR, Vertex normTL, Integer slopeId) {
+    private void addGroundRectangle(TerrainTileBuilder terrainTileBuilder, Vertex vertexBL, Vertex vertexBR, Vertex vertexTR, Vertex vertexTL, Vertex normBL, Vertex normBR, Vertex normTR, Vertex normTL, Integer groundId) {
         // Triangle 1
-        terrainTileBuilder.addGroundTriangleCorner(vertexBL, normBL, slopeId);
-        terrainTileBuilder.addGroundTriangleCorner(vertexBR, normBR, slopeId);
-        terrainTileBuilder.addGroundTriangleCorner(vertexTL, normTL, slopeId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexBL, normBL, groundId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexBR, normBR, groundId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexTL, normTL, groundId);
         // Triangle 2
-        terrainTileBuilder.addGroundTriangleCorner(vertexBR, normBR, slopeId);
-        terrainTileBuilder.addGroundTriangleCorner(vertexTR, normTR, slopeId);
-        terrainTileBuilder.addGroundTriangleCorner(vertexTL, normTL, slopeId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexBR, normBR, groundId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexTR, normTR, groundId);
+        terrainTileBuilder.addGroundTriangleCorner(vertexTL, normTL, groundId);
     }
 
     private void insertSlopePart(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
@@ -211,7 +211,13 @@ public class TerrainTileFactory {
                     uvTermination = new DecimalPosition(uvX, fractionalSlopeSegment.getUvYTermination());
                 }
                 lastPosition = transformedPoint;
-                terrainSlopeTileBuilder.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeFactor, fractionalSlopeSegment.getDrivewayHeightFactor()));
+                terrainSlopeTileBuilder.addVertex(vertexColumn,
+                        row,
+                        transformedPoint,
+                        new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()),
+                        uvTermination,
+                        setupSlopeFactor(slopeFactor, fractionalSlopeSegment.getDrivewayHeightFactor()),
+                        fractionalSlopeSegment.getDrivewayHeightFactor());
             }
             vertexColumn++;
             if (slopeConfig.hasWaterConfigId()) {
