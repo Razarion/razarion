@@ -23,7 +23,6 @@ import java.util.function.Consumer;
  * on 01.09.2017.
  */
 @Singleton
-
 public class PlanetBackupMongoDb {
     @Inject
     private MongoDbService mongoDbService;

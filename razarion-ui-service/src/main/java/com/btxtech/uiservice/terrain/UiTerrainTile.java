@@ -11,7 +11,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.renderer.ThreeJsRendererService;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.ThreeJsTerrainTile;
 
 import javax.enterprise.context.Dependent;
@@ -32,7 +32,7 @@ public class UiTerrainTile {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
-    private ThreeJsRendererService threeJsRendererService;
+    private BabylonRendererService threeJsRendererService;
     private Index index;
     private TerrainTile terrainTile;
     private ThreeJsTerrainTile threeJsTerrainTile;

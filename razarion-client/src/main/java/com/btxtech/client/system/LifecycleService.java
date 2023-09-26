@@ -1,7 +1,6 @@
 package com.btxtech.client.system;
 
 import com.btxtech.client.ClientTrackerService;
-import com.btxtech.client.cockpit.ClientScreenCoverImpl;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.renderer.GameCanvas;
@@ -43,6 +42,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.enterprise.client.jaxrs.api.ResponseException;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
@@ -64,8 +64,6 @@ public class LifecycleService {
     private ExceptionHandler exceptionHandler;
     @Inject
     private ClientTrackerService clientTrackerService;
-    @Inject
-    private ClientScreenCoverImpl clientScreenCover;
     @Inject
     private GameCanvas gameCanvas;
     @Inject
@@ -99,7 +97,7 @@ public class LifecycleService {
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
-    private ScreenCover screenCover;
+    private Instance<ScreenCover> screenCover;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -119,12 +117,12 @@ public class LifecycleService {
     @PostConstruct
     public void postConstruct() {
         boot.addStartupProgressListener(clientTrackerService);
-        boot.addStartupProgressListener(clientScreenCover);
         boot.addStartupProgressListener(new StartupProgressListener() {
             @Override
             public void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
                 if(userUiService.isAdmin()) {
                     gwtAngularService.onCrash();
+                    screenCover.get().removeLoadingCover();
                 }
             }
         });
@@ -160,7 +158,7 @@ public class LifecycleService {
                 handleServerRestart();
                 break;
             case PLANET_RESTART_WARM:
-                screenCover.fadeInLoadingCover();
+                screenCover.get().fadeInLoadingCover();
                 startWarm();
                 break;
             case PLANET_RESTART_COLD:

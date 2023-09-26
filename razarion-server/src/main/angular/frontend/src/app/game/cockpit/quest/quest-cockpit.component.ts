@@ -1,4 +1,4 @@
-import {Component} from "@angular/core";
+import {Component, NgZone} from "@angular/core";
 import {
   ConditionTrigger,
   QuestCockpit,
@@ -20,30 +20,34 @@ export class QuestCockpitComponent implements QuestCockpit {
   progressTable: string[] = [];
   questProgressInfo?: QuestProgressInfo;
 
-  constructor(private gwtAngularService: GwtAngularService) {
+  constructor(private gwtAngularService: GwtAngularService, private zone: NgZone) {
   }
 
   showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, questProgressInfo: QuestProgressInfo | null, showQuestSelectionButton: boolean): void {
-    try {
-      this.showCockpit = !!questDescriptionConfig;
-      this.questDescriptionConfig = questDescriptionConfig || undefined;
-      this.questProgressInfo = questProgressInfo || undefined;
-      this.setupProgress();
-    } catch (e) {
-      console.warn(e);
-    }
+    this.zone.run(() => {
+      try {
+        this.showCockpit = !!questDescriptionConfig;
+        this.questDescriptionConfig = questDescriptionConfig || undefined;
+        this.questProgressInfo = questProgressInfo || undefined;
+        this.setupProgress();
+      } catch (e) {
+        console.warn(e);
+      }
+    });
   }
 
   setShowQuestInGameVisualisation(): void {
   }
 
   onQuestProgress(questProgressInfo: QuestProgressInfo | null): void {
-    try {
-      this.questProgressInfo = questProgressInfo || undefined;
-      this.setupProgress();
-    } catch (e) {
-      console.warn(e);
-    }
+    this.zone.run(() => {
+      try {
+        this.questProgressInfo = questProgressInfo || undefined;
+        this.setupProgress();
+      } catch (e) {
+        console.warn(e);
+      }
+    });
   }
 
   setBotSceneIndicationInfos(): void {

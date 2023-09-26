@@ -13,22 +13,22 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @ApplicationScoped
-public class ThreeJsRendererService {
-    private static final Logger LOG = Logger.getLogger(ThreeJsRendererService.class.getName());
+public class BabylonRendererService {
+    private static final Logger LOG = Logger.getLogger(BabylonRendererService.class.getName());
 
     @Inject
-    private BabylonRenderServiceAccess threeJsRendererServiceAccess;
+    private BabylonRenderServiceAccess babylonRenderServiceAccess;
 
     public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfig) {
-        return threeJsRendererServiceAccess.createTerrainTile(terrainTile, defaultGroundConfig);
+        return babylonRenderServiceAccess.createTerrainTile(terrainTile, defaultGroundConfig);
     }
 
     public BabylonBaseItem createSyncBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy) {
-        return threeJsRendererServiceAccess.createBabylonBaseItem(id, baseItemType, diplomacy);
+        return babylonRenderServiceAccess.createBabylonBaseItem(id, baseItemType, diplomacy);
     }
 
     public BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType baseItemType) {
-        return threeJsRendererServiceAccess.createBabylonResourceItem(id, baseItemType);
+        return babylonRenderServiceAccess.createBabylonResourceItem(id, baseItemType);
     }
 
     public void executeViewFieldConfig(ViewFieldConfig viewFieldConfig, Optional<Runnable> completionCallback) {
@@ -36,14 +36,10 @@ public class ThreeJsRendererService {
             LOG.warning("Can only execute ViewFieldConfig with to-position");
             return;
         }
-        threeJsRendererServiceAccess.setViewFieldCenter(viewFieldConfig.getToPosition().getX(), viewFieldConfig.getToPosition().getY());
+        babylonRenderServiceAccess.setViewFieldCenter(viewFieldConfig.getToPosition().getX(), viewFieldConfig.getToPosition().getY());
     }
 
-    public void initMeshContainers(MeshContainer[] meshContainers) {
-        threeJsRendererServiceAccess.initMeshContainers(meshContainers);
-    }
-
-    public void startRenderLoop() {
-        LOG.warning("startRenderLoop() Not implemented");
+    public void runRenderer(MeshContainer[] meshContainers) {
+        babylonRenderServiceAccess.runRenderer(meshContainers);
     }
 }

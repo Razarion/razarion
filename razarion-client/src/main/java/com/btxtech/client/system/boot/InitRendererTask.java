@@ -1,7 +1,7 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.uiservice.AssetService;
-import com.btxtech.uiservice.renderer.ThreeJsRendererService;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
@@ -15,12 +15,12 @@ import javax.inject.Inject;
 @Dependent
 public class InitRendererTask extends AbstractStartupTask {
     @Inject
-    private ThreeJsRendererService threeJsRendererService;
+    private BabylonRendererService threeJsRendererService;
     @Inject
     private AssetService assetService;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        threeJsRendererService.initMeshContainers(assetService.getMeshContainers());
+        threeJsRendererService.runRenderer(assetService.getMeshContainers());
     }
 }

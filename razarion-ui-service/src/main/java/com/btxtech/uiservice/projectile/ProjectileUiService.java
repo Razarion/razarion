@@ -1,13 +1,11 @@
 package com.btxtech.uiservice.projectile;
 
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
-import com.btxtech.uiservice.renderer.ThreeJsRendererService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -28,8 +26,6 @@ public class ProjectileUiService {
     private ItemTypeService itemTypeService;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
-    @Inject
-    private ThreeJsRendererService threeJsRendererService;
     private final Collection<ProjectileUi> projectiles = new ArrayList<>();
     private MapList<BaseItemType, ModelMatrices> modelMatrices = new MapList<>();
 

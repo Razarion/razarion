@@ -96,21 +96,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return Color3.Gray()
   }
 
-  initMeshContainers(meshContainers: MeshContainer[]): void {
+  runRenderer(meshContainers: MeshContainer[]): void {
     this.meshContainers = meshContainers;
+    this.internalSetup();
   }
 
-  internalSetup(canvas: HTMLCanvasElement) {
-    this.engine = new Engine(canvas)
-    this.scene = new Scene(this.engine);
-    this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
-    this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
-    this.babylonModelService.setScene(this.scene);
-    this.baseItemContainer = new TransformNode("Base Items");
-    this.resourceItemContainer = new TransformNode("Resource Items");
-    this.projectileMaterial = new SimpleMaterial("Projectile", this.scene);
-    this.projectileMaterial.diffuseColor = new Color3(0, 0, 0);
-
+  internalSetup() {
     // ----- Keyboard -----
     const self = this;
     window.addEventListener("keydown", e => {
@@ -225,11 +216,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   setup(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
-    try {
-      this.internalSetup(canvas);
-    } catch (err) {
-      console.error(err);
-    }
+    this.engine = new Engine(this.canvas)
+    this.scene = new Scene(this.engine);
+    this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
+    this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
+    this.babylonModelService.setScene(this.scene);
+    this.baseItemContainer = new TransformNode("Base Items");
+    this.resourceItemContainer = new TransformNode("Resource Items");
+    this.projectileMaterial = new SimpleMaterial("Projectile", this.scene);
+    this.projectileMaterial.diffuseColor = new Color3(0, 0, 0);
   }
 
   scrollCamera(delta: number) {
@@ -298,13 +293,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.scene;
   }
 
-  private onViewFieldChanged() {
+  public onViewFieldChanged() {
     if (this.gwtAngularService.gwtAngularFacade.inputService === undefined) {
       return;
     }
     try {
       // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
-      //getViewMatrix forces recalculation of the camera view matrix
+      // getViewMatrix() forces recalculation of the camera view matrix
       this.camera.getViewMatrix();
 
       let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());

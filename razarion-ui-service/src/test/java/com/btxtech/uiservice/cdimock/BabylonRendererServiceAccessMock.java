@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @ApplicationScoped
-public class ThreeJsRendererServiceAccessMock implements BabylonRenderServiceAccess {
+public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAccess {
     private final List<BabylonBaseItemMock> babylonBaseItemMocks = new ArrayList<>();
 
-    private final Logger logger = Logger.getLogger(ThreeJsRendererServiceAccessMock.class.getName());
+    private final Logger logger = Logger.getLogger(BabylonRendererServiceAccessMock.class.getName());
 
     @Override
     public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId) {
@@ -47,7 +47,7 @@ public class ThreeJsRendererServiceAccessMock implements BabylonRenderServiceAcc
     }
 
     @Override
-    public void initMeshContainers(MeshContainer[] meshContainers) {
+    public void runRenderer(MeshContainer[] meshContainers) {
         logger.warning("initMeshContainers()");
     }
 

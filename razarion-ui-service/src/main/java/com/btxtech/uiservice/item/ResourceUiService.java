@@ -10,7 +10,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
-import com.btxtech.uiservice.renderer.ThreeJsRendererService;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -36,7 +36,7 @@ public class ResourceUiService {
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private ThreeJsRendererService threeJsRendererService;
+    private BabylonRendererService threeJsRendererService;
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
     private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
     private final Map<Integer, BabylonResourceItem> babylonResourceItem = new HashMap<>();

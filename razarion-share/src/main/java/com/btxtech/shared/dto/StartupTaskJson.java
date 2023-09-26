@@ -24,8 +24,10 @@ public class StartupTaskJson {
     private String gameSessionUuid;
     private String taskEnum;
     private Date startTime;
+    private Date serverTime;
     private int duration;
     private String error;
+    private String httpSessionId;
 
     public String getGameSessionUuid() {
         return gameSessionUuid;
@@ -70,5 +72,21 @@ public class StartupTaskJson {
     public StartupTaskJson setError(String error) {
         this.error = error;
         return this;
+    }
+
+    public String getHttpSessionId() {
+        return httpSessionId;
+    }
+
+    public void setHttpSessionId(String httpSessionId) {
+        this.httpSessionId = httpSessionId;
+    }
+
+    public Date getServerTime() {
+        return serverTime;
+    }
+
+    public void setServerTime(Date serverTime) {
+        this.serverTime = serverTime;
     }
 }

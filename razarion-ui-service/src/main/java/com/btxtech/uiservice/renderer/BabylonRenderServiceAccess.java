@@ -17,5 +17,5 @@ public interface BabylonRenderServiceAccess {
 
     void setViewFieldCenter(double x, double y);
 
-    void initMeshContainers(MeshContainer[] meshContainers);
+    void runRenderer(MeshContainer[] meshContainers);
 }

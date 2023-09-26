@@ -1,12 +1,14 @@
 package com.btxtech.uiservice.cockpit;
 
+import jsinterop.annotations.JsType;
+
 /**
  * Created by Beat
  * 05.07.2016.
  */
-public interface ScreenCover {
-    long FADE_DURATION = 2000; // Edit in razarion.css
 
+@JsType(isNative = true)
+public interface ScreenCover {
     void showStoryCover(String html);
 
     void hideStoryCover();
@@ -14,8 +16,6 @@ public interface ScreenCover {
     void removeLoadingCover();
 
     void fadeOutLoadingCover();
-
-    void fadeOutAndForward(String url);
 
     void fadeInLoadingCover();
 }

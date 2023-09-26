@@ -30,7 +30,7 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
-import com.btxtech.uiservice.renderer.ThreeJsRendererService;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.user.UserUiService;
 
@@ -77,7 +77,7 @@ public class BaseItemUiService {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private ThreeJsRendererService threeJsRendererService;
+    private BabylonRendererService threeJsRendererService;
     @Inject
     private AudioService audioService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();

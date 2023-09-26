@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 @EntryPoint
 @Bundle("clientI18n/ErraiI18nBundle.properties")
 public class Client {
-    private Logger logger = Logger.getLogger(Client.class.getName());
+    private final Logger logger = Logger.getLogger(Client.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
@@ -35,18 +35,6 @@ public class Client {
     private GwtAngularService gwtAngularService;
 
     public Client() {
-//        DomGlobal.window.onerror = new Window.OnerrorCallbackFn() {
-//            @Override
-//            public Object onInvoke(String p0, String p1, double p2) {
-//                DomGlobal.console.error("------------------------------");
-//                DomGlobal.console.error(p0);
-//                DomGlobal.console.error(p1);
-//                DomGlobal.console.error(p2);
-//                // ErrorEvent errorEvent =
-//
-//                return true; // When the function returns true, this prevents the firing of the default event handler.
-//            }
-//        };
         GWT.setUncaughtExceptionHandler(e -> {
             if (logger != null) {
                 logger.log(Level.SEVERE, "UncaughtExceptionHandler", e);
@@ -70,9 +58,9 @@ public class Client {
     }
 
     @AfterInitialization
+    @SuppressWarnings("unused")
     public void afterInitialization() {
         gwtAngularService.init();
-        mainPanelService.init();
         lifecycleService.startCold();
     }
 

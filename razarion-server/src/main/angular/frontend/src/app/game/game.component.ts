@@ -1,4 +1,4 @@
-﻿import {Component, ElementRef, HostBinding, OnInit, ViewChild} from '@angular/core';
+﻿import {Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild} from '@angular/core';
 import {FrontendService} from "../service/frontend.service";
 import {NavigationStart, Router} from "@angular/router";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
@@ -25,14 +25,12 @@ import {
   PhysicalAreaConfig,
   QuestConfig,
   QuestProgressInfo,
+  ScreenCover,
   WeaponType
 } from "../gwtangular/GwtAngularFacade";
 import {GwtInstance} from "../gwtangular/GwtInstance";
 import {GwtHelper} from "../gwtangular/GwtHelper";
 import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
-import {ServerQuestEditorComponent} from "../editor/server-quest-editor/server-quest-editor.component";
-import {ServerBotEditorComponent} from "../editor/server-bot-editor/server-bot-editor.component";
-import {ServerStartRegionComponent} from "../editor/server-start-region/server-start-region.component";
 import {SlopeEditorComponent} from "../editor/crud-editors/slope-editor/slope-editor.component";
 import {CrudContainerComponent} from "../editor/crud-editors/crud-container/crud-container.component";
 
@@ -41,7 +39,7 @@ import {CrudContainerComponent} from "../editor/crud-editors/crud-container/crud
   templateUrl: 'game.component.html',
   styleUrls: ['game.component.scss']
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, ScreenCover {
   @ViewChild('canvas', {static: true})
   canvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('mainCockpit', {static: true})
@@ -50,26 +48,30 @@ export class GameComponent implements OnInit {
   itemCockpitContainer!: ItemCockpitComponent;
   @ViewChild('questCockpitContainer', {static: true})
   questCockpitContainer!: QuestCockpitComponent;
-  // TODO @ViewChild('loadingCover', {static: true})
-  // TODO loadingCover?: OverlayPanel;
   editorModels: EditorModel[] = [];
-  @HostBinding("style.--cursor") cursor: string = '';
+  @HostBinding("style.--cursor")
+  cursor: string = '';
+  fadeOutCover: boolean = false;
+  removeCover: boolean = false;
 
   constructor(private frontendService: FrontendService,
               private router: Router,
               private gwtAngularService: GwtAngularService,
               private threeJsRendererService: BabylonRenderServiceAccessImpl,
               private threeJsModelService: BabylonModelService,
-              private gameMockService: GameMockService) {
+              private gameMockService: GameMockService,
+              private zone: NgZone) {
   }
 
   ngOnInit(): void {
+    // this.loadingCover!.render = true;
+
     this.gwtAngularService.crashListener = () => this.addEditorModel(new EditorModel("Crash Information Panel", CrashPanelComponent));
 
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = false;
+      let runGwtMock = true;
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
@@ -83,8 +85,17 @@ export class GameComponent implements OnInit {
               this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
               this.gameMockService.mockTerrainTile(this.threeJsRendererService);
               this.mainCockpitComponent.show(true);
-              this.threeJsRendererService.initMeshContainers(this.gameMockService.createMeshContainers());
-              this.threeJsRendererService.setViewFieldCenter(5, 2);
+              this.threeJsRendererService.runRenderer(this.gameMockService.createMeshContainers());
+              setTimeout(() => {
+                // Some very strange babylon behavior, _projectionMatrix is zero matrix
+                this.threeJsRendererService.setViewFieldCenter(5, 2);
+                this.fadeOutLoadingCover();
+                setTimeout(() => {
+                  // Some very strange babylon behavior, _projectionMatrix is zero matrix
+                  this.removeLoadingCover();
+                }, 2000);
+              }, 100);
+              // this.loadingCover!.hide();
               // this.threeJsRendererService.createProjectile(new class implements Vertex {
               //   getX(): number {
               //     return 0;
@@ -342,6 +353,7 @@ export class GameComponent implements OnInit {
         this.addEditorModel(new EditorModel("??? Editor", CrudContainerComponent, SlopeEditorComponent));
       }
     }
+    this.gwtAngularService.gwtAngularFacade.screenCover = this;
     this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
     this.gwtAngularService.gwtAngularFacade.angularCursorService = this.createAngularCursorService();
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
@@ -379,6 +391,30 @@ export class GameComponent implements OnInit {
     // TODO if(this.loadingCover) {
     //    this.loadingCover.show(null, this.canvas);
     // }
+  }
+
+  fadeInLoadingCover(): void {
+    throw new Error("Not Implemented fadeInLoadingCover()");
+  }
+
+  fadeOutLoadingCover(): void {
+    this.zone.run(() => {
+      this.fadeOutCover = true;
+    });
+  }
+
+  hideStoryCover(): void {
+    throw new Error("Not Implemented hideStoryCover()");
+  }
+
+  removeLoadingCover(): void {
+    this.zone.run(() => {
+      this.removeCover = true;
+    });
+  }
+
+  showStoryCover(html: string): void {
+    throw new Error("Not Implemented showStoryCover()");
   }
 
   private startGame(): void {

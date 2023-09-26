@@ -10,7 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.cdimock.TestItemCockpitFrontend;
-import com.btxtech.uiservice.cdimock.ThreeJsRendererServiceAccessMock;
+import com.btxtech.uiservice.cdimock.BabylonRendererServiceAccessMock;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -60,8 +60,8 @@ public class WeldUiBaseIntegrationTest {
         return getWeldBean(TerrainUiService.class);
     }
 
-    protected ThreeJsRendererServiceAccessMock getThreeJsRendererServiceAccessMock() {
-        return getWeldBean(ThreeJsRendererServiceAccessMock.class);
+    protected BabylonRendererServiceAccessMock getThreeJsRendererServiceAccessMock() {
+        return getWeldBean(BabylonRendererServiceAccessMock.class);
     }
 
     protected void setupAlarmService() {

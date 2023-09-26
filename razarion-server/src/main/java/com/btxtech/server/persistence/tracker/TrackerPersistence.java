@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.marketing.facebook.FbFacade;
+import com.btxtech.server.persistence.MongoDbService;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.history.HistoryPersistence;
@@ -26,7 +27,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -41,7 +41,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +49,7 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class TrackerPersistence {
-    private Logger logger = Logger.getLogger(TrackerPersistence.class.getName());
+    // private final Logger logger = Logger.getLogger(TrackerPersistence.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -63,6 +62,8 @@ public class TrackerPersistence {
     private TrackingContainerMongoDb trackingContainerMongoDb;
     @Inject
     private HistoryPersistence historyPersistence;
+    @Inject
+    private MongoDbService mongoDbService;
 
     @Transactional
     public void onNewSession(HttpServletRequest request) {
@@ -121,26 +122,16 @@ public class TrackerPersistence {
 
     @Transactional
     public void onStartupTask(StartupTaskJson startupTaskJson) {
-        StartupTaskEntity startupTaskEntity = new StartupTaskEntity();
-        startupTaskEntity.setStartTime(new Date());
-        startupTaskEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
-        startupTaskEntity.setGameSessionUuid(startupTaskJson.getGameSessionUuid());
-        startupTaskEntity.setClientStartTime(startupTaskJson.getStartTime());
-        startupTaskEntity.setDuration(startupTaskJson.getDuration());
-        startupTaskEntity.setTaskEnum(startupTaskJson.getTaskEnum());
-        startupTaskEntity.setError(startupTaskJson.getError());
-        // TODO entityManager.persist(startupTaskEntity);
+        startupTaskJson.setHttpSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
+        startupTaskJson.setServerTime(new Date());
+        mongoDbService.storeObject(startupTaskJson, StartupTaskJson.class, MongoDbService.CollectionName.STARTUP_TRACKING);
     }
 
     @Transactional
     public void onStartupTerminated(StartupTerminatedJson startupTerminatedJson) {
-        StartupTerminatedEntity startupTerminatedEntity = new StartupTerminatedEntity();
-        startupTerminatedEntity.setTimeStamp(new Date());
-        startupTerminatedEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
-        startupTerminatedEntity.setGameSessionUuid(startupTerminatedJson.getGameSessionUuid());
-        startupTerminatedEntity.setTotalTime(startupTerminatedJson.getTotalTime());
-        startupTerminatedEntity.setSuccessful(startupTerminatedJson.isSuccessful());
-        // TODO entityManager.persist(startupTerminatedEntity);
+        startupTerminatedJson.setHttpSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
+        startupTerminatedJson.setServerTime(new Date());
+        mongoDbService.storeObject(startupTerminatedJson, StartupTerminatedJson.class, MongoDbService.CollectionName.STARTUP_TRACKING);
     }
 
     @Transactional
@@ -263,21 +254,23 @@ public class TrackerPersistence {
     }
 
     private int readStartupTaskCount(String sessionId) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
-        Root<StartupTaskEntity> root = cq.from(StartupTaskEntity.class);
-        // TODO cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
-        // TODO cq.select(criteriaBuilder.countDistinct(root.get(StartupTaskEntity_.gameSessionUuid)));
-        return entityManager.createQuery(cq).getSingleResult().intValue();
+//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
+//        Root<StartupTaskEntity> root = cq.from(StartupTaskEntity.class);
+//        // TODO cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
+//        // TODO cq.select(criteriaBuilder.countDistinct(root.get(StartupTaskEntity_.gameSessionUuid)));
+//        return entityManager.createQuery(cq).getSingleResult().intValue();
+        return -999;
     }
 
     private int readSuccessStartupTerminatedCount(String sessionId) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
-        Root<StartupTerminatedEntity> root = cq.from(StartupTerminatedEntity.class);
-        // TODO cq.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTerminatedEntity_.sessionId), sessionId), criteriaBuilder.equal(root.get(StartupTerminatedEntity_.successful), true)));
-        cq.select(criteriaBuilder.count(root));
-        return entityManager.createQuery(cq).getSingleResult().intValue();
+//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
+//        Root<StartupTerminatedEntity> root = cq.from(StartupTerminatedEntity.class);
+//        // TODO cq.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTerminatedEntity_.sessionId), sessionId), criteriaBuilder.equal(root.get(StartupTerminatedEntity_.successful), true)));
+//        cq.select(criteriaBuilder.count(root));
+//        return entityManager.createQuery(cq).getSingleResult().intValue();
+        return -999;
     }
 
     private String getFbAdRazTrack(String sessionId) {
@@ -369,14 +362,15 @@ public class TrackerPersistence {
     }
 
     private List<GameSessionDetail> readGameSessionDetails(String sessionId) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
-        Root<StartupTaskEntity> root = cq.from(StartupTaskEntity.class);
-        // TODO cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
-        // TODO cq.multiselect(root.get(StartupTaskEntity_.gameSessionUuid), root.get(StartupTaskEntity_.startTime), root.get(StartupTaskEntity_.clientStartTime));
-        // TODO cq.groupBy(root.get(StartupTaskEntity_.gameSessionUuid));
-        // TODO cq.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
-        return entityManager.createQuery(cq).getResultList().stream().map(tuple -> readGameSessionDetail(sessionId, (String) tuple.get(0), (Date) tuple.get(1), (Date) tuple.get(2))).collect(Collectors.toList());
+//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+//        Root<StartupTaskEntity> root = cq.from(StartupTaskEntity.class);
+//        // TODO cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
+//        // TODO cq.multiselect(root.get(StartupTaskEntity_.gameSessionUuid), root.get(StartupTaskEntity_.startTime), root.get(StartupTaskEntity_.clientStartTime));
+//        // TODO cq.groupBy(root.get(StartupTaskEntity_.gameSessionUuid));
+//        // TODO cq.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
+//        return entityManager.createQuery(cq).getResultList().stream().map(tuple -> readGameSessionDetail(sessionId, (String) tuple.get(0), (Date) tuple.get(1), (Date) tuple.get(2))).collect(Collectors.toList());
+        return null;
     }
 
     private GameSessionDetail readGameSessionDetail(String sessionId, String gameSessionUuid, Date time, Date clientTime) {
@@ -392,29 +386,31 @@ public class TrackerPersistence {
     }
 
     private List<StartupTaskDetail> readStartupTaskDetails(String sessionId, String gameSessionUuid) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<StartupTaskEntity> query = criteriaBuilder.createQuery(StartupTaskEntity.class);
-        Root<StartupTaskEntity> root = query.from(StartupTaskEntity.class);
-        // TODO query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(StartupTaskEntity_.gameSessionUuid), gameSessionUuid));
-        // TODO query.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
-
-        return entityManager.createQuery(query).getResultList().stream().map(StartupTaskEntity::toStartupTaskDetail).collect(Collectors.toList());
+//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<StartupTaskEntity> query = criteriaBuilder.createQuery(StartupTaskEntity.class);
+//        Root<StartupTaskEntity> root = query.from(StartupTaskEntity.class);
+//        // TODO query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(StartupTaskEntity_.gameSessionUuid), gameSessionUuid));
+//        // TODO query.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
+//
+//        return entityManager.createQuery(query).getResultList().stream().map(StartupTaskEntity::toStartupTaskDetail).collect(Collectors.toList());
+        return null;
     }
 
     private StartupTerminatedDetail readStartupTerminatedDetail(String sessionId, String gameSessionUuid) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<StartupTerminatedEntity> query = criteriaBuilder.createQuery(StartupTerminatedEntity.class);
-        Root<StartupTerminatedEntity> root = query.from(StartupTerminatedEntity.class);
-        // TODO query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTerminatedEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(StartupTerminatedEntity_.gameSessionUuid), gameSessionUuid));
-
-        List<StartupTerminatedEntity> startupTerminatedEntities = entityManager.createQuery(query).getResultList();
-        if (startupTerminatedEntities.isEmpty()) {
-            return null;
-        }
-        if (startupTerminatedEntities.size() > 1) {
-            logger.warning("More then one entry found for StartupTerminatedEntity. sessionId: " + sessionId + " gameSessionUuid: " + gameSessionUuid);
-        }
-        return startupTerminatedEntities.get(0).toStartupTerminatedDetail();
+//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<StartupTerminatedEntity> query = criteriaBuilder.createQuery(StartupTerminatedEntity.class);
+//        Root<StartupTerminatedEntity> root = query.from(StartupTerminatedEntity.class);
+//        // TODO query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTerminatedEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(StartupTerminatedEntity_.gameSessionUuid), gameSessionUuid));
+//
+//        List<StartupTerminatedEntity> startupTerminatedEntities = entityManager.createQuery(query).getResultList();
+//        if (startupTerminatedEntities.isEmpty()) {
+//            return null;
+//        }
+//        if (startupTerminatedEntities.size() > 1) {
+//            logger.warning("More then one entry found for StartupTerminatedEntity. sessionId: " + sessionId + " gameSessionUuid: " + gameSessionUuid);
+//        }
+//        return startupTerminatedEntities.get(0).toStartupTerminatedDetail();
+        return null;
     }
 
     private List<SceneTrackerDetail> readSceneTrackerDetails(String sessionId, String gameSessionUuid) {

@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.QuestCockpit;
+import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitFrontend;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerPresenter;
@@ -23,6 +24,7 @@ public abstract class GwtAngularFacade {
     public GwtAngularBoot gwtAngularBoot;  // Initialized by Angular
     public GameUiControl gameUiControl; // Initialized by GWT
     public String language; // Initialized by GWT
+    public ScreenCover screenCover; // Initialized by GWT
     public AngularCursorService angularCursorService; // Initialized by Angular
     public MainCockpit mainCockpit; // Initialized by Angular
     public ItemCockpitFrontend itemCockpitFrontend; // Initialized by Angular

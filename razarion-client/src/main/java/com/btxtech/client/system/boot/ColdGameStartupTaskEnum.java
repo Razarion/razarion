@@ -27,7 +27,6 @@ public enum ColdGameStartupTaskEnum implements StartupTaskEnum {
     LOAD_AND_START_WORKER(LoadWorkerTask.class),
     LOAD_GAME_UI_CONTEXT_CONFIG(LoadGameUiContextlTask.class),
     LOAD_THREE_JS_MODELS(LoadLoadThreeJsModelsTask.class),
-    LOAD_MEDIAS(LoadMediaControlTask.class),
     INIT_WORKER(InitWorkerTask.class) {
         @Override
         public StartupTaskEnum[] getWaitForBackgroundTasks() {
@@ -38,7 +37,7 @@ public enum ColdGameStartupTaskEnum implements StartupTaskEnum {
     INIT_RENDERER(InitRendererTask.class) {
         @Override
         public StartupTaskEnum[] getWaitForBackgroundTasks() {
-            return new StartupTaskEnum[]{INIT_WORKER, LOAD_MEDIAS, LOAD_THREE_JS_MODELS};
+            return new StartupTaskEnum[]{INIT_WORKER, LOAD_THREE_JS_MODELS};
         }
     },
     RUN_GAME(RunGameUiControlTask.class);

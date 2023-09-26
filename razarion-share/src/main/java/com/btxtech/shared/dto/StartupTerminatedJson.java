@@ -10,6 +10,9 @@ public class StartupTerminatedJson {
     private boolean successful;
     private int totalTime;
     private String gameSessionUuid;
+    private String httpSessionId;
+    private Date serverTime;
+
 
     public boolean isSuccessful() {
         return successful;
@@ -36,5 +39,21 @@ public class StartupTerminatedJson {
     public StartupTerminatedJson setGameSessionUuid(String gameSessionUuid) {
         this.gameSessionUuid = gameSessionUuid;
         return this;
+    }
+
+    public String getHttpSessionId() {
+        return httpSessionId;
+    }
+
+    public void setHttpSessionId(String httpSessionId) {
+        this.httpSessionId = httpSessionId;
+    }
+
+    public Date getServerTime() {
+        return serverTime;
+    }
+
+    public void setServerTime(Date serverTime) {
+        this.serverTime = serverTime;
     }
 }

@@ -6,7 +6,7 @@ import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
-import com.btxtech.uiservice.cdimock.ThreeJsRendererServiceAccessMock;
+import com.btxtech.uiservice.cdimock.BabylonRendererServiceAccessMock;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -65,9 +65,9 @@ public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
         BaseItemUiService baseItemUiService = getWeldBean(BaseItemUiService.class);
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
 
-        ThreeJsRendererServiceAccessMock threeJsRendererServiceAccessMock = getWeldBean(ThreeJsRendererServiceAccessMock.class);
+        BabylonRendererServiceAccessMock threeJsRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
         Assert.assertEquals(1, threeJsRendererServiceAccessMock.getBabylonBaseItemMocks().size());
-        ThreeJsRendererServiceAccessMock.BabylonBaseItemMock babylonBaseItemMock = threeJsRendererServiceAccessMock.getBabylonBaseItemMocks().get(0);
+        BabylonRendererServiceAccessMock.BabylonBaseItemMock babylonBaseItemMock = threeJsRendererServiceAccessMock.getBabylonBaseItemMocks().get(0);
         assertVertex(274, 100, 2, babylonBaseItemMock.getPosition());
         Assert.assertEquals(0, babylonBaseItemMock.getAngle(), 0.0001);
         Assert.assertEquals(babylonBaseItemMock.getDiplomacy(), Diplomacy.OWN);

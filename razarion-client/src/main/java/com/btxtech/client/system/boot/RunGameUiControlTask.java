@@ -4,7 +4,7 @@ import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.renderer.ThreeJsRendererService;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -21,7 +21,7 @@ import javax.inject.Inject;
 public class RunGameUiControlTask extends AbstractStartupTask {
     // private Logger logger = Logger.getLogger(RunGameUiControlTask.class.getName());
     @Inject
-    private ThreeJsRendererService threeJsRendererService;
+    private BabylonRendererService babylonRendererService;
     @Inject
     private Boot boot;
     @Inject
@@ -41,7 +41,7 @@ public class RunGameUiControlTask extends AbstractStartupTask {
         // gameEngineControl.enableTracking();
         gameUiControl.start();
         // Injection does not work here
-        threeJsRendererService.startRenderLoop();
+        // babylonRendererService.startRenderLoop();
         perfmonService.start(boot.getGameSessionUuid());
         clientPerformanceTrackerService.start();
         userUiService.start();

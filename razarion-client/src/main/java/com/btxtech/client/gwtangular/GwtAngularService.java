@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.QuestCockpitService;
+import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.i18n.I18nHelper;
@@ -82,6 +83,11 @@ public class GwtAngularService {
     @Produces
     public BabylonRenderServiceAccess threeJsRendererServiceAccess() {
         return gwtAngularFacade.threeJsRendererServiceAccess;
+    }
+
+    @Produces
+    public ScreenCover screenCover() {
+        return gwtAngularFacade.screenCover;
     }
 
 }

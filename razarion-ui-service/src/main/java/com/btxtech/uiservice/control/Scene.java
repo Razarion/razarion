@@ -17,13 +17,14 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
-import com.btxtech.uiservice.renderer.ThreeJsRendererService;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -37,11 +38,12 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_GAME_UI_CONTEXT
 @Dependent
 // Better name: something with game-control
 public class Scene implements ViewService.ViewFieldListener {
+    public static final long FADE_DURATION = 2000; // Edit in razarion.css
     private Logger logger = Logger.getLogger(Scene.class.getName());
     @Inject
     private ScreenCover screenCover;
     @Inject
-    private ThreeJsRendererService threeJsRendererService;
+    private BabylonRendererService threeJsRendererService;
     @Inject
     private ViewService viewService;
     @Inject
@@ -82,7 +84,7 @@ public class Scene implements ViewService.ViewFieldListener {
             hasCompletionCallback = true;
             completionCallbackCount++;
             screenCover.fadeOutLoadingCover();
-            simpleExecutorService.schedule(ScreenCover.FADE_DURATION, () -> {
+            simpleExecutorService.schedule(FADE_DURATION, () -> {
                 screenCover.removeLoadingCover();
                 onComplete();
             }, SimpleExecutorService.Type.SCENE_RUNNER);

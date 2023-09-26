@@ -6,6 +6,7 @@ export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
   gameUiControl!: GameUiControl;
   language!: string;
+  screenCover!: ScreenCover;
   angularCursorService!: AngularCursorService;
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
@@ -103,6 +104,18 @@ export interface Alarm {
   getText(): string;
 
   getId(): number;
+}
+
+export interface ScreenCover {
+  showStoryCover(html: string): void;
+
+  hideStoryCover(): void;
+
+  removeLoadingCover(): void;
+
+  fadeOutLoadingCover(): void;
+
+  fadeInLoadingCover(): void;
 }
 
 export interface InputService {
@@ -418,7 +431,7 @@ export interface BabylonRenderServiceAccess {
 
   setViewFieldCenter(x: number, y: number): void;
 
-  initMeshContainers(meshContainers: MeshContainer[]): void;
+  runRenderer(meshContainers: MeshContainer[]): void;
 }
 
 export interface TerrainTile {

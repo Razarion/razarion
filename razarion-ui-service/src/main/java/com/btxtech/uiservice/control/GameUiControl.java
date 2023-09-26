@@ -26,8 +26,8 @@ import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
-import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.cockpit.QuestCockpitService;
+import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.system.boot.Boot;
@@ -84,7 +84,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private ModalDialogManager modalDialogManager;
     @Inject
-    private ScreenCover screenCover;
+    private Instance<ScreenCover> screenCover;
     @Inject
     private Instance<AbstractServerSystemConnection> serverSystemConnectionInstance;
     @Inject
@@ -217,7 +217,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             }
             // TODO Temporary fix for showing move to first multiplayer planet. Pervents loading new planet if multiplayer planet is done. Because there is no new planet
             modalDialogManager.showLeaveStartTutorial(() -> {
-                screenCover.fadeInLoadingCover();
+                screenCover.get().fadeInLoadingCover();
                 boot.startWarm(); // Replace by LifecycleService. Move boot back to client package. Not needed in DevTools.
             });
         }
@@ -280,8 +280,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private List<SceneConfig> setupSlaveExistingScenes(DecimalPosition scrollToPosition) {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
 
-        sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet fade out").removeLoadingCover(true));
         sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet viewfield").viewFieldConfig(new ViewFieldConfig().toPosition(scrollToPosition)));
+        sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet fade out").removeLoadingCover(true));
         sceneConfigs.add(new SceneConfig().internalName("script: Process Server Quests").processServerQuests(true));
         return sceneConfigs;
     }
@@ -289,6 +289,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private List<SceneConfig> setupSlaveSpawnScenes() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         DecimalPosition position = null;
+        // Set camera Position
         if (coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion() != null) {
             if (coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getNoBaseViewPosition() != null) {
                 position = coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getNoBaseViewPosition();
@@ -300,7 +301,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             logger.warning("No StartRegion defined. Scroll to 0:0 position");
             sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet viewfield default").viewFieldConfig(new ViewFieldConfig().toPosition(DecimalPosition.NULL)));
         }
-        // Set camera Position
         // Fade out
         sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet fade out").removeLoadingCover(true));
         // User Spawn
