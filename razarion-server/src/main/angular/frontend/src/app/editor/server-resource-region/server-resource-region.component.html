@@ -9,7 +9,16 @@
                   [(ngModel)]="selectedResourceRegion"
                   optionLabel="internalName"></p-dropdown>
     </div>
-    <div class="col-8">
+    <div class="col-1">
+      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+                (onClick)="onCreate()"></p-button>
+    </div>
+    <div class="col-1">
+      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                (onClick)="onDelete()"
+                [disabled]="!selectedResourceRegion"></p-button>
+    </div>
+    <div class="col-6">
       <p-button type="button"
                 label="{{EditorService.RESTART_RESOURCE_REGIONS.name}}"
                 icon="pi pi-cog"

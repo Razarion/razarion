@@ -1,7 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {EditorService} from "../editor-service";
-import {ConditionTrigger, ServerGameEngineConfig} from "../../generated/razarion-share";
+import {
+  ConditionTrigger,
+  QuestConfig,
+  ServerGameEngineConfig,
+  ServerLevelQuestConfig
+} from "../../generated/razarion-share";
 
 @Component({
   selector: 'server-quest-editor',
@@ -9,6 +14,9 @@ import {ConditionTrigger, ServerGameEngineConfig} from "../../generated/razarion
 })
 export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig?: ServerGameEngineConfig;
+  selectedLevelQuest?: ServerLevelQuestConfig;
+
+  protected readonly EditorService = EditorService;
   protected readonly CONDITION_TRIGGERS =
     [ConditionTrigger.SYNC_ITEM_KILLED,
       ConditionTrigger.HARVEST,
@@ -19,7 +27,7 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
       ConditionTrigger.INVENTORY_ITEM_PLACED,
     ];
 
-  constructor(private editorService: EditorService) {
+  constructor(public editorService: EditorService) {
     super();
   }
 
@@ -31,5 +39,48 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
 
   onSave() {
     this.editorService.updateServerLevelQuestConfig(this.serverGameEngineConfig?.serverLevelQuestConfigs)
+  }
+
+  onCreate() {
+    this.selectedLevelQuest = {
+      id: null,
+      internalName: "New",
+      minimalLevelId: null,
+      questConfigs: []
+    };
+    this.serverGameEngineConfig!.serverLevelQuestConfigs.push(this.selectedLevelQuest)
+  }
+
+  onDelete() {
+    this.serverGameEngineConfig!.serverLevelQuestConfigs.splice(this.serverGameEngineConfig!.serverLevelQuestConfigs.findIndex(l => l === this.selectedLevelQuest), 1);
+    this.selectedLevelQuest = undefined;
+  }
+
+  onCreateQuest() {
+    this.selectedLevelQuest!.questConfigs.push({
+      conditionConfig: {
+        comparisonConfig: {
+          count: null,
+          typeCount: {},
+          timeSeconds: null,
+          placeConfig: null,
+          botIds: [],
+        },
+        conditionTrigger: null
+      },
+      crystal: 0,
+      description: "",
+      hidePassedDialog: false,
+      id: 0,
+      internalName: "",
+      passedMessage: "",
+      razarion: 0,
+      title: "",
+      xp: 0
+    })
+  }
+
+  onDeleteQuest(questConfig: QuestConfig) {
+    this.selectedLevelQuest!.questConfigs.splice(this.selectedLevelQuest!.questConfigs.findIndex(b => b === questConfig), 1);
   }
 }

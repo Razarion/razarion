@@ -59,11 +59,11 @@ public class ComparisonConfig {
         }
     }
 
-    public Integer getCount() {
+    public @Nullable Integer getCount() {
         return count;
     }
 
-    public void setCount(Integer count) {
+    public void setCount(@Nullable Integer count) {
         this.count = count;
     }
 
@@ -75,11 +75,11 @@ public class ComparisonConfig {
         this.typeCount = typeCount;
     }
 
-    public Integer getTimeSeconds() {
+    public @Nullable Integer getTimeSeconds() {
         return timeSeconds;
     }
 
-    public void setTimeSeconds(Integer timeSeconds) {
+    public void setTimeSeconds(@Nullable Integer timeSeconds) {
         this.timeSeconds = timeSeconds;
     }
 

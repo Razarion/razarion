@@ -71,7 +71,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = true;
+      let runGwtMock = false;
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
@@ -351,6 +351,8 @@ export class GameComponent implements OnInit, ScreenCover {
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.mainCockpitComponent.show(true);
         this.addEditorModel(new EditorModel("??? Editor", CrudContainerComponent, SlopeEditorComponent));
+        this.fadeOutLoadingCover();
+        this.removeLoadingCover();
       }
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;

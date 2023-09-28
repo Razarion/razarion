@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
 
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 /**
@@ -26,11 +27,11 @@ public class ConditionConfig {
     private ConditionTrigger conditionTrigger;
     private ComparisonConfig comparisonConfig;
 
-    public ConditionTrigger getConditionTrigger() {
+    public @Nullable ConditionTrigger getConditionTrigger() {
         return conditionTrigger;
     }
 
-    public void setConditionTrigger(ConditionTrigger conditionTrigger) {
+    public void setConditionTrigger(@Nullable ConditionTrigger conditionTrigger) {
         this.conditionTrigger = conditionTrigger;
     }
 

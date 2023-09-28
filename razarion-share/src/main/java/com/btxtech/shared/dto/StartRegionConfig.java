@@ -1,7 +1,6 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.system.Nullable;
 
@@ -10,17 +9,17 @@ import com.btxtech.shared.system.Nullable;
  * on 28.07.2017.
  */
 public class StartRegionConfig {
-    private int id;
+    private Integer id;
     private String internalName;
     private Integer minimalLevelId;
     private PlaceConfig region;
     private DecimalPosition noBaseViewPosition;
 
-    public int getId() {
+    public @Nullable Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@Nullable Integer id) {
         this.id = id;
     }
 

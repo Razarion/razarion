@@ -10,17 +10,22 @@ import java.util.List;
  * on 03.08.2017.
  */
 public class ServerLevelQuestConfig implements ObjectNameIdProvider {
-    private int id;
+    private Integer id;
     private String internalName;
     private Integer minimalLevelId;
     private List<QuestConfig> questConfigs;
 
-    public int getId() {
+    public @Nullable Integer getId() {
         return id;
     }
 
-    public ServerLevelQuestConfig id(int id) {
+
+    public void setId(@Nullable Integer id) {
         this.id = id;
+    }
+
+    public ServerLevelQuestConfig id(Integer id) {
+        setId(id);
         return this;
     }
 

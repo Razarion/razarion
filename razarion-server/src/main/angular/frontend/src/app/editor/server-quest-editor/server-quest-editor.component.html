@@ -1,91 +1,123 @@
-<div class="grid grid-razarion-editor">
-  <div class="col">
-    <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
-              (onClick)="onSave()"></p-button>
+<div [style]="{width:'500px'}">
+  <div class="grid grid-razarion-editor">
+    <div class="col">
+      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
+                (onClick)="onSave()"></p-button>
+    </div>
+    <div class="col-3">
+      <p-dropdown [options]="serverGameEngineConfig ? serverGameEngineConfig!.serverLevelQuestConfigs:[]"
+                  [(ngModel)]="selectedLevelQuest"
+                  optionLabel="internalName"></p-dropdown>
+    </div>
+    <div class="col-1">
+      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+                (onClick)="onCreate()"></p-button>
+    </div>
+    <div class="col-1">
+      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                (onClick)="onDelete()"
+                [disabled]="!selectedLevelQuest"></p-button>
+    </div>
+    <div class="col-6">
+      <p-button type="button"
+                label="{{EditorService.RESTART_BOTS.name}}"
+                icon="pi pi-cog"
+                styleClass="p-button-sm"
+                (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
+    </div>
   </div>
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-cog mr-2"></i>
+      <b>Configuration</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-razarion-editor">
+    <span class="col-3">Id</span>
+    <div class="col-9">
+      <p-inputNumber [disabled]="true" inputId="integeronly"
+                     [(ngModel)]="selectedLevelQuest&&selectedLevelQuest.id"></p-inputNumber>
+    </div>
+  </div>
+  <div class="field grid align-items-center">
+    <span class="col-3">Minimal level (id)</span>
+    <div class="col-9">
+      <level *ngIf="selectedLevelQuest" [(levelId)]="selectedLevelQuest.minimalLevelId"></level>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-3">Create quest</span>
+    <div class="col-9">
+      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+                (onClick)="onCreateQuest()"></p-button>
+    </div>
+  </div>
+  <p-accordion *ngIf="selectedLevelQuest">
+    <p-accordionTab *ngFor="let questConfig of selectedLevelQuest.questConfigs">
+      <ng-template pTemplate="header">
+        {{questConfig.title}} ({{questConfig.id}})
+        <div class="col-1">
+          <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                    (onClick)="onDeleteQuest(questConfig)"></p-button>
+        </div>
+      </ng-template>
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Title</span>
+        <div class="col-9">
+          <input [(ngModel)]="questConfig.title" type="text"
+                 class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Description</span>
+        <div class="col-9">
+          <input [(ngModel)]="questConfig.description" type="text"
+                 class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        </div>
+      </div>
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-cog mr-2"></i>
+          <b>Condition</b>
+        </div>
+      </p-divider>
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Trigger</span>
+        <div class="col-9">
+          <p-dropdown [placeholder]="'...'"
+                      [options]="CONDITION_TRIGGERS"
+                      [(ngModel)]="questConfig.conditionConfig.conditionTrigger"
+                      [style]="{width:'100%'}">
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Count</span>
+        <div class="col-9">
+          <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.count" type="text"
+                 class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Type Count</span>
+        <div class="col-9">
+          <base-item-type-count
+            [(baseItemTypeCount)]="questConfig.conditionConfig.comparisonConfig.typeCount"></base-item-type-count>
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Time Seconds</span>
+        <div class="col-9">
+          <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.timeSeconds" type="text"
+                 class="bg-primary-reverse text-base text-color p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Place</span>
+        <div class="col-9">
+          <place-config [(placeConfig)]="questConfig.conditionConfig.comparisonConfig.placeConfig"></place-config>
+        </div>
+      </div>
+    </p-accordionTab>
+  </p-accordion>
 </div>
-<p-accordion *ngIf="serverGameEngineConfig?.serverLevelQuestConfigs" [style]="{width:'500px'}">
-  <p-accordionTab *ngFor="let serverLevelQuestConfig of serverGameEngineConfig?.serverLevelQuestConfigs">
-    <ng-template pTemplate="header">
-      {{serverLevelQuestConfig.internalName}}
-      (
-      <level [(levelId)]="serverLevelQuestConfig.minimalLevelId" [readOnly]="true"></level>
-      )
-    </ng-template>
-    <div class="field grid align-items-center">
-      <span class="col">Internal name</span>
-      <div class="col">
-        {{serverLevelQuestConfig.internalName}}
-      </div>
-    </div>
-    <div class="field grid align-items-center">
-      <span class="col">Minimal level (id)</span>
-      <div class="col">
-        <level [(levelId)]="serverLevelQuestConfig.minimalLevelId"></level>
-      </div>
-    </div>
-    <p-accordion *ngIf="serverLevelQuestConfig.questConfigs">
-      <p-accordionTab *ngFor="let questConfig of serverLevelQuestConfig.questConfigs">
-        <ng-template pTemplate="header">
-          {{questConfig.title}} ({{questConfig.id}})
-        </ng-template>
-        <div class="field grid align-items-center">
-          <span class="col">Title</span>
-          <div class="col">
-            <input [(ngModel)]="questConfig.title" type="text"
-                   class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-          </div>
-        </div>
-        <div class="field grid align-items-center">
-          <span class="col">Description</span>
-          <div class="col">
-            <input [(ngModel)]="questConfig.description" type="text"
-                   class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-          </div>
-        </div>
-        <p-divider align="left">
-          <div class="inline-flex align-items-center">
-            <i class="pi pi-cog mr-2"></i>
-            <b>Condition</b>
-          </div>
-        </p-divider>
-        <div class="field grid align-items-center">
-          <span class="col">Trigger</span>
-          <div class="col">
-            <p-dropdown [placeholder]="'...'"
-                        [options]="CONDITION_TRIGGERS"
-                        [(ngModel)]="questConfig.conditionConfig.conditionTrigger"
-                        [style]="{width:'100%'}">
-            </p-dropdown>
-          </div>
-        </div>
-        <div class="field grid align-items-center">
-          <span class="col">Count</span>
-          <div class="col">
-            <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.count" type="text"
-                   class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-          </div>
-        </div>
-        <div class="field grid align-items-center">
-          <span class="col">Type Count</span>
-          <div class="col">
-            <base-item-type-count [(baseItemTypeCount)]="questConfig.conditionConfig.comparisonConfig.typeCount"></base-item-type-count>
-          </div>
-        </div>
-        <div class="field grid align-items-center">
-          <span class="col">Time Seconds</span>
-          <div class="col">
-            <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.timeSeconds" type="text"
-                   class="bg-primary-reverse text-base text-color p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-          </div>
-        </div>
-        <div class="field grid align-items-center">
-          <span class="col">Place</span>
-          <div class="col">
-            <place-config [(placeConfig)]="questConfig.conditionConfig.comparisonConfig.placeConfig"></place-config>
-          </div>
-        </div>
-      </p-accordionTab>
-    </p-accordion>
-  </p-accordionTab>
-</p-accordion>

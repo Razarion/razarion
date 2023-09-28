@@ -27,4 +27,20 @@ export class ServerResourceRegionComponent extends EditorPanel implements OnInit
 
 
   protected readonly EditorService = EditorService;
+
+  onCreate() {
+    this.serverGameEngineConfig!.resourceRegionConfigs.push({
+      id: null,
+      count: 0,
+      internalName: "New",
+      minDistanceToItems: 0,
+      region: null,
+      resourceItemTypeId: null
+    });
+  }
+
+  onDelete() {
+    this.serverGameEngineConfig!.resourceRegionConfigs.splice(this.serverGameEngineConfig!.resourceRegionConfigs.findIndex(b => b === this.selectedResourceRegion), 1);
+    this.selectedResourceRegion = undefined;
+  }
 }

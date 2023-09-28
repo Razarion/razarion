@@ -7,7 +7,10 @@ import {
 } from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {MessageService} from "primeng/api";
-import {RazarionMetadataType, BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
+import {
+  BabylonRenderServiceAccessImpl,
+  RazarionMetadataType
+} from "../../game/renderer/babylon-render-service-access-impl.service";
 import {BabylonModelService} from "../../game/renderer/babylon-model.service";
 import {TerrainObjectPositionComponent} from "./terrain-object-position.component";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
@@ -234,6 +237,10 @@ export class ObjectEditorComponent implements OnInit {
     }
     this.terrainObjectPositionComponent.clearSelection();
     this.showHideRadius();
+    this.selectedRadiusShow = false;
+    this.selectedTerrainObject = null;
+    this.newTerrainObjectMode = false;
+    this.selectedNode = null;
   }
 
   restartPlanetWarm() {

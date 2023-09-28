@@ -24,4 +24,20 @@ export class ServerStartRegionComponent extends EditorPanel implements OnInit {
   onSave() {
     this.editorService.updateStartRegionConfig(this.serverGameEngineConfig?.startRegionConfigs)
   }
+
+  onCreate() {
+    this.selectedStartRegion = {
+      id: null,
+      internalName: "New",
+      minimalLevelId: null,
+      noBaseViewPosition: null,
+      region: null
+    };
+    this.serverGameEngineConfig!.startRegionConfigs.push(this.selectedStartRegion);
+  }
+
+  onDelete() {
+    this.serverGameEngineConfig!.startRegionConfigs.splice(this.serverGameEngineConfig!.startRegionConfigs.findIndex(b => b === this.selectedStartRegion), 1);
+    this.selectedStartRegion = undefined;
+  }
 }

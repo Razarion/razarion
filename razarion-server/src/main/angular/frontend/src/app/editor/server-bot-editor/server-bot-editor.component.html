@@ -4,14 +4,23 @@
       <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
                 (onClick)="onSave()"></p-button>
     </div>
-    <div class="col-11">
+    <div class="col-3">
       <p-dropdown [options]="serverGameEngineConfig ? serverGameEngineConfig!.botConfigs:[]"
                   [(ngModel)]="selectedBot"
                   optionLabel="internalName"></p-dropdown>
     </div>
-    <div class="col-8">
+    <div class="col-1">
+      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+                (onClick)="onCreate()"></p-button>
+    </div>
+    <div class="col-1">
+      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                (onClick)="onDelete()"
+                [disabled]="!selectedBot"></p-button>
+    </div>
+    <div class="col-6">
       <p-button type="button"
-                label="{{EditorService.RESTART_RESOURCE_REGIONS.name}}"
+                label="{{EditorService.RESTART_BOTS.name}}"
                 icon="pi pi-cog"
                 styleClass="p-button-sm"
                 (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
@@ -53,11 +62,22 @@
   </div>
 
   <div class="grid grid-razarion-editor">
+    <span class="col-4">Create enragement state</span>
+    <div class="col-8">
+      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+                (onClick)="onCreateEnragementState()"></p-button>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
     <div class="col-12">
       <p-accordion *ngIf="selectedBot?.botEnragementStateConfigs">
         <p-accordionTab *ngFor="let botEnragementStateConfig of selectedBot!.botEnragementStateConfigs">
           <ng-template pTemplate="header">
             {{botEnragementStateConfig.name}}
+            <div class="col-1">
+              <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                        (onClick)="onDeleteEnragementState(botEnragementStateConfig)"></p-button>
+            </div>
           </ng-template>
           <div class="grid grid-razarion-editor">
             <span class="col-3">Name</span>
@@ -74,11 +94,22 @@
             </div>
           </div>
           <div class="grid grid-razarion-editor">
+            <span class="col-3">Create bot item</span>
+            <div class="col-9">
+              <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+                        (onClick)="onCreateBotItem(botEnragementStateConfig)"></p-button>
+            </div>
+          </div>
+          <div class="grid grid-razarion-editor">
             <div class="col-12">
               <p-accordion *ngIf="botEnragementStateConfig?.botItems">
                 <p-accordionTab *ngFor="let botItem of botEnragementStateConfig!.botItems">
                   <ng-template pTemplate="header">
                     <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId" [readOnly]="true"></base-item-type>
+                    <div class="col-1">
+                      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                                (onClick)="onDeleteBotItem(botItem, botEnragementStateConfig)"></p-button>
+                    </div>
                   </ng-template>
                   <div class="grid grid-razarion-editor">
                     <span class="col-3">Base Item</span>

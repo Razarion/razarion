@@ -4,10 +4,19 @@
       <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
                 (onClick)="onSave()"></p-button>
     </div>
-    <div class="col-11">
+    <div class="col-3">
       <p-dropdown [options]="serverGameEngineConfig ? serverGameEngineConfig!.startRegionConfigs:[]"
                   [(ngModel)]="selectedStartRegion"
                   optionLabel="internalName"></p-dropdown>
+    </div>
+    <div class="col-1">
+      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+                (onClick)="onCreate()"></p-button>
+    </div>
+    <div class="col-1">
+      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                (onClick)="onDelete()"
+                [disabled]="!selectedStartRegion"></p-button>
     </div>
   </div>
   <p-divider align="left">

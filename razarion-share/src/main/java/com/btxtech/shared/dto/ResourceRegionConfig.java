@@ -33,11 +33,11 @@ public class ResourceRegionConfig {
     private Integer resourceItemTypeId;
     private PlaceConfig region;
 
-    public Integer getId() {
+    public @Nullable Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@Nullable Integer id) {
         this.id = id;
     }
 

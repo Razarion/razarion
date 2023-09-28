@@ -28,11 +28,11 @@ public class BotConfig {
     private Integer maxActiveMs;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
 
-    public Integer getId() {
+    public @Nullable Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(@Nullable Integer id) {
         this.id = id;
     }
 

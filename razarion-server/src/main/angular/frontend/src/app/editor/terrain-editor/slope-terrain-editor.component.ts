@@ -24,7 +24,10 @@ import {
   Mesh,
   MeshBuilder,
   Node,
+  Nullable,
+  Observer,
   PointerEventTypes,
+  PointerInfo,
   PolygonMeshBuilder,
   Tools,
   Vector2,
@@ -60,6 +63,7 @@ export class SlopeTerrainEditorComponent implements OnInit {
   draggableCorner: DraggableCorner | undefined;
   private slopeTerrainEditorUpdate: SlopeTerrainEditorUpdate | undefined;
   private highlightLayer: HighlightLayer;
+  private pointerObservable: Nullable<Observer<PointerInfo>> = null;
 
 
   constructor(private httpClient: HttpClient,
@@ -210,7 +214,7 @@ export class SlopeTerrainEditorComponent implements OnInit {
 
   activate() {
     this.createPolygonMeshes(this.terrainSlopePositions);
-    this.renderService.getScene().onPointerObservable.add((pointerInfo) => {
+    this.pointerObservable = this.renderService.getScene().onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
           let pickingInfo = this.renderService.setupMeshPickPoint();
@@ -258,6 +262,9 @@ export class SlopeTerrainEditorComponent implements OnInit {
             }
             this.slopeTerrainEditorUpdate?.createdSlopes.push(this.selectedTerrainSlopePosition)
             this.selectedTerrainSlopeMesh = this.createPolygonMesh(this.selectedTerrainSlopePolygon!, this.selectedTerrainSlopePosition);
+            if (!parentSlopeId) {
+              this.terrainSlopePositions.push(this.selectedTerrainSlopePosition);
+            }
             this.updateHighlight();
             this.clearDraggableCorner();
             this.newSlopeMode = false;
@@ -302,6 +309,19 @@ export class SlopeTerrainEditorComponent implements OnInit {
     });
   }
 
+  deactivate() {
+    if (this.pointerObservable) {
+      this.renderService.getScene().onPointerObservable.remove(this.pointerObservable);
+      this.pointerObservable = null;
+    }
+
+    this.disposeAllEditorMeshes()
+
+    this.clearSelection();
+
+    this.newSlopeMode = false;
+  }
+
   private updateHighlight() {
     this.highlightLayer.removeAllMeshes();
     if (this.selectedTerrainSlopeMesh) {
@@ -323,10 +343,6 @@ export class SlopeTerrainEditorComponent implements OnInit {
       this.draggableCorner.dispose();
       this.draggableCorner = undefined;
     }
-  }
-
-  deactivate() {
-
   }
 
   private createPolygonMesh(polygon: Vector2[], terrainSlopePosition: TerrainSlopePosition): Mesh {
@@ -603,6 +619,19 @@ export class SlopeTerrainEditorComponent implements OnInit {
       }
 
     })
+  }
+
+  private disposeAllEditorMeshes() {
+    let editorMeshes: Mesh[] = [];
+
+    this.renderService.getScene().meshes.forEach(mesh => {
+      let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
+      if (razarionMetadata && razarionMetadata.editorHintSlopePosition) {
+        editorMeshes.push(<Mesh>mesh);
+      }
+    });
+
+    editorMeshes.forEach(mesh => mesh.dispose());
   }
 
   restartPlanetWarm() {
