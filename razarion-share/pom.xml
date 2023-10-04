@@ -94,10 +94,11 @@
                         <class>com.btxtech.shared.gameengine.datatypes.config.SlopeConfig</class>
                         <class>com.btxtech.shared.dto.WaterConfig</class>
                         <class>com.btxtech.shared.dto.DrivewayConfig</class>
+                        <class>com.btxtech.shared.dto.SlopeTerrainEditorUpdate</class>
                     </classes>
                     <outputKind>module</outputKind>
-                    <outputFile>../razarion-server/src/main/angular/frontend/src/app/generated/razarion-share.d.ts
-                    </outputFile>
+                    <outputFile>../razarion-server/src/main/angular/frontend/src/app/generated/razarion-share.d.ts</outputFile>
+<!--                    <outputFile>../razarion-terrain-editor-2d/src/generated/razarion-share.d.ts</outputFile>-->
                     <mapEnum>asEnum</mapEnum>
                     <nullableAnnotations>com.btxtech.shared.system.Nullable</nullableAnnotations>
                 </configuration>

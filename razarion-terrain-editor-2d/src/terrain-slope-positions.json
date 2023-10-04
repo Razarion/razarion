@@ -1,0 +1,4158 @@
+[
+  {
+    "id": 1,
+    "slopeConfigId": 1,
+    "inverted": false,
+    "polygon": [
+      {
+        "position": {
+          "x": 103.0,
+          "y": 123.0
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 114.42654454249006,
+          "y": 123.0
+        },
+        "slopeDrivewayId": 31
+      },
+      {
+        "position": {
+          "x": 140.0,
+          "y": 123.0
+        },
+        "slopeDrivewayId": 31
+      },
+      {
+        "position": {
+          "x": 150.0,
+          "y": 123.0
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 150.0,
+          "y": 168.0
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 103.0,
+          "y": 168.0
+        },
+        "slopeDrivewayId": null
+      }
+    ],
+    "children": null,
+    "editorParentIdIfCreated": null
+  },
+  {
+    "id": 20,
+    "slopeConfigId": 22,
+    "inverted": false,
+    "polygon": [
+      {
+        "position": {
+          "x": 185.0646701215221,
+          "y": 188.80026752319847
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 182.8523527006974,
+          "y": 186.58795010237372
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 181.43195748149532,
+          "y": 183.80026752319847
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 180.94252264444685,
+          "y": 180.71009757944898
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 181.34522587233195,
+          "y": 178.1675294644249
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 181.0115061042555,
+          "y": 177.83380969634825
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 179.5911108850534,
+          "y": 175.046127117173
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 179.10167604800495,
+          "y": 171.9559571734235
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 179.5911108850534,
+          "y": 168.86578722967403
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 181.01150610425546,
+          "y": 166.07810465049877
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 181.40075244586265,
+          "y": 165.68885830889158
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 180.40847642998241,
+          "y": 163.7414069757643
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 179.91904159293395,
+          "y": 160.65123703201482
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 180.40847642998241,
+          "y": 157.56106708826536
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 181.82887164918446,
+          "y": 154.77338450909008
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 181.97045708117787,
+          "y": 154.63179907709664
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 181.80260022882328,
+          "y": 153.57199262129438
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 182.29203506587174,
+          "y": 150.48182267754493
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 183.32368069733545,
+          "y": 148.4571041232757
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 183.72308098200418,
+          "y": 145.93538997098688
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 185.14347620120623,
+          "y": 143.1477073918116
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 187.35579362203097,
+          "y": 140.93538997098688
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 189.26359007281482,
+          "y": 139.96331912685736
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 189.6273110379946,
+          "y": 137.66687533203458
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 191.04770625719664,
+          "y": 134.8791927528593
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 193.26002367802138,
+          "y": 132.66687533203458
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 196.04770625719664,
+          "y": 131.2464801128325
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 199.13787620094612,
+          "y": 130.75704527578404
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 199.97920301534842,
+          "y": 130.89029835241317
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 201.2234599945414,
+          "y": 128.44830653350084
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 203.43577741536615,
+          "y": 126.23598911267611
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 206.2234599945414,
+          "y": 124.81559389347404
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 209.3136299382909,
+          "y": 124.32615905642558
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 212.40379988204035,
+          "y": 124.81559389347404
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 215.19148246121563,
+          "y": 126.23598911267611
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 217.40379988204035,
+          "y": 128.44830653350084
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 218.20969251795185,
+          "y": 130.02995988704998
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 218.8965974264564,
+          "y": 130.13875493653964
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 221.68428000563168,
+          "y": 131.5591501557417
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 223.89659742645642,
+          "y": 133.77146757656644
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 225.24895450684303,
+          "y": 136.42561778972748
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 226.16611953630897,
+          "y": 136.89293671362668
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 228.37843695713372,
+          "y": 139.10525413445143
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 229.79883217633576,
+          "y": 141.89293671362668
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 229.82100884683092,
+          "y": 142.03295470055605
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 230.56905521503737,
+          "y": 142.15143360592126
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 233.35673779421265,
+          "y": 143.5718288251233
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 234.17758074604853,
+          "y": 144.3926717769592
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 235.34449617196267,
+          "y": 144.57749302359866
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 238.13217875113796,
+          "y": 145.9978882428007
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 239.57596732496435,
+          "y": 147.4416768166271
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 241.63137038052992,
+          "y": 148.48895698240636
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 243.84368780135463,
+          "y": 150.7012744032311
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 245.25220594512078,
+          "y": 153.46564690938112
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 246.2676576535686,
+          "y": 153.30481515886197
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 248.80476922655214,
+          "y": 153.70665415538988
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 249.25254534855475,
+          "y": 153.6357333849158
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 251.5956936183104,
+          "y": 154.00685161221844
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 251.8412896581857,
+          "y": 153.96795302089686
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 252.53350290342502,
+          "y": 154.0775888283293
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 254.595152782873,
+          "y": 153.02712574680348
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 257.6853227266225,
+          "y": 152.537690909755
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 259.03760284967257,
+          "y": 152.7518710402063
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 259.7006640210679,
+          "y": 152.6468524676739
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 262.79083396481735,
+          "y": 153.13628730472237
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 263.09326482141404,
+          "y": 153.29038352287077
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 264.5286618632862,
+          "y": 153.06303896575034
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 265.9366576576252,
+          "y": 153.28604359161602
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 268.48604864442876,
+          "y": 151.9870640031279
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 271.5762185881782,
+          "y": 151.49762916607943
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 273.6042838197337,
+          "y": 151.818843142721
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 274.28531139084754,
+          "y": 151.47184226343114
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 277.375481334597,
+          "y": 150.98240742638268
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 279.23590424251256,
+          "y": 151.27706946741984
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 280.45833083669066,
+          "y": 150.65421200754724
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 283.5485007804401,
+          "y": 150.16477717049878
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 285.04852261800346,
+          "y": 150.40235728971584
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 285.94517537557977,
+          "y": 149.94548989037133
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 289.0353453193292,
+          "y": 149.45605505332287
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 291.46494787949786,
+          "y": 149.84086629502625
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 291.8520147573335,
+          "y": 149.6436458701126
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 294.94218470108297,
+          "y": 149.15421103306414
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 297.96892208493773,
+          "y": 149.63359913961534
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 300.99565946879244,
+          "y": 149.15421103306414
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 304.0858294125419,
+          "y": 149.6436458701126
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 304.2686817417937,
+          "y": 149.73681378536577
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 306.6773719051446,
+          "y": 149.35531474192823
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 309.76754184889404,
+          "y": 149.8447495789767
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 311.27316205476023,
+          "y": 150.61190139113853
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 312.1664105381346,
+          "y": 150.47042473002855
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 315.25658048188404,
+          "y": 150.95985956707702
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 318.0442630610593,
+          "y": 152.38025478627907
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 318.111071626302,
+          "y": 152.44706335152176
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 320.45454523870376,
+          "y": 152.8182331080373
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 323.24222781787904,
+          "y": 154.23862832723935
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 323.3647057741715,
+          "y": 154.36110628353183
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 324.9541622339257,
+          "y": 154.61285145533023
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 327.74184481310095,
+          "y": 156.03324667453228
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 328.68422436893246,
+          "y": 156.9756262303638
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 330.19083553008596,
+          "y": 157.21424999590977
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 332.97851810926124,
+          "y": 158.63464521511182
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 333.4080376389714,
+          "y": 159.06416474482202
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 334.97801061816364,
+          "y": 159.312824036456
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 336.7222007566975,
+          "y": 160.20153330079617
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 337.35159879607653,
+          "y": 160.3012201570046
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 340.1392813752518,
+          "y": 161.72161537620664
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 341.23588958502785,
+          "y": 162.81822358598268
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 342.476265897263,
+          "y": 163.45022688401653
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 344.6885833180877,
+          "y": 165.66254430484128
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 344.97069481516195,
+          "y": 166.21621929272305
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 347.09422943814525,
+          "y": 168.33975391570632
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 347.77529079127174,
+          "y": 169.67641208224586
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 348.9768040904274,
+          "y": 170.8779253814016
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 349.166863206809,
+          "y": 171.25093739987926
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 349.7527295612013,
+          "y": 171.83680375427159
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 350.77787637061186,
+          "y": 173.84876765210583
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 352.10783286476146,
+          "y": 175.1787241462555
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 353.4075762737852,
+          "y": 177.72961421526657
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 354.35805490940567,
+          "y": 178.68009285088704
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 355.77845012860774,
+          "y": 181.4677754300623
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 355.8133883709835,
+          "y": 181.68836681078255
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 356.0201729015467,
+          "y": 181.89515134134552
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 357.44056812074876,
+          "y": 184.68283392052078
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 357.6151045307733,
+          "y": 185.784813443679
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 358.71489728549835,
+          "y": 187.9432782579809
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 359.04395664813524,
+          "y": 190.0208773072477
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 359.921661233685,
+          "y": 191.74346954757763
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 360.41109607073344,
+          "y": 194.83363949132712
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 360.38056435900927,
+          "y": 195.02640913247114
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 361.2778665850373,
+          "y": 196.7874639078869
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 361.7673014220858,
+          "y": 199.87763385163638
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 361.7044150927484,
+          "y": 200.27468250874244
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 362.3888292350887,
+          "y": 200.9590966510832
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 363.80922445429076,
+          "y": 203.74677923025845
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 363.80940644704697,
+          "y": 203.7479282872987
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 364.1278900921432,
+          "y": 204.37298763499626
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 364.1646891953288,
+          "y": 204.40978673818182
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 364.7954725662654,
+          "y": 205.64776880867993
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 365.642962615346,
+          "y": 206.49525885776055
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 365.96083851584075,
+          "y": 207.11912543951837
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 367.26215256074846,
+          "y": 208.42043948442614
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 367.4295573752454,
+          "y": 208.74898993202987
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 368.24287557112496,
+          "y": 209.56230812790946
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 368.6108531236906,
+          "y": 209.74980205578436
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 370.11511184371204,
+          "y": 211.25406077580578
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 370.1381530614243,
+          "y": 211.2658008626175
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 372.350470482249,
+          "y": 213.47811828344226
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 372.8709850673797,
+          "y": 214.4996856764884
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 373.8109991629313,
+          "y": 215.43969977204006
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 374.5335441306681,
+          "y": 216.85777411642016
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 375.30159288352263,
+          "y": 217.62582286927477
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 376.060398735707,
+          "y": 219.11506320641058
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 376.5602367467023,
+          "y": 219.61490121740593
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 377.4111087486821,
+          "y": 221.2848315473318
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 378.41715395776083,
+          "y": 222.2908767564105
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 379.2649925795155,
+          "y": 223.95485374243913
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 380.5623426877605,
+          "y": 225.25220385068417
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 381.8089941495897,
+          "y": 227.69889510637336
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 382.6368477866603,
+          "y": 228.52674874344405
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 383.91443172049895,
+          "y": 231.0341483936603
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 385.75049218979194,
+          "y": 232.87020886295335
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 386.6878423042007,
+          "y": 234.70986204482824
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 387.3769895163009,
+          "y": 235.3990092569285
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 388.79032095696545,
+          "y": 238.1728283901374
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 389.0673246888328,
+          "y": 238.44983212200478
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 390.4877199080349,
+          "y": 241.23751470118003
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 390.5744144662688,
+          "y": 241.78488259954338
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 391.09791295998735,
+          "y": 242.30838109326157
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 392.51830817918943,
+          "y": 245.09606367243683
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 392.631473292143,
+          "y": 245.8105600757558
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 393.04637684725975,
+          "y": 246.2254636308723
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 394.46677206646183,
+          "y": 249.01314621004755
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 394.6542824402512,
+          "y": 250.19704011657768
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 395.2908346921379,
+          "y": 250.83359236846388
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 396.71122991133996,
+          "y": 253.62127494763914
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 396.8065767312856,
+          "y": 254.22327107649016
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 396.93389802985416,
+          "y": 254.35059237505823
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 398.35429324905624,
+          "y": 257.1382749542335
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 398.54264439135227,
+          "y": 258.32747726419575
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 398.77554471773834,
+          "y": 258.56037759058154
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 400.1959399369404,
+          "y": 261.3480601697568
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 400.4953785839419,
+          "y": 263.2386413808149
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 400.9526086766552,
+          "y": 263.6958714735282
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 402.37300389585727,
+          "y": 266.4835540527035
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 402.72161014528126,
+          "y": 268.6845672880295
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 403.15467201109317,
+          "y": 269.11762915384116
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 404.57506723029525,
+          "y": 271.90531173301645
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 405.0047397679659,
+          "y": 274.6181573685485
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 405.4007908190191,
+          "y": 275.0142084196019
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 406.8211860382212,
+          "y": 277.8018909987772
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 407.31062087526965,
+          "y": 280.89206094252665
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 407.30252505543666,
+          "y": 280.94317593725964
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 407.8028175452309,
+          "y": 281.44346842705386
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 409.22321276443296,
+          "y": 284.23115100622914
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 409.7126476014814,
+          "y": 287.3213209499786
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 409.61928209634993,
+          "y": 287.91080754942095
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 409.8100122710061,
+          "y": 288.10153772407716
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 411.23040749020817,
+          "y": 290.88922030325244
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 411.71984232725663,
+          "y": 293.9793902470019
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 411.4273112089957,
+          "y": 295.8263590380111
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 411.9223052777551,
+          "y": 296.79783959752115
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 412.41174011480354,
+          "y": 299.8880095412706
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 411.9302698599242,
+          "y": 302.92789309228647
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 411.98445015714924,
+          "y": 303.03422791281133
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 412.4738849941977,
+          "y": 306.1243978565608
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 411.98445015714924,
+          "y": 309.21456780031025
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 411.63783308654223,
+          "y": 309.8948421044711
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 411.7075179186695,
+          "y": 310.3348148188645
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 411.21808308162105,
+          "y": 313.424984762614
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 409.79768786241897,
+          "y": 316.21266734178926
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 408.782392877332,
+          "y": 317.2279623268763
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 408.7634232469581,
+          "y": 317.347731859382
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 407.343028027756,
+          "y": 320.1354144385573
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 405.1307106069313,
+          "y": 322.347731859382
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 404.80222957253324,
+          "y": 322.51510130608415
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 404.1812922599979,
+          "y": 323.733759398926
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 401.9689748391732,
+          "y": 325.9460768197507
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 399.1812922599979,
+          "y": 327.3664720389528
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 399.02579047406186,
+          "y": 327.39110110228773
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 397.70020274881705,
+          "y": 328.7166888275326
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 394.91252016964177,
+          "y": 330.1370840467347
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 391.8711547831521,
+          "y": 330.6187890012963
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 390.93868485312515,
+          "y": 331.5512589313233
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 388.15100227394987,
+          "y": 332.97165415052535
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 385.0608323302004,
+          "y": 333.4610889875738
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 381.97066238645095,
+          "y": 332.97165415052535
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 381.81137935883856,
+          "y": 332.89049539428436
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 381.2202234205863,
+          "y": 332.98412529670895
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 378.13005347683685,
+          "y": 332.4946904596605
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 375.34237089766157,
+          "y": 331.0742952404584
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 373.389762977561,
+          "y": 329.12168732035786
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 372.94186107315727,
+          "y": 329.05074662790855
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 370.154178493982,
+          "y": 327.6303514087065
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 369.03445372147985,
+          "y": 326.51062663620434
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 367.91880769432595,
+          "y": 326.33392566459327
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 365.13112511515067,
+          "y": 324.9135304453912
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 363.64374393728554,
+          "y": 323.42614926752606
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 362.898729582611,
+          "y": 323.3081505859272
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 360.1110470034357,
+          "y": 321.8877553667251
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 359.0281611980449,
+          "y": 320.8048695613343
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 358.53844048646,
+          "y": 320.7273054205146
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 355.7507579072847,
+          "y": 319.3069102013125
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 353.53844048646,
+          "y": 317.0945927804878
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 353.2588049485866,
+          "y": 316.5457771361448
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 351.2995126335897,
+          "y": 315.54746783865505
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 349.087195212765,
+          "y": 313.33515041783033
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 348.5947022867655,
+          "y": 312.36857862737673
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 347.7067015229387,
+          "y": 311.9161196390365
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 345.494384102114,
+          "y": 309.70380221821176
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 344.5709498962948,
+          "y": 307.89146054472815
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 343.9754721820437,
+          "y": 307.58804949471045
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 341.76315476121897,
+          "y": 305.37573207388573
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 340.72817620358813,
+          "y": 303.344472283707
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 340.5992823801425,
+          "y": 303.2787976003787
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 338.38696495931777,
+          "y": 301.066480179554
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 337.2769344959455,
+          "y": 298.88792273070885
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 337.1975967777608,
+          "y": 298.84749814418893
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 334.9852793569361,
+          "y": 296.6351807233642
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 334.0799587463827,
+          "y": 294.8583889822419
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 332.4788929259914,
+          "y": 293.25732316185054
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 331.17128292721446,
+          "y": 290.6909940411474
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 329.3644752067867,
+          "y": 288.88418632071966
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 328.59482317436476,
+          "y": 287.37365915630494
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 327.12011321071947,
+          "y": 285.89894919265964
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 326.6778261092887,
+          "y": 285.0309118809422
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 325.4428397457533,
+          "y": 283.7959255174068
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 324.7147143909531,
+          "y": 283.4249271187139
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 323.6025086760903,
+          "y": 282.3127214038511
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 321.84491703209784,
+          "y": 281.4171837314182
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 321.4321265549727,
+          "y": 281.00439325429306
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 321.3750262779827,
+          "y": 280.9953494588796
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 320.7360873162712,
+          "y": 280.6697937972141
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 319.3618087856154,
+          "y": 280.887458133142
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 316.2716388418659,
+          "y": 280.3980232960935
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 316.08564026700253,
+          "y": 280.3032522886309
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 315.89964169213914,
+          "y": 280.3980232960935
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 312.8094717483897,
+          "y": 280.887458133142
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 309.7193018046402,
+          "y": 280.3980232960935
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 308.7091781194798,
+          "y": 279.8833395713672
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 306.5841209987426,
+          "y": 280.21991555409284
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 304.4605113298039,
+          "y": 279.8835688252102
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 304.33756917346454,
+          "y": 279.94621098268084
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 301.2473992297151,
+          "y": 280.4356458197293
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 298.50867705620203,
+          "y": 280.00187484107306
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 298.1937540645404,
+          "y": 280.16233611995557
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 295.10358412079097,
+          "y": 280.65177095700403
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 292.0134141770415,
+          "y": 280.16233611995557
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 291.8573322125403,
+          "y": 280.08280838683515
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 291.7012502480391,
+          "y": 280.16233611995557
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 288.61108030428966,
+          "y": 280.65177095700403
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 285.5209103605402,
+          "y": 280.16233611995557
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 284.1430484184534,
+          "y": 279.4602803945725
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 283.418212064434,
+          "y": 279.57508319483077
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 280.32804212068453,
+          "y": 279.0856483577823
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 277.54035954150925,
+          "y": 277.6652531385802
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 276.75557487859464,
+          "y": 276.8804684756656
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 275.9389017190254,
+          "y": 276.75112015435917
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 274.30122918328465,
+          "y": 275.9166843194612
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 273.85982018310335,
+          "y": 275.9865966369091
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 270.7696502393539,
+          "y": 275.49716179986063
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 268.9924246327178,
+          "y": 274.59162012378636
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 266.87738527125947,
+          "y": 274.25663079825745
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 264.0897026920842,
+          "y": 272.83623557905537
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 263.84430455729546,
+          "y": 272.59083744426664
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 262.76910499849686,
+          "y": 272.4205425639091
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 261.7781586823009,
+          "y": 271.9156301967245
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 261.5005480043444,
+          "y": 271.95959940858074
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 258.41037806059495,
+          "y": 271.4701645715323
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 255.62269548141967,
+          "y": 270.0497693523302
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 255.08203052687705,
+          "y": 269.5091043977876
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 253.57748090661133,
+          "y": 269.2708071482413
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 250.78979832743607,
+          "y": 267.85041192903924
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 248.98157367564613,
+          "y": 266.0421872772493
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 247.8594622533643,
+          "y": 265.4704429504283
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 246.87392037688264,
+          "y": 264.4849010739466
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 246.32028092003299,
+          "y": 264.20280768083745
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 244.10796349920827,
+          "y": 261.99049026001273
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 243.47384699395755,
+          "y": 260.74596654509344
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 242.51334910621034,
+          "y": 260.25656842710055
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 241.97806973717235,
+          "y": 259.72128905806255
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 241.54741100021633,
+          "y": 259.6530794150389
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 238.75972842104107,
+          "y": 258.23268419583684
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 236.54741100021636,
+          "y": 256.0203667750121
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 235.12701578101428,
+          "y": 253.23268419583687
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 234.63758094396582,
+          "y": 250.14251425208738
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 234.7145611354467,
+          "y": 249.65648045152489
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 233.93706466578374,
+          "y": 249.77962379472694
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 230.84689472203425,
+          "y": 249.29018895767848
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 228.059212142859,
+          "y": 247.86979373847643
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 225.84689472203428,
+          "y": 245.65747631765169
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 225.26756138734922,
+          "y": 244.5204706288095
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 223.24466334142005,
+          "y": 245.55118866494294
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 220.15449339767056,
+          "y": 246.0406235019914
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 217.06432345392108,
+          "y": 245.55118866494294
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 214.27664087474582,
+          "y": 244.1307934457409
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 212.06432345392108,
+          "y": 241.91847602491615
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 210.64392823471903,
+          "y": 239.1307934457409
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 210.15449339767056,
+          "y": 236.0406235019914
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 210.64392823471903,
+          "y": 232.95045355824192
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 212.06432345392108,
+          "y": 230.16277097906666
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 214.27664087474582,
+          "y": 227.95045355824192
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 216.75291389099897,
+          "y": 226.6887294365646
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 216.20984364145528,
+          "y": 225.62289405958285
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 215.82732264187965,
+          "y": 225.42798987533297
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 213.6150052210549,
+          "y": 223.21567245450822
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 212.883567300254,
+          "y": 221.78014470701945
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 211.14025559018705,
+          "y": 220.0368329969525
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 210.70694543395575,
+          "y": 219.18641393219093
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 209.27573496298135,
+          "y": 217.7552034612165
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 207.85533974377927,
+          "y": 214.96752088204124
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 207.65683972523922,
+          "y": 213.71424108932115
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 205.5424216739199,
+          "y": 212.63689128130366
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 203.33010425309516,
+          "y": 210.42457386047892
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 203.25817505040803,
+          "y": 210.28340485163255
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 201.2056489015294,
+          "y": 208.2308787027539
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 200.66266090975435,
+          "y": 207.16520476573305
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 200.3282324590162,
+          "y": 206.99480495904695
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 198.11591503819147,
+          "y": 204.7824875382222
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 197.07828903495144,
+          "y": 202.74603184347802
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 195.6228770448314,
+          "y": 201.29061985335795
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 194.69195067159671,
+          "y": 199.46357397339574
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 193.2954545117051,
+          "y": 198.06707781350414
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 192.50265699310978,
+          "y": 196.5111250747706
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 190.35352203263426,
+          "y": 194.36199011429505
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 189.86302309555148,
+          "y": 193.39933174743726
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 187.81916889121118,
+          "y": 191.35547754309692
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 187.45096467818192,
+          "y": 190.63283608643445
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 186.63569473304017,
+          "y": 189.8175661412927
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 186.4864800701773,
+          "y": 189.52471587638266
+        },
+        "slopeDrivewayId": null
+      }
+    ],
+    "children": null,
+    "editorParentIdIfCreated": null
+  },
+  {
+    "id": 26,
+    "slopeConfigId": 27,
+    "inverted": false,
+    "polygon": [
+      {
+        "position": {
+          "x": 26.475488540302123,
+          "y": 304.64236445170553
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 31.833555828643664,
+          "y": 298.71549543781373
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 32.18964555953711,
+          "y": 293.31580826303025
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 37.65092728836665,
+          "y": 285.26635730361414
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 40.00493030532553,
+          "y": 277.7411996877992
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 41.34216339158242,
+          "y": 270.9788885312349
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 49.4473519635077,
+          "y": 260.7637330461151
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 51.15203121416599,
+          "y": 252.87980805366698
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 57.353432118393364,
+          "y": 246.09732477716952
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 58.68586564644185,
+          "y": 235.70540149428848
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 64.72338657224294,
+          "y": 230.09581717751445
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 69.19628143310547,
+          "y": 222.3515625
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 78.08402361548337,
+          "y": 221.20163441656067
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 83.6909695056959,
+          "y": 221.92690862773773
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 87.24166870117188,
+          "y": 225.20767211914062
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 92.44129180908203,
+          "y": 225.46444702148438
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 97.55579706437115,
+          "y": 221.22107017385483
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 107.39832151609298,
+          "y": 219.78369775331083
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 112.40866088867188,
+          "y": 220.0
+        },
+        "slopeDrivewayId": 33
+      },
+      {
+        "position": {
+          "x": 122.9762053203709,
+          "y": 220.0
+        },
+        "slopeDrivewayId": 33
+      },
+      {
+        "position": {
+          "x": 132.40049743652344,
+          "y": 220.7069549560547
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 142.24037170410156,
+          "y": 222.92172241210938
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 153.24726060800788,
+          "y": 231.34118857332317
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 163.41758853200324,
+          "y": 246.74536395183537
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 166.81329610515454,
+          "y": 246.83368817459362
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 173.25510785838478,
+          "y": 259.4205243590664
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 189.26503058171886,
+          "y": 263.16203322986775
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 190.53899030898106,
+          "y": 266.79993165134624
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 194.39190035472254,
+          "y": 269.9192118226526
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 195.45966118293586,
+          "y": 273.4767341287296
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 197.5863398260653,
+          "y": 279.3159282316909
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 201.24826203473515,
+          "y": 285.6366813031718
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 206.51489900045556,
+          "y": 289.3804375133662
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 214.17986042546718,
+          "y": 306.0752516651802
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 218.69255117238046,
+          "y": 310.1222479277708
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 225.89693153095376,
+          "y": 306.2556658957193
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 232.0928388042607,
+          "y": 311.82095355323906
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 238.92460623507003,
+          "y": 309.38200138241774
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 244.6759303053857,
+          "y": 317.74243534965325
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 256.2615946969576,
+          "y": 321.2135471560338
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 261.96483849362113,
+          "y": 328.6814300968336
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 260.96824377168605,
+          "y": 334.40142464224857
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 268.7128590940781,
+          "y": 348.44390794004744
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 279.5413112298541,
+          "y": 354.71683479074704
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 282.71945260254245,
+          "y": 358.8176355151898
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 292.80512434262226,
+          "y": 369.92179928234225
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 295.51194868942355,
+          "y": 379.69318801082125
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 290.1630569179131,
+          "y": 386.9240254610844
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 289.3550411345483,
+          "y": 400.24966384740634
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 289.68711645468625,
+          "y": 407.17238438509077
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 299.0807334057932,
+          "y": 418.502939051306
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 301.5449521881664,
+          "y": 432.0848004475612
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 314.1815003649958,
+          "y": 446.0378201075191
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 319.93520807543734,
+          "y": 451.2576824840506
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 320.67663174481385,
+          "y": 459.70170018664254
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 330.85974427852005,
+          "y": 476.6339419151537
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 331.7309052569447,
+          "y": 490.3001925331956
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 341.63968270593216,
+          "y": 499.8289080124546
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 337.2478744716987,
+          "y": 519.8469931531591
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 336.1122364578625,
+          "y": 532.4379973856182
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 348.9949763666067,
+          "y": 547.2401601964507
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 343.61130645054584,
+          "y": 558.2238642915956
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 345.19948715157153,
+          "y": 572.0282313760432
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 349.881036543925,
+          "y": 587.4632683055693
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 345.2168671185319,
+          "y": 594.7755091435978
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 334.77667236328125,
+          "y": 587.8966064453125
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 325.4865814063939,
+          "y": 595.7085638523573
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 314.0712231683527,
+          "y": 592.2709246149867
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 306.1346612165877,
+          "y": 597.3068068008465
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 295.6739183430007,
+          "y": 588.8457809147335
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 293.2431750152883,
+          "y": 584.5766903015605
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 283.6192502846164,
+          "y": 579.0707806827472
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 272.967642236675,
+          "y": 579.298754985288
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 262.708753564253,
+          "y": 589.8934163719767
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 251.51306815288044,
+          "y": 583.6981834140397
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 246.6265416951471,
+          "y": 575.5856844080336
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 233.65666495250977,
+          "y": 561.4883412563206
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 228.31011962890625,
+          "y": 561.02783203125
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 222.41173578620987,
+          "y": 555.2720115139982
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 210.05132805607428,
+          "y": 549.0109666016101
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 203.72873297554122,
+          "y": 535.39003802008
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 197.28413979897485,
+          "y": 532.9110779083505
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 189.2531510285597,
+          "y": 532.0957830846813
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 183.5547920801523,
+          "y": 534.2320825516977
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 180.8229088607408,
+          "y": 542.0759141124325
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 174.03860407426208,
+          "y": 541.9154223444899
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 164.12195453341877,
+          "y": 546.078333194593
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 153.26927185058594,
+          "y": 545.3339233398438
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 148.00541117829135,
+          "y": 539.3962796775326
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 140.30270385742188,
+          "y": 537.9216918945312
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 132.97580774538326,
+          "y": 541.6858414542997
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 128.11123657226562,
+          "y": 544.03857421875
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 116.489013671875,
+          "y": 541.5592041015625
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 107.6876449584961,
+          "y": 537.6282348632812
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 105.30467045901523,
+          "y": 524.5360016094448
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 90.89617986495547,
+          "y": 516.6219269164664
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 88.48357829280417,
+          "y": 503.5255201046628
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 85.62758873599762,
+          "y": 496.42579975172
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 84.79339197356965,
+          "y": 489.74552484932997
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 81.27071730924195,
+          "y": 486.252909543872
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 76.12352997030943,
+          "y": 484.7530513375695
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 71.80983292099707,
+          "y": 482.04376723026286
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 71.83669321450755,
+          "y": 476.8929964198458
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 73.36680258819038,
+          "y": 468.7829104387365
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 73.78051003199558,
+          "y": 462.7746854129805
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 71.94890788343821,
+          "y": 458.96591148198655
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 63.958622675848076,
+          "y": 454.44133924920817
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 56.83369977550097,
+          "y": 448.2289076251936
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 57.87968683362816,
+          "y": 443.3926499443265
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 54.813936602515064,
+          "y": 436.09818340325364
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 56.301292680216925,
+          "y": 426.19903405035444
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 51.71901753750404,
+          "y": 423.4274944375771
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 45.668855450135446,
+          "y": 427.79477737837914
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 41.24101698438391,
+          "y": 420.5768993607953
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 39.41482585237035,
+          "y": 413.0528585460152
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 39.24996375411931,
+          "y": 406.98647161708016
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 37.29064891804642,
+          "y": 399.6991210757778
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 33.39081907643574,
+          "y": 393.97754130824086
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 33.17837456266098,
+          "y": 387.4914487196852
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 35.667826533551285,
+          "y": 380.7640703689252
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 35.57036834957655,
+          "y": 372.0744036435614
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 35.12930143388459,
+          "y": 367.03706701692425
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 30.71303423538055,
+          "y": 363.8604230463514
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 28.62303904254987,
+          "y": 358.97397512664503
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 25.119862156044576,
+          "y": 357.08252230692415
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 21.880447162655138,
+          "y": 353.9593950348948
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 23.13134756076193,
+          "y": 350.3586897752608
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 26.37252915800591,
+          "y": 347.82493372618904
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 28.025049918880335,
+          "y": 342.43231950326384
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 30.462025340577995,
+          "y": 340.74106117347446
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 31.20165728064224,
+          "y": 337.26543991246643
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 32.934051513671875,
+          "y": 334.6860656738281
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 33.23768864200379,
+          "y": 330.06755827588853
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 29.904245376586914,
+          "y": 324.99395751953125
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 29.269412261850245,
+          "y": 321.14420292014785
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 27.089727143800523,
+          "y": 318.016044260671
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 25.98666763305664,
+          "y": 316.3070068359375
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 23.79071807861328,
+          "y": 312.4378662109375
+        },
+        "slopeDrivewayId": null
+      }
+    ],
+    "children": [
+      {
+        "id": 28,
+        "slopeConfigId": 27,
+        "inverted": false,
+        "polygon": [
+          {
+            "position": {
+              "x": 69.88490821298333,
+              "y": 278.8889997455178
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 76.30260467529297,
+              "y": 259.3249206542969
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 94.2754080480664,
+              "y": 259.9125617983133
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 122.67984456945024,
+              "y": 260.3309090370678
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 144.43228149414062,
+              "y": 260.4235534667969
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 158.19773343960657,
+              "y": 279.9634596791781
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 164.76388549804688,
+              "y": 300.553955078125
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 171.91591071496464,
+              "y": 328.01029399143357
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 163.33707204949985,
+              "y": 341.11503743537924
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 153.06385759348876,
+              "y": 336.6485756486446
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 133.96097560926705,
+              "y": 351.1495918737441
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 114.74260874716337,
+              "y": 349.57295027471963
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 101.34773231929071,
+              "y": 337.38599909336415
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 89.1528668861496,
+              "y": 329.77846343057263
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 78.07114787492824,
+              "y": 320.75754977662626
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 71.36071014404297,
+              "y": 311.2214660644531
+            },
+            "slopeDrivewayId": null
+          }
+        ],
+        "children": null,
+        "editorParentIdIfCreated": null
+      },
+      {
+        "id": 30,
+        "slopeConfigId": 27,
+        "inverted": false,
+        "polygon": [
+          {
+            "position": {
+              "x": 130.79061691746364,
+              "y": 406.5967692398935
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 144.4321746826172,
+              "y": 390.6526794433594
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 155.51566287578825,
+              "y": 401.9440620879294
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 162.7244110107422,
+              "y": 410.18133544921875
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 162.67311683681675,
+              "y": 431.7348309800129
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 154.4321746826172,
+              "y": 443.3609924316406
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 138.100347260706,
+              "y": 453.73015944583597
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 132.9525604248047,
+              "y": 420.18133544921875
+            },
+            "slopeDrivewayId": null
+          }
+        ],
+        "children": null,
+        "editorParentIdIfCreated": null
+      },
+      {
+        "id": 31,
+        "slopeConfigId": 1,
+        "inverted": false,
+        "polygon": [
+          {
+            "position": {
+              "x": 190.2803497314453,
+              "y": 356.8207702636719
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 239.4518585205078,
+              "y": 357.0428161621094
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 246.7440185546875,
+              "y": 420.97650146484375
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 192.3606414794922,
+              "y": 418.2645568847656
+            },
+            "slopeDrivewayId": null
+          }
+        ],
+        "children": null,
+        "editorParentIdIfCreated": null
+      },
+      {
+        "id": 32,
+        "slopeConfigId": 27,
+        "inverted": false,
+        "polygon": [
+          {
+            "position": {
+              "x": 198.97323820821654,
+              "y": 486.3275174371611
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 194.5483050362667,
+              "y": 460.965640027163
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 206.43392944335938,
+              "y": 432.0118103027344
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 222.1580272021926,
+              "y": 432.30342244799397
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 234.74452892508887,
+              "y": 435.49428582474604
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 246.21504445255013,
+              "y": 431.6946510173672
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 263.6348730631246,
+              "y": 436.1282177487247
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 274.681522855336,
+              "y": 436.1950224863893
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 285.65478515625,
+              "y": 435.9463806152344
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 293.53577115404386,
+              "y": 450.28918661462563
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 305.00650591179783,
+              "y": 480.76357027091956
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 310.3862630906499,
+              "y": 510.4518087588043
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 293.2391662597656,
+              "y": 520.9430541992188
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 281.85258640086647,
+              "y": 539.68505267161
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 250.44185119040344,
+              "y": 537.5210377831362
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 230.37917264630255,
+              "y": 509.06852759107437
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 205.08990478515625,
+              "y": 496.86151123046875
+            },
+            "slopeDrivewayId": null
+          }
+        ],
+        "children": null,
+        "editorParentIdIfCreated": null
+      },
+      {
+        "id": 34,
+        "slopeConfigId": 27,
+        "inverted": false,
+        "polygon": [
+          {
+            "position": {
+              "x": 245.7216585111368,
+              "y": 471.30317686484307
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 255.7216585111368,
+              "y": 471.30317686484307
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 255.7216585111368,
+              "y": 481.30317686484307
+            },
+            "slopeDrivewayId": null
+          },
+          {
+            "position": {
+              "x": 245.7216585111368,
+              "y": 481.30317686484307
+            },
+            "slopeDrivewayId": null
+          }
+        ],
+        "children": null,
+        "editorParentIdIfCreated": null
+      }
+    ],
+    "editorParentIdIfCreated": null
+  },
+  {
+    "id": 33,
+    "slopeConfigId": 22,
+    "inverted": false,
+    "polygon": [
+      {
+        "position": {
+          "x": 387.81358533479425,
+          "y": 631.1974723757502
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 389.7676986845535,
+          "y": 571.0332742263877
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 408.0315557910943,
+          "y": 496.79510936587394
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 413.1049893481409,
+          "y": 465.3247029461338
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 416.19191442647684,
+          "y": 425.2229017876997
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 435.5964050292969,
+          "y": 413.1643981933594
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 477.3804380212191,
+          "y": 400.2127886356736
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 504.56062630950214,
+          "y": 390.19999510363846
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 616.2011108398438,
+          "y": 379.0884094238281
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 632.1407452502714,
+          "y": 393.23623216870544
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 667.0648896174777,
+          "y": 494.79675558398253
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 706.5696603297542,
+          "y": 578.3670772389726
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 703.5768432617188,
+          "y": 636.4633178710938
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 657.1946701472234,
+          "y": 653.1470009796697
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 612.3110559182203,
+          "y": 680.885535040052
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 543.9728306372599,
+          "y": 664.2591685158226
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 518.1353536386754,
+          "y": 681.5211788699039
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 470.61583340533633,
+          "y": 671.5233502587366
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 444.5917459218697,
+          "y": 667.8667875195658
+        },
+        "slopeDrivewayId": null
+      },
+      {
+        "position": {
+          "x": 397.564208984375,
+          "y": 657.50146484375
+        },
+        "slopeDrivewayId": null
+      }
+    ],
+    "children": null,
+    "editorParentIdIfCreated": null
+  }
+]
