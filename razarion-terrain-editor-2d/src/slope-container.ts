@@ -11,9 +11,12 @@ export class SlopeContainer {
         if (!this.terrainSlopePositions) {
             return;
         }
+        ctx.save();
+        ctx.scale(1, -1);
         this.terrainSlopePositions.forEach(terrainSlopePosition => {
             this.drawPolygon(ctx, terrainSlopePosition);
         });
+        ctx.restore();
     }
 
     private drawPolygon(ctx: CanvasRenderingContext2D, terrainSlopePosition: TerrainSlopePosition) {

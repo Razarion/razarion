@@ -1,19 +1,22 @@
 import {SlopeContainer} from "./slope-container";
+import {Cursor} from "./cursor";
 
 export class CanvasController {
+    private controls: HTMLDivElement;
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
-    private cameraOffset = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    private cameraOffset = {x: window.innerWidth / 2, y: window.innerHeight / 2};
     private cameraZoom = 1;
     private readonly MAX_ZOOM = 5;
     private readonly MIN_ZOOM = 0.1;
     private readonly SCROLL_SENSITIVITY = 0.0005;
     private isDragging = false;
-    private dragStart = { x: 0, y: 0 };
+    private dragStart = {x: 0, y: 0};
     private initialPinchDistance: number | null = null;
     private lastZoom = this.cameraZoom;
 
-    constructor(private slopeContainer: SlopeContainer) {
+    constructor(private slopeContainer: SlopeContainer, private cursor: Cursor) {
+        this.controls = document.getElementById("controls") as HTMLDivElement;
         this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
         this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
         this.setupEventListeners();
@@ -35,11 +38,12 @@ export class CanvasController {
         this.canvas.height = window.innerHeight;
 
         this.ctx.translate(window.innerWidth / 2, window.innerHeight / 2);
-        this.ctx.scale(this.cameraZoom, -this.cameraZoom);
+        this.ctx.scale(this.cameraZoom, this.cameraZoom);
         this.ctx.translate(-window.innerWidth / 2 + this.cameraOffset.x, -window.innerHeight / 2 + this.cameraOffset.y);
         this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
         this.slopeContainer.draw(this.ctx);
+        this.cursor.draw(this.ctx);
 
         requestAnimationFrame(this.draw.bind(this));
     }
@@ -56,7 +60,7 @@ export class CanvasController {
     private onPointerDown(e: MouseEvent | TouchEvent) {
         this.isDragging = true;
         this.dragStart.x = this.getEventLocation(e).x / this.cameraZoom - this.cameraOffset.x;
-        this.dragStart.y = -this.getEventLocation(e).y / this.cameraZoom - this.cameraOffset.y;
+        this.dragStart.y = this.getEventLocation(e).y / this.cameraZoom - this.cameraOffset.y;
     }
 
     private onPointerUp(e: MouseEvent | TouchEvent) {
@@ -64,9 +68,14 @@ export class CanvasController {
     }
 
     private onPointerMove(e: MouseEvent | TouchEvent) {
+        let x = this.getEventLocation(e).x / this.cameraZoom - this.cameraOffset.x;
+        let y = -(this.getEventLocation(e).y / this.cameraZoom - this.cameraOffset.y);
+        this.controls.innerText = `${x}:${y}`
+
+        this.cursor.move(x, y);
         if (this.isDragging) {
             this.cameraOffset.x = this.getEventLocation(e).x / this.cameraZoom - this.dragStart.x;
-            this.cameraOffset.y = -this.getEventLocation(e).y / this.cameraZoom - this.dragStart.y;
+            this.cameraOffset.y = this.getEventLocation(e).y / this.cameraZoom - this.dragStart.y;
         }
     }
 

@@ -1,5 +1,4 @@
-// import terrainSlopePositions from "./assets/terrain-slope-positions.txt";
-const terrainSlopePositions = require('./terrain-slope-positions.json');
+const terrainSlopePositions = require('./assets/terrain-slope-positions.json');
 import {TerrainEditor} from "./terrain-editor";
 
 const terrainEditor = new TerrainEditor();

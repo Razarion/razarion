@@ -1,15 +1,17 @@
-.sum {
-    color: rgb(228, 18, 162);
+
+.body {
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
+    height: 100%;
 }
 
-.minus {
-    color: rgb(1, 172, 251);
+.controls {
+    position: absolute;
+    background-color: rgb(196, 196, 196);
 }
 
-.id {
-    color: rgb(228, 18, 162);
-}
-
-.name {
-    color: rgb(1, 172, 251);
+.canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
