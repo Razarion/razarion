@@ -73,12 +73,9 @@ export class CanvasController {
     }
 
     private onPointerMove(e: MouseEvent | TouchEvent) {
-        console.log(`onPointerMove ${this.getEventLocation(e).x}:${this.getEventLocation(e).y} zoom:${this.cameraZoom}`)
-        console.log(`cameraOffset ${this.cameraOffset.x}:${this.cameraOffset.y}`)
         let x = this.getEventLocation(e).x / this.cameraZoom - this.cameraOffset.x;
         let y = (window.innerHeight - this.getEventLocation(e).y)/ this.cameraZoom - this.cameraOffset.y;
         this.controls.innerText = `${x}:${y}`
-        console.log(`game ${x}:${y}`)
 
         this.cursor.move(x, y);
         this.slopeContainer.recalculateSelection(this.cursor.getPolygon());
@@ -98,7 +95,6 @@ export class CanvasController {
             this.cameraZoom += zoomAmount;
             this.cameraZoom = Math.max(Math.min(this.cameraZoom, this.MAX_ZOOM), this.MIN_ZOOM);
         }
-        console.log(`adjustZoom ${this.cameraZoom}`)
     }
 
     private drawPlanetSize(ctx: CanvasRenderingContext2D) {
