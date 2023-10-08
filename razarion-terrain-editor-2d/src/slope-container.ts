@@ -1,41 +1,46 @@
-import {TerrainSlopeCorner, TerrainSlopePosition} from "./generated/razarion-share";
+import {TerrainSlopePosition} from "./generated/razarion-share";
+import {SelectionContext, Slope} from "./model";
+import {Feature, Polygon} from "@turf/turf";
+import * as turf from '@turf/turf';
 
 export class SlopeContainer {
-    private terrainSlopePositions?: TerrainSlopePosition[];
+    private slopes: Slope[] = [];
+    private selectionContext?: SelectionContext;
 
     setTerrainSlopePositions(terrainSlopePositions: TerrainSlopePosition[]) {
-        this.terrainSlopePositions = terrainSlopePositions;
+        terrainSlopePositions.forEach(terrainSlopePosition => {
+            this.slopes.push(new Slope(terrainSlopePosition));
+        });
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-        if (!this.terrainSlopePositions) {
-            return;
-        }
         ctx.save();
         ctx.scale(1, -1);
-        this.terrainSlopePositions.forEach(terrainSlopePosition => {
-            this.drawPolygon(ctx, terrainSlopePosition);
+        this.slopes.forEach(slopes => {
+            slopes.draw(ctx);
         });
         ctx.restore();
     }
 
-    private drawPolygon(ctx: CanvasRenderingContext2D, terrainSlopePosition: TerrainSlopePosition) {
-        if (terrainSlopePosition.polygon.length < 3) {
+    recalculateSelection(cursorPolygon: Feature<Polygon, any> | undefined) {
+        this.selectionContext = new SelectionContext();
+        if (!cursorPolygon) {
+            return;
+        }
+        this.slopes.forEach(slope => {
+            slope.recalculateSelection(cursorPolygon, this.selectionContext!);
+        });
+
+    }
+
+    manipulate(cursorPolygon?: Feature<Polygon, any>) {
+        if(!cursorPolygon) {
             return;
         }
 
-        ctx.beginPath();
-        ctx.moveTo(terrainSlopePosition.polygon[0].position.x, terrainSlopePosition.polygon[0].position.y);
-        for (let i = 1; i < terrainSlopePosition.polygon.length; i++) {
-            ctx.lineTo(terrainSlopePosition.polygon[i].position.x, terrainSlopePosition.polygon[i].position.y)
+        if (!this.selectionContext?.valid()) {
+            return;
         }
-        ctx.closePath();
-        ctx.stroke();
-
-        if(terrainSlopePosition.children) {
-            terrainSlopePosition.children.forEach(child => {
-                this.drawPolygon(ctx, child);
-            })
-        }
+        this.selectionContext.getSelectedSlope().adjoin(cursorPolygon);
     }
 }

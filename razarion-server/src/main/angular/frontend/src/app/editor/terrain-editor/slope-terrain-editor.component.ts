@@ -57,6 +57,7 @@ export class SlopeTerrainEditorComponent implements OnInit {
   selectedTerrainSlopePolygon: Vector2[] | undefined;
   selectedTerrainSlopeMesh: Mesh | undefined;
 
+  private readonly slopeMaterial;
   private readonly cornerDiscMaterial;
   minCornerSelectionDistance = 5;
   driveways: any[] = [];
@@ -89,6 +90,12 @@ export class SlopeTerrainEditorComponent implements OnInit {
     this.cornerDiscMaterial = new SimpleMaterial(`Slope Editor Corner`, renderService.getScene());
     this.cornerDiscMaterial.diffuseColor = Color3.Yellow();
     this.cornerDiscMaterial.backFaceCulling = false;
+
+    this.slopeMaterial = new SimpleMaterial("Slope Editor", this.renderService.getScene());
+    this.slopeMaterial.diffuseColor = Color3.Red();
+    this.slopeMaterial.alpha = 0.4;
+    this.slopeMaterial.backFaceCulling = false;
+
 
     this.createSlopeTerrainEditorUpdate()
 
@@ -355,7 +362,7 @@ export class SlopeTerrainEditorComponent implements OnInit {
 
     const polygonMeshBuilder = new PolygonMeshBuilder(`Editor Slope`, polygon, this.renderService.getScene(), SlopeTerrainEditorComponent.EAR_CUT);
     const polygonMesh = polygonMeshBuilder.build();
-    polygonMesh.material = new SimpleMaterial("Slope", this.renderService.getScene());
+    polygonMesh.material = this.slopeMaterial;
     polygonMesh.position.y = height + this.SELECTION_BOOST;
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(polygonMesh, RazarionMetadataType.EDITOR_SLOPE); // TODO set config id
     let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(polygonMesh);
@@ -567,27 +574,28 @@ export class SlopeTerrainEditorComponent implements OnInit {
   private findParentSlope(center: Vector2): number | null {
     for (const terrainSlopePosition of this.terrainSlopePositions) {
       if (this.isInside(center, terrainSlopePosition.polygon)) {
-        return this.findNearestParentSlope(center, terrainSlopePosition);
+        let nearestChildSlope = this.findNearestChildSlope(center, terrainSlopePosition);
+        return nearestChildSlope || terrainSlopePosition.id;
       }
     }
     return null;
   }
 
-  private findNearestParentSlope(center: Vector2, parent: TerrainSlopePosition): number | null {
-    if (parent.children) {
-      for (const child of parent.children) {
-        let slopeId = this.findNearestParentSlope(center, child);
+  private findNearestChildSlope(center: Vector2, slope: TerrainSlopePosition): number | null {
+    if (slope.children) {
+      for (const child of slope.children) {
+        let slopeId = this.findNearestChildSlope(center, child);
         if (slopeId) {
           return slopeId;
         }
       }
-      if (this.isInside(center, parent.polygon)) {
-        return parent.id;
+      if (this.isInside(center, slope.polygon)) {
+        return slope.id;
       } else {
         return null;
       }
     } else {
-      return parent.id;
+      return null;
     }
   }
 

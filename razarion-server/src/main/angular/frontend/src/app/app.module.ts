@@ -71,7 +71,7 @@ import {TerrainObjectPositionComponent} from "./editor/terrain-editor/terrain-ob
 import {ChipsModule} from "primeng/chips";
 import {DividerModule} from "primeng/divider";
 import {SelectButtonModule} from "primeng/selectbutton";
-import {ObjectEditorComponent} from "./editor/terrain-editor/object-editor.component";
+import {ObjectTerrainEditorComponent} from "./editor/terrain-editor/object-terrain-editor.component";
 import {SlopeTerrainEditorComponent} from "./editor/terrain-editor/slope-terrain-editor.component";
 import {QuestCockpitComponent} from "./game/cockpit/quest/quest-cockpit.component";
 import {ServerQuestEditorComponent} from "./editor/server-quest-editor/server-quest-editor.component";
@@ -116,7 +116,7 @@ import {ProgressSpinnerModule} from "primeng/progressspinner";
     ServerPanelComponent,
     BackupRestoreComponent,
     TerrainEditorComponent,
-    ObjectEditorComponent,
+    ObjectTerrainEditorComponent,
     SlopeTerrainEditorComponent,
     ImageTypePipe,
     FormatFileSizePipe,

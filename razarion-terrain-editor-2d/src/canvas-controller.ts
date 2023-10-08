@@ -61,6 +61,10 @@ export class CanvasController {
         this.isDragging = true;
         this.dragStart.x = this.getEventLocation(e).x / this.cameraZoom - this.cameraOffset.x;
         this.dragStart.y = this.getEventLocation(e).y / this.cameraZoom - this.cameraOffset.y;
+        this.slopeContainer.recalculateSelection(this.cursor.getPolygon());
+        if(!e.ctrlKey && this.cursor.getPolygon()) {
+            this.slopeContainer.manipulate(this.cursor.getPolygon());
+        }
     }
 
     private onPointerUp(e: MouseEvent | TouchEvent) {
@@ -73,9 +77,15 @@ export class CanvasController {
         this.controls.innerText = `${x}:${y}`
 
         this.cursor.move(x, y);
+        this.slopeContainer.recalculateSelection(this.cursor.getPolygon());
+
         if (this.isDragging) {
-            this.cameraOffset.x = this.getEventLocation(e).x / this.cameraZoom - this.dragStart.x;
-            this.cameraOffset.y = this.getEventLocation(e).y / this.cameraZoom - this.dragStart.y;
+            if(e.ctrlKey) {
+                this.cameraOffset.x = this.getEventLocation(e).x / this.cameraZoom - this.dragStart.x;
+                this.cameraOffset.y = this.getEventLocation(e).y / this.cameraZoom - this.dragStart.y;
+            } else {
+                this.slopeContainer.manipulate(this.cursor.getPolygon());
+            }
         }
     }
 

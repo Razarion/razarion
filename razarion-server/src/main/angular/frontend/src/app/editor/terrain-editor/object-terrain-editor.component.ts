@@ -26,10 +26,10 @@ import {UPDATE_RADIUS_REST_CALL} from "../../common";
 import {HttpClient} from "@angular/common/http";
 
 @Component({
-  selector: 'object-editor',
-  templateUrl: './object-editor.component.html'
+  selector: 'object-terrain-editor',
+  templateUrl: './object-terrain-editor.component.html'
 })
-export class ObjectEditorComponent implements OnInit {
+export class ObjectTerrainEditorComponent implements OnInit {
   private readonly discRadiusMaterial: SimpleMaterial;
   terrainEditorService: TerrainEditorService;
   terrainObjectConfigs: any[] = [];

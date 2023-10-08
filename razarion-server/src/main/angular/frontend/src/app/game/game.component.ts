@@ -71,7 +71,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = false;
+      let runGwtMock = true;
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
