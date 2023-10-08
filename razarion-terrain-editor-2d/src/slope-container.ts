@@ -1,7 +1,6 @@
 import {TerrainSlopePosition} from "./generated/razarion-share";
 import {SelectionContext, Slope} from "./model";
 import {Feature, Polygon} from "@turf/turf";
-import * as turf from '@turf/turf';
 
 export class SlopeContainer {
     private slopes: Slope[] = [];
@@ -14,12 +13,9 @@ export class SlopeContainer {
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-        ctx.save();
-        ctx.scale(1, -1);
         this.slopes.forEach(slopes => {
             slopes.draw(ctx);
         });
-        ctx.restore();
     }
 
     recalculateSelection(cursorPolygon: Feature<Polygon, any> | undefined) {

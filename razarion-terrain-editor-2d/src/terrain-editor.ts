@@ -9,10 +9,10 @@ export class TerrainEditor {
     private readonly cursor: Cursor;
 
 
-    constructor() {
+    constructor(planetSize: {x: number, y: number}) {
         this.slopeContainer = new SlopeContainer;
         this.cursor = new Cursor;
-        this.canvasController = new CanvasController(this.slopeContainer, this.cursor);
+        this.canvasController = new CanvasController(this.slopeContainer, this.cursor, planetSize);
     }
 
     setTerrainSlopePositions(terrainSlopePosition: TerrainSlopePosition[]) {

@@ -31,8 +31,6 @@ export class Cursor {
         if (!this.cursor) {
             return;
         }
-        ctx.save();
-        ctx.scale(1, -1);
         ctx.beginPath();
         ctx.moveTo(this.cursor.geometry.coordinates[0][0][0], this.cursor.geometry.coordinates[0][0][1]);
         for (let i = 1; i < this.cursor.geometry.coordinates[0].length - 1; i++) {
@@ -40,6 +38,5 @@ export class Cursor {
         }
         ctx.closePath();
         ctx.stroke();
-        ctx.restore();
     }
 }
