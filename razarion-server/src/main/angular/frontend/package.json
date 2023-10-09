@@ -28,6 +28,7 @@
     "@babylonjs/materials": "^5.38.0",
     "@babylonjs/node-editor": "^5.38.0",
     "@babylonjs/serializers": "^5.38.0",
+    "@turf/turf": "^6.5.0",
     "@types/stats.js": "^0.17.0",
     "chart.js": "^3.7.0",
     "chartjs-plugin-dragdata": "^2.2.5",

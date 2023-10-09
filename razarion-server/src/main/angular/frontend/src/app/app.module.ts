@@ -93,6 +93,7 @@ import {WaterComponent} from './editor/common/water/water.component';
 import {BabylonModelComponent} from './editor/common/babylon-material/babylon-model.component';
 import {DrivewayEditorComponent} from './editor/crud-editors/driveway-editor/driveway-editor.component';
 import {ProgressSpinnerModule} from "primeng/progressspinner";
+import { TerrainEditor2dComponent } from './terrain-editor2d/terrain-editor2d.component';
 
 @NgModule({
   declarations: [
@@ -143,6 +144,8 @@ import {ProgressSpinnerModule} from "primeng/progressspinner";
     WaterComponent,
     BabylonModelComponent,
     DrivewayEditorComponent,
+    TerrainEditorComponent,
+    TerrainEditor2dComponent
   ],
   imports: [
     BrowserModule,

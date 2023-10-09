@@ -98,7 +98,6 @@
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-server/src/main/angular/frontend/src/app/generated/razarion-share.d.ts</outputFile>
-<!--                    <outputFile>../razarion-terrain-editor-2d/src/generated/razarion-share.d.ts</outputFile>-->
                     <mapEnum>asEnum</mapEnum>
                     <nullableAnnotations>com.btxtech.shared.system.Nullable</nullableAnnotations>
                 </configuration>
