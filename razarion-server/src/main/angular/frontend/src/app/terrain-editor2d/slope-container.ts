@@ -1,10 +1,15 @@
 import {SelectionContext, Slope} from "./model";
 import {Feature, Polygon} from "@turf/turf";
 import {TerrainSlopePosition} from "../generated/razarion-share";
+import {SaveContext} from "./save-context";
 
 export class SlopeContainer {
   private slopes: Slope[] = [];
   private selectionContext?: SelectionContext;
+  private saveContext = new SaveContext();
+
+  constructor() {
+  }
 
   setTerrainSlopePositions(terrainSlopePositions: TerrainSlopePosition[]) {
     terrainSlopePositions.forEach(terrainSlopePosition => {
@@ -38,5 +43,10 @@ export class SlopeContainer {
       return;
     }
     this.selectionContext.getSelectedSlope().adjoin(cursorPolygon);
+    this.saveContext.onManipulated(this.selectionContext.getSelectedSlope());
+  }
+
+  getSaveContext(): SaveContext {
+    return this.saveContext;
   }
 }

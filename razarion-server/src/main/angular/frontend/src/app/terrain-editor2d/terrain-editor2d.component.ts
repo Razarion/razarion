@@ -1,6 +1,6 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {TerrainEditor} from "./terrain-editor";
-import {READ_TERRAIN_SLOPE_POSITIONS} from "../common";
+import {READ_TERRAIN_SLOPE_POSITIONS, UPDATE_SLOPES_TERRAIN_EDITOR} from "../common";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {TerrainSlopePosition} from "../generated/razarion-share";
@@ -49,4 +49,27 @@ export class TerrainEditor2dComponent implements OnInit {
 
   }
 
+  save() {
+    const url = `${UPDATE_SLOPES_TERRAIN_EDITOR}/${this.PLANET_ID}`;
+    this.httpClient.put(url, this.terrainEditor!.getSaveContext().generateSlopeTerrainEditorUpdate()).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          life: 300,
+          summary: `Terrain saved`
+        });
+        this.terrainEditor!.getSaveContext().clear();
+      },
+      error: error => {
+        console.error(error);
+        this.messageService.add({
+          severity: 'Terrain save failed',
+          summary: `Error calling: ${url}`,
+          detail: error,
+          sticky: true
+        });
+      }
+
+    })
+  }
 }

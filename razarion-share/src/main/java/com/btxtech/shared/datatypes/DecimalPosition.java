@@ -267,7 +267,7 @@ public class DecimalPosition {
      */
     public double getAngle(DecimalPosition point) {
         if (equals(point)) {
-            throw new IllegalArgumentException("Points are equal");
+            throw new IllegalArgumentException("Points are equal: " + point);
         }
         DecimalPosition normalized = point.sub(this);
 

@@ -14,8 +14,7 @@ import {MainCockpitComponent} from "../../game/cockpit/main/main-cockpit.compone
 
 @Component({
   selector: 'app-editor-panel',
-  templateUrl: './editor-panel.component.html',
-  styleUrls: ['./editor-panel.component.scss']
+  templateUrl: './editor-panel.component.html'
 })
 export class EditorPanelComponent implements AfterViewInit {
   @Input("mainCockpitComponent")

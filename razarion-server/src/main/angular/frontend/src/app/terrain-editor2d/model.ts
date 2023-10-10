@@ -1,6 +1,6 @@
 import * as turf from "@turf/turf";
 import {Feature, Polygon} from "@turf/turf";
-import {TerrainSlopePosition} from "../generated/razarion-share";
+import {DecimalPosition, TerrainSlopeCorner, TerrainSlopePosition} from "../generated/razarion-share";
 
 export class Slope {
   private terrainSlopePosition: TerrainSlopePosition;
@@ -61,6 +61,25 @@ export class Slope {
 
   adjoin(polygon: Feature<Polygon, any>) {
     this.polygon = <any>turf.union(polygon, this.polygon);
+  }
+
+  generateTerrainSlopePosition(): TerrainSlopePosition {
+    this.terrainSlopePosition.polygon = this.generateTerrainSlopeCorners();
+    return this.terrainSlopePosition;
+  }
+
+  private generateTerrainSlopeCorners() {
+    let terrainSlopeCorners: TerrainSlopeCorner[] = [];
+    this.polygon.geometry.coordinates[0].forEach(position => {
+      terrainSlopeCorners.push(new class implements TerrainSlopeCorner {
+        position: DecimalPosition = new class implements DecimalPosition {
+          x: number = position[0];
+          y: number = position[1];
+        };
+        slopeDrivewayId = <any>null;
+      })
+    })
+    return terrainSlopeCorners;
   }
 }
 
