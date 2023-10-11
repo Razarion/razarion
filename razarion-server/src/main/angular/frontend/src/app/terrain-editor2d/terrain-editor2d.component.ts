@@ -1,10 +1,11 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {TerrainEditor} from "./terrain-editor";
-import {READ_TERRAIN_SLOPE_POSITIONS, UPDATE_SLOPES_TERRAIN_EDITOR} from "../common";
+import {READ_TERRAIN_SLOPE_POSITIONS, SLOPE_EDITOR_PATH, UPDATE_SLOPES_TERRAIN_EDITOR} from "../common";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {TerrainSlopePosition} from "../generated/razarion-share";
 import {Controls} from "./model";
+import {ObjectNameId} from "../gwtangular/GwtAngularFacade";
 
 @Component({
   selector: 'app-terrain-editor2d',
@@ -20,6 +21,7 @@ export class TerrainEditor2dComponent implements OnInit {
   canvasDiv!: ElementRef<HTMLDivElement>;
   private terrainEditor?: TerrainEditor;
   controls: Controls = new Controls();
+  slopeConfigs: any[] = [];
 
   constructor(private httpClient: HttpClient,
               private messageService: MessageService) {
@@ -31,6 +33,11 @@ export class TerrainEditor2dComponent implements OnInit {
       this.controls,
       {x: 100, y: 100});
 
+    this.loadTerrainSlopePositions();
+    this.loadSlopeObjectNameIds();
+  }
+
+  private loadTerrainSlopePositions() {
     const url = `${READ_TERRAIN_SLOPE_POSITIONS}/${this.PLANET_ID}`;
     this.httpClient.get(url).subscribe({
       next: (value) => {
@@ -46,7 +53,29 @@ export class TerrainEditor2dComponent implements OnInit {
         });
       }
     });
+  }
 
+  private loadSlopeObjectNameIds() {
+    this.slopeConfigs = [];
+    const url = `${SLOPE_EDITOR_PATH}/objectNameIds`;
+    this.httpClient.get<ObjectNameId[]>(url).subscribe({
+      next: objectNameIds => {
+        objectNameIds.forEach(objectNameId => this.slopeConfigs.push({
+          label: `${objectNameId.internalName} '${objectNameId.id}'`,
+          value: objectNameId.id,
+        }));
+        this.controls.newSlopeConfigId = objectNameIds[0].id;
+      },
+      error: error => {
+        console.error(error);
+        this.messageService.add({
+          severity: 'Slope Load Error',
+          summary: `Error getObjectNameIds: ${url}`,
+          detail: error,
+          sticky: true
+        });
+      }
+    });
   }
 
   save() {

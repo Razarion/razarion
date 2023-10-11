@@ -3,7 +3,7 @@ import {Feature, Polygon} from "@turf/turf";
 import {DecimalPosition, TerrainSlopeCorner, TerrainSlopePosition} from "../generated/razarion-share";
 
 export class Slope {
-  private terrainSlopePosition: TerrainSlopePosition;
+  private readonly terrainSlopePosition: TerrainSlopePosition;
   private children: Slope[] = [];
   private polygon: Feature<Polygon, any>;
   private selected = false;
@@ -21,6 +21,9 @@ export class Slope {
   }
 
   private createPolygon(terrainSlopePosition: TerrainSlopePosition): Feature<Polygon, any> {
+    if (!terrainSlopePosition.polygon.length) {
+      return <any>undefined;
+    }
     let points: any = [];
     terrainSlopePosition.polygon.forEach(terrainSlopeCorner => {
       points.push([terrainSlopeCorner.position.x, terrainSlopeCorner.position.y])
@@ -70,7 +73,8 @@ export class Slope {
 
   private generateTerrainSlopeCorners() {
     let terrainSlopeCorners: TerrainSlopeCorner[] = [];
-    this.polygon.geometry.coordinates[0].forEach(position => {
+    for (let i = 0; i < this.polygon.geometry.coordinates[0].length - 1; i++) {
+      const position = this.polygon.geometry.coordinates[0][i];
       terrainSlopeCorners.push(new class implements TerrainSlopeCorner {
         position: DecimalPosition = new class implements DecimalPosition {
           x: number = position[0];
@@ -78,8 +82,13 @@ export class Slope {
         };
         slopeDrivewayId = <any>null;
       })
-    })
+    }
     return terrainSlopeCorners;
+  }
+
+  createNew(polygon: Feature<Polygon, any>) {
+    this.polygon = turf.clone(polygon);
+    this.selected = true;
   }
 }
 
@@ -102,4 +111,5 @@ export class SelectionContext {
 export class Controls {
   xPos?: number;
   yPos?: number;
+  newSlopeConfigId?: number;
 }

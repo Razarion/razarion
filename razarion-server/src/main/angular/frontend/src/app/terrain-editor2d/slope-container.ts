@@ -1,4 +1,4 @@
-import {SelectionContext, Slope} from "./model";
+import {Controls, SelectionContext, Slope} from "./model";
 import {Feature, Polygon} from "@turf/turf";
 import {TerrainSlopePosition} from "../generated/razarion-share";
 import {SaveContext} from "./save-context";
@@ -34,16 +34,30 @@ export class SlopeContainer {
 
   }
 
-  manipulate(cursorPolygon?: Feature<Polygon, any>) {
+  manipulate(controls: Controls, cursorPolygon?: Feature<Polygon, any>) {
     if (!cursorPolygon) {
       return;
     }
 
-    if (!this.selectionContext?.valid()) {
-      return;
+    if (this.selectionContext?.valid()) {
+      this.selectionContext.getSelectedSlope().adjoin(cursorPolygon);
+      this.saveContext.onManipulated(this.selectionContext.getSelectedSlope());
+    } else {
+      let terrainSlopePosition =new class implements TerrainSlopePosition {
+        children=[];
+        editorParentIdIfCreated= <any>null;
+        id= <any>null;
+        inverted=false;
+        polygon=[];
+        slopeConfigId= controls.newSlopeConfigId!;
+      };
+      let slope = new Slope(terrainSlopePosition);
+      slope.createNew(cursorPolygon!);
+      this.slopes.push(slope);
+      this.selectionContext = new SelectionContext();
+      this.selectionContext.add(slope)
+      this.saveContext.onCreated(slope);
     }
-    this.selectionContext.getSelectedSlope().adjoin(cursorPolygon);
-    this.saveContext.onManipulated(this.selectionContext.getSelectedSlope());
   }
 
   getSaveContext(): SaveContext {

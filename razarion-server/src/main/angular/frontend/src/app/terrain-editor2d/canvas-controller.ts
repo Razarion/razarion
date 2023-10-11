@@ -44,7 +44,7 @@ export class CanvasController {
     this.ctx.translate(this.cameraOffset.x, this.cameraOffset.y);
     this.ctx.clearRect(0, 0, this.canvasDiv.offsetWidth, this.canvasDiv.offsetHeight);
 
-    this.drawPlanetSize(this.ctx);
+    this.drawPlanetSize();
 
     this.slopeContainer.draw(this.ctx);
     this.cursor.draw(this.ctx);
@@ -65,7 +65,7 @@ export class CanvasController {
       this.dragStart.y = (this.canvasDiv.offsetHeight - this.getEventLocation(e).y) / this.cameraZoom - this.cameraOffset.y;
       this.slopeContainer.recalculateSelection(this.cursor.getPolygon());
       if (!e.ctrlKey && this.cursor.getPolygon()) {
-        this.slopeContainer.manipulate(this.cursor.getPolygon());
+        this.slopeContainer.manipulate(this.controls, this.cursor.getPolygon());
       }
     }
 
@@ -87,7 +87,7 @@ export class CanvasController {
           this.cameraOffset.x = this.getEventLocation(e).x / this.cameraZoom - this.dragStart.x;
           this.cameraOffset.y = (this.canvasDiv.offsetHeight - this.getEventLocation(e).y) / this.cameraZoom - this.dragStart.y;
         } else {
-          this.slopeContainer.manipulate(this.cursor.getPolygon());
+          this.slopeContainer.manipulate(this.controls, this.cursor.getPolygon());
         }
       }
     }
@@ -99,7 +99,7 @@ export class CanvasController {
         }
     }
 
-    private drawPlanetSize(ctx: CanvasRenderingContext2D) {
-        this.ctx.strokeRect(0, 0, this.planetSize.x, this.planetSize.y)
-    }
+  private drawPlanetSize() {
+    this.ctx.strokeRect(0, 0, this.planetSize.x, this.planetSize.y)
+  }
 }
