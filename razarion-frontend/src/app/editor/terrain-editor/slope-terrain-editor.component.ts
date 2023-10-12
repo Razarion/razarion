@@ -72,7 +72,7 @@ export class SlopeTerrainEditorComponent implements OnInit {
               private messageService: MessageService,
               private renderService: BabylonRenderServiceAccessImpl,
               private editorService: EditorService) {
-    const url = `${READ_TERRAIN_SLOPE_POSITIONS}/${gwtAngularService.gwtAngularFacade.gameUiControl.getPlanetConfig().getId()}`;
+    const url = `${READ_TERRAIN_SLOPE_POSITIONS}/${editorService.getPlanetId()}`;
     this.httpClient.get(url).subscribe({
       next: (value) => {
         this.terrainSlopePositions = <TerrainSlopePosition[]>value;
@@ -606,7 +606,7 @@ export class SlopeTerrainEditorComponent implements OnInit {
   }
 
   save() {
-    const url = `${UPDATE_SLOPES_TERRAIN_EDITOR}/${this.gwtAngularService.gwtAngularFacade.gameUiControl.getPlanetConfig().getId()}`;
+    const url = `${UPDATE_SLOPES_TERRAIN_EDITOR}/${this.editorService.getPlanetId()}`;
     this.httpClient.put(url, this.slopeTerrainEditorUpdate).subscribe({
       next: () => {
         this.createSlopeTerrainEditorUpdate();

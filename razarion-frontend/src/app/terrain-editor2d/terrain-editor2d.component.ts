@@ -7,6 +7,7 @@ import {TerrainSlopePosition} from "../generated/razarion-share";
 import {ObjectNameId} from "../gwtangular/GwtAngularFacade";
 import {Controls} from "./controls";
 import {EditorService} from "../editor/editor-service";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-terrain-editor2d',
@@ -14,8 +15,12 @@ import {EditorService} from "../editor/editor-service";
   styleUrls: ['./terrain-editor2d.component.scss']
 })
 export class TerrainEditor2dComponent implements OnInit {
-  readonly PLANET_ID = 117; //TODO get from url
-  // readonly PLANET_ID = 1; //TODO get from url
+  static PLANET_ID_PARAM = "PLANET_ID";
+  private planetId?: number;
+  planetSize?: {
+    x: number,
+    y: number
+  }
   @ViewChild('canvas', {static: true})
   canvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasDiv', {static: true})
@@ -26,21 +31,29 @@ export class TerrainEditor2dComponent implements OnInit {
 
   constructor(private httpClient: HttpClient,
               private messageService: MessageService,
-              private editorService: EditorService) {
+              private editorService: EditorService,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
     this.terrainEditor = new TerrainEditor(this.canvas.nativeElement,
       this.canvasDiv.nativeElement,
-      this.controls,
-      {x: 100, y: 100});
+      this.controls);
 
-    this.loadTerrainSlopePositions();
-    this.loadSlopeObjectNameIds();
+    this.route.queryParams.subscribe(params => {
+      this.planetId = parseInt(params[TerrainEditor2dComponent.PLANET_ID_PARAM]);
+      this.loadTerrainSlopePositions();
+      this.loadSlopeObjectNameIds();
+      this.editorService.readPlanetConfig(this.planetId)
+        .then(planetConfig => {
+          this.planetSize = {x: planetConfig.size.x, y: planetConfig.size.y}
+          this.terrainEditor!.setPlanetSize(planetConfig.size.x, planetConfig.size.y);
+        })
+    });
   }
 
   private loadTerrainSlopePositions() {
-    const url = `${READ_TERRAIN_SLOPE_POSITIONS}/${this.PLANET_ID}`;
+    const url = `${READ_TERRAIN_SLOPE_POSITIONS}/${this.planetId}`;
     this.httpClient.get(url).subscribe({
       next: (value) => {
         this.terrainEditor!.setTerrainSlopePositions(<TerrainSlopePosition[]>value);
@@ -81,7 +94,7 @@ export class TerrainEditor2dComponent implements OnInit {
   }
 
   save() {
-    const url = `${UPDATE_SLOPES_TERRAIN_EDITOR}/${this.PLANET_ID}`;
+    const url = `${UPDATE_SLOPES_TERRAIN_EDITOR}/${this.planetId}`;
     this.httpClient.put(url, this.terrainEditor!.getSaveContext().generateSlopeTerrainEditorUpdate()).subscribe({
       next: () => {
         this.messageService.add({

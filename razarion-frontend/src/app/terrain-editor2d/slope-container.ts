@@ -41,14 +41,15 @@ export class SlopeContainer {
       return;
     }
 
-    if (this.selectionContext?.valid()) {
-      this.selectionContext.getSelectedSlope().adjoin(cursorPolygon);
-      this.saveContext.onManipulated(this.selectionContext.getSelectedSlope());
+    if (this.selectionContext?.valid() && !this.selectionContext?.getInsideOf()) {
+      this.selectionContext!.getSelectedSlope().adjoin(cursorPolygon);
+      this.saveContext.onManipulated(this.selectionContext!.getSelectedSlope());
     } else {
+      let parentId = this.selectionContext?.getInsideOf()?.terrainSlopePosition.id
       let terrainSlopePosition =new class implements TerrainSlopePosition {
         children=[];
         editorParentIdIfCreated= <any>null;
-        id= <any>null;
+        id= <any>parentId;
         inverted=false;
         polygon=[];
         slopeConfigId= controls.newSlopeConfigId!;
@@ -59,6 +60,8 @@ export class SlopeContainer {
       this.selectionContext = new SelectionContext();
       this.selectionContext.add(slope)
       this.saveContext.onCreated(slope);
+
+      this.selectionContext?.getInsideOf() && this.selectionContext?.getInsideOf()?.addChild(slope);
     }
   }
 

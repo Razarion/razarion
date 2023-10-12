@@ -2,7 +2,7 @@ import {ComponentFactoryResolver, Injectable, Type} from "@angular/core";
 import {
   BASE_ITEM_TYPE_EDITOR_PATH,
   GROUND_EDITOR_PATH,
-  LEVEL_EDITOR_PATH,
+  LEVEL_EDITOR_PATH, PLANET_EDITOR_PATH,
   RESOURCE_ITEM_TYPE_EDITOR_PATH,
   SERVER_GAME_ENGINE_EDITOR,
   SERVER_GAME_ENGINE_PATH,
@@ -14,7 +14,7 @@ import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {
   BotConfig,
-  ObjectNameId,
+  ObjectNameId, PlanetConfig,
   ResourceRegionConfig,
   ServerGameEngineConfig,
   ServerLevelQuestConfig,
@@ -171,6 +171,10 @@ export class EditorService {
     return this.readConfig(WATER_EDITOR_PATH, id);
   }
 
+  readPlanetConfig(id: number): Promise<PlanetConfig> {
+    return this.readConfig(PLANET_EDITOR_PATH, id);
+  }
+
   readBabylonMaterialObjectNameIds(): Promise<ObjectNameId[]> {
     return this.readObjectNameIds(URL_THREE_JS_MODEL_EDITOR);
   }
@@ -209,6 +213,10 @@ export class EditorService {
         }
       });
     });
+  }
+
+  getPlanetId():number {
+    return this.gwtAngularService.gwtAngularFacade.gameUiControl.getPlanetConfig().getId();
   }
 
 }

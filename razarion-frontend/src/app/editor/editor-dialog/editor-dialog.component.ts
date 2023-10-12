@@ -17,6 +17,8 @@ import {ServerResourceRegionComponent} from "../server-resource-region/server-re
 import {CrudContainerComponent} from "../crud-editors/crud-container/crud-container.component";
 import {SlopeEditorComponent} from "../crud-editors/slope-editor/slope-editor.component";
 import {DrivewayEditorComponent} from "../crud-editors/driveway-editor/driveway-editor.component";
+import {TerrainEditor2dComponent} from "../../terrain-editor2d/terrain-editor2d.component";
+import {EditorService} from "../editor-service";
 
 @Component({
   selector: 'editor-dialog',
@@ -31,7 +33,9 @@ export class EditorDialogComponent {
   @Input("mainCockpitComponent")
   mainCockpitComponent!: MainCockpitComponent;
 
-  constructor(private gwtAngularService: GwtAngularService, private renderService: BabylonRenderServiceAccessImpl) {
+  constructor(private gwtAngularService: GwtAngularService,
+              private renderService: BabylonRenderServiceAccessImpl,
+              private editorService: EditorService) {
     this.editors.set("Babylon.js", RenderEngineComponent)
     this.editors.set("Server Control", ServerPanelComponent)
     this.editors.set("Backup Restore", BackupRestoreComponent)
@@ -54,6 +58,12 @@ export class EditorDialogComponent {
   openTerrainEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
+  }
+
+  openTerrainEditor2d() {
+    this.mainCockpitComponent.editorDialog = false;
+    const url = `/terrain-editor/?${TerrainEditor2dComponent.PLANET_ID_PARAM}=${this.editorService.getPlanetId()}`;
+    window.open(url, '_blank');
   }
 
   openQuestEditor() {

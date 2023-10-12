@@ -5,13 +5,13 @@ import {Feature, Polygon} from "@turf/turf";
 import {SelectionContext} from "./selection-context";
 
 export class Slope {
-  private readonly terrainSlopePosition: TerrainSlopePosition;
+  private readonly _terrainSlopePosition: TerrainSlopePosition;
   private children: Slope[] = [];
   private polygon: Feature<Polygon, any>;
   private selected = false;
 
   constructor(terrainSlopePosition: TerrainSlopePosition) {
-    this.terrainSlopePosition = terrainSlopePosition;
+    this._terrainSlopePosition = terrainSlopePosition;
 
     this.polygon = this.createPolygon(terrainSlopePosition);
 
@@ -57,11 +57,14 @@ export class Slope {
   }
 
   recalculateSelection(cursorPolygon: Feature<Polygon, any>, selectionContext: SelectionContext) {
+    this.selected = false;
     if (turf.intersect(this.polygon, cursorPolygon)) {
       selectionContext.add(this);
-      this.selected = true;
-    } else {
-      this.selected = false;
+      if (turf.booleanWithin(cursorPolygon, this.polygon)) {
+        selectionContext.setInsideOf(this);
+      } else {
+        this.selected = true;
+      }
     }
   }
 
@@ -70,8 +73,8 @@ export class Slope {
   }
 
   generateTerrainSlopePosition(): TerrainSlopePosition {
-    this.terrainSlopePosition.polygon = this.generateTerrainSlopeCorners();
-    return this.terrainSlopePosition;
+    this._terrainSlopePosition.polygon = this.generateTerrainSlopeCorners();
+    return this._terrainSlopePosition;
   }
 
   private generateTerrainSlopeCorners() {
@@ -92,5 +95,14 @@ export class Slope {
   createNew(polygon: Feature<Polygon, any>) {
     this.polygon = turf.clone(polygon);
     this.selected = true;
+  }
+
+
+  get terrainSlopePosition(): TerrainSlopePosition {
+    return this._terrainSlopePosition;
+  }
+
+  addChild(slope: Slope) {
+    this.children.push(slope);
   }
 }

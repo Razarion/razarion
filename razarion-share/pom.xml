@@ -95,9 +95,10 @@
                         <class>com.btxtech.shared.dto.WaterConfig</class>
                         <class>com.btxtech.shared.dto.DrivewayConfig</class>
                         <class>com.btxtech.shared.dto.SlopeTerrainEditorUpdate</class>
+                        <class>com.btxtech.shared.gameengine.datatypes.config.PlanetConfig</class>
                     </classes>
                     <outputKind>module</outputKind>
-                    <outputFile>../razarion-server/src/main/angular/frontend/src/app/generated/razarion-share.d.ts</outputFile>
+                    <outputFile>../razarion-frontend/src/app/generated/razarion-share.d.ts</outputFile>
                     <mapEnum>asEnum</mapEnum>
                     <nullableAnnotations>com.btxtech.shared.system.Nullable</nullableAnnotations>
                 </configuration>

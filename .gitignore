@@ -56,4 +56,4 @@ razarion-unity-converter/razarion-unity-converter.iml
 /razarion-server/src/test/resources/sql/db/razarion/USER_UNLOCKED.sql
 
 /razarion-server/src/main/angular/frontend/threejs-models/
-/razarion-server/src/main/angular/frontend/src/app/generated/
+/razarion-frontend/src/app/generated/

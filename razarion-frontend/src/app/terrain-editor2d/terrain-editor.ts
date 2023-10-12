@@ -12,16 +12,14 @@ export class TerrainEditor {
 
   constructor(canvas: HTMLCanvasElement,
               canvasDiv: HTMLDivElement,
-              controls: Controls,
-              planetSize: { x: number, y: number }) {
+              controls: Controls) {
     this.slopeContainer = new SlopeContainer();
     this.cursor = new Cursor;
     this.canvasController = new CanvasController(canvas,
       canvasDiv,
       this.slopeContainer,
       this.cursor,
-      controls,
-      planetSize);
+      controls);
   }
 
   setTerrainSlopePositions(terrainSlopePosition: TerrainSlopePosition[]) {
@@ -30,5 +28,9 @@ export class TerrainEditor {
 
   getSaveContext(): SaveContext {
     return this.slopeContainer.getSaveContext();
+  }
+
+  setPlanetSize(x: number, y: number) {
+    this.canvasController.setPlanetSize(x, y);
   }
 }

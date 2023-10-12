@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="gwt-mock-server.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="gwt-mock-server.js" working-dir="$PROJECT_DIR$/razarion-server/src/main/angular/frontend">
+  <configuration default="false" name="gwt-mock-server.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/razarion-frontend/gwt-mock-server.js" working-dir="$PROJECT_DIR$/razarion-server/src/main/angular/frontend">
     <method v="2" />
   </configuration>
 </component>

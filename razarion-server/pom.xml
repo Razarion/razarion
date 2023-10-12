@@ -221,21 +221,21 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
                 <executions>
-                    <execution>
-                        <id>Install angular cli for all</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>install</argument>
-                                <argument>-g</argument>
-                                <argument>@angular/cli@^1.6.7</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
+<!--                    <execution>-->
+<!--                        <id>Install angular cli for all</id>-->
+<!--                        <phase>generate-resources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>exec</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <executable>npm</executable>-->
+<!--                            <arguments>-->
+<!--                                <argument>install</argument>-->
+<!--                                <argument>-g</argument>-->
+<!--                                <argument>@angular/cli@^1.6.7</argument>-->
+<!--                            </arguments>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
                     <execution>
                         <id>NPM install frontend</id>
                         <phase>generate-resources</phase>
@@ -244,7 +244,7 @@
                         </goals>
                         <configuration>
                             <executable>npm</executable>
-                            <workingDirectory>${project.basedir}/src/main/angular/frontend</workingDirectory>
+                            <workingDirectory>${project.basedir}/../razarion-frontend</workingDirectory>
                             <arguments>
                                 <argument>install</argument>
                             </arguments>
@@ -258,44 +258,13 @@
                         </goals>
                         <configuration>
                             <executable>ng</executable>
-                            <workingDirectory>${project.basedir}/src/main/angular/frontend</workingDirectory>
+                            <workingDirectory>${project.basedir}/../razarion-frontend</workingDirectory>
                             <arguments>
                                 <argument>build</argument>
                                 <argument>--configuration=production</argument>
                                 <!--<argument>&#45;&#45;env=dev</argument>-->
                                 <argument>--output-path=${project.build.directory}/ROOT</argument>
                                 <argument>--base-href=/</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>NPM install backend</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>npm</executable>
-                            <workingDirectory>${project.basedir}/src/main/angular/backend</workingDirectory>
-                            <arguments>
-                                <argument>install</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Build angular backend</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>ng</executable>
-                            <workingDirectory>${project.basedir}/src/main/angular/backend</workingDirectory>
-                            <arguments>
-                                <argument>build</argument>
-                                <argument>--env=prod</argument>
-                                <argument>--output-path=${project.build.directory}/ROOT/backend</argument>
-                                <argument>--base-href=/backend/</argument>
                             </arguments>
                         </configuration>
                     </execution>

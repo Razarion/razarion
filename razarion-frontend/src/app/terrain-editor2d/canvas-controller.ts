@@ -4,6 +4,10 @@ import {Controls} from "./controls";
 
 export class CanvasController {
   private readonly ctx: CanvasRenderingContext2D;
+  private planetSize?: {
+    x: number,
+    y: number
+  }
   private cameraOffset = {x: 0, y: 0};
   private cameraZoom = 1;
   private readonly MAX_ZOOM = 5;
@@ -16,14 +20,14 @@ export class CanvasController {
               private canvasDiv: HTMLDivElement,
               private slopeContainer: SlopeContainer,
               private cursor: Cursor,
-              private controls: Controls,
-              private planetSize: {
-                x: number,
-                y: number
-              }) {
+              private controls: Controls) {
     this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
     this.setupEventListeners();
     this.draw();
+  }
+
+  setPlanetSize(x: number, y: number) {
+    this.planetSize = {x: x, y: y};
   }
 
   private setupEventListeners() {
@@ -80,7 +84,6 @@ export class CanvasController {
       this.controls.yPos = y;
 
       this.cursor.move(x, y);
-      this.slopeContainer.recalculateSelection(this.cursor.getPolygon());
 
       if (this.isDragging) {
         if (e.ctrlKey) {
@@ -89,6 +92,8 @@ export class CanvasController {
         } else {
           this.slopeContainer.manipulate(this.controls, this.cursor.getPolygon());
         }
+      } else {
+        this.slopeContainer.recalculateSelection(this.cursor.getPolygon());
       }
     }
 
@@ -100,6 +105,8 @@ export class CanvasController {
     }
 
   private drawPlanetSize() {
-    this.ctx.strokeRect(0, 0, this.planetSize.x, this.planetSize.y)
+    if (this.planetSize) {
+      this.ctx.strokeRect(0, 0, this.planetSize.x, this.planetSize.y);
+    }
   }
 }

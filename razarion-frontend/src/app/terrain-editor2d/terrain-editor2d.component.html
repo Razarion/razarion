@@ -4,11 +4,23 @@
   </div>
   <div style="width: 60em" class="flex flex-column surface-50">
     <div class="grid grid-razarion-editor">
+      <span class="col-4">Planet Size</span>
+      <div class="col-8">
+        {{planetSize?.x | number: '3.2-2'}} : {{planetSize?.y | number: '3.2-2'}}
+      </div>
+    </div>
+    <div class="grid grid-razarion-editor">
       <span class="col-4">Cursor Terrain Position</span>
       <div class="col-8">
         {{controls.xPos | number: '3.2-2'}} : {{controls.yPos | number: '3.2-2'}}
       </div>
     </div>
+    <p-divider align="left">
+      <div class="inline-flex align-items-center">
+        <i class="pi pi-save mr-2"></i>
+        <b>Action</b>
+      </div>
+    </p-divider>
     <div class="grid grid-razarion-editor">
       <span class="col-4">Save</span>
       <div class="col-8">
