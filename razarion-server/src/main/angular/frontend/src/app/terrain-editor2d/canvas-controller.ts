@@ -1,6 +1,6 @@
 import {SlopeContainer} from "./slope-container";
 import {Cursor} from "./cursor";
-import {Controls} from "./model";
+import {Controls} from "./controls";
 
 export class CanvasController {
   private readonly ctx: CanvasRenderingContext2D;

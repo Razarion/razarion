@@ -4,8 +4,9 @@ import {READ_TERRAIN_SLOPE_POSITIONS, SLOPE_EDITOR_PATH, UPDATE_SLOPES_TERRAIN_E
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {TerrainSlopePosition} from "../generated/razarion-share";
-import {Controls} from "./model";
 import {ObjectNameId} from "../gwtangular/GwtAngularFacade";
+import {Controls} from "./controls";
+import {EditorService} from "../editor/editor-service";
 
 @Component({
   selector: 'app-terrain-editor2d',
@@ -24,7 +25,8 @@ export class TerrainEditor2dComponent implements OnInit {
   slopeConfigs: any[] = [];
 
   constructor(private httpClient: HttpClient,
-              private messageService: MessageService) {
+              private messageService: MessageService,
+              private editorService: EditorService) {
   }
 
   ngOnInit(): void {
@@ -100,5 +102,13 @@ export class TerrainEditor2dComponent implements OnInit {
       }
 
     })
+  }
+
+  restartPlanetWarm() {
+    this.editorService.executeServerCommand(EditorService.RESTART_PLANET_WARM);
+  }
+
+  restartPlanetCold() {
+    this.editorService.executeServerCommand(EditorService.RESTART_PLANET_COLD);
   }
 }

@@ -1,5 +1,5 @@
-import {Slope} from "./model";
 import {SlopeTerrainEditorUpdate, TerrainSlopePosition} from "../generated/razarion-share";
+import {Slope} from "./slope";
 
 export class SaveContext {
   private updatedSlopes: Slope[] = [];

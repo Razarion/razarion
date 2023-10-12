@@ -1,7 +1,9 @@
-import {Controls, SelectionContext, Slope} from "./model";
 import {Feature, Polygon} from "@turf/turf";
 import {TerrainSlopePosition} from "../generated/razarion-share";
 import {SaveContext} from "./save-context";
+import {Slope} from "./slope";
+import {SelectionContext} from "./selection-context";
+import {Controls} from "./controls";
 
 export class SlopeContainer {
   private slopes: Slope[] = [];

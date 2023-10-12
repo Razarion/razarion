@@ -1,6 +1,8 @@
+import {DecimalPosition, TerrainSlopeCorner, TerrainSlopePosition} from "../generated/razarion-share";
 import * as turf from "@turf/turf";
 import {Feature, Polygon} from "@turf/turf";
-import {DecimalPosition, TerrainSlopeCorner, TerrainSlopePosition} from "../generated/razarion-share";
+
+import {SelectionContext} from "./selection-context";
 
 export class Slope {
   private readonly terrainSlopePosition: TerrainSlopePosition;
@@ -36,8 +38,6 @@ export class Slope {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    this.children.forEach(child => child.draw(ctx))
-
     if (this.selected) {
       ctx.fillStyle = "blue";
     } else {
@@ -51,6 +51,9 @@ export class Slope {
     }
     ctx.closePath();
     ctx.fill();
+    ctx.stroke();
+
+    this.children.forEach(child => child.draw(ctx))
   }
 
   recalculateSelection(cursorPolygon: Feature<Polygon, any>, selectionContext: SelectionContext) {
@@ -90,26 +93,4 @@ export class Slope {
     this.polygon = turf.clone(polygon);
     this.selected = true;
   }
-}
-
-export class SelectionContext {
-  private slopes: Slope[] = [];
-
-  add(slope: Slope) {
-    this.slopes.push(slope);
-  }
-
-  valid(): boolean {
-    return this.slopes.length > 0
-  }
-
-  getSelectedSlope(): Slope {
-    return this.slopes[0];
-  }
-}
-
-export class Controls {
-  xPos?: number;
-  yPos?: number;
-  newSlopeConfigId?: number;
 }

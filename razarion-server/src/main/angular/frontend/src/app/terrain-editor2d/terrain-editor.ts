@@ -2,8 +2,8 @@ import {CanvasController} from "./canvas-controller";
 import {SlopeContainer} from "./slope-container";
 import {Cursor} from "./cursor";
 import {TerrainSlopePosition} from "../generated/razarion-share";
-import {Controls} from "./model";
 import {SaveContext} from "./save-context";
+import {Controls} from "./controls";
 
 export class TerrainEditor {
   private readonly canvasController: CanvasController;
