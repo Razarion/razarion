@@ -423,7 +423,7 @@ export interface ComparisonConfig {
 
 // ---------- Renderer ----------
 export interface BabylonRenderServiceAccess {
-  createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile;
+  createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): BabylonTerrainTile;
 
   createBabylonBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem;
 
@@ -490,7 +490,7 @@ export interface TerrainObjectModel {
   rotation: Vertex | null;
 }
 
-export interface ThreeJsTerrainTile {
+export interface BabylonTerrainTile {
   addToScene(): void;
 
   removeFromScene(): void;

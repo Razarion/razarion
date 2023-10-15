@@ -13,9 +13,9 @@ import {
   TerrainObjectPosition,
   TerrainSlopePosition,
   TerrainTile,
-  ThreeJsTerrainTile
+  BabylonTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
-import {ThreeJsTerrainTileImpl} from "./three-js-terrain-tile.impl";
+import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
@@ -177,9 +177,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     });
   }
 
-  createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): ThreeJsTerrainTile {
+  createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): BabylonTerrainTile {
     try {
-      return new ThreeJsTerrainTileImpl(terrainTile,
+      return new BabylonTerrainTileImpl(terrainTile,
         defaultGroundConfigId,
         this.gwtAngularService,
         this,

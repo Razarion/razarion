@@ -4,7 +4,7 @@ import {
   TerrainObjectConfig,
   TerrainObjectModel,
   TerrainTile,
-  ThreeJsTerrainTile
+  BabylonTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
@@ -14,7 +14,7 @@ import {RazarionMetadataType, BabylonRenderServiceAccessImpl} from "./babylon-re
 import {BabylonJsUtils} from "./babylon-js.utils";
 import {Nullable} from "@babylonjs/core/types";
 
-export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
+export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private readonly container: TransformNode;
 
   constructor(terrainTile: TerrainTile,
@@ -74,7 +74,7 @@ export class ThreeJsTerrainTileImpl implements ThreeJsTerrainTile {
           }
           terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
             try {
-              ThreeJsTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, threeJsModelService, this.container);
+              BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, threeJsModelService, this.container);
             } catch (error) {
               console.error(error);
             }

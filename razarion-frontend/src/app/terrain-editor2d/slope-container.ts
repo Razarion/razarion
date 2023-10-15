@@ -41,9 +41,9 @@ export class SlopeContainer {
       return;
     }
 
-    if (this.selectionContext?.valid() && !this.selectionContext?.getInsideOf()) {
-      this.selectionContext!.getSelectedSlope().adjoin(cursorPolygon);
-      this.saveContext.onManipulated(this.selectionContext!.getSelectedSlope());
+    if (this.selectionContext?.getIntersect() && !this.selectionContext?.getInsideOf()) {
+      this.selectionContext!.getIntersect()!.append(cursorPolygon);
+      this.saveContext.onManipulated(this.selectionContext!.getIntersect()!);
     } else {
       let parentId = this.selectionContext?.getInsideOf()?.terrainSlopePosition.id
       let terrainSlopePosition =new class implements TerrainSlopePosition {
@@ -58,7 +58,7 @@ export class SlopeContainer {
       slope.createNew(cursorPolygon!);
       this.slopes.push(slope);
       this.selectionContext = new SelectionContext();
-      this.selectionContext.add(slope)
+      this.selectionContext.setIntersect(slope)
       this.saveContext.onCreated(slope);
 
       this.selectionContext?.getInsideOf() && this.selectionContext?.getInsideOf()?.addChild(slope);
@@ -67,5 +67,9 @@ export class SlopeContainer {
 
   getSaveContext(): SaveContext {
     return this.saveContext;
+  }
+
+  getSelectionContext(): SelectionContext | undefined {
+    return this.selectionContext;
   }
 }

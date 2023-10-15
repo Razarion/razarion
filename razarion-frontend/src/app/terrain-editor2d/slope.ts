@@ -59,7 +59,7 @@ export class Slope {
   recalculateSelection(cursorPolygon: Feature<Polygon, any>, selectionContext: SelectionContext) {
     this.selected = false;
     if (turf.intersect(this.polygon, cursorPolygon)) {
-      selectionContext.add(this);
+      selectionContext.setIntersect(this);
       if (turf.booleanWithin(cursorPolygon, this.polygon)) {
         selectionContext.setInsideOf(this);
       } else {
@@ -68,7 +68,7 @@ export class Slope {
     }
   }
 
-  adjoin(polygon: Feature<Polygon, any>) {
+  append(polygon: Feature<Polygon, any>) {
     this.polygon = <any>turf.union(polygon, this.polygon);
   }
 

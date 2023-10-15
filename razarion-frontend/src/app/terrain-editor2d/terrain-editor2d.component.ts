@@ -8,6 +8,7 @@ import {ObjectNameId} from "../gwtangular/GwtAngularFacade";
 import {Controls} from "./controls";
 import {EditorService} from "../editor/editor-service";
 import {ActivatedRoute} from "@angular/router";
+import {Slope} from "./slope";
 
 @Component({
   selector: 'app-terrain-editor2d',

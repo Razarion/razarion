@@ -15,7 +15,7 @@ import {BabylonModelService} from "../../game/renderer/babylon-model.service";
 import {TerrainObjectPositionComponent} from "./terrain-object-position.component";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
 import {GizmoManager, Mesh, MeshBuilder, Node, PointerEventTypes, Tools, TransformNode} from "@babylonjs/core";
-import {ThreeJsTerrainTileImpl} from "../../game/renderer/three-js-terrain-tile.impl";
+import {BabylonTerrainTileImpl} from "../../game/renderer/babylon-terrain-tile.impl";
 import {Observer} from "@babylonjs/core/Misc/observable";
 import {PointerInfo} from "@babylonjs/core/Events/pointerEvents";
 import {Nullable} from "@babylonjs/core/types";
@@ -112,7 +112,7 @@ export class ObjectTerrainEditorComponent implements OnInit {
                 scale = GwtInstance.newVertex(1, 1, 1);
                 terrainObjectId = -1;
               }
-              let newTerrainObjectMesh = ThreeJsTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, null);
+              let newTerrainObjectMesh = BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, null);
               this.threeJsRendererServiceImpl.addShadowCaster(newTerrainObjectMesh);
               this.selectActiveTerrainObject(<TransformNode>newTerrainObjectMesh, true)
             }

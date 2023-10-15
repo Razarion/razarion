@@ -34,6 +34,7 @@ export class CanvasController {
     this.canvas.addEventListener('mousedown', this.onPointerDown.bind(this));
     this.canvas.addEventListener('mouseup', this.onPointerUp.bind(this));
     this.canvas.addEventListener('mousemove', this.onPointerMove.bind(this));
+    window.addEventListener('keydown', this.onKeydown.bind(this));
     this.canvas.addEventListener('wheel', (e) => this.adjustZoom(e.deltaY * this.SCROLL_SENSITIVITY));
   }
 
@@ -97,12 +98,20 @@ export class CanvasController {
       }
     }
 
-    private adjustZoom(zoomAmount: number) {
-        if (!this.isDragging) {
-            this.cameraZoom += zoomAmount;
-            this.cameraZoom = Math.max(Math.min(this.cameraZoom, this.MAX_ZOOM), this.MIN_ZOOM);
-        }
+  private onKeydown(e: KeyboardEvent) {
+    if (e.key == ' ') {
+      if (this.slopeContainer.getSelectionContext()) {
+        this.controls.selectedSLope = this.slopeContainer.getSelectionContext()?.getInsideOf() || this.slopeContainer.getSelectionContext()?.getIntersect();
+      }
     }
+  }
+
+  private adjustZoom(zoomAmount: number) {
+    if (!this.isDragging) {
+      this.cameraZoom += zoomAmount;
+      this.cameraZoom = Math.max(Math.min(this.cameraZoom, this.MAX_ZOOM), this.MIN_ZOOM);
+    }
+  }
 
   private drawPlanetSize() {
     if (this.planetSize) {

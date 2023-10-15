@@ -19,7 +19,7 @@ public class BabylonRendererService {
     @Inject
     private BabylonRenderServiceAccess babylonRenderServiceAccess;
 
-    public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfig) {
+    public BabylonTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfig) {
         return babylonRenderServiceAccess.createTerrainTile(terrainTile, defaultGroundConfig);
     }
 

@@ -1,19 +1,15 @@
 import {Slope} from "./slope";
 
 export class SelectionContext {
-  private slopes: Slope[] = [];
+  private intersect?: Slope;
   private insideOf?: Slope;
 
-  add(slope: Slope) {
-    this.slopes.push(slope);
+  setIntersect(slope: Slope) {
+    this.intersect = slope;
   }
 
-  valid(): boolean {
-    return this.slopes.length > 0
-  }
-
-  getSelectedSlope(): Slope {
-    return this.slopes[0];
+  getIntersect(): Slope | undefined {
+    return this.intersect;
   }
 
   setInsideOf(slope: Slope) {

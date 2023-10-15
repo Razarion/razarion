@@ -10,7 +10,7 @@ import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
-import com.btxtech.uiservice.renderer.ThreeJsTerrainTile;
+import com.btxtech.uiservice.renderer.BabylonTerrainTile;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
     private final Logger logger = Logger.getLogger(BabylonRendererServiceAccessMock.class.getName());
 
     @Override
-    public ThreeJsTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId) {
+    public BabylonTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId) {
         logger.warning("createTerrainTile()");
         return null;
     }

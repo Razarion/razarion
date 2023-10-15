@@ -37,7 +37,7 @@ import {
   ThreeJsModelConfig,
   ThreeJsModelPackConfig,
   ThreeJsModelPackService,
-  ThreeJsTerrainTile,
+  BabylonTerrainTile,
   Vertex,
   WaterConfig, WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
@@ -646,7 +646,7 @@ export class GameMockService {
             }
           }
         };
-        const threeJsTerrainTile: ThreeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, 1);
+        const threeJsTerrainTile: BabylonTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, 1);
         threeJsTerrainTile.addToScene();
       }
     });
