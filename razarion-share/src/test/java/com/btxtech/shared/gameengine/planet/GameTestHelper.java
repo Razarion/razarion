@@ -109,6 +109,6 @@ public interface GameTestHelper {
     }
 
     static TerrainSlopeCorner createTerrainSlopeCorner(double x, double y, Integer slopeDrivewayId) {
-        return new TerrainSlopeCorner().setPosition(new DecimalPosition(x, y)).setSlopeDrivewayId(slopeDrivewayId);
+        return new TerrainSlopeCorner().position(new DecimalPosition(x, y)).slopeDrivewayId(slopeDrivewayId);
     }
 }

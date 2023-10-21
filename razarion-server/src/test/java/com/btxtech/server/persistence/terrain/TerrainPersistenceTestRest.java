@@ -17,7 +17,6 @@ import org.unitils.reflectionassert.comparator.impl.ObjectComparatorIgnore;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -124,6 +123,6 @@ public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
     }
 
     static TerrainSlopeCorner createTSC(double x, double y, Integer slopeDrivewayId) {
-        return new TerrainSlopeCorner().setPosition(new DecimalPosition(x, y)).setSlopeDrivewayId(slopeDrivewayId);
+        return new TerrainSlopeCorner().position(new DecimalPosition(x, y)).slopeDrivewayId(slopeDrivewayId);
     }
 }

@@ -14,17 +14,25 @@ public class TerrainSlopeCorner {
         return position;
     }
 
-    public TerrainSlopeCorner setPosition(DecimalPosition position) {
+    public void setPosition(DecimalPosition position) {
         this.position = position;
-        return this;
     }
 
     public Integer getSlopeDrivewayId() {
         return slopeDrivewayId;
     }
 
-    public TerrainSlopeCorner setSlopeDrivewayId(Integer slopeDrivewayId) {
+    public void setSlopeDrivewayId(Integer slopeDrivewayId) {
         this.slopeDrivewayId = slopeDrivewayId;
+    }
+
+    public TerrainSlopeCorner position(DecimalPosition position) {
+        setPosition(position);
+        return this;
+    }
+
+    public TerrainSlopeCorner slopeDrivewayId(Integer slopeDrivewayId) {
+        setSlopeDrivewayId(slopeDrivewayId);
         return this;
     }
 }

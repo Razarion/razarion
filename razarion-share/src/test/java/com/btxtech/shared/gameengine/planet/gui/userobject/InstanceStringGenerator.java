@@ -65,7 +65,7 @@ public class InstanceStringGenerator {
         StringBuilder builder = new StringBuilder();
         builder.append("Arrays.asList(");
         for (int i = 0; i < positions.size(); i++) {
-            builder.append(generate(new TerrainSlopeCorner().setPosition(positions.get(i))));
+            builder.append(generate(new TerrainSlopeCorner().position(positions.get(i))));
             if (i < positions.size() - 1) {
                 builder.append(", ");
             }

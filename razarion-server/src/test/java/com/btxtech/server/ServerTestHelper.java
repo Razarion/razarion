@@ -11,7 +11,6 @@ import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.TerrainObjectCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
-import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
@@ -721,16 +720,16 @@ public class ServerTestHelper {
         // Land slope
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.slopeConfigId(SLOPE_LAND_CONFIG_ENTITY_1);
-        terrainSlopePositionLand.polygon(Arrays.asList(new TerrainSlopeCorner().setPosition(new DecimalPosition(50, 40)), new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 40)),
-                new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 60)), new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 90)),
-                new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 110)), new TerrainSlopeCorner().setPosition(new DecimalPosition(50, 110))));
+        terrainSlopePositionLand.polygon(Arrays.asList(new TerrainSlopeCorner().position(new DecimalPosition(50, 40)), new TerrainSlopeCorner().position(new DecimalPosition(100, 40)),
+                new TerrainSlopeCorner().position(new DecimalPosition(100, 60)), new TerrainSlopeCorner().position(new DecimalPosition(100, 90)),
+                new TerrainSlopeCorner().position(new DecimalPosition(100, 110)), new TerrainSlopeCorner().position(new DecimalPosition(50, 110))));
         terrainSlopePositions.add(terrainSlopePositionLand);
         // Water slope
         TerrainSlopePosition terrainSlopePositionWater = new TerrainSlopePosition();
         terrainSlopePositionWater.slopeConfigId(SLOPE_WATER_CONFIG_ENTITY_2);
-        terrainSlopePositionWater.polygon(Arrays.asList(new TerrainSlopeCorner().setPosition(new DecimalPosition(64, 200)), new TerrainSlopeCorner().setPosition(new DecimalPosition(231, 200)),
-                new TerrainSlopeCorner().setPosition(new DecimalPosition(231, 256)), new TerrainSlopeCorner().setPosition(new DecimalPosition(151, 257)),
-                new TerrainSlopeCorner().setPosition(new DecimalPosition(239, 359)), new TerrainSlopeCorner().setPosition(new DecimalPosition(49, 360))));
+        terrainSlopePositionWater.polygon(Arrays.asList(new TerrainSlopeCorner().position(new DecimalPosition(64, 200)), new TerrainSlopeCorner().position(new DecimalPosition(231, 200)),
+                new TerrainSlopeCorner().position(new DecimalPosition(231, 256)), new TerrainSlopeCorner().position(new DecimalPosition(151, 257)),
+                new TerrainSlopeCorner().position(new DecimalPosition(239, 359)), new TerrainSlopeCorner().position(new DecimalPosition(49, 360))));
         terrainSlopePositions.add(terrainSlopePositionWater);
 
         // TODO planetCrudPersistence.createTerrainSlopePositions(PLANET_2_ID, terrainSlopePositions);
