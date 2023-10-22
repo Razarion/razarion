@@ -4,6 +4,7 @@ import {Cursor} from "./cursor";
 import {TerrainSlopePosition} from "../generated/razarion-share";
 import {SaveContext} from "./save-context";
 import {Controls} from "./controls";
+import {Slope} from "./slope";
 
 export class TerrainEditor {
   private readonly canvasController: CanvasController;
@@ -32,5 +33,16 @@ export class TerrainEditor {
 
   setPlanetSize(x: number, y: number) {
     this.canvasController.setPlanetSize(x, y);
+  }
+
+  findParentSlope(slope: Slope | undefined): Slope | undefined {
+    if (!slope) {
+      return undefined;
+    }
+    return this.slopeContainer.findParentSlope(slope!);
+  }
+
+  onDelete(slope: Slope) {
+    this.slopeContainer.deleteSlope(slope);
   }
 }

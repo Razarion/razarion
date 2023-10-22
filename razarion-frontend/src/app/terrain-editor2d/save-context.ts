@@ -4,6 +4,7 @@ import {Slope} from "./slope";
 export class SaveContext {
   private updatedSlopes: Slope[] = [];
   private createdSlopes: Slope[] = [];
+  private deletedSlopes: number[] = [];
 
   onManipulated(slope: Slope) {
     if (this.createdSlopes.includes(slope)) {
@@ -24,9 +25,10 @@ export class SaveContext {
       updatedSlopes.push(slope.generateTerrainSlopePosition());
     });
 
+    let deletedSlopes = this.deletedSlopes;
     return new class implements SlopeTerrainEditorUpdate {
       createdSlopes = createdSlopes;
-      deletedSlopeIds: number[] = [];
+      deletedSlopeIds= deletedSlopes;
       updatedSlopes = updatedSlopes;
     };
   }
@@ -34,9 +36,26 @@ export class SaveContext {
   clear() {
     this.createdSlopes = [];
     this.updatedSlopes = [];
+    this.deletedSlopes = [];
   }
 
   onCreated(slope: Slope) {
     this.createdSlopes.push(slope);
+  }
+
+  onDeleted(slope: Slope) {
+    if(slope.terrainSlopePosition.id) {
+      this.deletedSlopes.push(slope.terrainSlopePosition.id);
+      this.remove(slope, this.updatedSlopes);
+    } else {
+      this.remove(slope, this.createdSlopes);
+    }
+  }
+
+  private remove(removeSlope: Slope, slopes: Slope[]) {
+    const index = slopes.indexOf(removeSlope);
+    if (index >= 0) {
+      slopes.splice(index, 1);
+    }
   }
 }

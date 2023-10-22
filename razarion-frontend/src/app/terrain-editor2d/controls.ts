@@ -5,4 +5,12 @@ export class Controls {
   yPos?: number;
   newSlopeConfigId?: number;
   selectedSLope?: Slope;
+
+  getCorners(): number | undefined {
+    if (this.selectedSLope?.getPolygon()?.geometry) {
+      return this.selectedSLope?.getPolygon()?.geometry!.coordinates[0].length
+    }
+    return undefined;
+  }
+
 }

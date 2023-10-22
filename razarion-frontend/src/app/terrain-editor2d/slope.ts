@@ -2,13 +2,13 @@ import {DecimalPosition, TerrainSlopeCorner, TerrainSlopePosition} from "../gene
 import * as turf from "@turf/turf";
 import {Feature, Polygon} from "@turf/turf";
 
-import {SelectionContext} from "./selection-context";
+import {HoverContext} from "./hover-context";
 
 export class Slope {
   private readonly _terrainSlopePosition: TerrainSlopePosition;
   private children: Slope[] = [];
   private polygon: Feature<Polygon, any>;
-  private selected = false;
+  private hover = false;
 
   constructor(terrainSlopePosition: TerrainSlopePosition) {
     this._terrainSlopePosition = terrainSlopePosition;
@@ -38,7 +38,7 @@ export class Slope {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (this.selected) {
+    if (this.hover) {
       ctx.fillStyle = "blue";
     } else {
       ctx.fillStyle = "green";
@@ -56,15 +56,17 @@ export class Slope {
     this.children.forEach(child => child.draw(ctx))
   }
 
-  recalculateSelection(cursorPolygon: Feature<Polygon, any>, selectionContext: SelectionContext) {
-    this.selected = false;
+  detectHover(cursorPolygon: Feature<Polygon, any>, hoverContext: HoverContext) {
+    this.hover = false;
     if (turf.intersect(this.polygon, cursorPolygon)) {
-      selectionContext.setIntersect(this);
       if (turf.booleanWithin(cursorPolygon, this.polygon)) {
-        selectionContext.setInsideOf(this);
+        hoverContext.setInsideOf(this);
       } else {
-        this.selected = true;
+        hoverContext.getIntersectSlope() && hoverContext.getIntersectSlope()!.clearHover();
+        hoverContext.setIntersectSlope(this);
+        this.hover = true;
       }
+      this.children.forEach(child => child.detectHover(cursorPolygon, hoverContext));
     }
   }
 
@@ -94,7 +96,7 @@ export class Slope {
 
   createNew(polygon: Feature<Polygon, any>) {
     this.polygon = turf.clone(polygon);
-    this.selected = true;
+    this.hover = true;
   }
 
 
@@ -104,5 +106,30 @@ export class Slope {
 
   addChild(slope: Slope) {
     this.children.push(slope);
+  }
+
+  getPolygon(): Feature<Polygon, any> | undefined {
+    return this.polygon;
+  }
+
+  clearHover() {
+    this.hover = false;
+  }
+
+  findParentSlope(slope: Slope): Slope | undefined {
+    for (const childSlope of this.children) {
+      if (childSlope === slope) {
+        return this;
+      }
+      let found = childSlope.findParentSlope(slope);
+      if (found) {
+        return found;
+      }
+    }
+    return undefined;
+  }
+
+  getChildren(): Slope[] {
+    return this.children;
   }
 }

@@ -62,7 +62,21 @@
     <div class="grid grid-razarion-editor">
       <span class="col-4">Id</span>
       <div class="col-8">
-        {{controls.selectedSLope}}
+        {{controls.selectedSLope?.terrainSlopePosition?.id}} - {{controls.getCorners()}}
+      </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+      <span class="col-4">Parent Id</span>
+      <div class="col-8">
+        {{terrainEditor?.findParentSlope(controls.selectedSLope)?.terrainSlopePosition?.id}}
+      </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+      <span class="col-4">Delete</span>
+      <div class="col-8">
+        <p-button icon="pi pi-trash"
+                  [disabled]="!controls.selectedSLope"
+                  (onClick)="onDelete()"></p-button>
       </div>
     </div>
 

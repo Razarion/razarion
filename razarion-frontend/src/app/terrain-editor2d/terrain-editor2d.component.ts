@@ -8,7 +8,6 @@ import {ObjectNameId} from "../gwtangular/GwtAngularFacade";
 import {Controls} from "./controls";
 import {EditorService} from "../editor/editor-service";
 import {ActivatedRoute} from "@angular/router";
-import {Slope} from "./slope";
 
 @Component({
   selector: 'app-terrain-editor2d',
@@ -26,7 +25,7 @@ export class TerrainEditor2dComponent implements OnInit {
   canvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasDiv', {static: true})
   canvasDiv!: ElementRef<HTMLDivElement>;
-  private terrainEditor?: TerrainEditor;
+  terrainEditor?: TerrainEditor;
   controls: Controls = new Controls();
   slopeConfigs: any[] = [];
 
@@ -124,5 +123,10 @@ export class TerrainEditor2dComponent implements OnInit {
 
   restartPlanetCold() {
     this.editorService.executeServerCommand(EditorService.RESTART_PLANET_COLD);
+  }
+
+  onDelete() {
+    this.terrainEditor!.onDelete(this.controls.selectedSLope!);
+    this.controls.selectedSLope = undefined;
   }
 }

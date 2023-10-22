@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.system.Nullable;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -15,7 +17,7 @@ public class TerrainSlopePosition {
     private List<TerrainSlopePosition> children;
     private Integer editorParentIdIfCreated; // Filled in Angular slope editor
 
-    public Integer getId() {
+    public @Nullable Integer getId() {
         return id;
     }
 
@@ -51,11 +53,11 @@ public class TerrainSlopePosition {
         this.children = children;
     }
 
-    public Integer getEditorParentIdIfCreated() {
+    public @Nullable Integer getEditorParentIdIfCreated() {
         return editorParentIdIfCreated;
     }
 
-    public void setEditorParentIdIfCreated(Integer editorParentIdIfCreated) {
+    public void setEditorParentIdIfCreated(@Nullable Integer editorParentIdIfCreated) {
         this.editorParentIdIfCreated = editorParentIdIfCreated;
     }
 

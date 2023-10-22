@@ -68,7 +68,7 @@ export class CanvasController {
       this.isDragging = true;
       this.dragStart.x = this.getEventLocation(e).x / this.cameraZoom - this.cameraOffset.x;
       this.dragStart.y = (this.canvasDiv.offsetHeight - this.getEventLocation(e).y) / this.cameraZoom - this.cameraOffset.y;
-      this.slopeContainer.recalculateSelection(this.cursor.getPolygon());
+      this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
       if (!e.ctrlKey && this.cursor.getPolygon()) {
         this.slopeContainer.manipulate(this.controls, this.cursor.getPolygon());
       }
@@ -94,14 +94,14 @@ export class CanvasController {
           this.slopeContainer.manipulate(this.controls, this.cursor.getPolygon());
         }
       } else {
-        this.slopeContainer.recalculateSelection(this.cursor.getPolygon());
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
       }
     }
 
   private onKeydown(e: KeyboardEvent) {
     if (e.key == ' ') {
-      if (this.slopeContainer.getSelectionContext()) {
-        this.controls.selectedSLope = this.slopeContainer.getSelectionContext()?.getInsideOf() || this.slopeContainer.getSelectionContext()?.getIntersect();
+      if (this.slopeContainer.getHoverContext()) {
+        this.controls.selectedSLope = this.slopeContainer.getHoverContext()?.getIntersectSlope();
       }
     }
   }
