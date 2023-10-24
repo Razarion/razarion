@@ -6,10 +6,20 @@ import {SaveContext} from "./save-context";
 import {Controls} from "./controls";
 import {Slope} from "./slope";
 
+export enum Mode {
+  SELECT,
+  PANNING,
+  SLOPE_INCREASE,
+  SLOPE_DECREASE,
+  DRIVEWAY_INCREASE,
+  DRIVEWAY_DECREASE,
+}
 export class TerrainEditor {
   private readonly canvasController: CanvasController;
   private readonly slopeContainer: SlopeContainer;
   private readonly cursor: Cursor;
+  mode: Mode = Mode.SELECT;
+
 
   constructor(canvas: HTMLCanvasElement,
               canvasDiv: HTMLDivElement,

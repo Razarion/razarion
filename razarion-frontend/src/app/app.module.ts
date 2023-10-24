@@ -93,7 +93,8 @@ import {WaterComponent} from './editor/common/water/water.component';
 import {BabylonModelComponent} from './editor/common/babylon-material/babylon-model.component';
 import {DrivewayEditorComponent} from './editor/crud-editors/driveway-editor/driveway-editor.component';
 import {ProgressSpinnerModule} from "primeng/progressspinner";
-import { TerrainEditor2dComponent } from './terrain-editor2d/terrain-editor2d.component';
+import {TerrainEditor2dComponent} from './terrain-editor2d/terrain-editor2d.component';
+import {MenuModule} from 'primeng/menu';
 
 @NgModule({
   declarations: [
@@ -186,7 +187,8 @@ import { TerrainEditor2dComponent } from './terrain-editor2d/terrain-editor2d.co
     SelectButtonModule,
     AccordionModule,
     ToggleButtonModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    MenuModule
   ],
   providers: [
     FrontendService, {

@@ -1,8 +1,8 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {TerrainEditor} from "./terrain-editor";
+import {Mode, TerrainEditor} from "./terrain-editor";
 import {READ_TERRAIN_SLOPE_POSITIONS, SLOPE_EDITOR_PATH, UPDATE_SLOPES_TERRAIN_EDITOR} from "../common";
 import {HttpClient} from "@angular/common/http";
-import {MessageService} from "primeng/api";
+import {MenuItem, MessageService} from "primeng/api";
 import {TerrainSlopePosition} from "../generated/razarion-share";
 import {ObjectNameId} from "../gwtangular/GwtAngularFacade";
 import {Controls} from "./controls";
@@ -28,6 +28,7 @@ export class TerrainEditor2dComponent implements OnInit {
   terrainEditor?: TerrainEditor;
   controls: Controls = new Controls();
   slopeConfigs: any[] = [];
+  menuItems: MenuItem[] = [];
 
   constructor(private httpClient: HttpClient,
               private messageService: MessageService,
@@ -50,6 +51,57 @@ export class TerrainEditor2dComponent implements OnInit {
           this.terrainEditor!.setPlanetSize(planetConfig.size.x, planetConfig.size.y);
         })
     });
+    this.menuItems = [
+      {
+        label: 'Select',
+        icon: 'pi pi-check',
+        styleClass: this.getStyleClass(Mode.SELECT),
+        command: () => {
+          this.setMode(Mode.SELECT);
+        },
+
+      },
+      {
+        label: 'Panning',
+        icon: 'pi pi-arrows-h',
+        styleClass: this.getStyleClass(Mode.PANNING),
+        command: () => {
+          this.setMode(Mode.PANNING);
+        },
+      },
+      {
+        label: 'Slope +',
+        styleClass: this.getStyleClass(Mode.SLOPE_INCREASE),
+        icon: 'pi pi-plus-circle',
+        command: () => {
+          this.setMode(Mode.SLOPE_INCREASE);
+        },
+      },
+      {
+        label: 'Slope -',
+        icon: 'pi pi-circle',
+        styleClass: this.getStyleClass(Mode.SLOPE_DECREASE),
+        command: () => {
+          this.setMode(Mode.SLOPE_DECREASE);
+        },
+      },
+      {
+        label: 'Driveway +',
+        styleClass: this.getStyleClass(Mode.DRIVEWAY_INCREASE),
+        icon: 'pi pi-chevron-circle-up',
+        command: () => {
+          this.setMode(Mode.DRIVEWAY_INCREASE);
+        },
+      },
+      {
+        label: 'Driveway -',
+        styleClass: this.getStyleClass(Mode.DRIVEWAY_DECREASE),
+        icon: 'pi pi-minus-circle',
+        command: () => {
+          this.setMode(Mode.DRIVEWAY_DECREASE);
+        },
+      },
+    ];
   }
 
   private loadTerrainSlopePositions() {
@@ -117,6 +169,21 @@ export class TerrainEditor2dComponent implements OnInit {
     })
   }
 
+  private getStyleClass(mode: Mode): string {
+    if (mode === this.terrainEditor?.mode) {
+      return 'surface-300';
+    } else {
+      return '';
+    }
+  }
+
+  private setMode(mode: Mode) {
+    this.terrainEditor!.mode = mode;
+    this.menuItems.forEach((item, index) => {
+      item.styleClass = this.getStyleClass(index);
+    });
+  }
+
   restartPlanetWarm() {
     this.editorService.executeServerCommand(EditorService.RESTART_PLANET_WARM);
   }
@@ -133,4 +200,5 @@ export class TerrainEditor2dComponent implements OnInit {
   onChangeSlopeConfigId() {
     this.terrainEditor!.onChangeSlopeConfigId(this.controls.selectedSLope!);
   }
+
 }
