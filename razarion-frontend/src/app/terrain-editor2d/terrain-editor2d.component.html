@@ -79,6 +79,15 @@
                   (onClick)="onDelete()"></p-button>
       </div>
     </div>
+    <div class="grid grid-razarion-editor">
+      <span class="col-4">Slope</span>
+      <div class="col-8" *ngIf="controls.selectedSLope">
+        <p-dropdown [options]="slopeConfigs"
+                    [(ngModel)]="controls.selectedSLope!.terrainSlopePosition.slopeConfigId"
+                    (onChange)="onChangeSlopeConfigId()">
+        </p-dropdown>
+      </div>
+    </div>
 
   </div>
 </div>

@@ -45,4 +45,7 @@ export class TerrainEditor {
   onDelete(slope: Slope) {
     this.slopeContainer.deleteSlope(slope);
   }
+  onChangeSlopeConfigId(slope: Slope) {
+    this.slopeContainer.onChangeSlopeConfigId(slope);
+  }
 }

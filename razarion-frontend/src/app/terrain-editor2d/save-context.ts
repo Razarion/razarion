@@ -28,7 +28,7 @@ export class SaveContext {
     let deletedSlopes = this.deletedSlopes;
     return new class implements SlopeTerrainEditorUpdate {
       createdSlopes = createdSlopes;
-      deletedSlopeIds= deletedSlopes;
+      deletedSlopeIds = deletedSlopes;
       updatedSlopes = updatedSlopes;
     };
   }
@@ -44,7 +44,7 @@ export class SaveContext {
   }
 
   onDeleted(slope: Slope) {
-    if(slope.terrainSlopePosition.id) {
+    if (slope.terrainSlopePosition.id) {
       this.deletedSlopes.push(slope.terrainSlopePosition.id);
       this.remove(slope, this.updatedSlopes);
     } else {
@@ -57,5 +57,9 @@ export class SaveContext {
     if (index >= 0) {
       slopes.splice(index, 1);
     }
+  }
+
+  slopeConfigConfigIdChanged(slope: Slope) {
+    this.updatedSlopes.includes(slope) || this.createdSlopes.includes(slope) || this.updatedSlopes.push(slope);
   }
 }

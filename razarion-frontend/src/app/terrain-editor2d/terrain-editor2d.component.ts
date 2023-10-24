@@ -129,4 +129,8 @@ export class TerrainEditor2dComponent implements OnInit {
     this.terrainEditor!.onDelete(this.controls.selectedSLope!);
     this.controls.selectedSLope = undefined;
   }
+
+  onChangeSlopeConfigId() {
+    this.terrainEditor!.onChangeSlopeConfigId(this.controls.selectedSLope!);
+  }
 }

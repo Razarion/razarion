@@ -107,4 +107,8 @@ export class SlopeContainer {
 
     this.saveContext.onDeleted(deleteSlope)
   }
+
+  onChangeSlopeConfigId(slope: Slope) {
+    this.saveContext.slopeConfigConfigIdChanged(slope)
+  }
 }
