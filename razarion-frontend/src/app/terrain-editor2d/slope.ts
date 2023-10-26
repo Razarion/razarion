@@ -74,6 +74,13 @@ export class Slope {
     this.polygon = <any>turf.union(polygon, this.polygon);
   }
 
+  remove(polygon: Feature<Polygon, any>) {
+    let newPolygon = <any>turf.difference(this.polygon, polygon);
+    if(newPolygon && newPolygon.geometry.coordinates.length === 1) {
+      this.polygon = newPolygon;
+    }
+  }
+
   generateTerrainSlopePosition(): TerrainSlopePosition {
     this._terrainSlopePosition.polygon = this.generateTerrainSlopeCorners();
     return this._terrainSlopePosition;

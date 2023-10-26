@@ -35,20 +35,26 @@ export class SlopeContainer {
     });
   }
 
-  manipulate(controls: Controls, cursorPolygon?: Feature<Polygon, any>) {
+  manipulate(controls: Controls, increaseMode: boolean, cursorPolygon?: Feature<Polygon, any>) {
     if (!cursorPolygon) {
       return;
     }
 
     if (this.hoverContext?.getIntersectSlope()) {
-      this.manipulateExisting(cursorPolygon);
+      this.manipulateExisting(cursorPolygon, increaseMode);
     } else {
-      this.createNew(controls, cursorPolygon);
+      if (increaseMode) {
+        this.createNew(controls, cursorPolygon);
+      }
     }
   }
 
-  private manipulateExisting(cursorPolygon: Feature<Polygon, any>) {
-    this.hoverContext!.getIntersectSlope()!.append(cursorPolygon);
+  private manipulateExisting(cursorPolygon: Feature<Polygon, any>, increaseMode: boolean) {
+    if (increaseMode) {
+      this.hoverContext!.getIntersectSlope()!.append(cursorPolygon);
+    } else {
+      this.hoverContext!.getIntersectSlope()!.remove(cursorPolygon);
+    }
     this.saveContext.onManipulated(this.hoverContext!.getIntersectSlope()!);
   }
 

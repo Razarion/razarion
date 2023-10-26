@@ -84,8 +84,8 @@ export class CanvasController {
       case Mode.SLOPE_INCREASE:
       case Mode.SLOPE_DECREASE: {
         this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
-        if (this.terrainEditor.mode === Mode.SLOPE_INCREASE && this.cursor.getPolygon()) {
-          this.slopeContainer.manipulate(this.controls, this.cursor.getPolygon());
+        if (this.cursor.getPolygon()) {
+          this.slopeContainer.manipulate(this.controls, this.terrainEditor.mode === Mode.SLOPE_INCREASE, this.cursor.getPolygon());
         }
         return;
       }
@@ -127,7 +127,7 @@ export class CanvasController {
       case Mode.SLOPE_INCREASE:
       case Mode.SLOPE_DECREASE: {
         if (mouseEvent.buttons === 1) {
-          this.slopeContainer.manipulate(this.controls, this.cursor.getPolygon());
+          this.slopeContainer.manipulate(this.controls, this.terrainEditor.mode === Mode.SLOPE_INCREASE, this.cursor.getPolygon());
         } else {
           this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
         }
