@@ -40,7 +40,7 @@ export class SlopeContainer {
       return;
     }
 
-    if (this.hoverContext?.getIntersectSlope() && !this.hoverContext?.getInsideOf()) {
+    if (this.hoverContext?.getIntersectSlope()) {
       this.manipulateExisting(cursorPolygon);
     } else {
       this.createNew(controls, cursorPolygon);

@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostBinding, OnInit, ViewChild} from '@angular/core';
 import {Mode, TerrainEditor} from "./terrain-editor";
 import {READ_TERRAIN_SLOPE_POSITIONS, SLOPE_EDITOR_PATH, UPDATE_SLOPES_TERRAIN_EDITOR} from "../common";
 import {HttpClient} from "@angular/common/http";
@@ -25,10 +25,13 @@ export class TerrainEditor2dComponent implements OnInit {
   canvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasDiv', {static: true})
   canvasDiv!: ElementRef<HTMLDivElement>;
+  @HostBinding("style.--cursor")
+  cursor: string = 'default';
   terrainEditor?: TerrainEditor;
   controls: Controls = new Controls();
   slopeConfigs: any[] = [];
   menuItems: MenuItem[] = [];
+  Mode = Mode;
 
   constructor(private httpClient: HttpClient,
               private messageService: MessageService,
@@ -102,6 +105,7 @@ export class TerrainEditor2dComponent implements OnInit {
         },
       },
     ];
+    this.setCursor();
   }
 
   private loadTerrainSlopePositions() {
@@ -182,6 +186,7 @@ export class TerrainEditor2dComponent implements OnInit {
     this.menuItems.forEach((item, index) => {
       item.styleClass = this.getStyleClass(index);
     });
+    this.setCursor();
   }
 
   restartPlanetWarm() {
@@ -201,4 +206,27 @@ export class TerrainEditor2dComponent implements OnInit {
     this.terrainEditor!.onChangeSlopeConfigId(this.controls.selectedSLope!);
   }
 
+  private setCursor() {
+    switch (this.terrainEditor?.mode) {
+      case Mode.SELECT: {
+        this.cursor = "pointer";
+        return;
+      }
+      case Mode.PANNING: {
+        this.cursor = "move";
+        return;
+      }
+      case Mode.SLOPE_INCREASE:
+      case Mode.SLOPE_DECREASE: {
+        this.cursor = "none";
+        return;
+      }
+      case Mode.DRIVEWAY_INCREASE:
+      case Mode.DRIVEWAY_DECREASE:
+      default: {
+          this.cursor = "default";
+          return;
+      }
+    }
+  }
 }

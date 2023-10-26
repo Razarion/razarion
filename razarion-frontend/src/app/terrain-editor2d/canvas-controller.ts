@@ -1,6 +1,7 @@
 import {SlopeContainer} from "./slope-container";
 import {Cursor} from "./cursor";
 import {Controls} from "./controls";
+import {Mode, TerrainEditor} from "./terrain-editor";
 
 export class CanvasController {
   private readonly ctx: CanvasRenderingContext2D;
@@ -20,7 +21,8 @@ export class CanvasController {
               private canvasDiv: HTMLDivElement,
               private slopeContainer: SlopeContainer,
               private cursor: Cursor,
-              private controls: Controls) {
+              private controls: Controls,
+              private terrainEditor: TerrainEditor) {
     this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
     this.setupEventListeners();
     this.draw();
@@ -31,10 +33,9 @@ export class CanvasController {
   }
 
   private setupEventListeners() {
-    this.canvas.addEventListener('mousedown', this.onPointerDown.bind(this));
-    this.canvas.addEventListener('mouseup', this.onPointerUp.bind(this));
-    this.canvas.addEventListener('mousemove', this.onPointerMove.bind(this));
-    window.addEventListener('keydown', this.onKeydown.bind(this));
+    this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
+    this.canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
+    this.canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
     this.canvas.addEventListener('wheel', (e) => this.adjustZoom(e.deltaY * this.SCROLL_SENSITIVITY));
   }
 
@@ -52,58 +53,94 @@ export class CanvasController {
     this.drawPlanetSize();
 
     this.slopeContainer.draw(this.ctx);
-    this.cursor.draw(this.ctx);
+    if (this.terrainEditor.mode == Mode.SLOPE_INCREASE || this.terrainEditor.mode == Mode.SLOPE_DECREASE) {
+      this.cursor.draw(this.ctx);
+    }
 
     requestAnimationFrame(this.draw.bind(this));
   }
 
-    private getEventLocation(e: MouseEvent | TouchEvent): { x: number, y: number } {
-        if (e instanceof MouseEvent && e.clientX && e.clientY) {
-            return {x: e.clientX, y: e.clientY};
+  private getEventLocation(e: MouseEvent | TouchEvent): { x: number, y: number } {
+    if (e instanceof MouseEvent && e.offsetX && e.offsetY) {
+      return {x: e.offsetX, y: e.offsetY};
+    }
+    return {x: 0, y: 0};
+  }
+
+  private onMouseDown(e: MouseEvent) {
+    switch (this.terrainEditor?.mode) {
+      case Mode.SELECT: {
+        if (this.slopeContainer.getHoverContext()) {
+          this.controls.selectedSLope = this.slopeContainer.getHoverContext()?.getIntersectSlope();
         }
-        return {x: 0, y: 0};
-    }
-
-    private onPointerDown(e: MouseEvent | TouchEvent) {
-      this.isDragging = true;
-      this.dragStart.x = this.getEventLocation(e).x / this.cameraZoom - this.cameraOffset.x;
-      this.dragStart.y = (this.canvasDiv.offsetHeight - this.getEventLocation(e).y) / this.cameraZoom - this.cameraOffset.y;
-      this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
-      if (!e.ctrlKey && this.cursor.getPolygon()) {
-        this.slopeContainer.manipulate(this.controls, this.cursor.getPolygon());
+        return;
       }
-    }
-
-    private onPointerUp(e: MouseEvent | TouchEvent) {
-        this.isDragging = false;
-    }
-
-    private onPointerMove(e: MouseEvent | TouchEvent) {
-      let x = this.getEventLocation(e).x / this.cameraZoom - this.cameraOffset.x;
-      let y = (this.canvasDiv.offsetHeight - this.getEventLocation(e).y) / this.cameraZoom - this.cameraOffset.y;
-      this.controls.xPos = x;
-      this.controls.yPos = y;
-
-      this.cursor.move(x, y);
-
-      if (this.isDragging) {
-        if (e.ctrlKey) {
-          this.cameraOffset.x = this.getEventLocation(e).x / this.cameraZoom - this.dragStart.x;
-          this.cameraOffset.y = (this.canvasDiv.offsetHeight - this.getEventLocation(e).y) / this.cameraZoom - this.dragStart.y;
-        } else {
+      case Mode.PANNING: {
+        this.isDragging = true;
+        this.dragStart.x = this.getEventLocation(e).x / this.cameraZoom - this.cameraOffset.x;
+        this.dragStart.y = (this.canvasDiv.offsetHeight - this.getEventLocation(e).y) / this.cameraZoom - this.cameraOffset.y;
+        return;
+      }
+      case Mode.SLOPE_INCREASE:
+      case Mode.SLOPE_DECREASE: {
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+        if (this.terrainEditor.mode === Mode.SLOPE_INCREASE && this.cursor.getPolygon()) {
           this.slopeContainer.manipulate(this.controls, this.cursor.getPolygon());
         }
-      } else {
+        return;
+      }
+      case Mode.DRIVEWAY_INCREASE:
+      case Mode.DRIVEWAY_DECREASE:
+      default: {
+
+        return;
+      }
+    }
+  }
+
+  private onMouseUp(e: MouseEvent | TouchEvent) {
+    this.isDragging = false;
+  }
+
+  private onMouseMove(mouseEvent: MouseEvent) {
+    let x = this.getEventLocation(mouseEvent).x / this.cameraZoom - this.cameraOffset.x;
+    let y = (this.canvasDiv.offsetHeight - this.getEventLocation(mouseEvent).y) / this.cameraZoom - this.cameraOffset.y;
+    this.controls.xPos = x;
+    this.controls.yPos = y;
+    this.cursor.move(x, y);
+
+
+    switch (this.terrainEditor?.mode) {
+      case Mode.SELECT: {
         this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+        return;
+      }
+      case Mode.PANNING: {
+        if (this.isDragging) {
+          if (this.terrainEditor.mode === Mode.PANNING) {
+            this.cameraOffset.x = this.getEventLocation(mouseEvent).x / this.cameraZoom - this.dragStart.x;
+            this.cameraOffset.y = (this.canvasDiv.offsetHeight - this.getEventLocation(mouseEvent).y) / this.cameraZoom - this.dragStart.y;
+          }
+        }
+        return;
+      }
+      case Mode.SLOPE_INCREASE:
+      case Mode.SLOPE_DECREASE: {
+        if (mouseEvent.buttons === 1) {
+          this.slopeContainer.manipulate(this.controls, this.cursor.getPolygon());
+        } else {
+          this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+        }
+        return;
+      }
+      case Mode.DRIVEWAY_INCREASE:
+      case Mode.DRIVEWAY_DECREASE:
+      default: {
+
+        return;
       }
     }
 
-  private onKeydown(e: KeyboardEvent) {
-    if (e.key == ' ') {
-      if (this.slopeContainer.getHoverContext()) {
-        this.controls.selectedSLope = this.slopeContainer.getHoverContext()?.getIntersectSlope();
-      }
-    }
   }
 
   private adjustZoom(zoomAmount: number) {

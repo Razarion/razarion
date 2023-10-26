@@ -14,6 +14,7 @@ export enum Mode {
   DRIVEWAY_INCREASE,
   DRIVEWAY_DECREASE,
 }
+
 export class TerrainEditor {
   private readonly canvasController: CanvasController;
   private readonly slopeContainer: SlopeContainer;
@@ -30,7 +31,8 @@ export class TerrainEditor {
       canvasDiv,
       this.slopeContainer,
       this.cursor,
-      controls);
+      controls,
+      this);
   }
 
   setTerrainSlopePositions(terrainSlopePosition: TerrainSlopePosition[]) {
@@ -55,6 +57,7 @@ export class TerrainEditor {
   onDelete(slope: Slope) {
     this.slopeContainer.deleteSlope(slope);
   }
+
   onChangeSlopeConfigId(slope: Slope) {
     this.slopeContainer.onChangeSlopeConfigId(slope);
   }
