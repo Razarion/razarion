@@ -35,21 +35,21 @@ export class SlopeContainer {
     });
   }
 
-  manipulate(controls: Controls, increaseMode: boolean, cursorPolygon?: Feature<Polygon, any>) {
+  manipulateSlope(controls: Controls, increaseMode: boolean, cursorPolygon?: Feature<Polygon, any>) {
     if (!cursorPolygon) {
       return;
     }
 
     if (this.hoverContext?.getIntersectSlope()) {
-      this.manipulateExisting(cursorPolygon, increaseMode);
+      this.manipulateExistingSlope(cursorPolygon, increaseMode);
     } else {
       if (increaseMode) {
-        this.createNew(controls, cursorPolygon);
+        this.createNewSlope(controls, cursorPolygon);
       }
     }
   }
 
-  private manipulateExisting(cursorPolygon: Feature<Polygon, any>, increaseMode: boolean) {
+  private manipulateExistingSlope(cursorPolygon: Feature<Polygon, any>, increaseMode: boolean) {
     if (increaseMode) {
       this.hoverContext!.getIntersectSlope()!.append(cursorPolygon);
     } else {
@@ -58,7 +58,20 @@ export class SlopeContainer {
     this.saveContext.onManipulated(this.hoverContext!.getIntersectSlope()!);
   }
 
-  private createNew(controls: Controls, cursorPolygon: Feature<Polygon, any>) {
+  manipulateDriveway(controls: Controls, increaseMode: boolean, cursorPolygon: Feature<Polygon, any> | undefined) {
+    if (!cursorPolygon) {
+      return;
+    }
+
+    if (increaseMode) {
+      this.hoverContext!.getIntersectSlope()!.appendDriveway(cursorPolygon, controls);
+    } else {
+      // TODO
+    }
+    this.saveContext.onManipulated(this.hoverContext!.getIntersectSlope()!);
+  }
+
+  private createNewSlope(controls: Controls, cursorPolygon: Feature<Polygon, any>) {
     let parentId = this.hoverContext?.getInsideOf()?.terrainSlopePosition.id
     let terrainSlopePosition = new class implements TerrainSlopePosition {
       children = [];

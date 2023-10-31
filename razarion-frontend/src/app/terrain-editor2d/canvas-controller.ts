@@ -53,7 +53,10 @@ export class CanvasController {
     this.drawPlanetSize();
 
     this.slopeContainer.draw(this.ctx);
-    if (this.terrainEditor.mode == Mode.SLOPE_INCREASE || this.terrainEditor.mode == Mode.SLOPE_DECREASE) {
+    if (this.terrainEditor.mode == Mode.SLOPE_INCREASE
+      || this.terrainEditor.mode == Mode.SLOPE_DECREASE
+      || this.terrainEditor.mode == Mode.DRIVEWAY_INCREASE
+      || this.terrainEditor.mode == Mode.DRIVEWAY_DECREASE) {
       this.cursor.draw(this.ctx);
     }
 
@@ -71,7 +74,7 @@ export class CanvasController {
     switch (this.terrainEditor?.mode) {
       case Mode.SELECT: {
         if (this.slopeContainer.getHoverContext()) {
-          this.controls.selectedSLope = this.slopeContainer.getHoverContext()?.getIntersectSlope();
+          this.controls.selectedSlope = this.slopeContainer.getHoverContext()?.getIntersectSlope();
         }
         return;
       }
@@ -85,12 +88,18 @@ export class CanvasController {
       case Mode.SLOPE_DECREASE: {
         this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
         if (this.cursor.getPolygon()) {
-          this.slopeContainer.manipulate(this.controls, this.terrainEditor.mode === Mode.SLOPE_INCREASE, this.cursor.getPolygon());
+          this.slopeContainer.manipulateSlope(this.controls, this.terrainEditor.mode === Mode.SLOPE_INCREASE, this.cursor.getPolygon());
         }
         return;
       }
       case Mode.DRIVEWAY_INCREASE:
-      case Mode.DRIVEWAY_DECREASE:
+      case Mode.DRIVEWAY_DECREASE: {
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+        if (this.cursor.getPolygon()) {
+          this.slopeContainer.manipulateDriveway(this.controls, this.terrainEditor.mode === Mode.DRIVEWAY_INCREASE, this.cursor.getPolygon());
+        }
+        return;
+      }
       default: {
 
         return;
@@ -127,14 +136,21 @@ export class CanvasController {
       case Mode.SLOPE_INCREASE:
       case Mode.SLOPE_DECREASE: {
         if (mouseEvent.buttons === 1) {
-          this.slopeContainer.manipulate(this.controls, this.terrainEditor.mode === Mode.SLOPE_INCREASE, this.cursor.getPolygon());
+          this.slopeContainer.manipulateSlope(this.controls, this.terrainEditor.mode === Mode.SLOPE_INCREASE, this.cursor.getPolygon());
         } else {
           this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
         }
         return;
       }
       case Mode.DRIVEWAY_INCREASE:
-      case Mode.DRIVEWAY_DECREASE:
+      case Mode.DRIVEWAY_DECREASE: {
+        if (mouseEvent.buttons === 1) {
+          this.slopeContainer.manipulateDriveway(this.controls, this.terrainEditor.mode === Mode.DRIVEWAY_INCREASE, this.cursor.getPolygon());
+        } else {
+          this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+        }
+        return;
+      }
       default: {
 
         return;

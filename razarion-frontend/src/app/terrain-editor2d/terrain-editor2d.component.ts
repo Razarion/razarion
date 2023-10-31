@@ -1,6 +1,11 @@
 import {Component, ElementRef, HostBinding, OnInit, ViewChild} from '@angular/core';
 import {Mode, TerrainEditor} from "./terrain-editor";
-import {READ_TERRAIN_SLOPE_POSITIONS, SLOPE_EDITOR_PATH, UPDATE_SLOPES_TERRAIN_EDITOR} from "../common";
+import {
+  DRIVEWAY_EDITOR_PATH,
+  READ_TERRAIN_SLOPE_POSITIONS,
+  SLOPE_EDITOR_PATH,
+  UPDATE_SLOPES_TERRAIN_EDITOR
+} from "../common";
 import {HttpClient} from "@angular/common/http";
 import {MenuItem, MessageService} from "primeng/api";
 import {TerrainSlopePosition} from "../generated/razarion-share";
@@ -30,6 +35,7 @@ export class TerrainEditor2dComponent implements OnInit {
   terrainEditor?: TerrainEditor;
   controls: Controls = new Controls();
   slopeConfigs: any[] = [];
+  drivewayConfigs: any[] = [];
   menuItems: MenuItem[] = [];
   Mode = Mode;
 
@@ -48,6 +54,7 @@ export class TerrainEditor2dComponent implements OnInit {
       this.planetId = parseInt(params[TerrainEditor2dComponent.PLANET_ID_PARAM]);
       this.loadTerrainSlopePositions();
       this.loadSlopeObjectNameIds();
+      this.loadDrivewayObjectNameIds();
       this.editorService.readPlanetConfig(this.planetId)
         .then(planetConfig => {
           this.planetSize = {x: planetConfig.size.x, y: planetConfig.size.y}
@@ -140,7 +147,7 @@ export class TerrainEditor2dComponent implements OnInit {
       error: error => {
         console.error(error);
         this.messageService.add({
-          severity: 'Slope Load Error',
+          severity: 'Slope load error',
           summary: `Error getObjectNameIds: ${url}`,
           detail: error,
           sticky: true
@@ -149,6 +156,28 @@ export class TerrainEditor2dComponent implements OnInit {
     });
   }
 
+  private loadDrivewayObjectNameIds() {
+    this.drivewayConfigs = [];
+    const url = `${DRIVEWAY_EDITOR_PATH}/objectNameIds`;
+    this.httpClient.get<ObjectNameId[]>(url).subscribe({
+      next: objectNameIds => {
+        objectNameIds.forEach(objectNameId => this.drivewayConfigs.push({
+          label: `${objectNameId.internalName} '${objectNameId.id}'`,
+          value: objectNameId.id,
+        }));
+        this.controls.newDrivewayConfigId = objectNameIds[0].id;
+      },
+      error: error => {
+        console.error(error);
+        this.messageService.add({
+          severity: 'Driveway load error',
+          summary: `Error getObjectNameIds: ${url}`,
+          detail: error,
+          sticky: true
+        });
+      }
+    });
+  }
   save() {
     const url = `${UPDATE_SLOPES_TERRAIN_EDITOR}/${this.planetId}`;
     this.httpClient.put(url, this.terrainEditor!.getSaveContext().generateSlopeTerrainEditorUpdate()).subscribe({
@@ -198,12 +227,12 @@ export class TerrainEditor2dComponent implements OnInit {
   }
 
   onDelete() {
-    this.terrainEditor!.onDelete(this.controls.selectedSLope!);
-    this.controls.selectedSLope = undefined;
+    this.terrainEditor!.onDelete(this.controls.selectedSlope!);
+    this.controls.selectedSlope = undefined;
   }
 
   onChangeSlopeConfigId() {
-    this.terrainEditor!.onChangeSlopeConfigId(this.controls.selectedSLope!);
+    this.terrainEditor!.onChangeSlopeConfigId(this.controls.selectedSlope!);
   }
 
   private setCursor() {

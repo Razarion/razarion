@@ -53,13 +53,13 @@
       <div class="grid grid-razarion-editor">
         <span class="col-4">Id</span>
         <div class="col-8">
-          {{controls.selectedSLope?.terrainSlopePosition?.id}}
+          {{controls.selectedSlope?.terrainSlopePosition?.id}}
         </div>
       </div>
       <div class="grid grid-razarion-editor">
         <span class="col-4">Parent Id</span>
         <div class="col-8">
-          {{terrainEditor?.findParentSlope(controls.selectedSLope)?.terrainSlopePosition?.id}}
+          {{terrainEditor?.findParentSlope(controls.selectedSlope)?.terrainSlopePosition?.id}}
         </div>
       </div>
       <div class="grid grid-razarion-editor">
@@ -69,18 +69,24 @@
         </div>
       </div>
       <div class="grid grid-razarion-editor">
+        <span class="col-4">Driveways</span>
+        <div class="col-8">
+          {{controls.getDriveways()}}
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
         <span class="col-4">Delete</span>
         <div class="col-8">
           <p-button icon="pi pi-trash"
-                    [disabled]="!controls.selectedSLope"
+                    [disabled]="!controls.selectedSlope"
                     (onClick)="onDelete()"></p-button>
         </div>
       </div>
       <div class="grid grid-razarion-editor">
         <span class="col-4">Slope</span>
-        <div class="col-8" *ngIf="controls.selectedSLope">
+        <div class="col-8" *ngIf="controls.selectedSlope">
           <p-dropdown [options]="slopeConfigs"
-                      [(ngModel)]="controls.selectedSLope!.terrainSlopePosition.slopeConfigId"
+                      [(ngModel)]="controls.selectedSlope!.terrainSlopePosition.slopeConfigId"
                       (onChange)="onChangeSlopeConfigId()">
           </p-dropdown>
         </div>
@@ -99,6 +105,23 @@
         <div class="col-8">
           <p-dropdown [options]="slopeConfigs"
                       [(ngModel)]="controls.newSlopeConfigId">
+          </p-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="terrainEditor?.mode === Mode.DRIVEWAY_INCREASE || terrainEditor?.mode === Mode.DRIVEWAY_DECREASE">
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-plus-circle mr-2"></i>
+          <b>New</b>
+        </div>
+      </p-divider>
+      <div class="grid grid-razarion-editor">
+        <span class="col-4">Driveway</span>
+        <div class="col-8">
+          <p-dropdown [options]="drivewayConfigs"
+                      [(ngModel)]="controls.newDrivewayConfigId">
           </p-dropdown>
         </div>
       </div>
