@@ -1,19 +1,29 @@
 import * as turf from '@turf/turf';
 import {Feature, Polygon} from '@turf/turf';
+import {Controls} from "./controls";
 
 export class Cursor {
+  constructor(private controls: Controls) {
+
+  }
+
   private cursor?: Feature<Polygon, any>;
+  private x?: number
+  private y?: number
 
   move(x: number, y: number) {
-    const radius = 20;
-    const corners = 10;
+    this.x = x;
+    this.y = y;
+    this.moveInner(x, y);
+  }
 
-    let deltaAngle = 2 * Math.PI / corners;
+  private moveInner(x: number, y: number) {
+    let deltaAngle = 2 * Math.PI / this.controls.cursorCorners;
     let points = [];
-    for (let i = 0; i < corners; i++) {
-      let angleInRadians = i * deltaAngle;
-      const newX = x + radius * Math.cos(angleInRadians);
-      const newY = y + radius * Math.sin(angleInRadians);
+    for (let i = 0; i < this.controls.cursorCorners; i++) {
+      let angleInRadians = i * deltaAngle + (this.controls.cursorAngleDegree * (Math.PI / 180));
+      const newX = x + this.controls.cursorDiameter / 2.0 * Math.cos(angleInRadians);
+      const newY = y + this.controls.cursorDiameter / 2.0 * Math.sin(angleInRadians);
       points.push([newX, newY])
     }
     points.push([points[0][0], points[0][1]])
@@ -38,5 +48,11 @@ export class Cursor {
     }
     ctx.closePath();
     ctx.stroke();
+  }
+
+  redraw() {
+    if (this.x !== undefined && this.y !== undefined) {
+      this.moveInner(this.x, this.y);
+    }
   }
 }

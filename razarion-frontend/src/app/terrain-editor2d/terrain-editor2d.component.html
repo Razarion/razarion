@@ -43,17 +43,65 @@
       </div>
     </div>
 
-    <div *ngIf="terrainEditor?.mode === Mode.SELECT">
+    <div *ngIf="terrainEditor?.mode === Mode.SLOPE_INCREASE
+                || terrainEditor?.mode === Mode.SLOPE_DECREASE
+                || terrainEditor?.mode === Mode.DRIVEWAY_INCREASE
+                || terrainEditor?.mode === Mode.DRIVEWAY_DECREASE">
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-plus-circle mr-2"></i>
+          <b>Cursor</b>
+        </div>
+      </p-divider>
+      <div class="grid grid-razarion-editor">
+        <span class="col-4">Diameter</span>
+        <div class="col-8">
+          <div style="width: 20em">
+            <input type="text" pInputText [(ngModel)]="controls.cursorDiameter" class="w-full"/>
+            <p-slider [(ngModel)]="controls.cursorDiameter"
+                      [min]="0.1"
+                      [max]="100"
+                      (onChange)="terrainEditor!.onCursorChanged()"></p-slider>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
+        <span class="col-4">Corners</span>
+        <div class="col-8">
+          <div style="width: 20em">
+            <input type="text" pInputText [(ngModel)]="controls.cursorCorners" class="w-full"/>
+            <p-slider [(ngModel)]="controls.cursorCorners"
+                      [min]="3"
+                      [max]="100"
+                      (onChange)="terrainEditor!.onCursorChanged()"></p-slider>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
+        <span class="col-4">Angle [&deg;]</span>
+        <div class="col-8">
+          <div style="width: 20em">
+            <input type="text" pInputText [(ngModel)]="controls.cursorAngleDegree" class="w-full"/>
+            <p-slider [(ngModel)]="controls.cursorAngleDegree"
+                      [min]="0"
+                      [max]="360"
+                      (onChange)="terrainEditor!.onCursorChanged()"></p-slider>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="terrainEditor?.mode === Mode.SELECT && controls.selectedSlope">
       <p-divider align="left">
         <div class="inline-flex align-items-center">
           <i class="pi pi-wrench mr-2"></i>
-          <b>Selected</b>
+          <b>Selected slope</b>
         </div>
       </p-divider>
       <div class="grid grid-razarion-editor">
         <span class="col-4">Id</span>
         <div class="col-8">
-          {{controls.selectedSlope?.terrainSlopePosition?.id}}
+          {{controls.selectedSlope.terrainSlopePosition.id}}
         </div>
       </div>
       <div class="grid grid-razarion-editor">
@@ -77,16 +125,38 @@
       <div class="grid grid-razarion-editor">
         <span class="col-4">Delete</span>
         <div class="col-8">
-          <p-button icon="pi pi-trash"
-                    [disabled]="!controls.selectedSlope"
-                    (onClick)="onDelete()"></p-button>
+          <p-button icon="pi pi-trash" (onClick)="onDelete()"></p-button>
         </div>
       </div>
       <div class="grid grid-razarion-editor">
         <span class="col-4">Slope</span>
-        <div class="col-8" *ngIf="controls.selectedSlope">
+        <div class="col-8">
           <p-dropdown [options]="slopeConfigs"
                       [(ngModel)]="controls.selectedSlope!.terrainSlopePosition.slopeConfigId"
+                      (onChange)="onChangeSlopeConfigId()">
+          </p-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="terrainEditor?.mode === Mode.SELECT && controls.selectedDriveway">
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-wrench mr-2"></i>
+          <b>Selected driveway</b>
+        </div>
+      </p-divider>
+      <div class="grid grid-razarion-editor">
+        <span class="col-4">Corners</span>
+        <div class="col-8">
+          {{controls.selectedDriveway.getCorners()}}
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
+        <span class="col-4">Driveway</span>
+        <div class="col-8">
+          <p-dropdown [options]="drivewayConfigs"
+                      [(ngModel)]="controls.selectedDriveway!.drivewayConfigId"
                       (onChange)="onChangeSlopeConfigId()">
           </p-dropdown>
         </div>

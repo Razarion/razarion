@@ -2,15 +2,13 @@ import {Driveway} from "./driveway";
 import * as turf from "@turf/turf";
 
 
-it('#Driveway.correctIndexes',
+it('#Driveway.reduceToOnePiece',
   (done: DoneFn) => {
-    const polygon = turf.polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
-    const driveway1 = [3, 0, 1];
-    const driveway2 = [0, 1];
+    const indexes = [1, 2, 3];
 
-    // let indexes = Driveway.mergePathsCounterclockwise(polygon.geometry, driveway1, driveway2);
-    // console.log("Hallo4");
-    // console.log(indexes);
+    let resultIndexes = Driveway.reduceToOnePiece(10, indexes);
+    console.log("Hallo7");
+    console.log(resultIndexes);
     // expect(Driveway.correctIndexes(polygon.geometry, indexArray)).toBe([]);
     done();
   });

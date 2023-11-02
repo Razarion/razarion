@@ -26,7 +26,7 @@ export class TerrainEditor {
               canvasDiv: HTMLDivElement,
               controls: Controls) {
     this.slopeContainer = new SlopeContainer();
-    this.cursor = new Cursor;
+    this.cursor = new Cursor(controls);
     this.canvasController = new CanvasController(canvas,
       canvasDiv,
       this.slopeContainer,
@@ -60,5 +60,9 @@ export class TerrainEditor {
 
   onChangeSlopeConfigId(slope: Slope) {
     this.slopeContainer.onChangeSlopeConfigId(slope);
+  }
+
+  onCursorChanged() {
+    this.cursor.redraw();
   }
 }

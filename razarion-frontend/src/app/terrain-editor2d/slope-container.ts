@@ -19,9 +19,9 @@ export class SlopeContainer {
     });
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, controls: Controls) {
     this.rootSlopes.forEach(slopes => {
-      slopes.draw(ctx);
+      slopes.draw(ctx, controls);
     });
   }
 
@@ -59,14 +59,14 @@ export class SlopeContainer {
   }
 
   manipulateDriveway(controls: Controls, increaseMode: boolean, cursorPolygon: Feature<Polygon, any> | undefined) {
-    if (!cursorPolygon) {
+    if (!cursorPolygon || !this.hoverContext!.getIntersectSlope()) {
       return;
     }
 
     if (increaseMode) {
       this.hoverContext!.getIntersectSlope()!.appendDriveway(cursorPolygon, controls);
     } else {
-      // TODO
+      this.hoverContext!.getIntersectSlope()!.removeDriveway(cursorPolygon);
     }
     this.saveContext.onManipulated(this.hoverContext!.getIntersectSlope()!);
   }

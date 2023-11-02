@@ -52,7 +52,7 @@ export class CanvasController {
 
     this.drawPlanetSize();
 
-    this.slopeContainer.draw(this.ctx);
+    this.slopeContainer.draw(this.ctx, this.controls);
     if (this.terrainEditor.mode == Mode.SLOPE_INCREASE
       || this.terrainEditor.mode == Mode.SLOPE_DECREASE
       || this.terrainEditor.mode == Mode.DRIVEWAY_INCREASE
@@ -75,6 +75,7 @@ export class CanvasController {
       case Mode.SELECT: {
         if (this.slopeContainer.getHoverContext()) {
           this.controls.selectedSlope = this.slopeContainer.getHoverContext()?.getIntersectSlope();
+          this.controls.selectedDriveway = this.slopeContainer.getHoverContext()?.getIntersectDriveway();
         }
         return;
       }
@@ -87,17 +88,13 @@ export class CanvasController {
       case Mode.SLOPE_INCREASE:
       case Mode.SLOPE_DECREASE: {
         this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
-        if (this.cursor.getPolygon()) {
-          this.slopeContainer.manipulateSlope(this.controls, this.terrainEditor.mode === Mode.SLOPE_INCREASE, this.cursor.getPolygon());
-        }
+        this.slopeContainer.manipulateSlope(this.controls, this.terrainEditor.mode === Mode.SLOPE_INCREASE, this.cursor.getPolygon());
         return;
       }
       case Mode.DRIVEWAY_INCREASE:
       case Mode.DRIVEWAY_DECREASE: {
         this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
-        if (this.cursor.getPolygon()) {
-          this.slopeContainer.manipulateDriveway(this.controls, this.terrainEditor.mode === Mode.DRIVEWAY_INCREASE, this.cursor.getPolygon());
-        }
+        this.slopeContainer.manipulateDriveway(this.controls, this.terrainEditor.mode === Mode.DRIVEWAY_INCREASE, this.cursor.getPolygon());
         return;
       }
       default: {

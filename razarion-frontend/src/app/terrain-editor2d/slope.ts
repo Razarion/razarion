@@ -53,7 +53,7 @@ export class Slope {
     ]);
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, controls: Controls) {
     if (this.hover) {
       ctx.fillStyle = "blue";
     } else {
@@ -69,9 +69,9 @@ export class Slope {
     ctx.fill();
     ctx.stroke();
 
-    this.children.forEach(child => child.draw(ctx))
+    this.children.forEach(child => child.draw(ctx, controls))
 
-    this.driveways.forEach(driveway => driveway.draw(ctx));
+    this.driveways.forEach(driveway => driveway.draw(ctx, controls));
   }
 
   detectHover(cursorPolygon: Feature<Polygon, any>, hoverContext: HoverContext) {
@@ -83,6 +83,7 @@ export class Slope {
         hoverContext.getIntersectSlope() && hoverContext.getIntersectSlope()!.clearHover();
         hoverContext.setIntersectSlope(this);
         this.hover = true;
+        hoverContext.setIntersectDriveway(this.detectHoverDriveway(cursorPolygon, this))
       }
       this.children.forEach(child => child.detectHover(cursorPolygon, hoverContext));
     }
@@ -110,6 +111,16 @@ export class Slope {
     }
   }
 
+  removeDriveway(polygon: Feature<Polygon, any>) {
+    let driveway = this.findDriveway(polygon);
+    if (driveway) {
+      driveway.remove(polygon);
+      if (driveway.isEmpty()) {
+        this.driveways.splice(this.driveways.indexOf(driveway), 1);
+      }
+    }
+  }
+
   generateTerrainSlopePosition(): TerrainSlopePosition {
     this._terrainSlopePosition.polygon = this.generateTerrainSlopeCorners();
     return this._terrainSlopePosition;
@@ -134,7 +145,7 @@ export class Slope {
 
   private findDrivewayId(index: number): number | null {
     let driveway = this.driveways.find(driveway => driveway.containsIndex(index));
-    return driveway ? driveway.drivewayId : null;
+    return driveway ? driveway.drivewayConfigId : null;
   }
 
   createNew(polygon: Feature<Polygon, any>) {
@@ -183,5 +194,10 @@ export class Slope {
   getDrivewayCount(): number {
     return this.driveways.length;
   }
+
+  private detectHoverDriveway(cursorPolygon: Feature<Polygon, any>, slope: Slope): Driveway | undefined {
+    return slope.driveways.find(driveway => driveway.drivewayIntersection(cursorPolygon));
+  }
+
 }
 
