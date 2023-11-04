@@ -130,4 +130,12 @@ export class SlopeContainer {
   onChangeSlopeConfigId(slope: Slope) {
     this.saveContext.slopeConfigConfigIdChanged(slope)
   }
+
+  addCorner(position: { x: number; y: number }) {
+    if (!this.hoverContext?.getIntersectSlope()) {
+      return;
+    }
+    this.hoverContext?.getIntersectSlope()!.addCorner(position);
+    this.saveContext.onManipulated(this.hoverContext!.getIntersectSlope()!);
+  }
 }

@@ -5,6 +5,8 @@ import {Feature, Polygon} from "@turf/turf";
 import {HoverContext} from "./hover-context";
 import {Controls} from "./controls";
 import {Driveway} from "./driveway";
+import {Vector2} from "@babylonjs/core";
+import {SlopeTerrainEditorComponent} from "../editor/terrain-editor/slope-terrain-editor.component";
 
 export class Slope {
   private readonly _terrainSlopePosition: TerrainSlopePosition;
@@ -197,6 +199,66 @@ export class Slope {
 
   private detectHoverDriveway(cursorPolygon: Feature<Polygon, any>, slope: Slope): Driveway | undefined {
     return slope.driveways.find(driveway => driveway.drivewayIntersection(cursorPolygon));
+  }
+
+  addCorner(position: { x: number; y: number }) {
+    let index = this.projectPointToPolygon(position);
+    if (!index && index !== 0) {
+      throw new Error("Invalid Polygon");
+    }
+    this.polygon.geometry.coordinates[0].splice(index, 0, [position.x, position.y]);
+  }
+
+  private projectPointToPolygon(point: { x: number; y: number }): number | null {
+    let closestPoint = null;
+    let closestDistanceSquared = Infinity;
+
+    let index = null;
+
+    for (let i = 0; i < this.polygon.geometry.coordinates[0].length - 1; i++) {
+      const currentLineStart: { x: number; y: number } = {
+        x: this.polygon.geometry.coordinates[0][i][0],
+        y: this.polygon.geometry.coordinates[0][i][1]
+      };
+      const currentLineEnd: { x: number; y: number } = {
+        x: this.polygon.geometry.coordinates[0][i + 1][0],
+        y: this.polygon.geometry.coordinates[0][i + 1][1]
+      };
+      const projectedPoint = this.projectPointOnLine(point, currentLineStart, currentLineEnd);
+
+      const distanceSquared = (point.x - projectedPoint.x) * (point.x - projectedPoint.x) +
+        (point.y - projectedPoint.y) * (point.y - projectedPoint.y);
+
+      if (distanceSquared < closestDistanceSquared) {
+        closestPoint = projectedPoint;
+        closestDistanceSquared = distanceSquared;
+        index = i;
+      }
+    }
+
+    if (index == null) {
+      return null;
+    }
+    return SlopeTerrainEditorComponent.getCorrectedIndex(index + 1, this.polygon.geometry.coordinates[0].length - 1);
+  }
+
+  private projectPointOnLine(point: { x: number; y: number }, lineStart: { x: number; y: number }, lineEnd: {
+    x: number;
+    y: number
+  }): { x: number; y: number } {
+    const line = [lineEnd.x - lineStart.x, lineEnd.y - lineStart.y];
+    const lineLengthSquared = line[0] * line[0] + line[1] * line[1];
+
+    if (lineLengthSquared === 0) {
+      return lineStart;
+    }
+
+    const t = ((point.x - lineStart.x) * line[0] + (point.y - lineStart.y) * line[1]) / lineLengthSquared;
+    let x = lineStart.x + t * line[0];
+    let y = lineStart.y + t * line[1];
+    x = SlopeTerrainEditorComponent.clamp(x, Math.min(lineStart.x, lineEnd.x), Math.max(lineStart.x, lineEnd.x))
+    y = SlopeTerrainEditorComponent.clamp(y, Math.min(lineStart.y, lineEnd.y), Math.max(lineStart.y, lineEnd.y))
+    return new Vector2(x, y);
   }
 
 }

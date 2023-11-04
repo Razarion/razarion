@@ -13,6 +13,9 @@ export enum Mode {
   SLOPE_DECREASE,
   DRIVEWAY_INCREASE,
   DRIVEWAY_DECREASE,
+  CORNER_ADD,
+  CORNER_MOVE,
+  CORNER_DELETE,
 }
 
 export class TerrainEditor {

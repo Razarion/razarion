@@ -70,7 +70,7 @@ export class CanvasController {
     return {x: 0, y: 0};
   }
 
-  private onMouseDown(e: MouseEvent) {
+  private onMouseDown(mouseEvent: MouseEvent) {
     switch (this.terrainEditor?.mode) {
       case Mode.SELECT: {
         if (this.slopeContainer.getHoverContext()) {
@@ -81,8 +81,8 @@ export class CanvasController {
       }
       case Mode.PANNING: {
         this.isDragging = true;
-        this.dragStart.x = this.getEventLocation(e).x / this.cameraZoom - this.cameraOffset.x;
-        this.dragStart.y = (this.canvasDiv.offsetHeight - this.getEventLocation(e).y) / this.cameraZoom - this.cameraOffset.y;
+        this.dragStart.x = this.getEventLocation(mouseEvent).x / this.cameraZoom - this.cameraOffset.x;
+        this.dragStart.y = (this.canvasDiv.offsetHeight - this.getEventLocation(mouseEvent).y) / this.cameraZoom - this.cameraOffset.y;
         return;
       }
       case Mode.SLOPE_INCREASE:
@@ -97,8 +97,12 @@ export class CanvasController {
         this.slopeContainer.manipulateDriveway(this.controls, this.terrainEditor.mode === Mode.DRIVEWAY_INCREASE, this.cursor.getPolygon());
         return;
       }
+      case Mode.CORNER_ADD: {
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+        this.slopeContainer.addCorner(this.setupPosition(mouseEvent));
+        return;
+      }
       default: {
-
         return;
       }
     }
@@ -109,8 +113,7 @@ export class CanvasController {
   }
 
   private onMouseMove(mouseEvent: MouseEvent) {
-    let x = this.getEventLocation(mouseEvent).x / this.cameraZoom - this.cameraOffset.x;
-    let y = (this.canvasDiv.offsetHeight - this.getEventLocation(mouseEvent).y) / this.cameraZoom - this.cameraOffset.y;
+    let {x, y} = this.setupPosition(mouseEvent);
     this.controls.xPos = x;
     this.controls.yPos = y;
     this.cursor.move(x, y);
@@ -154,6 +157,12 @@ export class CanvasController {
       }
     }
 
+  }
+
+  private setupPosition(mouseEvent: MouseEvent): { x: number; y: number } {
+    let x = this.getEventLocation(mouseEvent).x / this.cameraZoom - this.cameraOffset.x;
+    let y = (this.canvasDiv.offsetHeight - this.getEventLocation(mouseEvent).y) / this.cameraZoom - this.cameraOffset.y;
+    return {x, y};
   }
 
   private adjustZoom(zoomAmount: number) {

@@ -111,6 +111,30 @@ export class TerrainEditor2dComponent implements OnInit {
           this.setMode(Mode.DRIVEWAY_DECREASE);
         },
       },
+      {
+        label: 'Corner +',
+        styleClass: this.getStyleClass(Mode.CORNER_ADD),
+        icon: 'pi pi-plus-circle',
+        command: () => {
+          this.setMode(Mode.CORNER_ADD);
+        },
+      },
+      {
+        label: 'Corner move',
+        styleClass: this.getStyleClass(Mode.CORNER_MOVE),
+        icon: 'pi pi-minus-circle',
+        command: () => {
+          this.setMode(Mode.CORNER_MOVE);
+        },
+      },
+      {
+        label: 'Corner -',
+        styleClass: this.getStyleClass(Mode.CORNER_DELETE),
+        icon: 'pi pi-minus-circle',
+        command: () => {
+          this.setMode(Mode.CORNER_DELETE);
+        },
+      },
     ];
     this.setCursor();
   }
@@ -178,6 +202,7 @@ export class TerrainEditor2dComponent implements OnInit {
       }
     });
   }
+
   save() {
     const url = `${UPDATE_SLOPES_TERRAIN_EDITOR}/${this.planetId}`;
     this.httpClient.put(url, this.terrainEditor!.getSaveContext().generateSlopeTerrainEditorUpdate()).subscribe({
@@ -251,10 +276,19 @@ export class TerrainEditor2dComponent implements OnInit {
         return;
       }
       case Mode.DRIVEWAY_INCREASE:
-      case Mode.DRIVEWAY_DECREASE:
+      case Mode.DRIVEWAY_DECREASE: {
+        this.cursor = "none";
+        return;
+      }
+      case Mode.CORNER_ADD:
+      case Mode.CORNER_MOVE:
+      case Mode.CORNER_DELETE: {
+        this.cursor = "pointer";
+        return;
+      }
       default: {
-          this.cursor = "default";
-          return;
+        this.cursor = "default";
+        return;
       }
     }
   }
