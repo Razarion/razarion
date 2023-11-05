@@ -160,10 +160,8 @@ export class CanvasController {
         }
         return;
       }
-      case Mode.CORNER_ADD: {
-        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), mousePosition);
-        return;
-      }
+      case Mode.CORNER_ADD:
+      case Mode.CORNER_MOVE:
       case Mode.CORNER_DELETE: {
         this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), mousePosition);
         return;

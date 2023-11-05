@@ -15,7 +15,6 @@ export class Slope {
   private children: Slope[] = [];
   private polygon!: Feature<Polygon, any>;
   private driveways: Driveway[] = [];
-  private hover = false;
 
   constructor(terrainSlopePosition: TerrainSlopePosition) {
     this._terrainSlopePosition = terrainSlopePosition;
@@ -58,7 +57,9 @@ export class Slope {
   }
 
   draw(ctx: CanvasRenderingContext2D, controls: Controls, hoverContext: HoverContext | undefined, mode: Mode) {
-    if (this.hover) {
+    if (controls.selectedSlope === this) {
+      ctx.fillStyle = "#adad00";
+    } else if (hoverContext?.getIntersectSlope() === this) {
       ctx.fillStyle = "blue";
     } else {
       ctx.fillStyle = "green";
@@ -77,7 +78,7 @@ export class Slope {
 
     this.driveways.forEach(driveway => driveway.draw(ctx, controls));
 
-    if (mode === Mode.CORNER_DELETE
+    if ((mode === Mode.CORNER_DELETE || mode === Mode.CORNER_MOVE)
       && hoverContext?.getIntersectSlope() === this && hoverContext?.getIntersectCornerIndex() !== undefined) {
       ctx.save();
       ctx.beginPath();
@@ -88,24 +89,19 @@ export class Slope {
         0,
         2 * Math.PI,
         false);
-      ctx.fillStyle = "red";
+      ctx.fillStyle = "#FF8888";
       ctx.fill();
       ctx.closePath();
       ctx.restore();
-
-
     }
   }
 
   detectHover(cursorPolygon: Feature<Polygon, any>, cursorPosition: DecimalPosition, hoverContext: HoverContext) {
-    this.hover = false;
     if (turf.intersect(this.polygon, cursorPolygon)) {
       if (turf.booleanWithin(cursorPolygon, this.polygon)) {
         hoverContext.setInsideOf(this);
       } else {
-        hoverContext.getIntersectSlope() && hoverContext.getIntersectSlope()!.clearHover();
         hoverContext.setIntersectSlope(this);
-        this.hover = true;
         hoverContext.setIntersectDriveway(this.detectHoverDriveway(cursorPolygon, this));
         hoverContext.setIntersectCornerIndex(this.detectIntersectCornerIndex(cursorPosition))
       }
@@ -175,9 +171,7 @@ export class Slope {
 
   createNew(polygon: Feature<Polygon, any>) {
     this.polygon = turf.clone(polygon);
-    this.hover = true;
   }
-
 
   get terrainSlopePosition(): TerrainSlopePosition {
     return this._terrainSlopePosition;
@@ -189,10 +183,6 @@ export class Slope {
 
   getPolygon(): Feature<Polygon, any> | undefined {
     return this.polygon;
-  }
-
-  clearHover() {
-    this.hover = false;
   }
 
   findParentSlope(slope: Slope): Slope | undefined {

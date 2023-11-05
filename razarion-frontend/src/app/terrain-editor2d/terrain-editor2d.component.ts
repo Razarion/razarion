@@ -237,6 +237,7 @@ export class TerrainEditor2dComponent implements OnInit {
 
   private setMode(mode: Mode) {
     this.terrainEditor!.mode = mode;
+    this.controls.clearSelection();
     this.menuItems.forEach((item, index) => {
       item.styleClass = this.getStyleClass(index);
     });

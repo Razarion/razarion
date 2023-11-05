@@ -26,4 +26,9 @@ export class Controls {
     }
     return undefined;
   }
+
+  clearSelection() {
+    this.selectedSlope = undefined;
+    this.selectedDriveway = undefined;
+  }
 }
