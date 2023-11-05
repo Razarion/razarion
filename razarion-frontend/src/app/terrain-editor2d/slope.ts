@@ -3,7 +3,7 @@ import * as turf from "@turf/turf";
 import {Feature, Polygon} from "@turf/turf";
 
 import {HoverContext} from "./hover-context";
-import {Controls} from "./controls";
+import {Controls, Corner} from "./controls";
 import {Driveway} from "./driveway";
 import {Vector2} from "@babylonjs/core";
 import {SlopeTerrainEditorComponent} from "../editor/terrain-editor/slope-terrain-editor.component";
@@ -89,10 +89,42 @@ export class Slope {
         0,
         2 * Math.PI,
         false);
-      ctx.fillStyle = "#FF8888";
+      ctx.fillStyle = "#fd6d14";
       ctx.fill();
       ctx.closePath();
       ctx.restore();
+    }
+
+    if (mode === Mode.SELECT) {
+      if (controls.selectedSlope === this && controls.selectedCorner !== undefined) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(
+          controls.selectedCorner.x,
+          controls.selectedCorner.y,
+          5,
+          0,
+          2 * Math.PI,
+          false);
+        ctx.fillStyle = "#8d5734";
+        ctx.fill();
+        ctx.closePath();
+        ctx.restore();
+      } else if (hoverContext?.getIntersectSlope() === this && hoverContext?.getIntersectCornerIndex() !== undefined) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(
+          this.polygon.geometry.coordinates[0][hoverContext!.getIntersectCornerIndex()!][0],
+          this.polygon.geometry.coordinates[0][hoverContext!.getIntersectCornerIndex()!][1],
+          5,
+          0,
+          2 * Math.PI,
+          false);
+        ctx.fillStyle = "#346e8d";
+        ctx.fill();
+        ctx.closePath();
+        ctx.restore();
+      }
     }
   }
 
@@ -293,6 +325,33 @@ export class Slope {
 
   removeCorner(index: number) {
     this.polygon.geometry.coordinates[0].splice(index, 1);
+  }
+
+  createIntersectCorner(index: number | undefined, changeHandler: (slope: Slope) => void): Corner | undefined {
+    if (index === undefined) {
+      return undefined;
+    }
+    let position = this.polygon.geometry.coordinates[0][index];
+    let slope = this;
+    return new class implements Corner {
+      get x(): number {
+        return position[0];
+      }
+
+      set x(value: number) {
+        position[0] = value;
+        changeHandler(slope);
+      }
+
+      get y(): number {
+        return position[1];
+      }
+
+      set y(value: number) {
+        position[1] = value;
+        changeHandler(slope);
+      }
+    }
   }
 }
 

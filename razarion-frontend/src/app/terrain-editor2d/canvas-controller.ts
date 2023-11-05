@@ -79,6 +79,10 @@ export class CanvasController {
         if (this.slopeContainer.getHoverContext()) {
           this.controls.selectedSlope = this.slopeContainer.getHoverContext()?.getIntersectSlope();
           this.controls.selectedDriveway = this.slopeContainer.getHoverContext()?.getIntersectDriveway();
+          this.controls.selectedCorner = this.slopeContainer.getHoverContext()?.getIntersectSlope()?.createIntersectCorner(this.slopeContainer.getHoverContext()?.getIntersectCornerIndex(),
+            (slope)=>{
+            this.slopeContainer.getSaveContext().onManipulated(slope);
+            });
         }
         return;
       }

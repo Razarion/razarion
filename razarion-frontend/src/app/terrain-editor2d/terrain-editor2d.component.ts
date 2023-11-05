@@ -72,6 +72,9 @@ export class TerrainEditor2dComponent implements OnInit {
 
       },
       {
+        separator: true,
+      },
+      {
         label: 'Panning',
         icon: 'pi pi-arrows-h',
         styleClass: this.getStyleClass(Mode.PANNING),
@@ -80,9 +83,12 @@ export class TerrainEditor2dComponent implements OnInit {
         },
       },
       {
+        separator: true,
+      },
+      {
         label: 'Slope +',
         styleClass: this.getStyleClass(Mode.SLOPE_INCREASE),
-        icon: 'pi pi-plus-circle',
+        icon: 'pi pi-circle-fill',
         command: () => {
           this.setMode(Mode.SLOPE_INCREASE);
         },
@@ -94,6 +100,9 @@ export class TerrainEditor2dComponent implements OnInit {
         command: () => {
           this.setMode(Mode.SLOPE_DECREASE);
         },
+      },
+      {
+        separator: true,
       },
       {
         label: 'Driveway +',
@@ -112,6 +121,9 @@ export class TerrainEditor2dComponent implements OnInit {
         },
       },
       {
+        separator: true,
+      },
+      {
         label: 'Corner +',
         styleClass: this.getStyleClass(Mode.CORNER_ADD),
         icon: 'pi pi-plus-circle',
@@ -122,7 +134,7 @@ export class TerrainEditor2dComponent implements OnInit {
       {
         label: 'Corner move',
         styleClass: this.getStyleClass(Mode.CORNER_MOVE),
-        icon: 'pi pi-minus-circle',
+        icon: 'pi pi-exclamation-circle',
         command: () => {
           this.setMode(Mode.CORNER_MOVE);
         },
@@ -130,7 +142,7 @@ export class TerrainEditor2dComponent implements OnInit {
       {
         label: 'Corner -',
         styleClass: this.getStyleClass(Mode.CORNER_DELETE),
-        icon: 'pi pi-minus-circle',
+        icon: 'pi pi-times-circle',
         command: () => {
           this.setMode(Mode.CORNER_DELETE);
         },

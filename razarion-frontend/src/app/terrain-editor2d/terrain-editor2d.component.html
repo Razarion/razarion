@@ -139,6 +139,37 @@
       </div>
     </div>
 
+    <div *ngIf="terrainEditor?.mode === Mode.SELECT && controls.selectedCorner">
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-wrench mr-2"></i>
+          <b>Selected corner</b>
+        </div>
+      </p-divider>
+      <div class="grid grid-razarion-editor">
+        <span class="col-4">X</span>
+        <div class="col-8">
+          <p-inputNumber [(ngModel)]="controls.selectedCorner.x"
+                         [prefix]="'x: '" [size]="8"
+                         [minFractionDigits]="1" [maxFractionDigits]="3"
+                         [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                         [showButtons]="true"
+                         (onInput)="controls.selectedCorner.x = $event.value"></p-inputNumber>
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
+        <span class="col-4">Y</span>
+        <div class="col-8">
+          <p-inputNumber [(ngModel)]="controls.selectedCorner.y"
+                         [prefix]="'x: '" [size]="8"
+                         [minFractionDigits]="1" [maxFractionDigits]="3"
+                         [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                         [showButtons]="true"
+                         (onInput)="controls.selectedCorner.y = $event.value"></p-inputNumber>
+        </div>
+      </div>
+    </div>
+
     <div *ngIf="terrainEditor?.mode === Mode.SELECT && controls.selectedDriveway">
       <p-divider align="left">
         <div class="inline-flex align-items-center">

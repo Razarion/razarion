@@ -8,6 +8,7 @@ export class Controls {
   newDrivewayConfigId?: number;
   selectedSlope?: Slope;
   selectedDriveway?: Driveway;
+  selectedCorner?: Corner;
   cursorDiameter = 20;
   cursorCorners = 10;
   cursorAngleDegree = 0;
@@ -30,5 +31,11 @@ export class Controls {
   clearSelection() {
     this.selectedSlope = undefined;
     this.selectedDriveway = undefined;
+    this.selectedCorner = undefined;
   }
+}
+
+export interface Corner {
+  x: number;
+  y: number;
 }
