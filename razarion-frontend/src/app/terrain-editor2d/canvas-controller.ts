@@ -2,6 +2,7 @@ import {SlopeContainer} from "./slope-container";
 import {Cursor} from "./cursor";
 import {Controls} from "./controls";
 import {Mode, TerrainEditor} from "./terrain-editor";
+import {DecimalPosition} from "../generated/razarion-share";
 
 export class CanvasController {
   private readonly ctx: CanvasRenderingContext2D;
@@ -52,7 +53,7 @@ export class CanvasController {
 
     this.drawPlanetSize();
 
-    this.slopeContainer.draw(this.ctx, this.controls);
+    this.slopeContainer.draw(this.ctx, this.controls, this.terrainEditor.mode);
     if (this.terrainEditor.mode == Mode.SLOPE_INCREASE
       || this.terrainEditor.mode == Mode.SLOPE_DECREASE
       || this.terrainEditor.mode == Mode.DRIVEWAY_INCREASE
@@ -63,7 +64,7 @@ export class CanvasController {
     requestAnimationFrame(this.draw.bind(this));
   }
 
-  private getEventLocation(e: MouseEvent | TouchEvent): { x: number, y: number } {
+  private getEventLocation(e: MouseEvent): { x: number, y: number } {
     if (e instanceof MouseEvent && e.offsetX && e.offsetY) {
       return {x: e.offsetX, y: e.offsetY};
     }
@@ -71,6 +72,8 @@ export class CanvasController {
   }
 
   private onMouseDown(mouseEvent: MouseEvent) {
+    const cursorPosition = this.setupPosition(mouseEvent);
+
     switch (this.terrainEditor?.mode) {
       case Mode.SELECT: {
         if (this.slopeContainer.getHoverContext()) {
@@ -87,19 +90,25 @@ export class CanvasController {
       }
       case Mode.SLOPE_INCREASE:
       case Mode.SLOPE_DECREASE: {
-        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), cursorPosition);
         this.slopeContainer.manipulateSlope(this.controls, this.terrainEditor.mode === Mode.SLOPE_INCREASE, this.cursor.getPolygon());
         return;
       }
       case Mode.DRIVEWAY_INCREASE:
       case Mode.DRIVEWAY_DECREASE: {
-        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), cursorPosition);
         this.slopeContainer.manipulateDriveway(this.controls, this.terrainEditor.mode === Mode.DRIVEWAY_INCREASE, this.cursor.getPolygon());
         return;
       }
       case Mode.CORNER_ADD: {
-        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
-        this.slopeContainer.addCorner(this.setupPosition(mouseEvent));
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), cursorPosition);
+        this.slopeContainer.addCorner(cursorPosition);
+        return;
+      }
+      case Mode.CORNER_DELETE: {
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), cursorPosition);
+        this.slopeContainer.removeCorner();
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), cursorPosition);
         return;
       }
       default: {
@@ -108,20 +117,20 @@ export class CanvasController {
     }
   }
 
-  private onMouseUp(e: MouseEvent | TouchEvent) {
+  private onMouseUp(e: MouseEvent) {
     this.isDragging = false;
   }
 
   private onMouseMove(mouseEvent: MouseEvent) {
-    let {x, y} = this.setupPosition(mouseEvent);
-    this.controls.xPos = x;
-    this.controls.yPos = y;
-    this.cursor.move(x, y);
+    let mousePosition = this.setupPosition(mouseEvent);
+    this.controls.xPos = mousePosition.x;
+    this.controls.yPos = mousePosition.y;
+    this.cursor.move(mousePosition.x, mousePosition.y);
 
 
     switch (this.terrainEditor?.mode) {
       case Mode.SELECT: {
-        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), mousePosition);
         return;
       }
       case Mode.PANNING: {
@@ -138,7 +147,7 @@ export class CanvasController {
         if (mouseEvent.buttons === 1) {
           this.slopeContainer.manipulateSlope(this.controls, this.terrainEditor.mode === Mode.SLOPE_INCREASE, this.cursor.getPolygon());
         } else {
-          this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+          this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), mousePosition);
         }
         return;
       }
@@ -147,19 +156,26 @@ export class CanvasController {
         if (mouseEvent.buttons === 1) {
           this.slopeContainer.manipulateDriveway(this.controls, this.terrainEditor.mode === Mode.DRIVEWAY_INCREASE, this.cursor.getPolygon());
         } else {
-          this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon());
+          this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), mousePosition);
         }
         return;
       }
+      case Mode.CORNER_ADD: {
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), mousePosition);
+        return;
+      }
+      case Mode.CORNER_DELETE: {
+        this.slopeContainer.recalculateHoverContext(this.cursor.getPolygon(), mousePosition);
+        return;
+      }
       default: {
-
         return;
       }
     }
 
   }
 
-  private setupPosition(mouseEvent: MouseEvent): { x: number; y: number } {
+  private setupPosition(mouseEvent: MouseEvent): DecimalPosition {
     let x = this.getEventLocation(mouseEvent).x / this.cameraZoom - this.cameraOffset.x;
     let y = (this.canvasDiv.offsetHeight - this.getEventLocation(mouseEvent).y) / this.cameraZoom - this.cameraOffset.y;
     return {x, y};

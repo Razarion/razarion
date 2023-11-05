@@ -63,7 +63,7 @@ export class EditorDialogComponent {
   openTerrainEditor2d() {
     this.mainCockpitComponent.editorDialog = false;
     const url = `/terrain-editor/?${TerrainEditor2dComponent.PLANET_ID_PARAM}=${this.editorService.getPlanetId()}`;
-    window.open(url, '_blank');
+    window.open(url, "_blank", "resizable=yes");
   }
 
   openQuestEditor() {

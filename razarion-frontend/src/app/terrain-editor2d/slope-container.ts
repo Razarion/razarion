@@ -1,9 +1,10 @@
 import {Feature, Polygon} from "@turf/turf";
-import {TerrainSlopePosition} from "../generated/razarion-share";
+import {DecimalPosition, TerrainSlopePosition} from "../generated/razarion-share";
 import {SaveContext} from "./save-context";
 import {Slope} from "./slope";
 import {HoverContext} from "./hover-context";
 import {Controls} from "./controls";
+import {Mode} from "./terrain-editor";
 
 export class SlopeContainer {
   private rootSlopes: Slope[] = [];
@@ -19,19 +20,19 @@ export class SlopeContainer {
     });
   }
 
-  draw(ctx: CanvasRenderingContext2D, controls: Controls) {
+  draw(ctx: CanvasRenderingContext2D, controls: Controls, mode: Mode) {
     this.rootSlopes.forEach(slopes => {
-      slopes.draw(ctx, controls);
+      slopes.draw(ctx, controls, this.hoverContext, mode);
     });
   }
 
-  recalculateHoverContext(cursorPolygon: Feature<Polygon, any> | undefined) {
+  recalculateHoverContext(cursorPolygon: Feature<Polygon, any> | undefined, cursorPosition: DecimalPosition) {
     this.hoverContext = new HoverContext();
     if (!cursorPolygon) {
       return;
     }
     this.rootSlopes.forEach(slope => {
-      slope.detectHover(cursorPolygon, this.hoverContext!);
+      slope.detectHover(cursorPolygon, cursorPosition, this.hoverContext!);
     });
   }
 
@@ -131,11 +132,18 @@ export class SlopeContainer {
     this.saveContext.slopeConfigConfigIdChanged(slope)
   }
 
-  addCorner(position: { x: number; y: number }) {
+  addCorner(position: DecimalPosition) {
     if (!this.hoverContext?.getIntersectSlope()) {
       return;
     }
     this.hoverContext?.getIntersectSlope()!.addCorner(position);
+    this.saveContext.onManipulated(this.hoverContext!.getIntersectSlope()!);
+  }
+  removeCorner() {
+    if (!this.hoverContext?.getIntersectSlope() || this.hoverContext?.getIntersectCornerIndex() === undefined) {
+      return;
+    }
+    this.hoverContext?.getIntersectSlope()!.removeCorner(this.hoverContext?.getIntersectCornerIndex()!);
     this.saveContext.onManipulated(this.hoverContext!.getIntersectSlope()!);
   }
 }

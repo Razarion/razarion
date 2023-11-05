@@ -283,7 +283,7 @@ export class TerrainEditor2dComponent implements OnInit {
       case Mode.CORNER_ADD:
       case Mode.CORNER_MOVE:
       case Mode.CORNER_DELETE: {
-        this.cursor = "pointer";
+        this.cursor = "default";
         return;
       }
       default: {

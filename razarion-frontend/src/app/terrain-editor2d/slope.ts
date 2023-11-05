@@ -7,6 +7,8 @@ import {Controls} from "./controls";
 import {Driveway} from "./driveway";
 import {Vector2} from "@babylonjs/core";
 import {SlopeTerrainEditorComponent} from "../editor/terrain-editor/slope-terrain-editor.component";
+import {Mode} from "./terrain-editor";
+import {Geometry} from "../common/geometry";
 
 export class Slope {
   private readonly _terrainSlopePosition: TerrainSlopePosition;
@@ -55,7 +57,7 @@ export class Slope {
     ]);
   }
 
-  draw(ctx: CanvasRenderingContext2D, controls: Controls) {
+  draw(ctx: CanvasRenderingContext2D, controls: Controls, hoverContext: HoverContext | undefined, mode: Mode) {
     if (this.hover) {
       ctx.fillStyle = "blue";
     } else {
@@ -71,12 +73,31 @@ export class Slope {
     ctx.fill();
     ctx.stroke();
 
-    this.children.forEach(child => child.draw(ctx, controls))
+    this.children.forEach(child => child.draw(ctx, controls, hoverContext, mode))
 
     this.driveways.forEach(driveway => driveway.draw(ctx, controls));
+
+    if (mode === Mode.CORNER_DELETE
+      && hoverContext?.getIntersectSlope() === this && hoverContext?.getIntersectCornerIndex() !== undefined) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(
+        this.polygon.geometry.coordinates[0][hoverContext!.getIntersectCornerIndex()!][0],
+        this.polygon.geometry.coordinates[0][hoverContext!.getIntersectCornerIndex()!][1],
+        5,
+        0,
+        2 * Math.PI,
+        false);
+      ctx.fillStyle = "red";
+      ctx.fill();
+      ctx.closePath();
+      ctx.restore();
+
+
+    }
   }
 
-  detectHover(cursorPolygon: Feature<Polygon, any>, hoverContext: HoverContext) {
+  detectHover(cursorPolygon: Feature<Polygon, any>, cursorPosition: DecimalPosition, hoverContext: HoverContext) {
     this.hover = false;
     if (turf.intersect(this.polygon, cursorPolygon)) {
       if (turf.booleanWithin(cursorPolygon, this.polygon)) {
@@ -85,9 +106,11 @@ export class Slope {
         hoverContext.getIntersectSlope() && hoverContext.getIntersectSlope()!.clearHover();
         hoverContext.setIntersectSlope(this);
         this.hover = true;
-        hoverContext.setIntersectDriveway(this.detectHoverDriveway(cursorPolygon, this))
+        hoverContext.setIntersectDriveway(this.detectHoverDriveway(cursorPolygon, this));
+        hoverContext.setIntersectCornerIndex(this.detectIntersectCornerIndex(cursorPosition))
       }
-      this.children.forEach(child => child.detectHover(cursorPolygon, hoverContext));
+
+      this.children.forEach(child => child.detectHover(cursorPolygon, cursorPosition, hoverContext));
     }
   }
 
@@ -201,7 +224,7 @@ export class Slope {
     return slope.driveways.find(driveway => driveway.drivewayIntersection(cursorPolygon));
   }
 
-  addCorner(position: { x: number; y: number }) {
+  addCorner(position: DecimalPosition) {
     let index = this.projectPointToPolygon(position);
     if (!index && index !== 0) {
       throw new Error("Invalid Polygon");
@@ -261,5 +284,21 @@ export class Slope {
     return new Vector2(x, y);
   }
 
+  private detectIntersectCornerIndex(position: DecimalPosition): number | undefined {
+    let minDistance = Infinity;
+    let indexFound;
+    this.polygon.geometry.coordinates[0].forEach((corner, index) => {
+      let distance = Geometry.pythagoras(position.x - corner[0], position.y - corner[1]);
+      if (distance < minDistance) {
+        minDistance = distance;
+        indexFound = index
+      }
+    });
+    return indexFound
+  }
+
+  removeCorner(index: number) {
+    this.polygon.geometry.coordinates[0].splice(index, 1);
+  }
 }
 
