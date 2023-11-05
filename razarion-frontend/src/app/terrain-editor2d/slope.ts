@@ -287,6 +287,10 @@ export class Slope {
     return indexFound
   }
 
+  moveCorner(index: number, position: DecimalPosition) {
+    this.polygon.geometry.coordinates[0][index] = [position.x, position.y];
+  }
+
   removeCorner(index: number) {
     this.polygon.geometry.coordinates[0].splice(index, 1);
   }

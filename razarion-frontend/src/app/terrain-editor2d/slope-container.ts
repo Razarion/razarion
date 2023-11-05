@@ -139,6 +139,22 @@ export class SlopeContainer {
     this.hoverContext?.getIntersectSlope()!.addCorner(position);
     this.saveContext.onManipulated(this.hoverContext!.getIntersectSlope()!);
   }
+
+  moveCorner(position: DecimalPosition) {
+    if (!this.hoverContext?.getIntersectSlope() || this.hoverContext?.getIntersectCornerIndex() === undefined) {
+      return;
+    }
+    this.hoverContext?.getIntersectSlope()!.moveCorner(this.hoverContext?.getIntersectCornerIndex()!, position);
+    this.saveContext.onManipulated(this.hoverContext!.getIntersectSlope()!);
+  }
+
+  manipulateCorner(mousePosition: DecimalPosition) {
+    if (!this.hoverContext?.getIntersectSlope() || this.hoverContext?.getIntersectCornerIndex() === undefined) {
+      return;
+    }
+    this.hoverContext?.getIntersectSlope()!.moveCorner(this.hoverContext?.getIntersectCornerIndex()!, mousePosition);
+  }
+
   removeCorner() {
     if (!this.hoverContext?.getIntersectSlope() || this.hoverContext?.getIntersectCornerIndex() === undefined) {
       return;
