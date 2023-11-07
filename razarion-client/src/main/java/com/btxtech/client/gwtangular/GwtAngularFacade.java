@@ -3,7 +3,6 @@ package com.btxtech.client.gwtangular;
 import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.QuestCockpit;
 import com.btxtech.uiservice.cockpit.ScreenCover;
@@ -37,7 +36,6 @@ public abstract class GwtAngularFacade {
     public TerrainTypeService terrainTypeService; // Initialized by GWT
     public ItemTypeService itemTypeService; // Initialized by GWT
     public ThreeJsModelPackService threeJsModelPackService; // Initialized by GWT
-    public AssetService assetService; // Initialized by GWT
 
     public abstract void onCrash();
 }

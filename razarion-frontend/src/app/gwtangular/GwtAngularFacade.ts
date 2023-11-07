@@ -1,5 +1,3 @@
-import {TreeNode} from "primeng/api";
-
 // ---------- Root ----------
 
 export abstract class GwtAngularFacade {
@@ -19,7 +17,6 @@ export abstract class GwtAngularFacade {
   terrainTypeService!: TerrainTypeService;
   itemTypeService!: ItemTypeService;
   threeJsModelPackService!: ThreeJsModelPackService;
-  assetService!: AssetService;
 
   abstract onCrash(): void;
 }
@@ -80,20 +77,12 @@ export interface StatusProvider {
   requestServerAlarms(): Promise<Alarm[]>;
 }
 
-export interface Callback {
-  onCallback(): void;
-}
-
 export interface Rectangle {
 
 }
 
 export interface I18nString {
   getString(language: string): string;
-}
-
-export interface NativeMatrix {
-  getColumnMajorFloat32Array(): Float32Array;
 }
 
 export interface Alarm {
@@ -157,10 +146,6 @@ export interface ThreeJsModelPackService {
   getThreeJsModelPackConfig(id: number): ThreeJsModelPackConfig;
 }
 
-export interface AssetService {
-  getMeshContainers(): MeshContainer[];
-}
-
 // ---------- Configs ----------
 
 export interface PlanetConfig {
@@ -216,24 +201,6 @@ export interface WaterConfig {
   getInternalName(): string;
 
   getMaterial(): number;
-}
-
-export interface PhongMaterialConfig {
-  getTextureId(): number;
-
-  getScale(): number;
-
-  getNormalMapId(): number;
-
-  getNormalMapDepth(): number;
-
-  getBumpMapId(): number;
-
-  getBumpMapDepth(): number;
-
-  getShininess(): number;
-
-  getSpecularStrength(): number;
 }
 
 export interface GroundSplattingConfig {
@@ -715,11 +682,6 @@ export interface PolygonCallback {
   polygon(polygon: any): void;
 }
 
-export interface GwtAngularPropertyTable {
-  rootTreeNodes: TreeNode[];
-  configId: number;
-}
-
 export interface ObjectNameId {
   id: number;
   internalName: string;
@@ -828,34 +790,4 @@ export interface PerfmonStatisticEntry {
   getSamples(): number;
 
   getDateAsLong(): number;
-}
-
-export enum PerfmonEnum {
-  RENDERER,
-  GAME_ENGINE,
-  CLIENT_GAME_ENGINE_UPDATE,
-  BOT_TICKER,
-  BOT_SCENE_TICKER,
-  BOT_TIMER,
-  DETAILED_TRACKING,
-  COVER_FADE,
-  DRAW_MINI_MAP,
-  PERFMON_SEND_TO_CLIENT,
-  PERFMON_ANALYSE,
-  PLAYBACK,
-  SCENE_RUNNER,
-  SCENE_WAIT,
-  TRAIL_SERVICE,
-  SCROLL,
-  SCROLL_AUTO,
-  TIP_SCROLL,
-  TIP_SPAWN,
-  TIP_GUI_POINTING,
-  REGISTER,
-  USER_SET_NAME,
-  SERVER_RESTART_WATCHDOG,
-  RELOAD_CLIENT_WRONG_INTERFACE_VERSION,
-  ESTABLISH_CONNECTION,
-  WAIT_RESTART,
-  QUEST_PROGRESS_PANEL_TEXT_REFRESHER
 }

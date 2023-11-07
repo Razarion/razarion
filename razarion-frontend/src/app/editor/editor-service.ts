@@ -1,4 +1,4 @@
-import {ComponentFactoryResolver, Injectable, Type} from "@angular/core";
+import {Injectable} from "@angular/core";
 import {
   BASE_ITEM_TYPE_EDITOR_PATH,
   GROUND_EDITOR_PATH,
@@ -46,31 +46,10 @@ export class EditorService {
     EditorService.RESTART_PLANET_WARM,
     EditorService.RESTART_PLANET_COLD,
   ]
-  private propertyEditorComponents = new Map();
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver,
-              private gwtAngularService: GwtAngularService,
+  constructor(private gwtAngularService: GwtAngularService,
               private httpClient: HttpClient,
               private messageService: MessageService) {
-  }
-
-  getPropertyEditorComponent<T>(selector: string): Type<T> {
-    let propertyEditorComponent = this.propertyEditorComponents.get(selector);
-    if (propertyEditorComponent == null) {
-      throw new TypeError(`No PropertyEditorComponent for ${selector}`);
-    }
-    return propertyEditorComponent;
-  }
-
-  registerPropertyEditorComponents<T>(propertyEditorComponents: Type<T>[]): void {
-    propertyEditorComponents.forEach(propertyEditorComponent =>
-      this.registerPropertyEditorComponent(propertyEditorComponent)
-    )
-  }
-
-  registerPropertyEditorComponent<T>(propertyEditorComponent: Type<T>): void {
-    let factory = this.componentFactoryResolver.resolveComponentFactory(propertyEditorComponent);
-    this.propertyEditorComponents.set(factory.selector, propertyEditorComponent);
   }
 
   executeServerCommand(serverCommand: ServerCommand) {

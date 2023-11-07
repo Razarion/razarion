@@ -17,11 +17,6 @@ public class AssetService {
         }
     }
 
-    @Deprecated
-    public MeshContainer getMeshContainer(int meshContainerId) {
-        return null;
-    }
-
     public MeshContainer[] getMeshContainers() {
         return meshContainers;
     }
