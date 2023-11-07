@@ -5,7 +5,7 @@ import {
   LEVEL_EDITOR_PATH, PLANET_EDITOR_PATH,
   RESOURCE_ITEM_TYPE_EDITOR_PATH,
   SERVER_GAME_ENGINE_EDITOR,
-  SERVER_GAME_ENGINE_PATH,
+  SERVER_GAME_ENGINE_PATH, SLOPE_EDITOR_PATH,
   URL_THREE_JS_MODEL_EDITOR,
   WATER_EDITOR_PATH
 } from "../common";
@@ -13,11 +13,11 @@ import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {
-  BotConfig,
+  BotConfig, GroundConfig,
   ObjectNameId, PlanetConfig,
   ResourceRegionConfig,
   ServerGameEngineConfig,
-  ServerLevelQuestConfig,
+  ServerLevelQuestConfig, SlopeConfig,
   StartRegionConfig, WaterConfig
 } from "../generated/razarion-share";
 
@@ -179,6 +179,18 @@ export class EditorService {
     return this.readObjectNameIds(URL_THREE_JS_MODEL_EDITOR);
   }
 
+  readGroundConfig(id: number): Promise<GroundConfig> {
+    return this.readConfig(GROUND_EDITOR_PATH, id);
+  }
+
+  readSlopeConfig(id: number): Promise<SlopeConfig> {
+    return this.readConfig(SLOPE_EDITOR_PATH, id);
+  }
+
+  readWaterConfig(id: number): Promise<WaterConfig> {
+    return this.readConfig(WATER_EDITOR_PATH, id);
+  }
+
   readObjectNameIds(editorUrl: string): Promise<ObjectNameId[]> {
     return new Promise((resolve) => {
       this.httpClient.get(`${editorUrl}/objectNameIds`).subscribe({
@@ -215,7 +227,7 @@ export class EditorService {
     });
   }
 
-  getPlanetId():number {
+  getPlanetId(): number {
     return this.gwtAngularService.gwtAngularFacade.gameUiControl.getPlanetConfig().getId();
   }
 

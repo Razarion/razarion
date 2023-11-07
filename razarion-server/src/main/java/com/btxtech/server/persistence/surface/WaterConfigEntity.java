@@ -51,6 +51,7 @@ public class WaterConfigEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ThreeJsModelConfigEntity material;
+    private String color;
 
 
     public Integer getId() {
@@ -69,7 +70,8 @@ public class WaterConfigEntity {
                 .normalMapDepth(bumpMapDepth)
                 .distortionStrength(distortionStrength)
                 .distortionAnimationSeconds(distortionDurationSeconds)
-                .material(PersistenceUtil.extractId(material, ThreeJsModelConfigEntity::getId));
+                .material(PersistenceUtil.extractId(material, ThreeJsModelConfigEntity::getId))
+                .color(color);
         if (reflection != null) {
             waterConfig.setReflectionId(reflection.getId());
         }
@@ -96,6 +98,7 @@ public class WaterConfigEntity {
         distortionStrength = waterConfig.getDistortionStrength();
         distortionDurationSeconds = waterConfig.getDistortionAnimationSeconds();
         material = threeJsModelCrudPersistence.getEntity(waterConfig.getMaterial());
+        color = waterConfig.getColor();
     }
 
     @Override

@@ -19,6 +19,7 @@ public class GroundConfig implements Config {
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
     private Integer bottomThreeJsMaterial;
     private GroundSplattingConfig splatting;
+    private String color;
 
     public int getId() {
         return id;
@@ -56,6 +57,14 @@ public class GroundConfig implements Config {
         this.splatting = splatting;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public GroundConfig id(int id) {
         this.id = id;
         return this;
@@ -78,6 +87,11 @@ public class GroundConfig implements Config {
 
     public GroundConfig splatting(GroundSplattingConfig splatting) {
         setSplatting(splatting);
+        return this;
+    }
+
+    public GroundConfig color(String color) {
+        setColor(color);
         return this;
     }
 

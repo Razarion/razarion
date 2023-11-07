@@ -2,14 +2,12 @@ import {SlopeContainer} from "./slope-container";
 import {Cursor} from "./cursor";
 import {Controls} from "./controls";
 import {Mode, TerrainEditor} from "./terrain-editor";
-import {DecimalPosition} from "../generated/razarion-share";
+import {DecimalPosition, PlanetConfig} from "../generated/razarion-share";
+import {EditorService} from "../editor/editor-service";
 
 export class CanvasController {
   private readonly ctx: CanvasRenderingContext2D;
-  private planetSize?: {
-    x: number,
-    y: number
-  }
+  private planetConfig?: PlanetConfig;
   private cameraOffset = {x: 0, y: 0};
   private cameraZoom = 1;
   private readonly MAX_ZOOM = 5;
@@ -17,20 +15,28 @@ export class CanvasController {
   private readonly SCROLL_SENSITIVITY = 0.0005;
   private isDragging = false;
   private dragStart = {x: 0, y: 0};
+  private planetColor?: string;
 
   constructor(private canvas: HTMLCanvasElement,
               private canvasDiv: HTMLDivElement,
               private slopeContainer: SlopeContainer,
               private cursor: Cursor,
               private controls: Controls,
-              private terrainEditor: TerrainEditor) {
+              private terrainEditor: TerrainEditor,
+              private editorService: EditorService) {
     this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
     this.setupEventListeners();
     this.draw();
   }
 
-  setPlanetSize(x: number, y: number) {
-    this.planetSize = {x: x, y: y};
+  setPlanetConfig(planetConfig: PlanetConfig) {
+    this.planetConfig = planetConfig;
+    if (planetConfig.groundConfigId !== undefined) {
+      this.editorService.readGroundConfig(planetConfig.groundConfigId)
+        .then(groundConfig => {
+          this.planetColor = groundConfig.color
+        });
+    }
   }
 
   private setupEventListeners() {
@@ -80,8 +86,8 @@ export class CanvasController {
           this.controls.selectedSlope = this.slopeContainer.getHoverContext()?.getIntersectSlope();
           this.controls.selectedDriveway = this.slopeContainer.getHoverContext()?.getIntersectDriveway();
           this.controls.selectedCorner = this.slopeContainer.getHoverContext()?.getIntersectSlope()?.createIntersectCorner(this.slopeContainer.getHoverContext()?.getIntersectCornerIndex(),
-            (slope)=>{
-            this.slopeContainer.getSaveContext().onManipulated(slope);
+            (slope) => {
+              this.slopeContainer.getSaveContext().onManipulated(slope);
             });
         }
         return;
@@ -202,8 +208,13 @@ export class CanvasController {
   }
 
   private drawPlanetSize() {
-    if (this.planetSize) {
-      this.ctx.strokeRect(0, 0, this.planetSize.x, this.planetSize.y);
+    if (this.planetConfig) {
+      if (this.planetColor) {
+        this.ctx.fillStyle = this.planetColor;
+        this.ctx.fillRect(0, 0, this.planetConfig.size.x, this.planetConfig.size.y);
+      } else {
+        this.ctx.strokeRect(0, 0, this.planetConfig.size.x, this.planetConfig.size.y);
+      }
     }
   }
 }

@@ -48,7 +48,8 @@ export class TerrainEditor2dComponent implements OnInit {
   ngOnInit(): void {
     this.terrainEditor = new TerrainEditor(this.canvas.nativeElement,
       this.canvasDiv.nativeElement,
-      this.controls);
+      this.controls,
+      this.editorService);
 
     this.route.queryParams.subscribe(params => {
       this.planetId = parseInt(params[TerrainEditor2dComponent.PLANET_ID_PARAM]);
@@ -57,8 +58,7 @@ export class TerrainEditor2dComponent implements OnInit {
       this.loadDrivewayObjectNameIds();
       this.editorService.readPlanetConfig(this.planetId)
         .then(planetConfig => {
-          this.planetSize = {x: planetConfig.size.x, y: planetConfig.size.y}
-          this.terrainEditor!.setPlanetSize(planetConfig.size.x, planetConfig.size.y);
+          this.terrainEditor!.setPlanetConfig(planetConfig);
         })
     });
     this.menuItems = [

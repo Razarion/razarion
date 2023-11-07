@@ -28,6 +28,7 @@ public class WaterConfig implements Config {
     private double distortionAnimationSeconds;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
     private Integer material;
+    private String color;
 
     @Override
     public int getId() {
@@ -140,6 +141,14 @@ public class WaterConfig implements Config {
         this.material = material;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public WaterConfig id(int id) {
         this.id = id;
         return this;
@@ -207,6 +216,11 @@ public class WaterConfig implements Config {
 
     public WaterConfig material(Integer material) {
         setMaterial(material);
+        return this;
+    }
+
+    public WaterConfig color(String color) {
+        setColor(color);
         return this;
     }
 }

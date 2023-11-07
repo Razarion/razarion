@@ -7,7 +7,7 @@ import {Controls, Corner} from "./controls";
 import {Driveway} from "./driveway";
 import {Vector2} from "@babylonjs/core";
 import {SlopeTerrainEditorComponent} from "../editor/terrain-editor/slope-terrain-editor.component";
-import {Mode} from "./terrain-editor";
+import {Mode, TerrainEditor} from "./terrain-editor";
 import {Geometry} from "../common/geometry";
 
 export class Slope {
@@ -16,14 +16,14 @@ export class Slope {
   private polygon!: Feature<Polygon, any>;
   private driveways: Driveway[] = [];
 
-  constructor(terrainSlopePosition: TerrainSlopePosition) {
+  constructor(terrainSlopePosition: TerrainSlopePosition, private terrainEditor: TerrainEditor) {
     this._terrainSlopePosition = terrainSlopePosition;
 
     this.setupPolygonAndDriveway(terrainSlopePosition);
 
     if (terrainSlopePosition.children) {
       terrainSlopePosition.children.forEach(child => {
-        this.children.push(new Slope(child))
+        this.children.push(new Slope(child, terrainEditor))
       })
     }
   }
@@ -57,14 +57,17 @@ export class Slope {
   }
 
   draw(ctx: CanvasRenderingContext2D, controls: Controls, hoverContext: HoverContext | undefined, mode: Mode) {
+    ctx.save();
     if (controls.selectedSlope === this) {
       ctx.fillStyle = "#adad00";
     } else if (hoverContext?.getIntersectSlope() === this) {
       ctx.fillStyle = "blue";
     } else {
-      ctx.fillStyle = "green";
+      let color = this.terrainEditor.getGroundColor(this._terrainSlopePosition.slopeConfigId);
+      if (color) {
+        ctx.fillStyle = color;
+      }
     }
-
     ctx.beginPath();
     ctx.moveTo(this.polygon.geometry.coordinates[0][0][0], this.polygon.geometry.coordinates[0][0][1]);
     for (let i = 1; i < this.polygon.geometry.coordinates[0].length - 1; i++) {
@@ -73,6 +76,7 @@ export class Slope {
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
+    ctx.restore();
 
     this.children.forEach(child => child.draw(ctx, controls, hoverContext, mode))
 

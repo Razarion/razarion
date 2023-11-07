@@ -46,6 +46,7 @@ public class GroundConfigEntity {
     })
     @Embedded
     private GroundSplattingConfigEmbeddable splatting;
+    private String color;
 
     public Integer getId() {
         return id;
@@ -57,7 +58,8 @@ public class GroundConfigEntity {
                 .internalName(internalName)
                 .topThreeJsMaterial(PersistenceUtil.extractId(topMaterial, ThreeJsModelConfigEntity::getId))
                 .bottomThreeJsMaterial(PersistenceUtil.extractId(bottomMaterial, ThreeJsModelConfigEntity::getId))
-                .splatting(PersistenceUtil.toConfig(splatting, GroundSplattingConfigEmbeddable::to));
+                .splatting(PersistenceUtil.toConfig(splatting, GroundSplattingConfigEmbeddable::to))
+                .color(this.color);
     }
 
     public void fromGroundConfig(GroundConfig config, ImagePersistence imagePersistence, ThreeJsModelCrudPersistence threeJsModelCrudPersistence) {
@@ -70,6 +72,7 @@ public class GroundConfigEntity {
         } else {
             splatting = null;
         }
+        color = config.getColor();
     }
 
     @Override

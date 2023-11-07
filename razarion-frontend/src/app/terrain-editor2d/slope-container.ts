@@ -4,19 +4,19 @@ import {SaveContext} from "./save-context";
 import {Slope} from "./slope";
 import {HoverContext} from "./hover-context";
 import {Controls} from "./controls";
-import {Mode} from "./terrain-editor";
+import {Mode, TerrainEditor} from "./terrain-editor";
 
 export class SlopeContainer {
   private rootSlopes: Slope[] = [];
   private hoverContext?: HoverContext;
   private saveContext = new SaveContext();
 
-  constructor() {
+  constructor(private terrainEditor: TerrainEditor) {
   }
 
-  setTerrainSlopePositions(terrainSlopePositions: TerrainSlopePosition[]) {
+  setTerrainSlopePositions(terrainSlopePositions: TerrainSlopePosition[], terrainEditor: TerrainEditor) {
     terrainSlopePositions.forEach(terrainSlopePosition => {
-      this.rootSlopes.push(new Slope(terrainSlopePosition));
+      this.rootSlopes.push(new Slope(terrainSlopePosition, terrainEditor));
     });
   }
 
@@ -82,7 +82,7 @@ export class SlopeContainer {
       polygon = [];
       slopeConfigId = controls.newSlopeConfigId!;
     };
-    let slope = new Slope(terrainSlopePosition);
+    let slope = new Slope(terrainSlopePosition, this.terrainEditor);
     slope.createNew(cursorPolygon!);
     this.hoverContext = new HoverContext();
     this.hoverContext.setIntersectSlope(slope)
