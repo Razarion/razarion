@@ -14,6 +14,8 @@ import {Controls} from "./controls";
 import {EditorService} from "../editor/editor-service";
 import {ActivatedRoute} from "@angular/router";
 
+const MENU_HIGHLIGHT = 'surface-300';
+
 @Component({
   selector: 'app-terrain-editor2d',
   templateUrl: './terrain-editor2d.component.html',
@@ -61,93 +63,21 @@ export class TerrainEditor2dComponent implements OnInit {
           this.terrainEditor!.setPlanetConfig(planetConfig);
         })
     });
-    this.menuItems = [
-      {
-        label: 'Select',
-        icon: 'pi pi-check',
-        styleClass: this.getStyleClass(Mode.SELECT),
-        command: () => {
-          this.setMode(Mode.SELECT);
-        },
 
-      },
-      {
-        separator: true,
-      },
-      {
-        label: 'Panning',
-        icon: 'pi pi-arrows-h',
-        styleClass: this.getStyleClass(Mode.PANNING),
-        command: () => {
-          this.setMode(Mode.PANNING);
-        },
-      },
-      {
-        separator: true,
-      },
-      {
-        label: 'Slope +',
-        styleClass: this.getStyleClass(Mode.SLOPE_INCREASE),
-        icon: 'pi pi-circle-fill',
-        command: () => {
-          this.setMode(Mode.SLOPE_INCREASE);
-        },
-      },
-      {
-        label: 'Slope -',
-        icon: 'pi pi-circle',
-        styleClass: this.getStyleClass(Mode.SLOPE_DECREASE),
-        command: () => {
-          this.setMode(Mode.SLOPE_DECREASE);
-        },
-      },
-      {
-        separator: true,
-      },
-      {
-        label: 'Driveway +',
-        styleClass: this.getStyleClass(Mode.DRIVEWAY_INCREASE),
-        icon: 'pi pi-chevron-circle-up',
-        command: () => {
-          this.setMode(Mode.DRIVEWAY_INCREASE);
-        },
-      },
-      {
-        label: 'Driveway -',
-        styleClass: this.getStyleClass(Mode.DRIVEWAY_DECREASE),
-        icon: 'pi pi-minus-circle',
-        command: () => {
-          this.setMode(Mode.DRIVEWAY_DECREASE);
-        },
-      },
-      {
-        separator: true,
-      },
-      {
-        label: 'Corner +',
-        styleClass: this.getStyleClass(Mode.CORNER_ADD),
-        icon: 'pi pi-plus-circle',
-        command: () => {
-          this.setMode(Mode.CORNER_ADD);
-        },
-      },
-      {
-        label: 'Corner move',
-        styleClass: this.getStyleClass(Mode.CORNER_MOVE),
-        icon: 'pi pi-exclamation-circle',
-        command: () => {
-          this.setMode(Mode.CORNER_MOVE);
-        },
-      },
-      {
-        label: 'Corner -',
-        styleClass: this.getStyleClass(Mode.CORNER_DELETE),
-        icon: 'pi pi-times-circle',
-        command: () => {
-          this.setMode(Mode.CORNER_DELETE);
-        },
-      },
-    ];
+    this.addMenuItem('Select', 'pi pi-check', Mode.SELECT);
+    this.menuItems.push({separator: true,})
+    this.addMenuItem('Panning', 'pi pi-arrows-h', Mode.PANNING);
+    this.menuItems.push({separator: true,})
+    this.addMenuItem('Slope +', 'pi pi-circle-fill', Mode.SLOPE_INCREASE);
+    this.addMenuItem('Slope -', 'pi pi-circle', Mode.SLOPE_DECREASE);
+    this.menuItems.push({separator: true,})
+    this.addMenuItem('Driveway +', 'pi pi-chevron-circle-up', Mode.DRIVEWAY_INCREASE);
+    this.addMenuItem('Driveway -', 'pi pi-minus-circle', Mode.DRIVEWAY_DECREASE);
+    this.menuItems.push({separator: true,})
+    this.addMenuItem('Corner +', 'pi pi-plus-circle', Mode.CORNER_ADD);
+    this.addMenuItem('Corner move', 'pi pi-exclamation-circle', Mode.CORNER_MOVE);
+    this.addMenuItem('Corner -', 'pi pi-times-circle', Mode.CORNER_DELETE);
+
     this.setCursor();
   }
 
@@ -239,21 +169,41 @@ export class TerrainEditor2dComponent implements OnInit {
     })
   }
 
+  private addMenuItem(label: string, icon: string, mode: Mode) {
+    let menuItem: MenuItem =
+      {
+        label: label,
+        styleClass: this.getStyleClass(mode),
+        icon: icon,
+        command: () => {
+          this.setMode(mode, menuItem);
+        }
+      };
+    this.menuItems.push(menuItem);
+  }
+
   private getStyleClass(mode: Mode): string {
     if (mode === this.terrainEditor?.mode) {
-      return 'surface-300';
+      return MENU_HIGHLIGHT;
     } else {
       return '';
     }
   }
 
-  private setMode(mode: Mode) {
+  private setMode(mode: Mode, menuItem: MenuItem) {
     this.terrainEditor!.mode = mode;
     this.controls.clearSelection();
-    this.menuItems.forEach((item, index) => {
-      item.styleClass = this.getStyleClass(index);
-    });
+    this.clearMenuHighlight();
     this.setCursor();
+    menuItem.styleClass = MENU_HIGHLIGHT;
+  }
+
+  private clearMenuHighlight() {
+    this.menuItems.forEach((item) => {
+      if (!item.separator) {
+        item.styleClass = '';
+      }
+    });
   }
 
   restartPlanetWarm() {
