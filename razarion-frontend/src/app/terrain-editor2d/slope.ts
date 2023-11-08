@@ -1,6 +1,6 @@
 import {DecimalPosition, TerrainSlopeCorner, TerrainSlopePosition} from "../generated/razarion-share";
 import * as turf from "@turf/turf";
-import {Feature, Polygon} from "@turf/turf";
+import {Feature, Polygon, Position} from "@turf/turf";
 
 import {HoverContext} from "./hover-context";
 import {Controls, Corner} from "./controls";
@@ -9,6 +9,7 @@ import {Vector2} from "@babylonjs/core";
 import {SlopeTerrainEditorComponent} from "../editor/terrain-editor/slope-terrain-editor.component";
 import {Mode, TerrainEditor} from "./terrain-editor";
 import {Geometry} from "../common/geometry";
+import {CORNER_COLOR, HOVER_CORNER_COLOR, HOVER_SLOPE_COLOR, SELECT_CORNER_COLOR, SELECT_SLOPE_COLOR} from "./colors";
 
 export class Slope {
   private readonly _terrainSlopePosition: TerrainSlopePosition;
@@ -59,9 +60,9 @@ export class Slope {
   draw(ctx: CanvasRenderingContext2D, controls: Controls, hoverContext: HoverContext | undefined, mode: Mode) {
     ctx.save();
     if (controls.selectedSlope === this) {
-      ctx.fillStyle = "#adad00";
+      ctx.fillStyle = SELECT_SLOPE_COLOR;
     } else if (hoverContext?.getIntersectSlope() === this) {
-      ctx.fillStyle = "blue";
+      ctx.fillStyle = HOVER_SLOPE_COLOR;
     } else {
       let color = this.terrainEditor.getGroundColor(this._terrainSlopePosition.slopeConfigId);
       if (color) {
@@ -82,6 +83,10 @@ export class Slope {
 
     this.driveways.forEach(driveway => driveway.draw(ctx, controls));
 
+    this.drawCorner(ctx, controls, hoverContext, mode, this.polygon.geometry.coordinates[0]);
+  }
+
+  private drawCorner(ctx: CanvasRenderingContext2D, controls: Controls, hoverContext: HoverContext | undefined, mode: Mode, coordinate: Position[]) {
     if ((mode === Mode.CORNER_DELETE || mode === Mode.CORNER_MOVE)
       && hoverContext?.getIntersectSlope() === this && hoverContext?.getIntersectCornerIndex() !== undefined) {
       ctx.save();
@@ -93,12 +98,11 @@ export class Slope {
         0,
         2 * Math.PI,
         false);
-      ctx.fillStyle = "#fd6d14";
+      ctx.fillStyle = HOVER_CORNER_COLOR;
       ctx.fill();
       ctx.closePath();
       ctx.restore();
     }
-
     if (mode === Mode.SELECT) {
       if (controls.selectedSlope === this && controls.selectedCorner !== undefined) {
         ctx.save();
@@ -110,11 +114,12 @@ export class Slope {
           0,
           2 * Math.PI,
           false);
-        ctx.fillStyle = "#8d5734";
+        ctx.fillStyle = SELECT_CORNER_COLOR;
         ctx.fill();
         ctx.closePath();
         ctx.restore();
-      } else if (hoverContext?.getIntersectSlope() === this && hoverContext?.getIntersectCornerIndex() !== undefined) {
+      }
+      if (hoverContext?.getIntersectSlope() === this && hoverContext?.getIntersectCornerIndex() !== undefined) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(
@@ -124,7 +129,25 @@ export class Slope {
           0,
           2 * Math.PI,
           false);
-        ctx.fillStyle = "#346e8d";
+        ctx.fillStyle = HOVER_CORNER_COLOR;
+        ctx.fill();
+        ctx.closePath();
+        ctx.restore();
+      }
+    }
+
+    if (mode === Mode.CORNER_ADD || mode === Mode.CORNER_MOVE || mode === Mode.CORNER_DELETE || mode === Mode.DRIVEWAY_DECREASE || mode === Mode.DRIVEWAY_INCREASE) {
+      for (const coordinateElement of coordinate) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(
+          coordinateElement[0],
+          coordinateElement[1],
+          1.2,
+          0,
+          2 * Math.PI,
+          false);
+        ctx.fillStyle = CORNER_COLOR;
         ctx.fill();
         ctx.closePath();
         ctx.restore();

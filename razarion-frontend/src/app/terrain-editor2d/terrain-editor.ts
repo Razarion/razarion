@@ -6,6 +6,7 @@ import {SaveContext} from "./save-context";
 import {Controls} from "./controls";
 import {Slope} from "./slope";
 import {EditorService} from "../editor/editor-service";
+import {LOADING_COLOR, MISSING_CONFIG_COLOR} from "./colors";
 
 export enum Mode {
   SELECT,
@@ -18,9 +19,6 @@ export enum Mode {
   CORNER_MOVE,
   CORNER_DELETE,
 }
-
-const MISSING_CONFIG_COLOR = "red";
-const LOADING_COLOR = "yellow";
 
 export class TerrainEditor {
   private readonly canvasController: CanvasController;

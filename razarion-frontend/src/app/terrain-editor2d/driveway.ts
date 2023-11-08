@@ -2,6 +2,7 @@ import * as turf from "@turf/turf";
 import {Feature, Polygon} from "@turf/turf";
 import {Slope} from "./slope";
 import {Controls} from "./controls";
+import {DRIVEWAY_COLOR, SELECT_DRIVEWAY_COLOR} from "./colors";
 
 export class Driveway {
   private indexes: number[] = [];
@@ -18,10 +19,10 @@ export class Driveway {
       return;
     }
     ctx.save();
-    if(controls.selectedDriveway === this) {
-      ctx.strokeStyle = "yellow";
+    if (controls.selectedDriveway === this) {
+      ctx.strokeStyle = SELECT_DRIVEWAY_COLOR;
     } else {
-      ctx.strokeStyle = "red";
+      ctx.strokeStyle = DRIVEWAY_COLOR;
     }
     ctx.lineWidth = 5;
     ctx.beginPath();
