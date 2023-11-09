@@ -45,7 +45,6 @@ import {TableModule} from 'primeng/table';
 import {CommonModule, DatePipe, DecimalPipe} from "@angular/common";
 import {ServerPanelComponent} from "./editor/server-panel/server-panel.component";
 import {BackupRestoreComponent} from "./editor/backup-restore/backup-restore.component";
-import {TerrainEditorComponent} from './editor/terrain-editor/terrain-editor.component';
 import {TabViewModule} from 'primeng/tabview';
 import {CheckboxModule} from 'primeng/checkbox';
 import {SliderModule} from 'primeng/slider';
@@ -72,7 +71,6 @@ import {ChipsModule} from "primeng/chips";
 import {DividerModule} from "primeng/divider";
 import {SelectButtonModule} from "primeng/selectbutton";
 import {ObjectTerrainEditorComponent} from "./editor/terrain-editor/object-terrain-editor.component";
-import {SlopeTerrainEditorComponent} from "./editor/terrain-editor/slope-terrain-editor.component";
 import {QuestCockpitComponent} from "./game/cockpit/quest/quest-cockpit.component";
 import {ServerQuestEditorComponent} from "./editor/server-quest-editor/server-quest-editor.component";
 import {AccordionModule} from "primeng/accordion";
@@ -117,9 +115,7 @@ import {MenuModule} from 'primeng/menu';
     CrashPanelComponent,
     ServerPanelComponent,
     BackupRestoreComponent,
-    TerrainEditorComponent,
     ObjectTerrainEditorComponent,
-    SlopeTerrainEditorComponent,
     ImageTypePipe,
     FormatFileSizePipe,
     RadToDegreePipe,
@@ -145,7 +141,6 @@ import {MenuModule} from 'primeng/menu';
     WaterComponent,
     BabylonModelComponent,
     DrivewayEditorComponent,
-    TerrainEditorComponent,
     TerrainEditor2dComponent
   ],
   imports: [

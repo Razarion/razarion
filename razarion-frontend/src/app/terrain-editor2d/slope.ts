@@ -6,10 +6,12 @@ import {HoverContext} from "./hover-context";
 import {Controls, Corner} from "./controls";
 import {Driveway} from "./driveway";
 import {Vector2} from "@babylonjs/core";
-import {SlopeTerrainEditorComponent} from "../editor/terrain-editor/slope-terrain-editor.component";
 import {Mode, TerrainEditor} from "./terrain-editor";
 import {Geometry} from "../common/geometry";
 import {CORNER_COLOR, HOVER_CORNER_COLOR, HOVER_SLOPE_COLOR, SELECT_CORNER_COLOR, SELECT_SLOPE_COLOR} from "./colors";
+import { MathUtils } from "../common/math-utils";
+import { Helpers } from "../common/helpers";
+
 
 export class Slope {
   private readonly _terrainSlopePosition: TerrainSlopePosition;
@@ -311,7 +313,7 @@ export class Slope {
     if (index == null) {
       return null;
     }
-    return SlopeTerrainEditorComponent.getCorrectedIndex(index + 1, this.polygon.geometry.coordinates[0].length - 1);
+    return Helpers.getCorrectedIndex(index + 1, this.polygon.geometry.coordinates[0].length - 1);
   }
 
   private projectPointOnLine(point: { x: number; y: number }, lineStart: { x: number; y: number }, lineEnd: {
@@ -328,8 +330,8 @@ export class Slope {
     const t = ((point.x - lineStart.x) * line[0] + (point.y - lineStart.y) * line[1]) / lineLengthSquared;
     let x = lineStart.x + t * line[0];
     let y = lineStart.y + t * line[1];
-    x = SlopeTerrainEditorComponent.clamp(x, Math.min(lineStart.x, lineEnd.x), Math.max(lineStart.x, lineEnd.x))
-    y = SlopeTerrainEditorComponent.clamp(y, Math.min(lineStart.y, lineEnd.y), Math.max(lineStart.y, lineEnd.y))
+    x = MathUtils.clamp(x, Math.min(lineStart.x, lineEnd.x), Math.max(lineStart.x, lineEnd.x))
+    y = MathUtils.clamp(y, Math.min(lineStart.y, lineEnd.y), Math.max(lineStart.y, lineEnd.y))
     return new Vector2(x, y);
   }
 

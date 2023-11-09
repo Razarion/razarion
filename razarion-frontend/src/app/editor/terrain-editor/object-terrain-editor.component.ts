@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   TerrainEditorService,
   TerrainObjectConfig,
@@ -24,12 +24,13 @@ import {SimpleMaterial} from "@babylonjs/materials";
 import {Color3} from "@babylonjs/core/Maths/math.color";
 import {UPDATE_RADIUS_REST_CALL} from "../../common";
 import {HttpClient} from "@angular/common/http";
+import { EditorPanel } from '../editor-model';
 
 @Component({
   selector: 'object-terrain-editor',
   templateUrl: './object-terrain-editor.component.html'
 })
-export class ObjectTerrainEditorComponent implements OnInit {
+export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy {
   private readonly discRadiusMaterial: SimpleMaterial;
   terrainEditorService: TerrainEditorService;
   terrainObjectConfigs: any[] = [];
@@ -55,6 +56,7 @@ export class ObjectTerrainEditorComponent implements OnInit {
               private threeJsRendererServiceImpl: BabylonRenderServiceAccessImpl,
               private editorService: EditorService,
               private httpClient: HttpClient) {
+    super();
     this.terrainEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService();
     this.gizmoManager = new GizmoManager(threeJsRendererServiceImpl.getScene());
     this.gizmoManager.positionGizmoEnabled = true;
@@ -75,10 +77,14 @@ export class ObjectTerrainEditorComponent implements OnInit {
       });
       this.newTerrainObjectConfig = this.terrainObjectConfigs[0];
     });
+    this.activate()
   }
 
+  ngOnDestroy(): void {
+    this.deactivate();
+  }
 
-  activate() {
+ private activate() {
     this.mouseObservable = this.threeJsRendererServiceImpl.getScene().onPointerObservable.add((pointerInfo) => {
       if (!this.gwtAngularService.gwtAngularFacade.inputService) {
         return;
@@ -123,7 +129,7 @@ export class ObjectTerrainEditorComponent implements OnInit {
     });
   }
 
-  deactivate() {
+  private deactivate() {
     this.threeJsRendererServiceImpl.getScene().onPointerObservable.remove(this.mouseObservable);
     this.clearSelection();
   }

@@ -1,3 +1,4 @@
+<div class="flex flex-column surface-50">
 <p-divider align="left">
   <div class="inline-flex align-items-center">
     <i class="pi pi-plus-circle mr-2"></i>
@@ -36,6 +37,17 @@
 </div>
 
 <div class="field grid align-items-center">
+  <span class="col">Show Radius</span>
+  <div class="col">
+    <p-selectButton [options]="onOffOptions"
+                    [(ngModel)]="selectedRadiusShow"
+                    (onChange)="showHideRadius()"
+                    optionLabel="label"
+                    optionValue="value"></p-selectButton>
+  </div>
+</div>
+
+<div class="field grid align-items-center">
   <span class="col">Radius</span>
   <div class="col">
     <p-inputNumber [(ngModel)]="selectedRadius"
@@ -48,17 +60,6 @@
                    [decrementButtonClass]="'p-button-text'"
                    [showButtons]="true"></p-inputNumber>
     <p-button icon="pi pi-save" (onClick)="saveRadius()"></p-button>
-  </div>
-</div>
-
-<div class="field grid align-items-center">
-  <span class="col">Show Radius</span>
-  <div class="col">
-    <p-selectButton [options]="onOffOptions"
-                    [(ngModel)]="selectedRadiusShow"
-                    (onChange)="showHideRadius()"
-                    optionLabel="label"
-                    optionValue="value"></p-selectButton>
   </div>
 </div>
 
@@ -119,4 +120,5 @@
   <div class="col">
     <p-button icon="pi pi-power-off" (onClick)="restartPlanetCold()"></p-button>
   </div>
+</div>
 </div>

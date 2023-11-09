@@ -6,7 +6,6 @@ import {RenderEngineComponent} from "../render-engine/render-engine.component";
 import {GameComponent} from "../../game/game.component";
 import {ServerPanelComponent} from "../server-panel/server-panel.component";
 import {BackupRestoreComponent} from "../backup-restore/backup-restore.component";
-import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component";
 import {ImageEditorComponent} from "../image-editor/image-editor.component";
 import {CollectionSelectorComponent} from "../property-table/collection-selector.component";
 import {BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
@@ -19,6 +18,7 @@ import {SlopeEditorComponent} from "../crud-editors/slope-editor/slope-editor.co
 import {DrivewayEditorComponent} from "../crud-editors/driveway-editor/driveway-editor.component";
 import {TerrainEditor2dComponent} from "../../terrain-editor2d/terrain-editor2d.component";
 import {EditorService} from "../editor-service";
+import { ObjectTerrainEditorComponent } from "../terrain-editor/object-terrain-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -57,7 +57,7 @@ export class EditorDialogComponent {
 
   openTerrainEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Object Terrain Editor", ObjectTerrainEditorComponent));
   }
 
   openTerrainEditor2d() {

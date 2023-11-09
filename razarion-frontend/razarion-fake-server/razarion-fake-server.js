@@ -6,7 +6,7 @@ const JSZip = require("jszip");
 const PORT = 8080;
 let zip = null;
 
-fs.readFile("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server\\src\\main\\angular\\frontend\\threejs-models\\BabylonJsModels.zip",
+fs.readFile("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-frontend\\threejs-models\\BabylonJsModels.zip",
   function (err, data) {
     if (err) throw err;
     JSZip.loadAsync(data).then(function (z) {

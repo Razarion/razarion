@@ -17,9 +17,9 @@ import {
 import {BabylonRenderServiceAccessImpl} from "../../../game/renderer/babylon-render-service-access-impl.service";
 import {EventEmitter} from "@angular/core";
 import {DecimalPosition, PlaceConfig} from "../../../generated/razarion-share";
-import {SlopeTerrainEditorComponent} from "../../terrain-editor/slope-terrain-editor.component";
 import {PlaceConfigComponent} from "./place-config.component";
 import {Color3} from "@babylonjs/core/Maths/math.color";
+import { Geometry } from "src/app/common/geometry";
 
 export class PolygonVisualization {
   static polygonMarkerMaterial: SimpleMaterial;
@@ -148,13 +148,13 @@ export class PolygonVisualization {
       this.polygonMarker.dispose();
     }
     let polygon = PlaceConfigComponent.toVertex2Array(this.placeConfigComponent.placeConfig!.polygon2D!.corners);
-    const polygonMeshBuilder = new PolygonMeshBuilder(`Polygon marker`, polygon, this.renderService.getScene(), SlopeTerrainEditorComponent.EAR_CUT);
+    const polygonMeshBuilder = new PolygonMeshBuilder(`Polygon marker`, polygon, this.renderService.getScene(), Geometry.EAR_CUT);
     this.polygonMarker = polygonMeshBuilder.build();
     this.polygonMarker.material = PolygonVisualization.polygonMarkerMaterial;
   }
 
   public static addPointToPolygon(point: Vector2, polygon: Vector2[]) {
-    let index = SlopeTerrainEditorComponent.projectPointToPolygon(point, polygon);
+    let index = Geometry.projectPointToPolygon(point, polygon);
     if (!index && index !== 0) {
       throw new Error("Invalid Polygon");
     }

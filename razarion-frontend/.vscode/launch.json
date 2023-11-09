@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "Razarion fake server",
-      "program": "${workspaceFolder}/razarion-fake-server.js",
+      "program": "${workspaceFolder}/razarion-fake-server/razarion-fake-server.js",
       "request": "launch",
       "skipFiles": [
         "<node_internals>/**"
