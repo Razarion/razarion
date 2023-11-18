@@ -93,6 +93,7 @@ import {DrivewayEditorComponent} from './editor/crud-editors/driveway-editor/dri
 import {ProgressSpinnerModule} from "primeng/progressspinner";
 import {TerrainEditor2dComponent} from './terrain-editor2d/terrain-editor2d.component';
 import {MenuModule} from 'primeng/menu';
+import { TerrainObjectGeneratorComponent } from './editor/terrain-editor/terrain-object-generator/terrain-object-generator.component';
 
 @NgModule({
   declarations: [
@@ -141,7 +142,8 @@ import {MenuModule} from 'primeng/menu';
     WaterComponent,
     BabylonModelComponent,
     DrivewayEditorComponent,
-    TerrainEditor2dComponent
+    TerrainEditor2dComponent,
+    TerrainObjectGeneratorComponent
   ],
   imports: [
     BrowserModule,

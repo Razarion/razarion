@@ -30,7 +30,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           const vertexData = BabylonJsUtils.createVertexData(groundTerrainTile.positions, groundTerrainTile.norms);
           const ground = new Mesh("Ground", null);
           vertexData.applyToMesh(ground)
-          BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(ground, RazarionMetadataType.GROUND);
+          BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(ground, RazarionMetadataType.GROUND, undefined, groundTerrainTile.groundConfigId);
 
           let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
           if (groundConfig.getTopThreeJsMaterial()) {

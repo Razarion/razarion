@@ -64,32 +64,37 @@ public class TerrainShapeManagerSetup {
         long time = System.currentTimeMillis();
         Map<Index, MapList<Integer, TerrainObjectPosition>> renderTerrainObjects = new HashMap<>();
         for (TerrainObjectPosition objectPosition : terrainObjectPositions) {
-            // Render engine
-            MapList<Integer, TerrainObjectPosition> tileObjects = renderTerrainObjects.computeIfAbsent(TerrainUtil.toTile(objectPosition.getPosition()), k -> new MapList<>());
-            tileObjects.put(objectPosition.getTerrainObjectConfigId(), objectPosition);
-            // Game engine
-            TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectConfigId());
-            if(terrainObjectConfig.getRadius() <= 0.0) {
-                continue;
-            }
-            Circle2D terrainObjectCircle = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius() * calculateScale(objectPosition.getScale()));
-            ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(terrainObjectCircle);
-            for (Index nodeIndex : GeometricUtil.rasterizeCircle(obstacleTerrainObject.getCircle(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
-                TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                terrainShapeNode.addObstacle(obstacleTerrainObject);
-                // Create terrain type
-                Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                switch (terrainObjectCircle.checkInside(terrainRect)) {
-                    case INSIDE:
-                        terrainShapeNode.setTerrainType(TerrainType.BLOCKED);
-                        terrainShapeNode.setTerrainShapeSubNodes(null);
-                        dirtyTerrainShapeNodes.put(nodeIndex, terrainShapeNode);
-                        break;
-                    case PARTLY:
-                        terrainShapeSubNodeFactory.fillTerrainObjectTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainObjectCircle);
-                        dirtyTerrainShapeNodes.put(nodeIndex, terrainShapeNode);
-                        break;
+            try {
+                // Render engine
+                MapList<Integer, TerrainObjectPosition> tileObjects = renderTerrainObjects.computeIfAbsent(TerrainUtil.toTile(objectPosition.getPosition()), k -> new MapList<>());
+                tileObjects.put(objectPosition.getTerrainObjectConfigId(), objectPosition);
+                // Game engine
+                TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectConfigId());
+                if (terrainObjectConfig.getRadius() <= 0.0) {
+                    continue;
                 }
+                Circle2D terrainObjectCircle = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius() * calculateScale(objectPosition.getScale()));
+                ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(terrainObjectCircle);
+                for (Index nodeIndex : GeometricUtil.rasterizeCircle(obstacleTerrainObject.getCircle(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
+                    TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                    terrainShapeNode.addObstacle(obstacleTerrainObject);
+                    // Create terrain type
+                    Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                    switch (terrainObjectCircle.checkInside(terrainRect)) {
+                        case INSIDE:
+                            terrainShapeNode.setTerrainType(TerrainType.BLOCKED);
+                            terrainShapeNode.setTerrainShapeSubNodes(null);
+                            dirtyTerrainShapeNodes.put(nodeIndex, terrainShapeNode);
+                            break;
+                        case PARTLY:
+                            terrainShapeSubNodeFactory.fillTerrainObjectTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainObjectCircle);
+                            dirtyTerrainShapeNodes.put(nodeIndex, terrainShapeNode);
+                            break;
+                    }
+                }
+            } catch (Throwable t) {
+                alarmService.riseAlarm(Alarm.Type.TERRAIN_SHAPE_FAILED_TERRAIN_OBJECT_POSITION, objectPosition.getId());
+                logger.log(Level.WARNING, "Can not handle terrain object with id: " + objectPosition.getId(), t);
             }
         }
         fillInRenderTerrainObject(renderTerrainObjects);

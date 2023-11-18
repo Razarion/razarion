@@ -1,5 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
+  ObjectNameId,
   TerrainEditorService,
   TerrainObjectConfig,
   TerrainObjectModel,
@@ -24,7 +25,8 @@ import {SimpleMaterial} from "@babylonjs/materials";
 import {Color3} from "@babylonjs/core/Maths/math.color";
 import {UPDATE_RADIUS_REST_CALL} from "../../common";
 import {HttpClient} from "@angular/common/http";
-import { EditorPanel } from '../editor-model';
+import {EditorPanel} from '../editor-model';
+import {TerrainObjectGeneratorComponent} from "./terrain-object-generator/terrain-object-generator.component";
 
 @Component({
   selector: 'object-terrain-editor',
@@ -33,7 +35,7 @@ import { EditorPanel } from '../editor-model';
 export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy {
   private readonly discRadiusMaterial: SimpleMaterial;
   terrainEditorService: TerrainEditorService;
-  terrainObjectConfigs: any[] = [];
+  terrainObjectConfigs: { objectNameId: ObjectNameId, name: string }[] = [];
   newTerrainObjectConfig: any;
   onOffOptions: any[] = [{label: 'Off', value: false}, {label: 'On', value: true}];
   newTerrainObjectMode: boolean = false;
@@ -44,6 +46,8 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
   selectedRadiusDisc: Mesh | null = null;
   @ViewChild('terrainObjectPosition')
   terrainObjectPositionComponent!: TerrainObjectPositionComponent;
+  @ViewChild('terrainObjectGenerator')
+  terrainObjectGenerator!: TerrainObjectGeneratorComponent;
   private mouseObservable: Nullable<Observer<PointerInfo>> = null;
   private newTerrainObjects: TerrainObjectPosition[] = [];
   private updatedTerrainObjects: TerrainObjectPosition[] = [];
@@ -53,18 +57,18 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
               private babylonModelService: BabylonModelService,
-              private threeJsRendererServiceImpl: BabylonRenderServiceAccessImpl,
+              private babylonRenderServiceAccess: BabylonRenderServiceAccessImpl,
               private editorService: EditorService,
               private httpClient: HttpClient) {
     super();
     this.terrainEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService();
-    this.gizmoManager = new GizmoManager(threeJsRendererServiceImpl.getScene());
+    this.gizmoManager = new GizmoManager(babylonRenderServiceAccess.getScene());
     this.gizmoManager.positionGizmoEnabled = true;
     this.gizmoManager.rotationGizmoEnabled = false;
     this.gizmoManager.scaleGizmoEnabled = false;
     this.gizmoManager.boundingBoxGizmoEnabled = false;
     this.gizmoManager.usePointerToAttachGizmos = false;
-    this.discRadiusMaterial = new SimpleMaterial(`Radius`, threeJsRendererServiceImpl.getScene());
+    this.discRadiusMaterial = new SimpleMaterial(`Radius`, babylonRenderServiceAccess.getScene());
     this.discRadiusMaterial.diffuseColor = Color3.Yellow();
     this.discRadiusMaterial.backFaceCulling = false;
   }
@@ -76,6 +80,12 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
         this.terrainObjectConfigs.push({name: terrainObject.toString(), objectNameId: terrainObject})
       });
       this.newTerrainObjectConfig = this.terrainObjectConfigs[0];
+      this.terrainObjectGenerator.init(this.terrainObjectConfigs, (terrainObjectModel: TerrainObjectModel, node: TransformNode) => {
+        let terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
+        terrainObjectPosition.setTerrainObjectConfigId(terrainObjectModel.terrainObjectId);
+        this.updateTerrainObjectPosition(node, terrainObjectPosition);
+        this.newTerrainObjects.push(terrainObjectPosition);
+      });
     });
     this.activate()
   }
@@ -84,15 +94,15 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
     this.deactivate();
   }
 
- private activate() {
-    this.mouseObservable = this.threeJsRendererServiceImpl.getScene().onPointerObservable.add((pointerInfo) => {
+  private activate() {
+    this.mouseObservable = this.babylonRenderServiceAccess.getScene().onPointerObservable.add((pointerInfo) => {
       if (!this.gwtAngularService.gwtAngularFacade.inputService) {
         return;
       }
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
           this.selectedNode = null;
-          let pickingInfo = this.threeJsRendererServiceImpl.setupMeshPickPoint();
+          let pickingInfo = this.babylonRenderServiceAccess.setupMeshPickPoint();
           if (pickingInfo.hit) {
             let node = BabylonRenderServiceAccessImpl.findRazarionMetadataNode(pickingInfo.pickedMesh!);
             if (!node) {
@@ -119,7 +129,7 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
                 terrainObjectId = -1;
               }
               let newTerrainObjectMesh = BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, null);
-              this.threeJsRendererServiceImpl.addShadowCaster(newTerrainObjectMesh);
+              this.babylonRenderServiceAccess.addShadowCaster(newTerrainObjectMesh);
               this.selectActiveTerrainObject(<TransformNode>newTerrainObjectMesh, true)
             }
           }
@@ -130,7 +140,7 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
   }
 
   private deactivate() {
-    this.threeJsRendererServiceImpl.getScene().onPointerObservable.remove(this.mouseObservable);
+    this.babylonRenderServiceAccess.getScene().onPointerObservable.remove(this.mouseObservable);
     this.clearSelection();
   }
 
@@ -141,14 +151,6 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
   private setupGizmo(node: Node) {
     this.clearGizmos();
     this.gizmoManager.attachToNode(node);
-  }
-
-  onSelectedSlopeChange(event: any) {
-    this.terrainEditorService.setSlope4New(event.value.objectNameId);
-  }
-
-  onSelectedDrivewayChange(event: any) {
-    this.terrainEditorService.setDriveway4New(event.value.objectNameId);
   }
 
   save() {
@@ -290,7 +292,7 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
     }
     const url = `${UPDATE_RADIUS_REST_CALL}/${this.selectedTerrainObject.getId()}/${this.selectedRadius}`
     this.httpClient.post(url, null).subscribe({
-      next: value => {
+      next: () => {
         this.messageService.add({
           severity: 'success',
           life: 300,

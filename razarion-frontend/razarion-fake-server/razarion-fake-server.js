@@ -264,13 +264,14 @@ server.on({
   }
 });
 
+const groundsJson = require("./grounds.json");
 server.on({
   method: 'GET',
   path: '/rest/editor/ground/objectNameIds',
   reply: {
     status: 200,
     headers: {"content-type": "application/json"},
-    body: "[]"
+    body: JSON.stringify(groundsJson.objectNameIds)
   }
 });
 

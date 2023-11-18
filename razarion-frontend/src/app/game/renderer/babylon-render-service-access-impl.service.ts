@@ -333,6 +333,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.scene.pick(this.scene.pointerX, this.scene.pointerY);
   }
 
+  public setupPickInfoFromNDC(ndcX: number, ndcY: number): PickingInfo {
+    const x = (ndcX + 1) / 2 * this.engine.getRenderWidth();
+    const y = (1 - ndcY) / 2 * this.engine.getRenderHeight();
+  
+    return this.scene.pick(x, y);
+  }
+  
   showInspector() {
     void Promise.all([
       import("@babylonjs/core/Debug/debugLayer"),
@@ -558,8 +565,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   public static setRazarionMetadataSimple(node: Node, razarionMetadataType: RazarionMetadataType, id?: number, configId?: number) {
     BabylonRenderServiceAccessImpl.setRazarionMetadata(node, new class implements RazarionMetadata {
       type = razarionMetadataType;
-      id = id;
-      configId = configId;
+      id = GwtHelper.gwtIssueNumber(id);
+      configId = GwtHelper.gwtIssueNumber(configId);
       editorHintTerrainObjectPosition = undefined;
       editorHintSlopePolygon = undefined;
       editorHintSlopePosition = undefined;
