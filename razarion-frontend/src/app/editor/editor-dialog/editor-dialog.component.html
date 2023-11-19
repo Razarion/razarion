@@ -53,6 +53,10 @@
         <p-button type="button" label="{{editor.key}}" icon="pi pi-cog" styleClass="p-button-sm"
                   (onClick)="openAdministrationEditor(editor.key, editor.value)"></p-button>
       </div>
+      <div class="mb-2">
+        <p-button type="button" label="Backend" icon="pi pi-cog" styleClass="p-button-sm"
+                  (onClick)="openBackend()"></p-button>
+      </div>
     </p-panel>
     <p-panel header="Experimental" [toggleable]="true" [collapsed]="true">
       <div class="mb-2" *ngFor="let collectionName of collectionNames;">

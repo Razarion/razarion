@@ -55,6 +55,12 @@ export class EditorDialogComponent {
     this.gameComponent.addEditorModel(new EditorModel(name, editorComponent));
   }
 
+  openBackend() {
+    this.mainCockpitComponent.editorDialog = false;
+    const url = `/backend`;
+    window.open(url, "_blank");
+  }
+
   openTerrainEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Object Terrain Editor", ObjectTerrainEditorComponent));

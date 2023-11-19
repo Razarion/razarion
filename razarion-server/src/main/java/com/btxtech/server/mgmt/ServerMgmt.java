@@ -16,6 +16,7 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.ServerState;
+import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -234,5 +235,4 @@ public class ServerMgmt {
             throw e;
         }
     }
-
 }

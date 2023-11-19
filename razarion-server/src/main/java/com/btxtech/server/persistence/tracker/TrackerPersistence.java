@@ -4,7 +4,9 @@ import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.persistence.MongoDbService;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
+import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.history.HistoryPersistence;
+import com.btxtech.server.persistence.item.ItemTracking;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.CommonUrl;
@@ -22,6 +24,10 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Sorts;
+import org.bson.Document;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -36,11 +42,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -120,18 +128,37 @@ public class TrackerPersistence {
         // TODO entityManager.persist(pageTrackerEntity);
     }
 
-    @Transactional
     public void onStartupTask(StartupTaskJson startupTaskJson) {
         startupTaskJson.setHttpSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         startupTaskJson.setServerTime(new Date());
         mongoDbService.storeObject(startupTaskJson, StartupTaskJson.class, MongoDbService.CollectionName.STARTUP_TRACKING);
     }
 
-    @Transactional
     public void onStartupTerminated(StartupTerminatedJson startupTerminatedJson) {
         startupTerminatedJson.setHttpSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         startupTerminatedJson.setServerTime(new Date());
         mongoDbService.storeObject(startupTerminatedJson, StartupTerminatedJson.class, MongoDbService.CollectionName.STARTUP_TRACKING);
+    }
+
+
+    public List<StartupTerminatedJson> loadStartupTerminatedJson() {
+        MongoCollection<StartupTerminatedJson> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.STARTUP_TRACKING, StartupTerminatedJson.class);
+        List<StartupTerminatedJson> startupTerminatedJson = new ArrayList<>();
+        Document query = new Document("successful", new Document("$exists", true));
+        dbCollection.find(query)
+                .sort(Sorts.descending("serverTime"))
+                .forEach((Consumer<? super StartupTerminatedJson>) startupTerminatedJson::add);
+        return startupTerminatedJson;
+    }
+
+    public List<StartupTaskJson> loadStartupTaskJson(String gameSessionUuid) {
+        MongoCollection<StartupTaskJson> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.STARTUP_TRACKING, StartupTaskJson.class);
+        List<StartupTaskJson> startupTaskJsons = new ArrayList<>();
+        Document query = new Document("taskEnum", new Document("$exists", true))
+                .append("gameSessionUuid", gameSessionUuid);;
+        dbCollection.find(query)
+                .forEach((Consumer<? super StartupTaskJson>) startupTaskJsons::add);
+        return startupTaskJsons;
     }
 
     @Transactional

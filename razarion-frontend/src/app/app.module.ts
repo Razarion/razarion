@@ -94,6 +94,7 @@ import {ProgressSpinnerModule} from "primeng/progressspinner";
 import {TerrainEditor2dComponent} from './terrain-editor2d/terrain-editor2d.component';
 import {MenuModule} from 'primeng/menu';
 import { TerrainObjectGeneratorComponent } from './editor/terrain-editor/terrain-object-generator/terrain-object-generator.component';
+import { BackendComponent } from './backend/backend.component';
 
 @NgModule({
   declarations: [
@@ -143,7 +144,8 @@ import { TerrainObjectGeneratorComponent } from './editor/terrain-editor/terrain
     BabylonModelComponent,
     DrivewayEditorComponent,
     TerrainEditor2dComponent,
-    TerrainObjectGeneratorComponent
+    TerrainObjectGeneratorComponent,
+    BackendComponent
   ],
   imports: [
     BrowserModule,

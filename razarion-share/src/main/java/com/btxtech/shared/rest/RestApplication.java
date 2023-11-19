@@ -1,6 +1,7 @@
-package com.btxtech.server.rest;
+package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
+import com.google.gwt.core.shared.GwtIncompatible;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -10,5 +11,6 @@ import javax.ws.rs.core.Application;
  * 15.06.2016.
  */
 @ApplicationPath(CommonUrl.APPLICATION_PATH)
+@GwtIncompatible
 public class RestApplication extends Application {
 }

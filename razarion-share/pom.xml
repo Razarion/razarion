@@ -31,6 +31,12 @@
             <version>2.10.2</version>
         </dependency>
         <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.btxtech</groupId>
             <artifactId>razarion-test</artifactId>
             <version>${project.version}</version>
@@ -83,6 +89,7 @@
                 </executions>
                 <configuration>
                     <jsonLibrary>jackson2</jsonLibrary>
+                    <generateJaxrsApplicationClient>true</generateJaxrsApplicationClient>
                     <classes>
                         <class>com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig</class>
                         <class>com.btxtech.shared.dto.ResourceRegionConfig</class>
@@ -98,11 +105,15 @@
                         <class>com.btxtech.shared.gameengine.datatypes.config.PlanetConfig</class>
                         <class>com.btxtech.shared.dto.GroundConfig</class>
                         <class>com.btxtech.shared.dto.WaterConfig</class>
+                        <class>com.btxtech.shared.rest.RestApplication</class>
+                        <class>com.btxtech.shared.rest.BackendController</class>
                     </classes>
                     <outputKind>module</outputKind>
-                    <outputFile>../razarion-frontend/src/app/generated/razarion-share.d.ts</outputFile>
+                    <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>
+                    <outputFileType>implementationFile</outputFileType>
                     <mapEnum>asEnum</mapEnum>
                     <nullableAnnotations>com.btxtech.shared.system.Nullable</nullableAnnotations>
+                    <restNamespacing>perResource</restNamespacing>
                 </configuration>
             </plugin>
         </plugins>
