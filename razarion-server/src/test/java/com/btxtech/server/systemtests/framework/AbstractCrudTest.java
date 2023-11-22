@@ -90,7 +90,7 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
             crudToBeTested.update(config2);
             config3 = crudToBeTested.read(config2.getId());
             assertThat(config3, is(samePropertyValuesAs(config2)));
-            List<ConfigObject> configs = crudToBeTested.read();
+            List<ConfigObject> configs = crudToBeTested.readAll();
             assertEquals(1, configs.size());
             assertThat(configs.get(0), is(samePropertyValuesAs(config3)));
         }

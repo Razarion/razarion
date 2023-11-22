@@ -46,6 +46,6 @@ public interface CrudController<C extends Config> {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("read")
-    List<C> read();
+    List<C> readAll();
 
 }

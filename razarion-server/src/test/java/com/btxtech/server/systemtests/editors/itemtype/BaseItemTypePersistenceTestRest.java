@@ -90,7 +90,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         systemUnderTest.update(factoryExpected);
         // Verify
         assertFactory(factoryExpected, systemUnderTest);
-        Assert.assertEquals(6, systemUnderTest.read().size());
+        Assert.assertEquals(6, systemUnderTest.readAll().size());
         // Try to delete builder, but should fail
         try {
             systemUnderTest.delete(builderExpected.getId());
@@ -105,13 +105,13 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         } catch (Exception e) {
             // Expected
         }
-        Assert.assertEquals(6, systemUnderTest.read().size());
+        Assert.assertEquals(6, systemUnderTest.readAll().size());
         // Remove attacker from transporter
         finalizeTransporter(transporterExpected, builderExpected.getId());
         transporterExpected.getItemContainerType().setRange(20).setMaxCount(15);
         systemUnderTest.update(transporterExpected);
         // Verify
-        Assert.assertEquals(6, systemUnderTest.read().size());
+        Assert.assertEquals(6, systemUnderTest.readAll().size());
         ReflectionAssert.assertReflectionEquals(transporterExpected, systemUnderTest.read(transporterExpected.getId()), ReflectionComparatorMode.LENIENT_ORDER);
         ReflectionAssert.assertReflectionEquals(builderExpected, systemUnderTest.read(builderExpected.getId()));
         ReflectionAssert.assertReflectionEquals(harvesterExpected, systemUnderTest.read(harvesterExpected.getId()));
@@ -121,7 +121,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         // Delete transporter
         systemUnderTest.delete(transporterExpected.getId());
         // Verify
-        Assert.assertEquals(5, systemUnderTest.read().size());
+        Assert.assertEquals(5, systemUnderTest.readAll().size());
         ReflectionAssert.assertReflectionEquals(builderExpected, systemUnderTest.read(builderExpected.getId()));
         ReflectionAssert.assertReflectionEquals(harvesterExpected, systemUnderTest.read(harvesterExpected.getId()));
         ReflectionAssert.assertReflectionEquals(attackerExpected, systemUnderTest.read(attackerExpected.getId()));
@@ -131,7 +131,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         finalizeFactory(factoryExpected, attackerExpected.getId(), harvesterExpected.getId());
         factoryExpected.getFactoryType().getAbleToBuildIds().sort(Integer::compareTo);
         systemUnderTest.update(factoryExpected);
-        Assert.assertEquals(5, systemUnderTest.read().size());
+        Assert.assertEquals(5, systemUnderTest.readAll().size());
         ReflectionAssert.assertReflectionEquals(builderExpected, systemUnderTest.read(builderExpected.getId()));
         ReflectionAssert.assertReflectionEquals(harvesterExpected, systemUnderTest.read(harvesterExpected.getId()));
         ReflectionAssert.assertReflectionEquals(attackerExpected, systemUnderTest.read(attackerExpected.getId()));
@@ -139,29 +139,29 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         assertFactory(factoryExpected, systemUnderTest);
         // Delete builder
         systemUnderTest.delete(builderExpected.getId());
-        Assert.assertEquals(4, systemUnderTest.read().size());
+        Assert.assertEquals(4, systemUnderTest.readAll().size());
         ReflectionAssert.assertReflectionEquals(harvesterExpected, systemUnderTest.read(harvesterExpected.getId()));
         ReflectionAssert.assertReflectionEquals(attackerExpected, systemUnderTest.read(attackerExpected.getId()));
         ReflectionAssert.assertReflectionEquals(towerExpected, systemUnderTest.read(towerExpected.getId()));
         assertFactory(factoryExpected, systemUnderTest);
         // Delete factory
         systemUnderTest.delete(factoryExpected.getId());
-        Assert.assertEquals(3, systemUnderTest.read().size());
+        Assert.assertEquals(3, systemUnderTest.readAll().size());
         ReflectionAssert.assertReflectionEquals(harvesterExpected, systemUnderTest.read(harvesterExpected.getId()));
         ReflectionAssert.assertReflectionEquals(attackerExpected, systemUnderTest.read(attackerExpected.getId()));
         ReflectionAssert.assertReflectionEquals(towerExpected, systemUnderTest.read(towerExpected.getId()));
         // Delete tower
         systemUnderTest.delete(towerExpected.getId());
-        Assert.assertEquals(2, systemUnderTest.read().size());
+        Assert.assertEquals(2, systemUnderTest.readAll().size());
         ReflectionAssert.assertReflectionEquals(harvesterExpected, systemUnderTest.read(harvesterExpected.getId()));
         ReflectionAssert.assertReflectionEquals(attackerExpected, systemUnderTest.read(attackerExpected.getId()));
         // Delete attacker
         systemUnderTest.delete(attackerExpected.getId());
-        Assert.assertEquals(1, systemUnderTest.read().size());
+        Assert.assertEquals(1, systemUnderTest.readAll().size());
         ReflectionAssert.assertReflectionEquals(harvesterExpected, systemUnderTest.read(harvesterExpected.getId()));
         // Delete harvester
         systemUnderTest.delete(harvesterExpected.getId());
-        Assert.assertEquals(0, systemUnderTest.read().size());
+        Assert.assertEquals(0, systemUnderTest.readAll().size());
 
         // Verify leftovers
         Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD").getSingleResult()).intValue());

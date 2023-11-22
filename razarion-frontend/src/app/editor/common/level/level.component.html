@@ -3,8 +3,8 @@
             [options]="levelOptions"
             [(ngModel)]="levelId"
             (onChange)="onChange()"
-            optionLabel="name"
-            optionValue="id">
+            optionLabel="label"
+            optionValue="levelId">
 </p-dropdown>
 <span *ngIf="readOnly">{{getCurrentName()}}</span>
 

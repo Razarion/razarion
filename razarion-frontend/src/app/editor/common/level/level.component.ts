@@ -1,5 +1,7 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {EditorService} from "../../editor-service";
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { LevelEditorControllerClient } from 'src/app/generated/razarion-share';
+import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'level',
@@ -12,15 +14,17 @@ export class LevelComponent {
   levelIdChange = new EventEmitter<number | null>();
   @Input("readOnly")
   readOnly: boolean = false;
-  levelOptions: { name: string, id: number }[] = [];
+  levelOptions: { label: string, levelId: number }[] = [];
+  private levelEditorControllerClient!: LevelEditorControllerClient;
 
-  constructor(private editorService: EditorService) {
-    editorService.readLevelObjectNameIds().then(objectNameIds => {
+  constructor(httpClient: HttpClient) {
+    this.levelEditorControllerClient = new LevelEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
+    this.levelEditorControllerClient.getObjectNameIds().then(objectNameIds => {
       this.levelOptions = [];
       objectNameIds.forEach(objectNameId => {
-        this.levelOptions.push({name: objectNameId.internalName, id: objectNameId.id});
+        this.levelOptions.push({ label: `${objectNameId.internalName} '${objectNameId.id}'`, levelId: objectNameId.id });
       });
-    })
+    });
   }
 
   onChange() {
@@ -29,7 +33,7 @@ export class LevelComponent {
 
   getCurrentName(): string {
     if (this.levelId) {
-      return this.levelOptions.find(value => value.id === this.levelId)?.name || "";
+      return this.levelOptions.find(value => value.levelId === this.levelId)?.label || "";
     } else {
       return "";
     }

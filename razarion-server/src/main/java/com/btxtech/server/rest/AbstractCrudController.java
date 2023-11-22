@@ -46,7 +46,7 @@ public abstract class AbstractCrudController<C extends Config, E> implements Cru
 
     @SecurityCheck
     @Override
-    public List<C> read() {
+    public List<C> readAll() {
         return getCrudPersistence().read();
     }
 

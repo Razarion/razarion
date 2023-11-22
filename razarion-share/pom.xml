@@ -107,6 +107,7 @@
                         <class>com.btxtech.shared.dto.WaterConfig</class>
                         <class>com.btxtech.shared.rest.RestApplication</class>
                         <class>com.btxtech.shared.rest.BackendController</class>
+                        <class>com.btxtech.shared.rest.LevelEditorController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

@@ -27,10 +27,10 @@ export class BackendComponent {
     minute: '2-digit',
     second: '2-digit',
   };
-  @ViewChild('detailOverlayPanel') 
+  @ViewChild('detailOverlayPanel')
   detailOverlayPanel!: OverlayPanel;
   private backendControllerClient!: BackendControllerClient;
-  detailStartupTaskJsons: StartupTaskJson[]  = [];
+  detailStartupTaskJsons: StartupTaskJson[] = [];
 
   constructor(httpClient: HttpClient) {
     try {
@@ -40,7 +40,7 @@ export class BackendComponent {
         let chartData: number[] = [];
         let labels: string[] = [];
         startupTerminatedJsons.forEach(startupTerminatedJson => {
-          chartData.push(startupTerminatedJson.totalTime);          
+          chartData.push(startupTerminatedJson.totalTime);
           labels.push(new Date(startupTerminatedJson.serverTime).toLocaleString('de-DE', this.DATE_FORMAT_OPTION));
         });
         this.data = {
@@ -56,7 +56,7 @@ export class BackendComponent {
             ],
             borderWidth: 1
           }]
-                };
+        };
 
       });
     } catch (e) {
@@ -69,8 +69,6 @@ export class BackendComponent {
       this.detailStartupTaskJsons = startupTaskJsons;
       this.detailOverlayPanel.toggle(event);
     });
-    // Hier kannst du die Logik für das Öffnen und Konfigurieren des OverlayPanels implementieren
-    // Zum Beispiel könntest du die Daten von startupTerminatedJson verwenden, um den Inhalt des OverlayPanels zu personalisieren.
-}
+  }
 
 }
