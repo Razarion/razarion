@@ -19,6 +19,7 @@ import {DrivewayEditorComponent} from "../crud-editors/driveway-editor/driveway-
 import {TerrainEditor2dComponent} from "../../terrain-editor2d/terrain-editor2d.component";
 import {EditorService} from "../editor-service";
 import { ObjectTerrainEditorComponent } from "../terrain-editor/object-terrain-editor.component";
+import { LevelEditorComponent } from "../crud-editors/level-editor/level-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -43,6 +44,11 @@ export class EditorDialogComponent {
 
   onShow() {
     this.collectionNames = this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().collectionNames();
+  }
+
+  openLevelEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Level Editor", LevelEditorComponent));
   }
 
   openConfigurationEditor(collectionName: string) {

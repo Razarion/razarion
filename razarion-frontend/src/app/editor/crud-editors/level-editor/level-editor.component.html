@@ -1,0 +1,65 @@
+<p-table [value]="levelConfigs" dataKey="id">
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="width: 5rem">
+                <p-button type="button" icon="pi pi-save"
+                    styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                    (onClick)="onSave()"></p-button>
+            </th>
+            <th>Number</th>
+            <th>XP to level up</th>
+            <th>
+                <p-button type="button" icon="pi pi-plus-circle"
+                    styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+                    (onClick)="onCreate()"></p-button>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-levelConfig let-expanded="expanded">
+        <tr>
+            <td>
+                <button type="button" pButton pRipple [pRowToggler]="levelConfig"
+                    class="p-button-text p-button-rounded p-button-plain"
+                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+            </td>
+            <td>{{levelConfig.number}}</td>
+            <td>{{levelConfig.xp2LevelUp}}</td>
+            <td>
+                <p-button type="button" icon="pi pi-trash"
+                    styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                    (onClick)="onRemove(levelConfig)"></p-button>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="rowexpansion" let-levelConfig>
+        <tr>
+            <td colspan="7">
+                <div class="p-3">
+                    <div class="flex flex-column surface-50">
+                        <div class="grid grid-razarion-editor">
+                            <span class="col-4">Number</span>
+                            <div class="col-8">
+                                <p-inputNumber [(ngModel)]="levelConfig.number" [size]="8"
+                                    [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
+                                    [showButtons]="true" (onInput)="sort()"></p-inputNumber>
+                            </div>
+                        </div>
+                        <div class="grid grid-razarion-editor">
+                            <span class="col-4">XP to level up</span>
+                            <div class="col-8">
+                                <p-inputNumber [(ngModel)]="levelConfig.xp2LevelUp" [size]="8"></p-inputNumber>
+                            </div>
+                        </div>
+                        <div class="grid grid-razarion-editor">
+                            <span class="col-4">Item type limitation</span>
+                            <div class="col-8">
+                                <base-item-type-count
+                                    [(baseItemTypeCount)]="levelConfig.itemTypeLimitation"></base-item-type-count>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

@@ -31,8 +31,7 @@ import {
 import {GwtInstance} from "../gwtangular/GwtInstance";
 import {GwtHelper} from "../gwtangular/GwtHelper";
 import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
-import {SlopeEditorComponent} from "../editor/crud-editors/slope-editor/slope-editor.component";
-import {CrudContainerComponent} from "../editor/crud-editors/crud-container/crud-container.component";
+import { LevelEditorComponent } from '../editor/crud-editors/level-editor/level-editor.component';
 
 
 @Component({
@@ -71,7 +70,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = true;
+      let runGwtMock = false;
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
@@ -350,7 +349,7 @@ export class GameComponent implements OnInit, ScreenCover {
       } else {
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.mainCockpitComponent.show(true);
-        this.addEditorModel(new EditorModel("??? Editor", CrudContainerComponent, SlopeEditorComponent));
+        this.addEditorModel(new EditorModel("??? Editor", LevelEditorComponent));
         this.fadeOutLoadingCover();
         this.removeLoadingCover();
       }

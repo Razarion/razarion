@@ -1,69 +1,111 @@
 ﻿<div class="flex">
   <div class="mr-2 editor-category">
-    <p-panel header="Planet">
-      <div class="mb-2">
-        <p-button type="button" label="Object Terrain Editor" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openTerrainEditor()"></p-button>
-      </div>
-      <div class="mb-2">
-        <p-button type="button" label="Terrain Editor 2d" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openTerrainEditor2d()"></p-button>
-      </div>
-      <div class="mb-2">
-        <p-button type="button" label="Quests" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openQuestEditor()"></p-button>
-      </div>
-      <div class="mb-2">
-        <p-button type="button" label="Bots" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openBotEditor()"></p-button>
-      </div>
-      <div class="mb-2">
-        <p-button type="button" label="Start Regions" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openStartRegionEditor()"></p-button>
-      </div>
-      <div class="mb-2">
-        <p-button type="button" label="Resource Regions" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openResourceRegionEditor()"></p-button>
-      </div>
-    </p-panel>
-  </div>
-  <div class="mr-2 editor-category">
     <p-panel header="Configuration">
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-sliders-h"></i>
+          <b>&nbsp;Global</b>
+        </div>
+      </p-divider>
       <div class="mb-2">
-        <p-button type="button" label="Slope" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openSlopeEditor()"></p-button>
+        <p-button type="button" label="Levels" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+          (onClick)="openLevelEditor()"></p-button>
       </div>
       <div class="mb-2">
-        <p-button type="button" label="Driveway" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openDrivewayEditor()"></p-button>
+        <p-button type="button" label="Image" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+          (onClick)="openImageEditor()"></p-button>
+      </div>
+     <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-image"></i>
+          <b>&nbsp;Terrain</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Slope" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+          (onClick)="openSlopeEditor()"></p-button>
       </div>
       <div class="mb-2">
-        <p-button type="button" label="Image" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openImageEditor()"></p-button>
+        <p-button type="button" label="Driveway" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+          (onClick)="openDrivewayEditor()"></p-button>
       </div>
     </p-panel>
   </div>
+
+  <div class="mr-2 editor-category">
+    <p-panel header="Planet">
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-image"></i>
+          <b>&nbsp;Terrain</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Object Terrain Editor" icon="pi pi-cog" [style]="{'width':'13em'}"
+          styleClass="p-button-sm" (onClick)="openTerrainEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Terrain Editor 2d" icon="pi pi-cog" [style]="{'width':'13em'}"
+          styleClass="p-button-sm" (onClick)="openTerrainEditor2d()"></p-button>
+      </div>
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-sliders-h"></i>
+          <b>&nbsp;Misc</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Quests" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+          (onClick)="openQuestEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Bots" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+          (onClick)="openBotEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Start Regions" icon="pi pi-cog" [style]="{'width':'13em'}"
+          styleClass="p-button-sm" (onClick)="openStartRegionEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Resource Regions" icon="pi pi-cog" [style]="{'width':'13em'}"
+          styleClass="p-button-sm" (onClick)="openResourceRegionEditor()"></p-button>
+      </div>
+    </p-panel>
+  </div>
+
   <div class="mr-2 editor-category">
     <p-panel header="Administration">
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-video"></i>
+          <b>&nbsp;Renderer</b>
+        </div>
+      </p-divider>
       <div class="mb-2">
-        <p-button type="button" label="Babylon" icon="pi pi-video" styleClass="p-button-sm"
-                  (onClick)="openBabylonInspector()"></p-button>
+        <p-button type="button" label="Babylon inspector" icon="pi pi-video" [style]="{'width':'13em'}"
+          styleClass="p-button-sm" (onClick)="openBabylonInspector()"></p-button>
       </div>
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-video"></i>
+          <b>&nbsp;Misc</b>
+        </div>
+      </p-divider>
       <div class="mb-2" *ngFor="let editor of editors | keyvalue">
-        <p-button type="button" label="{{editor.key}}" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openAdministrationEditor(editor.key, editor.value)"></p-button>
+        <p-button type="button" label="{{editor.key}}" icon="pi pi-cog" [style]="{'width':'13em'}"
+          styleClass="p-button-sm" (onClick)="openAdministrationEditor(editor.key, editor.value)"></p-button>
       </div>
       <div class="mb-2">
-        <p-button type="button" label="Backend" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openBackend()"></p-button>
+        <p-button type="button" label="Backend" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+          (onClick)="openBackend()"></p-button>
       </div>
     </p-panel>
     <p-panel header="Experimental" [toggleable]="true" [collapsed]="true">
       <div class="mb-2" *ngFor="let collectionName of collectionNames;">
-        <p-button type="button" label="{{collectionName}}" icon="pi pi-cog" styleClass="p-button-sm"
-                  (onClick)="openConfigurationEditor(collectionName)"></p-button>
+        <p-button type="button" label="{{collectionName}}" icon="pi pi-cog" [style]="{'width':'13em'}"
+          styleClass="p-button-sm" (onClick)="openConfigurationEditor(collectionName)"></p-button>
       </div>
     </p-panel>
   </div>
-</div>
 
+</div>
