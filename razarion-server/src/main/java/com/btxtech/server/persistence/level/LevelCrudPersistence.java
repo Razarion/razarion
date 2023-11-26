@@ -5,6 +5,7 @@ import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.system.alarm.Alarm;
@@ -15,6 +16,7 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -43,9 +45,18 @@ public class LevelCrudPersistence extends AbstractCrudPersistence<LevelConfig, L
     private EntityManager entityManager;
 
     public LevelCrudPersistence() {
-        super(LevelEntity.class, LevelEntity_.id, LevelEntity_.internalName);
+        super(LevelEntity.class, LevelEntity_.id, null);
     }
 
+    @Transactional
+    public List<ObjectNameId> getObjectNameIds() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+        Root<LevelEntity> root = cq.from(LevelEntity.class);
+        cq.multiselect(root.get(LevelEntity_.id), root.get(LevelEntity_.number));
+        List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
+        return tupleResult.stream().map(t -> new ObjectNameId(((int) t.get(0)), t.get(1) != null ? t.get(1).toString() : "")).collect(Collectors.toList());
+    }
 
     @Override
     protected LevelConfig toConfig(LevelEntity entity) {

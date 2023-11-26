@@ -31,7 +31,6 @@ public class LevelEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String internalName;
     private int number;
     private int xp2LevelUp;
     @ElementCollection
@@ -49,14 +48,13 @@ public class LevelEntity {
     public LevelConfig toLevelConfig() {
         return new LevelConfig()
                 .id(id)
-                .internalName(internalName)
+                .internalName(Integer.toString(number))
                 .number(number)
                 .xp2LevelUp(xp2LevelUp)
                 .itemTypeLimitation(PersistenceUtil.extractItemTypeLimitation(this.itemTypeLimitation));
     }
 
     public void fromLevelConfig(LevelConfig levelConfig, Map<BaseItemTypeEntity, Integer> itemTypeLimitation, Collection<LevelUnlockEntity> levelUnlockEntities) {
-        this.internalName = levelConfig.getInternalName();
         this.number = levelConfig.getNumber();
         this.xp2LevelUp = levelConfig.getXp2LevelUp();
         if (this.itemTypeLimitation == null) {
