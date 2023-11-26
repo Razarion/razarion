@@ -85,7 +85,6 @@ import { DecimalPositionComponent } from './editor/common/decimal-position/decim
 import { ServerResourceRegionComponent } from "./editor/server-resource-region/server-resource-region.component";
 import { ResourceItemTypeComponent } from './editor/common/resource-item-type/resource-item-type.component';
 import { SlopeEditorComponent } from "./editor/crud-editors/slope-editor/slope-editor.component";
-import { CrudContainerComponent } from './editor/crud-editors/crud-container/crud-container.component';
 import { GroundComponent } from './editor/common/ground/ground.component';
 import { WaterComponent } from './editor/common/water/water.component';
 import { BabylonModelComponent } from './editor/common/babylon-material/babylon-model.component';
@@ -96,6 +95,10 @@ import { MenuModule } from 'primeng/menu';
 import { TerrainObjectGeneratorComponent } from './editor/terrain-editor/terrain-object-generator/terrain-object-generator.component';
 import { BackendComponent } from './backend/backend.component';
 import { LevelEditorComponent } from './editor/crud-editors/level-editor/level-editor.component';
+import { BaseItemTypeEditorComponent } from './editor/crud-editors/base-item-type-editor/base-item-type-editor.component';
+import { AbstractCrudContainerComponent } from './editor/crud-editors/crud-container/crud-container.component';
+import { ManuallyCrudContainerComponent } from './editor/crud-editors/crud-container/manually-crud-container.component';
+import { GeneratedCrudContainerComponent } from './editor/crud-editors/crud-container/generated-crud-container.component';
 
 @NgModule({
   declarations: [
@@ -139,7 +142,9 @@ import { LevelEditorComponent } from './editor/crud-editors/level-editor/level-e
     ServerResourceRegionComponent,
     ResourceItemTypeComponent,
     SlopeEditorComponent,
-    CrudContainerComponent,
+    AbstractCrudContainerComponent,
+    ManuallyCrudContainerComponent,
+    GeneratedCrudContainerComponent,
     GroundComponent,
     WaterComponent,
     BabylonModelComponent,
@@ -147,7 +152,8 @@ import { LevelEditorComponent } from './editor/crud-editors/level-editor/level-e
     TerrainEditor2dComponent,
     TerrainObjectGeneratorComponent,
     BackendComponent,
-    LevelEditorComponent
+    LevelEditorComponent,
+    BaseItemTypeEditorComponent
   ],
   imports: [
     BrowserModule,

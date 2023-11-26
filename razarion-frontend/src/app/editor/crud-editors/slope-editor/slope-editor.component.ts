@@ -1,14 +1,14 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {SLOPE_EDITOR_PATH} from "../../../common";
-import {SlopeConfig, SlopeShape} from "../../../generated/razarion-share";
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { SLOPE_EDITOR_PATH } from "../../../common";
+import { SlopeConfig, SlopeShape } from "../../../generated/razarion-share";
 import 'chartjs-plugin-dragdata'
 import 'chartjs-plugin-zoom';
 import zoomPlugin from 'chartjs-plugin-zoom';
-import {Chart} from 'chart.js';
-import {UIChart} from "primeng/chart/chart";
-import {EditorService} from "../../editor-service";
-import {CrudContainerChild} from "../crud-container/crud-container.component";
-import {Vector2} from "@babylonjs/core";
+import { Chart } from 'chart.js';
+import { UIChart } from "primeng/chart/chart";
+import { EditorService } from "../../editor-service";
+import { Vector2 } from "@babylonjs/core";
+import { CrudContainerChild } from '../crud-container/crud-container.component';
 
 @Component({
   selector: 'slope-editor',
@@ -40,9 +40,9 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
 
   exportConfig(): SlopeConfig {
     let slopeShapes: SlopeShape[] = [];
-    if(this.data.datasets[0].data) {
+    if (this.data.datasets[0].data) {
       this.data.datasets[0].data.forEach((value: any) => slopeShapes.push({
-        position: {x: value.x, y: value.y},
+        position: { x: value.x, y: value.y },
         slopeFactor: 0
       }));
     }
@@ -159,7 +159,7 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
       {
         id: 'draw-water-delimiter-line',
         beforeDraw: (chart: any, args: any, options: any) => {
-          const {ctx} = chart;
+          const { ctx } = chart;
           ctx.save();
 
           if (this.slopeConfig.outerLineGameEngine || this.slopeConfig.outerLineGameEngine === 0) {
@@ -194,9 +194,9 @@ export class SlopeEditorComponent implements CrudContainerChild<SlopeConfig>, On
       let value = this.calculateFromPixel(event);
       chart.data.labels.push('');
       if (chart.data.datasets[0].data.length === 0) {
-        chart.data.datasets[0].data.push({x: 0, y: 0});
+        chart.data.datasets[0].data.push({ x: 0, y: 0 });
       } else {
-        chart.data.datasets[0].data.push({x: value.x, y: value.y});
+        chart.data.datasets[0].data.push({ x: value.x, y: value.y });
       }
 
       chart.update();

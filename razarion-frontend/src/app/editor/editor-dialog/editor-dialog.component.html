@@ -1,5 +1,6 @@
 ﻿<div class="flex">
   <div class="mr-2 editor-category">
+
     <p-panel header="Configuration">
       <p-divider align="left">
         <div class="inline-flex align-items-center">
@@ -11,10 +12,7 @@
         <p-button type="button" label="Levels" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
           (onClick)="openLevelEditor()"></p-button>
       </div>
-      <div class="mb-2">
-        <p-button type="button" label="Image" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
-          (onClick)="openImageEditor()"></p-button>
-      </div>
+
      <p-divider align="left">
         <div class="inline-flex align-items-center">
           <i class="pi pi-image"></i>
@@ -29,6 +27,29 @@
         <p-button type="button" label="Driveway" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
           (onClick)="openDrivewayEditor()"></p-button>
       </div>
+
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-home"></i>
+          <b>&nbsp;Items</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Base Items" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+          (onClick)="openBaseItemTypeEditor()"></p-button>
+      </div>
+
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-sliders-h"></i>
+          <b>&nbsp;Library</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Images" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+          (onClick)="openImageEditor()"></p-button>
+      </div>
+
     </p-panel>
   </div>
 

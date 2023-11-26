@@ -13,13 +13,15 @@ import {ServerQuestEditorComponent} from "../server-quest-editor/server-quest-ed
 import {ServerBotEditorComponent} from "../server-bot-editor/server-bot-editor.component";
 import {ServerStartRegionComponent} from "../server-start-region/server-start-region.component";
 import {ServerResourceRegionComponent} from "../server-resource-region/server-resource-region.component";
-import {CrudContainerComponent} from "../crud-editors/crud-container/crud-container.component";
+import {ManuallyCrudContainerComponent} from "../crud-editors/crud-container/manually-crud-container.component";
 import {SlopeEditorComponent} from "../crud-editors/slope-editor/slope-editor.component";
 import {DrivewayEditorComponent} from "../crud-editors/driveway-editor/driveway-editor.component";
 import {TerrainEditor2dComponent} from "../../terrain-editor2d/terrain-editor2d.component";
 import {EditorService} from "../editor-service";
 import { ObjectTerrainEditorComponent } from "../terrain-editor/object-terrain-editor.component";
 import { LevelEditorComponent } from "../crud-editors/level-editor/level-editor.component";
+import { GeneratedCrudContainerComponent } from "../crud-editors/crud-container/generated-crud-container.component";
+import { BaseItemTypeEditorComponent } from "../crud-editors/base-item-type-editor/base-item-type-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -48,7 +50,7 @@ export class EditorDialogComponent {
 
   openLevelEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Level Editor", LevelEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Level editor", LevelEditorComponent));
   }
 
   openConfigurationEditor(collectionName: string) {
@@ -69,7 +71,7 @@ export class EditorDialogComponent {
 
   openTerrainEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Object Terrain Editor", ObjectTerrainEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Object terrain editor", ObjectTerrainEditorComponent));
   }
 
   openTerrainEditor2d() {
@@ -80,41 +82,47 @@ export class EditorDialogComponent {
 
   openQuestEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Quest Editor", ServerQuestEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Quest editor", ServerQuestEditorComponent));
   }
 
   openBotEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Bot Editor", ServerBotEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Bot editor", ServerBotEditorComponent));
   }
 
   openStartRegionEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Start Region Editor", ServerStartRegionComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Start region editor", ServerStartRegionComponent));
   }
 
   openResourceRegionEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Resource Region Editor", ServerResourceRegionComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Resource region editor", ServerResourceRegionComponent));
   }
 
   openSlopeEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Slope Editor", CrudContainerComponent, SlopeEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Slope editor", ManuallyCrudContainerComponent, SlopeEditorComponent));
   }
 
   openDrivewayEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Driveway Editor", CrudContainerComponent, DrivewayEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Driveway editor", ManuallyCrudContainerComponent, DrivewayEditorComponent));
   }
 
   openImageEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Image Editor", ImageEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Image editor", ImageEditorComponent));
   }
 
   openBabylonInspector() {
     this.mainCockpitComponent.editorDialog = false;
     this.renderService.showInspector();
   }
+
+  openBaseItemTypeEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Base item type ditor", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
+  }
+
 }

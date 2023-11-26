@@ -1,10 +1,9 @@
-import {Component, ComponentFactoryResolver, ViewChild, ViewContainerRef} from '@angular/core';
-import {EditorPanel} from "../../editor-model";
-import {MenuItem, MessageService} from "primeng/api";
-import {HttpClient} from "@angular/common/http";
-import {ObjectNameId} from "../../../generated/razarion-share";
+import { Component, ComponentFactoryResolver, ViewChild, ViewContainerRef } from '@angular/core';
+import { EditorPanel } from "../../editor-model";
+import { MenuItem, MessageService } from "primeng/api";
+import { Config, ObjectNameId } from "../../../generated/razarion-share";
 
-export interface CrudContainerChild<T> {
+export interface CrudContainerChild<T extends Config> {
   init(config: T): void;
 
   exportConfig(): T;
@@ -16,10 +15,9 @@ export interface CrudContainerChild<T> {
   selector: 'crud-container',
   templateUrl: './crud-container.component.html'
 })
-export class CrudContainerComponent extends EditorPanel {
-  @ViewChild("configContainer", {read: ViewContainerRef})
+export class AbstractCrudContainerComponent extends EditorPanel {
+  @ViewChild("configContainer", { read: ViewContainerRef })
   configContainer!: ViewContainerRef;
-  editorUrl?: string;
   private crudContainerChild: CrudContainerChild<any> | null = null;
 
   items: MenuItem[] = [
@@ -29,11 +27,39 @@ export class CrudContainerComponent extends EditorPanel {
   ];
   selectedDisplayObjectName: string | null = null;
 
-  constructor(private messageService: MessageService,
-              private httpClient: HttpClient,
-              private resolver: ComponentFactoryResolver) {
+  initCustom(childComponent: any) {
+    throw new Error('Method not implemented.');
+  }
+
+  requestObjectNameId(): Promise<ObjectNameId[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  read(id: number): Promise<Config> {
+    throw new Error('Method not implemented.');
+  }
+
+  create(): Promise<Config> {
+    throw new Error('Method not implemented.');
+  }
+
+  update(config: Config): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  delete(id: number): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  getEditorName(): string {
+    throw new Error('Method not implemented.');
+  }
+
+  constructor(protected messageService: MessageService,
+    private resolver: ComponentFactoryResolver) {
     super();
   }
+
 
   onEditorModel(): void {
     if (!this.editorModel.childComponent) {
@@ -45,20 +71,11 @@ export class CrudContainerComponent extends EditorPanel {
       });
       return;
     }
-    this.editorUrl = (<any>this.editorModel.childComponent).editorUrl;
-    if (!this.editorUrl) {
-      console.error(`No editorUrl in ${this.editorModel.childComponent}`);
-      this.messageService.add({
-        severity: 'error',
-        summary: `No editorUrl in ${this.editorModel.childComponent}`,
-        sticky: true
-      });
-      return;
-    }
-    this.requestObjectNameId();
+    this.initCustom(this.editorModel.childComponent);
+    this.internalRequestObjectNameIds();
   }
 
-  setupMenuItems(objectNameIds: ObjectNameId[]) {
+  private setupMenuItems(objectNameIds: ObjectNameId[]) {
     let menuObjectNameIds: MenuItem[] = [];
 
     objectNameIds.forEach(objectNameId => {
@@ -66,23 +83,19 @@ export class CrudContainerComponent extends EditorPanel {
       menuObjectNameIds.push({
         label: displayObjectName,
         command: () => {
-          this.httpClient.get(`${this.editorUrl}/read/${objectNameId.id}`)
-            .subscribe({
-              next: (configObject: any) => {
-                this.displayConfigComponent(configObject);
-                this.items[0].label = displayObjectName;
-                this.selectedDisplayObjectName = displayObjectName;
-              },
-              error: (error) => {
-                console.error(error);
-                this.messageService.add({
-                  severity: 'error',
-                  summary: `Can not load config '${displayObjectName}' for: '${this.editorUrl}'`,
-                  detail: error.message,
-                  sticky: true
-                });
-              }
+          this.read(objectNameId.id).then(configObject => {
+            this.displayConfigComponent(configObject);
+            this.items[0].label = displayObjectName;
+            this.selectedDisplayObjectName = displayObjectName;
+          }).catch(error => {
+            console.error(error);
+            this.messageService.add({
+              severity: 'error',
+              summary: `Can not load config '${displayObjectName}' for: '${this.getEditorName}'`,
+              detail: error.message,
+              sticky: true
             });
+          });
         }
       });
     })
@@ -95,47 +108,41 @@ export class CrudContainerComponent extends EditorPanel {
       {
         label: "New",
         command: () => {
-          this.httpClient.post(`${this.editorUrl}/create`, {})
-            .subscribe({
-              next: (configObject: any) => {
-                this.displayConfigComponent(configObject);
-                this.items[0].label = configObject.internalName;
-                this.selectedDisplayObjectName = `? '${configObject.id}'`;
-                this.requestObjectNameId();
-              }, error: (error) => {
-                console.error(error);
-                this.messageService.add({
-                  severity: 'error',
-                  // summary: `Can not create config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
-                  detail: error,
-                  sticky: true
-                });
-              }
+          this.create().then(configObject => {
+            this.displayConfigComponent(configObject);
+            this.items[0].label = configObject.internalName;
+            this.selectedDisplayObjectName = `? '${configObject.id}'`;
+            this.internalRequestObjectNameIds();
+          }).catch(error => {
+            console.error(error);
+            this.messageService.add({
+              severity: 'error',
+              // summary: `Can not create config for: ${(<GenericPropertyEditorModel>this.editorModel).collectionName}`,
+              detail: error,
+              sticky: true
             });
+          });
         }
       },
       {
         label: "Save",
         disabled: !this.crudContainerChild,
         command: () => {
-          this.httpClient.post(`${this.editorUrl}/update`, this.crudContainerChild!.exportConfig()).subscribe({
-            next: () => {
-              this.messageService.add({
-                severity: 'success',
-                life: 300,
-                summary: 'Saved'
-              });
-              this.requestObjectNameId();
-            },
-            error: (error: any) => {
-              this.messageService.add({
-                severity: 'error',
-                summary: `Error loading objectNameIds for: ${this.editorUrl}`,
-                detail: error.message,
-                sticky: true
-              });
-              console.error(error);
-            }
+          this.update(this.crudContainerChild!.exportConfig()).then(() => {
+            this.messageService.add({
+              severity: 'success',
+              life: 300,
+              summary: 'Saved'
+            });
+            this.internalRequestObjectNameIds();
+          }).catch(error => {
+            this.messageService.add({
+              severity: 'error',
+              summary: `Error loading objectNameIds for: ${this.getEditorName}`,
+              detail: error.message,
+              sticky: true
+            });
+            console.error(error);
           });
         }
       },
@@ -143,37 +150,40 @@ export class CrudContainerComponent extends EditorPanel {
         label: "Delete",
         disabled: !this.crudContainerChild,
         command: () => {
-          this.httpClient.delete(`${this.editorUrl}/delete/${this.crudContainerChild?.getId()}`)
-            .subscribe(() => {
-              this.requestObjectNameId();
-              this.displayConfigComponent(null);
-              this.items[0].label = 'Select...';
-              this.selectedDisplayObjectName = null;
-              this.messageService.add({
-                severity: 'success',
-                life: 300,
-                summary: 'Deleted'
-              });
+          this.delete(this.crudContainerChild!.getId()).then(() => {
+            this.internalRequestObjectNameIds();
+            this.displayConfigComponent(null);
+            this.items[0].label = 'Select...';
+            this.selectedDisplayObjectName = null;
+            this.messageService.add({
+              severity: 'success',
+              life: 300,
+              summary: 'Deleted'
             });
+          }).catch(error => {
+            this.messageService.add({
+              severity: 'error',
+              summary: `Failed saving ${this.crudContainerChild!.getId()} ${this.getEditorName()}`,
+              detail: `${JSON.stringify(error)}`,
+              sticky: true
+            });
+          });
         }
       }
     ];
   }
 
-  private requestObjectNameId(): void {
-    this.httpClient.get(`${this.editorUrl}/objectNameIds`).subscribe({
-      next: (objectNameIds: any) => {
-        this.setupMenuItems(objectNameIds);
-      },
-      error: (error: any) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: `Error loading objectNameIds for: ${this.editorUrl}`,
-          detail: error.message,
-          sticky: true
-        });
-        console.error(error);
-      }
+  private internalRequestObjectNameIds() {
+    this.requestObjectNameId().then(objectNameIds => {
+      this.setupMenuItems(objectNameIds);
+    }).catch(error => {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not load objectNameIds for: ${this.getEditorName()}`,
+        detail: error.message,
+        sticky: true
+      });
     });
   }
 
@@ -198,7 +208,7 @@ export class CrudContainerComponent extends EditorPanel {
         } catch (error) {
           this.messageService.add({
             severity: 'error',
-            summary: `Can not open editor: ${this.editorUrl}`,
+            summary: `Can not open editor: ${this.getEditorName()}`,
             detail: String(error),
             sticky: true
           });

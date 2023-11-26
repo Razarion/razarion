@@ -1,9 +1,9 @@
-import {Component} from '@angular/core';
-import {CrudContainerChild} from "../crud-container/crud-container.component";
-import {DrivewayConfig} from "../../../generated/razarion-share";
-import {EditorService} from "../../editor-service";
-import {DRIVEWAY_EDITOR_PATH} from "../../../common";
-import {Tools} from "@babylonjs/core";
+import { Component } from '@angular/core';
+import { DrivewayConfig } from "../../../generated/razarion-share";
+import { EditorService } from "../../editor-service";
+import { DRIVEWAY_EDITOR_PATH } from "../../../common";
+import { Tools } from "@babylonjs/core";
+import { CrudContainerChild } from '../crud-container/crud-container.component';
 
 @Component({
   selector: 'app-driveway-editor',

@@ -84,18 +84,6 @@
                    [(ngModel)]="length"></p-inputNumber>
   </div>
 </div>
-<div class="grid grid-razarion-editor">
-  <span class="col-4">Restart Planet warm</span>
-  <div class="col-8">
-    <p-button icon="pi pi-power-off" (onClick)="restartPlanetWarm()"></p-button>
-  </div>
-</div>
-<div class="grid grid-razarion-editor">
-  <span class="col-4">Restart Planet cold</span>
-  <div class="col-8">
-    <p-button icon="pi pi-power-off" (onClick)="restartPlanetCold()"></p-button>
-  </div>
-</div>
 <div style="width:620px">
   <p-chart #chart type="scatter" [data]="data" [options]="options" [plugins]="plugins"></p-chart>
   <p-toggleButton [(ngModel)]="insertMode"
@@ -111,3 +99,22 @@
                   title="Remove vertex mode"
                   styleClass="p-button-sm p-button-text p-togglebutton-warning"></p-toggleButton>
 </div>
+<p-divider align="left">
+  <div class="inline-flex align-items-center">
+    <i class="pi pi-bolt"></i>
+    <b>&nbsp;Actions</b>
+  </div>
+</p-divider>
+<div class="grid grid-razarion-editor">
+  <span class="col-4">Restart Planet warm</span>
+  <div class="col-8">
+    <p-button icon="pi pi-power-off" (onClick)="restartPlanetWarm()"></p-button>
+  </div>
+</div>
+<div class="grid grid-razarion-editor">
+  <span class="col-4">Restart Planet cold</span>
+  <div class="col-8">
+    <p-button icon="pi pi-power-off" (onClick)="restartPlanetCold()"></p-button>
+  </div>
+</div>
+
