@@ -99,6 +99,10 @@ import { BaseItemTypeEditorComponent } from './editor/crud-editors/base-item-typ
 import { AbstractCrudContainerComponent } from './editor/crud-editors/crud-container/crud-container.component';
 import { ManuallyCrudContainerComponent } from './editor/crud-editors/crud-container/manually-crud-container.component';
 import { GeneratedCrudContainerComponent } from './editor/crud-editors/crud-container/generated-crud-container.component';
+import { TerrainTypeComponent } from './editor/common/terrain-type/terrain-type.component';
+import { VelocityComponent } from './editor/common/velocity/velocity.component';
+import { AccelerationComponent } from './editor/common/acceleration/acceleration.component';
+import { AngleComponent } from './editor/common/angle/angle.component';
 
 @NgModule({
   declarations: [
@@ -153,7 +157,11 @@ import { GeneratedCrudContainerComponent } from './editor/crud-editors/crud-cont
     TerrainObjectGeneratorComponent,
     BackendComponent,
     LevelEditorComponent,
-    BaseItemTypeEditorComponent
+    BaseItemTypeEditorComponent,
+    TerrainTypeComponent,
+    VelocityComponent,
+    AccelerationComponent,
+    AngleComponent
   ],
   imports: [
     BrowserModule,

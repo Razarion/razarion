@@ -1,15 +1,15 @@
-﻿import {Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild} from '@angular/core';
-import {FrontendService} from "../service/frontend.service";
-import {NavigationStart, Router} from "@angular/router";
-import {GwtAngularService} from "../gwtangular/GwtAngularService";
-import {EditorModel} from "../editor/editor-model";
-import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
-import {MainCockpitComponent} from "./cockpit/main/main-cockpit.component";
-import {CrashPanelComponent} from "../editor/crash-panel/crash-panel.component";
-import {BabylonRenderServiceAccessImpl} from './renderer/babylon-render-service-access-impl.service';
-import {environment} from 'src/environments/environment';
-import {GameMockService} from './renderer/game-mock.service';
-import {BabylonModelService} from './renderer/babylon-model.service';
+﻿import { Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild } from '@angular/core';
+import { FrontendService } from "../service/frontend.service";
+import { NavigationStart, Router } from "@angular/router";
+import { GwtAngularService } from "../gwtangular/GwtAngularService";
+import { EditorModel } from "../editor/editor-model";
+import { ItemCockpitComponent } from "./cockpit/item/item-cockpit.component";
+import { MainCockpitComponent } from "./cockpit/main/main-cockpit.component";
+import { CrashPanelComponent } from "../editor/crash-panel/crash-panel.component";
+import { BabylonRenderServiceAccessImpl } from './renderer/babylon-render-service-access-impl.service';
+import { environment } from 'src/environments/environment';
+import { GameMockService } from './renderer/game-mock.service';
+import { BabylonModelService } from './renderer/babylon-model.service';
 import {
   AngularCursorService,
   BaseItemType,
@@ -28,10 +28,14 @@ import {
   ScreenCover,
   WeaponType
 } from "../gwtangular/GwtAngularFacade";
-import {GwtInstance} from "../gwtangular/GwtInstance";
-import {GwtHelper} from "../gwtangular/GwtHelper";
-import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
+import { GwtInstance } from "../gwtangular/GwtInstance";
+import { GwtHelper } from "../gwtangular/GwtHelper";
+import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
 import { LevelEditorComponent } from '../editor/crud-editors/level-editor/level-editor.component';
+import {
+  GeneratedCrudContainerComponent
+} from "../editor/crud-editors/crud-container/generated-crud-container.component";
+import { BaseItemTypeEditorComponent } from '../editor/crud-editors/base-item-type-editor/base-item-type-editor.component';
 
 
 @Component({
@@ -39,13 +43,13 @@ import { LevelEditorComponent } from '../editor/crud-editors/level-editor/level-
   styleUrls: ['game.component.scss']
 })
 export class GameComponent implements OnInit, ScreenCover {
-  @ViewChild('canvas', {static: true})
+  @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('mainCockpit', {static: true})
+  @ViewChild('mainCockpit', { static: true })
   mainCockpitComponent!: MainCockpitComponent;
-  @ViewChild('itemCockpitContainer', {static: true})
+  @ViewChild('itemCockpitContainer', { static: true })
   itemCockpitContainer!: ItemCockpitComponent;
-  @ViewChild('questCockpitContainer', {static: true})
+  @ViewChild('questCockpitContainer', { static: true })
   questCockpitContainer!: QuestCockpitComponent;
   editorModels: EditorModel[] = [];
   @HostBinding("style.--cursor")
@@ -54,12 +58,12 @@ export class GameComponent implements OnInit, ScreenCover {
   removeCover: boolean = false;
 
   constructor(private frontendService: FrontendService,
-              private router: Router,
-              private gwtAngularService: GwtAngularService,
-              private threeJsRendererService: BabylonRenderServiceAccessImpl,
-              private threeJsModelService: BabylonModelService,
-              private gameMockService: GameMockService,
-              private zone: NgZone) {
+    private router: Router,
+    private gwtAngularService: GwtAngularService,
+    private threeJsRendererService: BabylonRenderServiceAccessImpl,
+    private threeJsModelService: BabylonModelService,
+    private gameMockService: GameMockService,
+    private zone: NgZone) {
   }
 
   ngOnInit(): void {
@@ -283,65 +287,65 @@ export class GameComponent implements OnInit, ScreenCover {
               });
 
               this.questCockpitContainer.showQuestSideBar(new class implements QuestConfig {
-                  getConditionConfig(): ConditionConfig | null {
-                    return new class implements ConditionConfig {
-                      getConditionTrigger(): ConditionTrigger {
-                        return ConditionTrigger.SYNC_ITEM_POSITION;
-                      }
+                getConditionConfig(): ConditionConfig | null {
+                  return new class implements ConditionConfig {
+                    getConditionTrigger(): ConditionTrigger {
+                      return ConditionTrigger.SYNC_ITEM_POSITION;
+                    }
 
-                      getComparisonConfig(): ComparisonConfig {
-                        return new class implements ComparisonConfig {
-                          getCount(): number | null {
-                            return null;
-                          }
+                    getComparisonConfig(): ComparisonConfig {
+                      return new class implements ComparisonConfig {
+                        getCount(): number | null {
+                          return null;
+                        }
 
-                          getTimeSeconds(): number | null {
-                            return null;
-                          }
+                        getTimeSeconds(): number | null {
+                          return null;
+                        }
 
-                          toTypeCountAngular(): number[][] {
-                            return [[1, 2], [2, 3]];
-                          }
+                        toTypeCountAngular(): number[][] {
+                          return [[1, 2], [2, 3]];
+                        }
 
-                        };
-                      }
-                    };
-                  }
+                      };
+                    }
+                  };
+                }
 
-                  getId(): number {
-                    return 0;
-                  }
+                getId(): number {
+                  return 0;
+                }
 
-                  getInternalName(): string {
-                    return "";
-                  }
+                getInternalName(): string {
+                  return "";
+                }
 
-                  getTitle(): string {
-                    return "Build";
-                  }
+                getTitle(): string {
+                  return "Build";
+                }
 
-                  getDescription(): string {
-                    return "Build a Factory";
-                  }
+                getDescription(): string {
+                  return "Build a Factory";
+                }
 
-                }, new class implements QuestProgressInfo {
-                  getBotBasesInformation(): string | null {
-                    return null;
-                  }
+              }, new class implements QuestProgressInfo {
+                getBotBasesInformation(): string | null {
+                  return null;
+                }
 
-                  getCount(): number | null {
-                    return 1;
-                  }
+                getCount(): number | null {
+                  return 1;
+                }
 
-                  getSecondsRemaining(): number | null {
-                    return null;
-                  }
+                getSecondsRemaining(): number | null {
+                  return null;
+                }
 
-                  toTypeCountAngular(): number[][] {
-                    return [];
-                  }
+                toTypeCountAngular(): number[][] {
+                  return [];
+                }
 
-                },
+              },
                 false)
             });
           });
@@ -349,7 +353,7 @@ export class GameComponent implements OnInit, ScreenCover {
       } else {
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.mainCockpitComponent.show(true);
-        this.addEditorModel(new EditorModel("??? Editor", LevelEditorComponent));
+        this.addEditorModel(new EditorModel("??? Editor", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
         this.fadeOutLoadingCover();
         this.removeLoadingCover();
       }
@@ -479,21 +483,21 @@ export class GameComponent implements OnInit, ScreenCover {
         cursorType = GwtHelper.gwtIssueStringEnum(cursorType, CursorType);
         switch (cursorType) {
           case CursorType.GO:
-            if(allowed) {
+            if (allowed) {
               gameComponent.cursor = "url(\"/assets/cursors/go.png\"), auto"
             } else {
               gameComponent.cursor = "url(\"/assets/cursors/go-no.png\"), auto"
             }
             break;
           case CursorType.ATTACK:
-            if(allowed) {
+            if (allowed) {
               gameComponent.cursor = "url(\"/assets/cursors/attack.png\"), auto"
             } else {
               gameComponent.cursor = "url(\"/assets/cursors/attack-no.png\"), auto"
             }
             break;
           case CursorType.COLLECT:
-            if(allowed) {
+            if (allowed) {
               gameComponent.cursor = "url(\"/assets/cursors/collect.png\"), auto"
             } else {
               gameComponent.cursor = "url(\"/assets/cursors/collect-no.png\"), auto"
@@ -501,7 +505,7 @@ export class GameComponent implements OnInit, ScreenCover {
             break;
           default:
             gameComponent.cursor = "default"
-             console.warn(`Unknown cursorType ${cursorType}`)
+            console.warn(`Unknown cursorType ${cursorType}`)
         }
       }
 

@@ -1,50 +1,42 @@
 <div class="grid grid-razarion-editor">
   <span class="col-4">Id</span>
   <div class="col-8">
-    <p-inputNumber [disabled]="true"
-                   [(ngModel)]="slopeConfig.id"></p-inputNumber>
+    <p-inputNumber [disabled]="true" [(ngModel)]="slopeConfig.id"></p-inputNumber>
   </div>
 </div>
 <div class="grid grid-razarion-editor">
   <span class="col-4">Internal name</span>
   <div class="col-8">
-    <input [(ngModel)]="slopeConfig.internalName"
-           type="text"
-           class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    <input [(ngModel)]="slopeConfig.internalName" type="text"
+      class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
   </div>
 </div>
 <div class="grid grid-razarion-editor">
   <span class="col-4">Horizontal space</span>
   <div class="col-8">
-    <p-inputNumber [(ngModel)]="slopeConfig.horizontalSpace"
-                   [minFractionDigits]="1"
-                   [maxFractionDigits]="6"></p-inputNumber>
+    <p-inputNumber [(ngModel)]="slopeConfig.horizontalSpace" [minFractionDigits]="1"
+      [maxFractionDigits]="6"></p-inputNumber>
   </div>
 </div>
 <div class="grid grid-razarion-editor">
   <span class="col-4">Outer line game engine</span>
   <div class="col-8">
     <p-inputNumber (onInput)="slopeConfig.outerLineGameEngine = $event.value;updateChart()"
-                   [(ngModel)]="slopeConfig.outerLineGameEngine"
-                   [minFractionDigits]="1"
-                   [maxFractionDigits]="6"></p-inputNumber>
+      [(ngModel)]="slopeConfig.outerLineGameEngine" [minFractionDigits]="1" [maxFractionDigits]="6"></p-inputNumber>
   </div>
 </div>
 <div class="grid grid-razarion-editor">
   <span class="col-4">Inner line game engine</span>
   <div class="col-8">
     <p-inputNumber (onInput)="slopeConfig.innerLineGameEngine = $event.value;updateChart()"
-                   [(ngModel)]="slopeConfig.innerLineGameEngine"
-                   [minFractionDigits]="1"
-                   [maxFractionDigits]="6"></p-inputNumber>
+      [(ngModel)]="slopeConfig.innerLineGameEngine" [minFractionDigits]="1" [maxFractionDigits]="6"></p-inputNumber>
   </div>
 </div>
 <div class="grid grid-razarion-editor">
   <span class="col-4">Coast delimiter line game engine</span>
   <div class="col-8">
-    <p-inputNumber [(ngModel)]="slopeConfig.coastDelimiterLineGameEngine"
-                   [minFractionDigits]="1"
-                   [maxFractionDigits]="6"></p-inputNumber>
+    <p-inputNumber [(ngModel)]="slopeConfig.coastDelimiterLineGameEngine" [minFractionDigits]="1"
+      [maxFractionDigits]="6"></p-inputNumber>
   </div>
 </div>
 <div class="grid grid-razarion-editor">
@@ -80,24 +72,17 @@
 <div class="grid grid-razarion-editor">
   <span class="col-4">Length</span>
   <div class="col-8">
-    <p-inputNumber [disabled]="true"
-                   [(ngModel)]="length"></p-inputNumber>
+    <p-inputNumber [disabled]="true" [(ngModel)]="length"></p-inputNumber>
   </div>
 </div>
 <div style="width:620px">
   <p-chart #chart type="scatter" [data]="data" [options]="options" [plugins]="plugins"></p-chart>
-  <p-toggleButton [(ngModel)]="insertMode"
-                  (onChange)="deleteMode = false"
-                  onIcon="pi pi-plus-circle"
-                  offIcon="pi pi-plus-circle"
-                  title="Add vertex mode"
-                  styleClass="p-button-sm p-button-text p-togglebutton-warning"></p-toggleButton>
-  <p-toggleButton [(ngModel)]="deleteMode"
-                  (onChange)="insertMode = false"
-                  onIcon="pi pi-minus-circle"
-                  offIcon="pi pi-minus-circle"
-                  title="Remove vertex mode"
-                  styleClass="p-button-sm p-button-text p-togglebutton-warning"></p-toggleButton>
+  <p-toggleButton [(ngModel)]="insertMode" (onChange)="deleteMode = false" onIcon="pi pi-plus-circle"
+    offIcon="pi pi-plus-circle" title="Add vertex mode"
+    styleClass="p-button-sm p-button-text p-togglebutton-warning"></p-toggleButton>
+  <p-toggleButton [(ngModel)]="deleteMode" (onChange)="insertMode = false" onIcon="pi pi-minus-circle"
+    offIcon="pi pi-minus-circle" title="Remove vertex mode"
+    styleClass="p-button-sm p-button-text p-togglebutton-warning"></p-toggleButton>
 </div>
 <p-divider align="left">
   <div class="inline-flex align-items-center">
@@ -117,4 +102,3 @@
     <p-button icon="pi pi-power-off" (onClick)="restartPlanetCold()"></p-button>
   </div>
 </div>
-

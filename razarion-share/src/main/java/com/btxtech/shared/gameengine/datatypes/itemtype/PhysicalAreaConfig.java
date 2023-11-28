@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 /**
@@ -42,43 +43,43 @@ public class PhysicalAreaConfig {
         this.terrainType = terrainType;
     }
 
-    public Double getAngularVelocity() {
+    public @Nullable Double getAngularVelocity() {
         return angularVelocity;
     }
 
-    public void setAngularVelocity(Double angularVelocity) {
+    public void setAngularVelocity(@Nullable Double angularVelocity) {
         this.angularVelocity = angularVelocity;
     }
 
-    public Double getSpeed() {
+    public @Nullable Double getSpeed() {
         return speed;
     }
 
-    public void setSpeed(Double speed) {
+    public void setSpeed(@Nullable Double speed) {
         this.speed = speed;
     }
 
-    public Double getAcceleration() {
+    public @Nullable Double getAcceleration() {
         return acceleration;
     }
 
-    public void setAcceleration(Double acceleration) {
+    public void setAcceleration(@Nullable Double acceleration) {
         this.acceleration = acceleration;
     }
 
-    public Double getStartAngleSlowDown() {
+    public @Nullable Double getStartAngleSlowDown() {
         return startAngleSlowDown;
     }
 
-    public void setStartAngleSlowDown(Double startAngleSlowDown) {
+    public void setStartAngleSlowDown(@Nullable Double startAngleSlowDown) {
         this.startAngleSlowDown = startAngleSlowDown;
     }
 
-    public Double getEndAngleSlowDown() {
+    public @Nullable Double getEndAngleSlowDown() {
         return endAngleSlowDown;
     }
 
-    public void setEndAngleSlowDown(Double endAngleSlowDown) {
+    public void setEndAngleSlowDown(@Nullable Double endAngleSlowDown) {
         this.endAngleSlowDown = endAngleSlowDown;
     }
 

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { BaseItemType, BaseItemTypeEditorControllerClient } from 'src/app/generated/razarion-share';
-import { HttpClient } from '@angular/common/http';
 import { CrudContainerChild } from '../crud-container/crud-container.component';
 
 @Component({
@@ -9,17 +8,17 @@ import { CrudContainerChild } from '../crud-container/crud-container.component';
 })
 export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemType> {
   static editorControllerClient = BaseItemTypeEditorControllerClient;
-  config?: BaseItemType;
+  baseItemType!: BaseItemType;
 
-  init(config: BaseItemType): void {
-    this.config = config;
+  init(baseItemType: BaseItemType): void {
+    this.baseItemType = baseItemType;
   }
 
   exportConfig(): BaseItemType {
-    return this.config!;
+    return this.baseItemType!;
   }
 
   getId(): number {
-    throw this.config!.id;
+    throw this.baseItemType!.id;
   }
 }

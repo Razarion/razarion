@@ -1,1 +1,98 @@
-<p>base-item-editor works!</p>
+<div style="width: 40em;">
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Id</span>
+        <div class="col-8">
+            <p-inputNumber [disabled]="true" [(ngModel)]="baseItemType.id"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Internal name</span>
+        <div class="col-8">
+            <input [(ngModel)]="baseItemType.internalName" type="text"
+                class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Price</span>
+        <div class="col-8">
+            <p-inputNumber [(ngModel)]="baseItemType.price"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Buildup</span>
+        <div class="col-8">
+            <p-inputNumber [(ngModel)]="baseItemType.buildup"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">XP on killed</span>
+        <div class="col-8">
+            <p-inputNumber [(ngModel)]="baseItemType.xpOnKilling"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Consuming house space</span>
+        <div class="col-8">
+            <p-inputNumber [(ngModel)]="baseItemType.consumingHouseSpace"></p-inputNumber>
+        </div>
+    </div>
+
+    <p-divider align="left">
+        <div class="inline-flex align-items-center">
+            <i class="pi pi-car"></i>
+            <b>&nbsp;Physical area / moving</b>
+        </div>
+    </p-divider>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Radius [m]</span>
+        <div class="col-8">
+            <p-inputNumber [(ngModel)]="baseItemType.physicalAreaConfig.radius" [minFractionDigits]="3"
+                [maxFractionDigits]="3"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Fix vertical norm</span>
+        <div class="col-8">
+            <p-checkbox [(ngModel)]="baseItemType.physicalAreaConfig.fixVerticalNorm" [binary]="true"></p-checkbox>
+
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Terrain type</span>
+        <div class="col-8">
+            <terrain-type [(terrainType)]="baseItemType.physicalAreaConfig.terrainType"></terrain-type>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Speed [km/h]</span>
+        <div class="col-8">
+            <velocity [(velocity)]="baseItemType.physicalAreaConfig.speed"></velocity>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Acceleration [s 0-100 km/h]</span>
+        <div class="col-8">
+            <acceleration [(acceleration)]="baseItemType.physicalAreaConfig.acceleration"></acceleration>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Angular velocity [&deg;/s]</span>
+        <div class="col-8">
+            <p-inputNumber [(ngModel)]="baseItemType.physicalAreaConfig.angularVelocity" [minFractionDigits]="2"
+            [maxFractionDigits]="2"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Start angle slow down [&deg;]</span>
+        <div class="col-8">
+            <angle [(angle)]="baseItemType.physicalAreaConfig.startAngleSlowDown" [maxDegreeAngle]="180"></angle>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">End angle slow down [&deg;]</span>
+        <div class="col-8">
+            <angle [(angle)]="baseItemType.physicalAreaConfig.endAngleSlowDown" [maxDegreeAngle]="180"></angle>
+        </div>
+    </div>
+    
+</div>
