@@ -188,7 +188,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeBuilder(BaseItemType builder, Integer... ableToBuild) {
-        builder.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_2_ID).thumbnail(IMAGE_3_ID).threeJsModelPackConfigId(SHAPE_3D_1_ID);
+        builder.health(5).spawnDurationMillis(3000).spawnShape3DId(SHAPE_3D_1_ID).spawnAudioId(AUDIO_1_ID).buildupTextureId(IMAGE_1_ID).demolitionImageId(IMAGE_2_ID).thumbnail(IMAGE_3_ID).threeJsModelPackConfigId(SHAPE_3D_1_ID);
         builder.setI18nName(i18nHelper("Builder"));
         builder.setI18nDescription(i18nHelper("Builds buildings"));
         builder.getPhysicalAreaConfig().radius(3).acceleration(40.0).speed(10.0).angularVelocity(Math.toRadians(60)).startAngleSlowDown(Math.toRadians(30)).endAngleSlowDown(Math.toRadians(120));
@@ -197,37 +197,37 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
             builderType.ableToBuildIds(Arrays.asList(ableToBuild));
         }
         builder.setBuilderType(builderType);
-        builder.setBoxPickupRange(2).setBuildup(30);
-        builder.setPrice(100).setWreckageShape3DId(SHAPE_3D_1_ID);
+        builder.boxPickupRange(2).setBuildup(30);
+        builder.price(100).wreckageShape3DId(SHAPE_3D_1_ID);
     }
 
     private void finalizeHarvester(BaseItemType harvester) {
-        harvester.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_2_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_3_ID).thumbnail(IMAGE_1_ID).threeJsModelPackConfigId(SHAPE_3D_1_ID);
+        harvester.health(5).spawnDurationMillis(3000).spawnShape3DId(SHAPE_3D_1_ID).spawnAudioId(AUDIO_2_ID).buildupTextureId(IMAGE_1_ID).demolitionImageId(IMAGE_3_ID).thumbnail(IMAGE_1_ID).threeJsModelPackConfigId(SHAPE_3D_1_ID);
         harvester.setI18nName(i18nHelper("Harvester"));
         harvester.setI18nDescription(i18nHelper("Collects resources"));
         harvester.getPhysicalAreaConfig().radius(3).acceleration(5.0).speed(15.0).angularVelocity(Math.toRadians(60)).startAngleSlowDown(Math.toRadians(40));
         harvester.setHarvesterType(new HarvesterType().progress(10).range(3));
-        harvester.setBoxPickupRange(2).setBuildup(20);
-        harvester.setPrice(100).setWreckageShape3DId(SHAPE_3D_2_ID);
+        harvester.boxPickupRange(2).setBuildup(20);
+        harvester.price(100).wreckageShape3DId(SHAPE_3D_2_ID);
     }
 
     private void finalizeAttacker(BaseItemType attacker) {
-        attacker.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_2_ID).setSpawnAudioId(AUDIO_3_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_1_ID).thumbnail(IMAGE_2_ID).threeJsModelPackConfigId(SHAPE_3D_3_ID);
+        attacker.health(5).spawnDurationMillis(3000).spawnShape3DId(SHAPE_3D_2_ID).spawnAudioId(AUDIO_3_ID).buildupTextureId(IMAGE_1_ID).demolitionImageId(IMAGE_1_ID).thumbnail(IMAGE_2_ID).threeJsModelPackConfigId(SHAPE_3D_3_ID);
         attacker.setI18nName(i18nHelper("Attacker"));
         attacker.setI18nDescription(i18nHelper("Attacks other units"));
         attacker.getPhysicalAreaConfig().radius(2).acceleration(5.0).speed(17.0).angularVelocity(Math.toRadians(60)).endAngleSlowDown(Math.toRadians(150));
         attacker.setWeaponType(new WeaponType().range(10).damage(1).reloadTime(3).detonationRadius(1).projectileSpeed(17.0).muzzleFlashAudioItemConfigId(AUDIO_1_ID).muzzleFlashParticleSystemConfigId(1111119999).turretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
-        attacker.setBoxPickupRange(2).setBuildup(15);
-        attacker.setPrice(100).setWreckageShape3DId(SHAPE_3D_3_ID);
+        attacker.boxPickupRange(2).setBuildup(15);
+        attacker.price(100).wreckageShape3DId(SHAPE_3D_3_ID);
     }
 
     private void finalizeTower(BaseItemType tower) {
-        tower.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_2_ID).setDemolitionImageId(IMAGE_3_ID).thumbnail(IMAGE_3_ID).threeJsModelPackConfigId(SHAPE_3D_3_ID);
+        tower.health(5).spawnDurationMillis(3000).spawnShape3DId(SHAPE_3D_1_ID).spawnAudioId(AUDIO_1_ID).buildupTextureId(IMAGE_2_ID).demolitionImageId(IMAGE_3_ID).thumbnail(IMAGE_3_ID).threeJsModelPackConfigId(SHAPE_3D_3_ID);
         tower.setI18nName(i18nHelper("Tower"));
         tower.setI18nDescription(i18nHelper("Defense tower"));
         tower.getPhysicalAreaConfig().radius(4).fixVerticalNorm(true);
         tower.setWeaponType(new WeaponType().range(20).damage(1).reloadTime(3).detonationRadius(1).projectileSpeed(40.0).muzzleFlashAudioItemConfigId(AUDIO_2_ID).muzzleFlashParticleSystemConfigId(1111119999).turretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTurretCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
-        tower.setWreckageShape3DId(SHAPE_3D_1_ID).setBuildup(45);
+        tower.wreckageShape3DId(SHAPE_3D_1_ID).setBuildup(45);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
         List<DemolitionParticleConfig> demolitionShape3Ds1 = new ArrayList<>();
@@ -248,7 +248,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeFactory(BaseItemType factory, Integer... ableToBuild) {
-        factory.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_2_ID).setBuildupTextureId(IMAGE_2_ID).setDemolitionImageId(IMAGE_1_ID).thumbnail(IMAGE_1_ID).threeJsModelPackConfigId(SHAPE_3D_2_ID);
+        factory.health(5).spawnDurationMillis(3000).spawnShape3DId(SHAPE_3D_1_ID).spawnAudioId(AUDIO_2_ID).buildupTextureId(IMAGE_2_ID).demolitionImageId(IMAGE_1_ID).thumbnail(IMAGE_1_ID).threeJsModelPackConfigId(SHAPE_3D_2_ID);
         factory.setI18nName(i18nHelper("Factory"));
         factory.setI18nDescription(i18nHelper("Creates units"));
         factory.setBuildup(30);
@@ -258,7 +258,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
             factoryType.setAbleToBuildIds(Arrays.asList(ableToBuild));
         }
         factory.setFactoryType(factoryType);
-        factory.setPrice(200).setWreckageShape3DId(SHAPE_3D_2_ID);
+        factory.price(200).wreckageShape3DId(SHAPE_3D_2_ID);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
         List<DemolitionParticleConfig> demolitionShape3Ds1 = new ArrayList<>();
@@ -278,13 +278,13 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeTransporter(BaseItemType transporter, Integer... ableToBuild) {
-        transporter.setHealth(19).setSpawnDurationMillis(2000).setSpawnShape3DId(SHAPE_3D_1_ID).setSpawnAudioId(AUDIO_1_ID).setBuildupTextureId(IMAGE_1_ID).setDemolitionImageId(IMAGE_3_ID).thumbnail(IMAGE_2_ID).threeJsModelPackConfigId(SHAPE_3D_2_ID);
+        transporter.health(19).spawnDurationMillis(2000).spawnShape3DId(SHAPE_3D_1_ID).spawnAudioId(AUDIO_1_ID).buildupTextureId(IMAGE_1_ID).demolitionImageId(IMAGE_3_ID).thumbnail(IMAGE_2_ID).threeJsModelPackConfigId(SHAPE_3D_2_ID);
         transporter.setI18nName(i18nHelper("Transporter"));
         transporter.setI18nDescription(i18nHelper("Transports units"));
         transporter.setBuildup(35);
         transporter.getPhysicalAreaConfig().radius(4).acceleration(2.0).speed(10.0).angularVelocity(Math.toRadians(40));
-        transporter.setBoxPickupRange(4).setBuildup(25);
-        transporter.setPrice(200).setWreckageShape3DId(SHAPE_3D_3_ID);
+        transporter.boxPickupRange(4).setBuildup(25);
+        transporter.price(200).wreckageShape3DId(SHAPE_3D_3_ID);
         // Container
         ItemContainerType itemContainerType = new ItemContainerType().setMaxCount(4).setRange(11.5);
         if (ableToBuild.length > 0) {

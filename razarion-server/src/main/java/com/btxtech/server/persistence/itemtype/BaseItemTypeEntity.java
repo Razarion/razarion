@@ -123,15 +123,15 @@ public class BaseItemTypeEntity {
 
     public BaseItemType toBaseItemType() {
         BaseItemType baseItemType = new BaseItemType()
-                .setPrice(price)
-                .setXpOnKilling(xpOnKilling)
-                .setDropBoxPossibility(dropBoxPossibility)
+                .price(price)
+                .xpOnKilling(xpOnKilling)
+                .dropBoxPossibility(dropBoxPossibility)
                 .explosionAudioItemConfigId(extractId(explosionAudioLibraryEntity, AudioLibraryEntity::getId));
         ;
         if (dropBoxItemTypeEntity != null) {
             baseItemType.setDropBoxItemTypeId(dropBoxItemTypeEntity.getId());
         }
-        baseItemType.setBoxPickupRange(boxPickupRange).setUnlockCrystals(unlockCrystals).setHealth(health).setBuildup(buildup);
+        baseItemType.boxPickupRange(boxPickupRange).unlockCrystals(unlockCrystals).health(health).buildup(buildup);
         baseItemType.id(id).internalName(internalName);
         if (i18nName != null) {
             baseItemType.setI18nName(i18nName.toI18nString());

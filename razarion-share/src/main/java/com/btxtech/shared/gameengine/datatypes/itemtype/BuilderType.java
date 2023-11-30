@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 import java.util.List;
@@ -56,11 +57,11 @@ public class BuilderType {
         this.ableToBuildIds = ableToBuildIds;
     }
 
-    public Integer getParticleSystemConfigId() {
+    public @Nullable Integer getParticleSystemConfigId() {
         return particleSystemConfigId;
     }
 
-    public void setParticleSystemConfigId(Integer particleSystemConfigId) {
+    public void setParticleSystemConfigId(@Nullable Integer particleSystemConfigId) {
         this.particleSystemConfigId = particleSystemConfigId;
     }
 

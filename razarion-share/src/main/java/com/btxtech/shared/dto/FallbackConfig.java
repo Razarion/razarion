@@ -110,7 +110,7 @@ public final class FallbackConfig {
 
     public static void setupBuilder(List<BaseItemType> baseItemTypes) {
         BaseItemType bulldozer = new BaseItemType();
-        bulldozer.setHealth(40).setBoxPickupRange(1).id(BUILDER_ITEM_TYPE_ID).internalName("Builder test");
+        bulldozer.health(40).boxPickupRange(1).id(BUILDER_ITEM_TYPE_ID).internalName("Builder test");
         bulldozer.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(1.0).angularVelocity(Math.toRadians(30)).radius(3).speed(20.0));
         bulldozer.setBuilderType(new BuilderType().ableToBuildIds(Arrays.asList(FACTORY_ITEM_TYPE_ID, GENERATOR_ITEM_TYPE_ID, CONSUMER_ITEM_TYPE_ID, HARBOUR_ITEM_TYPE_ID)).progress(5).range(10));
         baseItemTypes.add(bulldozer);
@@ -118,7 +118,7 @@ public final class FallbackConfig {
 
     public static void setupFactory(List<BaseItemType> baseItemTypes) {
         BaseItemType factory = new BaseItemType();
-        factory.setHealth(30).id(FACTORY_ITEM_TYPE_ID).setInternalName("Factory test");
+        factory.health(30).id(FACTORY_ITEM_TYPE_ID).setInternalName("Factory test");
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).radius(5));
         factory.setFactoryType(new FactoryType().setAbleToBuildIds(Arrays.asList(BUILDER_ITEM_TYPE_ID, ATTACKER_ITEM_TYPE_ID, HARVESTER_ITEM_TYPE_ID)).setProgress(2));
         baseItemTypes.add(factory);
@@ -126,7 +126,7 @@ public final class FallbackConfig {
 
     public static void setupHarbour(List<BaseItemType> baseItemTypes) {
         BaseItemType harbour = new BaseItemType();
-        harbour.setHealth(40).id(HARBOUR_ITEM_TYPE_ID).setInternalName("Harbour test");
+        harbour.health(40).id(HARBOUR_ITEM_TYPE_ID).setInternalName("Harbour test");
         harbour.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER_COAST).radius(4.5));
         harbour.setFactoryType(new FactoryType().setAbleToBuildIds(Arrays.asList(SHIP_ATTACKER_ITEM_TYPE_ID, SHIP_HARVESTER_ITEM_TYPE_ID, SHIP_TRANSPORTER_ITEM_TYPE_ID)).setProgress(3));
         baseItemTypes.add(harbour);
@@ -134,7 +134,7 @@ public final class FallbackConfig {
 
     public static void setupAttacker(List<BaseItemType> baseItemTypes) {
         BaseItemType attacker = new BaseItemType();
-        attacker.setHealth(20).setBuildup(8).id(ATTACKER_ITEM_TYPE_ID).internalName("Attacker test");
+        attacker.health(20).buildup(8).id(ATTACKER_ITEM_TYPE_ID).internalName("Attacker test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(1.0).angularVelocity(Math.toRadians(30)).radius(2).speed(20.0));
         attacker.setWeaponType(new WeaponType().damage(5).range(10).projectileSpeed(20.0).reloadTime(2).turretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTurretCenter(new Vertex(0, 0, 1))));
         baseItemTypes.add(attacker);
@@ -142,7 +142,7 @@ public final class FallbackConfig {
 
     public static void setupShipAttacker(List<BaseItemType> baseItemTypes) {
         BaseItemType attacker = new BaseItemType();
-        attacker.setHealth(30).setBuildup(12).id(SHIP_ATTACKER_ITEM_TYPE_ID).internalName("Ship attacker test");
+        attacker.health(30).buildup(12).id(SHIP_ATTACKER_ITEM_TYPE_ID).internalName("Ship attacker test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).acceleration(0.5).angularVelocity(Math.toRadians(30)).radius(3).speed(10.0));
         attacker.setWeaponType(new WeaponType().damage(5).range(15).projectileSpeed(20.0).reloadTime(2).turretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTurretCenter(new Vertex(0, 0, 1))));
         baseItemTypes.add(attacker);
@@ -150,7 +150,7 @@ public final class FallbackConfig {
 
     public static void setupShipTransporter(List<BaseItemType> baseItemTypes) {
         BaseItemType transporter = new BaseItemType();
-        transporter.setHealth(40).setBuildup(15).id(SHIP_TRANSPORTER_ITEM_TYPE_ID).internalName("Ship transporter test");
+        transporter.health(40).buildup(15).id(SHIP_TRANSPORTER_ITEM_TYPE_ID).internalName("Ship transporter test");
         transporter.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).acceleration(0.7).angularVelocity(Math.toRadians(45)).radius(4).speed(8.0));
         transporter.setItemContainerType(new ItemContainerType().setAbleToContain(Arrays.asList(ATTACKER_ITEM_TYPE_ID, BUILDER_ITEM_TYPE_ID)).setMaxCount(5).setRange(15));
         baseItemTypes.add(transporter);
@@ -158,7 +158,7 @@ public final class FallbackConfig {
 
     public static void setupGenerator(List<BaseItemType> baseItemTypes) {
         BaseItemType consumer = new BaseItemType();
-        consumer.setHealth(15).setBuildup(10).id(GENERATOR_ITEM_TYPE_ID).internalName("Power planet test");
+        consumer.health(15).buildup(10).id(GENERATOR_ITEM_TYPE_ID).internalName("Power planet test");
         consumer.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).radius(2));
         consumer.setGeneratorType(new GeneratorType().setWattage(80));
         baseItemTypes.add(consumer);
@@ -166,7 +166,7 @@ public final class FallbackConfig {
 
     public static void setupConsumer(List<BaseItemType> baseItemTypes) {
         BaseItemType consumer = new BaseItemType();
-        consumer.setHealth(15).setBuildup(20).id(CONSUMER_ITEM_TYPE_ID).internalName("Consumer test");
+        consumer.health(15).buildup(20).id(CONSUMER_ITEM_TYPE_ID).internalName("Consumer test");
         consumer.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).radius(1.5));
         consumer.setConsumerType(new ConsumerType().setWattage(60));
         baseItemTypes.add(consumer);
@@ -174,7 +174,7 @@ public final class FallbackConfig {
 
     public static void setupHarvester(List<BaseItemType> baseItemTypes) {
         BaseItemType harvester = new BaseItemType();
-        harvester.setHealth(17).setBuildup(18).id(HARVESTER_ITEM_TYPE_ID).internalName("Harvester test");
+        harvester.health(17).buildup(18).id(HARVESTER_ITEM_TYPE_ID).internalName("Harvester test");
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(1.5).angularVelocity(Math.toRadians(40)).radius(2).speed(15.0));
         harvester.setHarvesterType(new HarvesterType().progress(2.0).range(2));
         baseItemTypes.add(harvester);
@@ -182,7 +182,7 @@ public final class FallbackConfig {
 
     public static void setupShipHarvester(List<BaseItemType> baseItemTypes) {
         BaseItemType attacker = new BaseItemType();
-        attacker.setHealth(10).setBuildup(5).id(SHIP_HARVESTER_ITEM_TYPE_ID).internalName("Ship harvester test");
+        attacker.health(10).buildup(5).id(SHIP_HARVESTER_ITEM_TYPE_ID).internalName("Ship harvester test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).acceleration(1.5).angularVelocity(Math.toRadians(20)).radius(2.5).speed(15.0));
         attacker.setHarvesterType(new HarvesterType().range(10).progress(2.0));
         baseItemTypes.add(attacker);
@@ -190,7 +190,7 @@ public final class FallbackConfig {
 
     public static void setupMoveTestUnits(List<BaseItemType> baseItemTypes) {
         BaseItemType moveTest = new BaseItemType();
-        moveTest.setHealth(1).setBuildup(1).id(MOVING_TEST_ITEM_TYPE_ID).internalName("Move Test 1");
+        moveTest.health(1).buildup(1).id(MOVING_TEST_ITEM_TYPE_ID).internalName("Move Test 1");
         moveTest.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(5.0).angularVelocity(Math.toRadians(180)).radius(2).speed(17.0));
         baseItemTypes.add(moveTest);
     }

@@ -103,6 +103,8 @@ import { TerrainTypeComponent } from './editor/common/terrain-type/terrain-type.
 import { VelocityComponent } from './editor/common/velocity/velocity.component';
 import { AccelerationComponent } from './editor/common/acceleration/acceleration.component';
 import { AngleComponent } from './editor/common/angle/angle.component';
+import { BaseItemTypesComponent } from './editor/common/base-item-types/base-item-types.component';
+import { ParticleSystemComponent } from './editor/common/particle-system/particle-system.component';
 
 @NgModule({
   declarations: [
@@ -161,7 +163,9 @@ import { AngleComponent } from './editor/common/angle/angle.component';
     TerrainTypeComponent,
     VelocityComponent,
     AccelerationComponent,
-    AngleComponent
+    AngleComponent,
+    BaseItemTypesComponent,
+    ParticleSystemComponent
   ],
   imports: [
     BrowserModule,

@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 import java.util.List;
@@ -58,269 +59,212 @@ public class BaseItemType extends ItemType {
     private Integer buildupTextureId;
     private Integer explosionAudioItemConfigId;
 
-
     public PhysicalAreaConfig getPhysicalAreaConfig() {
         return physicalAreaConfig;
     }
 
-    public BaseItemType setPhysicalAreaConfig(PhysicalAreaConfig physicalAreaConfig) {
+    public void setPhysicalAreaConfig(PhysicalAreaConfig physicalAreaConfig) {
         this.physicalAreaConfig = physicalAreaConfig;
-        return this;
     }
 
     public int getHealth() {
         return health;
     }
 
-    public BaseItemType setHealth(int health) {
+    public void setHealth(int health) {
         this.health = health;
-        return this;
     }
 
     public int getPrice() {
         return price;
     }
 
-    public BaseItemType setPrice(int price) {
+    public void setPrice(int price) {
         this.price = price;
-        return this;
-    }
-
-    public Integer getDropBoxItemTypeId() {
-        return dropBoxItemTypeId;
-    }
-
-    public BaseItemType setDropBoxItemTypeId(Integer dropBoxItemTypeId) {
-        this.dropBoxItemTypeId = dropBoxItemTypeId;
-        return this;
-    }
-
-    public double getDropBoxPossibility() {
-        return dropBoxPossibility;
-    }
-
-    public BaseItemType setDropBoxPossibility(double dropBoxPossibility) {
-        this.dropBoxPossibility = dropBoxPossibility;
-        return this;
-    }
-
-    public double getBoxPickupRange() {
-        return boxPickupRange;
-    }
-
-    public BaseItemType setBoxPickupRange(double boxPickupRange) {
-        this.boxPickupRange = boxPickupRange;
-        return this;
-    }
-
-    public WeaponType getWeaponType() {
-        return weaponType;
-    }
-
-    public BaseItemType setWeaponType(WeaponType weaponType) {
-        this.weaponType = weaponType;
-        return this;
-    }
-
-    public FactoryType getFactoryType() {
-        return factoryType;
-    }
-
-    public BaseItemType setFactoryType(FactoryType factoryType) {
-        this.factoryType = factoryType;
-        return this;
-    }
-
-    public HarvesterType getHarvesterType() {
-        return harvesterType;
-    }
-
-    public BaseItemType setHarvesterType(HarvesterType harvesterType) {
-        this.harvesterType = harvesterType;
-        return this;
-    }
-
-    public BuilderType getBuilderType() {
-        return builderType;
-    }
-
-    public BaseItemType setBuilderType(BuilderType builderType) {
-        this.builderType = builderType;
-        return this;
-    }
-
-    public GeneratorType getGeneratorType() {
-        return generatorType;
-    }
-
-    public BaseItemType setGeneratorType(GeneratorType generatorType) {
-        this.generatorType = generatorType;
-        return this;
-    }
-
-    public ConsumerType getConsumerType() {
-        return consumerType;
-    }
-
-    public BaseItemType setConsumerType(ConsumerType consumerType) {
-        this.consumerType = consumerType;
-        return this;
-    }
-
-    public ItemContainerType getItemContainerType() {
-        return itemContainerType;
-    }
-
-    public BaseItemType setItemContainerType(ItemContainerType itemContainerType) {
-        this.itemContainerType = itemContainerType;
-        return this;
-    }
-
-    public HouseType getHouseType() {
-        return houseType;
-    }
-
-    public BaseItemType setHouseType(HouseType houseType) {
-        this.houseType = houseType;
-        return this;
-    }
-
-    public SpecialType getSpecialType() {
-        return specialType;
-    }
-
-    public BaseItemType setSpecialType(SpecialType specialType) {
-        this.specialType = specialType;
-        return this;
     }
 
     public int getBuildup() {
         return buildup;
     }
 
-    public BaseItemType setBuildup(int buildup) {
+    public void setBuildup(int buildup) {
         this.buildup = buildup;
-        return this;
     }
 
     public int getXpOnKilling() {
         return xpOnKilling;
     }
 
-    public BaseItemType setXpOnKilling(int xpOnKilling) {
+    public void setXpOnKilling(int xpOnKilling) {
         this.xpOnKilling = xpOnKilling;
-        return this;
     }
 
     public int getConsumingHouseSpace() {
         return consumingHouseSpace;
     }
 
-    public BaseItemType setConsumingHouseSpace(int consumingHouseSpace) {
+    public void setConsumingHouseSpace(int consumingHouseSpace) {
         this.consumingHouseSpace = consumingHouseSpace;
-        return this;
     }
 
-    public boolean unlockNeeded() {
-        return unlockCrystals != null;
+    public @Nullable WeaponType getWeaponType() {
+        return weaponType;
+    }
+
+    public void setWeaponType(@Nullable WeaponType weaponType) {
+        this.weaponType = weaponType;
+    }
+
+    public @Nullable FactoryType getFactoryType() {
+        return factoryType;
+    }
+
+    public void setFactoryType(@Nullable FactoryType factoryType) {
+        this.factoryType = factoryType;
+    }
+
+    public @Nullable HarvesterType getHarvesterType() {
+        return harvesterType;
+    }
+
+    public void setHarvesterType(@Nullable HarvesterType harvesterType) {
+        this.harvesterType = harvesterType;
+    }
+
+    public @Nullable BuilderType getBuilderType() {
+        return builderType;
+    }
+
+    public void setBuilderType(@Nullable BuilderType builderType) {
+        this.builderType = builderType;
+    }
+
+    public @Nullable GeneratorType getGeneratorType() {
+        return generatorType;
+    }
+
+    public void setGeneratorType(@Nullable GeneratorType generatorType) {
+        this.generatorType = generatorType;
+    }
+
+    public @Nullable ConsumerType getConsumerType() {
+        return consumerType;
+    }
+
+    public void setConsumerType(@Nullable ConsumerType consumerType) {
+        this.consumerType = consumerType;
+    }
+
+    public @Nullable ItemContainerType getItemContainerType() {
+        return itemContainerType;
+    }
+
+    public void setItemContainerType(@Nullable ItemContainerType itemContainerType) {
+        this.itemContainerType = itemContainerType;
+    }
+
+    public @Nullable HouseType getHouseType() {
+        return houseType;
+    }
+
+    public void setHouseType(@Nullable HouseType houseType) {
+        this.houseType = houseType;
+    }
+
+    public @Nullable SpecialType getSpecialType() {
+        return specialType;
+    }
+
+    public void setSpecialType(@Nullable SpecialType specialType) {
+        this.specialType = specialType;
+    }
+
+    public Integer getDropBoxItemTypeId() {
+        return dropBoxItemTypeId;
+    }
+
+    public void setDropBoxItemTypeId(Integer dropBoxItemTypeId) {
+        this.dropBoxItemTypeId = dropBoxItemTypeId;
+    }
+
+    public double getDropBoxPossibility() {
+        return dropBoxPossibility;
+    }
+
+    public void setDropBoxPossibility(double dropBoxPossibility) {
+        this.dropBoxPossibility = dropBoxPossibility;
+    }
+
+    public double getBoxPickupRange() {
+        return boxPickupRange;
+    }
+
+    public void setBoxPickupRange(double boxPickupRange) {
+        this.boxPickupRange = boxPickupRange;
     }
 
     public Integer getUnlockCrystals() {
         return unlockCrystals;
     }
 
-    public BaseItemType setUnlockCrystals(Integer unlockCrystals) {
+    public void setUnlockCrystals(Integer unlockCrystals) {
         this.unlockCrystals = unlockCrystals;
-        return this;
     }
 
     public int getSpawnDurationMillis() {
         return spawnDurationMillis;
     }
 
-    public BaseItemType setSpawnDurationMillis(int spawnDurationMillis) {
+    public void setSpawnDurationMillis(int spawnDurationMillis) {
         this.spawnDurationMillis = spawnDurationMillis;
-        return this;
     }
 
     public Integer getSpawnShape3DId() {
         return spawnShape3DId;
     }
 
-    public BaseItemType setSpawnShape3DId(Integer spawnShape3DId) {
+    public void setSpawnShape3DId(Integer spawnShape3DId) {
         this.spawnShape3DId = spawnShape3DId;
-        return this;
     }
 
     public Integer getSpawnAudioId() {
         return spawnAudioId;
     }
 
-    public BaseItemType setSpawnAudioId(Integer spawnAudioId) {
+    public void setSpawnAudioId(Integer spawnAudioId) {
         this.spawnAudioId = spawnAudioId;
-        return this;
     }
 
     public List<DemolitionStepEffect> getDemolitionStepEffects() {
         return demolitionStepEffects;
     }
 
-    public BaseItemType setDemolitionStepEffects(List<DemolitionStepEffect> demolitionStepEffects) {
+    public void setDemolitionStepEffects(List<DemolitionStepEffect> demolitionStepEffects) {
         this.demolitionStepEffects = demolitionStepEffects;
-        return this;
-    }
-
-    public DemolitionStepEffect getDemolitionStepEffect(int step) {
-        if (demolitionStepEffects == null) {
-            throw new IllegalStateException("No demolition configured for: " + this);
-        }
-        return demolitionStepEffects.get(step);
-    }
-
-    public int getDemolitionStep(double health) {
-        if (health >= 1.0) {
-            throw new IllegalArgumentException("SyncBaseItem must not be healthy");
-        }
-
-        if (health >= 0.0) {
-            int step = (int) (demolitionStepEffects.size() * (1.0 - health));
-            if (step >= demolitionStepEffects.size()) {
-                return demolitionStepEffects.size() - 1;
-            } else if (step < 0) {
-                return 0;
-            } else {
-                return step;
-            }
-        } else {
-            return demolitionStepEffects.size() - 1;
-        }
     }
 
     public Integer getWreckageShape3DId() {
         return wreckageShape3DId;
     }
 
-    public BaseItemType setWreckageShape3DId(Integer wreckageShape3DId) {
+    public void setWreckageShape3DId(Integer wreckageShape3DId) {
         this.wreckageShape3DId = wreckageShape3DId;
-        return this;
     }
 
     public Integer getDemolitionImageId() {
         return demolitionImageId;
     }
 
-    public BaseItemType setDemolitionImageId(Integer demolitionImageId) {
+    public void setDemolitionImageId(Integer demolitionImageId) {
         this.demolitionImageId = demolitionImageId;
-        return this;
     }
 
     public Integer getBuildupTextureId() {
         return buildupTextureId;
     }
 
-    public BaseItemType setBuildupTextureId(Integer buildupTextureId) {
+    public void setBuildupTextureId(Integer buildupTextureId) {
         this.buildupTextureId = buildupTextureId;
-        return this;
     }
 
     public Integer getExplosionAudioItemConfigId() {
@@ -329,11 +273,6 @@ public class BaseItemType extends ItemType {
 
     public void setExplosionAudioItemConfigId(Integer explosionAudioItemConfigId) {
         this.explosionAudioItemConfigId = explosionAudioItemConfigId;
-    }
-
-    public BaseItemType explosionAudioItemConfigId(Integer explosionAudioItemConfigId) {
-        setExplosionAudioItemConfigId(explosionAudioItemConfigId);
-        return this;
     }
 
     public static int nameComparator(BaseItemType b1, BaseItemType b2) {
@@ -347,5 +286,140 @@ public class BaseItemType extends ItemType {
             return -1;
         }
         return b1.getInternalName().compareTo(b2.getInternalName());
+    }
+
+    public BaseItemType physicalAreaConfig(PhysicalAreaConfig physicalAreaConfig) {
+        setPhysicalAreaConfig(physicalAreaConfig);
+        return this;
+    }
+
+    public BaseItemType health(int health) {
+        setHealth(health);
+        return this;
+    }
+
+    public BaseItemType price(int price) {
+        setPrice(price);
+        return this;
+    }
+
+    public BaseItemType buildup(int buildup) {
+        setBuildup(buildup);
+        return this;
+    }
+
+    public BaseItemType xpOnKilling(int xpOnKilling) {
+        setXpOnKilling(xpOnKilling);
+        return this;
+    }
+
+    public BaseItemType consumingHouseSpace(int consumingHouseSpace) {
+        setConsumingHouseSpace(consumingHouseSpace);
+        return this;
+    }
+
+    public BaseItemType weaponType(WeaponType weaponType) {
+        setWeaponType(weaponType);
+        return this;
+    }
+
+    public BaseItemType factoryType(FactoryType factoryType) {
+        setFactoryType(factoryType);
+        return this;
+    }
+
+    public BaseItemType harvesterType(HarvesterType harvesterType) {
+        setHarvesterType(harvesterType);
+        return this;
+    }
+
+    public BaseItemType builderType(BuilderType builderType) {
+        setBuilderType(builderType);
+        return this;
+    }
+
+    public BaseItemType generatorType(GeneratorType generatorType) {
+        setGeneratorType(generatorType);
+        return this;
+    }
+
+    public BaseItemType consumerType(ConsumerType consumerType) {
+        setConsumerType(consumerType);
+        return this;
+    }
+
+    public BaseItemType itemContainerType(ItemContainerType itemContainerType) {
+        setItemContainerType(itemContainerType);
+        return this;
+    }
+
+    public BaseItemType houseType(HouseType houseType) {
+        setHouseType(houseType);
+        return this;
+    }
+
+    public BaseItemType specialType(SpecialType specialType) {
+        setSpecialType(specialType);
+        return this;
+    }
+
+    public BaseItemType dropBoxItemTypeId(Integer dropBoxItemTypeId) {
+        setDropBoxItemTypeId(dropBoxItemTypeId);
+        return this;
+    }
+
+    public BaseItemType dropBoxPossibility(double dropBoxPossibility) {
+        setDropBoxPossibility(dropBoxPossibility);
+        return this;
+    }
+
+    public BaseItemType boxPickupRange(double boxPickupRange) {
+        setBoxPickupRange(boxPickupRange);
+        return this;
+    }
+
+    public BaseItemType unlockCrystals(Integer unlockCrystals) {
+        setUnlockCrystals(unlockCrystals);
+        return this;
+    }
+
+    public BaseItemType spawnDurationMillis(int spawnDurationMillis) {
+        setSpawnDurationMillis(spawnDurationMillis);
+        return this;
+    }
+
+    public BaseItemType spawnShape3DId(Integer spawnShape3DId) {
+        setSpawnShape3DId(spawnShape3DId);
+        return this;
+    }
+
+    public BaseItemType spawnAudioId(Integer spawnAudioId) {
+        setSpawnAudioId(spawnAudioId);
+        return this;
+    }
+
+    public BaseItemType demolitionStepEffects(List<DemolitionStepEffect> demolitionStepEffects) {
+        setDemolitionStepEffects(demolitionStepEffects);
+        return this;
+    }
+
+    public BaseItemType wreckageShape3DId(Integer wreckageShape3DId) {
+        setWreckageShape3DId(wreckageShape3DId);
+        return this;
+    }
+
+    public BaseItemType demolitionImageId(Integer demolitionImageId) {
+        setDemolitionImageId(demolitionImageId);
+        return this;
+    }
+
+    public BaseItemType buildupTextureId(Integer buildupTextureId) {
+        setBuildupTextureId(buildupTextureId);
+        return this;
+    }
+
+    public BaseItemType explosionAudioItemConfigId(Integer explosionAudioItemConfigId) {
+        setExplosionAudioItemConfigId(explosionAudioItemConfigId);
+        return this;
     }
 }
