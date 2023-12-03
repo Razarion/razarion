@@ -109,6 +109,9 @@ import { BabylonModelPackComponent } from './editor/common/babylon-model-pack/ba
 import { MeshContainerComponent } from './editor/common/mesh-container/mesh-container.component';
 import { ImageItemComponent } from './editor/common/image-item/image-item.component';
 import { ImageGalleryComponent } from './editor/common/image-item/image-gallery.component';
+import { KnobModule } from 'primeng/knob';
+import { BadgeModule } from 'primeng/badge';
+import { PlanetEditorComponent } from './editor/crud-editors/planet-editor/planet-editor.component';
 
 @NgModule({
   declarations: [
@@ -173,7 +176,8 @@ import { ImageGalleryComponent } from './editor/common/image-item/image-gallery.
     BabylonModelPackComponent,
     MeshContainerComponent,
     ImageItemComponent,
-    ImageGalleryComponent
+    ImageGalleryComponent,
+    PlanetEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -215,7 +219,9 @@ import { ImageGalleryComponent } from './editor/common/image-item/image-gallery.
     AccordionModule,
     ToggleButtonModule,
     ProgressSpinnerModule,
-    MenuModule
+    MenuModule,
+    KnobModule,
+    BadgeModule
   ],
   providers: [
     FrontendService, {

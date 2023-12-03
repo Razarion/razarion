@@ -32,7 +32,7 @@ export class CanvasController {
   setPlanetConfig(planetConfig: PlanetConfig) {
     this.planetConfig = planetConfig;
     if (planetConfig.groundConfigId !== undefined) {
-      this.editorService.readGroundConfig(planetConfig.groundConfigId)
+      this.editorService.readGroundConfig(planetConfig.groundConfigId!)
         .then(groundConfig => {
           this.planetColor = groundConfig.color
         });
@@ -211,9 +211,9 @@ export class CanvasController {
     if (this.planetConfig) {
       if (this.planetColor) {
         this.ctx.fillStyle = this.planetColor;
-        this.ctx.fillRect(0, 0, this.planetConfig.size.x, this.planetConfig.size.y);
+        this.ctx.fillRect(0, 0, this.planetConfig.size!.x, this.planetConfig.size!.y);
       } else {
-        this.ctx.strokeRect(0, 0, this.planetConfig.size.x, this.planetConfig.size.y);
+        this.ctx.strokeRect(0, 0, this.planetConfig.size!.x, this.planetConfig.size!.y);
       }
     }
   }

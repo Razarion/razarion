@@ -1,9 +1,10 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
-import com.btxtech.shared.dto.editor.CollectionReference;
-import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.Config;
+import com.btxtech.shared.dto.editor.CollectionReference;
+import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 import java.util.Map;
@@ -40,11 +41,11 @@ public class PlanetConfig implements Config {
         this.internalName = internalName;
     }
 
-    public DecimalPosition getSize() {
+    public @Nullable DecimalPosition getSize() {
         return size;
     }
 
-    public void setSize(DecimalPosition size) {
+    public void setSize(@Nullable DecimalPosition size) {
         this.size = size;
     }
 
@@ -72,19 +73,19 @@ public class PlanetConfig implements Config {
         this.startRazarion = startRazarion;
     }
 
-    public Integer getStartBaseItemTypeId() {
+    public @Nullable Integer getStartBaseItemTypeId() {
         return startBaseItemTypeId;
     }
 
-    public void setStartBaseItemTypeId(Integer startBaseItemTypeId) {
+    public void setStartBaseItemTypeId(@Nullable Integer startBaseItemTypeId) {
         this.startBaseItemTypeId = startBaseItemTypeId;
     }
 
-    public Integer getGroundConfigId() {
+    public @Nullable Integer getGroundConfigId() {
         return groundConfigId;
     }
 
-    public void setGroundConfigId(Integer groundConfigId) {
+    public void setGroundConfigId(@Nullable Integer groundConfigId) {
         this.groundConfigId = groundConfigId;
     }
 

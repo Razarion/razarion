@@ -353,6 +353,8 @@ export class GameComponent implements OnInit, ScreenCover {
       } else {
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.mainCockpitComponent.show(true);
+        this.mainCockpitComponent.displayXps(5, 20);
+        this.mainCockpitComponent.displayLevel(1)
         this.addEditorModel(new EditorModel("??? Editor", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
         this.fadeOutLoadingCover();
         this.removeLoadingCover();

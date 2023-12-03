@@ -1,31 +1,27 @@
 ﻿<div class="flex flex-column">
-  <div class="mb-2">
-    Level: {{levelNumber}}
+  <div>
+    <p-badge [value]="'Level: ' + levelNumber" severity="warning" size="large"></p-badge>
   </div>
-  <div class="mb-2">
-    XP: {{xp}}
+  <div>
+    <p-knob [(ngModel)]="100 * xp / xp2LevelUp" [size]="75" [valueTemplate]="xp + '/' + xp2LevelUp">
+    </p-knob>
   </div>
-  <div class="mb-2">
-    XP 2 Level Up: {{xp2LevelUp}}
+  <div class="p-inputgroup" style="width: 10em;">
+    <span class="p-inputgroup-addon w-8">Razarion</span>
+    <input type="text" class="w-4" pInputText value="{{resources}}" readonly="true">
   </div>
-  <div class="mb-2">
-    Razarion: {{resources}}
+  <div  *ngIf="false" class="p-inputgroup" style="width: 10em;">
+    <span class="p-inputgroup-addon w-8">House space</span>
+    <input type="text" class="w-4" pInputText value="{{houseSpace}}" readonly="true">
   </div>
-  <div class="mb-2">
-    Item Count: {{itemCount}}
-  </div>
-  <div class="mb-2">
-    House Space: {{houseSpace}}
-  </div>
-  <div class="mb-2" *ngIf="consuming && generating">
+  <div *ngIf="consuming && generating">
     Energy: {{consuming}}/{{generating}}
   </div>
-  <div class="mb-2" *ngIf="radarState">
+  <div *ngIf="radarState">
     Radar State: {{radarState}}
   </div>
-  <div class="mb-2" *ngIf="admin">
+  <div *ngIf="admin">
     <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
-              (onClick)="this.editorDialog = true"></p-button>
+      (onClick)="this.editorDialog = true"></p-button>
   </div>
 </div>
-

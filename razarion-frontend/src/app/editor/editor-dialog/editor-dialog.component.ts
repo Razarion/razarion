@@ -1,27 +1,28 @@
-import {Component, Input, Type} from "@angular/core";
-import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {EditorModel, EditorPanel, GenericPropertyEditorModel} from "../editor-model";
-import {MainCockpitComponent} from "../../game/cockpit/main/main-cockpit.component";
-import {RenderEngineComponent} from "../render-engine/render-engine.component";
-import {GameComponent} from "../../game/game.component";
-import {ServerPanelComponent} from "../server-panel/server-panel.component";
-import {BackupRestoreComponent} from "../backup-restore/backup-restore.component";
-import {ImageEditorComponent} from "../image-editor/image-editor.component";
-import {CollectionSelectorComponent} from "../property-table/collection-selector.component";
-import {BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
-import {ServerQuestEditorComponent} from "../server-quest-editor/server-quest-editor.component";
-import {ServerBotEditorComponent} from "../server-bot-editor/server-bot-editor.component";
-import {ServerStartRegionComponent} from "../server-start-region/server-start-region.component";
-import {ServerResourceRegionComponent} from "../server-resource-region/server-resource-region.component";
-import {ManuallyCrudContainerComponent} from "../crud-editors/crud-container/manually-crud-container.component";
-import {SlopeEditorComponent} from "../crud-editors/slope-editor/slope-editor.component";
-import {DrivewayEditorComponent} from "../crud-editors/driveway-editor/driveway-editor.component";
-import {TerrainEditor2dComponent} from "../../terrain-editor2d/terrain-editor2d.component";
-import {EditorService} from "../editor-service";
+import { Component, Input, Type } from "@angular/core";
+import { GwtAngularService } from "../../gwtangular/GwtAngularService";
+import { EditorModel, EditorPanel, GenericPropertyEditorModel } from "../editor-model";
+import { MainCockpitComponent } from "../../game/cockpit/main/main-cockpit.component";
+import { RenderEngineComponent } from "../render-engine/render-engine.component";
+import { GameComponent } from "../../game/game.component";
+import { ServerPanelComponent } from "../server-panel/server-panel.component";
+import { BackupRestoreComponent } from "../backup-restore/backup-restore.component";
+import { ImageEditorComponent } from "../image-editor/image-editor.component";
+import { CollectionSelectorComponent } from "../property-table/collection-selector.component";
+import { BabylonRenderServiceAccessImpl } from "../../game/renderer/babylon-render-service-access-impl.service";
+import { ServerQuestEditorComponent } from "../server-quest-editor/server-quest-editor.component";
+import { ServerBotEditorComponent } from "../server-bot-editor/server-bot-editor.component";
+import { ServerStartRegionComponent } from "../server-start-region/server-start-region.component";
+import { ServerResourceRegionComponent } from "../server-resource-region/server-resource-region.component";
+import { ManuallyCrudContainerComponent } from "../crud-editors/crud-container/manually-crud-container.component";
+import { SlopeEditorComponent } from "../crud-editors/slope-editor/slope-editor.component";
+import { DrivewayEditorComponent } from "../crud-editors/driveway-editor/driveway-editor.component";
+import { TerrainEditor2dComponent } from "../../terrain-editor2d/terrain-editor2d.component";
+import { EditorService } from "../editor-service";
 import { ObjectTerrainEditorComponent } from "../terrain-editor/object-terrain-editor.component";
 import { LevelEditorComponent } from "../crud-editors/level-editor/level-editor.component";
 import { GeneratedCrudContainerComponent } from "../crud-editors/crud-container/generated-crud-container.component";
 import { BaseItemTypeEditorComponent } from "../crud-editors/base-item-type-editor/base-item-type-editor.component";
+import { PlanetEditorComponent } from "../crud-editors/planet-editor/planet-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -37,8 +38,8 @@ export class EditorDialogComponent {
   mainCockpitComponent!: MainCockpitComponent;
 
   constructor(private gwtAngularService: GwtAngularService,
-              private renderService: BabylonRenderServiceAccessImpl,
-              private editorService: EditorService) {
+    private renderService: BabylonRenderServiceAccessImpl,
+    private editorService: EditorService) {
     this.editors.set("Babylon.js", RenderEngineComponent)
     this.editors.set("Server Control", ServerPanelComponent)
     this.editors.set("Backup Restore", BackupRestoreComponent)
@@ -123,6 +124,11 @@ export class EditorDialogComponent {
   openBaseItemTypeEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Base item type ditor", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
+  }
+
+  openPlanetEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Base item type ditor", GeneratedCrudContainerComponent, PlanetEditorComponent));
   }
 
 }
