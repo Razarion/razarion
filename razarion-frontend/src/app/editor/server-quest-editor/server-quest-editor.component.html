@@ -26,6 +26,7 @@
                 (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
     </div>
   </div>
+
   <p-divider align="left">
     <div class="inline-flex align-items-center">
       <i class="pi pi-cog mr-2"></i>
@@ -55,12 +56,19 @@
   <p-accordion *ngIf="selectedLevelQuest">
     <p-accordionTab *ngFor="let questConfig of selectedLevelQuest.questConfigs">
       <ng-template pTemplate="header">
-        {{questConfig.title}} ({{questConfig.id}})
+        {{questConfig.title}}
         <div class="col-1">
           <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
                     (onClick)="onDeleteQuest(questConfig)"></p-button>
         </div>
       </ng-template>
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Id</span>
+        <div class="col-9">
+          <p-inputNumber [disabled]="true" inputId="integeronly"
+                         [(ngModel)]="questConfig.id"></p-inputNumber>
+        </div>
+      </div>    
       <div class="grid grid-razarion-editor">
         <span class="col-3">Title</span>
         <div class="col-9">
@@ -75,6 +83,7 @@
                  class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
         </div>
       </div>
+
       <p-divider align="left">
         <div class="inline-flex align-items-center">
           <i class="pi pi-cog mr-2"></i>
@@ -118,6 +127,31 @@
           <place-config [(placeConfig)]="questConfig.conditionConfig.comparisonConfig.placeConfig"></place-config>
         </div>
       </div>
+
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-dollar mr-2"></i>
+          <b>Rewards</b>
+        </div>
+      </p-divider>
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Xps</span>
+        <div class="col-9">
+          <p-inputNumber [(ngModel)]="questConfig.xp" [min]="0"></p-inputNumber>
+        </div>
+      </div>    
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Razarion</span>
+        <div class="col-9">
+          <p-inputNumber [(ngModel)]="questConfig.razarion" [min]="0"></p-inputNumber>
+        </div>
+      </div>    
+      <div class="grid grid-razarion-editor">
+        <span class="col-3">Crystals</span>
+        <div class="col-9">
+          <p-inputNumber [(ngModel)]="questConfig.crystal" [min]="0"></p-inputNumber>
+        </div>
+      </div>    
     </p-accordionTab>
   </p-accordion>
 </div>
