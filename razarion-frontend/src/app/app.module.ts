@@ -105,6 +105,10 @@ import { AccelerationComponent } from './editor/common/acceleration/acceleration
 import { AngleComponent } from './editor/common/angle/angle.component';
 import { BaseItemTypesComponent } from './editor/common/base-item-types/base-item-types.component';
 import { ParticleSystemComponent } from './editor/common/particle-system/particle-system.component';
+import { BabylonModelPackComponent } from './editor/common/babylon-model-pack/babylon-model-pack.component';
+import { MeshContainerComponent } from './editor/common/mesh-container/mesh-container.component';
+import { ImageItemComponent } from './editor/common/image-item/image-item.component';
+import { ImageGalleryComponent } from './editor/common/image-item/image-gallery.component';
 
 @NgModule({
   declarations: [
@@ -165,7 +169,11 @@ import { ParticleSystemComponent } from './editor/common/particle-system/particl
     AccelerationComponent,
     AngleComponent,
     BaseItemTypesComponent,
-    ParticleSystemComponent
+    ParticleSystemComponent,
+    BabylonModelPackComponent,
+    MeshContainerComponent,
+    ImageItemComponent,
+    ImageGalleryComponent
   ],
   imports: [
     BrowserModule,

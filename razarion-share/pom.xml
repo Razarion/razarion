@@ -110,6 +110,9 @@
                         <class>com.btxtech.shared.rest.LevelEditorController</class>
                         <class>com.btxtech.shared.rest.BaseItemTypeEditorController</class>
                         <class>com.btxtech.shared.rest.ParticleSystemEditorController</class>
+                        <class>com.btxtech.shared.rest.ThreeJsModelPackEditorController</class>
+                        <class>com.btxtech.shared.rest.MeshContainerEditorController</class>
+                        <class>com.btxtech.shared.rest.ImageProvider</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

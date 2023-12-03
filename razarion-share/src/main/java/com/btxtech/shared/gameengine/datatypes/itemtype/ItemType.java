@@ -17,6 +17,7 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 /**
@@ -71,27 +72,27 @@ public abstract class ItemType implements Config {
         this.i18nDescription = i18nDescription;
     }
 
-    public Integer getThreeJsModelPackConfigId() {
+    public @Nullable Integer getThreeJsModelPackConfigId() {
         return threeJsModelPackConfigId;
     }
 
-    public void setThreeJsModelPackConfigId(Integer threeJsModelPackConfigId) {
+    public void setThreeJsModelPackConfigId(@Nullable Integer threeJsModelPackConfigId) {
         this.threeJsModelPackConfigId = threeJsModelPackConfigId;
     }
 
-    public Integer getMeshContainerId() {
+    public @Nullable Integer getMeshContainerId() {
         return meshContainerId;
     }
 
-    public void setMeshContainerId(Integer meshContainerId) {
+    public void setMeshContainerId(@Nullable Integer meshContainerId) {
         this.meshContainerId = meshContainerId;
     }
 
-    public Integer getThumbnail() {
+    public @Nullable Integer getThumbnail() {
         return thumbnail;
     }
 
-    public void setThumbnail(Integer thumbnail) {
+    public void setThumbnail(@Nullable Integer thumbnail) {
         this.thumbnail = thumbnail;
     }
 

@@ -52,6 +52,11 @@ export enum LoginResult {
   UNKNOWN = 'UNKNOWN'
 }
 
-export function getImageUrl(id: number) {
+export function getImageUrl(id: number): string {
   return `${URL_IMAGE}/${id}`
 }
+
+export function getUpdateUrl(imageId: number): string {
+  return `${URL_IMAGE}/update/${imageId}`
+}
+

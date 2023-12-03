@@ -37,6 +37,13 @@
                 <div class="p-3">
                     <div class="flex flex-column surface-50">
                         <div class="grid grid-razarion-editor">
+                            <span class="col-4">Id</span>
+                            <div class="col-8">
+                              <p-inputNumber [disabled]="true" inputId="integeronly"
+                                             [(ngModel)]="levelConfig.id"></p-inputNumber>
+                            </div>
+                          </div>                        
+                        <div class="grid grid-razarion-editor">
                             <span class="col-4">Number</span>
                             <div class="col-8">
                                 <p-inputNumber [(ngModel)]="levelConfig.number" [size]="8"

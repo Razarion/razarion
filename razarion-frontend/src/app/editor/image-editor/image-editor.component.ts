@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {EditorPanel} from "../editor-model";
-import {HttpClient} from "@angular/common/http";
-import {MessageService} from "primeng/api";
-import {URL_IMAGE} from "../../common";
-import {ImageGalleryItem} from "../../gwtangular/GwtAngularFacade";
+import { Component, OnInit } from '@angular/core';
+import { EditorPanel } from "../editor-model";
+import { HttpClient } from "@angular/common/http";
+import { MessageService } from "primeng/api";
+import { URL_IMAGE, getUpdateUrl as common_getUpdateUrl} from "../../common";
+import { ImageGalleryItem } from "../../gwtangular/GwtAngularFacade";
 
 @Component({
   selector: 'image-editor',
@@ -13,7 +13,7 @@ export class ImageEditorComponent extends EditorPanel implements OnInit {
   imageGalleryItems: ImageGalleryItem[] = [];
 
   constructor(private http: HttpClient,
-              private messageService: MessageService) {
+    private messageService: MessageService) {
     super();
   }
 
@@ -50,7 +50,7 @@ export class ImageEditorComponent extends EditorPanel implements OnInit {
   }
 
   getUpdateUrl(imageGalleryItem: ImageGalleryItem) {
-    return `${URL_IMAGE}/update/${imageGalleryItem.id}`
+    return common_getUpdateUrl(imageGalleryItem.id);
   }
 
   onUpdateError(event: any) {

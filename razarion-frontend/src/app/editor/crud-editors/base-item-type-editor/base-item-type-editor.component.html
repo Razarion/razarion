@@ -12,6 +12,38 @@
                 class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
         </div>
     </div>
+
+    <p-divider align="left">
+        <div class="inline-flex align-items-center">
+            <i class="pi pi-video"></i>
+            <b>&nbsp;Visibility</b>
+        </div>
+    </p-divider>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Babylon model pack</span>
+        <div class="col-8">
+            <babylon-model-pack [(babylonModelPackId)]="baseItemType.threeJsModelPackConfigId"></babylon-model-pack>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Mesh container</span>
+        <div class="col-8">
+            <mesh-container [(meshContainerId)]="baseItemType.meshContainerId"></mesh-container>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Thumbnail</span>
+        <div class="col-8">
+            <image-item [(imageId)]="baseItemType.thumbnail"></image-item>
+        </div>
+    </div>
+
+    <p-divider align="left">
+        <div class="inline-flex align-items-center">
+            <i class="pi pi-cog"></i>
+            <b>&nbsp;Game engine</b>
+        </div>
+    </p-divider>
     <div class="grid grid-razarion-editor">
         <span class="col-4">Price</span>
         <div class="col-8">
@@ -95,7 +127,13 @@
         </div>
     </div>
 
-    <p-panel header="Builder" [toggleable]="true" [collapsed]="!baseItemType.builderType" collapseIcon="pi pi-trash"
+    <p-divider align="left">
+        <div class="inline-flex align-items-center">
+            <i class="pi pi-th-large"></i>
+            <b>&nbsp;Abilities</b>
+        </div>
+    </p-divider>
+   <p-panel header="Builder" [toggleable]="true" [collapsed]="!baseItemType.builderType" collapseIcon="pi pi-trash"
         (collapsedChange)="onBuilderTypeChange(!$event)">
         <div *ngIf="baseItemType.builderType">
             <div class="grid grid-razarion-editor">
@@ -277,8 +315,8 @@
         </div>
     </p-panel>
 
-    <p-panel header="House" [toggleable]="true" [collapsed]="!baseItemType.houseType"
-        collapseIcon="pi pi-trash" (collapsedChange)="onHouseTypeChange(!$event)">
+    <p-panel header="House" [toggleable]="true" [collapsed]="!baseItemType.houseType" collapseIcon="pi pi-trash"
+        (collapsedChange)="onHouseTypeChange(!$event)">
         <div *ngIf="baseItemType.houseType">
             <div class="grid grid-razarion-editor">
                 <span class="col-4">Space</span>
@@ -289,8 +327,8 @@
         </div>
     </p-panel>
 
-    <p-panel header="Special" [toggleable]="true" [collapsed]="!baseItemType.specialType"
-        collapseIcon="pi pi-trash" (collapsedChange)="onSpecialTypeChange(!$event)">
+    <p-panel header="Special" [toggleable]="true" [collapsed]="!baseItemType.specialType" collapseIcon="pi pi-trash"
+        (collapsedChange)="onSpecialTypeChange(!$event)">
         <div *ngIf="baseItemType.specialType">
             <div class="grid grid-razarion-editor">
                 <span class="col-4">Mini terrain</span>
