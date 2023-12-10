@@ -112,6 +112,7 @@ import { ImageGalleryComponent } from './editor/common/image-item/image-gallery.
 import { KnobModule } from 'primeng/knob';
 import { BadgeModule } from 'primeng/badge';
 import { PlanetEditorComponent } from './editor/crud-editors/planet-editor/planet-editor.component';
+import { RadarComponent } from './game/cockpit/main/radar/radar.component';
 
 @NgModule({
   declarations: [
@@ -177,7 +178,8 @@ import { PlanetEditorComponent } from './editor/crud-editors/planet-editor/plane
     MeshContainerComponent,
     ImageItemComponent,
     ImageGalleryComponent,
-    PlanetEditorComponent
+    PlanetEditorComponent,
+    RadarComponent
   ],
   imports: [
     BrowserModule,

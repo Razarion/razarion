@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import { Injectable } from "@angular/core";
 import {
   Alarm,
   BaseItemType, BuilderType,
@@ -39,12 +39,12 @@ import {
   ThreeJsModelPackService,
   BabylonTerrainTile,
   Vertex,
-  WaterConfig, WeaponType
+  WaterConfig, WeaponType, BaseItemUiService, Diplomacy, NativeSyncBaseItemTickInfo
 } from "src/app/gwtangular/GwtAngularFacade";
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import * as Stats from 'stats.js';
-import {GwtInstance} from "../../gwtangular/GwtInstance";
-import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import { GwtInstance } from "../../gwtangular/GwtInstance";
+import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 
 let staticGameConfigJson: any = {};
 
@@ -54,8 +54,12 @@ export class GameMockService {
   gameUiControl: GameUiControl = new class implements GameUiControl {
     getPlanetConfig(): PlanetConfig {
       return new class implements PlanetConfig {
+        getSize(): DecimalPosition {
+          return GwtInstance.newDecimalPosition(320, 320);
+        }
+
         getId(): number {
-          return 1;
+          return 117;
         }
 
       };
@@ -487,7 +491,7 @@ export class GameMockService {
             return null;
           }
 
-          getWeaponType(): WeaponType| null {
+          getWeaponType(): WeaponType | null {
             return null;
           }
         }
@@ -562,6 +566,21 @@ export class GameMockService {
           return packJson.threeJsModelId;
         }
       }
+    }
+  }
+
+  mockBaseItemUiService: BaseItemUiService = new class implements BaseItemUiService {
+    getVisibleNativeSyncBaseItemTickInfos(bottomLeft: DecimalPosition, topRight: DecimalPosition): NativeSyncBaseItemTickInfo[] {
+      return [
+        {
+          x: 50,
+          y: 60
+        }
+      ];
+    }
+
+    diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo: NativeSyncBaseItemTickInfo): Diplomacy {
+      return Diplomacy.OWN;
     }
   }
 

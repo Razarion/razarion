@@ -334,7 +334,6 @@ public class DecimalPosition {
         return new DecimalPosition(x + point.x, y + point.y);
     }
 
-    @JsIgnore
     public DecimalPosition add(double deltaX, double deltaY) {
         return new DecimalPosition(x + deltaX, y + deltaY);
     }

@@ -4,7 +4,8 @@ import {
   DRIVEWAY_EDITOR_PATH,
   READ_TERRAIN_SLOPE_POSITIONS,
   SLOPE_EDITOR_PATH,
-  UPDATE_SLOPES_TERRAIN_EDITOR
+  UPDATE_SLOPES_TERRAIN_EDITOR,
+  getUpdateMiniMapPlanetUrl
 } from "../common";
 import {HttpClient} from "@angular/common/http";
 import {MenuItem, MessageService} from "primeng/api";
@@ -212,6 +213,29 @@ export class TerrainEditor2dComponent implements OnInit {
 
   restartPlanetCold() {
     this.editorService.executeServerCommand(EditorService.RESTART_PLANET_COLD);
+  }
+
+  saveMiniMap() {
+    let dataUrl = this.canvas.nativeElement.toDataURL("image/png");
+    this.httpClient.put(getUpdateMiniMapPlanetUrl(this.planetId!), dataUrl).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'MiniMap saved',
+        });
+   },
+      error: error => {
+        console.error(error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'MiniMap saved failed',
+          detail: error.message,
+          sticky: true
+        });
+      }
+    });
+
+    
   }
 
   onDelete() {

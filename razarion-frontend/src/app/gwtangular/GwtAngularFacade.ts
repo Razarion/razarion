@@ -17,6 +17,7 @@ export abstract class GwtAngularFacade {
   terrainTypeService!: TerrainTypeService;
   itemTypeService!: ItemTypeService;
   threeJsModelPackService!: ThreeJsModelPackService;
+  baseItemUiService!: BaseItemUiService
 
   abstract onCrash(): void;
 }
@@ -46,6 +47,10 @@ export interface DecimalPosition {
   getX(): number;
 
   getY(): number;
+
+  add(x: number, y: any): DecimalPosition;
+
+  divide(x: number, y: number): DecimalPosition;
 
   toString(): string;
 }
@@ -146,10 +151,25 @@ export interface ThreeJsModelPackService {
   getThreeJsModelPackConfig(id: number): ThreeJsModelPackConfig;
 }
 
+// ---------- SyncBaseItems ----------
+
+export interface BaseItemUiService {
+  getVisibleNativeSyncBaseItemTickInfos(bottomLeft: DecimalPosition, topRight: DecimalPosition): NativeSyncBaseItemTickInfo[];
+
+  diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo: NativeSyncBaseItemTickInfo): Diplomacy;
+}
+
+export interface NativeSyncBaseItemTickInfo {
+  x: number;
+  y: number;
+}
+
 // ---------- Configs ----------
 
 export interface PlanetConfig {
   getId(): number;
+
+  getSize(): DecimalPosition;
 }
 
 export interface TerrainObjectConfig {
@@ -224,7 +244,7 @@ export interface ThreeJsModelConfig {
 
   getNodeMaterialId(): number | null;
 
-  isDisabled():boolean;
+  isDisabled(): boolean;
 }
 
 export namespace ThreeJsModelConfig {
@@ -519,9 +539,9 @@ export interface ParticleSystemConfig {
 
 // ---------- Item Cockpit ----------
 export enum RadarState {
-  NONE,
-  NO_POWER,
-  WORKING
+  NONE = "NONE",
+  NO_POWER = "NO_POWER",
+  WORKING = "WORKING",
 }
 
 export enum CursorType {

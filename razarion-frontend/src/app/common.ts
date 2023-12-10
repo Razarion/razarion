@@ -23,6 +23,7 @@ export const PLANET_EDITOR_PATH = EDITOR_PATH + "/planet";
 export const TERRAIN_EDITOR = APPLICATION_PATH + "/planeteditor";
 export const READ_TERRAIN_SLOPE_POSITIONS = TERRAIN_EDITOR + "/readTerrainSlopePositions";
 export const UPDATE_SLOPES_TERRAIN_EDITOR = TERRAIN_EDITOR + "/updateSlopes";
+export const UPDATE_MINI_MAP_IMAGE = TERRAIN_EDITOR + "/updateMiniMapImage";
 
 export interface FrontendLoginState {
   loggedIn: boolean;
@@ -59,4 +60,15 @@ export function getImageUrl(id: number): string {
 export function getUpdateUrl(imageId: number): string {
   return `${URL_IMAGE}/update/${imageId}`
 }
+
+export function getMiniMapPlanetUrl(planetId: number): string {
+  return `${URL_IMAGE}/minimap/${planetId}`
+}
+
+export function getUpdateMiniMapPlanetUrl(planetId: number): string {
+  return `${UPDATE_MINI_MAP_IMAGE}/${planetId}`
+}
+
+
+
 

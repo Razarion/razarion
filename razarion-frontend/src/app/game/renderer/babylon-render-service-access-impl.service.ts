@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import { Injectable } from "@angular/core";
 import {
   BabylonBaseItem,
   BabylonRenderServiceAccess,
@@ -13,12 +13,13 @@ import {
   TerrainObjectPosition,
   TerrainSlopePosition,
   TerrainTile,
-  BabylonTerrainTile
+  BabylonTerrainTile,
+  DecimalPosition
 } from "src/app/gwtangular/GwtAngularFacade";
-import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
-import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
-import {BabylonModelService} from "./babylon-model.service";
-import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
+import { BabylonTerrainTileImpl } from "./babylon-terrain-tile.impl";
+import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
+import { BabylonModelService } from "./babylon-model.service";
+import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
 import {
   Color3,
   CubeTexture,
@@ -40,12 +41,13 @@ import {
   Vector2,
   Vector3
 } from "@babylonjs/core";
-import {SimpleMaterial} from "@babylonjs/materials";
-import {GwtHelper} from "../../gwtangular/GwtHelper";
-import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
-import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
-import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
-import {SelectionFrame} from "./selection-frame";
+import { SimpleMaterial } from "@babylonjs/materials";
+import { GwtHelper } from "../../gwtangular/GwtHelper";
+import { PickingInfo } from "@babylonjs/core/Collisions/pickingInfo";
+import { BabylonBaseItemImpl } from "./babylon-base-item.impl";
+import { BabylonResourceItemImpl } from "./babylon-resource-item.impl";
+import { SelectionFrame } from "./selection-frame";
+import { GwtInstance } from "src/app/gwtangular/GwtInstance";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -60,6 +62,51 @@ export enum RazarionMetadataType {
   GROUND,
   TERRAIN_OBJECT,
   EDITOR_SLOPE
+}
+
+export class ViewField {
+  private bottomLeft: DecimalPosition;
+  private bottomRight: DecimalPosition;
+  private topRight: DecimalPosition;
+  private topLeft: DecimalPosition;
+  private center?: DecimalPosition;
+
+  constructor(bottomLeft: Vector3, bottomRight: Vector3, topRight: Vector3, topLeft: Vector3) {
+    this.bottomLeft = GwtInstance.newDecimalPosition(bottomLeft.x, bottomLeft.z);
+    this.bottomRight = GwtInstance.newDecimalPosition(bottomRight.x, bottomRight.z);
+    this.topRight = GwtInstance.newDecimalPosition(topRight.x, topRight.z);
+    this.topLeft = GwtInstance.newDecimalPosition(topLeft.x, topLeft.z);
+  }
+
+  getBottomLeft(): DecimalPosition {
+    return this.bottomLeft;
+  }
+
+  getBottomRight(): DecimalPosition {
+    return this.bottomRight;
+  }
+
+  getTopRight(): DecimalPosition {
+    return this.topRight;
+  }
+
+  getTopLeft(): DecimalPosition {
+    return this.topLeft;
+  }
+
+  getCenter(): DecimalPosition {
+    if (!this.center) {
+      this.center = GwtInstance.newDecimalPosition(
+        (this.bottomLeft.getX() + this.bottomRight.getX() + this.topRight.getX() + this.topLeft.getX()) / 4,
+        (this.bottomLeft.getY() + this.bottomRight.getY() + this.topRight.getY() + this.topLeft.getY()) / 4
+      );
+    }
+    return this.center;
+  }
+}
+
+export interface ViewFieldListener {
+  onViewFieldChanged(viewField: ViewField): void;
 }
 
 @Injectable()
@@ -78,11 +125,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   public resourceItemContainer!: TransformNode;
   public projectileMaterial!: SimpleMaterial;
   private selectionFrame!: SelectionFrame;
+  private viewFieldListeners: ViewFieldListener[] = [];
+  private viewField?: ViewField;
 
   constructor(private gwtAngularService: GwtAngularService, private babylonModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
 
   public static color4Diplomacy(diplomacy: Diplomacy): Color3 {
+    diplomacy = GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy);
     switch (diplomacy) {
       case Diplomacy.OWN:
         return Color3.Green()
@@ -94,6 +144,21 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         return Color3.Blue()
     }
     return Color3.Gray()
+  }
+
+  addViewFieldListener(viewFieldListener: ViewFieldListener): void {
+    this.viewFieldListeners.push(viewFieldListener);
+  }
+
+  removeViewFieldListener(viewFieldListener: ViewFieldListener): void {
+    this.viewFieldListeners = this.viewFieldListeners.filter(listener => listener !== viewFieldListener);
+  }
+
+  getCurrentViewField(): ViewField {
+    if (!this.viewField) {
+      this.viewField = this.setupZeroLevelViewField();
+    }
+    return this.viewField;
   }
 
   runRenderer(meshContainers: MeshContainer[]): void {
@@ -298,25 +363,19 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       return;
     }
     try {
-      // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
-      // getViewMatrix() forces recalculation of the camera view matrix
-      this.camera.getViewMatrix();
 
-      let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
-
-      const bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
-      const bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
-      const topRight = this.setupZeroLevelPosition(1, 1, invertCameraViewProj);
-      const topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
-
-      // console.info(`ViewField BL ${bottomLeft.x}:${bottomLeft.z}:${bottomLeft.y} BR ${bottomRight.x}:${bottomRight.z}:${bottomRight.y} TR ${topRight.x}:${topRight.z}:${topRight.y} TL ${topLeft.x}:${topLeft.z}:${topLeft.y}`)
+      this.viewField = this.setupZeroLevelViewField()
 
       this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
-        bottomLeft.x, bottomLeft.z,
-        bottomRight.x, bottomRight.z,
-        topRight.x, topRight.z,
-        topLeft.x, topLeft.z
+        this.viewField.getBottomLeft().getX(), this.viewField.getBottomLeft().getY(),
+        this.viewField.getBottomRight().getX(), this.viewField.getBottomRight().getY(),
+        this.viewField.getTopRight().getX(), this.viewField.getTopRight().getY(),
+        this.viewField.getTopLeft().getX(), this.viewField.getTopLeft().getY(),
       );
+
+      this.viewFieldListeners.forEach(viewFieldListener => {
+        viewFieldListener.onViewFieldChanged(this.viewField!);
+      });
     } catch (error) {
       console.error(error);
     }
@@ -329,6 +388,30 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.camera.position.add(direction.multiplyByFloats(distanceToNullLevel, distanceToNullLevel, distanceToNullLevel));
   }
 
+  private setupZeroLevelViewField(): ViewField {
+    // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
+    // getViewMatrix() forces recalculation of the camera view matrix
+    this.camera.getViewMatrix();
+
+    let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
+
+    const bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
+    const bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
+    const topRight = this.setupZeroLevelPosition(1, 1, invertCameraViewProj);
+    const topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
+
+    // console.info(`ViewField BL ${bottomLeft.x}:${bottomLeft.z}:${bottomLeft.y} BR ${bottomRight.x}:${bottomRight.z}:${bottomRight.y} TR ${topRight.x}:${topRight.z}:${topRight.y} TL ${topLeft.x}:${topLeft.z}:${topLeft.y}`)
+
+    this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
+      bottomLeft.x, bottomLeft.z,
+      bottomRight.x, bottomRight.z,
+      topRight.x, topRight.z,
+      topLeft.x, topLeft.z
+    );
+
+    return new ViewField(bottomLeft, bottomRight, topRight, topLeft);
+  }
+
   public setupMeshPickPoint(): PickingInfo {
     return this.scene.pick(this.scene.pointerX, this.scene.pointerY);
   }
@@ -336,17 +419,17 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   public setupPickInfoFromNDC(ndcX: number, ndcY: number): PickingInfo {
     const x = (ndcX + 1) / 2 * this.engine.getRenderWidth();
     const y = (1 - ndcY) / 2 * this.engine.getRenderHeight();
-  
+
     return this.scene.pick(x, y);
   }
-  
+
   showInspector() {
     void Promise.all([
       import("@babylonjs/core/Debug/debugLayer"),
       import("@babylonjs/inspector"),
       import("@babylonjs/node-editor")
     ]).then((_values) => {
-      this.scene.debugLayer.show({enableClose: true, embedMode: true});
+      this.scene.debugLayer.show({ enableClose: true, embedMode: true });
     });
   }
 
@@ -449,7 +532,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     material.diffuseColor = Color3.Red()
     return new class implements BaseItemPlacerPresenter {
       activate(baseItemPlacer: BaseItemPlacer): void {
-        disc = MeshBuilder.CreateDisc("Base Item Placer", {radius: baseItemPlacer.getEnemyFreeRadius()}, threeJsRendererServiceImpl.scene);
+        disc = MeshBuilder.CreateDisc("Base Item Placer", { radius: baseItemPlacer.getEnemyFreeRadius() }, threeJsRendererServiceImpl.scene);
         disc.visibility = 0.5;
         disc.material = material;
         disc.rotation.x = Tools.ToRadians(90);

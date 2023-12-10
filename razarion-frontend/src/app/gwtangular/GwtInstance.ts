@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import {DecimalPosition, TerrainObjectPosition, Vertex} from "./GwtAngularFacade";
-import {environment} from "../../environments/environment";
+import { DecimalPosition, TerrainObjectPosition, Vertex } from "./GwtAngularFacade";
+import { environment } from "../../environments/environment";
 
 export class GwtInstance {
   static newDecimalPosition(x: number, y: number): DecimalPosition {
@@ -14,6 +14,18 @@ export class GwtInstance {
         getY(): number {
           return y;
         }
+
+        add(x: number, y: number): DecimalPosition {
+          return GwtInstance.newDecimalPosition(this.getX() + x, this.getY() + y);
+        }
+
+        divide(x: number, y: number): DecimalPosition {
+          return GwtInstance.newDecimalPosition(
+            this.getX() / x,
+            this.getY() / y
+          );
+        }
+
       }
     } else {
       return com.btxtech.shared.datatypes.DecimalPosition.create(x, y);

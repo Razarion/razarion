@@ -25,6 +25,7 @@ import {
   PhysicalAreaConfig,
   QuestConfig,
   QuestProgressInfo,
+  RadarState,
   ScreenCover,
   WeaponType
 } from "../gwtangular/GwtAngularFacade";
@@ -74,13 +75,14 @@ export class GameComponent implements OnInit, ScreenCover {
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = false;
+      let runGwtMock = true;
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
         this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.gwtAngularService.gwtAngularFacade.threeJsModelPackService = this.gameMockService.mockThreeJsModelPackService;
+        this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
         this.gameMockService.loadMockStaticGameConfig().then(() => {
           this.gameMockService.loadMockAssetConfig().then(() => {
             this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
@@ -88,6 +90,7 @@ export class GameComponent implements OnInit, ScreenCover {
               this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
               this.gameMockService.mockTerrainTile(this.threeJsRendererService);
               this.mainCockpitComponent.show(true);
+              this.mainCockpitComponent.showRadar(RadarState.WORKING);
               this.threeJsRendererService.runRenderer(this.gameMockService.createMeshContainers());
               setTimeout(() => {
                 // Some very strange babylon behavior, _projectionMatrix is zero matrix
@@ -353,6 +356,7 @@ export class GameComponent implements OnInit, ScreenCover {
       } else {
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.mainCockpitComponent.show(true);
+        this.mainCockpitComponent.showRadar(RadarState.WORKING);
         this.mainCockpitComponent.displayXps(5, 20);
         this.mainCockpitComponent.displayLevel(1)
         this.addEditorModel(new EditorModel("??? Editor", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));

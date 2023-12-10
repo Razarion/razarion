@@ -42,6 +42,13 @@
         <p-button icon="pi pi-power-off" (onClick)="restartPlanetCold()"></p-button>
       </div>
     </div>
+    <div class="grid grid-razarion-editor">
+      <span class="col-4">Save mini map</span>
+      <div class="col-8">
+        <p-button icon="pi pi-globe" (onClick)="saveMiniMap()"></p-button>
+        &nbsp;Canvas must be 1000px x 1000px
+      </div>
+    </div>
 
     <div *ngIf="terrainEditor?.mode === Mode.SLOPE_INCREASE
                 || terrainEditor?.mode === Mode.SLOPE_DECREASE

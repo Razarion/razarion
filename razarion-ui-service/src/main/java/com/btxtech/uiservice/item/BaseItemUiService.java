@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.item;
 
-import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -18,7 +17,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
@@ -33,6 +31,8 @@ import com.btxtech.uiservice.renderer.BabylonBaseItem;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.user.UserUiService;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
@@ -55,7 +55,8 @@ import static com.btxtech.shared.utils.MathHelper.clamp;
  * 28.12.2015.
  * *
  */
-@Singleton // This may leads to Errai problems
+@Singleton // This may lead to Errai problems
+@JsType
 public class BaseItemUiService {
     private final Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
     @Inject
@@ -331,6 +332,7 @@ public class BaseItemUiService {
         }
     }
 
+    @JsIgnore
     public PlayerBaseDto getBase(int baseId) {
         synchronized (bases) {
             PlayerBaseDto base = bases.get(baseId);
@@ -341,18 +343,22 @@ public class BaseItemUiService {
         }
     }
 
+    @JsIgnore
     public PlayerBaseDto getBase(SyncBaseItemSimpleDto syncBaseItem) {
         return getBase(syncBaseItem.getBaseId());
     }
 
+    @JsIgnore
     public boolean isMyOwnProperty(SyncBaseItemSimpleDto syncBaseItem) {
         return myBase != null && syncBaseItem.getBaseId() == myBase.getBaseId();
     }
 
+    @JsIgnore
     public boolean isMyOwnProperty(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         return myBase != null && nativeSyncBaseItemTickInfo.baseId == myBase.getBaseId();
     }
 
+    @JsIgnore
     public boolean isMyEnemy(SyncBaseItemSimpleDto syncBaseItem) {
         try {
             return getBase(syncBaseItem).getCharacter() == Character.BOT;
@@ -363,6 +369,7 @@ public class BaseItemUiService {
         }
     }
 
+    @JsIgnore
     public boolean isMyEnemy(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         try {
             return getBase(nativeSyncBaseItemTickInfo.baseId).getCharacter() == Character.BOT;
@@ -373,6 +380,7 @@ public class BaseItemUiService {
         }
     }
 
+    @JsIgnore
     public SyncBaseItemMonitor monitorSyncItem(int basItemId) {
         // Does not work here Arrays.stream(nativeSyncBaseItemTickInfos)
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
@@ -383,6 +391,7 @@ public class BaseItemUiService {
         throw new IllegalArgumentException("No NativeSyncBaseItemTickInfo for basItemId: " + basItemId);
     }
 
+    @JsIgnore
     public SyncBaseItemMonitor monitorSyncItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         double radius = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId).getPhysicalAreaConfig().getRadius();
         SyncBaseItemState syncBaseItemState = syncItemStates.computeIfAbsent(nativeSyncBaseItemTickInfo.id, k -> new SyncBaseItemState(nativeSyncBaseItemTickInfo, radius, this::releaseSyncItemMonitor));
@@ -580,8 +589,22 @@ public class BaseItemUiService {
         return result;
     }
 
-    public NativeSyncBaseItemTickInfo[] getNativeSyncBaseItemTickInfos() {
-        return nativeSyncBaseItemTickInfos;
+    @SuppressWarnings("unused") // Called by Angular
+    public NativeSyncBaseItemTickInfo[] getVisibleNativeSyncBaseItemTickInfos(DecimalPosition bottomLeft, DecimalPosition topRight) {
+        List<NativeSyncBaseItemTickInfo> visibleNativeSyncBaseItemTickInfos = new ArrayList<>();
+        Rectangle2D rectangle2D = new Rectangle2D(bottomLeft, topRight);
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (nativeSyncBaseItemTickInfo.contained) {
+                continue;
+            }
+            DecimalPosition position = NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo);
+            if (position == null || !rectangle2D.contains(position)) {
+                continue;
+            }
+            visibleNativeSyncBaseItemTickInfos.add(nativeSyncBaseItemTickInfo);
+        }
+
+        return visibleNativeSyncBaseItemTickInfos.toArray(new NativeSyncBaseItemTickInfo[0]);
     }
 
     public SyncBaseItemSimpleDto getSyncBaseItemSimpleDto4IdPlayback(int itemId) {
@@ -598,17 +621,6 @@ public class BaseItemUiService {
 
     public boolean hasRadar() {
         return hasRadar;
-    }
-
-    @Deprecated // use diplomacy4SyncBaseItem
-    public Color color4SyncBaseItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
-        if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
-            return Colors.OWN;
-        } else if (isMyEnemy(nativeSyncBaseItemTickInfo)) {
-            return Colors.ENEMY;
-        } else {
-            return Colors.FRIEND;
-        }
     }
 
     public Diplomacy diplomacy4SyncBaseItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
