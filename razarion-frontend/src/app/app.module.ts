@@ -113,6 +113,7 @@ import { KnobModule } from 'primeng/knob';
 import { BadgeModule } from 'primeng/badge';
 import { PlanetEditorComponent } from './editor/crud-editors/planet-editor/planet-editor.component';
 import { RadarComponent } from './game/cockpit/main/radar/radar.component';
+import { RadarNoPowerComponent } from './game/cockpit/main/radar/radar-no-power.component';
 
 @NgModule({
   declarations: [
@@ -179,7 +180,8 @@ import { RadarComponent } from './game/cockpit/main/radar/radar.component';
     ImageItemComponent,
     ImageGalleryComponent,
     PlanetEditorComponent,
-    RadarComponent
+    RadarComponent,
+    RadarNoPowerComponent
   ],
   imports: [
     BrowserModule,

@@ -10,16 +10,18 @@
     <span class="p-inputgroup-addon w-8">Razarion</span>
     <input type="text" class="w-4" pInputText value="{{resources}}" readonly="true">
   </div>
-  <div  *ngIf="false" class="p-inputgroup" style="width: 10em;">
+  <div *ngIf="false" class="p-inputgroup" style="width: 10em;">
     <span class="p-inputgroup-addon w-8">House space</span>
     <input type="text" class="w-4" pInputText value="{{houseSpace}}" readonly="true">
   </div>
   <div *ngIf="consuming && generating">
     Energy: {{consuming}}/{{generating}}
   </div>
-  <div *ngIf="radarState">
-    Radar State: {{radarState}}
+  <div *ngIf="radarState == WORKING">
     <radar></radar>
+  </div>
+  <div *ngIf="radarState == NO_POWER">
+    <radar-no-power></radar-no-power>
   </div>
   <div *ngIf="admin">
     <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"

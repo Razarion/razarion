@@ -20,6 +20,8 @@ export class MainCockpitComponent implements MainCockpit {
   consuming!: number;
   generating!: number;
   radarState!: RadarState;
+  WORKING = RadarState.WORKING;
+  NO_POWER = RadarState.NO_POWER;
 
   constructor(private zone: NgZone) {
   }
