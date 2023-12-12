@@ -1,29 +1,40 @@
 ﻿<div class="flex flex-column">
-  <div>
+  <div class="flex cockpit-element">
     <p-badge [value]="'Level: ' + levelNumber" severity="warning" size="large"></p-badge>
   </div>
-  <div>
-    <p-knob [(ngModel)]="100 * xp / xp2LevelUp" [size]="75" [valueTemplate]="xp + '/' + xp2LevelUp">
-    </p-knob>
+  <div class="flex">
+    <div class="flex flex-row">
+      <div class="flex cockpit-element"><p-knob [ngModel]="100 * xp / xp2LevelUp" [size]="75"
+          [valueTemplate]="xp + '/' + xp2LevelUp">
+        </p-knob></div>
+      <div class="flex cockpit-element"><p-knob [ngModel]="generating >= consuming ? 100 * consuming / generating : 100"
+          [size]="75" [valueTemplate]="consuming + '/' + generating"
+          [valueColor]="generating >= consuming ? 'var(--green-500)':'var(--red-500)'"
+          [rangeColor]="generating > 0 ? 'var(--green-900)':'var(--surface-border)'">
+        </p-knob></div>
+    </div>
   </div>
-  <div class="p-inputgroup" style="width: 10em;">
-    <span class="p-inputgroup-addon w-8">Razarion</span>
-    <input type="text" class="w-4" pInputText value="{{resources}}" readonly="true">
+  <div class="flex cockpit-element">
+    <div class="p-inputgroup" style="width: 10em;">
+      <span class="p-inputgroup-addon w-8">Razarion</span>
+      <input type="text" class="w-4" pInputText value="{{resources}}" readonly="true">
+    </div>
   </div>
-  <div *ngIf="false" class="p-inputgroup" style="width: 10em;">
-    <span class="p-inputgroup-addon w-8">House space</span>
-    <input type="text" class="w-4" pInputText value="{{houseSpace}}" readonly="true">
+  <div *ngIf="false" class="flex cockpit-element">
+    <div class="p-inputgroup" style="width: 10em;">
+      <span class="p-inputgroup-addon w-8">House space</span>
+      <input type="text" class="w-4" pInputText value="{{houseSpace}}" readonly="true">
+    </div>
   </div>
-  <div *ngIf="consuming && generating">
-    Energy: {{consuming}}/{{generating}}
+  <div class="flex cockpit-element">
+    <div *ngIf="radarState == WORKING">
+      <radar></radar>
+    </div>
+    <div *ngIf="radarState == NO_POWER">
+      <radar-no-power></radar-no-power>
+    </div>
   </div>
-  <div *ngIf="radarState == WORKING">
-    <radar></radar>
-  </div>
-  <div *ngIf="radarState == NO_POWER">
-    <radar-no-power></radar-no-power>
-  </div>
-  <div *ngIf="admin">
+  <div *ngIf="admin" class="flex cockpit-element">
     <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
       (onClick)="this.editorDialog = true"></p-button>
   </div>

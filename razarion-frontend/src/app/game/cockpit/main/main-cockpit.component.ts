@@ -17,8 +17,8 @@ export class MainCockpitComponent implements MainCockpit {
   resources: number = 0;
   itemCount: number = 0;
   houseSpace: number = 0;
-  consuming!: number;
-  generating!: number;
+  consuming: number = 0;
+  generating: number = 0;
   radarState!: RadarState;
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
