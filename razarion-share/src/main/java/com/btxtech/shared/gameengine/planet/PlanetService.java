@@ -144,8 +144,10 @@ public class PlanetService implements Runnable { // Only available in worker. On
             planetServiceTracker.afterTickListener();
             /// --- new experimental
             tickCount++;
-            baseItemService.afterTick(tickCount);
-            syncService.afterTick(tickCount);
+            if (gameEngineMode != GameEngineMode.MASTER) {
+                baseItemService.processPendingReceivedTickInfos(tickCount);
+            }
+            syncService.sendTickInfo(tickCount);
             /// --- new experimental ends
             planetServiceTracker.endTick();
 

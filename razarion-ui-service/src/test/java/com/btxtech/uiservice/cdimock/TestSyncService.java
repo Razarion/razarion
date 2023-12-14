@@ -9,7 +9,7 @@ import com.btxtech.shared.gameengine.planet.SyncService;
  */
 public class TestSyncService extends SyncService {
     @Override
-    protected void sendTickInfo(TickInfo tickInfo) {
+    protected void internSendTickInfo(TickInfo tickInfo) {
         System.out.println("TestSyncService.sendTickInfo(): " + tickInfo);
     }
 }

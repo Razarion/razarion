@@ -90,8 +90,8 @@ public class SyncItemContainer extends SyncBaseAbility {
             containedItems.add(syncBaseItem);
             setupMaxContainingRadius();
             syncBaseItem.setContained(getSyncBaseItem());
-            syncService.sendSyncBaseItem(getSyncBaseItem());
-            syncService.sendSyncBaseItem(syncBaseItem);
+            syncService.notifySendSyncBaseItem(getSyncBaseItem());
+            syncService.notifySendSyncBaseItem(syncBaseItem);
             gameLogicService.onSyncItemLoaded(getSyncBaseItem(), syncBaseItem);
         }
     }
@@ -116,14 +116,14 @@ public class SyncItemContainer extends SyncBaseAbility {
         containedItems.removeIf(contained -> {
             if (allowedUnload()) {
                 contained.clearContained(unloadPos);
-                syncService.sendSyncBaseItem(contained);
+                syncService.notifySendSyncBaseItem(contained);
                 gameLogicService.onSyncItemUnloaded(contained);
                 return true;
             }
             return false;
         });
         setupMaxContainingRadius();
-        syncService.sendSyncBaseItem(getSyncBaseItem());
+        syncService.notifySendSyncBaseItem(getSyncBaseItem());
         gameLogicService.onSyncItemContainerUnloaded(getSyncBaseItem());
     }
 

@@ -16,7 +16,7 @@ public class ServerSyncService extends SyncService {
     private ClientGameConnectionService clientGameConnectionService;
 
     @Override
-    protected void sendTickInfo(TickInfo tickInfo) {
+    protected void internSendTickInfo(TickInfo tickInfo) {
         clientGameConnectionService.sendTickinfo(tickInfo);
     }
 }

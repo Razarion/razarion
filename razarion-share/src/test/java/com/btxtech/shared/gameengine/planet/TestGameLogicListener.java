@@ -17,13 +17,13 @@ import java.util.List;
  * on 22.08.2017.
  */
 public class TestGameLogicListener implements GameLogicListener {
-    private List<EnergyStateChangedEntry> energyStateChangedEntries = new ArrayList<>();
-    private List<SyncBaseItem> syncBaseItemKilled = new ArrayList<>();
-    private List<SyncResourceItem> resourceCreated = new ArrayList<>();
-    private List<SyncResourceItem> resourceDeleted = new ArrayList<>();
-    private List<BoxPickedEntry> boxPicked = new ArrayList<>();
-    private MapList<Integer, QuestProgressInfo> questProgresses = new MapList<>();
-    private TestWebSocket testWebSocket = new TestWebSocket();
+    private final List<EnergyStateChangedEntry> energyStateChangedEntries = new ArrayList<>();
+    private final List<SyncBaseItem> syncBaseItemKilled = new ArrayList<>();
+    private final List<SyncResourceItem> resourceCreated = new ArrayList<>();
+    private final List<SyncResourceItem> resourceDeleted = new ArrayList<>();
+    private final List<BoxPickedEntry> boxPicked = new ArrayList<>();
+    private final MapList<Integer, QuestProgressInfo> questProgresses = new MapList<>();
+    private final TestWebSocket testWebSocket = new TestWebSocket();
 
     public void clearAll() {
         energyStateChangedEntries.clear();
@@ -119,9 +119,9 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     public static class EnergyStateChangedEntry {
-        private PlayerBase base;
-        private int generating;
-        private int consuming;
+        private final PlayerBase base;
+        private final int generating;
+        private final int consuming;
 
         public EnergyStateChangedEntry(PlayerBase base, int consuming, int generating) {
             this.base = base;
@@ -143,8 +143,8 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     public static class BoxPickedEntry {
-        private int userId;
-        private BoxContent boxContent;
+        private final int userId;
+        private final BoxContent boxContent;
 
         public BoxPickedEntry(int userId, BoxContent boxContent) {
             this.userId = userId;

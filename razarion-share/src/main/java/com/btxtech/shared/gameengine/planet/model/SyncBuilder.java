@@ -100,8 +100,8 @@ public class SyncBuilder extends SyncBaseAbility {
                 }
                 try {
                     currentBuildup = baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
-                    syncService.sendSyncBaseItem(currentBuildup);
-                    syncService.sendSyncBaseItem(getSyncBaseItem());
+                    syncService.notifySendSyncBaseItem(currentBuildup);
+                    syncService.notifySendSyncBaseItem(getSyncBaseItem());
                     gameLogicService.onStartBuildingSyncBaseItem(getSyncBaseItem(), currentBuildup);
                     toBeBuildPosition = null;
                     toBeBuiltType = null;
@@ -133,6 +133,7 @@ public class SyncBuilder extends SyncBaseAbility {
             if (getSyncBaseItem().getBase().withdrawalResource(buildFactor * (double) currentBuildup.getBaseItemType().getPrice())) {
                 currentBuildup.addBuildup(buildFactor);
                 if (currentBuildup.isBuildup()) {
+                    syncService.notifySendSyncBaseItem(currentBuildup);
                     stop();
                     return false;
                 }

@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -10,6 +11,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+
+import java.util.PriorityQueue;
 
 /**
  * Created by Beat
@@ -29,12 +32,17 @@ public class WeldSlaveEmulator extends AbstractIntegrationTest {
 
         testClientWebSocket = new TestClientWebSocket();
         weldMasterBaseTest.getTestGameLogicListener().getTestWebSocket().add(testClientWebSocket);
-        weldMasterBaseTest.getWeldBean(TestSyncService.class).setTestWebSocket(testClientWebSocket);
+        weldMasterBaseTest.getWeldBean(TestSyncService.class).getTestWebSocket().add(testClientWebSocket);
         getWeldBean(PlanetService.class).initialSlaveSyncItemInfo(weldMasterBaseTest.getPlanetService().generateSlaveSyncItemInfo(userContext.getUserId()));
     }
 
     public void disconnectFromMaster() {
         weldMasterBaseTest.getTestGameLogicListener().getTestWebSocket().remove(testClientWebSocket);
+        weldMasterBaseTest.getWeldBean(TestSyncService.class).getTestWebSocket().remove(testClientWebSocket);
+    }
+
+    public boolean hasPendingReceivedTickInfos() {
+        return !((PriorityQueue<?>) SimpleTestEnvironment.readField("pendingReceivedTickInfos", getBaseItemService())).isEmpty();
     }
 
     private class TestClientWebSocket extends TestWebSocket {

@@ -112,7 +112,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 if (!getSyncPhysicalMovable().hasDestination()) {
                     if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
                         getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
-                        syncService.sendSyncBaseItem(getSyncBaseItem());
+                        syncService.notifySendSyncBaseItem(getSyncBaseItem());
                     } else {
                         return true;
                     }
@@ -124,7 +124,7 @@ public class SyncWeapon extends SyncBaseAbility {
                         if (!targetPosition.equals(target.getSyncPhysicalArea().getPosition2d())) {
                             targetPosition = target.getSyncPhysicalArea().getPosition2d();
                             getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
-                            syncService.sendSyncBaseItem(getSyncBaseItem());
+                            syncService.notifySendSyncBaseItem(getSyncBaseItem());
                         }
                         targetPositionLastCheck = System.currentTimeMillis();
                     }

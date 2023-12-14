@@ -25,7 +25,7 @@ public abstract class SyncService {
         gameEngineMode = planetActivationEvent.getGameEngineMode();
     }
 
-    public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
+    public void notifySendSyncBaseItem(SyncBaseItem syncBaseItem) {
         if (gameEngineMode != GameEngineMode.MASTER) {
             return;
         }
@@ -37,7 +37,7 @@ public abstract class SyncService {
         }
     }
 
-    public void afterTick(double tickCount) {
+    public void sendTickInfo(double tickCount) {
         if (itemsToSend.isEmpty()) {
             return;
         }
@@ -49,8 +49,8 @@ public abstract class SyncService {
             itemsToSend.clear();
         }
 
-        sendTickInfo(tickInfo);
+        internSendTickInfo(tickInfo);
     }
 
-    protected abstract void sendTickInfo(TickInfo tickInfo);
+    protected abstract void internSendTickInfo(TickInfo tickInfo);
 }

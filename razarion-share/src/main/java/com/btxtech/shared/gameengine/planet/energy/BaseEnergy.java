@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.energy;
 
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.model.SyncConsumer;
 import com.btxtech.shared.gameengine.planet.model.SyncGenerator;
@@ -21,8 +20,8 @@ public class BaseEnergy {
     private GameLogicService gameLogicService;
     private int consuming;
     private int generating;
-    private Set<SyncGenerator> syncGenerators = new HashSet<>();
-    private Set<SyncConsumer> syncConsumers = new HashSet<>();
+    private final Set<SyncGenerator> syncGenerators = new HashSet<>();
+    private final Set<SyncConsumer> syncConsumers = new HashSet<>();
     private final Object syncObject = new Object();
     private PlayerBase base;
 
@@ -63,10 +62,6 @@ public class BaseEnergy {
         generating = newGenerating;
         gameLogicService.onEnergyStateChanged(base, consuming, generating);
     }
-
-//    private boolean hasEnoughPower(int generating, int consuming) {
-//        return generating >= consuming;
-//    }
 
     public int getGenerating() {
         return generating;

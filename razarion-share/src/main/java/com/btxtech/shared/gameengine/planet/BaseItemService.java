@@ -94,7 +94,7 @@ public class BaseItemService {
     private final Queue<BaseCommand> commandQueue = new LinkedList<>();
     private PlanetConfig planetConfig;
     private GameEngineMode gameEngineMode;
-    private PriorityQueue<TickInfo> pendingReceivedTickInfos = new PriorityQueue<>(Comparator.comparingDouble(TickInfo::getTickCount));
+    private final PriorityQueue<TickInfo> pendingReceivedTickInfos = new PriorityQueue<>(Comparator.comparingDouble(TickInfo::getTickCount));
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         activeItems.clear();
@@ -309,7 +309,7 @@ public class BaseItemService {
             syncBaseItem.handleIfItemBecomesReady();
             gameLogicService.onSpawnSyncItemNoSpan(syncBaseItem);
         } else {
-            syncService.sendSyncBaseItem(syncBaseItem);
+            syncService.notifySendSyncBaseItem(syncBaseItem);
             gameLogicService.onSpawnSyncItemStart(syncBaseItem);
         }
 
@@ -569,7 +569,7 @@ public class BaseItemService {
                         if (!guardingItemService.add(activeItem)) {
                             gameLogicService.onSyncBaseItemIdle(activeItem);
                         }
-                        syncService.sendSyncBaseItem(activeItem);
+                        syncService.notifySendSyncBaseItem(activeItem);
                         continue;
                     }
                     try {
@@ -580,7 +580,7 @@ public class BaseItemService {
                                 if (!guardingItemService.add(activeItem)) {
                                     gameLogicService.onSyncBaseItemIdle(activeItem);
                                 }
-                                syncService.sendSyncBaseItem(activeItem);
+                                syncService.notifySendSyncBaseItem(activeItem);
                             } catch (Throwable t) {
                                 exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
                             }
@@ -590,7 +590,7 @@ public class BaseItemService {
                         exceptionHandler.handleException(t);
                         iterator.remove();
                         gameLogicService.onSyncBaseItemIdle(activeItem);
-                        syncService.sendSyncBaseItem(activeItem);
+                        syncService.notifySendSyncBaseItem(activeItem);
                     }
                 }
             }
@@ -607,7 +607,7 @@ public class BaseItemService {
             syncBaseItem.executeCommand(baseCommand);
             addToActiveItemQueue(syncBaseItem);
             guardingItemService.remove(syncBaseItem);
-            syncService.sendSyncBaseItem(syncBaseItem);
+            syncService.notifySendSyncBaseItem(syncBaseItem);
             gameLogicService.onMasterCommandSent(syncBaseItem);
         } catch (ItemDoesNotExistException e) {
             gameLogicService.onItemDoesNotExistException(e);
@@ -742,7 +742,7 @@ public class BaseItemService {
         });
     }
 
-    public void afterTick(long tickCount) {
+    public void processPendingReceivedTickInfos(long tickCount) {
         while (!pendingReceivedTickInfos.isEmpty() && pendingReceivedTickInfos.peek().getTickCount() <= tickCount) {
             TickInfo tickInfo = pendingReceivedTickInfos.remove();
             // System.out.println("Synchronize pending: slaveTickCount: " + tickCount + " info tick count: " + syncBaseItemInfo.getTickCount() + ". " + syncBaseItemInfo);

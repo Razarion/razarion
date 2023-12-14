@@ -10,16 +10,14 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class TestSyncService extends SyncService {
-    private TestWebSocket testWebSocket;
+    private final TestWebSocket testWebSocket = new TestWebSocket();
 
-    public void setTestWebSocket(TestWebSocket testWebSocket) {
-        this.testWebSocket = testWebSocket;
+    public TestWebSocket getTestWebSocket() {
+        return testWebSocket;
     }
 
     @Override
-    protected void sendTickInfo(TickInfo tickInfo) {
-        if (testWebSocket != null) {
-            testWebSocket.onTickInfo(tickInfo);
-        }
+    protected void internSendTickInfo(TickInfo tickInfo) {
+        testWebSocket.onTickInfo(tickInfo);
     }
 }

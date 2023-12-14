@@ -39,7 +39,6 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         tickPlanetServiceBaseServiceActive();
         assertEnergy(60, 0, playerBaseFull);
         SyncBaseItem consumer1 = findSyncBaseItem(playerBaseFull, FallbackConfig.CONSUMER_ITEM_TYPE_ID);
-        // TODO Assert.assertFalse(consumer1.getSyncConsumer().isOperating());
         assertGameLogicListener(60, 0, playerBaseFull);
         getTestGameLogicListener().clearAll();
 
@@ -51,7 +50,6 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         tickPlanetServiceBaseServiceActive();
         assertEnergy(60, 80, playerBaseFull);
-        // TODO Assert.assertTrue(consumer1.getSyncConsumer().isOperating());
         SyncBaseItem generator1 = findSyncBaseItem(playerBaseFull, FallbackConfig.GENERATOR_ITEM_TYPE_ID);
         assertGameLogicListener(60, 80, playerBaseFull);
         getTestGameLogicListener().clearAll();
@@ -62,8 +60,6 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         tickPlanetServiceBaseServiceActive();
         assertEnergy(120, 80, playerBaseFull);
         SyncBaseItem consumer2 = findSyncBaseItem(playerBaseFull, FallbackConfig.CONSUMER_ITEM_TYPE_ID, consumer1);
-        // TODO Assert.assertFalse(consumer1.getSyncConsumer().isOperating());
-        // TODO Assert.assertFalse(consumer2.getSyncConsumer().isOperating());
         assertGameLogicListener(120, 80, playerBaseFull);
         getTestGameLogicListener().clearAll();
 
@@ -72,8 +68,6 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         tickPlanetServiceBaseServiceActive();
         assertEnergy(120, 160, playerBaseFull);
-        // TODO Assert.assertTrue(consumer1.getSyncConsumer().isOperating());
-        // TODO Assert.assertTrue(consumer2.getSyncConsumer().isOperating());
         SyncBaseItem generator2 = findSyncBaseItem(playerBaseFull, FallbackConfig.GENERATOR_ITEM_TYPE_ID, generator1);
         assertGameLogicListener(120, 160, playerBaseFull);
         getTestGameLogicListener().clearAll();
@@ -85,22 +79,18 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         removeSyncItem(generator1);
         tickPlanetService(1);
         assertEnergy(120, 80, playerBaseFull);
-        // TODO Assert.assertFalse(consumer1.getSyncConsumer().isOperating());
-        // TODO Assert.assertFalse(consumer2.getSyncConsumer().isOperating());
         assertGameLogicListener(120, 80, playerBaseFull);
         getTestGameLogicListener().clearAll();
 
         removeSyncItem(consumer1);
         tickPlanetService(1);
         assertEnergy(60, 80, playerBaseFull);
-        // TODO Assert.assertTrue(consumer2.getSyncConsumer().isOperating());
         assertGameLogicListener(60, 80, playerBaseFull);
         getTestGameLogicListener().clearAll();
 
         removeSyncItem(generator2);
         tickPlanetService(1);
         assertEnergy(60, 0, playerBaseFull);
-        // TODO Assert.assertFalse(consumer2.getSyncConsumer().isOperating());
         assertGameLogicListener(60, 0, playerBaseFull);
         getTestGameLogicListener().clearAll();
 
@@ -229,6 +219,10 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
     }
 
     private void assertConnectedSlave(int consumingExpected, int generatingExpected, WeldSlaveEmulator permanentSalve, UserContext userContext) {
+        permanentSalve.tickPlanetService();
+        while (permanentSalve.hasPendingReceivedTickInfos()) {
+            permanentSalve.tickPlanetService();
+        }
         permanentSalve.tickPlanetService();
         assertEnergy(consumingExpected, generatingExpected, permanentSalve.getEnergyService(), permanentSalve.getPlayerBase(userContext));
     }

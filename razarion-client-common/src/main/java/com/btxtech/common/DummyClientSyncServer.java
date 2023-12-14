@@ -12,7 +12,7 @@ import javax.inject.Singleton;
 @Singleton
 public class DummyClientSyncServer extends SyncService {
     @Override
-    protected void sendTickInfo(TickInfo tickInfo) {
+    protected void internSendTickInfo(TickInfo tickInfo) {
         // Called in client-worker when running as Master -> ignore
     }
 }
