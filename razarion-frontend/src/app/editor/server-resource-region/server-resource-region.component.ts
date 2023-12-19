@@ -8,7 +8,7 @@ import {EditorService} from "../editor-service";
   templateUrl: './server-resource-region.component.html'
 })
 export class ServerResourceRegionComponent extends EditorPanel implements OnInit {
-  serverGameEngineConfig?: ServerGameEngineConfig;
+  serverGameEngineConfig!: ServerGameEngineConfig;
   selectedResourceRegion?: ResourceRegionConfig;
 
   constructor(public editorService: EditorService) {
@@ -22,7 +22,7 @@ export class ServerResourceRegionComponent extends EditorPanel implements OnInit
   }
 
   onSave() {
-    this.editorService.updateResourceRegionConfig(this.serverGameEngineConfig?.resourceRegionConfigs)
+    this.editorService.updateResourceRegionConfig(this.serverGameEngineConfig.resourceRegionConfigs)
   }
 
 

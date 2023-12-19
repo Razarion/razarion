@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {EditorPanel} from "../editor-model";
-import {EditorService} from "../editor-service";
+import { Component, OnInit } from '@angular/core';
+import { EditorPanel } from "../editor-model";
+import { EditorService } from "../editor-service";
 import {
   ConditionTrigger,
   QuestConfig,
@@ -13,18 +13,19 @@ import {
   templateUrl: './server-quest-editor.component.html'
 })
 export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
-  serverGameEngineConfig?: ServerGameEngineConfig;
+  serverGameEngineConfig!: ServerGameEngineConfig;
+  options: { label: string, value: ServerLevelQuestConfig }[] = [];
   selectedLevelQuest?: ServerLevelQuestConfig;
 
   protected readonly EditorService = EditorService;
   protected readonly CONDITION_TRIGGERS =
     [ConditionTrigger.SYNC_ITEM_KILLED,
-      ConditionTrigger.HARVEST,
-      ConditionTrigger.SYNC_ITEM_CREATED,
-      ConditionTrigger.BASE_KILLED,
-      ConditionTrigger.SYNC_ITEM_POSITION,
-      ConditionTrigger.BOX_PICKED,
-      ConditionTrigger.INVENTORY_ITEM_PLACED,
+    ConditionTrigger.HARVEST,
+    ConditionTrigger.SYNC_ITEM_CREATED,
+    ConditionTrigger.BASE_KILLED,
+    ConditionTrigger.SYNC_ITEM_POSITION,
+    ConditionTrigger.BOX_PICKED,
+    ConditionTrigger.INVENTORY_ITEM_PLACED,
     ];
 
   constructor(public editorService: EditorService) {
@@ -34,11 +35,33 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   ngOnInit(): void {
     this.editorService.readServerGameEngineConfig().then(serverGameEngineConfig => {
       this.serverGameEngineConfig = serverGameEngineConfig;
-    })
+      this.loadOptions();
+    });
+  }
+
+  private loadOptions(): void {
+    this.options = [];
+    let tmpSelectedLevelQuest = this.selectedLevelQuest;
+    let levelIdMap = new Map<number, string>();
+    this.editorService.readLevelObjectNameIds().then(objectNameIds => {
+      objectNameIds.forEach(objectNameId => {
+        levelIdMap.set(objectNameId.id, objectNameId.internalName);
+      });
+      this.serverGameEngineConfig.serverLevelQuestConfigs.forEach(levelQuest => {
+        if ((levelQuest.minimalLevelId || levelQuest.minimalLevelId === 0) && levelIdMap.has(levelQuest.minimalLevelId)) {
+          this.options.push({ label: levelIdMap.get(levelQuest.minimalLevelId)!, value: levelQuest });
+        } else {
+          this.options.push({ label: "?", value: levelQuest });
+        }
+      });
+      this.selectedLevelQuest = tmpSelectedLevelQuest;
+    });
   }
 
   onSave() {
-    this.editorService.updateServerLevelQuestConfig(this.serverGameEngineConfig?.serverLevelQuestConfigs)
+    this.editorService.updateServerLevelQuestConfig(this.serverGameEngineConfig.serverLevelQuestConfigs).then(() => {
+      this.loadOptions();
+    });
   }
 
   onCreate() {
@@ -48,7 +71,8 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
       minimalLevelId: null,
       questConfigs: []
     };
-    this.serverGameEngineConfig!.serverLevelQuestConfigs.push(this.selectedLevelQuest)
+    this.serverGameEngineConfig!.serverLevelQuestConfigs.push(this.selectedLevelQuest);
+    this.loadOptions();
   }
 
   onDelete() {
@@ -82,5 +106,23 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
 
   onDeleteQuest(questConfig: QuestConfig) {
     this.selectedLevelQuest!.questConfigs.splice(this.selectedLevelQuest!.questConfigs.findIndex(b => b === questConfig), 1);
+  }
+
+  onQuestUp(questConfig: QuestConfig): void {
+    const index = this.selectedLevelQuest!.questConfigs.indexOf(questConfig);
+    if (index > 0) {
+      const temp = this.selectedLevelQuest!.questConfigs[index];
+      this.selectedLevelQuest!.questConfigs[index] = this.selectedLevelQuest!.questConfigs[index - 1];
+      this.selectedLevelQuest!.questConfigs[index - 1] = temp;
+    }
+  }
+
+  onQuestDown(questConfig: QuestConfig) {
+    const index = this.selectedLevelQuest!.questConfigs.indexOf(questConfig);
+    if (index < this.selectedLevelQuest!.questConfigs.length - 1) {
+      const temp = this.selectedLevelQuest!.questConfigs[index];
+      this.selectedLevelQuest!.questConfigs[index] = this.selectedLevelQuest!.questConfigs[index + 1];
+      this.selectedLevelQuest!.questConfigs[index + 1] = temp;
+    }
   }
 }

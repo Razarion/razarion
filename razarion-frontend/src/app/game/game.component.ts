@@ -37,6 +37,7 @@ import {
   GeneratedCrudContainerComponent
 } from "../editor/crud-editors/crud-container/generated-crud-container.component";
 import { BaseItemTypeEditorComponent } from '../editor/crud-editors/base-item-type-editor/base-item-type-editor.component';
+import { ServerQuestEditorComponent } from '../editor/server-quest-editor/server-quest-editor.component';
 
 
 @Component({
@@ -75,7 +76,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = true;
+      let runGwtMock = false;
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
@@ -360,7 +361,7 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.displayXps(5, 20);
         this.mainCockpitComponent.displayLevel(1)
         this.mainCockpitComponent.displayEnergy(2,10);
-        this.addEditorModel(new EditorModel("??? Editor", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
+        this.addEditorModel(new EditorModel("Quest editor", ServerQuestEditorComponent));
         this.fadeOutLoadingCover();
         this.removeLoadingCover();
       }

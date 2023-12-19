@@ -128,7 +128,7 @@ export class EditorDialogComponent {
 
   openPlanetEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Base item type ditor", GeneratedCrudContainerComponent, PlanetEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Planet ditor", GeneratedCrudContainerComponent, PlanetEditorComponent));
   }
 
 }

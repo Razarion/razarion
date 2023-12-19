@@ -13,7 +13,7 @@ import {
   templateUrl: './server-bot-editor.component.html'
 })
 export class ServerBotEditorComponent extends EditorPanel implements OnInit {
-  serverGameEngineConfig?: ServerGameEngineConfig;
+  serverGameEngineConfig!: ServerGameEngineConfig;
   selectedBot?: BotConfig;
 
   constructor(public editorService: EditorService) {
@@ -27,7 +27,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   }
 
   onSave() {
-    this.editorService.updateBotConfig(this.serverGameEngineConfig?.botConfigs)
+    this.editorService.updateBotConfig(this.serverGameEngineConfig.botConfigs)
   }
 
   protected readonly EditorService = EditorService;

@@ -8,7 +8,7 @@ import {EditorPanel} from "../editor-model";
   templateUrl: './server-start-region.component.html'
 })
 export class ServerStartRegionComponent extends EditorPanel implements OnInit {
-  serverGameEngineConfig?: ServerGameEngineConfig;
+  serverGameEngineConfig!: ServerGameEngineConfig;
   selectedStartRegion?: StartRegionConfig;
 
   constructor(private editorService: EditorService) {
@@ -22,7 +22,7 @@ export class ServerStartRegionComponent extends EditorPanel implements OnInit {
   }
 
   onSave() {
-    this.editorService.updateStartRegionConfig(this.serverGameEngineConfig?.startRegionConfigs)
+    this.editorService.updateStartRegionConfig(this.serverGameEngineConfig.startRegionConfigs)
   }
 
   onCreate() {

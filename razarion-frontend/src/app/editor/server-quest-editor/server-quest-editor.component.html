@@ -5,9 +5,8 @@
                 (onClick)="onSave()"></p-button>
     </div>
     <div class="col-3">
-      <p-dropdown [options]="serverGameEngineConfig ? serverGameEngineConfig!.serverLevelQuestConfigs:[]"
-                  [(ngModel)]="selectedLevelQuest"
-                  optionLabel="internalName"></p-dropdown>
+      <p-dropdown [options]="options"
+                  [(ngModel)]="selectedLevelQuest"></p-dropdown>
     </div>
     <div class="col-1">
       <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
@@ -60,6 +59,14 @@
         <div class="col-1">
           <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
                     (onClick)="onDeleteQuest(questConfig)"></p-button>
+        </div>
+        <div class="col-1">
+          <p-button type="button" icon="pi pi-angle-up" styleClass="p-button-sm"
+                    (onClick)="onQuestUp(questConfig)"></p-button>
+        </div>
+        <div class="col-1">
+          <p-button type="button" icon="pi pi-angle-down" styleClass="p-button-sm"
+                    (onClick)="onQuestDown(questConfig)"></p-button>
         </div>
       </ng-template>
       <div class="grid grid-razarion-editor">

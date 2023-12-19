@@ -91,11 +91,6 @@
                     <jsonLibrary>jackson2</jsonLibrary>
                     <generateJaxrsApplicationClient>true</generateJaxrsApplicationClient>
                     <classes>
-                        <class>com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig</class>
-                        <class>com.btxtech.shared.dto.ResourceRegionConfig</class>
-                        <class>com.btxtech.shared.dto.StartRegionConfig</class>
-                        <class>com.btxtech.shared.dto.ServerLevelQuestConfig</class>
-                        <class>com.btxtech.shared.gameengine.datatypes.config.QuestConfig</class>
                         <class>com.btxtech.shared.dto.ServerGameEngineConfig</class>
                         <class>com.btxtech.shared.dto.ObjectNameId</class>
                         <class>com.btxtech.shared.gameengine.datatypes.config.SlopeConfig</class>
@@ -113,6 +108,7 @@
                         <class>com.btxtech.shared.rest.MeshContainerEditorController</class>
                         <class>com.btxtech.shared.rest.ImageProvider</class>
                         <class>com.btxtech.shared.rest.PlanetEditorController</class>
+                        <class>com.btxtech.shared.rest.ServerGameEngineEditorController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

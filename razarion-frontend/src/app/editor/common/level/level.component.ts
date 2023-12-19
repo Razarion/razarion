@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { LevelEditorControllerClient } from 'src/app/generated/razarion-share';
-import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
-import { HttpClient } from '@angular/common/http';
+import { EditorService } from '../../editor-service';
 
 @Component({
   selector: 'level',
@@ -17,9 +16,8 @@ export class LevelComponent {
   levelOptions: { label: string, levelId: number }[] = [];
   private levelEditorControllerClient!: LevelEditorControllerClient;
 
-  constructor(httpClient: HttpClient) {
-    this.levelEditorControllerClient = new LevelEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
-    this.levelEditorControllerClient.getObjectNameIds().then(objectNameIds => {
+  constructor(editorService: EditorService) {
+    editorService.readLevelObjectNameIds().then(objectNameIds => {
       this.levelOptions = [];
       objectNameIds.forEach(objectNameId => {
         this.levelOptions.push({ label: `${objectNameId.internalName} '${objectNameId.id}'`, levelId: objectNameId.id });
