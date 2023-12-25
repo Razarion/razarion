@@ -24,4 +24,15 @@ export class GwtHelper {
     console.info(`GwtHelper: Unexpected GWT enum: '${value}' typeof: ${typeof (value)} enum ${enumType}`)
     return value;
   }
+
+  static gwtIssueArray(array: any): any[] {
+    if (array === null || array === undefined) {
+      return array;
+    }
+    if (Array.isArray(array)) {
+      return array;
+    }
+    return <any[]>Object.values(array)[0]; // GWT rubbish
+  }
+
 }

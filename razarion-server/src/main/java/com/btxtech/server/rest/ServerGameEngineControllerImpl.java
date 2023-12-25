@@ -4,21 +4,18 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.rest.ServerGameEngineController;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 /**
  * Created by Beat
  * on 29.08.2017.
  */
-@Path(CommonUrl.SERVER_GAME_ENGINE_PATH)
-public class ServerGameEngineController {
+public class ServerGameEngineControllerImpl implements ServerGameEngineController {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -30,8 +27,6 @@ public class ServerGameEngineController {
     @Inject
     private ServerMgmt serverMgmt;
 
-    @POST
-    @Path("restartBots")
     @SecurityCheck
     public void restartBots() {
         try {
@@ -42,8 +37,6 @@ public class ServerGameEngineController {
         }
     }
 
-    @POST
-    @Path("reloadStatic")
     @SecurityCheck
     public void reloadStatic() {
         try {
@@ -54,8 +47,6 @@ public class ServerGameEngineController {
         }
     }
 
-    @POST
-    @Path("restartResourceRegions")
     @SecurityCheck
     public void restartResourceRegions() {
         try {
@@ -66,8 +57,6 @@ public class ServerGameEngineController {
         }
     }
 
-    @POST
-    @Path("reloadPlanetShapes")
     @SecurityCheck
     public void reloadPlanetShapes() {
         try {
@@ -78,8 +67,6 @@ public class ServerGameEngineController {
         }
     }
 
-    @POST
-    @Path("restartBoxRegions")
     @SecurityCheck
     public void restartBoxRegions() {
         try {
@@ -90,8 +77,6 @@ public class ServerGameEngineController {
         }
     }
 
-    @POST
-    @Path("restartPlanetWarm")
     @SecurityCheck
     public void restartPlanetWarm() {
         try {
@@ -102,8 +87,6 @@ public class ServerGameEngineController {
         }
     }
 
-    @POST
-    @Path("restartPlanetCold")
     @SecurityCheck
     public void restartPlanetCold() {
         try {
@@ -114,10 +97,8 @@ public class ServerGameEngineController {
         }
     }
 
-    @DELETE
-    @Path("deletebase/{baseId}")
     @SecurityCheck
-    public void deleteBase(int baseId) {
+    public void deleteBase(@PathParam("baseId") int baseId) {
         try {
             baseItemService.mgmtDeleteBase(baseId);
         } catch (Throwable e) {

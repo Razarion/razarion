@@ -114,6 +114,7 @@ import { BadgeModule } from 'primeng/badge';
 import { PlanetEditorComponent } from './editor/crud-editors/planet-editor/planet-editor.component';
 import { RadarComponent } from './game/cockpit/main/radar/radar.component';
 import { RadarNoPowerComponent } from './game/cockpit/main/radar/radar-no-power.component';
+import { BaseMgmtComponent } from './editor/base-mgmt/base-mgmt.component';
 
 @NgModule({
   declarations: [
@@ -181,7 +182,8 @@ import { RadarNoPowerComponent } from './game/cockpit/main/radar/radar-no-power.
     ImageGalleryComponent,
     PlanetEditorComponent,
     RadarComponent,
-    RadarNoPowerComponent
+    RadarNoPowerComponent,
+    BaseMgmtComponent
   ],
   imports: [
     BrowserModule,

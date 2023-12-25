@@ -38,6 +38,7 @@ import {
 } from "../editor/crud-editors/crud-container/generated-crud-container.component";
 import { BaseItemTypeEditorComponent } from '../editor/crud-editors/base-item-type-editor/base-item-type-editor.component';
 import { ServerQuestEditorComponent } from '../editor/server-quest-editor/server-quest-editor.component';
+import { BaseMgmtComponent } from '../editor/base-mgmt/base-mgmt.component';
 
 
 @Component({
@@ -77,13 +78,13 @@ export class GameComponent implements OnInit, ScreenCover {
 
     if (environment.gwtMock) {
       let runGwtMock = false;
+      this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
         this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.gwtAngularService.gwtAngularFacade.threeJsModelPackService = this.gameMockService.mockThreeJsModelPackService;
-        this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
         this.gameMockService.loadMockStaticGameConfig().then(() => {
           this.gameMockService.loadMockAssetConfig().then(() => {
             this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
@@ -361,7 +362,7 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.displayXps(5, 20);
         this.mainCockpitComponent.displayLevel(1)
         this.mainCockpitComponent.displayEnergy(2,10);
-        this.addEditorModel(new EditorModel("Quest editor", ServerQuestEditorComponent));
+        this.addEditorModel(new EditorModel("???", BaseMgmtComponent));
         this.fadeOutLoadingCover();
         this.removeLoadingCover();
       }

@@ -1,11 +1,13 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
 import com.btxtech.shared.gameengine.datatypes.Character;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 07.01.2017.
  */
+@JsType
 public class PlayerBaseDto {
     private int baseId;
     private String name;

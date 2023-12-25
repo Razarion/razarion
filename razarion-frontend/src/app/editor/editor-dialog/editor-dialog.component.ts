@@ -23,6 +23,7 @@ import { LevelEditorComponent } from "../crud-editors/level-editor/level-editor.
 import { GeneratedCrudContainerComponent } from "../crud-editors/crud-container/generated-crud-container.component";
 import { BaseItemTypeEditorComponent } from "../crud-editors/base-item-type-editor/base-item-type-editor.component";
 import { PlanetEditorComponent } from "../crud-editors/planet-editor/planet-editor.component";
+import { BaseMgmtComponent } from "../base-mgmt/base-mgmt.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -131,4 +132,8 @@ export class EditorDialogComponent {
     this.gameComponent.addEditorModel(new EditorModel("Planet ditor", GeneratedCrudContainerComponent, PlanetEditorComponent));
   }
 
+  openBaseMgmt() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Base management", BaseMgmtComponent));
+  }
 }

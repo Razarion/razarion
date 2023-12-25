@@ -157,11 +157,27 @@ export interface BaseItemUiService {
   getVisibleNativeSyncBaseItemTickInfos(bottomLeft: DecimalPosition, topRight: DecimalPosition): NativeSyncBaseItemTickInfo[];
 
   diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo: NativeSyncBaseItemTickInfo): Diplomacy;
+
+  getBases(): PlayerBaseDto[];
 }
 
 export interface NativeSyncBaseItemTickInfo {
   x: number;
   y: number;
+}
+
+export interface PlayerBaseDto {
+  getBaseId(): number;
+
+  getName(): string;
+
+  getCharacter(): Character;
+}
+
+export enum Character {
+  HUMAN = "HUMAN",
+  BOT = "BOT",
+  BOT_NCP = "BOT_NCP"
 }
 
 // ---------- Configs ----------

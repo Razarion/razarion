@@ -39,7 +39,7 @@ import {
   ThreeJsModelPackService,
   BabylonTerrainTile,
   Vertex,
-  WaterConfig, WeaponType, BaseItemUiService, Diplomacy, NativeSyncBaseItemTickInfo
+  WaterConfig, WeaponType, BaseItemUiService, Diplomacy, NativeSyncBaseItemTickInfo, PlayerBaseDto, Character
 } from "src/app/gwtangular/GwtAngularFacade";
 import { HttpClient } from "@angular/common/http";
 import * as Stats from 'stats.js';
@@ -581,6 +581,25 @@ export class GameMockService {
 
     diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo: NativeSyncBaseItemTickInfo): Diplomacy {
       return Diplomacy.OWN;
+    }
+
+    getBases(): PlayerBaseDto[] {
+      return [
+        {
+          getName() {
+            return "Base 1"
+          },
+
+          getBaseId(): number {
+            return 1;
+          },
+
+          getCharacter(): Character {
+            return Character.HUMAN
+          }
+
+        }
+      ];
     }
   }
 

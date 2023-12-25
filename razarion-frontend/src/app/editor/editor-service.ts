@@ -18,6 +18,7 @@ import {
   ObjectNameId, PlanetConfig,
   ResourceRegionConfig,
   ServerGameEngineConfig,
+  ServerGameEngineControllerClient,
   ServerGameEngineEditorControllerClient,
   ServerLevelQuestConfig, SlopeConfig,
   StartRegionConfig, WaterConfig
@@ -25,22 +26,23 @@ import {
 import { TypescriptGenerator } from "../backend/typescript-generator";
 
 export class ServerCommand {
-  constructor(public name: string, public methodUrl: string) {
+  constructor(public name: string, public restcall: (client: ServerGameEngineControllerClient) => (Promise<void>)) {
   }
 }
 
 @Injectable()
 export class EditorService {
   static readonly SERVER_GAME_ENGINE_ID = 3; // TODO read from game engine
-  static RESTART_BOTS: ServerCommand = new ServerCommand("Restart Bots", "restartBots");
-  static RELOAD_STATIC: ServerCommand = new ServerCommand("Reload Static", "reloadStatic");
-  static RESTART_RESOURCE_REGIONS: ServerCommand = new ServerCommand("Restart Resource Regions", "restartResourceRegions");
-  static RELOAD_PLANET_SHAPES: ServerCommand = new ServerCommand("Reload Planet Shapes", "reloadPlanetShapes");
-  static RESTART_BOX_REGIONS: ServerCommand = new ServerCommand("Restart Box Regions", "restartBoxRegions");
-  static RESTART_PLANET_WARM: ServerCommand = new ServerCommand("Restart Planet warm", "restartPlanetWarm");
-  static RESTART_PLANET_COLD: ServerCommand = new ServerCommand("Restart Planet cold", "restartPlanetCold");
+  static RESTART_BOTS: ServerCommand = new ServerCommand("Restart Bots", (client) => client.restartBots());
+  static RELOAD_STATIC: ServerCommand = new ServerCommand("Reload Static", (client) => client.reloadStatic());
+  static RESTART_RESOURCE_REGIONS: ServerCommand = new ServerCommand("Restart Resource Regions", (client) => client.restartResourceRegions());
+  static RELOAD_PLANET_SHAPES: ServerCommand = new ServerCommand("Reload Planet Shapes", (client) => client.reloadPlanetShapes());
+  static RESTART_BOX_REGIONS: ServerCommand = new ServerCommand("Restart Box Regions", (client) => client.restartBoxRegions());
+  static RESTART_PLANET_WARM: ServerCommand = new ServerCommand("Restart Planet warm", (client) => client.restartPlanetWarm());
+  static RESTART_PLANET_COLD: ServerCommand = new ServerCommand("Restart Planet cold", (client) => client.restartPlanetCold());
   private scaleinerverGameEngineEditorControllerClient: ServerGameEngineEditorControllerClient;
   private levelEditorControllerClient: LevelEditorControllerClient;
+  private serverGameEngineControllerClient: ServerGameEngineControllerClient;
 
   public static ALL_SERVER_COMMANDS: ServerCommand[] = [
     EditorService.RESTART_BOTS,
@@ -57,26 +59,24 @@ export class EditorService {
     private messageService: MessageService) {
     this.scaleinerverGameEngineEditorControllerClient = new ServerGameEngineEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
     this.levelEditorControllerClient = new LevelEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
-
+    this.serverGameEngineControllerClient = new ServerGameEngineControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
   executeServerCommand(serverCommand: ServerCommand) {
-    const url = SERVER_GAME_ENGINE_PATH + "/" + serverCommand.methodUrl
-    this.httpClient.post(url, null).subscribe(value => {
+    serverCommand.restcall(this.serverGameEngineControllerClient).then(() => {
       this.messageService.add({
         severity: 'success',
         life: 300,
         summary: serverCommand.name
       });
-    },
-      error => {
-        this.messageService.add({
-          severity: 'error',
-          summary: `Can not invoke ${serverCommand.name} on Server. URL: ${url}`,
-          detail: error,
-          sticky: true
-        });
+    }).catch(err => {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not invoke ${serverCommand.name}`,
+        detail: err,
+        sticky: true
       });
+    });
   }
 
   readServerGameEngineConfig(): Promise<ServerGameEngineConfig> {

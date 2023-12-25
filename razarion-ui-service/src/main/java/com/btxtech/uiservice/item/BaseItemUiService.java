@@ -290,10 +290,13 @@ public class BaseItemUiService {
         cockpitService.onItemCountChanged(itemCount, getMyTotalHouseSpace());
     }
 
-    public Collection<PlayerBaseDto> getBases() {
+    @SuppressWarnings("unused") // Used in angular
+    public PlayerBaseDto[] getBases() {
+        List<PlayerBaseDto> basesList;
         synchronized (bases) {
-            return new ArrayList<>(bases.values());
+            basesList = new ArrayList<>(bases.values());
         }
+        return basesList.toArray(new PlayerBaseDto[0]);
     }
 
     public void addBase(PlayerBaseDto playerBase) {
