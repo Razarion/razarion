@@ -1,29 +1,22 @@
 <div [style]="{width:'500px'}">
   <div class="grid grid-razarion-editor">
     <div class="col-1">
-      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
-                (onClick)="onSave()"></p-button>
+      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm" (onClick)="onSave()"></p-button>
     </div>
     <div class="col-3">
-      <p-dropdown [options]="serverGameEngineConfig ? serverGameEngineConfig!.botConfigs:[]"
-                  [(ngModel)]="selectedBot"
-                  optionLabel="internalName"></p-dropdown>
+      <p-dropdown [options]="serverGameEngineConfig ? serverGameEngineConfig!.botConfigs:[]" [(ngModel)]="selectedBot"
+        optionLabel="internalName"></p-dropdown>
     </div>
     <div class="col-1">
-      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
-                (onClick)="onCreate()"></p-button>
+      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm" (onClick)="onCreate()"></p-button>
     </div>
     <div class="col-1">
-      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                (onClick)="onDelete()"
-                [disabled]="!selectedBot"></p-button>
+      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm" (onClick)="onDelete()"
+        [disabled]="!selectedBot"></p-button>
     </div>
     <div class="col-6">
-      <p-button type="button"
-                label="{{EditorService.RESTART_BOTS.name}}"
-                icon="pi pi-cog"
-                styleClass="p-button-sm"
-                (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
+      <p-button type="button" label="{{EditorService.RESTART_BOTS.name}}" icon="pi pi-cog" styleClass="p-button-sm"
+        (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
     </div>
   </div>
   <p-divider align="left">
@@ -41,17 +34,15 @@
   <div class="grid grid-razarion-editor">
     <span class="col-3">Internal name</span>
     <div class="col-9">
-      <input [(ngModel)]="selectedBot&&selectedBot.internalName"
-             type="text"
-             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+      <input [(ngModel)]="selectedBot&&selectedBot.internalName" type="text"
+        class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
   </div>
   <div class="grid grid-razarion-editor">
     <span class="col-3">Name</span>
     <div class="col-9">
-      <input [(ngModel)]="selectedBot&&selectedBot.name"
-             type="text"
-             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+      <input [(ngModel)]="selectedBot&&selectedBot.name" type="text"
+        class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
   </div>
   <div class="grid grid-razarion-editor">
@@ -60,12 +51,49 @@
       <place-config *ngIf="selectedBot" [(placeConfig)]="selectedBot!.realm"></place-config>
     </div>
   </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-3">Action delay [ms]</span>
+    <div class="col-9">
+      <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.actionDelay"></p-inputNumber>
+    </div>
+  </div>
+
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-clock"></i>
+      <b>Intervall</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Min inactive [ms]</span>
+    <div class="col-8">
+      <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.minInactiveMs"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Max inactive [ms]</span>
+    <div class="col-8">
+      <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.maxInactiveMs"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Min active [ms]</span>
+    <div class="col-8">
+      <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.minActiveMs"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Max active [ms]</span>
+    <div class="col-8">
+      <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.maxActiveMs"></p-inputNumber>
+    </div>
+  </div>
 
   <div class="grid grid-razarion-editor">
     <span class="col-4">Create enragement state</span>
     <div class="col-8">
       <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
-                (onClick)="onCreateEnragementState()"></p-button>
+        (onClick)="onCreateEnragementState()"></p-button>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
@@ -76,15 +104,14 @@
             {{botEnragementStateConfig.name}}
             <div class="col-1">
               <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                        (onClick)="onDeleteEnragementState(botEnragementStateConfig)"></p-button>
+                (onClick)="onDeleteEnragementState(botEnragementStateConfig)"></p-button>
             </div>
           </ng-template>
           <div class="grid grid-razarion-editor">
             <span class="col-3">Name</span>
             <div class="col-9">
-              <input [(ngModel)]="botEnragementStateConfig.name"
-                     type="text"
-                     class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+              <input [(ngModel)]="botEnragementStateConfig.name" type="text"
+                class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
             </div>
           </div>
           <div class="grid grid-razarion-editor">
@@ -97,7 +124,7 @@
             <span class="col-3">Create bot item</span>
             <div class="col-9">
               <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
-                        (onClick)="onCreateBotItem(botEnragementStateConfig)"></p-button>
+                (onClick)="onCreateBotItem(botEnragementStateConfig)"></p-button>
             </div>
           </div>
           <div class="grid grid-razarion-editor">
@@ -108,7 +135,7 @@
                     <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId" [readOnly]="true"></base-item-type>
                     <div class="col-1">
                       <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                                (onClick)="onDeleteBotItem(botItem, botEnragementStateConfig)"></p-button>
+                        (onClick)="onDeleteBotItem(botItem, botEnragementStateConfig)"></p-button>
                     </div>
                   </ng-template>
                   <div class="grid grid-razarion-editor">

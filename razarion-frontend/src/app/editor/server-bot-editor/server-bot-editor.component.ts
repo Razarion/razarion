@@ -35,15 +35,15 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   onCreate() {
     this.selectedBot = {
       id: null,
-      actionDelay: 0,
+      actionDelay: 3000,
       autoAttack: false,
       auxiliaryId: 0,
       botEnragementStateConfigs: [],
       internalName: "New",
-      maxActiveMs: 0,
-      maxInactiveMs: 0,
-      minActiveMs: 0,
-      minInactiveMs: 0,
+      maxActiveMs: null,
+      maxInactiveMs: null,
+      minActiveMs: null,
+      minInactiveMs: null,
       name: "",
       npc: false,
       realm: null

@@ -92,35 +92,35 @@ public class BotConfig {
         this.autoAttack = autoAttack;
     }
 
-    public Integer getMinInactiveMs() {
+    public @Nullable Integer getMinInactiveMs() {
         return minInactiveMs;
     }
 
-    public void setMinInactiveMs(Integer minInactiveMs) {
+    public void setMinInactiveMs(@Nullable Integer minInactiveMs) {
         this.minInactiveMs = minInactiveMs;
     }
 
-    public Integer getMaxInactiveMs() {
+    public @Nullable Integer getMaxInactiveMs() {
         return maxInactiveMs;
     }
 
-    public void setMaxInactiveMs(Integer maxInactiveMs) {
+    public void setMaxInactiveMs(@Nullable Integer maxInactiveMs) {
         this.maxInactiveMs = maxInactiveMs;
     }
 
-    public Integer getMinActiveMs() {
+    public @Nullable Integer getMinActiveMs() {
         return minActiveMs;
     }
 
-    public void setMinActiveMs(Integer minActiveMs) {
+    public void setMinActiveMs(@Nullable Integer minActiveMs) {
         this.minActiveMs = minActiveMs;
     }
 
-    public Integer getMaxActiveMs() {
+    public @Nullable Integer getMaxActiveMs() {
         return maxActiveMs;
     }
 
-    public void setMaxActiveMs(Integer maxActiveMs) {
+    public void setMaxActiveMs(@Nullable Integer maxActiveMs) {
         this.maxActiveMs = maxActiveMs;
     }
 
