@@ -70,7 +70,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
       baseItemTypeId: null,
       count: 0,
       createDirectly: false,
-      idleTtl: 0,
+      idleTtl: null,
       moveRealmIfIdle: false,
       noRebuild: false,
       noSpawn: false,

@@ -80,11 +80,11 @@ public class BotItemConfig {
         this.moveRealmIfIdle = moveRealmIfIdle;
     }
 
-    public Integer getIdleTtl() {
+    public @Nullable Integer getIdleTtl() {
         return idleTtl;
     }
 
-    public void setIdleTtl(Integer idleTtl) {
+    public void setIdleTtl(@Nullable Integer idleTtl) {
         this.idleTtl = idleTtl;
     }
 
