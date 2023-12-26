@@ -40,6 +40,13 @@ export class LocationVisualization {
         if (pointerInfo.type === PointerEventTypes.POINTERDOWN) {
           let pickingInfo = this.renderService.setupMeshPickPoint();
           if (pickingInfo.hit) {
+            if(!this.placeConfigComponent.placeConfig?.position) {
+              this.placeConfigComponent.placeConfig!.position = {
+                x: pickingInfo.pickedPoint!.x,
+                y: pickingInfo.pickedPoint!.z
+              }
+            }
+
             if (!this.locationMarker) {
               this.setupMeshes();
             }
