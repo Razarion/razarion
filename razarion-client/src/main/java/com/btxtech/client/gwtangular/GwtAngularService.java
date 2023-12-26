@@ -9,6 +9,7 @@ import com.btxtech.uiservice.cockpit.QuestCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
@@ -52,6 +53,8 @@ public class GwtAngularService {
     private ThreeJsModelPackService threeJsModelPackService;
     @Inject
     private BaseItemUiService baseItemUiService;
+    @Inject
+    private ModalDialogManager modalDialogManager;
     private GwtAngularFacade gwtAngularFacade;
 
     public void init() {
@@ -70,6 +73,7 @@ public class GwtAngularService {
         questCockpitService.init(gwtAngularFacade.questCockpit);
         clientCursorService.init(gwtAngularFacade.angularCursorService);
         baseItemPlacerService.init(gwtAngularFacade.baseItemPlacerPresenter);
+        modalDialogManager.init(gwtAngularFacade.modelDialogPresenter);
     }
 
     public void onCrash() {

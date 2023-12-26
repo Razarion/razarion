@@ -25,6 +25,7 @@ import javax.inject.Inject;
  * 20.05.2016.
  */
 @Templated("ModalDialogPanel.html#glass-panel")
+@Deprecated
 public class ModalDialogPanel<T> implements IsElement {
     // private Logger logger = Logger.getLogger(ModalDialogPanel.class.getName());
     @Inject

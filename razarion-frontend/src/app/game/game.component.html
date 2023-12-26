@@ -11,29 +11,32 @@
   </div>
   <div class="flex-none flex align-items-center justify-content-center" *ngFor="let editorModel of editorModels">
     <app-editor-panel [editorModel]="editorModel" [gameComponent]="getGameComponent()"
-                      [mainCockpitComponent]="mainCockpit" [style]="{height:'100%'}"></app-editor-panel>
+      [mainCockpitComponent]="mainCockpit" [style]="{height:'100%'}"></app-editor-panel>
   </div>
 </div>
 
 <p-sidebar [appendTo]="canvasDiv" [visible]="mainCockpit.showCockpit" [modal]="false" [showCloseIcon]="false"
-           [style]="{height:'auto', width:'auto', position: 'absolute'}">
+  [style]="{height:'auto', width:'auto', position: 'absolute'}">
   <main-cockpit #mainCockpit></main-cockpit>
 </p-sidebar>
 
 <p-sidebar [appendTo]="canvasDiv" [visible]="itemCockpitContainer.showCockpit" [modal]="false" [showCloseIcon]="false"
-           position="bottom"
-           [style]="{height:'auto', width:'auto', position: 'absolute'}">
+  position="bottom" [style]="{height:'auto', width:'auto', position: 'absolute'}">
   <item-cockpit #itemCockpitContainer></item-cockpit>
 </p-sidebar>
 
 <p-sidebar [appendTo]="canvasDiv" [visible]="questCockpitContainer.showCockpit" [modal]="false" [showCloseIcon]="false"
-           position="right"
-           [style]="{height:'auto', width:'auto', position: 'absolute'}">
+  position="right" [style]="{height:'auto', width:'auto', position: 'absolute'}">
   <quest-cockpit #questCockpitContainer></quest-cockpit>
 </p-sidebar>
 
 <p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog" (onShow)="editorDialogComponent.onShow()">
   <editor-dialog #editorDialogComponent [mainCockpitComponent]="mainCockpit"
-                 [gameComponent]="getGameComponent()"></editor-dialog>
+    [gameComponent]="getGameComponent()"></editor-dialog>
 </p-dialog>
 
+<p-dialog [(visible)]="modelDialogPresenter.message" [showHeader]="false"
+  [style]="{'box-shadow': 'none', 'border': 'none'}"
+  [contentStyle]="{'background-color': 'transparent', 'font-size': '17em', 'font-weight': 'bold'}" [resizable]="false">
+  {{modelDialogPresenter.message}}
+</p-dialog>

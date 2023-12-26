@@ -18,6 +18,7 @@ export abstract class GwtAngularFacade {
   itemTypeService!: ItemTypeService;
   threeJsModelPackService!: ThreeJsModelPackService;
   baseItemUiService!: BaseItemUiService
+  modelDialogPresenter!: ModelDialogPresenter;
 
   abstract onCrash(): void;
 }
@@ -678,6 +679,17 @@ export interface OtherItemCockpit {
   type: string;
   friend: boolean;
 }
+
+// ---------- Editor ----------
+
+export interface ModelDialogPresenter {
+  showLevelUp(): void;
+
+  showQuestPassed(): void;
+
+  showBaseLost(): void;
+}
+
 
 // ---------- Editor ----------
 export interface EditorFrontendProvider {

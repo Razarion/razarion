@@ -1,15 +1,15 @@
-﻿import { Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild } from '@angular/core';
-import { FrontendService } from "../service/frontend.service";
-import { NavigationStart, Router } from "@angular/router";
-import { GwtAngularService } from "../gwtangular/GwtAngularService";
-import { EditorModel } from "../editor/editor-model";
-import { ItemCockpitComponent } from "./cockpit/item/item-cockpit.component";
-import { MainCockpitComponent } from "./cockpit/main/main-cockpit.component";
-import { CrashPanelComponent } from "../editor/crash-panel/crash-panel.component";
-import { BabylonRenderServiceAccessImpl } from './renderer/babylon-render-service-access-impl.service';
-import { environment } from 'src/environments/environment';
-import { GameMockService } from './renderer/game-mock.service';
-import { BabylonModelService } from './renderer/babylon-model.service';
+﻿import {Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild} from '@angular/core';
+import {FrontendService} from "../service/frontend.service";
+import {NavigationStart, Router} from "@angular/router";
+import {GwtAngularService} from "../gwtangular/GwtAngularService";
+import {EditorModel} from "../editor/editor-model";
+import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
+import {MainCockpitComponent} from "./cockpit/main/main-cockpit.component";
+import {CrashPanelComponent} from "../editor/crash-panel/crash-panel.component";
+import {BabylonRenderServiceAccessImpl} from './renderer/babylon-render-service-access-impl.service';
+import {environment} from 'src/environments/environment';
+import {GameMockService} from './renderer/game-mock.service';
+import {BabylonModelService} from './renderer/babylon-model.service';
 import {
   AngularCursorService,
   BaseItemType,
@@ -29,16 +29,11 @@ import {
   ScreenCover,
   WeaponType
 } from "../gwtangular/GwtAngularFacade";
-import { GwtInstance } from "../gwtangular/GwtInstance";
-import { GwtHelper } from "../gwtangular/GwtHelper";
-import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
-import { LevelEditorComponent } from '../editor/crud-editors/level-editor/level-editor.component';
-import {
-  GeneratedCrudContainerComponent
-} from "../editor/crud-editors/crud-container/generated-crud-container.component";
-import { BaseItemTypeEditorComponent } from '../editor/crud-editors/base-item-type-editor/base-item-type-editor.component';
-import { ServerQuestEditorComponent } from '../editor/server-quest-editor/server-quest-editor.component';
-import { BaseMgmtComponent } from '../editor/base-mgmt/base-mgmt.component';
+import {GwtInstance} from "../gwtangular/GwtInstance";
+import {GwtHelper} from "../gwtangular/GwtHelper";
+import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
+import {BaseMgmtComponent} from '../editor/base-mgmt/base-mgmt.component';
+import {ModelDialogPresenterImpl} from './model-dialog-presenter.impl';
 
 
 @Component({
@@ -59,6 +54,7 @@ export class GameComponent implements OnInit, ScreenCover {
   cursor: string = '';
   fadeOutCover: boolean = false;
   removeCover: boolean = false;
+  modelDialogPresenter: ModelDialogPresenterImpl;
 
   constructor(private frontendService: FrontendService,
     private router: Router,
@@ -67,12 +63,14 @@ export class GameComponent implements OnInit, ScreenCover {
     private threeJsModelService: BabylonModelService,
     private gameMockService: GameMockService,
     private zone: NgZone) {
+    this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone);
   }
 
   ngOnInit(): void {
     // this.loadingCover!.render = true;
 
     this.gwtAngularService.crashListener = () => this.addEditorModel(new EditorModel("Crash Information Panel", CrashPanelComponent));
+    this.gwtAngularService.gwtAngularFacade.modelDialogPresenter = this.modelDialogPresenter;
 
     this.threeJsRendererService.setup(this.canvas.nativeElement);
 
@@ -361,11 +359,20 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.showRadar(RadarState.NO_POWER);
         this.mainCockpitComponent.displayXps(5, 20);
         this.mainCockpitComponent.displayLevel(1)
-        this.mainCockpitComponent.displayEnergy(2,10);
+        this.mainCockpitComponent.displayEnergy(2, 10);
         this.addEditorModel(new EditorModel("???", BaseMgmtComponent));
         this.fadeOutLoadingCover();
         this.removeLoadingCover();
       }
+      setTimeout(() => {
+        this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
+      }, 100);
+      setTimeout(() => {
+        this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBaseLost();
+      }, 110);
+      setTimeout(() => {
+        this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
+      }, 120);
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;
     this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;

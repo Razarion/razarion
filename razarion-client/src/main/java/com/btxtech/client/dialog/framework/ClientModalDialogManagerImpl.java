@@ -39,7 +39,8 @@ import java.util.function.Consumer;
  * 20.05.2016.
  */
 @Singleton
-public class ClientModalDialogManagerImpl extends ModalDialogManager {
+@Deprecated
+public class ClientModalDialogManagerImpl {
     public enum Type {
         PROMPTLY,
         STACK_ABLE,
@@ -64,12 +65,10 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     private List<ModalDialogPanel> stackedDialogs = new ArrayList<>();
     private BiConsumer<ModalDialogPanel, Boolean> trackerCallback;
 
-    @Override
     protected void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener) {
         show(I18nHelper.getConstants().questPassed(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestPassedDialog.class, questDescriptionConfig, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnQuestPassed(), DialogButton.Button.CLOSE);
     }
 
-    @Override
     protected void showLevelUp(LevelUpPacket levelUpPacket, Runnable closeListener) {
         show(I18nHelper.getConstants().levelUpDialogTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, levelUpPacket, (button, value) -> {
             closeListener.run();
@@ -79,37 +78,30 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         }, null, audioService.getAudioConfig().getOnLevelUp(), DialogButton.Button.CLOSE);
     }
 
-    @Override
     public void showBoxPicked(BoxContent boxContent) {
         show(I18nHelper.getConstants().boxPicked(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null, null, audioService.getAudioConfig().getOnBoxPicked(), DialogButton.Button.CLOSE);
     }
 
-    @Override
     public void showUseInventoryItemLimitExceeded(BaseItemType baseItemType) {
         show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemLimit(I18nHelper.getLocalizedString(baseItemType.getI18nName())), null, null, DialogButton.Button.CLOSE);
     }
 
-    @Override
     public void showUseInventoryHouseSpaceExceeded() {
         show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemHouseSpace(), null, null, DialogButton.Button.CLOSE);
     }
 
-    @Override
     protected void showBaseLost(Runnable closeListener) {
         show(I18nHelper.getConstants().baseLostTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, MessageDialog.class, I18nHelper.getConstants().baseLost(), (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnBaseLost(), DialogButton.Button.CLOSE);
     }
 
-    @Override
     public void showLeaveStartTutorial(Runnable closeListener) {
         show(I18nHelper.getConstants().nextPlanet(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, MessageDialog.class, I18nHelper.getConstants().startTutorialFinished(), (button, value) -> closeListener.run(), null, DialogButton.Button.OK);
     }
 
-    @Override
     public void showMessageImageDialog(String title, String message, Integer imageId) {
         show(title, Type.STACK_ABLE, MessageImageDialog.class, new MessageImage(message, imageId), null, null, DialogButton.Button.CLOSE);
     }
 
-    @Override
     public void showRegisterDialog() {
         if (userUiServicesInstance.get().isRegistered()) {
             throw new IllegalStateException("User is already registered");
@@ -117,7 +109,6 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         show(I18nHelper.getConstants().register(), Type.QUEUE_ABLE, RegisterDialog.class, null, null, null, DialogButton.Button.CANCEL);
     }
 
-    @Override
     public void showSetUserNameDialog() {
         if (userUiServicesInstance.get().isRegisteredAndNamed()) {
             throw new IllegalStateException("User is already registered and named");
@@ -137,12 +128,10 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     }
 
 
-    @Override
     public void showMessageDialog(String title, String message) {
         show(title, Type.STACK_ABLE, MessageDialog.class, message, null, null, DialogButton.Button.CLOSE);
     }
 
-    @Override
     public void showScrollTipDialog(ScrollTipDialogModel scrollTipDialogModel) {
         show(scrollTipDialogModel.getDialogTitle(), Type.STACK_ABLE, ScrollTipDialog.class, scrollTipDialogModel, null, null, DialogButton.Button.CLOSE);
     }

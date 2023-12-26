@@ -1,0 +1,34 @@
+package com.btxtech.uiservice.dialog;
+
+import com.btxtech.shared.datatypes.LevelUpPacket;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
+import jsinterop.annotations.JsType;
+
+@JsType(isNative = true)
+public interface ModelDialogPresenter {
+
+    void showLevelUp();
+
+    void showQuestPassed();
+
+    void showBaseLost();
+
+    void showBoxPicked(BoxContent boxContent);
+
+    void showUseInventoryItemLimitExceeded(BaseItemType baseItemType);
+
+    void showUseInventoryHouseSpaceExceeded();
+
+    void showLeaveStartTutorial(Runnable closeListener);
+
+    void showMessageDialog(String title, String message);
+
+    void showRegisterDialog();
+
+    void showSetUserNameDialog();
+
+    void showScrollTipDialog(ScrollTipDialogModel scrollTipDialogModel);
+}

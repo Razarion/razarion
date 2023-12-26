@@ -4,45 +4,86 @@ import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
 
-import javax.inject.Inject;
+import javax.enterprise.context.ApplicationScoped;
 
 /**
  * Created by Beat
  * 24.09.2016.
  */
-public abstract class ModalDialogManager {
-    @Inject
-    private QuestService questService;
+@ApplicationScoped
+public class ModalDialogManager {
     private Runnable levelUpCallback;
     private Runnable questPassedCallback;
     private Runnable baseLostCallback;
+    private ModelDialogPresenter modelDialogPresenter;
 
-    protected abstract void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener);
+    public void init(ModelDialogPresenter modelDialogPresenter) {
+        this.modelDialogPresenter = modelDialogPresenter;
+    }
 
-    protected abstract void showLevelUp(LevelUpPacket levelUpPacket, Runnable closeListener);
+    protected void showLevelUp(LevelUpPacket levelUpPacket, Runnable closeListener) {
+        if (modelDialogPresenter != null) {
+            // TODO closeListener not working, levelUpPacket not used
+            modelDialogPresenter.showLevelUp();
+        }
+    }
 
-    public abstract void showBoxPicked(BoxContent boxContent);
+    public void showBoxPicked(BoxContent boxContent) {
+        if (modelDialogPresenter != null) {
+            modelDialogPresenter.showBoxPicked(boxContent);
+        }
+    }
 
-    public abstract void showUseInventoryItemLimitExceeded(BaseItemType baseItemType);
+    public void showUseInventoryItemLimitExceeded(BaseItemType baseItemType) {
+        if (modelDialogPresenter != null) {
+            modelDialogPresenter.showUseInventoryItemLimitExceeded(baseItemType);
+        }
+    }
 
-    public abstract void showUseInventoryHouseSpaceExceeded();
+    public void showUseInventoryHouseSpaceExceeded() {
+        if (modelDialogPresenter != null) {
+            modelDialogPresenter.showUseInventoryHouseSpaceExceeded();
+        }
+    }
 
-    protected abstract void showBaseLost(Runnable closeListener);
+    protected void showBaseLost(Runnable closeListener) {
+        if (modelDialogPresenter != null) {
+            modelDialogPresenter.showBaseLost();
+        }
+    }
 
-    public abstract void showLeaveStartTutorial(Runnable closeListener);
+    public void showLeaveStartTutorial(Runnable closeListener) {
+        if (modelDialogPresenter != null) {
+            modelDialogPresenter.showLeaveStartTutorial(closeListener);
+        }
+    }
 
-    public abstract void showMessageDialog(String title, String message);
+    public void showMessageDialog(String title, String message) {
+        if (modelDialogPresenter != null) {
+            modelDialogPresenter.showMessageDialog(title, message);
+        }
+    }
 
-    public abstract void showMessageImageDialog(String title, String message, Integer imageId);
+    public void showRegisterDialog() {
+        if (modelDialogPresenter != null) {
+            modelDialogPresenter.showRegisterDialog();
+        }
+    }
 
-    public abstract void showRegisterDialog();
+    public void showSetUserNameDialog() {
+        if (modelDialogPresenter != null) {
+            modelDialogPresenter.showSetUserNameDialog();
+        }
+    }
 
-    public abstract void showSetUserNameDialog();
+    public void showScrollTipDialog(ScrollTipDialogModel scrollTipDialogModel) {
+        if (modelDialogPresenter != null) {
+            modelDialogPresenter.showScrollTipDialog(scrollTipDialogModel);
+        }
+    }
 
-    public abstract void showScrollTipDialog(ScrollTipDialogModel scrollTipDialogModel);
 
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig) {
         showQuestPassed(questDescriptionConfig, () -> {
@@ -52,6 +93,13 @@ public abstract class ModalDialogManager {
                 tmpQuestPassedCallback.run();
             }
         });
+    }
+
+    private void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener) {
+        if (modelDialogPresenter != null) {
+            // TODO closeListener not working, questDescriptionConfig not used
+            modelDialogPresenter.showQuestPassed();
+        }
     }
 
     public void onLevelPassed(LevelUpPacket levelUpPacket) {
@@ -85,4 +133,5 @@ public abstract class ModalDialogManager {
     public void setBaseLostCallback(Runnable baseLostCallback) {
         this.baseLostCallback = baseLostCallback;
     }
+
 }
