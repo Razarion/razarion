@@ -4,9 +4,9 @@ import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.asset.AssetCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
-import com.btxtech.server.persistence.inventory.InventoryPersistence;
+import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity_;
@@ -84,6 +84,8 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     @Inject
     private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
     @Inject
+    private BoxItemTypeCrudPersistence boxItemTypeCrudPersistence;
+    @Inject
     private ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence;
     @Inject
     private AssetCrudPersistence assetCrudPersistence;
@@ -100,9 +102,9 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     @Inject
     private AlarmService alarmService;
     @Inject
-    private ItemTypePersistence itemTypePersistence;
+    private BotConfigEntityPersistence botConfigEntityPersistence;
     @Inject
-    private InventoryPersistence inventoryPersistence;
+    private InventoryItemCrudPersistence inventoryPersistence;
     @Inject
     private ImagePersistence imagePersistence;
 
@@ -199,7 +201,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     }
 
     private void fromConfig(SceneEntity sceneEntity, SceneConfig sceneConfig, Locale locale) {
-        sceneEntity.fromSceneConfig(itemTypePersistence, baseItemTypeCrudPersistence, sceneConfig, locale);
+        sceneEntity.fromSceneConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, sceneConfig, locale);
         sceneEntity.clearBotConfigEntities();
         if (sceneConfig.getBotConfigs() != null) {
             for (BotConfig botConfig : sceneConfig.getBotConfigs()) {
@@ -301,7 +303,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
         if (sceneConfig.getBoxItemPositions() != null) {
             for (BoxItemPosition boxItemPosition : sceneConfig.getBoxItemPositions()) {
                 BoxItemPositionEntity resourceItemPositionEntity = new BoxItemPositionEntity();
-                resourceItemPositionEntity.setBoxItemType(itemTypePersistence.readBoxItemTypeEntity(boxItemPosition.getBoxItemTypeId()));
+                resourceItemPositionEntity.setBoxItemType(boxItemTypeCrudPersistence.getEntity(boxItemPosition.getBoxItemTypeId()));
                 resourceItemPositionEntity.setPosition(boxItemPosition.getPosition());
                 resourceItemPositionEntity.setRotationZ(boxItemPosition.getRotationZ());
                 sceneEntity.addBoxItemPositionEntity(resourceItemPositionEntity);
@@ -313,8 +315,8 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             gameTipConfigEntity.setActor(baseItemTypeCrudPersistence.getEntity(sceneConfig.getGameTipConfig().getActor()));
             gameTipConfigEntity.setToCreatedItemType(baseItemTypeCrudPersistence.getEntity(sceneConfig.getGameTipConfig().getToCreatedItemTypeId()));
             gameTipConfigEntity.setResourceItemTypeEntity(resourceItemTypeCrudPersistence.getEntity(sceneConfig.getGameTipConfig().getResourceItemTypeId()));
-            gameTipConfigEntity.setBoxItemTypeEntity(itemTypePersistence.readBoxItemTypeEntity(sceneConfig.getGameTipConfig().getBoxItemTypeId()));
-            gameTipConfigEntity.setInventoryItemEntity(inventoryPersistence.readInventoryItemEntity(sceneConfig.getGameTipConfig().getInventoryItemId()));
+            gameTipConfigEntity.setBoxItemTypeEntity(boxItemTypeCrudPersistence.getEntity(sceneConfig.getGameTipConfig().getBoxItemTypeId()));
+            gameTipConfigEntity.setInventoryItemEntity(inventoryPersistence.getEntity(sceneConfig.getGameTipConfig().getInventoryItemId()));
             gameTipConfigEntity.setTerrainPositionHint(sceneConfig.getGameTipConfig().getTerrainPositionHint());
             if (sceneConfig.getGameTipConfig().getPlaceConfig() != null) {
                 PlaceConfigEntity placeConfigEntity = new PlaceConfigEntity();

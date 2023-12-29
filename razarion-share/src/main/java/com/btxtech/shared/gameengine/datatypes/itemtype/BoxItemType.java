@@ -25,10 +25,6 @@ public class BoxItemType extends ItemType {
     private TerrainType terrainType;
     private List<BoxItemTypePossibility> boxItemTypePossibilities;
 
-    public BoxItemType setRadius(double radius) {
-        this.radius = radius;
-        return this;
-    }
 
     public double getRadius() {
         return radius;
@@ -38,34 +34,60 @@ public class BoxItemType extends ItemType {
         return terrainType;
     }
 
-    public BoxItemType setTerrainType(TerrainType terrainType) {
-        this.terrainType = terrainType;
-        return this;
-    }
 
     public boolean isFixVerticalNorm() {
         return fixVerticalNorm;
-    }
-
-    public BoxItemType setFixVerticalNorm(boolean fixVerticalNorm) {
-        this.fixVerticalNorm = fixVerticalNorm;
-        return this;
     }
 
     public Integer getTtl() {
         return ttl;
     }
 
+    public void setTtl(Integer ttl) {
+        this.ttl = ttl;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    public void setFixVerticalNorm(boolean fixVerticalNorm) {
+        this.fixVerticalNorm = fixVerticalNorm;
+    }
+
+    public void setTerrainType(TerrainType terrainType) {
+        this.terrainType = terrainType;
+    }
+
+    public void setBoxItemTypePossibilities(List<BoxItemTypePossibility> boxItemTypePossibilities) {
+        this.boxItemTypePossibilities = boxItemTypePossibilities;
+    }
+
     public List<BoxItemTypePossibility> getBoxItemTypePossibilities() {
         return boxItemTypePossibilities;
     }
 
-    public BoxItemType setTtl(Integer ttl) {
+    public BoxItemType terrainType(TerrainType terrainType) {
+        this.terrainType = terrainType;
+        return this;
+    }
+
+    public BoxItemType fixVerticalNorm(boolean fixVerticalNorm) {
+        this.fixVerticalNorm = fixVerticalNorm;
+        return this;
+    }
+
+    public BoxItemType radius(double radius) {
+        this.radius = radius;
+        return this;
+    }
+
+    public BoxItemType ttl(Integer ttl) {
         this.ttl = ttl;
         return this;
     }
 
-    public BoxItemType setBoxItemTypePossibilities(List<BoxItemTypePossibility> boxItemTypePossibilities) {
+    public BoxItemType boxItemTypePossibilities(List<BoxItemTypePossibility> boxItemTypePossibilities) {
         this.boxItemTypePossibilities = boxItemTypePossibilities;
         return this;
     }

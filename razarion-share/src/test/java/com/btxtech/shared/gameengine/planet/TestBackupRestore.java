@@ -49,7 +49,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         Assert.assertEquals(5, resources.size());
         // Box
         Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
-        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID).setMinInterval(1).setMaxInterval(1).setCount(1).setRegion(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(200, 20, 20, 20))));
+        boxRegionConfigs.add(new BoxRegionConfig().boxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID).minInterval(1).maxInterval(1).count(1).region(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(200, 20, 20, 20))));
         getBoxService().startBoxRegions(boxRegionConfigs);
         // Bot
         SyncBaseItem botTarget = setupBot();

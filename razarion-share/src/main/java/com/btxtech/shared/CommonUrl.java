@@ -52,18 +52,18 @@ public class CommonUrl {
     public static final String SHAPE_3D_EDITOR_PATH = "editor/shape-3d";
     public static final String MESH_CONTAINER_EDITOR_PATH = "editor/mesh-container";
     public static final String BASE_ITEM_TYPE_EDITOR_PATH = "editor/base_item_type";
+    public static final String BOX_ITEM_TYPE_EDITOR_PATH = "editor/box_item_type";
     public static final String RESOURCE_ITEM_TYPE_EDITOR_PATH = "editor/resource_item_type";
     public static final String GENERIC_PROPERTY_EDITOR_PATH = "editor/generic-property";
     public static final String GAME_UI_CONTEXT_EDITOR_PATH = "editor/game-ui-context";
     public static final String SERVER_GAME_ENGINE_EDITOR_PATH = "editor/server-game-engine";
     public static final String ASSET_EDITOR_PATH = "editor/asset";
     public static final String THREE_JS_MODEL_PACK_EDITOR_PATH = "editor/three-js-model-pack-editor";
+    public static final String INVENTORY_ITEM_EDITOR_PATH = "editor/inventory-item";
     public static final String SHAPE_3D_CONTROLLER = G_ZIPPED + "/" + "shape3d-controller";
     public static final String TERRAIN_SHAPE_CONTROLLER = G_ZIPPED + "/" + "terrainshape";
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
     public static final String COLLADA_CONVERTER = "collada-convert";
-    @Deprecated
-    public static final String ITEM_TYPE_PROVIDER = "itemtypeprovider";
     public static final String TRACKER_PATH = "tracker";
     public static final String BACKEND_PATH = "backend";
     public static final String SERVER_MGMT = "servermgmt";
@@ -72,7 +72,6 @@ public class CommonUrl {
     public static final String SERVER_GAME_ENGINE_MGMT_PATH = "servergameenginemgmt";
     public static final String COMMON_EDITOR_PROVIDER_PATH = "commoneditorprovider";
     public static final String INVENTORY_PROVIDER_PATH = "inventoryprovider";
-    public static final String INVENTORY_EDITOR_PROVIDER_PATH = "inventoryeditorprovider";
     public static final String UNLOCK_PROVIDER_PATH = "unlockprovider";
     public static final String USER_SERVICE_PROVIDER_PATH = "userserviceprovider";
     public static final String FRONTEND_PATH = "frontend";

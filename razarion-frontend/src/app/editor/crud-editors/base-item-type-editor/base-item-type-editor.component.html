@@ -40,37 +40,6 @@
 
     <p-divider align="left">
         <div class="inline-flex align-items-center">
-            <i class="pi pi-cog"></i>
-            <b>&nbsp;Game engine</b>
-        </div>
-    </p-divider>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Price</span>
-        <div class="col-8">
-            <p-inputNumber [(ngModel)]="baseItemType.price"></p-inputNumber>
-        </div>
-    </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Buildup</span>
-        <div class="col-8">
-            <p-inputNumber [(ngModel)]="baseItemType.buildup"></p-inputNumber>
-        </div>
-    </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">XP on killed</span>
-        <div class="col-8">
-            <p-inputNumber [(ngModel)]="baseItemType.xpOnKilling"></p-inputNumber>
-        </div>
-    </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Consuming house space</span>
-        <div class="col-8">
-            <p-inputNumber [(ngModel)]="baseItemType.consumingHouseSpace"></p-inputNumber>
-        </div>
-    </div>
-
-    <p-divider align="left">
-        <div class="inline-flex align-items-center">
             <i class="pi pi-car"></i>
             <b>&nbsp;Physical area / moving</b>
         </div>
@@ -124,6 +93,37 @@
         <span class="col-4">End angle slow down [&deg;]</span>
         <div class="col-8">
             <angle [(angle)]="baseItemType.physicalAreaConfig.endAngleSlowDown" [maxDegreeAngle]="180"></angle>
+        </div>
+    </div>
+
+    <p-divider align="left">
+        <div class="inline-flex align-items-center">
+            <i class="pi pi-cog"></i>
+            <b>&nbsp;Game engine</b>
+        </div>
+    </p-divider>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Price</span>
+        <div class="col-8">
+            <p-inputNumber [(ngModel)]="baseItemType.price"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Buildup</span>
+        <div class="col-8">
+            <p-inputNumber [(ngModel)]="baseItemType.buildup"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">XP on killed</span>
+        <div class="col-8">
+            <p-inputNumber [(ngModel)]="baseItemType.xpOnKilling"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Consuming house space</span>
+        <div class="col-8">
+            <p-inputNumber [(ngModel)]="baseItemType.consumingHouseSpace"></p-inputNumber>
         </div>
     </div>
 

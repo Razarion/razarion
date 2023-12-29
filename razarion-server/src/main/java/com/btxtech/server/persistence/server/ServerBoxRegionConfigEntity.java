@@ -1,8 +1,8 @@
 package com.btxtech.server.persistence.server;
 
+import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
@@ -41,19 +41,19 @@ public class ServerBoxRegionConfigEntity implements ObjectNameIdProvider {
     }
 
     public BoxRegionConfig toBoxRegionConfig() {
-        BoxRegionConfig boxRegionConfig = new BoxRegionConfig().setId(id).setInternalName(internalName).setCount(count).setMinInterval(minInterval).setMaxInterval(maxInterval).setMinDistanceToItems(minDistanceToItems);
+        BoxRegionConfig boxRegionConfig = new BoxRegionConfig().id(id).internalName(internalName).count(count).minInterval(minInterval).maxInterval(maxInterval).minDistanceToItems(minDistanceToItems);
         if (boxItemTypeId != null) {
-            boxRegionConfig.setBoxItemTypeId(boxItemTypeId.getId());
+            boxRegionConfig.boxItemTypeId(boxItemTypeId.getId());
         }
         if (region != null) {
-            boxRegionConfig.setRegion(region.toPlaceConfig());
+            boxRegionConfig.region(region.toPlaceConfig());
         }
         return boxRegionConfig;
     }
 
-    public void fromBoxRegionConfig(ItemTypePersistence itemTypePersistence, BoxRegionConfig boxRegionConfig) {
+    public void fromBoxRegionConfig(BoxItemTypeCrudPersistence boxItemTypeCrudPersistence, BoxRegionConfig boxRegionConfig) {
         internalName = boxRegionConfig.getInternalName();
-        boxItemTypeId = itemTypePersistence.readBoxItemTypeEntity(boxRegionConfig.getBoxItemTypeId());
+        boxItemTypeId = boxItemTypeCrudPersistence.getEntity(boxRegionConfig.getBoxItemTypeId());
         minInterval = boxRegionConfig.getMinInterval();
         maxInterval = boxRegionConfig.getMaxInterval();
         count = boxRegionConfig.getCount();

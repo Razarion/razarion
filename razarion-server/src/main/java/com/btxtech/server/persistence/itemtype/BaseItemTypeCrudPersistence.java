@@ -2,6 +2,7 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.AudioPersistence;
+import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.Shape3DCrudPersistence;
@@ -9,6 +10,7 @@ import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.server.persistence.asset.MeshContainerCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -25,13 +27,13 @@ public class BaseItemTypeCrudPersistence extends AbstractCrudPersistence<BaseIte
     @Inject
     private MeshContainerCrudPersistence meshContainerCrudPersistence;
     @Inject
-    private ItemTypePersistence itemTypePersistence;
-    @Inject
     private ImagePersistence imagePersistence;
     @Inject
     private AudioPersistence audioPersistence;
     @Inject
     private ParticleSystemCrudPersistence particleSystemCrudPersistence;
+    @Inject
+    private BoxItemTypeCrudPersistence boxItemTypeCrudPersistence;
 
     public BaseItemTypeCrudPersistence() {
         super(BaseItemTypeEntity.class, BaseItemTypeEntity_.id, BaseItemTypeEntity_.internalName);
@@ -44,7 +46,7 @@ public class BaseItemTypeCrudPersistence extends AbstractCrudPersistence<BaseIte
 
     @Override
     protected void fromConfig(BaseItemType baseItemType, BaseItemTypeEntity baseItemTypeEntity) {
-        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, this, audioPersistence, particleSystemCrudPersistence);
+        baseItemTypeEntity.fromBaseItemType(baseItemType, this, boxItemTypeCrudPersistence, audioPersistence, particleSystemCrudPersistence);
         baseItemTypeEntity.setThreeJsModelPackConfigEntity(threeJsModelPackCrudPersistence.getEntity(baseItemType.getThreeJsModelPackConfigId()));
         baseItemTypeEntity.setMeshContainer(meshContainerCrudPersistence.getEntity(baseItemType.getMeshContainerId()));
         baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getEntity(baseItemType.getSpawnShape3DId()));

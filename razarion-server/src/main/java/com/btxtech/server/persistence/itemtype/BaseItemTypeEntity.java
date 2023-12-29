@@ -2,6 +2,7 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.AudioLibraryEntity;
 import com.btxtech.server.persistence.AudioPersistence;
+import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
@@ -210,7 +211,7 @@ public class BaseItemTypeEntity {
         return baseItemType;
     }
 
-    public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, AudioPersistence audioPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
+    public void fromBaseItemType(BaseItemType baseItemType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BoxItemTypeCrudPersistence boxItemTypeCrudPersistence, AudioPersistence audioPersistence, ParticleSystemCrudPersistence particleSystemCrudPersistence) {
         internalName = baseItemType.getInternalName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
         fixVerticalNorm = baseItemType.getPhysicalAreaConfig().isFixVerticalNorm();
@@ -227,7 +228,7 @@ public class BaseItemTypeEntity {
         xpOnKilling = baseItemType.getXpOnKilling();
         i18nName = I18nBundleEntity.fromI18nStringSafe(baseItemType.getI18nName(), i18nName);
         i18nDescription = I18nBundleEntity.fromI18nStringSafe(baseItemType.getI18nDescription(), i18nDescription);
-        dropBoxItemTypeEntity = itemTypePersistence.readBoxItemTypeEntity(baseItemType.getDropBoxItemTypeId());
+        dropBoxItemTypeEntity = boxItemTypeCrudPersistence.getEntity(baseItemType.getDropBoxItemTypeId());
         dropBoxPossibility = baseItemType.getDropBoxPossibility();
         boxPickupRange = baseItemType.getBoxPickupRange();
         unlockCrystals = baseItemType.getUnlockCrystals();

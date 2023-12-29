@@ -4,7 +4,7 @@ import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 
 import javax.persistence.CascadeType;
@@ -65,7 +65,7 @@ public class ComparisonConfigEntity {
         return comparisonConfig;
     }
 
-    public void fromComparisonConfig(ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ComparisonConfig comparisonConfig) {
+    public void fromComparisonConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ComparisonConfig comparisonConfig) {
         count = comparisonConfig.getCount();
         time = comparisonConfig.getTimeSeconds();
         if (comparisonConfig.getPlaceConfig() != null) {
@@ -92,7 +92,7 @@ public class ComparisonConfigEntity {
                 bots = new ArrayList<>();
             }
             bots.clear();
-            comparisonConfig.getBotIds().forEach(botId -> bots.add(itemTypePersistence.readBotConfigEntity(botId)));
+            comparisonConfig.getBotIds().forEach(botId -> bots.add(botConfigEntityPersistence.readBotConfigEntity(botId)));
         } else {
             bots = null;
         }

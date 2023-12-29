@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
@@ -62,13 +62,13 @@ public class ServerLevelQuestEntity implements ObjectNameIdProvider {
                 .questConfigs(toConfigList(questConfigs, questConfigEntity -> questConfigEntity.toQuestConfig(locale)));
     }
 
-    public void fromServerLevelQuestConfig(ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ServerLevelQuestConfig serverLevelQuestConfig, LevelCrudPersistence levelCrudPersistence, Locale locale) {
+    public void fromServerLevelQuestConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ServerLevelQuestConfig serverLevelQuestConfig, LevelCrudPersistence levelCrudPersistence, Locale locale) {
         internalName = serverLevelQuestConfig.getInternalName();
         minimalLevel = levelCrudPersistence.getEntity(serverLevelQuestConfig.getMinimalLevelId());
         questConfigs = fromConfigs(questConfigs,
                 serverLevelQuestConfig.getQuestConfigs(),
                 QuestConfigEntity::new,
-                (questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, questConfig, locale));
+                (questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, questConfig, locale));
     }
 
     @Override

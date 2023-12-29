@@ -19,11 +19,12 @@ import java.util.List;
 @Ignore
 public class InventoryPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
-    private InventoryPersistence inventoryPersistence;
+    private InventoryItemCrudPersistence inventoryPersistence;
     private int baseItemTypeId;
 
     @Test
     public void testCrud() throws Exception {
+        Assert.fail("---- TODO ----");
         runInTransaction(em -> {
             BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
             em.persist(baseItemTypeEntity);
@@ -32,21 +33,21 @@ public class InventoryPersistenceTestRest extends IgnoreOldArquillianTest {
             em.createNativeQuery("INSERT INTO IMAGE_LIBRARY (id, size) VALUES(23, 0)").executeUpdate();
         });
 
-        InventoryItem expectedInventoryItem = inventoryPersistence.createInventoryItem();
-        expectedInventoryItem.setI18nName(i18nHelper("aiudhoais paisuhdpaisd")).setInternalName("adesasd").setRazarion(999).setBaseItemTypeCount(3).setBaseItemTypeId(baseItemTypeId).setBaseItemTypeFreeRange(1234).setImageId(1);
-        inventoryPersistence.updateInventoryItem(expectedInventoryItem);
-        List<InventoryItem> actualInventoryItems = inventoryPersistence.readInventoryItems();
-        Assert.assertEquals(1, actualInventoryItems.size());
-        ReflectionAssert.assertReflectionEquals(expectedInventoryItem, actualInventoryItems.get(0));
-
-        expectedInventoryItem.setI18nName(i18nHelper("ddd www")).setInternalName("rrr").setRazarion(1).setBaseItemTypeCount(0).setBaseItemTypeId(null).setBaseItemTypeFreeRange(0).setImageId(23);
-        inventoryPersistence.updateInventoryItem(expectedInventoryItem);
-        actualInventoryItems = inventoryPersistence.readInventoryItems();
-        Assert.assertEquals(1, actualInventoryItems.size());
-        ReflectionAssert.assertReflectionEquals(expectedInventoryItem, actualInventoryItems.get(0));
-        Assert.assertEquals(1, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM BaseItemTypeEntity r").getSingleResult()).intValue());
-
-        inventoryPersistence.deleteInventoryItem(expectedInventoryItem.getId());
+//        InventoryItem expectedInventoryItem = inventoryPersistence.createInventoryItem();
+//        expectedInventoryItem.i18nName(i18nHelper("aiudhoais paisuhdpaisd")).setInternalName("adesasd").setRazarion(999).setBaseItemTypeCount(3).setBaseItemTypeId(baseItemTypeId).setBaseItemTypeFreeRange(1234).setImageId(1);
+//        inventoryPersistence.updateInventoryItem(expectedInventoryItem);
+//        List<InventoryItem> actualInventoryItems = inventoryPersistence.readInventoryItems();
+//        Assert.assertEquals(1, actualInventoryItems.size());
+//        ReflectionAssert.assertReflectionEquals(expectedInventoryItem, actualInventoryItems.get(0));
+//
+//        expectedInventoryItem.i18nName(i18nHelper("ddd www")).setInternalName("rrr").setRazarion(1).setBaseItemTypeCount(0).setBaseItemTypeId(null).setBaseItemTypeFreeRange(0).setImageId(23);
+//        inventoryPersistence.updateInventoryItem(expectedInventoryItem);
+//        actualInventoryItems = inventoryPersistence.readInventoryItems();
+//        Assert.assertEquals(1, actualInventoryItems.size());
+//        ReflectionAssert.assertReflectionEquals(expectedInventoryItem, actualInventoryItems.get(0));
+//        Assert.assertEquals(1, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM BaseItemTypeEntity r").getSingleResult()).intValue());
+//
+//        inventoryPersistence.deleteInventoryItem(expectedInventoryItem.getId());
 
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM InventoryItemEntity r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM I18N_BUNDLE r").getSingleResult()).intValue());

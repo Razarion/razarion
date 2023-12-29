@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.history;
 
 import com.btxtech.server.mgmt.GameHistoryEntry;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
-import com.btxtech.server.persistence.inventory.InventoryPersistence;
+import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.user.ForgotPasswordEntity;
@@ -43,7 +43,7 @@ public class HistoryPersistence {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private InventoryPersistence inventoryPersistence;
+    private InventoryItemCrudPersistence inventoryPersistence;
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onLevelUp(int userId, LevelEntity newLevel) {
@@ -110,7 +110,7 @@ public class HistoryPersistence {
             // TODO inventoryHistoryEntry.setHumanPlayerIdEntityId(userId.getPlayerId());
             inventoryHistoryEntry.setTimeStamp(date);
             inventoryHistoryEntry.setType(InventoryHistoryEntry.Type.INVENTORY_ITEM_USED);
-            InventoryItemEntity inventoryItemEntity = inventoryPersistence.readInventoryItemEntity(inventoryItemId);
+            InventoryItemEntity inventoryItemEntity = inventoryPersistence.getEntity(inventoryItemId);
             inventoryHistoryEntry.setInventoryItemId(inventoryItemId);
             inventoryHistoryEntry.setInventoryItemName(inventoryItemEntity.getInternalName());
             // entityManager.persist(inventoryHistoryEntry);

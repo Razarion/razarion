@@ -131,15 +131,6 @@ public abstract class ItemType implements Config {
         return this;
     }
 
-    @Deprecated
-    public Integer getShape3DId() {
-        return null;
-    }
-
-    @Deprecated
-    public void setShape3DId(Integer shape3DId) {
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

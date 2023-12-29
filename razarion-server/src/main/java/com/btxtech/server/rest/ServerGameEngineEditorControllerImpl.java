@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
@@ -26,6 +27,7 @@ public class ServerGameEngineEditorControllerImpl extends AbstractCrudController
         return serverGameEngineCrudPersistence;
     }
 
+    @Override
     @SecurityCheck
     public void updateResourceRegionConfig(int serverGameEngineConfigId, List<ResourceRegionConfig> resourceRegionConfigs) {
         try {
@@ -36,6 +38,7 @@ public class ServerGameEngineEditorControllerImpl extends AbstractCrudController
         }
     }
 
+    @Override
     @SecurityCheck
     public void updateStartRegionConfig(int serverGameEngineConfigId, List<StartRegionConfig> startRegionConfigs) {
         try {
@@ -46,6 +49,7 @@ public class ServerGameEngineEditorControllerImpl extends AbstractCrudController
         }
     }
 
+    @Override
     @SecurityCheck
     public void updateBotConfig(int serverGameEngineConfigId, List<BotConfig> botConfigs) {
         try {
@@ -56,10 +60,22 @@ public class ServerGameEngineEditorControllerImpl extends AbstractCrudController
         }
     }
 
+    @Override
     @SecurityCheck
     public void updateServerLevelQuestConfig(int serverGameEngineConfigId, List<ServerLevelQuestConfig> serverLevelQuestConfigs) {
         try {
             serverGameEngineCrudPersistence.updateServerLevelQuestConfig(serverGameEngineConfigId, serverLevelQuestConfigs);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public void updateBoxRegionConfig(int serverGameEngineConfigId, List<BoxRegionConfig> boxRegionConfigs) {
+        try {
+            serverGameEngineCrudPersistence.updateBoxRegionConfig(serverGameEngineConfigId, boxRegionConfigs);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

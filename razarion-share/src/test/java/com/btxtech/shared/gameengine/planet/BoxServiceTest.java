@@ -40,7 +40,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         // Start box service
         BoxService boxService = getBoxService();
         Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
-        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_ID).setMinInterval(100).setMaxInterval(100).setCount(1).setRegion(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(40, 50, 200, 150))));
+        boxRegionConfigs.add(new BoxRegionConfig().boxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_ID).minInterval(100).maxInterval(100).count(1).region(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(40, 50, 200, 150))));
         boxService.startBoxRegions(boxRegionConfigs);
         // Span box 1
         tickBoxService(900);
@@ -90,7 +90,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         // Start box service
         BoxService boxService = getBoxService();
         Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
-        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID).setMinInterval(10000).setMaxInterval(10000).setCount(1).setRegion(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 1, 1))));
+        boxRegionConfigs.add(new BoxRegionConfig().boxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID).minInterval(10000).maxInterval(10000).count(1).region(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 1, 1))));
         boxService.startBoxRegions(boxRegionConfigs);
         tickBoxService(100000);
         assertSyncItemCount(0, 0, 1);

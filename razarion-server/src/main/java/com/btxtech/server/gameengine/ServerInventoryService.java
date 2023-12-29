@@ -1,7 +1,7 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.persistence.history.HistoryPersistence;
-import com.btxtech.server.persistence.inventory.InventoryPersistence;
+import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.InventoryInfo;
@@ -22,7 +22,7 @@ public class ServerInventoryService {
     @Inject
     private UserService userService;
     @Inject
-    private InventoryPersistence inventoryPersistence;
+    private InventoryItemCrudPersistence inventoryPersistence;
     @Inject
     private BaseItemService baseItemService;
     @Inject
@@ -32,7 +32,7 @@ public class ServerInventoryService {
         if (boxContent.getCrystals() > 0) {
             userService.persistAddCrystals(userId, boxContent.getCrystals());
         }
-        boxContent.getInventoryItems().forEach(inventoryItem -> userService.persistAddInventoryItem(userId, inventoryPersistence.readInventoryItemEntity(inventoryItem.getId())));
+        boxContent.getInventoryItems().forEach(inventoryItem -> userService.persistAddInventoryItem(userId, inventoryPersistence.getEntity(inventoryItem.getId())));
         historyPersistence.onBoxPicked(userId, boxContent);
     }
 
@@ -57,7 +57,7 @@ public class ServerInventoryService {
         if (inventoryInfo.getInventoryItemIds() == null || !inventoryInfo.getInventoryItemIds().contains(useInventoryItem.getInventoryId())) {
             throw new IllegalArgumentException("User does not have inventory. Inventory Id: " + useInventoryItem.getInventoryId() + ". HumanPlayerId: " + playerSession.getUserContext().getUserId());
         }
-        userService.persistRemoveInventoryItem(playerSession.getUserContext().getUserId(), inventoryPersistence.readInventoryItemEntity(useInventoryItem.getInventoryId()));
+        userService.persistRemoveInventoryItem(playerSession.getUserContext().getUserId(), inventoryPersistence.getEntity(useInventoryItem.getInventoryId()));
         baseItemService.useInventoryItem(useInventoryItem, playerBaseFull);
         historyPersistence.onInventoryItemUsed(playerSession.getUserContext().getUserId(), useInventoryItem.getInventoryId());
     }

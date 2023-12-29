@@ -5,7 +5,7 @@ import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
-import com.btxtech.server.persistence.inventory.InventoryPersistence;
+import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
@@ -72,7 +72,7 @@ public class UserService {
     @Inject
     private Instance<HistoryPersistence> historyPersistence;
     @Inject
-    private InventoryPersistence inventoryPersistence;
+    private InventoryItemCrudPersistence inventoryPersistence;
     @Inject
     private RegisterService registerService;
 

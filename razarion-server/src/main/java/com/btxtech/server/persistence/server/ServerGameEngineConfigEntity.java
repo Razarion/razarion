@@ -5,7 +5,7 @@ import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.dto.BoxRegionConfig;
@@ -82,10 +82,11 @@ public class ServerGameEngineConfigEntity {
                 .resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
                 .startRegionConfigs(toConfigList(startRegionConfigs, StartRegionConfigEntity::toStartRegionConfig))
                 .botConfigs(toConfigList(botConfigs, BotConfigEntity::toBotConfig))
-                .serverLevelQuestConfig(toConfigList(serverQuestEntities, serverLevelQuestEntity -> serverLevelQuestEntity.toServerLevelQuestConfig(locale)));
+                .serverLevelQuestConfig(toConfigList(serverQuestEntities, serverLevelQuestEntity -> serverLevelQuestEntity.toServerLevelQuestConfig(locale)))
+                .boxRegionConfigs(toConfigList(boxRegionConfigs, ServerBoxRegionConfigEntity::toBoxRegionConfig));
     }
 
-    public void fromServerGameEngineConfig(ServerGameEngineConfig config, PlanetCrudPersistence planetCrudPersistence, ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence, LevelCrudPersistence levelCrudPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ItemTypePersistence itemTypePersistence, Locale locale) {
+    public void fromServerGameEngineConfig(ServerGameEngineConfig config, PlanetCrudPersistence planetCrudPersistence, ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence, LevelCrudPersistence levelCrudPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotConfigEntityPersistence botConfigEntityPersistence, Locale locale) {
         internalName = config.getInternalName();
         planetEntity = planetCrudPersistence.getEntity(config.getPlanetConfigId());
         resourceRegionConfigs = fromConfigs(resourceRegionConfigs,
@@ -103,7 +104,7 @@ public class ServerGameEngineConfigEntity {
         serverQuestEntities = fromConfigs(serverQuestEntities,
                 config.getServerLevelQuestConfigs(),
                 ServerLevelQuestEntity::new,
-                (serverLevelQuestEntity, serverLevelQuestConfig) -> serverLevelQuestEntity.fromServerLevelQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence, locale));
+                (serverLevelQuestEntity, serverLevelQuestConfig) -> serverLevelQuestEntity.fromServerLevelQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence, locale));
     }
 
     public Integer getId() {
@@ -193,6 +194,10 @@ public class ServerGameEngineConfigEntity {
 
     public List<ServerLevelQuestEntity> getServerQuestEntities() {
         return serverQuestEntities;
+    }
+
+    public List<ServerBoxRegionConfigEntity> getServerBoxRegionConfigEntities() {
+        return boxRegionConfigs;
     }
 
     @Override

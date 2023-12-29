@@ -115,6 +115,12 @@ import { PlanetEditorComponent } from './editor/crud-editors/planet-editor/plane
 import { RadarComponent } from './game/cockpit/main/radar/radar.component';
 import { RadarNoPowerComponent } from './game/cockpit/main/radar/radar-no-power.component';
 import { BaseMgmtComponent } from './editor/base-mgmt/base-mgmt.component';
+import { BoxItemTypeEditorComponent } from './editor/crud-editors/box-item-type-editor/box-item-type-editor.component';
+import { InventoryItemEditorComponent } from './editor/crud-editors/inventory-item-editor/inventory-item-editor.component';
+import { BoxItemTypeComponent } from './editor/common/box-item-type/box-item-type.component';
+import { InventoryItemComponent } from './editor/common/inventory-item/inventory-item.component';
+import { PercentInputComponent } from './editor/common/percent-input/percent-input.component';
+import { BoxRegionComponent } from './editor/box-region/box-region.component';
 
 @NgModule({
   declarations: [
@@ -183,7 +189,13 @@ import { BaseMgmtComponent } from './editor/base-mgmt/base-mgmt.component';
     PlanetEditorComponent,
     RadarComponent,
     RadarNoPowerComponent,
-    BaseMgmtComponent
+    BaseMgmtComponent,
+    BoxItemTypeEditorComponent,
+    InventoryItemEditorComponent,
+    BoxItemTypeComponent,
+    InventoryItemComponent,
+    PercentInputComponent,
+    BoxRegionComponent,
   ],
   imports: [
     BrowserModule,

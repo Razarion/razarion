@@ -1,6 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
@@ -35,4 +36,9 @@ public interface ServerGameEngineEditorController extends CrudController<ServerG
     @Path("update/serverLevelQuestConfig/{serverGameEngineConfigId}")
     @Consumes(MediaType.APPLICATION_JSON)
     void updateServerLevelQuestConfig(@PathParam("serverGameEngineConfigId") int serverGameEngineConfigId, List<ServerLevelQuestConfig> serverLevelQuestConfigs);
+
+    @POST
+    @Path("update/boxRegionConfig/{serverGameEngineConfigId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updateBoxRegionConfig(@PathParam("serverGameEngineConfigId") int serverGameEngineConfigId, List<BoxRegionConfig> boxRegionConfigs);
 }

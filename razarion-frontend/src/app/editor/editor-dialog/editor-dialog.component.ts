@@ -24,6 +24,9 @@ import { GeneratedCrudContainerComponent } from "../crud-editors/crud-container/
 import { BaseItemTypeEditorComponent } from "../crud-editors/base-item-type-editor/base-item-type-editor.component";
 import { PlanetEditorComponent } from "../crud-editors/planet-editor/planet-editor.component";
 import { BaseMgmtComponent } from "../base-mgmt/base-mgmt.component";
+import { BoxItemTypeEditorComponent } from "../crud-editors/box-item-type-editor/box-item-type-editor.component";
+import { InventoryItemEditorComponent } from "../crud-editors/inventory-item-editor/inventory-item-editor.component";
+import { BoxRegionComponent } from "../box-region/box-region.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -102,6 +105,11 @@ export class EditorDialogComponent {
     this.gameComponent.addEditorModel(new EditorModel("Resource region editor", ServerResourceRegionComponent));
   }
 
+  openBoxRegionEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Box region editor", BoxRegionComponent));
+  }
+
   openSlopeEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Slope editor", ManuallyCrudContainerComponent, SlopeEditorComponent));
@@ -127,6 +135,16 @@ export class EditorDialogComponent {
     this.gameComponent.addEditorModel(new EditorModel("Base item type ditor", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
   }
 
+  openBoxItemTypeEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Box item type ditor", GeneratedCrudContainerComponent, BoxItemTypeEditorComponent));
+  }
+
+  openInventoryItemEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Inventory item ditor", GeneratedCrudContainerComponent, InventoryItemEditorComponent));
+  }
+  
   openPlanetEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Planet ditor", GeneratedCrudContainerComponent, PlanetEditorComponent));

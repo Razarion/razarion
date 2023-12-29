@@ -1,11 +1,12 @@
 package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity_;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
@@ -66,9 +67,11 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     @Inject
     private ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence;
     @Inject
-    private ItemTypePersistence itemTypePersistence;
+    private BotConfigEntityPersistence botConfigEntityPersistence;
     @Inject
     private LevelCrudPersistence levelCrudPersistence;
+    @Inject
+    private BoxItemTypeCrudPersistence boxItemTypeCrudPersistence;
 
     public ServerGameEngineCrudPersistence() {
         super(ServerGameEngineConfigEntity.class, ServerGameEngineConfigEntity_.id, ServerGameEngineConfigEntity_.internalName);
@@ -81,7 +84,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
 
     @Override
     protected void fromConfig(ServerGameEngineConfig config, ServerGameEngineConfigEntity entity) {
-        entity.fromServerGameEngineConfig(config, planetCrudPersistence, resourceItemTypeCrudPersistence, levelCrudPersistence, baseItemTypeCrudPersistence, itemTypePersistence, Locale.GERMAN);
+        entity.fromServerGameEngineConfig(config, planetCrudPersistence, resourceItemTypeCrudPersistence, levelCrudPersistence, baseItemTypeCrudPersistence, botConfigEntityPersistence, Locale.GERMAN);
     }
 
     @Transactional
@@ -264,9 +267,20 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
                 serverLevelQuestConfigs,
                 ServerGameEngineConfigEntity::getServerQuestEntities,
                 ServerLevelQuestConfig::getId,
-                (serverLevelQuestConfig, serverLevelQuestEntity) -> serverLevelQuestEntity.fromServerLevelQuestConfig(itemTypePersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence, Locale.GERMAN),
+                (serverLevelQuestConfig, serverLevelQuestEntity) -> serverLevelQuestEntity.fromServerLevelQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence, Locale.GERMAN),
                 ServerLevelQuestEntity::new,
                 ServerLevelQuestEntity::getId);
+    }
+
+    @Transactional
+    public void updateBoxRegionConfig(int serverGameEngineConfigId, List<BoxRegionConfig> boxRegionConfigs) {
+        updateChildren(serverGameEngineConfigId,
+                boxRegionConfigs,
+                ServerGameEngineConfigEntity::getServerBoxRegionConfigEntities,
+                BoxRegionConfig::getId,
+                (boxRegionConfig, boxRegionConfigEntity) -> boxRegionConfigEntity.fromBoxRegionConfig(boxItemTypeCrudPersistence, boxRegionConfig),
+                ServerBoxRegionConfigEntity::new,
+                ServerBoxRegionConfigEntity::getId);
     }
 
     private <C, E> void updateChildren(int serverGameEngineConfigId,

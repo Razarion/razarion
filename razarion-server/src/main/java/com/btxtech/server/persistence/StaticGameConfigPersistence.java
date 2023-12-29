@@ -1,8 +1,7 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.persistence.inventory.InventoryPersistence;
+import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
@@ -31,11 +30,11 @@ public class StaticGameConfigPersistence {
     @Inject
     private ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence;
     @Inject
-    private ItemTypePersistence itemTypePersistence;
+    private BoxItemTypeCrudPersistence boxItemTypeCrudPersistence;
     @Inject
     private LevelCrudPersistence levelCrudPersistence;
     @Inject
-    private InventoryPersistence inventoryPersistence;
+    private InventoryItemCrudPersistence inventoryItemCrudPersistence;
     @Inject
     private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
     @Inject
@@ -52,9 +51,9 @@ public class StaticGameConfigPersistence {
         staticGameConfig.setWaterConfigs(waterCrudPersistence.read());
         staticGameConfig.setBaseItemTypes(baseItemTypeCrudPersistence.read());
         staticGameConfig.setResourceItemTypes(resourceItemTypeCrudPersistence.read());
-        staticGameConfig.setBoxItemTypes(itemTypePersistence.readBoxItemTypes());
+        staticGameConfig.setBoxItemTypes(boxItemTypeCrudPersistence.read());
         staticGameConfig.setLevelConfigs(levelCrudPersistence.read());
-        staticGameConfig.setInventoryItems(inventoryPersistence.readInventoryItems());
+        staticGameConfig.setInventoryItems(inventoryItemCrudPersistence.read());
         staticGameConfig.setThreeJsModelConfigs(threeJsModelCrudPersistence.read());
         staticGameConfig.setThreeJsModelPackConfigs(threeJsModelPackCrudPersistence.read());
         staticGameConfig.setParticleSystemConfigs(particleSystemCrudPersistence.read());

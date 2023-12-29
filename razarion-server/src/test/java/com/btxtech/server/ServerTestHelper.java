@@ -2,13 +2,13 @@ package com.btxtech.server;
 
 import com.btxtech.server.persistence.AudioLibraryEntity;
 import com.btxtech.server.persistence.AudioPersistence;
+import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.TerrainObjectCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
@@ -24,7 +24,6 @@ import com.btxtech.server.persistence.itemtype.FactoryTypeEntity;
 import com.btxtech.server.persistence.itemtype.HarvesterTypeEntity;
 import com.btxtech.server.persistence.itemtype.HouseTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemContainerTypeEntity;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.TurretTypeEntity;
 import com.btxtech.server.persistence.itemtype.WeaponTypeEntity;
@@ -390,7 +389,7 @@ public class ServerTestHelper {
         RESOURCE_ITEM_TYPE_ID = createResourceItemTypeEntity(resource);
 
         BoxItemType boxItemType = new BoxItemType();
-        boxItemType.setRadius(2);
+        boxItemType.radius(2);
         BOX_ITEM_TYPE_ID = createBoxItemTypeEntity(boxItemType);
 
         cleanupAfterTests.add(Arrays.asList(
@@ -417,13 +416,12 @@ public class ServerTestHelper {
 
     private int createBaseItemTypeEntity(BaseItemType baseItemType) {
         BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
-        ItemTypePersistence itemTypePersistence = EasyMock.createNiceMock(ItemTypePersistence.class);
+        BoxItemTypeCrudPersistence boxItemTypeCrudPersistence = EasyMock.createNiceMock(BoxItemTypeCrudPersistence.class);
         BaseItemTypeCrudPersistence baseItemTypeCrudPersistence = EasyMock.createNiceMock(BaseItemTypeCrudPersistence.class);
-        Shape3DCrudPersistence shape3DPersistence = EasyMock.createNiceMock(Shape3DCrudPersistence.class);
         AudioPersistence audioPersistence = EasyMock.createNiceMock(AudioPersistence.class);
         ParticleSystemCrudPersistence particleSystemCrudPersistence = EasyMock.createNiceMock(ParticleSystemCrudPersistence.class);
-        EasyMock.replay(itemTypePersistence, baseItemTypeCrudPersistence, shape3DPersistence, particleSystemCrudPersistence, audioPersistence);
-        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, baseItemTypeCrudPersistence, audioPersistence, particleSystemCrudPersistence);
+        EasyMock.replay(baseItemTypeCrudPersistence, boxItemTypeCrudPersistence, particleSystemCrudPersistence, audioPersistence);
+        baseItemTypeEntity.fromBaseItemType(baseItemType, baseItemTypeCrudPersistence, boxItemTypeCrudPersistence, audioPersistence, particleSystemCrudPersistence);
         persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
     }

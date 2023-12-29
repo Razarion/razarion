@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.quest;
 
 import com.btxtech.server.mgmt.QuestBackendInfo;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
-import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
@@ -69,7 +69,7 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
         return questConfig;
     }
 
-    public void fromQuestConfig(ItemTypePersistence itemTypePersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, QuestConfig questConfig, Locale locale) {
+    public void fromQuestConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, QuestConfig questConfig, Locale locale) {
         internalName = questConfig.getInternalName();
         if (questConfig.getTitle() != null) {
             if (title == null) {
@@ -103,7 +103,7 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
             if (conditionConfigEntity == null) {
                 conditionConfigEntity = new ConditionConfigEntity();
             }
-            conditionConfigEntity.fromConditionConfig(itemTypePersistence, baseItemTypeCrudPersistence, questConfig.getConditionConfig());
+            conditionConfigEntity.fromConditionConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, questConfig.getConditionConfig());
         } else {
             conditionConfigEntity = null;
         }

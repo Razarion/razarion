@@ -12,6 +12,7 @@ public class ServerGameEngineConfig implements Config {
     private List<StartRegionConfig> startRegionConfigs;
     private List<BotConfig> botConfigs;
     private List<ServerLevelQuestConfig> serverLevelQuestConfigs;
+    private List<BoxRegionConfig> boxRegionConfigs;
 
     @Override
     public int getId() {
@@ -73,6 +74,14 @@ public class ServerGameEngineConfig implements Config {
         this.serverLevelQuestConfigs = serverLevelQuestConfigs;
     }
 
+    public List<BoxRegionConfig> getBoxRegionConfigs() {
+        return boxRegionConfigs;
+    }
+
+    public void setBoxRegionConfigs(List<BoxRegionConfig> boxRegionConfigs) {
+        this.boxRegionConfigs = boxRegionConfigs;
+    }
+
     public ServerGameEngineConfig internalName(String internalName) {
         setInternalName(internalName);
         return this;
@@ -100,6 +109,11 @@ public class ServerGameEngineConfig implements Config {
 
     public ServerGameEngineConfig serverLevelQuestConfig(List<ServerLevelQuestConfig> serverLevelQuestConfigs) {
         setServerLevelQuestConfigs(serverLevelQuestConfigs);
+        return this;
+    }
+
+    public ServerGameEngineConfig boxRegionConfigs(List<BoxRegionConfig> boxRegionConfigs) {
+        setBoxRegionConfigs(boxRegionConfigs);
         return this;
     }
 }

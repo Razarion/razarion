@@ -1,15 +1,15 @@
-﻿import {Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild} from '@angular/core';
-import {FrontendService} from "../service/frontend.service";
-import {NavigationStart, Router} from "@angular/router";
-import {GwtAngularService} from "../gwtangular/GwtAngularService";
-import {EditorModel} from "../editor/editor-model";
-import {ItemCockpitComponent} from "./cockpit/item/item-cockpit.component";
-import {MainCockpitComponent} from "./cockpit/main/main-cockpit.component";
-import {CrashPanelComponent} from "../editor/crash-panel/crash-panel.component";
-import {BabylonRenderServiceAccessImpl} from './renderer/babylon-render-service-access-impl.service';
-import {environment} from 'src/environments/environment';
-import {GameMockService} from './renderer/game-mock.service';
-import {BabylonModelService} from './renderer/babylon-model.service';
+﻿import { Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild } from '@angular/core';
+import { FrontendService } from "../service/frontend.service";
+import { NavigationStart, Router } from "@angular/router";
+import { GwtAngularService } from "../gwtangular/GwtAngularService";
+import { EditorModel } from "../editor/editor-model";
+import { ItemCockpitComponent } from "./cockpit/item/item-cockpit.component";
+import { MainCockpitComponent } from "./cockpit/main/main-cockpit.component";
+import { CrashPanelComponent } from "../editor/crash-panel/crash-panel.component";
+import { BabylonRenderServiceAccessImpl } from './renderer/babylon-render-service-access-impl.service';
+import { environment } from 'src/environments/environment';
+import { GameMockService } from './renderer/game-mock.service';
+import { BabylonModelService } from './renderer/babylon-model.service';
 import {
   AngularCursorService,
   BaseItemType,
@@ -29,11 +29,13 @@ import {
   ScreenCover,
   WeaponType
 } from "../gwtangular/GwtAngularFacade";
-import {GwtInstance} from "../gwtangular/GwtInstance";
-import {GwtHelper} from "../gwtangular/GwtHelper";
-import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
-import {BaseMgmtComponent} from '../editor/base-mgmt/base-mgmt.component';
-import {ModelDialogPresenterImpl} from './model-dialog-presenter.impl';
+import { GwtInstance } from "../gwtangular/GwtInstance";
+import { GwtHelper } from "../gwtangular/GwtHelper";
+import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
+import { BaseMgmtComponent } from '../editor/base-mgmt/base-mgmt.component';
+import { ModelDialogPresenterImpl } from './model-dialog-presenter.impl';
+import { GeneratedCrudContainerComponent } from '../editor/crud-editors/crud-container/generated-crud-container.component';
+import { BoxItemTypeEditorComponent } from '../editor/crud-editors/box-item-type-editor/box-item-type-editor.component';
 
 
 @Component({
@@ -360,19 +362,20 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.displayXps(5, 20);
         this.mainCockpitComponent.displayLevel(1)
         this.mainCockpitComponent.displayEnergy(2, 10);
-        this.addEditorModel(new EditorModel("???", BaseMgmtComponent));
+        // this.addEditorModel(new EditorModel("???", BaseMgmtComponent));
+        this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, BoxItemTypeEditorComponent));
         this.fadeOutLoadingCover();
         this.removeLoadingCover();
       }
-      setTimeout(() => {
-        this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
-      }, 100);
-      setTimeout(() => {
-        this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBaseLost();
-      }, 110);
-      setTimeout(() => {
-        this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
-      }, 120);
+      // setTimeout(() => {
+      //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
+      // }, 100);
+      // setTimeout(() => {
+      //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBaseLost();
+      // }, 110);
+      // setTimeout(() => {
+      //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
+      // }, 120);
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;
     this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;

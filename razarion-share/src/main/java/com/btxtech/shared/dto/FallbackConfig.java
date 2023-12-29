@@ -218,29 +218,29 @@ public final class FallbackConfig {
     public static void setupBox(List<BoxItemType> boxItemTypes) {
         BoxItemType resourceItemType = new BoxItemType();
         resourceItemType.id(BOX_ITEM_TYPE_ID).internalName("Test box");
-        resourceItemType.setRadius(1).setTerrainType(TerrainType.LAND).setFixVerticalNorm(false);
+        resourceItemType.radius(1).terrainType(TerrainType.LAND).fixVerticalNorm(false);
         // resourceItemType.setBoxItemTypePossibilities()
-        resourceItemType.setTtl(250);
+        resourceItemType.ttl(250);
         boxItemTypes.add(resourceItemType);
     }
 
     public static void setupLongBox(List<BoxItemType> boxItemTypes) {
         BoxItemType resourceItemType = new BoxItemType();
         resourceItemType.id(BOX_ITEM_TYPE_LONG_ID).internalName("Test box long");
-        resourceItemType.setRadius(1).setTerrainType(TerrainType.LAND).setFixVerticalNorm(false);
+        resourceItemType.radius(1).terrainType(TerrainType.LAND).fixVerticalNorm(false);
         List<BoxItemTypePossibility> boxItemTypePossibilities = new ArrayList<>();
         boxItemTypePossibilities.add(new BoxItemTypePossibility().setInventoryItemId(INVENTORY_ITEM_ATTACKER_ID).setPossibility(1));
         boxItemTypePossibilities.add(new BoxItemTypePossibility().setInventoryItemId(INVENTORY_ITEM_GOLD_ID).setPossibility(1));
         boxItemTypePossibilities.add(new BoxItemTypePossibility().setCrystals(10).setPossibility(1));
-        resourceItemType.setBoxItemTypePossibilities(boxItemTypePossibilities);
-        resourceItemType.setTtl(Integer.MAX_VALUE);
+        resourceItemType.boxItemTypePossibilities(boxItemTypePossibilities);
+        resourceItemType.ttl(Integer.MAX_VALUE);
         boxItemTypes.add(resourceItemType);
     }
 
     public static List<InventoryItem> setupInventoryItems() {
         List<InventoryItem> inventoryItems = new ArrayList<>();
-        inventoryItems.add(new InventoryItem().setId(INVENTORY_ITEM_ATTACKER_ID).setBaseItemTypeCount(3).setBaseItemTypeId(ATTACKER_ITEM_TYPE_ID).setBaseItemTypeFreeRange(1));
-        inventoryItems.add(new InventoryItem().setId(INVENTORY_ITEM_GOLD_ID).setRazarion(100));
+        inventoryItems.add(new InventoryItem().id(INVENTORY_ITEM_ATTACKER_ID).baseItemTypeCount(3).baseItemTypeId(ATTACKER_ITEM_TYPE_ID).baseItemTypeFreeRange(1));
+        inventoryItems.add(new InventoryItem().id(INVENTORY_ITEM_GOLD_ID).razarion(100));
         return inventoryItems;
     }
 

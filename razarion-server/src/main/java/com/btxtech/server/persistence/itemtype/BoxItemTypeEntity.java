@@ -1,8 +1,8 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.server.persistence.inventory.InventoryPersistence;
+import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
+import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
@@ -24,6 +24,8 @@ import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
+
 /**
  * Created by Beat
  * 04.10.2016.
@@ -35,9 +37,6 @@ public class BoxItemTypeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String internalName;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ColladaEntity shape3DId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity thumbnail;
@@ -53,20 +52,24 @@ public class BoxItemTypeEntity {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     List<BoxItemTypePossibilityEntity> boxItemTypePossibilities;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity;
 
     public Integer getId() {
         return id;
     }
 
     public BoxItemType toBoxItemType() {
-        BoxItemType boxItemType = new BoxItemType();
-        boxItemType.setRadius(radius).setTtl(ttl).setFixVerticalNorm(fixVerticalNorm).setTerrainType(terrainType).id(id).internalName(internalName);
-        if (shape3DId != null) {
-            boxItemType.setShape3DId(shape3DId.getId());
-        }
-        if (thumbnail != null) {
-            boxItemType.setThumbnail(thumbnail.getId());
-        }
+        BoxItemType boxItemType = (BoxItemType)new BoxItemType()
+                .radius(radius)
+                .ttl(ttl)
+                .fixVerticalNorm(fixVerticalNorm)
+                .terrainType(terrainType)
+                .id(id)
+                .internalName(internalName)
+                .thumbnail(extractId(thumbnail, ImageLibraryEntity::getId))
+                .threeJsModelPackConfigId(extractId(threeJsModelPackConfigEntity, ThreeJsModelPackConfigEntity::getId));
         if (i18nName != null) {
             boxItemType.setI18nName(i18nName.toI18nString());
         }
@@ -78,12 +81,12 @@ public class BoxItemTypeEntity {
             for (BoxItemTypePossibilityEntity boxItemTypePossibility : this.boxItemTypePossibilities) {
                 boxItemTypePossibilities.add(boxItemTypePossibility.toBoxItemTypePossibility());
             }
-            boxItemType.setBoxItemTypePossibilities(boxItemTypePossibilities);
+            boxItemType.boxItemTypePossibilities(boxItemTypePossibilities);
         }
         return boxItemType;
     }
 
-    public void fromBoxItemType(BoxItemType boxItemType, InventoryPersistence inventoryPersistence) {
+    public void fromBoxItemType(BoxItemType boxItemType, InventoryItemCrudPersistence inventoryPersistence) {
         internalName = boxItemType.getInternalName();
         radius = boxItemType.getRadius();
         fixVerticalNorm = boxItemType.isFixVerticalNorm();
@@ -104,8 +107,8 @@ public class BoxItemTypeEntity {
         }
     }
 
-    public void setShape3DId(ColladaEntity shape3DId) {
-        this.shape3DId = shape3DId;
+    public void setThreeJsModelPackConfigEntity(ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity) {
+        this.threeJsModelPackConfigEntity = threeJsModelPackConfigEntity;
     }
 
     public void setThumbnail(ImageLibraryEntity thumbnail) {

@@ -16,7 +16,7 @@ export class BaseItemTypeComponent {
   readOnly: boolean = false;
   baseItemTypeOptions: { name: string, id: number }[] = [];
 
-  constructor(private editorService: EditorService) {
+  constructor(editorService: EditorService) {
     editorService.readBaseItemTypeObjectNameIds().then(objectNameIds => {
       this.baseItemTypeOptions = [];
       objectNameIds.forEach(objectNameId => {

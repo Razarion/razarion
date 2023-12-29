@@ -13,7 +13,7 @@ import { GwtAngularService } from "../gwtangular/GwtAngularService";
 import { HttpClient } from "@angular/common/http";
 import { MessageService } from "primeng/api";
 import {
-  BotConfig, GroundConfig,
+  BotConfig, BoxRegionConfig, GroundConfig,
   LevelEditorControllerClient,
   ObjectNameId, PlanetConfig,
   ResourceRegionConfig,
@@ -154,6 +154,21 @@ export class EditorService {
     });
   }
 
+  updateBoxRegionConfig(boxRegionConfigs: BoxRegionConfig[]) {
+    return new Promise((resolve) => {
+      this.scaleinerverGameEngineEditorControllerClient.updateBoxRegionConfig(EditorService.SERVER_GAME_ENGINE_ID, boxRegionConfigs).then(serverGameEngineConfig => {
+        resolve(serverGameEngineConfig);
+      }).catch(err => {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Failed updateBoxRegionConfig`,
+          detail: `${JSON.stringify(err)}`,
+          sticky: true
+        });
+      });
+    });
+  }
+  
   readBaseItemTypeObjectNameIds(): Promise<ObjectNameId[]> {
     return this.readObjectNameIds(BASE_ITEM_TYPE_EDITOR_PATH);
   }

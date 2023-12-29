@@ -1,8 +1,8 @@
 package com.btxtech.server.persistence.inventory;
 
+import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
-import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 
 import javax.persistence.CascadeType;
@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -45,18 +47,21 @@ public class InventoryItemEntity {
     }
 
     public InventoryItem toInventoryItem() {
-        InventoryItem inventoryItem = new InventoryItem().setId(id).setInternalName(internalName);
-        if (baseItemType != null) {
-            inventoryItem.setBaseItemTypeId(baseItemType.getId()).setBaseItemTypeCount(baseItemTypeCount).setBaseItemTypeFreeRange(itemFreeRange);
-        }
+        InventoryItem inventoryItem = new InventoryItem()
+                .id(id)
+                .internalName(internalName)
+                .baseItemTypeId(extractId(baseItemType, BaseItemTypeEntity::getId))
+                .baseItemTypeCount(baseItemTypeCount)
+                .baseItemTypeFreeRange(itemFreeRange)
+                .razarion(razarion)
+                .crystalCost(crystalCost);
         if (i18nName != null) {
-            inventoryItem.setI18nName(i18nName.toI18nString());
+            inventoryItem.i18nName(i18nName.toI18nString());
         }
-        inventoryItem.setRazarion(razarion);
+
         if (image != null) {
-            inventoryItem.setImageId(image.getId());
+            inventoryItem.imageId(image.getId());
         }
-        inventoryItem.setCrystalCost(crystalCost);
         return inventoryItem;
     }
 

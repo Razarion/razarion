@@ -16,8 +16,8 @@
         <p-button type="button" label="Planets" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
           (onClick)="openPlanetEditor()"></p-button>
       </div>
-      
-     <p-divider align="left">
+
+      <p-divider align="left">
         <div class="inline-flex align-items-center">
           <i class="pi pi-image"></i>
           <b>&nbsp;Terrain</b>
@@ -39,8 +39,16 @@
         </div>
       </p-divider>
       <div class="mb-2">
-        <p-button type="button" label="Base Items" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+        <p-button type="button" label="Base items" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
           (onClick)="openBaseItemTypeEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Box items" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+          (onClick)="openBoxItemTypeEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Inventory items" icon="pi pi-cog" [style]="{'width':'13em'}"
+          styleClass="p-button-sm" (onClick)="openInventoryItemEditor()"></p-button>
       </div>
 
       <p-divider align="left">
@@ -95,6 +103,10 @@
         <p-button type="button" label="Resource Regions" icon="pi pi-cog" [style]="{'width':'13em'}"
           styleClass="p-button-sm" (onClick)="openResourceRegionEditor()"></p-button>
       </div>
+      <div class="mb-2">
+        <p-button type="button" label="Box Regions" icon="pi pi-cog" [style]="{'width':'13em'}"
+          styleClass="p-button-sm" (onClick)="openBoxRegionEditor()"></p-button>
+      </div>
     </p-panel>
   </div>
 
@@ -125,8 +137,8 @@
           (onClick)="openBackend()"></p-button>
       </div>
       <div class="mb-2">
-        <p-button type="button" label="Base management" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
-          (onClick)="openBaseMgmt()"></p-button>
+        <p-button type="button" label="Base management" icon="pi pi-cog" [style]="{'width':'13em'}"
+          styleClass="p-button-sm" (onClick)="openBaseMgmt()"></p-button>
       </div>
     </p-panel>
     <p-panel header="Experimental" [toggleable]="true" [collapsed]="true">
