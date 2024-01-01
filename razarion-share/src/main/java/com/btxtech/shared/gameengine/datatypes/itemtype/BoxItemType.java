@@ -15,9 +15,11 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import jsinterop.annotations.JsType;
 
 import java.util.List;
 
+@JsType
 public class BoxItemType extends ItemType {
     private Integer ttl;  // seconds
     private double radius;

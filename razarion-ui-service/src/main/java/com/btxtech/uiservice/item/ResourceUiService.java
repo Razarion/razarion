@@ -42,7 +42,7 @@ public class ResourceUiService {
     private final Map<Integer, BabylonResourceItem> babylonResourceItems = new HashMap<>();
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
-    private BabylonResourceItem selectedBabylonBaseItem;
+    private BabylonResourceItem selectedBabylonResourceItem;
     private BabylonResourceItem hoverBabylonResourceItem;
 
     public void clear() {
@@ -187,14 +187,14 @@ public class ResourceUiService {
     }
 
     public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
-        if (selectedBabylonBaseItem != null) {
-            selectedBabylonBaseItem.select(false);
-            selectedBabylonBaseItem = null;
+        if (selectedBabylonResourceItem != null) {
+            selectedBabylonResourceItem.select(false);
+            selectedBabylonResourceItem = null;
         }
         if (selectionEvent.getType() == SelectionEvent.Type.OTHER && selectionEvent.getSelectedOther() instanceof SyncResourceItemSimpleDto) {
-            selectedBabylonBaseItem = babylonResourceItems.get(selectionEvent.getSelectedOther().getId());
-            if (selectedBabylonBaseItem != null) {
-                selectedBabylonBaseItem.select(true);
+            selectedBabylonResourceItem = babylonResourceItems.get(selectionEvent.getSelectedOther().getId());
+            if (selectedBabylonResourceItem != null) {
+                selectedBabylonResourceItem.select(true);
             }
         }
     }

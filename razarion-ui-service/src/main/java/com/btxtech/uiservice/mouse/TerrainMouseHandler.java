@@ -99,11 +99,13 @@ public class TerrainMouseHandler {
                 if (syncBoxItem != null) {
                     cursorService.handleMouseOverBoxItem();
                     baseItemUiService.onHover(syncBoxItem);
+                    boxUiService.onHover(syncBoxItem);
                     return;
                 }
                 cursorService.handleMouseOverTerrain(terrainPosition);
                 baseItemUiService.onHover(null);
                 resourceUiService.onHover(null);
+                boxUiService.onHover(null);
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

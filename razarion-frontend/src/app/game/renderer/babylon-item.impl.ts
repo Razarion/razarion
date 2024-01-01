@@ -1,16 +1,17 @@
-import {GwtHelper} from "../../gwtangular/GwtHelper";
-import {Mesh, MeshBuilder, Tools, TransformNode} from "@babylonjs/core";
+import { GwtHelper } from "../../gwtangular/GwtHelper";
+import { Mesh, MeshBuilder, Tools, TransformNode } from "@babylonjs/core";
 import {
   BabylonItem,
   BaseItemType,
+  BoxItemType,
   Diplomacy,
   ItemType,
   ResourceItemType,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
-import {SimpleMaterial} from "@babylonjs/materials";
-import {BabylonModelService} from "./babylon-model.service";
-import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import { SimpleMaterial } from "@babylonjs/materials";
+import { BabylonModelService } from "./babylon-model.service";
+import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
@@ -34,7 +35,7 @@ export class BabylonItemImpl implements BabylonItem {
         throw new Error("Diplomacy can not be null");
       }
     } else {
-      this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, {diameter: this.getRadius() * 2});
+      this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, { diameter: this.getRadius() * 2 });
       console.warn(`No MeshContainerId or ThreeJsModelPackConfigId for ${itemType.getInternalName()} '${itemType.getId()}'`)
     }
     this.container.parent = parent;
@@ -115,7 +116,7 @@ export class BabylonItemImpl implements BabylonItem {
   private updateMarkedDisk(): void {
     if (this.isSelectOrHove()) {
       if (!this.markerDisc) {
-        this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", {radius: this.getRadius() + 0.1});
+        this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", { radius: this.getRadius() + 0.1 });
         let material = this.rendererService.itemMarkerMaterialCache.get(this.diplomacy);
         if (!material) {
           material = new SimpleMaterial(`Base Item Marker ${this.diplomacy}`, this.rendererService.getScene());
@@ -142,11 +143,12 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   private getRadius(): number {
-    let radius;
     if ((<BaseItemType>this.itemType).getPhysicalAreaConfig !== undefined) {
       return (<BaseItemType>this.itemType).getPhysicalAreaConfig().getRadius();
     } else if ((<ResourceItemType>this.itemType).getRadius !== undefined) {
       return (<ResourceItemType>this.itemType).getRadius();
+    } else if ((<BoxItemType>this.itemType).getRadius !== undefined) {
+      return (<BoxItemType>this.itemType).getRadius();
     } else {
       console.warn(`No radius for ${this.itemType.getInternalName()} '${this.itemType.getId()}'`)
       return 3;

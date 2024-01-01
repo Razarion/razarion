@@ -5,12 +5,14 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
+import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.renderer.BabylonBoxItem;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +40,8 @@ public class BoxUiService {
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
     private final Map<Integer, BabylonBoxItem> babylonBoxItems = new HashMap<>();
+    private BabylonBoxItem selectedBabylonBoxItem;
+    private BabylonBoxItem hoverBabylonBoxItem;
 
     public void clear() {
         boxes.clear();
@@ -180,6 +184,37 @@ public class BoxUiService {
                 }
             });
             unused.forEach(id -> babylonBoxItems.remove(id).dispose());
+        }
+    }
+
+    public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+        if (selectedBabylonBoxItem != null) {
+            selectedBabylonBoxItem.select(false);
+            selectedBabylonBoxItem = null;
+        }
+        if (selectionEvent.getType() == SelectionEvent.Type.OTHER && selectionEvent.getSelectedOther() instanceof SyncBoxItemSimpleDto) {
+            selectedBabylonBoxItem = babylonBoxItems.get(selectionEvent.getSelectedOther().getId());
+            if (selectedBabylonBoxItem != null) {
+                selectedBabylonBoxItem.select(true);
+            }
+        }
+    }
+
+    public void onHover(SyncBoxItemSimpleDto syncItem) {
+        if (hoverBabylonBoxItem == null && syncItem != null) {
+            hoverBabylonBoxItem = babylonBoxItems.get(syncItem.getId());
+            if (hoverBabylonBoxItem != null) {
+                hoverBabylonBoxItem.hover(true);
+            }
+        } else if (hoverBabylonBoxItem != null && syncItem == null) {
+            hoverBabylonBoxItem.hover(false);
+            hoverBabylonBoxItem = null;
+        } else if (hoverBabylonBoxItem != null && hoverBabylonBoxItem.getId() != syncItem.getId()) {
+            hoverBabylonBoxItem.hover(false);
+            hoverBabylonBoxItem = babylonBoxItems.get(syncItem.getId());
+            if (hoverBabylonBoxItem != null) {
+                hoverBabylonBoxItem.hover(true);
+            }
         }
     }
 

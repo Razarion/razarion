@@ -580,6 +580,9 @@ export class GameComponent implements OnInit, ScreenCover {
               gameComponent.cursor = "url(\"/assets/cursors/collect-no.png\"), auto"
             }
             break;
+          case CursorType.PICKUP:
+            gameComponent.cursor = "url(\"/assets/cursors/pick.png\"), auto"
+            break;
           default:
             gameComponent.cursor = "default"
             console.warn(`Unknown cursorType ${cursorType}`)

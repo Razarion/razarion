@@ -146,6 +146,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         return Color3.Yellow()
       case Diplomacy.RESOURCE:
         return Color3.Blue()
+      case Diplomacy.BOX:
+        return Color3.Purple()
     }
     return Color3.Gray()
   }
