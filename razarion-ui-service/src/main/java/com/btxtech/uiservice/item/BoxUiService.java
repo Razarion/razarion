@@ -1,25 +1,23 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.renderer.BabylonBoxItem;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.renderer.ViewService;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -27,28 +25,22 @@ import java.util.logging.Logger;
  * 06.01.2017.
  */
 @ApplicationScoped
-public class BoxUiService implements ViewService.ViewFieldListener {
-    private Logger logger = Logger.getLogger(BoxUiService.class.getName());
+public class BoxUiService {
+    private final Logger logger = Logger.getLogger(BoxUiService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
-    @Inject
-    private ViewService viewService;
+    private BabylonRendererService babylonRendererService;
     private final Map<Integer, SyncBoxItemSimpleDto> boxes = new HashMap<>();
-    private final MapList<BoxItemType, ModelMatrices> boxModelMatrices = new MapList<>();
     private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
-
-    @PostConstruct
-    public void init() {
-        viewService.addViewFieldListeners(this);
-    }
+    private ViewField viewField;
+    private Rectangle2D viewFieldAabb;
+    private final Map<Integer, BabylonBoxItem> babylonBoxItems = new HashMap<>();
 
     public void clear() {
         boxes.clear();
-        boxModelMatrices.clear();
         syncStaticItemSetPositionMonitor = null;
     }
 
@@ -61,7 +53,7 @@ public class BoxUiService implements ViewService.ViewFieldListener {
         if (syncStaticItemSetPositionMonitor != null) {
             syncStaticItemSetPositionMonitor.add(syncBoxItem);
         }
-        setupModelMatrices();
+        updateBabylonBoxItems();
     }
 
     public void removeBox(int id) {
@@ -76,7 +68,7 @@ public class BoxUiService implements ViewService.ViewFieldListener {
         if (syncStaticItemSetPositionMonitor != null) {
             syncStaticItemSetPositionMonitor.remove(box);
         }
-        setupModelMatrices();
+        updateBabylonBoxItems();
     }
 
     public SyncBoxItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
@@ -126,28 +118,6 @@ public class BoxUiService implements ViewService.ViewFieldListener {
         }
     }
 
-    public List<ModelMatrices> provideModelMatrices(BoxItemType boxItemType) {
-        synchronized (boxModelMatrices) {
-            return boxModelMatrices.get(boxItemType);
-        }
-    }
-
-    private void setupModelMatrices() {
-        synchronized (boxModelMatrices) {
-            boxModelMatrices.clear();
-            Rectangle2D aabb = viewService.getCurrentAabb();
-            if (aabb == null) {
-                return;
-            }
-            for (SyncBoxItemSimpleDto boxItemSimpleDto : boxes.values()) {
-                if (aabb.contains(boxItemSimpleDto.getPosition2d())) {
-                    BoxItemType boxItemType = itemTypeService.getBoxItemType(boxItemSimpleDto.getItemTypeId());
-                    boxModelMatrices.put(boxItemType, new ModelMatrices(boxItemSimpleDto.getModel(), nativeMatrixFactory));
-                }
-            }
-        }
-    }
-
     public SyncItemMonitor monitorFirstBoxItem(int boxItemTypeId) {
         SyncBoxItemSimpleDto boxItemSimpleDto = findFirstBoxItem(boxItemTypeId);
         if (boxItemSimpleDto != null) {
@@ -166,13 +136,14 @@ public class BoxUiService implements ViewService.ViewFieldListener {
         if (syncStaticItemSetPositionMonitor != null) {
             throw new IllegalStateException("BoxUiService.createSyncItemSetPositionMonitor() syncStaticItemSetPositionMonitor != null");
         }
-        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(boxes.values(), viewService.getCurrentViewField(), () -> syncStaticItemSetPositionMonitor = null);
+        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(boxes.values(), viewField, () -> syncStaticItemSetPositionMonitor = null);
         return syncStaticItemSetPositionMonitor;
     }
 
-    @Override
-    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
-        setupModelMatrices();
+    public void onViewChanged(ViewField viewField, Rectangle2D viewFieldAabb) {
+        this.viewField = viewField;
+        this.viewFieldAabb = viewFieldAabb;
+        updateBabylonBoxItems();
         if (syncStaticItemSetPositionMonitor != null) {
             syncStaticItemSetPositionMonitor.onViewChanged(viewField);
         }
@@ -180,6 +151,36 @@ public class BoxUiService implements ViewService.ViewFieldListener {
 
     public SyncBoxItemSimpleDto getSyncBoxItemSimpleDto4IdPlayback(int syncBoxId) {
         return boxes.get(syncBoxId);
+    }
+
+    private void updateBabylonBoxItems() {
+        if (viewFieldAabb == null) {
+            return;
+        }
+        synchronized (boxes) {
+            Set<Integer> unused = new HashSet<>(babylonBoxItems.keySet());
+            boxes.forEach((id, syncBoxItemSimpleDto) -> {
+                BoxItemType boxItemType = itemTypeService.getBoxItemType(syncBoxItemSimpleDto.getItemTypeId());
+                if (viewFieldAabb.adjoinsCircleExclusive(syncBoxItemSimpleDto.getPosition2d(), boxItemType.getRadius())) {
+                    BabylonBoxItem visibleBox = babylonBoxItems.get(id);
+                    if (visibleBox == null) {
+                        visibleBox = babylonRendererService.createBabylonBoxItem(id, boxItemType);
+                        visibleBox.setPosition(syncBoxItemSimpleDto.getPosition3d());
+                        visibleBox.updatePosition();
+                        babylonBoxItems.put(id, visibleBox);
+                    } else {
+                        unused.remove(id);
+                    }
+                } else {
+                    BabylonBoxItem visibleBox = babylonBoxItems.remove(id);
+                    if (visibleBox != null) {
+                        visibleBox.dispose();
+                        unused.remove(id);
+                    }
+                }
+            });
+            unused.forEach(id -> babylonBoxItems.remove(id).dispose());
+        }
     }
 
 }

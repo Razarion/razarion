@@ -36,10 +36,10 @@ public class ResourceUiService {
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private BabylonRendererService threeJsRendererService;
+    private BabylonRendererService babylonRendererService;
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
     private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
-    private final Map<Integer, BabylonResourceItem> babylonResourceItem = new HashMap<>();
+    private final Map<Integer, BabylonResourceItem> babylonResourceItems = new HashMap<>();
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
     private BabylonResourceItem selectedBabylonBaseItem;
@@ -123,28 +123,28 @@ public class ResourceUiService {
             return;
         }
         synchronized (resources) {
-            Set<Integer> unused = new HashSet<>(babylonResourceItem.keySet());
+            Set<Integer> unused = new HashSet<>(babylonResourceItems.keySet());
             resources.forEach((id, syncResourceItemSimpleDto) -> {
                 ResourceItemType resourceItemType = itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId());
                 if (viewFieldAabb.adjoinsCircleExclusive(syncResourceItemSimpleDto.getPosition2d(), resourceItemType.getRadius())) {
-                    BabylonResourceItem visibleResource = babylonResourceItem.get(id);
+                    BabylonResourceItem visibleResource = babylonResourceItems.get(id);
                     if (visibleResource == null) {
-                        visibleResource = threeJsRendererService.createBabylonResourceItem(id, resourceItemType);
+                        visibleResource = babylonRendererService.createBabylonResourceItem(id, resourceItemType);
                         visibleResource.setPosition(syncResourceItemSimpleDto.getPosition3d());
                         visibleResource.updatePosition();
-                        babylonResourceItem.put(id, visibleResource);
+                        babylonResourceItems.put(id, visibleResource);
                     } else {
                         unused.remove(id);
                     }
                 } else {
-                    BabylonResourceItem visibleResource = babylonResourceItem.remove(id);
+                    BabylonResourceItem visibleResource = babylonResourceItems.remove(id);
                     if (visibleResource != null) {
                         visibleResource.dispose();
                         unused.remove(id);
                     }
                 }
             });
-            unused.forEach(id -> babylonResourceItem.remove(id).dispose());
+            unused.forEach(id -> babylonResourceItems.remove(id).dispose());
         }
     }
 
@@ -192,7 +192,7 @@ public class ResourceUiService {
             selectedBabylonBaseItem = null;
         }
         if (selectionEvent.getType() == SelectionEvent.Type.OTHER && selectionEvent.getSelectedOther() instanceof SyncResourceItemSimpleDto) {
-            selectedBabylonBaseItem = babylonResourceItem.get(selectionEvent.getSelectedOther().getId());
+            selectedBabylonBaseItem = babylonResourceItems.get(selectionEvent.getSelectedOther().getId());
             if (selectedBabylonBaseItem != null) {
                 selectedBabylonBaseItem.select(true);
             }
@@ -201,7 +201,7 @@ public class ResourceUiService {
 
     public void onHover(SyncResourceItemSimpleDto syncItem) {
         if (hoverBabylonResourceItem == null && syncItem != null) {
-            hoverBabylonResourceItem = babylonResourceItem.get(syncItem.getId());
+            hoverBabylonResourceItem = babylonResourceItems.get(syncItem.getId());
             if (hoverBabylonResourceItem != null) {
                 hoverBabylonResourceItem.hover(true);
             }
@@ -210,7 +210,7 @@ public class ResourceUiService {
             hoverBabylonResourceItem = null;
         } else if (hoverBabylonResourceItem != null && hoverBabylonResourceItem.getId() != syncItem.getId()) {
             hoverBabylonResourceItem.hover(false);
-            hoverBabylonResourceItem = babylonResourceItem.get(syncItem.getId());
+            hoverBabylonResourceItem = babylonResourceItems.get(syncItem.getId());
             if (hoverBabylonResourceItem != null) {
                 hoverBabylonResourceItem.hover(true);
             }

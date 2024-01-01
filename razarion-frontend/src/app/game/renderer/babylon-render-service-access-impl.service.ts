@@ -14,7 +14,9 @@ import {
   TerrainSlopePosition,
   TerrainTile,
   BabylonTerrainTile,
-  DecimalPosition
+  DecimalPosition,
+  BabylonBoxItem,
+  BoxItemType
 } from "src/app/gwtangular/GwtAngularFacade";
 import { BabylonTerrainTileImpl } from "./babylon-terrain-tile.impl";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
@@ -48,6 +50,7 @@ import { BabylonBaseItemImpl } from "./babylon-base-item.impl";
 import { BabylonResourceItemImpl } from "./babylon-resource-item.impl";
 import { SelectionFrame } from "./selection-frame";
 import { GwtInstance } from "src/app/gwtangular/GwtInstance";
+import { BabylonBoxItemImpl } from "./babylon-box-item.impl";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -123,6 +126,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   public readonly itemMarkerMaterialCache: Map<Diplomacy, SimpleMaterial> = new Map<Diplomacy, SimpleMaterial>();
   public baseItemContainer!: TransformNode;
   public resourceItemContainer!: TransformNode;
+  public boxItemContainer!: TransformNode;
   public projectileMaterial!: SimpleMaterial;
   private selectionFrame!: SelectionFrame;
   private viewFieldListeners: ViewFieldListener[] = [];
@@ -286,8 +290,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
     this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
     this.babylonModelService.setScene(this.scene);
-    this.baseItemContainer = new TransformNode("Base Items");
-    this.resourceItemContainer = new TransformNode("Resource Items");
+    this.baseItemContainer = new TransformNode("Base items");
+    this.resourceItemContainer = new TransformNode("Resource items");
+    this.boxItemContainer = new TransformNode("Box items");
     this.projectileMaterial = new SimpleMaterial("Projectile", this.scene);
     this.projectileMaterial.diffuseColor = new Color3(0, 0, 0);
   }
@@ -442,6 +447,18 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     } catch (error) {
       console.error(error);
       return BabylonResourceItemImpl.createDummy(id);
+    }
+  }
+
+  createBabylonBoxItem(id: number, boxItemType: BoxItemType): BabylonBoxItem {
+    try {
+      return new BabylonBoxItemImpl(id,
+        boxItemType,
+        this,
+        this.babylonModelService);
+    } catch (error) {
+      console.error(error);
+      return BabylonBoxItemImpl.createDummy(id);
     }
   }
 

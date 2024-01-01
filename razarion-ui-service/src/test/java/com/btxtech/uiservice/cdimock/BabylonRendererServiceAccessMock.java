@@ -3,11 +3,13 @@ package com.btxtech.uiservice.cdimock;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
+import com.btxtech.uiservice.renderer.BabylonBoxItem;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
@@ -38,6 +40,11 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
 
     @Override
     public BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType baseItemType) {
+        throw new UnsupportedOperationException("...TODO...");
+    }
+
+    @Override
+    public BabylonBoxItem createBabylonBoxItem(int id, BoxItemType boxItemType) {
         throw new UnsupportedOperationException("...TODO...");
     }
 

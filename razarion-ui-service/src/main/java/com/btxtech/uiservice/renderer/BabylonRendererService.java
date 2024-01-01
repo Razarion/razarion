@@ -3,6 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.Diplomacy;
@@ -27,8 +28,12 @@ public class BabylonRendererService {
         return babylonRenderServiceAccess.createBabylonBaseItem(id, baseItemType, diplomacy);
     }
 
-    public BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType baseItemType) {
-        return babylonRenderServiceAccess.createBabylonResourceItem(id, baseItemType);
+    public BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType resourceItemType) {
+        return babylonRenderServiceAccess.createBabylonResourceItem(id, resourceItemType);
+    }
+
+    public BabylonBoxItem createBabylonBoxItem(int id, BoxItemType boxItemType) {
+        return babylonRenderServiceAccess.createBabylonBoxItem(id, boxItemType);
     }
 
     public void executeViewFieldConfig(ViewFieldConfig viewFieldConfig, Optional<Runnable> completionCallback) {

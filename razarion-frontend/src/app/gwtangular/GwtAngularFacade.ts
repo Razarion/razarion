@@ -356,6 +356,10 @@ export interface ResourceItemType extends ItemType {
   getRadius(): number;
 }
 
+export interface BoxItemType extends ItemType {
+  getRadius(): number;
+}
+
 export interface PhysicalAreaConfig {
   getRadius(): number;
 }
@@ -433,6 +437,8 @@ export interface BabylonRenderServiceAccess {
 
   createBabylonResourceItem(id: number, resourceItemType: ResourceItemType): BabylonResourceItem;
 
+  createBabylonBoxItem(id: number, boxItemType: BoxItemType): BabylonBoxItem;
+
   setViewFieldCenter(x: number, y: number): void;
 
   runRenderer(meshContainers: MeshContainer[]): void;
@@ -454,7 +460,8 @@ export enum Diplomacy {
   OWN = "OWN",
   FRIEND = "FRIEND",
   ENEMY = "ENEMY",
-  RESOURCE = "RESOURCE"
+  RESOURCE = "RESOURCE",
+  BOX = "BOX",
 }
 
 export interface GroundTerrainTile {
@@ -541,6 +548,10 @@ export interface BabylonBaseItem extends BabylonItem {
 }
 
 export interface BabylonResourceItem extends BabylonItem {
+
+}
+
+export interface BabylonBoxItem extends BabylonItem {
 
 }
 

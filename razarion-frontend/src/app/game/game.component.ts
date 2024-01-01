@@ -32,7 +32,6 @@ import {
 import { GwtInstance } from "../gwtangular/GwtInstance";
 import { GwtHelper } from "../gwtangular/GwtHelper";
 import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
-import { BaseMgmtComponent } from '../editor/base-mgmt/base-mgmt.component';
 import { ModelDialogPresenterImpl } from './model-dialog-presenter.impl';
 import { GeneratedCrudContainerComponent } from '../editor/crud-editors/crud-container/generated-crud-container.component';
 import { BoxItemTypeEditorComponent } from '../editor/crud-editors/box-item-type-editor/box-item-type-editor.component';

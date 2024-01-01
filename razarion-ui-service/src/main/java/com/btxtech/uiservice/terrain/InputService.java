@@ -3,6 +3,7 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.renderer.ViewField;
@@ -21,6 +22,8 @@ public class InputService {
     @Inject
     private ResourceUiService resourceUiService;
     @Inject
+    private BoxUiService boxUiService;
+    @Inject
     private TerrainMouseHandler terrainMouseHandler;
 
     @SuppressWarnings("unused") // Called by Angular
@@ -34,6 +37,7 @@ public class InputService {
         terrainUiService.onViewChanged(viewField, viewFieldAabb);
         baseItemUiService.onViewChanged(viewField, viewFieldAabb);
         resourceUiService.onViewChanged(viewField, viewFieldAabb);
+        boxUiService.onViewChanged(viewField, viewFieldAabb);
     }
 
     @SuppressWarnings("unused") // Called by Babylonjs
