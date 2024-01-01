@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes;
 
+import jsinterop.annotations.JsType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,8 +9,9 @@ import java.util.List;
  * Created by Beat
  * 26.10.2016.
  */
+@JsType
 public class BoxContent {
-    private List<InventoryItem> inventoryItems = new ArrayList<>();
+    private final List<InventoryItem> inventoryItems = new ArrayList<>();
     private int crystals;
 
     public void addInventoryItem(InventoryItem inventoryItem) {

@@ -1,11 +1,13 @@
 import { NgZone } from "@angular/core";
-import { ModelDialogPresenter } from "../gwtangular/GwtAngularFacade";
+import { BoxContent, ModelDialogPresenter } from "../gwtangular/GwtAngularFacade";
+import { GwtAngularService } from "../gwtangular/GwtAngularService";
 
 export class ModelDialogPresenterImpl implements ModelDialogPresenter {
-    message?: string;
-    private messageQueue: string[] = [];
+    title?: string;
+    messageLines?: string[] = [];
+    private queue: { title: string, messageLines?: string[] }[] = [];
 
-    constructor(private zone: NgZone) {
+    constructor(private zone: NgZone, private gwtAngularService: GwtAngularService) {
     }
 
     showQuestPassed(): void {
@@ -26,20 +28,45 @@ export class ModelDialogPresenterImpl implements ModelDialogPresenter {
         });
     }
 
-    private post(message: string): void {
-        if (this.message) {
-            this.messageQueue.push(message);
+    showBoxPicked(boxContent: BoxContent): void {
+        this.zone.run(() => {
+            let messgaeLine: string[] = [];
+            if (boxContent.getCrystals()) {
+                messgaeLine.push("Crystals: " + boxContent.getCrystals());
+            }
+            if (boxContent.getInventoryItems() && boxContent.getInventoryItems().length > 0) {
+                boxContent.getInventoryItems().map(inventoryItem => {
+                    let message = `${inventoryItem.getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language)}`
+                    if (inventoryItem.getBaseItemTypeId() || inventoryItem.getBaseItemTypeId() === 0) {
+                        message += `: ${inventoryItem.getBaseItemTypeCount()} ${this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemType(inventoryItem.getBaseItemTypeId()!).getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language)}`;
+                    }
+                    if (inventoryItem.getRazarion()) {
+                        message += `:  ${inventoryItem.getRazarion()} Razarion`;
+                    }
+                    messgaeLine.push(message);
+                });
+            }
+            this.post("Box picked", messgaeLine);
+        });
+    }
+
+    private post(title: string, messageLines?: string[]): void {
+        if (this.title) {
+            this.queue.push({ title: title, messageLines: messageLines });
         } else {
-            this.displayMessage(message);
+            this.displayMessage(title, messageLines);
         }
     }
 
-    private displayMessage(message: string): void {
-        this.message = message;
+    private displayMessage(title: string, messageLines?: string[]): void {
+        this.title = title;
+        this.messageLines = messageLines;
         setTimeout(() => {
-            this.message = undefined;
-            if (this.messageQueue.length > 0) {
-                this.displayMessage(this.messageQueue.shift()!);
+            this.title = undefined;
+            this.messageLines = undefined;
+            if (this.queue.length > 0) {
+                let queueEntry = this.queue.shift()!;
+                this.displayMessage(queueEntry.title, queueEntry.messageLines);
             }
         }, 2000);
     }

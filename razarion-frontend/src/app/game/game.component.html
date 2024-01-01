@@ -35,8 +35,15 @@
     [gameComponent]="getGameComponent()"></editor-dialog>
 </p-dialog>
 
-<p-dialog [(visible)]="modelDialogPresenter.message" [showHeader]="false"
+<p-dialog [(visible)]="modelDialogPresenter.title" [showHeader]="false"
   [style]="{'box-shadow': 'none', 'border': 'none'}"
-  [contentStyle]="{'background-color': 'transparent', 'font-size': '17em', 'font-weight': 'bold'}" [resizable]="false">
-  {{modelDialogPresenter.message}}
+  [contentStyle]="{'background-color': 'transparent'}" [resizable]="false">
+  <div [style]="{'font-size': '17em', 'font-weight': 'bold'}">
+    {{modelDialogPresenter.title}}
+  </div>
+  <div *ngIf="modelDialogPresenter.messageLines" [style]="{'font-size': '3em', 'font-weight': 'bold'}">
+    <div *ngFor="let messageLine of modelDialogPresenter.messageLines">
+      {{messageLine}} <br>
+    </div>
+  </div>
 </p-dialog>

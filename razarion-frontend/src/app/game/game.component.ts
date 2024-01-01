@@ -13,6 +13,7 @@ import { BabylonModelService } from './renderer/babylon-model.service';
 import {
   AngularCursorService,
   BaseItemType,
+  BoxContent,
   BuilderType,
   ComparisonConfig,
   ConditionConfig,
@@ -21,6 +22,7 @@ import {
   Diplomacy,
   HarvesterType,
   I18nString,
+  InventoryItem,
   OwnItemCockpit,
   PhysicalAreaConfig,
   QuestConfig,
@@ -64,7 +66,7 @@ export class GameComponent implements OnInit, ScreenCover {
     private threeJsModelService: BabylonModelService,
     private gameMockService: GameMockService,
     private zone: NgZone) {
-    this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone);
+    this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, gwtAngularService);
   }
 
   ngOnInit(): void {
@@ -78,6 +80,7 @@ export class GameComponent implements OnInit, ScreenCover {
     if (environment.gwtMock) {
       let runGwtMock = false;
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
+      this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
@@ -88,7 +91,6 @@ export class GameComponent implements OnInit, ScreenCover {
           this.gameMockService.loadMockAssetConfig().then(() => {
             this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
               this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
-              this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
               this.gameMockService.mockTerrainTile(this.threeJsRendererService);
               this.mainCockpitComponent.show(true);
               this.mainCockpitComponent.showRadar(RadarState.WORKING);
@@ -375,6 +377,63 @@ export class GameComponent implements OnInit, ScreenCover {
       // setTimeout(() => {
       //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
       // }, 120);
+      setTimeout(() => {
+        let boxContent = new class implements BoxContent {
+          getInventoryItems(): InventoryItem[] {
+            return [
+              new class implements InventoryItem {
+                getBaseItemTypeId(): number | null {
+                  return 1;
+                }
+
+                getBaseItemTypeCount(): number {
+                  return 2;
+                }
+
+                getI18nName(): I18nString {
+                  return new class implements I18nString {
+                    getString(language: string): string {
+                      return "InventoryItem";
+                    }
+                  };
+                }
+
+                getRazarion(): number | null {
+                  return null;
+                }
+
+              },
+              new class implements InventoryItem {
+                getBaseItemTypeId(): number | null {
+                  return null;
+                }
+
+                getBaseItemTypeCount(): number {
+                  return 5;
+                }
+
+                getI18nName(): I18nString {
+                  return new class implements I18nString {
+                    getString(language: string): string {
+                      return "InventoryItem2";
+                    }
+                  };
+                }
+
+                getRazarion(): number | null {
+                  return 6;
+                }
+
+              }
+            ];
+          }
+          getCrystals(): number {
+            return 30;
+          }
+        };
+        this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBoxPicked(boxContent);
+      }, 100);
+
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;
     this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;

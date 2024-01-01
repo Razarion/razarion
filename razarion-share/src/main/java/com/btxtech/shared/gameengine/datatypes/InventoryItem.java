@@ -6,11 +6,13 @@ import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.system.Nullable;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * 25.10.2016.
  */
+@JsType
 public class InventoryItem implements Config {
     private int id;
     private I18nString i18nName;

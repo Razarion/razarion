@@ -691,7 +691,7 @@ export interface OtherItemCockpit {
   friend: boolean;
 }
 
-// ---------- Editor ----------
+// ---------- Dialog ----------
 
 export interface ModelDialogPresenter {
   showLevelUp(): void;
@@ -699,6 +699,24 @@ export interface ModelDialogPresenter {
   showQuestPassed(): void;
 
   showBaseLost(): void;
+
+  showBoxPicked(boxContent: BoxContent): void;
+}
+
+export interface BoxContent {
+  getInventoryItems(): InventoryItem[];
+
+  getCrystals(): number;
+}
+
+export interface InventoryItem {
+  getI18nName(): I18nString;
+
+  getRazarion(): number | null;
+
+  getBaseItemTypeId(): number | null;
+
+  getBaseItemTypeCount(): number;
 }
 
 
