@@ -12,8 +12,8 @@ import javax.ws.rs.core.MediaType;
  * Created by Beat
  * on 17.09.2017.
  */
-@Path(CommonUrl.INVENTORY_PROVIDER_PATH)
-public interface InventoryProvider {
+@Path(CommonUrl.INVENTORY_CONTROLLER_PATH)
+public interface InventoryController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("loadInventory")

@@ -30,14 +30,13 @@
   <quest-cockpit #questCockpitContainer></quest-cockpit>
 </p-sidebar>
 
-<p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog" (onShow)="editorDialogComponent.onShow()">
-  <editor-dialog #editorDialogComponent [mainCockpitComponent]="mainCockpit"
-    [gameComponent]="getGameComponent()"></editor-dialog>
+<p-dialog header="Inventory" [(visible)]="showInventory"  [style]="{width: '70vw'}">
+  <inventory *ngIf="showInventory" style="width: 100em;"></inventory>
 </p-dialog>
 
 <p-dialog [(visible)]="modelDialogPresenter.title" [showHeader]="false"
-  [style]="{'box-shadow': 'none', 'border': 'none'}"
-  [contentStyle]="{'background-color': 'transparent'}" [resizable]="false">
+  [style]="{'box-shadow': 'none', 'border': 'none'}" [contentStyle]="{'background-color': 'transparent'}"
+  [resizable]="false">
   <div [style]="{'font-size': '17em', 'font-weight': 'bold'}">
     {{modelDialogPresenter.title}}
   </div>
@@ -46,4 +45,9 @@
       {{messageLine}} <br>
     </div>
   </div>
+</p-dialog>
+
+<p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog" (onShow)="editorDialogComponent.onShow()">
+  <editor-dialog #editorDialogComponent [mainCockpitComponent]="mainCockpit"
+    [gameComponent]="getGameComponent()"></editor-dialog>
 </p-dialog>

@@ -71,7 +71,7 @@ public class CommonUrl {
     public static final String FB_CLICK_TRACKING_TAGS_RECEIVER = "clicktrackerreceiver";
     public static final String SERVER_GAME_ENGINE_MGMT_PATH = "servergameenginemgmt";
     public static final String COMMON_EDITOR_PROVIDER_PATH = "commoneditorprovider";
-    public static final String INVENTORY_PROVIDER_PATH = "inventoryprovider";
+    public static final String INVENTORY_CONTROLLER_PATH = "inventory-controller";
     public static final String UNLOCK_PROVIDER_PATH = "unlockprovider";
     public static final String USER_SERVICE_PROVIDER_PATH = "userserviceprovider";
     public static final String FRONTEND_PATH = "frontend";

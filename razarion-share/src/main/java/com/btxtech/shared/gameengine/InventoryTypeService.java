@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine;
 
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import jsinterop.annotations.JsType;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -14,6 +15,7 @@ import java.util.List;
  * 25.10.2016.
  */
 @ApplicationScoped
+@JsType
 public class InventoryTypeService {
     private final HashMap<Integer, InventoryItem> inventoryItems = new HashMap<>();
 

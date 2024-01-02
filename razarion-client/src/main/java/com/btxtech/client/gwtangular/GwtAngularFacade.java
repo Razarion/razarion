@@ -1,6 +1,7 @@
 package com.btxtech.client.gwtangular;
 
 import com.btxtech.client.editor.EditorFrontendProvider;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.cockpit.MainCockpit;
@@ -9,6 +10,7 @@ import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitFrontend;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModelDialogPresenter;
+import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerPresenter;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
@@ -40,6 +42,8 @@ public abstract class GwtAngularFacade {
     public ThreeJsModelPackService threeJsModelPackService; // Initialized by GWT
     public BaseItemUiService baseItemUiService ; // Initialized by GWT
     public ModelDialogPresenter modelDialogPresenter; // Initialized by Angular
+    public InventoryTypeService inventoryTypeService; // Initialized by GWT
+    public InventoryUiService inventoryUiService; // Initialized by GWT
 
 
     public abstract void onCrash();

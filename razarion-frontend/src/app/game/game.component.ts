@@ -58,6 +58,7 @@ export class GameComponent implements OnInit, ScreenCover {
   fadeOutCover: boolean = false;
   removeCover: boolean = false;
   modelDialogPresenter: ModelDialogPresenterImpl;
+  showInventory = false;
 
   constructor(private frontendService: FrontendService,
     private router: Router,
@@ -81,6 +82,7 @@ export class GameComponent implements OnInit, ScreenCover {
       let runGwtMock = false;
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
+      this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
@@ -364,7 +366,8 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.displayLevel(1)
         this.mainCockpitComponent.displayEnergy(2, 10);
         // this.addEditorModel(new EditorModel("???", BaseMgmtComponent));
-        this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, BoxItemTypeEditorComponent));
+        // this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, BoxItemTypeEditorComponent));
+        this.showInventory = true;
         this.fadeOutLoadingCover();
         this.removeLoadingCover();
       }
@@ -377,62 +380,62 @@ export class GameComponent implements OnInit, ScreenCover {
       // setTimeout(() => {
       //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
       // }, 120);
-      setTimeout(() => {
-        let boxContent = new class implements BoxContent {
-          getInventoryItems(): InventoryItem[] {
-            return [
-              new class implements InventoryItem {
-                getBaseItemTypeId(): number | null {
-                  return 1;
-                }
-
-                getBaseItemTypeCount(): number {
-                  return 2;
-                }
-
-                getI18nName(): I18nString {
-                  return new class implements I18nString {
-                    getString(language: string): string {
-                      return "InventoryItem";
-                    }
-                  };
-                }
-
-                getRazarion(): number | null {
-                  return null;
-                }
-
-              },
-              new class implements InventoryItem {
-                getBaseItemTypeId(): number | null {
-                  return null;
-                }
-
-                getBaseItemTypeCount(): number {
-                  return 5;
-                }
-
-                getI18nName(): I18nString {
-                  return new class implements I18nString {
-                    getString(language: string): string {
-                      return "InventoryItem2";
-                    }
-                  };
-                }
-
-                getRazarion(): number | null {
-                  return 6;
-                }
-
-              }
-            ];
-          }
-          getCrystals(): number {
-            return 30;
-          }
-        };
-        this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBoxPicked(boxContent);
-      }, 100);
+      // setTimeout(() => {
+      //   let boxContent = new class implements BoxContent {
+      //     getInventoryItems(): InventoryItem[] {
+      //       return [
+      //         new class implements InventoryItem {
+      //           getBaseItemTypeId(): number | null {
+      //             return 1;
+      //           }
+      //
+      //           getBaseItemTypeCount(): number {
+      //             return 2;
+      //           }
+      //
+      //           getI18nName(): I18nString {
+      //             return new class implements I18nString {
+      //               getString(language: string): string {
+      //                 return "InventoryItem";
+      //               }
+      //             };
+      //           }
+      //
+      //           getRazarion(): number | null {
+      //             return null;
+      //           }
+      //
+      //         },
+      //         new class implements InventoryItem {
+      //           getBaseItemTypeId(): number | null {
+      //             return null;
+      //           }
+      //
+      //           getBaseItemTypeCount(): number {
+      //             return 5;
+      //           }
+      //
+      //           getI18nName(): I18nString {
+      //             return new class implements I18nString {
+      //               getString(language: string): string {
+      //                 return "InventoryItem2";
+      //               }
+      //             };
+      //           }
+      //
+      //           getRazarion(): number | null {
+      //             return 6;
+      //           }
+      //
+      //         }
+      //       ];
+      //     }
+      //     getCrystals(): number {
+      //       return 30;
+      //     }
+      //   };
+      //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBoxPicked(boxContent);
+      // }, 100);
 
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;
@@ -598,5 +601,10 @@ export class GameComponent implements OnInit, ScreenCover {
       }
     }
   }
+
+  openInventory() {
+    this.showInventory = true;
+  }
+
 }
 

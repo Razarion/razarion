@@ -1,5 +1,5 @@
 import { NgZone } from "@angular/core";
-import { BoxContent, ModelDialogPresenter } from "../gwtangular/GwtAngularFacade";
+import { BaseItemType, BoxContent, ModelDialogPresenter } from "../gwtangular/GwtAngularFacade";
 import { GwtAngularService } from "../gwtangular/GwtAngularService";
 
 export class ModelDialogPresenterImpl implements ModelDialogPresenter {
@@ -28,6 +28,18 @@ export class ModelDialogPresenterImpl implements ModelDialogPresenter {
         });
     }
 
+    showUseInventoryItemLimitExceeded(baseItemType: BaseItemType): void {
+        this.zone.run(() => {
+            this.post("Item limit exceeded", [baseItemType.getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language)]);
+        });
+    }
+
+    showUseInventoryHouseSpaceExceeded(): void {
+        this.zone.run(() => {
+            this.post("House space exceeded");
+        });
+    }
+
     showBoxPicked(boxContent: BoxContent): void {
         this.zone.run(() => {
             let messgaeLine: string[] = [];
@@ -36,14 +48,7 @@ export class ModelDialogPresenterImpl implements ModelDialogPresenter {
             }
             if (boxContent.getInventoryItems() && boxContent.getInventoryItems().length > 0) {
                 boxContent.getInventoryItems().map(inventoryItem => {
-                    let message = `${inventoryItem.getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language)}`
-                    if (inventoryItem.getBaseItemTypeId() || inventoryItem.getBaseItemTypeId() === 0) {
-                        message += `: ${inventoryItem.getBaseItemTypeCount()} ${this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemType(inventoryItem.getBaseItemTypeId()!).getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language)}`;
-                    }
-                    if (inventoryItem.getRazarion()) {
-                        message += `:  ${inventoryItem.getRazarion()} Razarion`;
-                    }
-                    messgaeLine.push(message);
+                    messgaeLine.push(`${inventoryItem.getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language)}`);
                 });
             }
             this.post("Box picked", messgaeLine);

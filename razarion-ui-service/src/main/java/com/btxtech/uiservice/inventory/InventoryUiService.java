@@ -15,6 +15,7 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.tip.GameTipService;
+import jsinterop.annotations.JsType;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -25,7 +26,8 @@ import java.util.function.Consumer;
  * Created by Beat
  * 30.10.2016.
  */
-public abstract class InventoryUiService {
+@JsType
+public class InventoryUiService {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -47,11 +49,10 @@ public abstract class InventoryUiService {
     private List<Integer> inventoryItemIds = new ArrayList<>();
     private List<Integer> inventoryArtifactIds = new ArrayList<>();
 
-    protected abstract void loadServerInventoryInfo(Consumer<InventoryInfo> inventoryInfoConsumer);
-
+    @Deprecated // Done in angular
     public void provideInventoryInfo(Consumer<InventoryInfo> inventoryInfoConsumer) {
         if (gameUiControl.getGameEngineMode() == GameEngineMode.SLAVE) {
-            loadServerInventoryInfo(inventoryInfoConsumer);
+            // TODO loadServerInventoryInfo(inventoryInfoConsumer);
         } else if (gameUiControl.getGameEngineMode() == GameEngineMode.MASTER) {
             inventoryInfoConsumer.accept(new InventoryInfo().setCrystals(0).setInventoryItemIds(inventoryItemIds).setInventoryArtifactIds(inventoryArtifactIds));
         } else {

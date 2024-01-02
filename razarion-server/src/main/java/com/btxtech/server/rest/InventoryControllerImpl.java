@@ -3,7 +3,7 @@ package com.btxtech.server.rest;
 import com.btxtech.server.gameengine.ServerInventoryService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.dto.InventoryInfo;
-import com.btxtech.shared.rest.InventoryProvider;
+import com.btxtech.shared.rest.InventoryController;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -12,7 +12,7 @@ import javax.inject.Inject;
  * Created by Beat
  * on 18.09.2017.
  */
-public class InventoryProviderImpl implements InventoryProvider {
+public class InventoryControllerImpl implements InventoryController {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject

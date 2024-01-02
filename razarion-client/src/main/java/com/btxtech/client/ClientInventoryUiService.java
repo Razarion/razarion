@@ -2,7 +2,7 @@ package com.btxtech.client;
 
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.InventoryInfo;
-import com.btxtech.shared.rest.InventoryProvider;
+import com.btxtech.shared.rest.InventoryController;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -16,15 +16,15 @@ import java.util.function.Consumer;
  * on 17.09.2017.
  */
 @ApplicationScoped
-public class ClientInventoryUiService extends InventoryUiService {
+@Deprecated
+public class ClientInventoryUiService  {
     // private Logger logger = Logger.getLogger(ClientInventoryUiService.class.getName());
     @Inject
-    private Caller<InventoryProvider> inventoryProvider;
+    private Caller<InventoryController> inventoryController;
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
 
-    @Override
     protected void loadServerInventoryInfo(Consumer<InventoryInfo> inventoryInfoConsumer) {
-        inventoryProvider.call((RemoteCallback<InventoryInfo>) inventoryInfoConsumer::accept, exceptionHandler.restErrorHandler("InventoryProvider.loadInventory()")).loadInventory();
+        inventoryController.call((RemoteCallback<InventoryInfo>) inventoryInfoConsumer::accept, exceptionHandler.restErrorHandler("InventoryProvider.loadInventory()")).loadInventory();
     }
 }

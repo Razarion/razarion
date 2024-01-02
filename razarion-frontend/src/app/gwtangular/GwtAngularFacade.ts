@@ -19,6 +19,8 @@ export abstract class GwtAngularFacade {
   threeJsModelPackService!: ThreeJsModelPackService;
   baseItemUiService!: BaseItemUiService
   modelDialogPresenter!: ModelDialogPresenter;
+  inventoryTypeService!: InventoryTypeService;
+  inventoryUiService!: InventoryUiService;
 
   abstract onCrash(): void;
 }
@@ -691,18 +693,7 @@ export interface OtherItemCockpit {
   friend: boolean;
 }
 
-// ---------- Dialog ----------
-
-export interface ModelDialogPresenter {
-  showLevelUp(): void;
-
-  showQuestPassed(): void;
-
-  showBaseLost(): void;
-
-  showBoxPicked(boxContent: BoxContent): void;
-}
-
+// ---------- Inventory ----------
 export interface BoxContent {
   getInventoryItems(): InventoryItem[];
 
@@ -717,8 +708,33 @@ export interface InventoryItem {
   getBaseItemTypeId(): number | null;
 
   getBaseItemTypeCount(): number;
+
+  getImageId(): number | null;
 }
 
+export interface InventoryTypeService {
+  getInventoryItem(id: number): InventoryItem
+}
+
+export interface InventoryUiService {
+  useItem(inventoryItem: InventoryItem): void;
+}
+
+// ---------- Dialog ----------
+
+export interface ModelDialogPresenter {
+  showLevelUp(): void;
+
+  showQuestPassed(): void;
+
+  showBaseLost(): void;
+
+  showBoxPicked(boxContent: BoxContent): void;
+
+  showUseInventoryItemLimitExceeded(baseItemType: BaseItemType): void;
+
+  showUseInventoryHouseSpaceExceeded(): void;
+}
 
 // ---------- Editor ----------
 export interface EditorFrontendProvider {

@@ -121,6 +121,7 @@ import { BoxItemTypeComponent } from './editor/common/box-item-type/box-item-typ
 import { InventoryItemComponent } from './editor/common/inventory-item/inventory-item.component';
 import { PercentInputComponent } from './editor/common/percent-input/percent-input.component';
 import { BoxRegionComponent } from './editor/box-region/box-region.component';
+import { InventoryComponent } from './game/inventory/inventory.component';
 
 @NgModule({
   declarations: [
@@ -196,6 +197,7 @@ import { BoxRegionComponent } from './editor/box-region/box-region.component';
     InventoryItemComponent,
     PercentInputComponent,
     BoxRegionComponent,
+    InventoryComponent,
   ],
   imports: [
     BrowserModule,

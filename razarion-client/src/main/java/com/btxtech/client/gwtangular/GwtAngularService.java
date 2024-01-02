@@ -2,6 +2,7 @@ package com.btxtech.client.gwtangular;
 
 import com.btxtech.client.ClientCursorService;
 import com.btxtech.client.editor.EditorFrontendProvider;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
@@ -11,6 +12,7 @@ import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
+import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
@@ -55,6 +57,10 @@ public class GwtAngularService {
     private BaseItemUiService baseItemUiService;
     @Inject
     private ModalDialogManager modalDialogManager;
+    @Inject
+    private InventoryTypeService inventoryTypeService;
+    @Inject
+    private InventoryUiService inventoryUiService;
     private GwtAngularFacade gwtAngularFacade;
 
     public void init() {
@@ -68,6 +74,8 @@ public class GwtAngularService {
         gwtAngularFacade.itemTypeService = itemTypeService;
         gwtAngularFacade.threeJsModelPackService = threeJsModelPackService;
         gwtAngularFacade.baseItemUiService = baseItemUiService;
+        gwtAngularFacade.inventoryTypeService = inventoryTypeService;
+        gwtAngularFacade.inventoryUiService = inventoryUiService;
         cockpitService.init(gwtAngularFacade.mainCockpit);
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
         questCockpitService.init(gwtAngularFacade.questCockpit);

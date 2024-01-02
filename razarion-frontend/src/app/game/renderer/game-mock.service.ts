@@ -39,10 +39,9 @@ import {
   ThreeJsModelPackService,
   BabylonTerrainTile,
   Vertex,
-  WaterConfig, WeaponType, BaseItemUiService, Diplomacy, NativeSyncBaseItemTickInfo, PlayerBaseDto, Character
+  WaterConfig, WeaponType, BaseItemUiService, Diplomacy, NativeSyncBaseItemTickInfo, PlayerBaseDto, Character, InventoryTypeService, InventoryItem
 } from "src/app/gwtangular/GwtAngularFacade";
 import { HttpClient } from "@angular/common/http";
-import * as Stats from 'stats.js';
 import { GwtInstance } from "../../gwtangular/GwtInstance";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 
@@ -530,6 +529,40 @@ export class GameMockService {
       }
     }
   }
+
+  mockInventoryTypeService(): InventoryTypeService {
+    return new class implements InventoryTypeService {
+      getInventoryItem(id: number): InventoryItem {
+        return new class implements InventoryItem {
+          getI18nName(): I18nString {
+            return new class implements I18nString {
+              getString(language: string): string {
+                return "Viper Pack";
+              }
+            }
+          }
+
+          getRazarion(): number | null {
+            return null;
+          }
+
+          getBaseItemTypeId(): number | null {
+            return 1;
+          }
+
+          getBaseItemTypeCount(): number {
+            return 2;
+          }
+
+          getImageId(): number | null {
+            return 36;
+          }
+
+        }
+      }
+
+    }
+  };
 
   mockThreeJsModelPackService: ThreeJsModelPackService = new class implements ThreeJsModelPackService {
     getThreeJsModelPackConfig(id: number): ThreeJsModelPackConfig {

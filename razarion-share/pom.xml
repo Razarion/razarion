@@ -112,6 +112,7 @@
                         <class>com.btxtech.shared.rest.ServerGameEngineEditorController</class>
                         <class>com.btxtech.shared.rest.ServerGameEngineController</class>
                         <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
+                        <class>com.btxtech.shared.rest.InventoryController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

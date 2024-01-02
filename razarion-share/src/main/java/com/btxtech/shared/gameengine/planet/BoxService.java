@@ -133,7 +133,9 @@ public class BoxService {
         }
 
         BoxContent boxContent = new BoxContent();
-        box.getBoxItemType().getBoxItemTypePossibilities().stream().filter(boxItemTypePossibility -> MathHelper.isRandomPossibility(boxItemTypePossibility.getPossibility())).forEach(boxItemTypePossibility -> setupBoxContent(boxItemTypePossibility, boxContent));
+        box.getBoxItemType().getBoxItemTypePossibilities().stream()
+                .filter(boxItemTypePossibility -> MathHelper.isRandomPossibility(boxItemTypePossibility.getPossibility()))
+                .forEach(boxItemTypePossibility -> setupBoxContent(boxItemTypePossibility, boxContent));
 
         gameLogicService.onBoxPicked(box, picker, boxContent);
     }

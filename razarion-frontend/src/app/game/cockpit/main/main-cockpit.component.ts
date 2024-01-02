@@ -1,5 +1,6 @@
-﻿import {Component, NgZone} from '@angular/core';
-import {MainCockpit, RadarState, Rectangle} from "../../../gwtangular/GwtAngularFacade";
+﻿import { Component, NgZone } from '@angular/core';
+import { MainCockpit, RadarState, Rectangle } from "../../../gwtangular/GwtAngularFacade";
+import { GameComponent } from '../../game.component';
 
 
 @Component({
@@ -23,7 +24,7 @@ export class MainCockpitComponent implements MainCockpit {
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
 
-  constructor(private zone: NgZone) {
+  constructor(private zone: NgZone, private gameComponent: GameComponent) {
   }
 
   show(admin: boolean): void {
@@ -88,5 +89,9 @@ export class MainCockpitComponent implements MainCockpit {
 
   getScrollHomeButtonLocation(): Rectangle {
     return {};
+  }
+
+  onInventory(): void {
+    this.gameComponent.openInventory();
   }
 }

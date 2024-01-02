@@ -3,7 +3,7 @@ package com.btxtech.client.dialog.unlock;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
-import com.btxtech.shared.rest.InventoryProvider;
+import com.btxtech.shared.rest.InventoryController;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.google.gwt.user.client.ui.Composite;
@@ -30,7 +30,7 @@ public class UnlockDialog extends Composite implements ModalDialogContent<Void> 
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
-    private Caller<InventoryProvider> inventoryProvider;
+    private Caller<InventoryController> inventoryProvider;
     @Inject
     private UnlockUiService unlockUiService;
     @Inject
