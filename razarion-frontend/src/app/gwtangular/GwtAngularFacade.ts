@@ -695,7 +695,7 @@ export interface OtherItemCockpit {
 
 // ---------- Inventory ----------
 export interface BoxContent {
-  getInventoryItems(): InventoryItem[];
+  toInventoryItemArray(): InventoryItem[];
 
   getCrystals(): number;
 }

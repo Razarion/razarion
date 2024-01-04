@@ -46,8 +46,8 @@ export class ModelDialogPresenterImpl implements ModelDialogPresenter {
             if (boxContent.getCrystals()) {
                 messgaeLine.push("Crystals: " + boxContent.getCrystals());
             }
-            if (boxContent.getInventoryItems() && boxContent.getInventoryItems().length > 0) {
-                boxContent.getInventoryItems().map(inventoryItem => {
+            if (boxContent.toInventoryItemArray() && boxContent.toInventoryItemArray().length > 0) {
+                boxContent.toInventoryItemArray().map(inventoryItem => {
                     messgaeLine.push(`${inventoryItem.getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language)}`);
                 });
             }

@@ -22,6 +22,12 @@ public class BoxContent {
         return inventoryItems;
     }
 
+    @SuppressWarnings("unused") // Used by angular
+    // Do not call this method get<something>, because it will be sent as json via websocket to the client
+    public InventoryItem[] toInventoryItemArray() {
+        return inventoryItems.toArray(new InventoryItem[0]);
+    }
+
     public void addCrystals(int crystals) {
         this.crystals += crystals;
     }
