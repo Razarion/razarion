@@ -519,7 +519,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           this.selectionFrame.onPointerDown(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
-            this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
+            this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
           }
           break;
         }
@@ -527,7 +527,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           this.selectionFrame.onPointerUp(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
-            this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
+            this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
           }
           break;
         }
@@ -535,7 +535,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           this.selectionFrame.onPointerMove(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
-            this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, (pointerInfo.event.buttons & 1) === 1);
+            this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y, (pointerInfo.event.buttons & 1) === 1);
           }
           break;
         }
@@ -555,6 +555,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         disc.visibility = 0.5;
         disc.material = material;
         disc.rotation.x = Tools.ToRadians(90);
+        disc.isPickable = false;
         this.updatePosition(disc, baseItemPlacer);
         disc.position.y = 0.1;
         material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
@@ -569,6 +570,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       private updatePosition(disc: Mesh, baseItemPlacer: BaseItemPlacer) {
         if (baseItemPlacer.getPosition()) {
           disc.position.x = baseItemPlacer.getPosition().getX();
+          disc.position.y = baseItemPlacer.getPosition().getZ() + 0.01;
           disc.position.z = baseItemPlacer.getPosition().getY();
         } else {
           let centerPosition = threeJsRendererServiceImpl.setupCenterGroundPosition();

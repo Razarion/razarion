@@ -66,15 +66,15 @@ export class GameMockService {
   };
 
   inputService: InputService = new class implements InputService {
-    onMouseDown(x: number, y: number): void {
+    onMouseDown(x: number, y: number, z: number): void {
       // console.info(`Terrain Position ${x}:${y} (mouse down)`);
     }
 
-    onMouseMove(x: number, y: number, primaryButtonDown: boolean): void {
+    onMouseMove(x: number, y: number, z: number, primaryButtonDown: boolean): void {
       // console.info(`Terrain Position ${x}:${y}  (mouse move) ${primaryButtonDown}`);
     }
 
-    onMouseUp(x: number, y: number): void {
+    onMouseUp(x: number, y: number, z: number): void {
       // console.info(`Terrain Position  ${x}:${y} (mouse up)`);
     }
 

@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.itemplacer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -25,7 +26,7 @@ public class BaseItemPlacer {
     private ItemTypeService itemTypeService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private DecimalPosition position;
+    private Vertex position;
     private BaseItemType baseItemType;
     private String errorText;
 
@@ -33,7 +34,7 @@ public class BaseItemPlacer {
         baseItemType = itemTypeService.getBaseItemType(baseItemPlacerConfig.getBaseItemTypeId());
         baseItemPlacerChecker.init(baseItemType, baseItemPlacerConfig);
         if (baseItemPlacerConfig.getSuggestedPosition() != null) {
-            onMove(baseItemPlacerConfig.getSuggestedPosition());
+            onMove(new Vertex(baseItemPlacerConfig.getSuggestedPosition(), 0));
         }
         return this;
     }
@@ -42,9 +43,9 @@ public class BaseItemPlacer {
         return baseItemPlacerChecker.getEnemyFreeRadius();
     }
 
-    void onMove(DecimalPosition position) {
+    void onMove(Vertex position) {
         try {
-            baseItemPlacerChecker.check(position);
+            baseItemPlacerChecker.check(position.toXY());
             setupErrorText();
             this.position = position;
         } catch (Exception e) {
@@ -56,7 +57,7 @@ public class BaseItemPlacer {
         return baseItemPlacerChecker.isPositionValid();
     }
 
-    public DecimalPosition getPosition() {
+    public Vertex getPosition() {
         return position;
     }
 
@@ -69,7 +70,7 @@ public class BaseItemPlacer {
     }
 
     Collection<DecimalPosition> setupAbsolutePositions() {
-        return baseItemPlacerChecker.setupAbsolutePositions(position);
+        return baseItemPlacerChecker.setupAbsolutePositions(position.toXY());
     }
 
     private void setupErrorText() {

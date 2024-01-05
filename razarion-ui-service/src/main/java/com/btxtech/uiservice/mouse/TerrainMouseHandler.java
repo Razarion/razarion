@@ -70,7 +70,7 @@ public class TerrainMouseHandler {
         groupSelectionFrame = null;
     }
 
-    public void onMouseMove(DecimalPosition terrainPosition, boolean primaryButtonDown) {
+    public void onMouseMove(Vertex terrainPosition, boolean primaryButtonDown) {
         try {
             if (baseItemPlacerService.isActive()) {
                 baseItemPlacerService.onMouseMoveEvent(terrainPosition);
@@ -79,30 +79,30 @@ public class TerrainMouseHandler {
 
             if (primaryButtonDown) {
                 if (groupSelectionFrame != null) {
-                    groupSelectionFrame.onMove(terrainPosition);
+                    groupSelectionFrame.onMove(terrainPosition.toXY());
                     selectionFrameRenderTaskRunner.onMove(groupSelectionFrame);
                 }
             } else {
-                SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition);
+                SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncBaseItem != null) {
                     cursorService.handleMouseOverBaseItem(syncBaseItem);
                     baseItemUiService.onHover(syncBaseItem);
                     return;
                 }
-                SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition);
+                SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncResourceItem != null) {
                     cursorService.handleMouseOverResourceItem();
                     resourceUiService.onHover(syncResourceItem);
                     return;
                 }
-                SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition);
+                SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncBoxItem != null) {
                     cursorService.handleMouseOverBoxItem();
                     baseItemUiService.onHover(syncBoxItem);
                     boxUiService.onHover(syncBoxItem);
                     return;
                 }
-                cursorService.handleMouseOverTerrain(terrainPosition);
+                cursorService.handleMouseOverTerrain(terrainPosition.toXY());
                 baseItemUiService.onHover(null);
                 resourceUiService.onHover(null);
                 boxUiService.onHover(null);
@@ -145,7 +145,7 @@ public class TerrainMouseHandler {
         return null;
     }
 
-    public void onMouseUp(DecimalPosition terrainPosition) {
+    public void onMouseUp(Vertex terrainPosition) {
         try {
 // TODO           if (editorMouseListener != null) {
 //                editorMouseListener.onMouseUp();
@@ -160,12 +160,12 @@ public class TerrainMouseHandler {
             boolean onlySelectionFrame = false;
             if (groupSelectionFrame != null) {
                 selectionFrameRenderTaskRunner.stop();
-                groupSelectionFrame.onMove(terrainPosition);
+                groupSelectionFrame.onMove(terrainPosition.toXY());
                 if (groupSelectionFrame.getRectangle2D() != null) {
                     onlySelectionFrame = true;
                     selectionHandler.selectRectangle(groupSelectionFrame.getRectangle2D());
                 } else {
-                    if (isSelectionChangeNeeded(terrainPosition)) {
+                    if (isSelectionChangeNeeded(terrainPosition.toXY())) {
                         selectionHandler.selectPosition(groupSelectionFrame.getStart2D());
                     }
                 }
@@ -173,7 +173,7 @@ public class TerrainMouseHandler {
             }
 
             if (!onlySelectionFrame && selectionHandler.hasOwnSelection()) {
-                mouseUpWithOwnSelection(terrainPosition);
+                mouseUpWithOwnSelection(terrainPosition.toXY());
             }
 
         } catch (Throwable t) {

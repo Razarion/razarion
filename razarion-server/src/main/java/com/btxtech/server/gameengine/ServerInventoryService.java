@@ -37,19 +37,11 @@ public class ServerInventoryService {
     }
 
     public InventoryInfo loadInventory(PlayerSession playerSession) {
-        if (playerSession.getUserContext().registered()) {
-            return userService.readInventoryInfo(playerSession.getUserContext().getUserId());
-        } else {
-            return playerSession.getUnregisteredUser().toInventoryInfo();
-        }
+        return userService.readInventoryInfo(playerSession.getUserContext().getUserId());
     }
 
     public int loadCrystals(PlayerSession playerSession) {
-        if (playerSession.getUserContext().registered()) {
-            return userService.readCrystals(playerSession.getUserContext().getUserId());
-        } else {
-            return playerSession.getUnregisteredUser().getCrystals();
-        }
+        return userService.readCrystals(playerSession.getUserContext().getUserId());
     }
 
     public void useInventoryItem(UseInventoryItem useInventoryItem, PlayerSession playerSession, PlayerBaseFull playerBaseFull) {

@@ -122,11 +122,11 @@ export interface InputService {
     topRightX: number, topRightY: number,
     topLeftX: number, topLeftY: number): void;
 
-  onMouseMove(x: number, y: number, primaryButtonDown: boolean): void;
+  onMouseMove(x: number, y: number, z: number, primaryButtonDown: boolean): void;
 
-  onMouseDown(x: number, y: number): void;
+  onMouseDown(x: number, y: number, z: number): void;
 
-  onMouseUp(x: number, y: number): void;
+  onMouseUp(x: number, y: number, z: number): void;
 
 }
 
@@ -667,7 +667,7 @@ export interface BaseItemPlacerPresenter {
 export interface BaseItemPlacer {
   isPositionValid(): boolean;
 
-  getPosition(): DecimalPosition;
+  getPosition(): Vertex;
 
   getEnemyFreeRadius(): number;
 }

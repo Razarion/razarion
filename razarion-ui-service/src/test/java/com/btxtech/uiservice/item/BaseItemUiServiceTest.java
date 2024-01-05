@@ -77,20 +77,20 @@ public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
         InputService inputService = getWeldBean(InputService.class);
 
         // Hover cursor
-        inputService.onMouseMove(274, 100, false);
+        inputService.onMouseMove(274, 100, 0, false);
         Assert.assertTrue(babylonBaseItemMock.isHover());
         Assert.assertFalse(babylonBaseItemMock.isSelect());
-        inputService.onMouseMove(274, 150, false);
+        inputService.onMouseMove(274, 150, 0, false);
         Assert.assertFalse(babylonBaseItemMock.isHover());
         Assert.assertFalse(babylonBaseItemMock.isSelect());
 
         // Select
-        inputService.onMouseDown(250, 90);
-        inputService.onMouseUp(300, 110);
+        inputService.onMouseDown(250, 90, 0);
+        inputService.onMouseUp(300, 110, 0);
         Assert.assertFalse(babylonBaseItemMock.isHover());
         Assert.assertTrue(babylonBaseItemMock.isSelect());
-        inputService.onMouseDown(10, 10);
-        inputService.onMouseUp(20, 20);
+        inputService.onMouseDown(10, 10, 0);
+        inputService.onMouseUp(20, 20, 0);
         Assert.assertFalse(babylonBaseItemMock.isHover());
         Assert.assertFalse(babylonBaseItemMock.isSelect());
     }

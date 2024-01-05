@@ -2,6 +2,7 @@ package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
@@ -41,18 +42,18 @@ public class InputService {
     }
 
     @SuppressWarnings("unused") // Called by Babylonjs
-    public void onMouseMove(int x, int y, boolean primaryButtonDown) {
-        terrainMouseHandler.onMouseMove(new DecimalPosition(x, y), primaryButtonDown);
+    public void onMouseMove(int x, int y, int z, boolean primaryButtonDown) {
+        terrainMouseHandler.onMouseMove(new Vertex(x, y, z), primaryButtonDown);
     }
 
     @SuppressWarnings("unused") // Called by Babylonjs
-    public void onMouseDown(int x, int y) {
+    public void onMouseDown(int x, int y, int z) {
         terrainMouseHandler.onMouseDown(new DecimalPosition(x, y));
     }
 
     @SuppressWarnings("unused") // Called by Babylonjs
-    public void onMouseUp(int x, int y) {
-        terrainMouseHandler.onMouseUp(new DecimalPosition(x, y));
+    public void onMouseUp(int x, int y, int z) {
+        terrainMouseHandler.onMouseUp(new Vertex(x, y, z));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.itemplacer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.uiservice.mouse.CursorService;
 
@@ -54,7 +55,7 @@ public class BaseItemPlacerService {
         return baseItemPlacer != null;
     }
 
-    public void onMouseUpEvent(DecimalPosition terrainPosition) {
+    public void onMouseUpEvent(Vertex terrainPosition) {
         if (!isActive()) {
             return;
         }
@@ -65,7 +66,7 @@ public class BaseItemPlacerService {
         }
     }
 
-    public void onMouseMoveEvent(DecimalPosition terrainPosition) {
+    public void onMouseMoveEvent(Vertex terrainPosition) {
         if (!isActive()) {
             return;
         }
