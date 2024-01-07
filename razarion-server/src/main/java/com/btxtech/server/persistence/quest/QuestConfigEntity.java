@@ -45,8 +45,6 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
     private boolean hidePassedDialog;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private ConditionConfigEntity conditionConfigEntity;
-    @ManyToMany(mappedBy="questConfigs")
-    private List<ServerLevelQuestEntity> serverLevelQuestEntities;
 
     public Integer getId() {
         return id;
@@ -119,15 +117,7 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
     }
 
     public QuestBackendInfo toQuestBackendInfo() {
-        LevelEntity levelEntity = null;
-        if (serverLevelQuestEntities != null && serverLevelQuestEntities.size() > 0) {
-            levelEntity = serverLevelQuestEntities.get(0).getMinimalLevel();
-        }
-        QuestBackendInfo questBackendInfo = new QuestBackendInfo().setId(id).setInternalName(internalName);
-        if (levelEntity != null) {
-            questBackendInfo.setLevelId(levelEntity.getId()).setLevelNumber(levelEntity.getNumber());
-        }
-        return questBackendInfo;
+        throw new UnsupportedOperationException("FIX ME");
     }
 
     @Override

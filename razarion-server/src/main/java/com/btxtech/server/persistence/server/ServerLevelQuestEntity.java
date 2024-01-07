@@ -8,6 +8,7 @@ import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -17,7 +18,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
@@ -38,7 +39,7 @@ public class ServerLevelQuestEntity implements ObjectNameIdProvider {
     private Integer id;
     private String internalName;
     @OrderColumn(name = "orderColumn")
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "SERVER_QUEST",
             joinColumns = @JoinColumn(name = "serverLevelQuest"),
             inverseJoinColumns = @JoinColumn(name = "quest"))
@@ -65,10 +66,12 @@ public class ServerLevelQuestEntity implements ObjectNameIdProvider {
     public void fromServerLevelQuestConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ServerLevelQuestConfig serverLevelQuestConfig, LevelCrudPersistence levelCrudPersistence, Locale locale) {
         internalName = serverLevelQuestConfig.getInternalName();
         minimalLevel = levelCrudPersistence.getEntity(serverLevelQuestConfig.getMinimalLevelId());
-        questConfigs = fromConfigs(questConfigs,
+        questConfigs = fromConfigsNoClear(questConfigs,
                 serverLevelQuestConfig.getQuestConfigs(),
                 QuestConfigEntity::new,
-                (questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, questConfig, locale));
+                (questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, questConfig, locale),
+                QuestDescriptionConfig::getId,
+                QuestConfigEntity::getId);
     }
 
     @Override

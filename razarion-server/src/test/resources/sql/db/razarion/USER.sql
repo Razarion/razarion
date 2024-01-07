@@ -34,12 +34,8 @@ CREATE TABLE IF NOT EXISTS `USER` (
 DELETE FROM `USER`;
 /*!40000 ALTER TABLE `USER` DISABLE KEYS */;
 INSERT INTO `USER` (`id`, `admin`, `crystals`, `email`, `facebookUserId`, `locale`, `name`, `passwordHash`, `registerDate`, `verificationDoneDate`, `verificationId`, `verificationStartedDate`, `verificationTimedOutDate`, `xp`, `activeQuest_id`, `level_id`, `creationDate`) VALUES
-	(591, b'1', 0, 'admin@admin.com', NULL, 'de_DE', NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, 265, NULL),
-	(592, b'0', 0, 'user@user.com', NULL, NULL, NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, 265, NULL),
-	(883, b'0', 0, NULL, NULL, 'de_DE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 265, '2023-08-13 14:51:03.461'),
-	(884, b'0', 0, NULL, NULL, 'de_DE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 265, '2023-08-15 18:19:53.249'),
-	(885, b'0', 0, NULL, NULL, 'de_DE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 265, '2023-08-15 20:14:23.084'),
-	(886, b'0', 0, NULL, NULL, 'de_DE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 18, 265, '2023-08-15 20:39:23.891');
+	(591, b'1', 0, 'admin@admin.com', NULL, 'de_DE', NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, NULL, NULL),
+	(592, b'0', 0, 'user@user.com', NULL, NULL, NULL, 'qKfYO+K4nrC4UZwdquWOMHoOYFw7qNPkhOBR9Df1iCbD+YcPX2ofbNg3H3zHJ+HzXz32oQwYQUC7/K/tP1nAvg==', NULL, '2020-01-27 20:00:00.000', NULL, NULL, NULL, 0, NULL, NULL, NULL);
 /*!40000 ALTER TABLE `USER` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

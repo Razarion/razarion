@@ -1,18 +1,10 @@
 version: '3'
 
 services:
-#  web:
-#    build: wildfly/.
-#    ports:
-#      - "32778:8080"
-#      - "32768:9990"
-#      - "60784:8787"
-#    volumes:
-#      - ./stage/wildfly:/tmp/stage
   db:
     image: mariadb
-#    image: db_dev
-    container_name: db
+    # container_name: db
+    container_name: db_system_test
     restart: always
     environment:
       MYSQL_DATABASE: razarion

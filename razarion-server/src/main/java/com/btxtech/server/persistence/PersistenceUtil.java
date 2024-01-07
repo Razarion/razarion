@@ -135,6 +135,38 @@ public interface PersistenceUtil {
         return outputEntities;
     }
 
+    static <C, E> List<E> fromConfigsNoClear(List<E> outputEntities, List<C> inputConfigs, Supplier<E> entityCreator, BiConsumer<E, C> entityFiller, Function<C, Integer> getConfigId, Function<E, Integer> getEntityId) {
+        // To order of outputEntities is mixed up
+        if (outputEntities == null) {
+            outputEntities = new ArrayList<>();
+        }
+        if (inputConfigs == null) {
+            inputConfigs = new ArrayList<>();
+        }
+        List<E> newEntities = new ArrayList<>();
+        List<Integer> updatedEntityIds = new ArrayList<>();
+        for (C config : inputConfigs) {
+            E entity;
+            Integer configId = getConfigId.apply(config);
+            if(configId != null) {
+                entity = outputEntities.stream().filter(e -> configId.equals(getEntityId.apply(e))).findFirst().orElse(null);
+                if (entity == null) {
+                    entity = entityCreator.get();
+                    newEntities.add(entity);
+                } else {
+                    updatedEntityIds.add(getEntityId.apply(entity));
+                }
+            } else {
+                entity = entityCreator.get();
+                newEntities.add(entity);
+            }
+            entityFiller.accept(entity, config);
+        }
+        outputEntities.removeIf(e -> !updatedEntityIds.contains(getEntityId.apply(e)));
+        outputEntities.addAll(newEntities);
+        return outputEntities;
+    }
+
     static <V> V defaultOnNull(V value, V defaultNullValue) {
         if (value == null) {
             return defaultNullValue;

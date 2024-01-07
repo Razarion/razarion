@@ -146,10 +146,10 @@ public abstract class JsonAssert {
     }
 
     public static class IdSuppressor {
-        private String jsonPtrExpr;
-        private String propertyName;
-        private boolean array;
-        private IdSuppressor[] children;
+        private final String jsonPtrExpr;
+        private final String propertyName;
+        private final boolean array;
+        private final IdSuppressor[] children;
 
         public IdSuppressor(String jsonPtrExpr, String propertyName, IdSuppressor... children) {
             this(jsonPtrExpr, propertyName, false, children);

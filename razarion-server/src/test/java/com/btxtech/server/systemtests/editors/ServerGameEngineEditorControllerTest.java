@@ -3,13 +3,16 @@ package com.btxtech.server.systemtests.editors;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotEnragementStateConfigEntity;
 import com.btxtech.server.persistence.bot.BotItemConfigEntity;
+import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.server.ServerResourceRegionConfigEntity;
 import com.btxtech.server.persistence.server.StartRegionConfigEntity;
 import com.btxtech.server.systemtests.framework.AbstractCrudTest;
+import com.btxtech.server.user.UserEntity;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
@@ -32,9 +35,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<ServerGameEngineEditorController, ServerGameEngineConfig> {
     public ServerGameEngineEditorControllerTest() {
@@ -68,12 +73,12 @@ public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<Serve
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.planetConfigId(PLANET_2_ID).setResourceRegionConfigs(Collections.singletonList(
                 new ResourceRegionConfig().region(new PlaceConfig().position(new DecimalPosition(1, 1)).radius(9.0)))), idSuppressor);
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.startRegionConfigs(Collections.singletonList(new StartRegionConfig().minimalLevelId(LEVEL_1_ID).internalName("xxxx").region(new PlaceConfig().polygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(1, 1),
-                new DecimalPosition(2, 1),
-                new DecimalPosition(2, 2))))))),
+                        new DecimalPosition(2, 1),
+                        new DecimalPosition(2, 2))))))),
                 idSuppressor);
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.getStartRegionConfigs().add(new StartRegionConfig().minimalLevelId(LEVEL_2_ID).internalName("yyy").region(new PlaceConfig().polygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(10, 10),
-                new DecimalPosition(20, 10),
-                new DecimalPosition(20, 20)))))),
+                        new DecimalPosition(20, 10),
+                        new DecimalPosition(20, 20)))))),
                 idSuppressor);
         registerUpdate(serverGameEngineConfig -> serverGameEngineConfig.botConfigs(Collections.singletonList(
                         new BotConfig().botEnragementStateConfigs(Collections.singletonList(
@@ -236,6 +241,10 @@ public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<Serve
         getCrudToBeTested().updateServerLevelQuestConfig(serverGameEngineConfig.getId(), serverLevelQuestConfigs);
         JsonAssert.assertViaJson(serverLevelQuestConfigs, getCrudToBeTested().read(serverGameEngineConfig.getId()).getServerLevelQuestConfigs(), idSuppressor);
 
+        SingleHolder<Integer> userIdHolder = new SingleHolder<>();
+        QuestConfig activeQuest = getCrudToBeTested().read(serverGameEngineConfig.getId()).getServerLevelQuestConfigs().get(0).getQuestConfigs().get(0);
+        setActivateQuestOnNewUser(activeQuest, userIdHolder);
+
         serverLevelQuestConfigs = new ArrayList<>(getCrudToBeTested().read(serverGameEngineConfig.getId()).getServerLevelQuestConfigs());
         serverLevelQuestConfigs.add(new ServerLevelQuestConfig()
                 .internalName("ServerLevelQuestConfig 33")
@@ -250,6 +259,26 @@ public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<Serve
         JsonAssert.assertViaJson(serverLevelQuestConfigs, getCrudToBeTested().read(serverGameEngineConfig.getId()).getServerLevelQuestConfigs(), idSuppressor);
 
         serverLevelQuestConfigs = new ArrayList<>(getCrudToBeTested().read(serverGameEngineConfig.getId()).getServerLevelQuestConfigs());
+        removeServerLevelQuestConfigWithConfigId(activeQuest, serverLevelQuestConfigs);
+        try {
+            getCrudToBeTested().updateServerLevelQuestConfig(serverGameEngineConfig.getId(), serverLevelQuestConfigs);
+            fail("Can not delete, because user has active quest");
+        } catch (Exception e) {
+            // Ignore
+        }
+
+        serverLevelQuestConfigs = new ArrayList<>(getCrudToBeTested().read(serverGameEngineConfig.getId()).getServerLevelQuestConfigs());
+        removeConfigWithConfigId(activeQuest, serverLevelQuestConfigs);
+        try {
+            getCrudToBeTested().updateServerLevelQuestConfig(serverGameEngineConfig.getId(), serverLevelQuestConfigs);
+            fail("Can not delete, because user has active quest");
+        } catch (Exception e) {
+            // Ignore
+        }
+
+        clearActivateQuestOnUser(userIdHolder.getO());
+
+        serverLevelQuestConfigs = new ArrayList<>(getCrudToBeTested().read(serverGameEngineConfig.getId()).getServerLevelQuestConfigs());
         serverLevelQuestConfigs.remove(0);
         getCrudToBeTested().updateServerLevelQuestConfig(serverGameEngineConfig.getId(), serverLevelQuestConfigs);
         JsonAssert.assertViaJson(serverLevelQuestConfigs, getCrudToBeTested().read(serverGameEngineConfig.getId()).getServerLevelQuestConfigs(), idSuppressor);
@@ -258,5 +287,36 @@ public class ServerGameEngineEditorControllerTest extends AbstractCrudTest<Serve
         serverLevelQuestConfigs.remove(0);
         getCrudToBeTested().updateServerLevelQuestConfig(serverGameEngineConfig.getId(), serverLevelQuestConfigs);
         assertThat(getCrudToBeTested().read(serverGameEngineConfig.getId()).getServerLevelQuestConfigs().size(), equalTo(0));
+    }
+
+    private void removeServerLevelQuestConfigWithConfigId(QuestConfig activeQuest, List<ServerLevelQuestConfig> serverLevelQuestConfigs) {
+        serverLevelQuestConfigs.removeIf(serverLevelQuestConfig -> serverLevelQuestConfig.getQuestConfigs().stream().anyMatch(questConfig -> questConfig.getId().equals(activeQuest.getId())));
+    }
+
+    private void removeConfigWithConfigId(QuestConfig activeQuest, List<ServerLevelQuestConfig> serverLevelQuestConfigs) {
+        serverLevelQuestConfigs.forEach(serverLevelQuestConfig -> serverLevelQuestConfig.getQuestConfigs().removeIf(questConfig -> questConfig.getId().equals(activeQuest.getId())));
+    }
+
+    private void setActivateQuestOnNewUser(QuestConfig activeQuest, SingleHolder<Integer> userIdHolder) {
+        runInTransaction(entityManager -> {
+            UserEntity gameUser = new UserEntity();
+            gameUser.setVerifiedDone();
+            gameUser.fromEmailPasswordHash("gameUser", "1234", Locale.ENGLISH);
+            QuestConfigEntity questConfigEntity = entityManager.find(QuestConfigEntity.class, activeQuest.getId());
+            if (questConfigEntity == null) {
+                throw new NullPointerException("questConfigEntity == null for " + activeQuest.getId());
+            }
+            gameUser.setActiveQuest(questConfigEntity);
+            entityManager.persist(gameUser);
+            userIdHolder.setO(gameUser.getId());
+        });
+    }
+
+    private void clearActivateQuestOnUser(Integer userId) {
+        runInTransaction(entityManager -> {
+            UserEntity gameUser = entityManager.find(UserEntity.class, userId);
+            gameUser.setActiveQuest(null);
+            entityManager.persist(gameUser);
+        });
     }
 }

@@ -40,7 +40,7 @@ export class EditorService {
   static RESTART_BOX_REGIONS: ServerCommand = new ServerCommand("Restart Box Regions", (client) => client.restartBoxRegions());
   static RESTART_PLANET_WARM: ServerCommand = new ServerCommand("Restart Planet warm", (client) => client.restartPlanetWarm());
   static RESTART_PLANET_COLD: ServerCommand = new ServerCommand("Restart Planet cold", (client) => client.restartPlanetCold());
-  private scaleinerverGameEngineEditorControllerClient: ServerGameEngineEditorControllerClient;
+  private serverGameEngineEditorControllerClient: ServerGameEngineEditorControllerClient;
   private levelEditorControllerClient: LevelEditorControllerClient;
   private serverGameEngineControllerClient: ServerGameEngineControllerClient;
 
@@ -57,7 +57,7 @@ export class EditorService {
   constructor(private gwtAngularService: GwtAngularService,
     private httpClient: HttpClient,
     private messageService: MessageService) {
-    this.scaleinerverGameEngineEditorControllerClient = new ServerGameEngineEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
+    this.serverGameEngineEditorControllerClient = new ServerGameEngineEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
     this.levelEditorControllerClient = new LevelEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
     this.serverGameEngineControllerClient = new ServerGameEngineControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
@@ -81,13 +81,13 @@ export class EditorService {
 
   readServerGameEngineConfig(): Promise<ServerGameEngineConfig> {
     return new Promise((resolve) => {
-      this.scaleinerverGameEngineEditorControllerClient.read(EditorService.SERVER_GAME_ENGINE_ID).then(serverGameEngineConfig => {
+      this.serverGameEngineEditorControllerClient.read(EditorService.SERVER_GAME_ENGINE_ID).then(serverGameEngineConfig => {
         resolve(serverGameEngineConfig);
       }).catch(err => {
         this.messageService.add({
           severity: 'error',
           summary: `Loading SERVER_GAME_ENGINE failed`,
-          detail: `${JSON.stringify(err)}`,
+          detail: err.message,
           sticky: true
         });
       });
@@ -96,13 +96,13 @@ export class EditorService {
 
   updateResourceRegionConfig(resourceRegionConfigs: ResourceRegionConfig[]) {
     return new Promise((resolve) => {
-      this.scaleinerverGameEngineEditorControllerClient.updateResourceRegionConfig(EditorService.SERVER_GAME_ENGINE_ID, resourceRegionConfigs).then(serverGameEngineConfig => {
+      this.serverGameEngineEditorControllerClient.updateResourceRegionConfig(EditorService.SERVER_GAME_ENGINE_ID, resourceRegionConfigs).then(serverGameEngineConfig => {
         resolve(serverGameEngineConfig);
       }).catch(err => {
         this.messageService.add({
           severity: 'error',
           summary: `Failed updateResourceRegionConfig`,
-          detail: `${JSON.stringify(err)}`,
+          detail: err.message,
           sticky: true
         });
       });
@@ -111,13 +111,13 @@ export class EditorService {
 
   updateStartRegionConfig(startRegionConfigs: StartRegionConfig[]) {
     return new Promise((resolve) => {
-      this.scaleinerverGameEngineEditorControllerClient.updateStartRegionConfig(EditorService.SERVER_GAME_ENGINE_ID, startRegionConfigs).then(serverGameEngineConfig => {
+      this.serverGameEngineEditorControllerClient.updateStartRegionConfig(EditorService.SERVER_GAME_ENGINE_ID, startRegionConfigs).then(serverGameEngineConfig => {
         resolve(serverGameEngineConfig);
       }).catch(err => {
         this.messageService.add({
           severity: 'error',
           summary: `Failed updateStartRegionConfig`,
-          detail: `${JSON.stringify(err)}`,
+          detail: err.message,
           sticky: true
         });
       });
@@ -126,13 +126,13 @@ export class EditorService {
 
   updateBotConfig(botConfigs: BotConfig[]) {
     return new Promise((resolve) => {
-      this.scaleinerverGameEngineEditorControllerClient.updateBotConfig(EditorService.SERVER_GAME_ENGINE_ID, botConfigs).then(serverGameEngineConfig => {
+      this.serverGameEngineEditorControllerClient.updateBotConfig(EditorService.SERVER_GAME_ENGINE_ID, botConfigs).then(serverGameEngineConfig => {
         resolve(serverGameEngineConfig);
       }).catch(err => {
         this.messageService.add({
           severity: 'error',
           summary: `Failed updateBotConfig`,
-          detail: `${JSON.stringify(err)}`,
+          detail: err.message,
           sticky: true
         });
       });
@@ -141,13 +141,13 @@ export class EditorService {
 
   updateServerLevelQuestConfig(serverLevelQuestConfigs: ServerLevelQuestConfig[]): Promise<void> {
     return new Promise((resolve) => {
-      this.scaleinerverGameEngineEditorControllerClient.updateServerLevelQuestConfig(EditorService.SERVER_GAME_ENGINE_ID, serverLevelQuestConfigs).then(() => {
+      this.serverGameEngineEditorControllerClient.updateServerLevelQuestConfig(EditorService.SERVER_GAME_ENGINE_ID, serverLevelQuestConfigs).then(() => {
         resolve();
       }).catch(err => {
         this.messageService.add({
           severity: 'error',
           summary: `Failed updateServerLevelQuestConfig`,
-          detail: `${JSON.stringify(err)}`,
+          detail: err.message,
           sticky: true
         });
       });
@@ -156,19 +156,19 @@ export class EditorService {
 
   updateBoxRegionConfig(boxRegionConfigs: BoxRegionConfig[]) {
     return new Promise((resolve) => {
-      this.scaleinerverGameEngineEditorControllerClient.updateBoxRegionConfig(EditorService.SERVER_GAME_ENGINE_ID, boxRegionConfigs).then(serverGameEngineConfig => {
+      this.serverGameEngineEditorControllerClient.updateBoxRegionConfig(EditorService.SERVER_GAME_ENGINE_ID, boxRegionConfigs).then(serverGameEngineConfig => {
         resolve(serverGameEngineConfig);
       }).catch(err => {
         this.messageService.add({
           severity: 'error',
           summary: `Failed updateBoxRegionConfig`,
-          detail: `${JSON.stringify(err)}`,
+          detail: err.message,
           sticky: true
         });
       });
     });
   }
-  
+
   readBaseItemTypeObjectNameIds(): Promise<ObjectNameId[]> {
     return this.readObjectNameIds(BASE_ITEM_TYPE_EDITOR_PATH);
   }
