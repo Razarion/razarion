@@ -122,6 +122,7 @@ import { InventoryItemComponent } from './editor/common/inventory-item/inventory
 import { PercentInputComponent } from './editor/common/percent-input/percent-input.component';
 import { BoxRegionComponent } from './editor/box-region/box-region.component';
 import { InventoryComponent } from './game/inventory/inventory.component';
+import { QuestDialogComponent } from './game/cockpit/quest/quest-dialog/quest-dialog.component';
 
 @NgModule({
   declarations: [
@@ -198,6 +199,7 @@ import { InventoryComponent } from './game/inventory/inventory.component';
     PercentInputComponent,
     BoxRegionComponent,
     InventoryComponent,
+    QuestDialogComponent,
   ],
   imports: [
     BrowserModule,

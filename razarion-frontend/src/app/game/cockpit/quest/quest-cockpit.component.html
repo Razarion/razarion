@@ -1,12 +1,26 @@
-<div class="flex flex-column">
-  <div *ngIf="questDescriptionConfig?.getTitle()" class="flex font-bold bg-primary-reverse w-12rem m-0 p-0">
-    <H3>{{questDescriptionConfig?.getTitle()}}</H3>
+<div class="flex flex-column surface-0" style="width: 20em">
+  <div class="flex flex-column m-2 align-items-center font-semibold text-3xl" [ngStyle]="{color:'var(--surface-300)'}">
+    {{title}}
   </div>
-  <div *ngIf="questDescriptionConfig?.getDescription()"
-       class="flex bg-primary-reverse  m-0 p-0">{{questDescriptionConfig?.getDescription()}}
+  <div *ngIf="customRow" class="flex flex-column m-1">
+    {{customRow}}
   </div>
-
-  <div *ngFor="let progressRow of progressTable"
-       class="flex bg-primary-reverse  m-0 p-0">{{progressRow}}
+  <div *ngFor="let progressRow of progressRows" class="flex flex-row m-1">
+    <div class="flex align-items-center justify-content-center p-1">
+      <i *ngIf="!progressRow.done" class="pi pi-exclamation-triangle" style="color: yellow"></i>
+      <i *ngIf="progressRow.done" class="pi pi-check-circle" style="color: green"></i>
+    </div>
+    <div class="flex">{{progressRow.text}}</div>
+  </div>
+  <div *ngIf="timeRow" class="flex flex-column m-1">
+    {{timeRow}}
+  </div>
+  <div *ngIf="showQuestSelectionButton" class="flex flex-column align-items-center m-1">
+    <p-button type="button" label="Quests" icon="pi pi-list" styleClass="p-button-sm"
+      (onClick)="showQuestDialog = true"></p-button>
   </div>
 </div>
+
+<p-dialog header="Quets" [(visible)]="showQuestDialog" [style]="{width: '30vw'}">
+  <quest-dialog *ngIf="showQuestDialog"></quest-dialog>
+</p-dialog>

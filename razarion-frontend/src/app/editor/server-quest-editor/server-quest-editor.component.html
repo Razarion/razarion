@@ -55,7 +55,7 @@
   <p-accordion *ngIf="selectedLevelQuest">
     <p-accordionTab *ngFor="let questConfig of selectedLevelQuest.questConfigs">
       <ng-template pTemplate="header">
-        {{questConfig.title}}
+        {{conditionTriggerToTitle(questConfig)}}
         <div class="col-1">
           <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
                     (onClick)="onDeleteQuest(questConfig)"></p-button>

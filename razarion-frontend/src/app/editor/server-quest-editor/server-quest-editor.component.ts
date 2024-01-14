@@ -7,6 +7,7 @@ import {
   ServerGameEngineConfig,
   ServerLevelQuestConfig
 } from "../../generated/razarion-share";
+import { QuestCockpitComponent } from 'src/app/game/cockpit/quest/quest-cockpit.component';
 
 @Component({
   selector: 'server-quest-editor',
@@ -124,5 +125,9 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
       this.selectedLevelQuest!.questConfigs[index] = this.selectedLevelQuest!.questConfigs[index + 1];
       this.selectedLevelQuest!.questConfigs[index + 1] = temp;
     }
+  }
+
+  conditionTriggerToTitle(questConfig: QuestConfig): string {
+    return (questConfig.title ? `'${questConfig.title}'` : "") + " " + QuestCockpitComponent.conditionTriggerToTitle(questConfig.conditionConfig.conditionTrigger!)!;
   }
 }

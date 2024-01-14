@@ -14,8 +14,8 @@ import java.util.List;
  * Created by Beat
  * on 29.08.2017.
  */
-@Path(CommonUrl.QUEST_PROVIDER_PATH)
-public interface QuestProvider {
+@Path(CommonUrl.QUEST_CONTROLLER_PATH)
+public interface QuestController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("readMyOpenQuests")

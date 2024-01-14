@@ -1,5 +1,7 @@
 // ---------- Root ----------
 
+import { ConditionTrigger } from "../generated/razarion-share";
+
 export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
   gameUiControl!: GameUiControl;
@@ -131,9 +133,9 @@ export interface InputService {
 }
 
 export interface ItemTypeService {
-  getResourceItemType(resourceItemTypeId: number): ResourceItemType;
+  getResourceItemTypeAngular(resourceItemTypeId: number): ResourceItemType;
 
-  getBaseItemType(baseItemTypeId: number): BaseItemType;
+  getBaseItemTypeAngular(baseItemTypeId: number): BaseItemType;
 }
 
 export interface TerrainTypeService {
@@ -389,7 +391,7 @@ export interface QuestDescriptionConfig {
 
   getTitle(): string;
 
-  getDescription(): string;
+  getDescription(): string | null;
 }
 
 export interface QuestConfig extends QuestDescriptionConfig {
@@ -411,16 +413,6 @@ export interface ConditionConfig {
   getConditionTrigger(): ConditionTrigger;
 
   getComparisonConfig(): ComparisonConfig;
-}
-
-export enum ConditionTrigger {
-  SYNC_ITEM_KILLED = "SYNC_ITEM_KILLED",
-  HARVEST = "HARVEST",
-  SYNC_ITEM_CREATED = "SYNC_ITEM_CREATED",
-  BASE_KILLED = "BASE_KILLED",
-  SYNC_ITEM_POSITION = "SYNC_ITEM_POSITION",
-  BOX_PICKED = "BOX_PICKED",
-  INVENTORY_ITEM_PLACED = "INVENTORY_ITEM_PLACED"
 }
 
 export interface ComparisonConfig {
@@ -649,7 +641,7 @@ export interface BuildupItemCockpit {
 }
 
 export interface QuestCockpit {
-  showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, questProgressInfo: QuestProgressInfo | null, showQuestSelectionButton: boolean): void;
+  showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, showQuestSelectionButton: boolean): void;
 
   setShowQuestInGameVisualisation(): void;
 

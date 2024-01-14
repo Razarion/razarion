@@ -56,13 +56,14 @@ public class InGameQuestVisualizationService {
     private Collection<Runnable> placeConfigCallback = new ArrayList<>();
 
     public void onQuestActivated(QuestConfig quest) {
-        stop();
-        this.quest = quest;
-        if (visibleCallback != null) {
-            visibleCallback.accept(true);
-        }
-        visible = true;
-        showVisualization();
+        // TODO
+//        stop();
+//        this.quest = quest;
+//        if (visibleCallback != null) {
+//            visibleCallback.accept(true);
+//        }
+//        visible = true;
+//        showVisualization();
     }
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {

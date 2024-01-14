@@ -1,13 +1,15 @@
-import {Component, NgZone} from "@angular/core";
+import { Component, NgZone } from "@angular/core";
 import {
-  ConditionTrigger,
+  ConditionConfig,
   QuestCockpit,
   QuestConfig,
   QuestDescriptionConfig,
   QuestProgressInfo
 } from "../../../gwtangular/GwtAngularFacade";
-import {GwtHelper} from "../../../gwtangular/GwtHelper";
-import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
+import { GwtHelper } from "../../../gwtangular/GwtHelper";
+import { GwtAngularService } from "../../../gwtangular/GwtAngularService";
+import { ConditionTrigger } from "src/app/generated/razarion-share";
+import { QuestDialogComponent } from "./quest-dialog/quest-dialog.component";
 
 @Component({
   selector: 'quest-cockpit',
@@ -15,21 +17,35 @@ import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
   styleUrls: ['quest-cockpit.component.scss']
 })
 export class QuestCockpitComponent implements QuestCockpit {
+  title?: string
+  customRow?: string
   showCockpit: boolean = false;
-  questDescriptionConfig?: QuestDescriptionConfig;
-  progressTable: string[] = [];
-  questProgressInfo?: QuestProgressInfo;
+  progressRows: { text: string, done: boolean }[] = [];
+  timeRow?: string = "";
+  showQuestSelectionButton: boolean = false;
+  showQuestDialog: boolean = false;
+  private questDescriptionConfig?: QuestDescriptionConfig;
+  private conditionConfig?: ConditionConfig;
+  private questProgressInfo?: QuestProgressInfo;
 
   constructor(private gwtAngularService: GwtAngularService, private zone: NgZone) {
   }
 
-  showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, questProgressInfo: QuestProgressInfo | null, showQuestSelectionButton: boolean): void {
+  showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, showQuestSelectionButton: boolean): void {
     this.zone.run(() => {
       try {
-        this.showCockpit = !!questDescriptionConfig;
         this.questDescriptionConfig = questDescriptionConfig || undefined;
-        this.questProgressInfo = questProgressInfo || undefined;
+        this.conditionConfig = this.setupConditionConfig();
+        this.questProgressInfo = undefined;
+        this.setupTitle();
+        this.setupCusstomDescription();
         this.setupProgress();
+        this.showQuestSelectionButton = showQuestSelectionButton;
+        this.showCockpit = !!questDescriptionConfig;
+        if (!this.showCockpit) {
+          this.showQuestDialog = false;
+        }
+
       } catch (e) {
         console.warn(e);
       }
@@ -53,87 +69,159 @@ export class QuestCockpitComponent implements QuestCockpit {
   setBotSceneIndicationInfos(): void {
   }
 
+  private setupConditionConfig(): ConditionConfig | undefined {
+    if (!this.questDescriptionConfig) {
+      return undefined
+    }
+    if ((<QuestConfig>this.questDescriptionConfig).getConditionConfig && (<QuestConfig>this.questDescriptionConfig).getConditionConfig()) {
+      return (<QuestConfig>this.questDescriptionConfig).getConditionConfig()!;
+    } else {
+      return undefined
+    }
+  }
+
+  private setupTitle(): void {
+    if (!this.questDescriptionConfig) {
+      return undefined
+    }
+    if (this.conditionConfig?.getConditionTrigger()) {
+      let conditionTrigger = GwtHelper.gwtIssue(this.conditionConfig?.getConditionTrigger());
+      this.title = QuestCockpitComponent.conditionTriggerToTitle(conditionTrigger);
+      if (!this.title) {
+        console.warn(`Unknown ConditionTrigger ${conditionTrigger}`);
+        this.title = `Unknown ConditionTrigger ${conditionTrigger}`;
+      }
+    } else {
+      this.title = this.questDescriptionConfig.getTitle();
+    }
+  }
+
+  private setupCusstomDescription() {
+    if (this.questDescriptionConfig?.getDescription()) {
+      this.customRow = this.questDescriptionConfig.getDescription()!;
+    } else {
+      this.customRow = undefined;
+    }
+  }
+
   private setupProgress() {
-    this.progressTable = [];
-    if (!this.questDescriptionConfig || !this.questProgressInfo) {
+    this.progressRows = [];
+    if (!this.conditionConfig) {
       return;
     }
 
-    if (!('getConditionConfig' in this.questDescriptionConfig)) {
-      return
-    }
-
-    let conditionConfig = (<QuestConfig>this.questDescriptionConfig).getConditionConfig();
-    if (!conditionConfig) {
-      return;
-    }
-    if (conditionConfig) {
-      switch (GwtHelper.gwtIssueStringEnum(conditionConfig?.getConditionTrigger(), ConditionTrigger)) {
-        case ConditionTrigger.SYNC_ITEM_KILLED: {
-          this.setupSingleOrMulti("Einheiten zerstört");
-          break;
-        }
-        case ConditionTrigger.HARVEST: {
-          this.setupSingleCount("Ressourcen gesammelt");
-          break;
-        }
-        case ConditionTrigger.SYNC_ITEM_CREATED: {
-          this.setupSingleOrMulti("Einheiten gebaut");
-          break;
-        }
-        case ConditionTrigger.BASE_KILLED: {
-          this.setupSingleCount("Basen ausgelöscht");
-          break;
-        }
-        case ConditionTrigger.SYNC_ITEM_POSITION: {
-          this.setupSingleOrMulti("Einheiten vorhanden");
-          break;
-        }
-        case ConditionTrigger.BOX_PICKED: {
-          this.setupSingleCount("Boxen gesammelt");
-          break;
-        }
-        case ConditionTrigger.INVENTORY_ITEM_PLACED: {
-          this.setupSingleCount("Inventar eingesetzt");
-          break;
-        }
-        default: {
-          console.warn(`Unknown ConditionTrigger ${conditionConfig.getConditionTrigger()}`)
-          this.progressTable.push(`???`)
-        }
+    switch (GwtHelper.gwtIssue(this.conditionConfig?.getConditionTrigger())) {
+      case ConditionTrigger.SYNC_ITEM_KILLED: {
+        this.specificOrCount("Units or buildings destroyed", "destroyed");
+        break;
       }
-      if (conditionConfig.getComparisonConfig().getTimeSeconds()) {
-        this.progressTable.push(`Verbleibende Zeit ${this.questProgressInfo?.getSecondsRemaining()}`)
+      case ConditionTrigger.HARVEST: {
+        this.setupSingleCount("Razarion harvested");
+        break;
       }
+      case ConditionTrigger.SYNC_ITEM_CREATED: {
+        this.specificOrCount("Units or buildings created", "created");
+        break;
+      }
+      case ConditionTrigger.BASE_KILLED: {
+        this.setupSingleCount("Bases killed");
+        break;
+      }
+      case ConditionTrigger.SYNC_ITEM_POSITION: {
+        this.specificOrCount("Units or buildings on position", "on region");
+        break;
+      }
+      case ConditionTrigger.BOX_PICKED: {
+        this.setupSingleCount("Box picked");
+        break;
+      }
+      case ConditionTrigger.INVENTORY_ITEM_PLACED: {
+        this.setupSingleCount("Inventory items placed");
+        break;
+      }
+      default: {
+        console.warn(`Unknown ConditionTrigger ${this.conditionConfig.getConditionTrigger()}`)
+        this.progressRows.push({ text: `???`, done: false })
+      }
+    }
+    if (this.conditionConfig.getComparisonConfig().getTimeSeconds()) {
+      if (this.questProgressInfo?.getSecondsRemaining()) {
+        this.timeRow = `Time remaingin: ${this.questProgressInfo?.getSecondsRemaining()} seconds`;
+      } else {
+        this.timeRow = `Time remaingin: ${this.conditionConfig.getComparisonConfig().getTimeSeconds()} seconds`;
+      }
+    } else {
+      this.timeRow = undefined
     }
   }
 
   private setupSingleCount(text: string) {
-    this.progressTable.push(`${text} ${this.questProgressInfo?.getCount()}/${(<QuestConfig>this.questDescriptionConfig).getConditionConfig()?.getComparisonConfig().getCount()}`)
+    let actualCount = this.questProgressInfo ? this.questProgressInfo.getCount() : 0;
+    let expectedCount = (<QuestConfig>this.questDescriptionConfig).getConditionConfig()?.getComparisonConfig().getCount();
+    this.progressRows.push({
+      text: `${text} ${actualCount} of ${expectedCount}`,
+      done: !!(expectedCount && actualCount && actualCount >= expectedCount)
+    });
   }
 
-  private setupSingleOrMulti(text: string) {
-    let conditionConfig = (<QuestConfig>this.questDescriptionConfig)?.getConditionConfig();
-    if (conditionConfig!.getComparisonConfig().getCount()) {
-      this.setupSingleCount(text);
-    } else if (conditionConfig!.getComparisonConfig().toTypeCountAngular()?.length) {
-      this.progressTable.push(text);
-      conditionConfig!.getComparisonConfig().toTypeCountAngular().forEach((itemTypeIdCount) => {
-        let itemTypeName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemType(itemTypeIdCount[0]).getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language);
-        this.progressTable.push(`${itemTypeName} ${this.findCurrentItemTypeCount(itemTypeIdCount[0])}/${itemTypeIdCount[1]}`)
+  private specificOrCount(textCount: string, textSpecific: string) {
+    if (this.conditionConfig?.getComparisonConfig().getCount()) {
+      this.setupSingleCount(textCount);
+    } else if (this.conditionConfig?.getComparisonConfig().toTypeCountAngular()?.length) {
+      this.conditionConfig.getComparisonConfig().toTypeCountAngular().forEach((itemTypeIdCount) => {
+        let itemTypeName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(GwtHelper.gwtIssueNumber(itemTypeIdCount[0])).getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language);
+        let actualCount = this.findCurrentItemTypeCount(itemTypeIdCount[0]);
+        this.progressRows.push({
+          text: `${itemTypeName} ${textSpecific} ${actualCount} of ${itemTypeIdCount[1]}`,
+          done: actualCount >= itemTypeIdCount[1]
+        });
       });
     }
   }
 
   private findCurrentItemTypeCount(itemTypeId: number) {
-    let typeCounts = this.questProgressInfo?.toTypeCountAngular();
-    if (!typeCounts) {
-      return "?";
+    if (this.questProgressInfo) {
+      let typeCounts = this.questProgressInfo.toTypeCountAngular();
+      if (!typeCounts) {
+        return 0;
+      }
+      let typeCount = typeCounts.find((ty) => ty[0] === itemTypeId);
+      if (!typeCount) {
+        return 0;
+      }
+      return typeCount[1];
+    } else {
+      return 0;
     }
-    let typeCount = typeCounts.find((ty) => ty[0] === itemTypeId);
-    if (!typeCount) {
-      return "?";
+  }
+
+  static conditionTriggerToTitle(conditionTrigger: ConditionTrigger): string | undefined {
+    switch (conditionTrigger) {
+      case ConditionTrigger.SYNC_ITEM_KILLED: {
+        return "Destroy";
+      }
+      case ConditionTrigger.HARVEST: {
+        return "Harvest";
+      }
+      case ConditionTrigger.SYNC_ITEM_CREATED: {
+        return "Build";
+      }
+      case ConditionTrigger.BASE_KILLED: {
+        return "Destroy Bases";
+      }
+      case ConditionTrigger.SYNC_ITEM_POSITION: {
+        return "Region";
+      }
+      case ConditionTrigger.BOX_PICKED: {
+        return "Boxs";
+      }
+      case ConditionTrigger.INVENTORY_ITEM_PLACED: {
+        return "Inventory";
+      }
+      default: {
+        console.warn(`Unknown ConditionTrigger ${conditionTrigger}`)
+      }
     }
-    return typeCount[1];
+    return undefined
   }
 }

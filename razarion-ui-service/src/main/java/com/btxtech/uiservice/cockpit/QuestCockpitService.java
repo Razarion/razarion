@@ -22,9 +22,9 @@ public class QuestCockpitService {
         this.questCockpit = questCockpit;
     }
 
-    public void showQuestSideBar(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo, boolean showQuestSelectionButton) {
+    public void showQuestSideBar(QuestDescriptionConfig<?> descriptionConfig, boolean showQuestSelectionButton) {
         if (questCockpit != null) {
-            questCockpit.showQuestSideBar(descriptionConfig, questProgressInfo, showQuestSelectionButton);
+            questCockpit.showQuestSideBar(descriptionConfig, showQuestSelectionButton);
         } else {
             logger.warning("No questCockpit showQuestSideBar()");
         }

@@ -4,13 +4,12 @@ import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.rest.QuestProvider;
+import com.btxtech.shared.rest.QuestController;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
@@ -19,18 +18,17 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 26.10.2016.
  */
 @Templated("QuestSelectionDialog.html#quest-selection-dialog")
+@Deprecated
 public class QuestSelectionDialog extends Composite implements ModalDialogContent<Void> {
     // private Logger logger = Logger.getLogger(QuestSelectionDialog.class.getName());
     @Inject
-    private Caller<QuestProvider> provider;
+    private Caller<QuestController> provider;
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject

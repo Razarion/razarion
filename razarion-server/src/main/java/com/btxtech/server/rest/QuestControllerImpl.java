@@ -3,7 +3,7 @@ package com.btxtech.server.rest;
 import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.rest.QuestProvider;
+import com.btxtech.shared.rest.QuestController;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -13,7 +13,7 @@ import java.util.List;
  * Created by Beat
  * on 30.08.2017.
  */
-public class QuestProviderImpl implements QuestProvider {
+public class QuestControllerImpl implements QuestController {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject

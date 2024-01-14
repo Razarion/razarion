@@ -24,7 +24,6 @@ import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -136,7 +135,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.getQuestConfig() != null) {
             gameEngineControl.activateQuest(sceneConfig.getQuestConfig());
             audioService.onQuestActivated();
-            questCockpitService.showQuestSideBar(sceneConfig.getQuestConfig(), null, false);
+            questCockpitService.showQuestSideBar(sceneConfig.getQuestConfig(), false);
             inGameQuestVisualizationService.onQuestActivated(sceneConfig.getQuestConfig());
         }
         if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
@@ -161,7 +160,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            questCockpitService.showQuestSideBar(new QuestDescriptionConfig().title(I18nHelper.getConstants().placeStartItemTitle()).description(I18nHelper.getConstants().placeStartItemDescription()).hidePassedDialog(true), null, false);
+            questCockpitService.showQuestSideBar(new QuestDescriptionConfig().title(I18nHelper.getConstants().placeStartItemTitle()).description(I18nHelper.getConstants().placeStartItemDescription()).hidePassedDialog(true), false);
         }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
@@ -170,7 +169,7 @@ public class Scene implements ViewService.ViewFieldListener {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             scrollBouncePrevention = false;
-            questCockpitService.showQuestSideBar(sceneConfig.getScrollUiQuest(), null, false);
+            questCockpitService.showQuestSideBar(sceneConfig.getScrollUiQuest(), false);
             audioService.onQuestActivated();
             viewService.addViewFieldListeners(this);
         }
@@ -238,10 +237,10 @@ public class Scene implements ViewService.ViewFieldListener {
             baseItemPlacerService.deactivate();
         }
         if (sceneConfig.getQuestConfig() != null) {
-            questCockpitService.showQuestSideBar(null, null, false);
+            questCockpitService.showQuestSideBar(null, false);
         }
         if (sceneConfig.getScrollUiQuest() != null) {
-            questCockpitService.showQuestSideBar(null, null, false);
+            questCockpitService.showQuestSideBar(null, false);
         }
         if (sceneConfig.getGameTipConfig() != null) {
             inGameQuestVisualizationService.setSuppressed(false);
@@ -249,20 +248,20 @@ public class Scene implements ViewService.ViewFieldListener {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             viewService.removeViewFieldListeners(this);
-            questCockpitService.showQuestSideBar(null, null, false);
+            questCockpitService.showQuestSideBar(null, false);
         }
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
-            questCockpitService.showQuestSideBar(null, null, false);
+            questCockpitService.showQuestSideBar(null, false);
         }
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
-            questCockpitService.showQuestSideBar(null, null, false);
+            questCockpitService.showQuestSideBar(null, false);
         }
         inGameQuestVisualizationService.stop();
     }
 
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
-            questCockpitService.showQuestSideBar(null, null, false);
+            questCockpitService.showQuestSideBar(null, false);
             if (sceneConfig.getQuestConfig().isHidePassedDialog()) {
                 onComplete();
             } else {
@@ -275,7 +274,7 @@ public class Scene implements ViewService.ViewFieldListener {
             userUiService.increaseXp(sceneConfig.getQuestConfig().getXp());
         }
         if (sceneConfig.getScrollUiQuest() != null) {
-            questCockpitService.showQuestSideBar(null, null, false);
+            questCockpitService.showQuestSideBar(null, false);
             if (sceneConfig.getScrollUiQuest().isHidePassedDialog()) {
                 onComplete();
             } else {
@@ -295,7 +294,7 @@ public class Scene implements ViewService.ViewFieldListener {
     }
 
     private void setupQuestVisualizer4Server() {
-        questCockpitService.showQuestSideBar(gameUiControl.getServerQuest(), gameUiControl.getServerQuestProgress(), true);
+        questCockpitService.showQuestSideBar(gameUiControl.getServerQuest(), true);
         inGameQuestVisualizationService.onQuestActivated(gameUiControl.getServerQuest());
         inGameQuestVisualizationService.onQuestProgress(gameUiControl.getServerQuestProgress());
     }
@@ -307,7 +306,7 @@ public class Scene implements ViewService.ViewFieldListener {
 
     public void onQuestActivatedServer(QuestConfig quest) {
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
-            questCockpitService.showQuestSideBar(quest, null, true);
+            questCockpitService.showQuestSideBar(quest, true);
             if (quest != null) {
                 inGameQuestVisualizationService.onQuestActivated(quest);
             } else {
@@ -318,7 +317,7 @@ public class Scene implements ViewService.ViewFieldListener {
 
     public void onQuestPassedServer(QuestConfig quest) {
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
-            questCockpitService.showQuestSideBar(null, null, true);
+            questCockpitService.showQuestSideBar(null, true);
             modalDialogManager.showQuestPassed(quest);
             inGameQuestVisualizationService.stop();
         } else {

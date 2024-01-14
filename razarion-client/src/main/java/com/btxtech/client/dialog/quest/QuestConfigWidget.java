@@ -5,7 +5,7 @@ import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.common.DisplayUtils;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.rest.QuestProvider;
+import com.btxtech.shared.rest.QuestController;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -30,10 +30,11 @@ import javax.inject.Inject;
  * on 29.08.2017.
  */
 @Templated("QuestSelectionDialog.html#questSelectionTr")
+@Deprecated
 public class QuestConfigWidget implements TakesValue<QuestConfig>, IsElement {
     // private Logger logger = Logger.getLogger(QuestConfigWidget.class.getName());
     @Inject
-    private Caller<QuestProvider> provider;
+    private Caller<QuestController> provider;
     @Inject
     private GameUiControl gameUiControl;
     @Inject

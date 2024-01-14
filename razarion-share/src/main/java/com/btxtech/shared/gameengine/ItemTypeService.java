@@ -49,6 +49,11 @@ public class ItemTypeService {
         }
         return resourceItemType;
     }
+    @SuppressWarnings("unused") // Called by Angular
+    public ResourceItemType getResourceItemTypeAngular(int resourceItemTypeId) {
+        return getResourceItemType(resourceItemTypeId);
+    }
+
 
     public BaseItemType getBaseItemType(Integer baseItemTypeId) {
         BaseItemType baseItemType = baseItemTypes.get(baseItemTypeId);
@@ -56,6 +61,11 @@ public class ItemTypeService {
             throw new NoSuchItemTypeException(BaseItemType.class, baseItemTypeId);
         }
         return baseItemType;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public BaseItemType getBaseItemTypeAngular(int baseItemTypeId) {
+        return getBaseItemType(baseItemTypeId);
     }
 
     public BoxItemType getBoxItemType(Integer boxItemTypeId) {

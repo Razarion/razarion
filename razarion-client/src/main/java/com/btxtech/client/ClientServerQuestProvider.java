@@ -1,7 +1,7 @@
 package com.btxtech.client;
 
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
-import com.btxtech.shared.rest.QuestProvider;
+import com.btxtech.shared.rest.QuestController;
 import com.btxtech.uiservice.ServerQuestProvider;
 import org.jboss.errai.common.client.api.Caller;
 
@@ -11,7 +11,7 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class ClientServerQuestProvider implements ServerQuestProvider {
     @Inject
-    private Caller<QuestProvider> questProvider;
+    private Caller<QuestController> questProvider;
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
 

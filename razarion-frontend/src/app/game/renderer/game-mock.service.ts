@@ -39,11 +39,13 @@ import {
   ThreeJsModelPackService,
   BabylonTerrainTile,
   Vertex,
-  WaterConfig, WeaponType, BaseItemUiService, Diplomacy, NativeSyncBaseItemTickInfo, PlayerBaseDto, Character, InventoryTypeService, InventoryItem
+  WaterConfig, WeaponType, BaseItemUiService, Diplomacy, NativeSyncBaseItemTickInfo, PlayerBaseDto, Character, InventoryTypeService, InventoryItem, ConditionConfig, ComparisonConfig, QuestProgressInfo, QuestConfig
 } from "src/app/gwtangular/GwtAngularFacade";
 import { HttpClient } from "@angular/common/http";
 import { GwtInstance } from "../../gwtangular/GwtInstance";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
+import { QuestCockpitComponent } from "../cockpit/quest/quest-cockpit.component";
+import { ConditionTrigger } from "src/app/generated/razarion-share";
 
 let staticGameConfigJson: any = {};
 
@@ -448,7 +450,7 @@ export class GameMockService {
 
   mockItemTypeService(): ItemTypeService {
     return new class implements ItemTypeService {
-      getBaseItemType(baseItemTypeId: number): BaseItemType {
+      getBaseItemTypeAngular(baseItemTypeId: number): BaseItemType {
         return new class implements BaseItemType {
           getBuilderType(): BuilderType | null {
             return null;
@@ -461,7 +463,7 @@ export class GameMockService {
           getI18nName(): I18nString {
             return new class implements I18nString {
               getString(language: string): string {
-                return "I18nString";
+                return "Viper";
               }
             };
           }
@@ -496,7 +498,7 @@ export class GameMockService {
         }
       }
 
-      getResourceItemType(resourceItemTypeId: number): ResourceItemType {
+      getResourceItemTypeAngular(resourceItemTypeId: number): ResourceItemType {
         return new class implements ResourceItemType {
           getI18nName(): I18nString {
             return new class implements I18nString {
@@ -903,6 +905,78 @@ export class GameMockService {
         }
       }
     }
+  }
+
+  showQuestSideBar(questCockpitContainer: QuestCockpitComponent) {
+    questCockpitContainer.showQuestSideBar(new class implements QuestConfig {
+      getConditionConfig(): ConditionConfig | null {
+        return new class implements ConditionConfig {
+          getConditionTrigger(): ConditionTrigger {
+            return ConditionTrigger.SYNC_ITEM_CREATED;
+          }
+
+          getComparisonConfig(): ComparisonConfig {
+            return new class implements ComparisonConfig {
+              getCount(): number | null {
+                return null;
+              }
+
+              getTimeSeconds(): number | null {
+                return null;
+              }
+
+              toTypeCountAngular(): number[][] {
+                return [[1, 2], [2, 3]];
+              }
+
+            };
+          }
+        };
+      }
+
+      getId(): number {
+        return 0;
+      }
+
+      getInternalName(): string {
+        return "";
+      }
+
+      getTitle(): string {
+        return "Place";
+      }
+
+      getDescription(): string | null {
+        return null;
+      }
+
+    },
+      true)
+  }
+
+  hideQuestSideBar(questCockpitContainer: QuestCockpitComponent) {
+    questCockpitContainer.showQuestSideBar(null, false);
+  }
+
+  onQuestProgress(questCockpitContainer: QuestCockpitComponent) {
+    questCockpitContainer.onQuestProgress(new class implements QuestProgressInfo {
+      getBotBasesInformation(): string | null {
+        return null;
+      }
+
+      getCount(): number | null {
+        return 7;
+      }
+
+      getSecondsRemaining(): number | null {
+        return 25;
+      }
+
+      toTypeCountAngular(): number[][] {
+        return [[1, 2], [2, 2]];
+      }
+
+    });
   }
 }
 

@@ -1,4 +1,13 @@
 export class GwtHelper {
+  static gwtIssue(value: any): any {
+    if (typeof value === "object") {
+      for (let childValue of Object.values(value)) {
+        return childValue;
+      }
+    }
+    return value;
+  }
+
   static gwtIssueNumber(integer: any): number {
     if (integer === null || integer === undefined) {
       return integer;

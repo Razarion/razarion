@@ -13,16 +13,11 @@ import { BabylonModelService } from './renderer/babylon-model.service';
 import {
   AngularCursorService,
   BaseItemType,
-  BoxContent,
   BuilderType,
-  ComparisonConfig,
-  ConditionConfig,
-  ConditionTrigger,
   CursorType,
   Diplomacy,
   HarvesterType,
   I18nString,
-  InventoryItem,
   OwnItemCockpit,
   PhysicalAreaConfig,
   QuestConfig,
@@ -35,8 +30,7 @@ import { GwtInstance } from "../gwtangular/GwtInstance";
 import { GwtHelper } from "../gwtangular/GwtHelper";
 import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
 import { ModelDialogPresenterImpl } from './model-dialog-presenter.impl';
-import { GeneratedCrudContainerComponent } from '../editor/crud-editors/crud-container/generated-crud-container.component';
-import { BoxItemTypeEditorComponent } from '../editor/crud-editors/box-item-type-editor/box-item-type-editor.component';
+import { setIn } from 'vanilla-jsoneditor';
 
 
 @Component({
@@ -293,68 +287,6 @@ export class GameComponent implements OnInit, ScreenCover {
                 }
 
               });
-
-              this.questCockpitContainer.showQuestSideBar(new class implements QuestConfig {
-                getConditionConfig(): ConditionConfig | null {
-                  return new class implements ConditionConfig {
-                    getConditionTrigger(): ConditionTrigger {
-                      return ConditionTrigger.SYNC_ITEM_POSITION;
-                    }
-
-                    getComparisonConfig(): ComparisonConfig {
-                      return new class implements ComparisonConfig {
-                        getCount(): number | null {
-                          return null;
-                        }
-
-                        getTimeSeconds(): number | null {
-                          return null;
-                        }
-
-                        toTypeCountAngular(): number[][] {
-                          return [[1, 2], [2, 3]];
-                        }
-
-                      };
-                    }
-                  };
-                }
-
-                getId(): number {
-                  return 0;
-                }
-
-                getInternalName(): string {
-                  return "";
-                }
-
-                getTitle(): string {
-                  return "Build";
-                }
-
-                getDescription(): string {
-                  return "Build a Factory";
-                }
-
-              }, new class implements QuestProgressInfo {
-                getBotBasesInformation(): string | null {
-                  return null;
-                }
-
-                getCount(): number | null {
-                  return 1;
-                }
-
-                getSecondsRemaining(): number | null {
-                  return null;
-                }
-
-                toTypeCountAngular(): number[][] {
-                  return [];
-                }
-
-              },
-                false)
             });
           });
         });
@@ -367,9 +299,24 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.displayEnergy(2, 10);
         // this.addEditorModel(new EditorModel("???", BaseMgmtComponent));
         // this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, BoxItemTypeEditorComponent));
-        this.showInventory = true;
+        // this.showInventory = true;
         this.fadeOutLoadingCover();
         this.removeLoadingCover();
+
+
+        this.gameMockService.showQuestSideBar(this.questCockpitContainer);
+        this.gameMockService.onQuestProgress(this.questCockpitContainer);
+        let questDialogVisible = false;
+        setInterval(() => {
+          if (questDialogVisible) {
+            this.gameMockService.showQuestSideBar(this.questCockpitContainer);
+            this.gameMockService.onQuestProgress(this.questCockpitContainer);
+          } else {
+            this.gameMockService.hideQuestSideBar(this.questCockpitContainer);
+          }
+          questDialogVisible = !questDialogVisible;
+        }, 5000);
+
       }
       // setTimeout(() => {
       //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
@@ -380,40 +327,40 @@ export class GameComponent implements OnInit, ScreenCover {
       // setTimeout(() => {
       //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
       // }, 120);
-      setTimeout(() => {
-        let boxContent = new class implements BoxContent {
-          toInventoryItemArray(): InventoryItem[] {
-            return [
-              new class implements InventoryItem {
-                getI18nName(): I18nString {
-                  return new class implements I18nString {
-                    getString(language: string): string {
-                      return "3 viper pack";
-                    }
-                  };
-                }
-                getRazarion(): number | null {
-                  return null
-                }
-                getBaseItemTypeId(): number | null {
-                  return null
-                }
-                getBaseItemTypeCount(): number {
-                  throw 0;
-                }
-                getImageId(): number | null {
-                  return null
-                }
-
-              }
-            ];
-          }
-          getCrystals(): number {
-            return 0;
-          }
-        };
-        this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBoxPicked(boxContent);
-      }, 100);
+      // setTimeout(() => {
+      //   let boxContent = new class implements BoxContent {
+      //     toInventoryItemArray(): InventoryItem[] {
+      //       return [
+      //         new class implements InventoryItem {
+      //           getI18nName(): I18nString {
+      //             return new class implements I18nString {
+      //               getString(language: string): string {
+      //                 return "3 viper pack";
+      //               }
+      //             };
+      //           }
+      //           getRazarion(): number | null {
+      //             return null
+      //           }
+      //           getBaseItemTypeId(): number | null {
+      //             return null
+      //           }
+      //           getBaseItemTypeCount(): number {
+      //             throw 0;
+      //           }
+      //           getImageId(): number | null {
+      //             return null
+      //           }
+      //
+      //         }
+      //       ];
+      //     }
+      //     getCrystals(): number {
+      //       return 0;
+      //     }
+      //   };
+      //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBoxPicked(boxContent);
+      // }, 100);
 
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;
@@ -440,6 +387,7 @@ export class GameComponent implements OnInit, ScreenCover {
         this.startGame();
       });
     }
+
     // TODO remove
     // let ownItemCockpit: OwnItemCockpit = {
     //   buildupItemInfos: null,

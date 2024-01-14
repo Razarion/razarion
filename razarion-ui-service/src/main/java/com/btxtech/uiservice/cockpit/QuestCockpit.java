@@ -6,7 +6,7 @@ import jsinterop.annotations.JsType;
 
 @JsType(isNative = true)
 public interface QuestCockpit {
-    void showQuestSideBar(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo, boolean showQuestSelectionButton);
+    void showQuestSideBar(QuestDescriptionConfig<?> descriptionConfig, boolean showQuestSelectionButton);
 
     void setShowQuestInGameVisualisation();
 

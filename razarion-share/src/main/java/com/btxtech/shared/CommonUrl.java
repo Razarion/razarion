@@ -33,7 +33,7 @@ public class CommonUrl {
     public static final String AUDIO_SERVICE_PATH = "audio";
     public static final String ALARM_SERVICE_PATH = "alarm-service";
     public static final String SERVER_GAME_ENGINE_EDITOR_PROVIDER_PATH = "servergameengineditorprovider";
-    public static final String QUEST_PROVIDER_PATH = "questprovider";
+    public static final String QUEST_CONTROLLER_PATH = "quest-controller";
     public static final String SERVER_GAME_ENGINE_PATH = "server-game-engine";
     public static final String GAME_UI_CONTEXT_CONTROL_PATH = G_ZIPPED + "/" + "game-ui-context-control";
     public static final String COLD = "cold";
