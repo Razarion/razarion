@@ -24,7 +24,8 @@ import {
   QuestProgressInfo,
   RadarState,
   ScreenCover,
-  WeaponType
+  WeaponType,
+  MarkerConfig
 } from "../gwtangular/GwtAngularFacade";
 import { GwtInstance } from "../gwtangular/GwtInstance";
 import { GwtHelper } from "../gwtangular/GwtHelper";
@@ -57,7 +58,7 @@ export class GameComponent implements OnInit, ScreenCover {
   constructor(private frontendService: FrontendService,
     private router: Router,
     private gwtAngularService: GwtAngularService,
-    private threeJsRendererService: BabylonRenderServiceAccessImpl,
+    private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
     private threeJsModelService: BabylonModelService,
     private gameMockService: GameMockService,
     private zone: NgZone) {
@@ -70,10 +71,10 @@ export class GameComponent implements OnInit, ScreenCover {
     this.gwtAngularService.crashListener = () => this.addEditorModel(new EditorModel("Crash Information Panel", CrashPanelComponent));
     this.gwtAngularService.gwtAngularFacade.modelDialogPresenter = this.modelDialogPresenter;
 
-    this.threeJsRendererService.setup(this.canvas.nativeElement);
+    this.babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = false;
+      let runGwtMock = true;
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
@@ -87,13 +88,13 @@ export class GameComponent implements OnInit, ScreenCover {
           this.gameMockService.loadMockAssetConfig().then(() => {
             this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
               this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
-              this.gameMockService.mockTerrainTile(this.threeJsRendererService);
+              this.gameMockService.mockTerrainTile(this.babylonRenderServiceAccessImpl);
               this.mainCockpitComponent.show(true);
               this.mainCockpitComponent.showRadar(RadarState.WORKING);
-              this.threeJsRendererService.runRenderer(this.gameMockService.createMeshContainers());
+              this.babylonRenderServiceAccessImpl.runRenderer(this.gameMockService.createMeshContainers());
               setTimeout(() => {
                 // Some very strange babylon behavior, _projectionMatrix is zero matrix
-                this.threeJsRendererService.setViewFieldCenter(5, 2);
+                this.babylonRenderServiceAccessImpl.setViewFieldCenter(5, 2);
                 this.fadeOutLoadingCover();
                 setTimeout(() => {
                   // Some very strange babylon behavior, _projectionMatrix is zero matrix
@@ -191,23 +192,24 @@ export class GameComponent implements OnInit, ScreenCover {
               };
 
               {
-                let babylonBaseItem1 = this.threeJsRendererService.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
+                let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
                 babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
                 babylonBaseItem1.setAngle(0);
 
                 babylonBaseItem1.updatePosition();
                 babylonBaseItem1.updateAngle();
 
-                babylonBaseItem1.select(true);
+                babylonBaseItem1.select(false);
 
                 babylonBaseItem1.setConstructing(0.01);
                 babylonBaseItem1.setHealth(0.99);
+                // babylonBaseItem1.mark(MarkerConfig);
 
                 // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
                 // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
               }
               {
-                let babylonBaseItem2 = this.threeJsRendererService.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
+                let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
                 babylonBaseItem2.setPosition(GwtInstance.newVertex(8, 14, 0));
                 babylonBaseItem2.setAngle(0);
 
@@ -223,7 +225,7 @@ export class GameComponent implements OnInit, ScreenCover {
                 setInterval(() => babylonBaseItem2.setHealth((Date.now() % 10000) / 10000), 2000);
               }
               {
-                let babylonBaseItem3 = this.threeJsRendererService.createBabylonBaseItem(999997, baseItemType, Diplomacy.ENEMY);
+                let babylonBaseItem3 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999997, baseItemType, Diplomacy.ENEMY);
                 babylonBaseItem3.setPosition(GwtInstance.newVertex(8, 20, 0));
                 babylonBaseItem3.setAngle(0);
 
@@ -287,6 +289,14 @@ export class GameComponent implements OnInit, ScreenCover {
                 }
 
               });
+
+              this.babylonRenderServiceAccessImpl.showOutOfViewMarker(new class implements MarkerConfig {
+                radius = 1;
+                nodesMaterialId = null;
+                outOfViewNodesMaterialId = 1;
+                outOfViewDistanceFromCamera = 3;
+                outOfViewSize = 1;
+              }, 0);
             });
           });
         });
@@ -364,12 +374,12 @@ export class GameComponent implements OnInit, ScreenCover {
 
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;
-    this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.threeJsRendererService;
+    this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.babylonRenderServiceAccessImpl;
     this.gwtAngularService.gwtAngularFacade.angularCursorService = this.createAngularCursorService();
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
     this.gwtAngularService.gwtAngularFacade.questCockpit = this.questCockpitContainer;
-    this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.threeJsRendererService.createBaseItemPlacerPresenter();
+    this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.babylonRenderServiceAccessImpl.createBaseItemPlacerPresenter();
 
     // Prevent running game in the background if someone press the browser history navigation button
     // Proper solution is to stop the game

@@ -135,7 +135,6 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
     }
 
     protected void draw(AbstractRenderUnit renderUnit, List<ModelMatrices> modelMatrices, double interpolationFactor) {
-        renderUnit.prepareDraw();
 
         if (modelMatrices != null) {
             for (ModelMatrices modelMatrice : modelMatrices) {
@@ -155,23 +154,6 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         }
     }
 
-    public void fillBuffers() {
-        if (renderUnit != null) {
-            renderUnit.fillBuffers(rendererData);
-        }
-        if (depthBufferRenderUnit != null) {
-            depthBufferRenderUnit.fillBuffers(rendererData);
-        }
-        if (wireRenderUnit != null) {
-            wireRenderUnit.fillBuffers(rendererData);
-        }
-    }
-
-    public void fillNormBuffer() {
-        if (normRenderUnit != null) {
-            normRenderUnit.fillBuffers(rendererData);
-        }
-    }
 
     public ModelRenderer getModelRenderer() {
         return modelRenderer;

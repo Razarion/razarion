@@ -1,15 +1,13 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Polygon2D;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
-import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.renderer.BabylonItem;
+import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
+import com.btxtech.uiservice.renderer.MarkerConfig;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,66 +15,61 @@ import java.util.Set;
  * on 12.09.2017.
  */
 public class SyncStaticItemSetPositionMonitor extends AbstractSyncItemSetPositionMonitor {
-    private Set<SyncItemSimpleDto> syncItems = new HashSet<>();
-    private List<Vertex> inViewVertices = new ArrayList<>();
-    private Polygon2D viewFieldPolygon;
-    private DecimalPosition viewFieldCenter;
-    private DecimalPosition nearestOutOfViewPosition;
+    private final Set<BabylonItem> visibleBabylonItems = new HashSet<>();
+    private final BabylonRendererService babylonRendererService;
+    private final MarkerConfig markerConfig;
+    private SyncItemSimpleDto nearestOutOfViewSyncItem;
+    private double nearestOutOfViewDistance;
 
-    public SyncStaticItemSetPositionMonitor(Collection<? extends SyncItemSimpleDto> syncItems, ViewField viewField, Runnable releaseCallback) {
+    public SyncStaticItemSetPositionMonitor(BabylonRendererService babylonRendererService, MarkerConfig markerConfig, Runnable releaseCallback) {
         super(releaseCallback);
-        viewFieldPolygon = viewField.toPolygon();
-        viewFieldCenter = viewField.calculateCenter();
-        this.syncItems = new HashSet<>(syncItems);
-        setupVertices();
+        this.babylonRendererService = babylonRendererService;
+        this.markerConfig = markerConfig;
     }
 
-    @Override
-    public DecimalPosition getNearestOutOfViewPosition2d() {
-        return nearestOutOfViewPosition;
-    }
-
-    @Override
-    public boolean hasInViewPositions() {
-        return !inViewVertices.isEmpty();
-    }
-
-    @Override
-    public List<Vertex> getInViewPosition3d() {
-        return inViewVertices;
-    }
-
-    public void add(SyncItemSimpleDto resource) {
-        syncItems.add(resource);
-        setupVertices();
-    }
-
-    public void remove(SyncItemSimpleDto resource) {
-        syncItems.remove(resource);
-        setupVertices();
-    }
-
-    public void onViewChanged(ViewField viewField) {
-        viewFieldPolygon = viewField.toPolygon();
-        viewFieldCenter = viewField.calculateCenter();
-        setupVertices();
-    }
-
-    private void setupVertices() {
-        inViewVertices.clear();
-        double distance = Double.MAX_VALUE;
-        for (SyncItemSimpleDto resource : syncItems) {
-            if (viewFieldPolygon.isInside(resource.getPosition2d())) {
-                inViewVertices.add(resource.getPosition3d());
-                nearestOutOfViewPosition = null;
+    public void setInvisible(SyncItemSimpleDto syncItemSimpleDto, DecimalPosition viewFieldCenter) {
+        if (syncItemSimpleDto == null) {
+            this.nearestOutOfViewSyncItem = null;
+        } else {
+            if (this.nearestOutOfViewSyncItem == null) {
+                this.nearestOutOfViewSyncItem = syncItemSimpleDto;
+                this.nearestOutOfViewDistance = viewFieldCenter.getDistance(syncItemSimpleDto.getPosition2d());
             } else {
-                if (inViewVertices.isEmpty()) {
-                    double newDistance = viewFieldCenter.getDistance(resource.getPosition2d());
-                    if (newDistance < distance) {
-                        distance = newDistance;
-                        nearestOutOfViewPosition = resource.getPosition2d();
-                    }
+                double distance = viewFieldCenter.getDistance(syncItemSimpleDto.getPosition2d());
+                if (distance < this.nearestOutOfViewDistance) {
+                    this.nearestOutOfViewSyncItem = syncItemSimpleDto;
+                    this.nearestOutOfViewDistance = distance;
                 }
+            }
+        }
+    }
+
+    public void addVisible(BabylonItem babylonItem) {
+        visibleBabylonItems.add(babylonItem);
+        babylonItem.mark(markerConfig);
+    }
+
+    public void removeVisible(BabylonItem babylonItem) {
+        visibleBabylonItems.remove(babylonItem);
+        babylonItem.mark(null);
+    }
+
+    @Override
+    public void release() {
+        visibleBabylonItems.forEach(babylonItem -> babylonItem.mark(null));
+        visibleBabylonItems.clear();
+        super.release();
+    }
+
+    public void handleOutOfView(DecimalPosition viewFieldCenter) {
+        if (visibleBabylonItems.isEmpty()) {
+            babylonRendererService.showOutOfViewMarker(null, 0);
+        } else {
+            if (nearestOutOfViewSyncItem != null) {
+                babylonRendererService.showOutOfViewMarker(markerConfig,
+                        viewFieldCenter.getAngle(nearestOutOfViewSyncItem.getPosition2d()));
+            } else {
+                babylonRendererService.showOutOfViewMarker(null, 0);
             }
         }
     }

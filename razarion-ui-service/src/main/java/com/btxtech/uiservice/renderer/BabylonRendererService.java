@@ -44,6 +44,10 @@ public class BabylonRendererService {
         babylonRenderServiceAccess.setViewFieldCenter(viewFieldConfig.getToPosition().getX(), viewFieldConfig.getToPosition().getY());
     }
 
+    public void showOutOfViewMarker(MarkerConfig markerConfig, double angle) {
+        babylonRenderServiceAccess.showOutOfViewMarker(markerConfig, angle);
+    }
+
     public void runRenderer(MeshContainer[] meshContainers) {
         babylonRenderServiceAccess.runRenderer(meshContainers);
     }

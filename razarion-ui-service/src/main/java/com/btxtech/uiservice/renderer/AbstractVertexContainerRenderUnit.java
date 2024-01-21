@@ -15,18 +15,6 @@ public abstract class AbstractVertexContainerRenderUnit extends AbstractRenderUn
     protected abstract void internalFillBuffers(VertexContainer vertexContainer);
 
     @Override
-    public void fillBuffers(VertexContainer vertexContainer) {
-        if (vertexContainer == null) {
-            logger.warning("No vertices to render");
-            return;
-        }
-
-        internalFillBuffers(vertexContainer);
-
-        setElementCount(vertexContainer);
-    }
-
-    @Override
     public String helperString() {
         return getRenderData().getKey();
     }

@@ -31,6 +31,9 @@ public class DbPropertiesEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity shape3DId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ThreeJsModelConfigEntity babylonModel;
     private Integer intValue;
     private Double doubleValue;
     @AttributeOverrides({
@@ -93,6 +96,14 @@ public class DbPropertiesEntity {
 
     public void setShape3DId(ColladaEntity shape3DId) {
         this.shape3DId = shape3DId;
+    }
+
+    public ThreeJsModelConfigEntity getBabylonModel() {
+        return babylonModel;
+    }
+
+    public void setBabylonModel(ThreeJsModelConfigEntity babylonModel) {
+        this.babylonModel = babylonModel;
     }
 
     public Color getColor() {

@@ -9,6 +9,7 @@ import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.renderer.BabylonBoxItem;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
+import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -54,9 +55,6 @@ public class BoxUiService {
                 logger.warning("Box already exists: " + syncBoxItem);
             }
         }
-        if (syncStaticItemSetPositionMonitor != null) {
-            syncStaticItemSetPositionMonitor.add(syncBoxItem);
-        }
         updateBabylonBoxItems();
     }
 
@@ -68,9 +66,6 @@ public class BoxUiService {
                 throw new IllegalStateException("No box for id: " + id);
             }
             selectionHandler.boxItemRemove(box);
-        }
-        if (syncStaticItemSetPositionMonitor != null) {
-            syncStaticItemSetPositionMonitor.remove(box);
         }
         updateBabylonBoxItems();
     }
@@ -136,11 +131,11 @@ public class BoxUiService {
         return new SyncItemState(boxItemSimpleDto.getId(), boxItemSimpleDto.getPosition2d(), boxItemSimpleDto.getPosition3d(), itemTypeService.getBoxItemType(boxItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 
-    public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor() {
+    public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor(MarkerConfig markerConfig) {
         if (syncStaticItemSetPositionMonitor != null) {
             throw new IllegalStateException("BoxUiService.createSyncItemSetPositionMonitor() syncStaticItemSetPositionMonitor != null");
         }
-        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(boxes.values(), viewField, () -> syncStaticItemSetPositionMonitor = null);
+        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(babylonRendererService, markerConfig, () -> syncStaticItemSetPositionMonitor = null);
         return syncStaticItemSetPositionMonitor;
     }
 
@@ -148,9 +143,6 @@ public class BoxUiService {
         this.viewField = viewField;
         this.viewFieldAabb = viewFieldAabb;
         updateBabylonBoxItems();
-        if (syncStaticItemSetPositionMonitor != null) {
-            syncStaticItemSetPositionMonitor.onViewChanged(viewField);
-        }
     }
 
     public SyncBoxItemSimpleDto getSyncBoxItemSimpleDto4IdPlayback(int syncBoxId) {

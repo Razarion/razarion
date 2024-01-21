@@ -24,4 +24,6 @@ public interface BabylonItem {
     void select(boolean active);
 
     void hover(boolean active);
+
+    void mark(MarkerConfig markerConfig);
 }

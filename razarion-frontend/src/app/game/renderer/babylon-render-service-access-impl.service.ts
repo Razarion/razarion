@@ -16,7 +16,8 @@ import {
   BabylonTerrainTile,
   DecimalPosition,
   BabylonBoxItem,
-  BoxItemType
+  BoxItemType,
+  MarkerConfig
 } from "src/app/gwtangular/GwtAngularFacade";
 import { BabylonTerrainTileImpl } from "./babylon-terrain-tile.impl";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
@@ -131,6 +132,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private selectionFrame!: SelectionFrame;
   private viewFieldListeners: ViewFieldListener[] = [];
   private viewField?: ViewField;
+  private outOfViewPlane?: Mesh;
 
   constructor(private gwtAngularService: GwtAngularService, private babylonModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -363,6 +365,41 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   getScene(): Scene {
     return this.scene;
+  }
+
+  showOutOfViewMarker(markerConfig: MarkerConfig | null, angle: number): void {
+    if (markerConfig) {
+      if (!markerConfig.outOfViewNodesMaterialId) {
+        console.warn("No outOfViewNodesMaterialId set");
+        return;
+      }
+      if (!this.outOfViewPlane) {
+        this.outOfViewPlane = MeshBuilder.CreatePlane("Out of view plane", { size: markerConfig.outOfViewSize }, this.scene);
+        this.outOfViewPlane.parent = this.camera;
+        this.outOfViewPlane.position.z = markerConfig.outOfViewDistanceFromCamera;
+        this.outOfViewPlane.rotation.x = this.camera.rotation.x;
+        let nodeMaterial = this.babylonModelService.getNodeMaterial(markerConfig.outOfViewNodesMaterialId!);
+        nodeMaterial = nodeMaterial.clone(`Out of view plane outOfViewNodesMaterialId: ${markerConfig.outOfViewNodesMaterialId}`);
+        nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
+        this.outOfViewPlane.material = nodeMaterial;
+        let angleBlock = <InputBlock>(<NodeMaterial>this.outOfViewPlane.material).getBlockByName("angle");
+        if (!angleBlock) {
+          console.warn(`No angle block found in outOfViewNodesMaterialId: ${markerConfig.outOfViewNodesMaterialId}`);
+        } else {
+          angleBlock.value = angle;
+        }
+      } else {
+        let angleBlock = <InputBlock>(<NodeMaterial>this.outOfViewPlane.material).getBlockByName("angle");
+        if (angleBlock) {
+          angleBlock.value = angle;
+        }
+      }
+    } else {
+      if (this.outOfViewPlane) {
+        this.outOfViewPlane.dispose();
+        this.outOfViewPlane = undefined;
+      }
+    }
   }
 
   public onViewFieldChanged() {

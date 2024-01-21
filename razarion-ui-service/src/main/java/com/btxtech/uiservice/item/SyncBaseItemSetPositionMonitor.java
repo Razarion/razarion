@@ -29,21 +29,6 @@ public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionM
         this.botIdFilter = botIdFilter;
     }
 
-    @Override
-    public boolean hasInViewPositions() {
-        return !inViewVertices.isEmpty();
-    }
-
-    @Override
-    public List<Vertex> getInViewPosition3d() {
-        return inViewVertices;
-    }
-
-    @Override
-    public DecimalPosition getNearestOutOfViewPosition2d() {
-        return nearestOutOfViewPosition;
-    }
-
     public void init(DecimalPosition viewFieldCenter) {
         this.viewFieldCenter = viewFieldCenter;
         inViewVertices.clear();
@@ -67,10 +52,6 @@ public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionM
             minDistance = distance;
             nearestOutOfViewPosition = position;
         }
-    }
-
-    public void setItemTypeFilter(Set<Integer> itemTypeFilter) {
-        this.itemTypeFilter = itemTypeFilter;
     }
 
     private boolean isAllowed(int baseId, BaseItemType baseItemType) {

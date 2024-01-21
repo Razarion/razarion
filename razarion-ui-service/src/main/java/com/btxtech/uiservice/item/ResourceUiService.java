@@ -9,8 +9,9 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleD
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
+import com.btxtech.uiservice.renderer.BabylonResourceItem;
+import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -56,9 +57,6 @@ public class ResourceUiService {
                 logger.warning("Resource already exists: " + syncResourceItem);
             }
         }
-        if (syncStaticItemSetPositionMonitor != null) {
-            syncStaticItemSetPositionMonitor.add(syncResourceItem);
-        }
         updateBabylonResourceItems();
     }
 
@@ -70,9 +68,6 @@ public class ResourceUiService {
                 throw new IllegalStateException("No resource for id: " + id);
             }
             selectionHandler.resourceItemRemove(resource);
-        }
-        if (syncStaticItemSetPositionMonitor != null) {
-            syncStaticItemSetPositionMonitor.remove(resource);
         }
         updateBabylonResourceItems();
     }
@@ -122,6 +117,10 @@ public class ResourceUiService {
         if (viewFieldAabb == null) {
             return;
         }
+        if (syncStaticItemSetPositionMonitor != null) {
+            syncStaticItemSetPositionMonitor.setInvisible(null,null);
+        }
+        DecimalPosition viewFiledCenter = viewFieldAabb.center();
         synchronized (resources) {
             Set<Integer> unused = new HashSet<>(babylonResourceItems.keySet());
             resources.forEach((id, syncResourceItemSimpleDto) -> {
@@ -133,18 +132,37 @@ public class ResourceUiService {
                         visibleResource.setPosition(syncResourceItemSimpleDto.getPosition3d());
                         visibleResource.updatePosition();
                         babylonResourceItems.put(id, visibleResource);
+                        if (syncStaticItemSetPositionMonitor != null) {
+                            syncStaticItemSetPositionMonitor.addVisible(visibleResource);
+                        }
                     } else {
                         unused.remove(id);
                     }
                 } else {
                     BabylonResourceItem visibleResource = babylonResourceItems.remove(id);
                     if (visibleResource != null) {
+                        if (syncStaticItemSetPositionMonitor != null) {
+                            syncStaticItemSetPositionMonitor.removeVisible(visibleResource);
+                        }
                         visibleResource.dispose();
                         unused.remove(id);
                     }
+
+                    if (syncStaticItemSetPositionMonitor != null) {
+                        syncStaticItemSetPositionMonitor.setInvisible(syncResourceItemSimpleDto, viewFiledCenter);
+                    }
                 }
             });
-            unused.forEach(id -> babylonResourceItems.remove(id).dispose());
+            unused.forEach(id -> {
+                BabylonResourceItem toRemove = babylonResourceItems.remove(id);
+                if (syncStaticItemSetPositionMonitor != null) {
+                    syncStaticItemSetPositionMonitor.removeVisible(toRemove);
+                }
+                toRemove.dispose();
+            });
+            if (syncStaticItemSetPositionMonitor != null) {
+                syncStaticItemSetPositionMonitor.handleOutOfView(viewFiledCenter);
+            }
         }
     }
 
@@ -162,14 +180,14 @@ public class ResourceUiService {
         return new SyncItemState(syncResourceItemSimpleDto.getId(), syncResourceItemSimpleDto.getPosition2d(), syncResourceItemSimpleDto.getPosition3d(), itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 
-    public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor() {
+    public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor(MarkerConfig markerConfig) {
         if (syncStaticItemSetPositionMonitor != null) {
             throw new IllegalStateException("ResourceUiService.createSyncItemSetPositionMonitor() syncStaticItemSetPositionMonitor != null");
         }
         if (viewField == null) {
             throw new IllegalStateException("ResourceUiService.createSyncItemSetPositionMonitor() viewField != null");
         }
-        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(resources.values(), viewField, () -> syncStaticItemSetPositionMonitor = null);
+        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(babylonRendererService, markerConfig,() -> syncStaticItemSetPositionMonitor = null);
         return syncStaticItemSetPositionMonitor;
     }
 
@@ -177,9 +195,6 @@ public class ResourceUiService {
         this.viewField = viewField;
         this.viewFieldAabb = viewFieldAabb;
         updateBabylonResourceItems();
-        if (syncStaticItemSetPositionMonitor != null) {
-            syncStaticItemSetPositionMonitor.onViewChanged(viewField);
-        }
     }
 
     public SyncResourceItemSimpleDto getSyncResourceItemSimpleDto4IdPlayback(int resourceItemId) {

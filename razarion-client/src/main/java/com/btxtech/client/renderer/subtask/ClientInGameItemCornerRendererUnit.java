@@ -22,6 +22,7 @@ import java.util.List;
  */
 @ColorBufferRenderer
 @Dependent
+@Deprecated
 public class ClientInGameItemCornerRendererUnit extends AbstractInGameItemCornerRendererUnit {
     @Inject
     private WebGlFacade webGlFacade;
@@ -35,20 +36,6 @@ public class ClientInGameItemCornerRendererUnit extends AbstractInGameItemCorner
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
         modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_NORM_MATRIX);
-    }
-
-    @Override
-    protected void fillBuffers(List<Vertex> vertices) {
-        positions.fillBuffer(vertices);
-    }
-
-    @Override
-    protected void prepareDraw(Color cornerColor) {
-        webGlFacade.useProgram();
-
-        webGlFacade.uniform4f(colorUniformLocation, cornerColor);
-
-        positions.activate();
     }
 
     @Override

@@ -7,44 +7,53 @@ import com.btxtech.shared.datatypes.Color;
  * on 12.09.2017.
  */
 public class InGameQuestVisualConfig {
-    private double cornerLength;
-    private Integer outOfViewShape3DId;
-    private double moveDistance;
-    private long duration;
+    private Integer nodesMaterialId;
+    private double radius;
+    private Integer outOfViewNodesMaterialId;
+    public double outOfViewSize;
+    public double outOfViewDistanceFromCamera;
     private Color harvestColor;
     private Color attackColor;
     private Color pickColor;
 
-    public double getCornerLength() {
-        return cornerLength;
+    public Integer getNodesMaterialId() {
+        return nodesMaterialId;
     }
 
-    public void setCornerLength(double cornerLength) {
-        this.cornerLength = cornerLength;
+    public void setNodesMaterialId(Integer nodesMaterialId) {
+        this.nodesMaterialId = nodesMaterialId;
     }
 
-    public Integer getOutOfViewShape3DId() {
-        return outOfViewShape3DId;
+    public double getRadius() {
+        return radius;
     }
 
-    public void setOutOfViewShape3DId(Integer outOfViewShape3DId) {
-        this.outOfViewShape3DId = outOfViewShape3DId;
+    public void setRadius(double radius) {
+        this.radius = radius;
     }
 
-    public double getMoveDistance() {
-        return moveDistance;
+    public Integer getOutOfViewNodesMaterialId() {
+        return outOfViewNodesMaterialId;
     }
 
-    public void setMoveDistance(double moveDistance) {
-        this.moveDistance = moveDistance;
+    public void setOutOfViewNodesMaterialId(Integer outOfViewNodesMaterialId) {
+        this.outOfViewNodesMaterialId = outOfViewNodesMaterialId;
     }
 
-    public long getDuration() {
-        return duration;
+    public double getOutOfViewSize() {
+        return outOfViewSize;
     }
 
-    public void setDuration(long duration) {
-        this.duration = duration;
+    public void setOutOfViewSize(double outOfViewSize) {
+        this.outOfViewSize = outOfViewSize;
+    }
+
+    public double getOutOfViewDistanceFromCamera() {
+        return outOfViewDistanceFromCamera;
+    }
+
+    public void setOutOfViewDistanceFromCamera(double outOfViewDistanceFromCamera) {
+        this.outOfViewDistanceFromCamera = outOfViewDistanceFromCamera;
     }
 
     public Color getHarvestColor() {

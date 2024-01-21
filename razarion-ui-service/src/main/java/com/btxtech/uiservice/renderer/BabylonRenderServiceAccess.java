@@ -21,4 +21,6 @@ public interface BabylonRenderServiceAccess {
     void setViewFieldCenter(double x, double y);
 
     void runRenderer(MeshContainer[] meshContainers);
+
+    void showOutOfViewMarker(MarkerConfig markerConfig, double angle);
 }

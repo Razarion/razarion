@@ -1,6 +1,6 @@
 // ---------- Root ----------
 
-import { ConditionTrigger } from "../generated/razarion-share";
+import {ConditionTrigger} from "../generated/razarion-share";
 
 export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
@@ -436,6 +436,8 @@ export interface BabylonRenderServiceAccess {
   setViewFieldCenter(x: number, y: number): void;
 
   runRenderer(meshContainers: MeshContainer[]): void;
+
+  showOutOfViewMarker(markerConfig: MarkerConfig | null, angle: number): void;
 }
 
 export interface TerrainTile {
@@ -456,6 +458,14 @@ export enum Diplomacy {
   ENEMY = "ENEMY",
   RESOURCE = "RESOURCE",
   BOX = "BOX",
+}
+
+export interface MarkerConfig {
+  radius: number;
+  nodesMaterialId: number | null;
+  outOfViewNodesMaterialId: number | null;
+  outOfViewSize : number;
+  outOfViewDistanceFromCamera : number;
 }
 
 export interface GroundTerrainTile {
@@ -521,6 +531,8 @@ export interface BabylonItem {
   select(active: boolean): void;
 
   hover(active: boolean): void;
+
+  mark(markerConfig: MarkerConfig | null): void;
 }
 
 export interface BabylonBaseItem extends BabylonItem {

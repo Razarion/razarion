@@ -21,6 +21,7 @@ import java.util.logging.Logger;
  * 05.12.2016.
  */
 @ApplicationScoped
+@Deprecated
 public class ItemVisualizationRenderTask extends AbstractModelRenderTaskRunner<InGameItemVisualization> {
     private Logger logger = Logger.getLogger(ItemVisualizationRenderTask.class.getName());
     private boolean active;
@@ -74,14 +75,14 @@ public class ItemVisualizationRenderTask extends AbstractModelRenderTaskRunner<I
     }
 
     private void setupCorners() {
-        ModelRenderer<InGameItemVisualization> modelRenderer = create();
-        modelRenderer.init(gameItemVisualization, timeStamp -> gameItemVisualization.provideCornerModelMatrices(timeStamp));
-        CommonRenderComposite<AbstractInGameItemCornerRendererUnit, InGameItemVisualization> compositeRenderer = modelRenderer.create();
-        compositeRenderer.init(gameItemVisualization);
-        compositeRenderer.setRenderUnit(AbstractInGameItemCornerRendererUnit.class);
-        modelRenderer.add(RenderUnitControl.TERRAIN_ITEM_VISUALIZATION_CORNERS, compositeRenderer);
-        add(modelRenderer);
-        compositeRenderer.fillBuffers();
+//        ModelRenderer<InGameItemVisualization> modelRenderer = create();
+//        modelRenderer.init(gameItemVisualization, timeStamp -> gameItemVisualization.provideCornerModelMatrices(timeStamp));
+//        CommonRenderComposite<AbstractInGameItemCornerRendererUnit, InGameItemVisualization> compositeRenderer = modelRenderer.create();
+//        compositeRenderer.init(gameItemVisualization);
+//        compositeRenderer.setRenderUnit(AbstractInGameItemCornerRendererUnit.class);
+//        modelRenderer.add(RenderUnitControl.TERRAIN_ITEM_VISUALIZATION_CORNERS, compositeRenderer);
+//        add(modelRenderer);
+//        compositeRenderer.fillBuffers();
     }
 
     private void setupShape3D() {

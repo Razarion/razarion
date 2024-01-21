@@ -23,10 +23,6 @@ public abstract class AbstractRenderUnit<D> {
 
     }
 
-    public abstract void fillBuffers(D d);
-
-    protected abstract void prepareDraw();
-
     protected void afterDraw() {
 
     }

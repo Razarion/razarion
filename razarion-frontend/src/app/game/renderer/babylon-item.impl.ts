@@ -1,11 +1,12 @@
 import { GwtHelper } from "../../gwtangular/GwtHelper";
-import { Mesh, MeshBuilder, Tools, TransformNode } from "@babylonjs/core";
+import { Mesh, MeshBuilder, NodeMaterial, Tools, TransformNode } from "@babylonjs/core";
 import {
   BabylonItem,
   BaseItemType,
   BoxItemType,
   Diplomacy,
   ItemType,
+  MarkerConfig,
   ResourceItemType,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
@@ -19,7 +20,8 @@ export class BabylonItemImpl implements BabylonItem {
   private readonly container: TransformNode;
   private position: Vertex | null = null;
   private angle: number = 0;
-  private markerDisc: Mesh | null = null;
+  private diplomacyMarkerDisc: Mesh | null = null;
+  private visualizationMarkerDisc: Mesh | null = null;
   private selectActive: boolean = false;
   private hoverActive: boolean = false;
 
@@ -95,6 +97,33 @@ export class BabylonItemImpl implements BabylonItem {
     this.updateMarkedDisk();
   }
 
+  mark(markerConfig: MarkerConfig | null): void {
+    if (markerConfig) {
+      if (!markerConfig.nodesMaterialId) {
+        console.warn("markerConfig.babylonModelId == null");
+        return;
+      }
+      if (this.visualizationMarkerDisc) {
+        this.visualizationMarkerDisc.dispose();
+        console.warn("this.visualizationMarkerDisc != null")
+      }
+      this.visualizationMarkerDisc = MeshBuilder.CreateDisc("Visualization item marker", { radius: markerConfig.radius });
+      let nodeMaterial = this.babylonModelService.getNodeMaterial(markerConfig.nodesMaterialId);
+      this.visualizationMarkerDisc.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
+      this.visualizationMarkerDisc.position.y = 0.01;
+      this.visualizationMarkerDisc.rotation.x = Tools.ToRadians(90);
+      this.visualizationMarkerDisc.parent = this.container;
+      (<NodeMaterial>this.visualizationMarkerDisc.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
+    } else {
+      if (!this.visualizationMarkerDisc) {
+        console.warn("!this.visualizationMarkerDisc")
+      } else {
+        this.visualizationMarkerDisc.dispose();
+        this.visualizationMarkerDisc = null;
+      }
+    }
+  }
+
   getContainer(): TransformNode {
     return this.container;
   }
@@ -115,30 +144,30 @@ export class BabylonItemImpl implements BabylonItem {
 
   private updateMarkedDisk(): void {
     if (this.isSelectOrHove()) {
-      if (!this.markerDisc) {
-        this.markerDisc = MeshBuilder.CreateDisc("Base Item Marker", { radius: this.getRadius() + 0.1 });
+      if (!this.diplomacyMarkerDisc) {
+        this.diplomacyMarkerDisc = MeshBuilder.CreateDisc("Base Item Marker", { radius: this.getRadius() + 0.1 });
         let material = this.rendererService.itemMarkerMaterialCache.get(this.diplomacy);
         if (!material) {
           material = new SimpleMaterial(`Base Item Marker ${this.diplomacy}`, this.rendererService.getScene());
           material.diffuseColor = BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy);
           this.rendererService.itemMarkerMaterialCache.set(this.diplomacy, material);
         }
-        this.markerDisc.material = material;
-        this.markerDisc.position.y = 0.01;
-        this.markerDisc.rotation.x = Tools.ToRadians(90);
-        this.markerDisc.parent = this.container;
+        this.diplomacyMarkerDisc.material = material;
+        this.diplomacyMarkerDisc.position.y = 0.01;
+        this.diplomacyMarkerDisc.rotation.x = Tools.ToRadians(90);
+        this.diplomacyMarkerDisc.parent = this.container;
       }
     } else {
-      if (this.markerDisc) {
-        this.markerDisc.dispose();
-        this.markerDisc = null;
+      if (this.diplomacyMarkerDisc) {
+        this.diplomacyMarkerDisc.dispose();
+        this.diplomacyMarkerDisc = null;
       }
     }
 
     if (this.selectActive) {
-      (<SimpleMaterial>this.markerDisc!.material).alpha = BabylonItemImpl.HOVER_ALPHA;
+      (<SimpleMaterial>this.diplomacyMarkerDisc!.material).alpha = BabylonItemImpl.HOVER_ALPHA;
     } else if (this.hoverActive) {
-      (<SimpleMaterial>this.markerDisc!.material).alpha = BabylonItemImpl.SELECT_ALPHA;
+      (<SimpleMaterial>this.diplomacyMarkerDisc!.material).alpha = BabylonItemImpl.SELECT_ALPHA;
     }
   }
 

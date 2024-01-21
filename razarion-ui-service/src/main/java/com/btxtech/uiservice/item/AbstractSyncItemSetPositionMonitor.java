@@ -12,12 +12,6 @@ import java.util.List;
 public abstract class AbstractSyncItemSetPositionMonitor {
     private Runnable releaseCallback;
 
-    public abstract boolean hasInViewPositions();
-
-    public abstract List<Vertex> getInViewPosition3d();
-
-    public abstract DecimalPosition getNearestOutOfViewPosition2d();
-
     public AbstractSyncItemSetPositionMonitor(Runnable releaseCallback) {
         this.releaseCallback = releaseCallback;
     }

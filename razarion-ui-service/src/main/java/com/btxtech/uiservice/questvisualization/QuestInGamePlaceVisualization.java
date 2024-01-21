@@ -56,7 +56,7 @@ public class QuestInGamePlaceVisualization {
     }
 
     public Integer getOutOfViewShape3DId() {
-        return inGameQuestVisualConfig.getOutOfViewShape3DId();
+        return inGameQuestVisualConfig.getOutOfViewNodesMaterialId();
     }
 
     public List<ModelMatrices> provideOutOfViewModelMatrices() {

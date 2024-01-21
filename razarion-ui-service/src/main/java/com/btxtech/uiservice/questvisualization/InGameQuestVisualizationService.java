@@ -1,7 +1,5 @@
 package com.btxtech.uiservice.questvisualization;
 
-import com.btxtech.shared.datatypes.Color;
-import com.btxtech.shared.dto.InGameQuestVisualConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -11,7 +9,7 @@ import com.btxtech.uiservice.item.AbstractSyncItemSetPositionMonitor;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
-import com.btxtech.uiservice.item.SyncBaseItemSetPositionMonitor;
+import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.task.visualization.ItemVisualizationRenderTask;
 
 import javax.enterprise.inject.Instance;
@@ -43,10 +41,8 @@ public class InGameQuestVisualizationService {
     @Inject
     private BoxUiService boxUiService;
     @Inject
-    private Instance<QuestInGameItemVisualization> instanceQuestInGameItemVisualization;
-    @Inject
     private Instance<QuestInGamePlaceVisualization> instanceQuestInGamePlaceVisualization;
-    private QuestInGameItemVisualization questInGameItemVisualization;
+    private AbstractSyncItemSetPositionMonitor syncItemSetPositionMonitor;
     private QuestInGamePlaceVisualization questInGamePlaceVisualization;
     private QuestConfig quest;
     private Set<Integer> itemTypeFilter;
@@ -56,14 +52,13 @@ public class InGameQuestVisualizationService {
     private Collection<Runnable> placeConfigCallback = new ArrayList<>();
 
     public void onQuestActivated(QuestConfig quest) {
-        // TODO
-//        stop();
-//        this.quest = quest;
-//        if (visibleCallback != null) {
-//            visibleCallback.accept(true);
-//        }
-//        visible = true;
-//        showVisualization();
+        stop();
+        this.quest = quest;
+        if (visibleCallback != null) {
+            visibleCallback.accept(true);
+        }
+        visible = true;
+        showVisualization();
     }
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
@@ -81,7 +76,7 @@ public class InGameQuestVisualizationService {
                     }
                 }
                 if (visible) {
-                    ((SyncBaseItemSetPositionMonitor) questInGameItemVisualization.getSyncItemSetPositionMonitor()).setItemTypeFilter(itemTypeFilter);
+                    // TODO ((SyncBaseItemSetPositionMonitor) questInGameItemVisualization.getSyncItemSetPositionMonitor()).setItemTypeFilter(itemTypeFilter);
                 }
             }
         }
@@ -112,34 +107,47 @@ public class InGameQuestVisualizationService {
             return;
         }
         switch (quest.getConditionConfig().getConditionTrigger()) {
-            case SYNC_ITEM_KILLED:
+            case SYNC_ITEM_KILLED: {
                 if (itemTypeFilter == null) {
                     if (quest.getConditionConfig().getComparisonConfig().getTypeCount() != null) {
                         itemTypeFilter = quest.getConditionConfig().getComparisonConfig().getTypeCount().keySet();
                     }
                 }
-                setupVisualization(gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getAttackColor(), baseItemUiService.createSyncItemSetPositionMonitor(itemTypeFilter, quest.getConditionConfig().getComparisonConfig().toBotIdSet()));
+                setupVisualization(baseItemUiService.createSyncItemSetPositionMonitor(itemTypeFilter, quest.getConditionConfig().getComparisonConfig().toBotIdSet()));
                 break;
-            case HARVEST:
-                setupVisualization(gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getHarvestColor(), resourceUiService.createSyncItemSetPositionMonitor());
+            }
+            case HARVEST: {
+                MarkerConfig markerConfig = setupMarkerConfig();
+                setupVisualization(resourceUiService.createSyncItemSetPositionMonitor(markerConfig));
                 break;
-            case SYNC_ITEM_POSITION:
-                setupVisualization(quest.getConditionConfig().getComparisonConfig().getPlaceConfig());
+            }
+            case SYNC_ITEM_POSITION: {
+                setupVisualizationPlaceConfig(quest.getConditionConfig().getComparisonConfig().getPlaceConfig());
                 break;
-            case BOX_PICKED:
-                setupVisualization(gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getPickColor(), boxUiService.createSyncItemSetPositionMonitor());
+            }
+            case BOX_PICKED: {
+                MarkerConfig markerConfig = new MarkerConfig();
+                setupVisualization(boxUiService.createSyncItemSetPositionMonitor(markerConfig));
                 break;
+            }
         }
     }
 
-    private void setupVisualization(Color color, AbstractSyncItemSetPositionMonitor syncItemSetPositionMonitor) {
-        InGameQuestVisualConfig inGameQuestVisualConfig = gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig();
-        questInGameItemVisualization = instanceQuestInGameItemVisualization.get();
-        questInGameItemVisualization.init(color, inGameQuestVisualConfig, syncItemSetPositionMonitor);
-        itemVisualizationRenderTask.activate(questInGameItemVisualization);
+    private MarkerConfig setupMarkerConfig() {
+        MarkerConfig markerConfig = new MarkerConfig();
+        markerConfig.radius = gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getRadius();
+        markerConfig.nodesMaterialId = gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getNodesMaterialId();
+        markerConfig.outOfViewNodesMaterialId = gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getOutOfViewNodesMaterialId();
+        markerConfig.outOfViewSize = gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getOutOfViewSize();
+        markerConfig.outOfViewDistanceFromCamera = gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getOutOfViewDistanceFromCamera();
+        return markerConfig;
     }
 
-    private void setupVisualization(PlaceConfig placeConfig) {
+    private void setupVisualization(AbstractSyncItemSetPositionMonitor syncItemSetPositionMonitor) {
+        this.syncItemSetPositionMonitor = syncItemSetPositionMonitor;
+    }
+
+    private void setupVisualizationPlaceConfig(PlaceConfig placeConfig) {
         if (placeConfig != null) {
             questInGamePlaceVisualization = instanceQuestInGamePlaceVisualization.get();
             questInGamePlaceVisualization.init(placeConfig, gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig());
@@ -154,10 +162,9 @@ public class InGameQuestVisualizationService {
             itemVisualizationRenderTask.deactivate();
             placeConfigCallback.forEach(Runnable::run);
         }
-        if (questInGameItemVisualization != null) {
-            questInGameItemVisualization.releaseMonitor();
-            itemVisualizationRenderTask.deactivate();
-            questInGameItemVisualization = null;
+        if (syncItemSetPositionMonitor != null) {
+            syncItemSetPositionMonitor.release();
+            syncItemSetPositionMonitor = null;
         }
     }
 

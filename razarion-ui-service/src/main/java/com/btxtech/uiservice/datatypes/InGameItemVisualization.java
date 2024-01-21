@@ -10,9 +10,8 @@ import java.util.List;
  * Created by Beat
  * on 12.09.2017.
  */
+@Deprecated
 public interface InGameItemVisualization {
-    List<ModelMatrices> provideCornerModelMatrices(long timeStamp);
-
     List<ModelMatrices> provideOutOfViewShape3DModelMatrices();
 
     Integer getOutOfViewShape3DId();

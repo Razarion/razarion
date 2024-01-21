@@ -39,10 +39,12 @@ public enum DbPropertyKey {
     TIP_DIRECTION_SHAPE3D("tip.direction.shape3d"),
     TIP_SCROLL_DIALOG_KEYBOARD_IMAGE("tip.scroll.dialog.keyboard.image"),
     // Quest in game visualization
-    QUEST_IN_GAME_VISUALIZATION_CORNER_LENGTH("questInGameVisualization.corner.length"),
+    QUEST_IN_GAME_VISUALIZATION_NODES_MATERIAL("questInGameVisualization.nodes-material"),
+    QUEST_IN_GAME_VISUALIZATION_RADIUS("questInGameVisualization.radius"),
     QUEST_IN_GAME_VISUALIZATION_MOVE_DURATION("questInGameVisualization.move.duration"),
-    QUEST_IN_GAME_VISUALIZATION_MOVE_DISTANCE("questInGameVisualization.move.distance"),
-    QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SHAPE3D("questInGameVisualization.outOfView.shape3d"),
+    QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_NODES_MATERIAL("questInGameVisualization.outOfView.nodes-material"),
+    QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SIZE("questInGameVisualization.outOfView.size"),
+    QUEST_IN_GAME_VISUALIZATION_OUT_DISTANCE_FROM_CAMERA("questInGameVisualization.outOfView.distance-from-camera"),
     QUEST_IN_GAME_VISUALIZATION_CORNER_HARVEST_COLOR("questInGameVisualization.corner.harvest.color"),
     QUEST_IN_GAME_VISUALIZATION_CORNER_ATTACK_COLOR("questInGameVisualization.corner.attack.color"),
     QUEST_IN_GAME_VISUALIZATION_CORNER_PICK_COLOR("questInGameVisualization.corner.pick.color");

@@ -14,18 +14,19 @@ import {
   BabylonBaseItem,
   BaseItemType,
   Diplomacy,
+  MarkerConfig,
   NativeVertexDto,
   ParticleSystemConfig,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
-import {GwtHelper} from "../../gwtangular/GwtHelper";
-import {BabylonItemImpl} from "./babylon-item.impl";
-import {BabylonModelService} from "./babylon-model.service";
-import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import { GwtHelper } from "../../gwtangular/GwtHelper";
+import { BabylonItemImpl } from "./babylon-item.impl";
+import { BabylonModelService } from "./babylon-model.service";
+import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
-  private readonly PROGRESS_BAR_NODE_MATERIAL_ID = 54;
-  private readonly HEALTH_BAR_NODE_MATERIAL_ID = 55;
+  private readonly PROGRESS_BAR_NODE_MATERIAL_ID = 54; // Put in properties
+  private readonly HEALTH_BAR_NODE_MATERIAL_ID = 55; // Put in properties
   private buildingParticleSystem: ParticleSystem | null = null;
   private harvestingParticleSystem: ParticleSystem | null = null;
   private progressBar: Mesh | undefined;
@@ -84,6 +85,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       }
 
       hover(active: boolean): void {
+      }
+
+      mark(markerConfig: MarkerConfig | null): void {
       }
 
       setBuildingPosition(buildingPosition: NativeVertexDto): void {

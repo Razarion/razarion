@@ -353,10 +353,11 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
 
     private InGameQuestVisualConfig setupInGameQuestVisualConfig() {
         InGameQuestVisualConfig inGameQuestVisualConfig = new InGameQuestVisualConfig();
-        inGameQuestVisualConfig.setCornerLength(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_LENGTH));
-        inGameQuestVisualConfig.setOutOfViewShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SHAPE3D));
-        inGameQuestVisualConfig.setMoveDistance(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_MOVE_DISTANCE));
-        inGameQuestVisualConfig.setDuration(dbPropertiesService.getIntProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_MOVE_DURATION));
+        inGameQuestVisualConfig.setNodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_NODES_MATERIAL));
+        inGameQuestVisualConfig.setRadius(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_RADIUS));
+        inGameQuestVisualConfig.setOutOfViewNodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_NODES_MATERIAL));
+        inGameQuestVisualConfig.setOutOfViewSize(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SIZE));
+        inGameQuestVisualConfig.setOutOfViewDistanceFromCamera(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_DISTANCE_FROM_CAMERA));
         inGameQuestVisualConfig.setHarvestColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_HARVEST_COLOR));
         inGameQuestVisualConfig.setAttackColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_ATTACK_COLOR));
         inGameQuestVisualConfig.setPickColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_PICK_COLOR));

@@ -1,4 +1,4 @@
-import { BabylonBoxItem, BoxItemType, Diplomacy, Vertex } from "src/app/gwtangular/GwtAngularFacade";
+import { BabylonBoxItem, BoxItemType, Diplomacy, MarkerConfig, Vertex } from "src/app/gwtangular/GwtAngularFacade";
 import { BabylonItemImpl } from "./babylon-item.impl";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { BabylonModelService } from "./babylon-model.service";
@@ -28,6 +28,9 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
             hover(active: boolean): void {
             }
 
+            mark(markerConfig: MarkerConfig | null): void {
+            }
+      
             select(active: boolean): void {
             }
 

@@ -29,6 +29,8 @@ public class DbPropertiesService {
     @Inject
     private Shape3DCrudPersistence shape3DPersistence;
     @Inject
+    private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
+    @Inject
     private AlarmService alarmService;
 
     @Transactional
@@ -48,6 +50,16 @@ public class DbPropertiesService {
             return dbPropertiesEntity.getShape3DId().getId();
         }
         alarmService.riseAlarm(INVALID_PROPERTY, "Shape3D: " + dbPropertyKey);
+        return null;
+    }
+
+    @Transactional
+    public Integer getBabylonModelProperty(DbPropertyKey dbPropertyKey) {
+        DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
+        if (dbPropertiesEntity != null && dbPropertiesEntity.getBabylonModel() != null) {
+            return dbPropertiesEntity.getBabylonModel().getId();
+        }
+        alarmService.riseAlarm(INVALID_PROPERTY, "Babylon model: " + dbPropertyKey);
         return null;
     }
 
@@ -154,6 +166,21 @@ public class DbPropertiesService {
             dbPropertiesEntity.setShape3DId(shape3DPersistence.getEntity(shape3DId));
         } else {
             dbPropertiesEntity.setShape3DId(null);
+        }
+        entityManager.merge(dbPropertiesEntity);
+    }
+
+    @Transactional
+    @SecurityCheck
+    public void setBabylonModelProperty(Integer babylonModelId, DbPropertyKey dbPropertyKey) {
+        DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
+        if (dbPropertiesEntity == null) {
+            dbPropertiesEntity = new DbPropertiesEntity(dbPropertyKey.getKey());
+        }
+        if (babylonModelId != null) {
+            dbPropertiesEntity.setBabylonModel(threeJsModelCrudPersistence.getEntity(babylonModelId));
+        } else {
+            dbPropertiesEntity.setBabylonModel(null);
         }
         entityManager.merge(dbPropertiesEntity);
     }

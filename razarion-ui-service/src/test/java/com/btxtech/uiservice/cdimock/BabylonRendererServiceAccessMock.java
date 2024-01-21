@@ -13,6 +13,7 @@ import com.btxtech.uiservice.renderer.BabylonBoxItem;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
+import com.btxtech.uiservice.renderer.MarkerConfig;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
@@ -66,6 +67,11 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         babylonBaseItemMocks.clear();
     }
 
+    @Override
+    public void showOutOfViewMarker(MarkerConfig markerConfig, double angle) {
+
+    }
+
     public static class BabylonBaseItemMock implements BabylonBaseItem {
         private final int id;
         private final BaseItemType baseItemType;
@@ -115,6 +121,11 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         @Override
         public void hover(boolean active) {
             this.hover = active;
+        }
+
+        @Override
+        public void mark(MarkerConfig markerConfig) {
+
         }
 
         @Override
@@ -187,5 +198,6 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         public BaseItemType getBaseItemType() {
             return baseItemType;
         }
+
     }
 }
