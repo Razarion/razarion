@@ -91,7 +91,9 @@ public class InGameQuestVisualizationService {
         } else {
             hideVisualization();
         }
-        visibleCallback.accept(visible);
+        if (suppressCallback != null) {
+            visibleCallback.accept(visible);
+        }
     }
 
     public boolean isVisible() {
