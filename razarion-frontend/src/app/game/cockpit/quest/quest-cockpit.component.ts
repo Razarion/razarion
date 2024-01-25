@@ -24,6 +24,7 @@ export class QuestCockpitComponent implements QuestCockpit {
   timeRow?: string = "";
   showQuestSelectionButton: boolean = false;
   showQuestDialog: boolean = false;
+  showQuestInGameVisualisation: boolean = true;
   private questDescriptionConfig?: QuestDescriptionConfig;
   private conditionConfig?: ConditionConfig;
   private questProgressInfo?: QuestProgressInfo;
@@ -32,6 +33,7 @@ export class QuestCockpitComponent implements QuestCockpit {
   }
 
   showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, showQuestSelectionButton: boolean): void {
+    this.showQuestInGameVisualisation = true;
     this.zone.run(() => {
       try {
         this.questDescriptionConfig = questDescriptionConfig || undefined;
@@ -52,7 +54,16 @@ export class QuestCockpitComponent implements QuestCockpit {
     });
   }
 
+  // TODO unknown called from AbstractTipTask
   setShowQuestInGameVisualisation(): void {
+  }
+
+  onShowQuestInGameVisualisation(visible: boolean): void {
+    try {
+      this.gwtAngularService.gwtAngularFacade.inGameQuestVisualizationService.setVisible(visible);
+    } catch (e) {
+      console.warn(e);
+    }
   }
 
   onQuestProgress(questProgressInfo: QuestProgressInfo | null): void {

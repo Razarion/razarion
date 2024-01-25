@@ -43,6 +43,7 @@ import java.util.logging.Logger;
  * 11.07.2016.
  */
 @Templated("TopRightCockpitWidget.html#questSidebar")
+@Deprecated
 public class QuestSidebar extends Composite {
     private static final int TIME_TEXT_REFRESHER_DELAY = 1000;
     private Logger logger = Logger.getLogger(QuestSidebar.class.getName());

@@ -15,9 +15,14 @@
   <div *ngIf="timeRow" class="flex flex-column m-1">
     {{timeRow}}
   </div>
-  <div *ngIf="showQuestSelectionButton" class="flex flex-column align-items-center m-1">
-    <p-button type="button" label="Quests" icon="pi pi-list" styleClass="p-button-sm"
-      (onClick)="showQuestDialog = true"></p-button>
+  <div class="flex flex-row align-items-center justify-content-center surface-100">
+    <p-inputSwitch (onChange)="onShowQuestInGameVisualisation($event.checked)" 
+    class="flex align-items-center justify-content-center p-1"
+      [(ngModel)]="showQuestInGameVisualisation"></p-inputSwitch>
+    <div *ngIf="showQuestSelectionButton" class="flex flex-column align-items-center m-1">
+      <p-button type="button" label="Quests" icon="pi pi-list" styleClass="p-button-sm"
+        (onClick)="showQuestDialog = true"></p-button>
+    </div>
   </div>
 </div>
 

@@ -188,6 +188,16 @@ public class ResourceUiService {
             throw new IllegalStateException("ResourceUiService.createSyncItemSetPositionMonitor() viewField != null");
         }
         syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(babylonRendererService, markerConfig,() -> syncStaticItemSetPositionMonitor = null);
+        babylonResourceItems.values().forEach(syncStaticItemSetPositionMonitor::addVisible);
+        if (babylonResourceItems.isEmpty()) {
+            DecimalPosition viewFieldCenter = viewField.calculateCenter();
+            synchronized (resources) {
+                for (SyncResourceItemSimpleDto resource : resources.values()) {
+                    syncStaticItemSetPositionMonitor.setInvisible(resource, viewFieldCenter);
+                }
+            }
+            syncStaticItemSetPositionMonitor.handleOutOfView(viewFieldCenter);
+        }
         return syncStaticItemSetPositionMonitor;
     }
 
@@ -230,5 +240,15 @@ public class ResourceUiService {
                 hoverBabylonResourceItem.hover(true);
             }
         }
+    }
+
+    // Only for tests
+    public Map<Integer, SyncResourceItemSimpleDto> getResources() {
+        return resources;
+    }
+
+    // Only for tests
+    public ViewField getViewField() {
+        return viewField;
     }
 }

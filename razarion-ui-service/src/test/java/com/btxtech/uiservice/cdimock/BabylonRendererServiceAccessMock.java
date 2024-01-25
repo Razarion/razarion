@@ -10,21 +10,26 @@ import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
 import com.btxtech.uiservice.renderer.BabylonBoxItem;
-import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
+import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 @ApplicationScoped
 public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAccess {
     private final List<BabylonBaseItemMock> babylonBaseItemMocks = new ArrayList<>();
+    private final List<BabylonResourceItemMock> babylonResourceItemMocks = new ArrayList<>();
 
     private final Logger logger = Logger.getLogger(BabylonRendererServiceAccessMock.class.getName());
+
+    private MarkerConfig showOutOfViewMarkerConfig;
+    private double showOutOfViewAngle;
 
     @Override
     public BabylonTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId) {
@@ -41,7 +46,9 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
 
     @Override
     public BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType baseItemType) {
-        throw new UnsupportedOperationException("...TODO...");
+        BabylonResourceItemMock babylonResourceItemMock = new BabylonResourceItemMock(id, baseItemType, babylonResourceItemMocks::remove);
+        babylonResourceItemMocks.add(babylonResourceItemMock);
+        return babylonResourceItemMock;
     }
 
     @Override
@@ -63,13 +70,27 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         return babylonBaseItemMocks;
     }
 
+    public List<BabylonResourceItemMock> getBabylonResourceItemMocks() {
+        return babylonResourceItemMocks;
+    }
+
     public void clear() {
         babylonBaseItemMocks.clear();
+        babylonResourceItemMocks.clear();
     }
 
     @Override
     public void showOutOfViewMarker(MarkerConfig markerConfig, double angle) {
+        this.showOutOfViewMarkerConfig = markerConfig;
+        this.showOutOfViewAngle = angle;
+    }
 
+    public MarkerConfig getShowOutOfViewMarkerConfig() {
+        return showOutOfViewMarkerConfig;
+    }
+
+    public double getShowOutOfViewAngle() {
+        return showOutOfViewAngle;
     }
 
     public static class BabylonBaseItemMock implements BabylonBaseItem {
@@ -81,6 +102,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         private boolean hover;
         private Vertex position;
         private double angle;
+        private MarkerConfig markerConfig;
 
         public BabylonBaseItemMock(int id, BaseItemType baseItemType, Diplomacy diplomacy) {
             this.id = id;
@@ -125,7 +147,11 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
 
         @Override
         public void mark(MarkerConfig markerConfig) {
+            this.markerConfig = markerConfig;
+        }
 
+        public MarkerConfig getMarkerConfig() {
+            return markerConfig;
         }
 
         @Override
@@ -198,6 +224,73 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         public BaseItemType getBaseItemType() {
             return baseItemType;
         }
+    }
 
+    public static class BabylonResourceItemMock implements BabylonResourceItem {
+        private final int id;
+        private final ResourceItemType resourceItemType;
+        private final Consumer<BabylonResourceItemMock> onDisposeCallback;
+        private Vertex position;
+        private MarkerConfig markerConfig;
+
+        public BabylonResourceItemMock(int id, ResourceItemType resourceItemType, Consumer<BabylonResourceItemMock> onDisposeCallback) {
+            this.id = id;
+            this.resourceItemType = resourceItemType;
+            this.onDisposeCallback = onDisposeCallback;
+        }
+
+        @Override
+        public int getId() {
+            return id;
+        }
+
+        @Override
+        public void dispose() {
+            onDisposeCallback.accept(this);
+        }
+
+        @Override
+        public void updatePosition() {
+        }
+
+        @Override
+        public double getAngle() {
+            return 0;
+        }
+
+        @Override
+        public void setAngle(double angle) {
+        }
+
+        @Override
+        public void updateAngle() {
+        }
+
+        @Override
+        public void select(boolean active) {
+        }
+
+        @Override
+        public void hover(boolean active) {
+        }
+
+        @Override
+        public void mark(MarkerConfig markerConfig) {
+            this.markerConfig = markerConfig;
+        }
+
+        @Override
+        public Vertex getPosition() {
+            return position;
+        }
+
+        @Override
+        public void setPosition(Vertex position) {
+            this.position = position;
+        }
+
+        public MarkerConfig getMarkerConfig() {
+            return markerConfig;
+        }
     }
 }

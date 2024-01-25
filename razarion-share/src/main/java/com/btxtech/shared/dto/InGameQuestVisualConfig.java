@@ -79,4 +79,44 @@ public class InGameQuestVisualConfig {
     public void setPickColor(Color pickColor) {
         this.pickColor = pickColor;
     }
+
+    public InGameQuestVisualConfig nodesMaterialId(Integer nodesMaterialId) {
+        setNodesMaterialId(nodesMaterialId);
+        return this;
+    }
+
+    public InGameQuestVisualConfig radius(double radius) {
+        setRadius(radius);
+        return this;
+    }
+
+    public InGameQuestVisualConfig outOfViewNodesMaterialId(Integer outOfViewNodesMaterialId) {
+        setOutOfViewNodesMaterialId(outOfViewNodesMaterialId);
+        return this;
+    }
+
+    public InGameQuestVisualConfig outOfViewSize(double outOfViewSize) {
+        setOutOfViewSize(outOfViewSize);
+        return this;
+    }
+
+    public InGameQuestVisualConfig outOfViewDistanceFromCamera(double outOfViewDistanceFromCamera) {
+        setOutOfViewDistanceFromCamera(outOfViewDistanceFromCamera);
+        return this;
+    }
+
+    public InGameQuestVisualConfig harvestColor(Color harvestColor) {
+        setHarvestColor(harvestColor);
+        return this;
+    }
+
+    public InGameQuestVisualConfig attackColor(Color attackColor) {
+        setAttackColor(attackColor);
+        return this;
+    }
+
+    public InGameQuestVisualConfig pickColor(Color pickColor) {
+        setPickColor(pickColor);
+        return this;
+    }
 }

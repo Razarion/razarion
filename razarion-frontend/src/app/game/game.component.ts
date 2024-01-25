@@ -74,7 +74,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = true;
+      let runGwtMock = false;
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
@@ -316,16 +316,16 @@ export class GameComponent implements OnInit, ScreenCover {
 
         this.gameMockService.showQuestSideBar(this.questCockpitContainer);
         this.gameMockService.onQuestProgress(this.questCockpitContainer);
-        let questDialogVisible = false;
-        setInterval(() => {
-          if (questDialogVisible) {
-            this.gameMockService.showQuestSideBar(this.questCockpitContainer);
-            this.gameMockService.onQuestProgress(this.questCockpitContainer);
-          } else {
-            this.gameMockService.hideQuestSideBar(this.questCockpitContainer);
-          }
-          questDialogVisible = !questDialogVisible;
-        }, 5000);
+        // let questDialogVisible = false;
+        // setInterval(() => {
+        //  if (questDialogVisible) {
+        //     this.gameMockService.showQuestSideBar(this.questCockpitContainer);
+        //     this.gameMockService.onQuestProgress(this.questCockpitContainer);
+        //   } else {
+        //     this.gameMockService.hideQuestSideBar(this.questCockpitContainer);
+        //   }
+        //   questDialogVisible = !questDialogVisible;
+        // }, 5000);
 
       }
       // setTimeout(() => {

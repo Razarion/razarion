@@ -66,6 +66,12 @@ public final class FallbackConfig {
         coldGameUiContext.staticGameConfig(setupStaticGameConfig());
         coldGameUiContext.warmGameUiContext(warmGameUiControlConfig());
         coldGameUiContext.audioConfig(new AudioConfig());
+        coldGameUiContext.inGameQuestVisualConfig(new InGameQuestVisualConfig()
+                .nodesMaterialId(1)
+                .radius(40)
+                .outOfViewNodesMaterialId(2)
+                .outOfViewSize(10)
+                .outOfViewDistanceFromCamera(3));
         return coldGameUiContext;
     }
 
@@ -201,11 +207,11 @@ public final class FallbackConfig {
         return resourceItemTypes;
     }
 
-    public static void setupResource(List<ResourceItemType> baseItemTypes) {
+    public static void setupResource(List<ResourceItemType> resourceItemTypes) {
         ResourceItemType resourceItemType = new ResourceItemType();
         resourceItemType.id(RESOURCE_ITEM_TYPE_ID).internalName("Test resource");
-        resourceItemType.setRadius(1).setTerrainType(TerrainType.LAND).setAmount(10000000).setFixVerticalNorm(false);
-        baseItemTypes.add(resourceItemType);
+        resourceItemType.setRadius(2).setTerrainType(TerrainType.LAND).setAmount(10000000).setFixVerticalNorm(false);
+        resourceItemTypes.add(resourceItemType);
     }
 
     public static List<BoxItemType> setupBoxItemType() {

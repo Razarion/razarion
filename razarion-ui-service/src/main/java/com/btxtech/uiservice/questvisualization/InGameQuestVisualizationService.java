@@ -11,6 +11,7 @@ import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.task.visualization.ItemVisualizationRenderTask;
+import jsinterop.annotations.JsType;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ import java.util.function.Consumer;
  * Created by Beat
  * on 12.09.2017.
  */
+@JsType
 @Singleton
 public class InGameQuestVisualizationService {
     // private Logger logger = Logger.getLogger(InGameQuestVisualizationService.class.getName());
@@ -159,7 +161,6 @@ public class InGameQuestVisualizationService {
     private void hideVisualization() {
         if (questInGamePlaceVisualization != null) {
             questInGamePlaceVisualization = null;
-            itemVisualizationRenderTask.deactivate();
             placeConfigCallback.forEach(Runnable::run);
         }
         if (syncItemSetPositionMonitor != null) {

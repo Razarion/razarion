@@ -15,6 +15,7 @@ import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
+import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
@@ -61,6 +62,8 @@ public class GwtAngularService {
     private InventoryTypeService inventoryTypeService;
     @Inject
     private InventoryUiService inventoryUiService;
+    @Inject
+    private InGameQuestVisualizationService inGameQuestVisualizationService;
     private GwtAngularFacade gwtAngularFacade;
 
     public void init() {
@@ -68,6 +71,7 @@ public class GwtAngularService {
         gwtAngularFacade.gameUiControl = gameUiControl;
         gwtAngularFacade.language = I18nHelper.getLanguage();
         gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
+        gwtAngularFacade.inGameQuestVisualizationService = inGameQuestVisualizationService;
         gwtAngularFacade.statusProvider = statusProvider;
         gwtAngularFacade.inputService = inputService;
         gwtAngularFacade.terrainTypeService = terrainTypeService;

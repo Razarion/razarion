@@ -13,6 +13,7 @@ import com.btxtech.uiservice.dialog.ModelDialogPresenter;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerPresenter;
+import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
@@ -32,6 +33,7 @@ public abstract class GwtAngularFacade {
     public MainCockpit mainCockpit; // Initialized by Angular
     public ItemCockpitFrontend itemCockpitFrontend; // Initialized by Angular
     public QuestCockpit questCockpit; // Initialized by Angular
+    public InGameQuestVisualizationService inGameQuestVisualizationService;  // Initialized by GWT
     public BaseItemPlacerPresenter baseItemPlacerPresenter; // Initialized by Angular
     public EditorFrontendProvider editorFrontendProvider;  // Initialized by GWT
     public StatusProvider statusProvider; // Initialized by GWT

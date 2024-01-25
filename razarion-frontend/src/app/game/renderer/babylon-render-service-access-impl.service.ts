@@ -133,6 +133,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private viewFieldListeners: ViewFieldListener[] = [];
   private viewField?: ViewField;
   private outOfViewPlane?: Mesh;
+  private outOfViewMaterial?: NodeMaterial;
 
   constructor(private gwtAngularService: GwtAngularService, private babylonModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -379,7 +380,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.outOfViewPlane.position.z = markerConfig.outOfViewDistanceFromCamera;
         this.outOfViewPlane.rotation.x = this.camera.rotation.x;
         let nodeMaterial = this.babylonModelService.getNodeMaterial(markerConfig.outOfViewNodesMaterialId!);
-        nodeMaterial = nodeMaterial.clone(`Out of view plane outOfViewNodesMaterialId: ${markerConfig.outOfViewNodesMaterialId}`);
+        // nodeMaterial = nodeMaterial.clone(`Out of view plane outOfViewNodesMaterialId: ${markerConfig.outOfViewNodesMaterialId}`);
         nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
         this.outOfViewPlane.material = nodeMaterial;
         let angleBlock = <InputBlock>(<NodeMaterial>this.outOfViewPlane.material).getBlockByName("angle");

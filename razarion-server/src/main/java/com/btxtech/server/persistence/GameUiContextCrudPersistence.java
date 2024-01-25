@@ -352,16 +352,15 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     }
 
     private InGameQuestVisualConfig setupInGameQuestVisualConfig() {
-        InGameQuestVisualConfig inGameQuestVisualConfig = new InGameQuestVisualConfig();
-        inGameQuestVisualConfig.setNodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_NODES_MATERIAL));
-        inGameQuestVisualConfig.setRadius(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_RADIUS));
-        inGameQuestVisualConfig.setOutOfViewNodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_NODES_MATERIAL));
-        inGameQuestVisualConfig.setOutOfViewSize(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SIZE));
-        inGameQuestVisualConfig.setOutOfViewDistanceFromCamera(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_DISTANCE_FROM_CAMERA));
-        inGameQuestVisualConfig.setHarvestColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_HARVEST_COLOR));
-        inGameQuestVisualConfig.setAttackColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_ATTACK_COLOR));
-        inGameQuestVisualConfig.setPickColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_PICK_COLOR));
-        return inGameQuestVisualConfig;
+        return new InGameQuestVisualConfig()
+                .nodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_NODES_MATERIAL))
+                .radius(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_RADIUS))
+                .outOfViewNodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_NODES_MATERIAL))
+                .outOfViewSize(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SIZE))
+                .outOfViewDistanceFromCamera(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_DISTANCE_FROM_CAMERA))
+                .harvestColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_HARVEST_COLOR))
+                .attackColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_ATTACK_COLOR))
+                .pickColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_PICK_COLOR));
     }
 
     private AudioConfig setupAudioConfig() {

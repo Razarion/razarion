@@ -3,7 +3,6 @@ package com.btxtech.uiservice.item;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.uiservice.renderer.BabylonItem;
-import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 
@@ -58,19 +57,20 @@ public class SyncStaticItemSetPositionMonitor extends AbstractSyncItemSetPositio
     public void release() {
         visibleBabylonItems.forEach(babylonItem -> babylonItem.mark(null));
         visibleBabylonItems.clear();
+        babylonRendererService.showOutOfViewMarker(null, 0);
         super.release();
     }
 
     public void handleOutOfView(DecimalPosition viewFieldCenter) {
         if (visibleBabylonItems.isEmpty()) {
-            babylonRendererService.showOutOfViewMarker(null, 0);
-        } else {
             if (nearestOutOfViewSyncItem != null) {
                 babylonRendererService.showOutOfViewMarker(markerConfig,
                         viewFieldCenter.getAngle(nearestOutOfViewSyncItem.getPosition2d()));
             } else {
                 babylonRendererService.showOutOfViewMarker(null, 0);
             }
+        } else {
+            babylonRendererService.showOutOfViewMarker(null, 0);
         }
     }
 }

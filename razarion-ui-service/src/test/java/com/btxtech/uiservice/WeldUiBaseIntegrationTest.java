@@ -2,15 +2,15 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.system.alarm.AlarmService;
-import com.btxtech.uiservice.cdimock.TestItemCockpitFrontend;
 import com.btxtech.uiservice.cdimock.BabylonRendererServiceAccessMock;
+import com.btxtech.uiservice.cdimock.TestItemCockpitFrontend;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -84,6 +84,15 @@ public class WeldUiBaseIntegrationTest {
                 .character(Character.HUMAN));
     }
 
+    protected SyncResourceItemSimpleDto createResource(int id, int itemTypeId, Vertex position3d) {
+        SyncResourceItemSimpleDto syncResourceItemSimpleDto = new SyncResourceItemSimpleDto();
+        syncResourceItemSimpleDto.setId(id);
+        syncResourceItemSimpleDto.setItemTypeId(itemTypeId);
+        syncResourceItemSimpleDto.setPosition2d(position3d.toXY());
+        syncResourceItemSimpleDto.setPosition3d(position3d);
+        return syncResourceItemSimpleDto;
+    }
+
     protected void setupCockpit() {
         getWeldBean(ItemCockpitService.class).init(getWeldBean(TestItemCockpitFrontend.class));
         getWeldBean(MainCockpitService.class).init(new MainCockpit() {
@@ -143,23 +152,4 @@ public class WeldUiBaseIntegrationTest {
             }
         });
     }
-
-    protected Vertex toNdcVertex(Vertex4 vertex4) {
-        double ndcX = vertex4.getX() / vertex4.getW();
-        double ndcY = vertex4.getY() / vertex4.getW();
-        double ndcZ = vertex4.getZ() / vertex4.getW();
-
-//        if (ndcX > 1 || ndcX < -1) {
-//            return null;
-//        }
-//        if (ndcY > 1 || ndcY < -1) {
-//            return null;
-//        }
-//        if (ndcZ > 1 || ndcZ < -1) {
-//            return null;
-//        }
-
-        return new Vertex(ndcX, ndcY, ndcZ);
-    }
-
 }

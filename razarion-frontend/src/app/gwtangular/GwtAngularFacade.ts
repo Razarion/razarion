@@ -1,6 +1,6 @@
 // ---------- Root ----------
 
-import {ConditionTrigger} from "../generated/razarion-share";
+import { ConditionTrigger } from "../generated/razarion-share";
 
 export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
@@ -11,6 +11,7 @@ export abstract class GwtAngularFacade {
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
   questCockpit!: QuestCockpit;
+  inGameQuestVisualizationService!: InGameQuestVisualizationService;
   baseItemPlacerPresenter!: BaseItemPlacerPresenter;
   editorFrontendProvider!: EditorFrontendProvider;
   statusProvider!: StatusProvider;
@@ -464,8 +465,8 @@ export interface MarkerConfig {
   radius: number;
   nodesMaterialId: number | null;
   outOfViewNodesMaterialId: number | null;
-  outOfViewSize : number;
-  outOfViewDistanceFromCamera : number;
+  outOfViewSize: number;
+  outOfViewDistanceFromCamera: number;
 }
 
 export interface GroundTerrainTile {
@@ -660,6 +661,10 @@ export interface QuestCockpit {
   onQuestProgress(questProgressInfo: QuestProgressInfo | null): void;
 
   setBotSceneIndicationInfos(): void;
+}
+
+export interface InGameQuestVisualizationService {
+  setVisible(visible: boolean): void;
 }
 
 export interface BaseItemPlacerPresenter {
