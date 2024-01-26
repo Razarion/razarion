@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.renderer.BabylonBoxItem;
@@ -135,7 +136,21 @@ public class BoxUiService {
         if (syncStaticItemSetPositionMonitor != null) {
             throw new IllegalStateException("BoxUiService.createSyncItemSetPositionMonitor() syncStaticItemSetPositionMonitor != null");
         }
+        if (viewField == null) {
+            throw new IllegalStateException("BoxUiService.createSyncItemSetPositionMonitor() viewField != null");
+        }
+
         syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(babylonRendererService, markerConfig, () -> syncStaticItemSetPositionMonitor = null);
+        babylonBoxItems.values().forEach(syncStaticItemSetPositionMonitor::addVisible);
+        if (babylonBoxItems.isEmpty()) {
+            DecimalPosition viewFieldCenter = viewField.calculateCenter();
+            synchronized (boxes) {
+                for (SyncBoxItemSimpleDto box : boxes.values()) {
+                    syncStaticItemSetPositionMonitor.setInvisible(box, viewFieldCenter);
+                }
+            }
+            syncStaticItemSetPositionMonitor.handleOutOfView(viewFieldCenter);
+        }
         return syncStaticItemSetPositionMonitor;
     }
 
@@ -153,6 +168,10 @@ public class BoxUiService {
         if (viewFieldAabb == null) {
             return;
         }
+        if (syncStaticItemSetPositionMonitor != null) {
+            syncStaticItemSetPositionMonitor.setInvisible(null, null);
+        }
+        DecimalPosition viewFiledCenter = viewFieldAabb.center();
         synchronized (boxes) {
             Set<Integer> unused = new HashSet<>(babylonBoxItems.keySet());
             boxes.forEach((id, syncBoxItemSimpleDto) -> {
@@ -164,18 +183,37 @@ public class BoxUiService {
                         visibleBox.setPosition(syncBoxItemSimpleDto.getPosition3d());
                         visibleBox.updatePosition();
                         babylonBoxItems.put(id, visibleBox);
+                        if (syncStaticItemSetPositionMonitor != null) {
+                            syncStaticItemSetPositionMonitor.addVisible(visibleBox);
+                        }
                     } else {
                         unused.remove(id);
                     }
                 } else {
                     BabylonBoxItem visibleBox = babylonBoxItems.remove(id);
                     if (visibleBox != null) {
+                        if (syncStaticItemSetPositionMonitor != null) {
+                            syncStaticItemSetPositionMonitor.removeVisible(visibleBox);
+                        }
                         visibleBox.dispose();
                         unused.remove(id);
                     }
+
+                    if (syncStaticItemSetPositionMonitor != null) {
+                        syncStaticItemSetPositionMonitor.setInvisible(syncBoxItemSimpleDto, viewFiledCenter);
+                    }
                 }
             });
-            unused.forEach(id -> babylonBoxItems.remove(id).dispose());
+            unused.forEach(id -> {
+                BabylonBoxItem toRemove = babylonBoxItems.remove(id);
+                if (syncStaticItemSetPositionMonitor != null) {
+                    syncStaticItemSetPositionMonitor.removeVisible(toRemove);
+                }
+                toRemove.dispose();
+            });
+            if (syncStaticItemSetPositionMonitor != null) {
+                syncStaticItemSetPositionMonitor.handleOutOfView(viewFiledCenter);
+            }
         }
     }
 
@@ -210,4 +248,9 @@ public class BoxUiService {
         }
     }
 
+
+    // Only for tests
+    public Map<Integer, SyncBoxItemSimpleDto> getBoxes() {
+        return boxes;
+    }
 }

@@ -20,6 +20,7 @@ import java.util.List;
  * Created by Beat
  * on 04.03.2018.
  */
+@Deprecated
 @Dependent
 public class QuestInGamePlaceVisualization {
     private static final long ANIMATION_PERIOD_MILLIS = 2000;

@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.cdimock.BabylonRendererServiceAccessMock;
@@ -91,6 +92,15 @@ public class WeldUiBaseIntegrationTest {
         syncResourceItemSimpleDto.setPosition2d(position3d.toXY());
         syncResourceItemSimpleDto.setPosition3d(position3d);
         return syncResourceItemSimpleDto;
+    }
+
+    protected SyncBoxItemSimpleDto createBox(int id, int itemTypeId, Vertex position3d) {
+        SyncBoxItemSimpleDto syncBoxItemSimpleDto = new SyncBoxItemSimpleDto();
+        syncBoxItemSimpleDto.setId(id);
+        syncBoxItemSimpleDto.setItemTypeId(itemTypeId);
+        syncBoxItemSimpleDto.setPosition2d(position3d.toXY());
+        syncBoxItemSimpleDto.setPosition3d(position3d);
+        return syncBoxItemSimpleDto;
     }
 
     protected void setupCockpit() {

@@ -130,7 +130,7 @@ public class InGameQuestVisualizationService {
                 break;
             }
             case BOX_PICKED: {
-                MarkerConfig markerConfig = new MarkerConfig();
+                MarkerConfig markerConfig = setupMarkerConfig();
                 setupVisualization(boxUiService.createSyncItemSetPositionMonitor(markerConfig));
                 break;
             }

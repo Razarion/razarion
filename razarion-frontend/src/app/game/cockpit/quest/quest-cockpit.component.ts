@@ -218,19 +218,19 @@ export class QuestCockpitComponent implements QuestCockpit {
         return "Build";
       }
       case ConditionTrigger.BASE_KILLED: {
-        return "Destroy Bases";
+        return "Destroy bases";
       }
       case ConditionTrigger.SYNC_ITEM_POSITION: {
         return "Region";
       }
       case ConditionTrigger.BOX_PICKED: {
-        return "Boxs";
+        return "Pick box";
       }
       case ConditionTrigger.INVENTORY_ITEM_PLACED: {
         return "Inventory";
       }
       default: {
-        console.warn(`Unknown ConditionTrigger ${conditionTrigger}`)
+        console.warn(`Unknown conditionTrigger ${conditionTrigger}`)
       }
     }
     return undefined

@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAccess {
     private final List<BabylonBaseItemMock> babylonBaseItemMocks = new ArrayList<>();
     private final List<BabylonResourceItemMock> babylonResourceItemMocks = new ArrayList<>();
+    private final List<BabylonBoxItemMock> babylonBoxItemMocks = new ArrayList<>();
 
     private final Logger logger = Logger.getLogger(BabylonRendererServiceAccessMock.class.getName());
 
@@ -53,7 +54,9 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
 
     @Override
     public BabylonBoxItem createBabylonBoxItem(int id, BoxItemType boxItemType) {
-        throw new UnsupportedOperationException("...TODO...");
+        BabylonBoxItemMock babylonBoxItemMock = new BabylonBoxItemMock(id, boxItemType, babylonBoxItemMocks::remove);
+        babylonBoxItemMocks.add(babylonBoxItemMock);
+        return babylonBoxItemMock;
     }
 
     @Override
@@ -74,9 +77,14 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         return babylonResourceItemMocks;
     }
 
+    public List<BabylonBoxItemMock> getBabylonBoxItemMocks() {
+        return babylonBoxItemMocks;
+    }
+
     public void clear() {
         babylonBaseItemMocks.clear();
         babylonResourceItemMocks.clear();
+        babylonBoxItemMocks.clear();
     }
 
     @Override
@@ -293,4 +301,78 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
             return markerConfig;
         }
     }
+
+    public static class BabylonBoxItemMock implements BabylonBoxItem {
+        private final int id;
+        private final BoxItemType boxItemType;
+        private final Consumer<BabylonBoxItemMock> onDisposeCallback;
+        private MarkerConfig markerConfig;
+        private Vertex position;
+
+        public BabylonBoxItemMock(int id, BoxItemType boxItemType, Consumer<BabylonBoxItemMock> onDisposeCallback) {
+            this.id = id;
+            this.boxItemType = boxItemType;
+            this.onDisposeCallback = onDisposeCallback;
+        }
+
+        @Override
+        public int getId() {
+            return id;
+        }
+
+        @Override
+        public void dispose() {
+            this.onDisposeCallback.accept(this);
+        }
+
+        @Override
+        public Vertex getPosition() {
+            return position;
+        }
+
+        @Override
+        public void setPosition(Vertex position) {
+            this.position = position;
+        }
+
+        @Override
+        public void updatePosition() {
+
+        }
+
+        @Override
+        public double getAngle() {
+            return 0;
+        }
+
+        @Override
+        public void setAngle(double angle) {
+
+        }
+
+        @Override
+        public void updateAngle() {
+
+        }
+
+        @Override
+        public void select(boolean active) {
+
+        }
+
+        @Override
+        public void hover(boolean active) {
+
+        }
+
+        @Override
+        public void mark(MarkerConfig markerConfig) {
+            this.markerConfig = markerConfig;
+        }
+
+        public MarkerConfig getMarkerConfig() {
+            return markerConfig;
+        }
+    }
+
 }
