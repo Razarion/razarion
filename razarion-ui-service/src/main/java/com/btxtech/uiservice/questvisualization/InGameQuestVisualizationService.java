@@ -9,6 +9,7 @@ import com.btxtech.uiservice.item.AbstractSyncItemSetPositionMonitor;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
+import com.btxtech.uiservice.item.SyncBaseItemSetPositionMonitor;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.task.visualization.ItemVisualizationRenderTask;
 import jsinterop.annotations.JsType;
@@ -77,8 +78,8 @@ public class InGameQuestVisualizationService {
                         itemTypeFilter.add(entry.getKey());
                     }
                 }
-                if (visible) {
-                    // TODO ((SyncBaseItemSetPositionMonitor) questInGameItemVisualization.getSyncItemSetPositionMonitor()).setItemTypeFilter(itemTypeFilter);
+                if(syncItemSetPositionMonitor != null) {
+                    ((SyncBaseItemSetPositionMonitor)syncItemSetPositionMonitor).setItemTypeFilter(itemTypeFilter);
                 }
             }
         }
@@ -117,7 +118,8 @@ public class InGameQuestVisualizationService {
                         itemTypeFilter = quest.getConditionConfig().getComparisonConfig().getTypeCount().keySet();
                     }
                 }
-                setupVisualization(baseItemUiService.createSyncItemSetPositionMonitor(itemTypeFilter, quest.getConditionConfig().getComparisonConfig().toBotIdSet()));
+                MarkerConfig markerConfig = setupMarkerConfig();
+                setupVisualization(baseItemUiService.createSyncItemSetPositionMonitor(markerConfig, itemTypeFilter, quest.getConditionConfig().getComparisonConfig().toBotIdSet()));
                 break;
             }
             case HARVEST: {

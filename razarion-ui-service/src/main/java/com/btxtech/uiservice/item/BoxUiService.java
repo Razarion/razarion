@@ -146,7 +146,7 @@ public class BoxUiService {
             DecimalPosition viewFieldCenter = viewField.calculateCenter();
             synchronized (boxes) {
                 for (SyncBoxItemSimpleDto box : boxes.values()) {
-                    syncStaticItemSetPositionMonitor.setInvisible(box, viewFieldCenter);
+                    syncStaticItemSetPositionMonitor.setInvisibleSyncItem(box, viewFieldCenter);
                 }
             }
             syncStaticItemSetPositionMonitor.handleOutOfView(viewFieldCenter);
@@ -169,7 +169,7 @@ public class BoxUiService {
             return;
         }
         if (syncStaticItemSetPositionMonitor != null) {
-            syncStaticItemSetPositionMonitor.setInvisible(null, null);
+            syncStaticItemSetPositionMonitor.setInvisibleSyncItem(null, null);
         }
         DecimalPosition viewFiledCenter = viewFieldAabb.center();
         synchronized (boxes) {
@@ -200,7 +200,7 @@ public class BoxUiService {
                     }
 
                     if (syncStaticItemSetPositionMonitor != null) {
-                        syncStaticItemSetPositionMonitor.setInvisible(syncBoxItemSimpleDto, viewFiledCenter);
+                        syncStaticItemSetPositionMonitor.setInvisibleSyncItem(syncBoxItemSimpleDto, viewFiledCenter);
                     }
                 }
             });

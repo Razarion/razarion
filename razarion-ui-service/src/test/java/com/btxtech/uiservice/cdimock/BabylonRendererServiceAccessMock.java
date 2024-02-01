@@ -40,7 +40,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
 
     @Override
     public BabylonBaseItem createBabylonBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy) {
-        BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock(id, baseItemType, diplomacy);
+        BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock(id, baseItemType, diplomacy, babylonBaseItemMocks::remove);
         babylonBaseItemMocks.add(babylonBaseItemMock);
         return babylonBaseItemMock;
     }
@@ -105,6 +105,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         private final int id;
         private final BaseItemType baseItemType;
         private final Diplomacy diplomacy;
+        private final Consumer<BabylonBaseItemMock> onDisposeCallback;
         private boolean disposed;
         private boolean select;
         private boolean hover;
@@ -112,10 +113,11 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         private double angle;
         private MarkerConfig markerConfig;
 
-        public BabylonBaseItemMock(int id, BaseItemType baseItemType, Diplomacy diplomacy) {
+        public BabylonBaseItemMock(int id, BaseItemType baseItemType, Diplomacy diplomacy, Consumer<BabylonBaseItemMock> onDisposeCallback) {
             this.id = id;
             this.baseItemType = baseItemType;
             this.diplomacy = diplomacy;
+            this.onDisposeCallback = onDisposeCallback;
         }
 
         @Override
@@ -126,6 +128,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         @Override
         public void dispose() {
             disposed = true;
+            onDisposeCallback.accept(this);
         }
 
         @Override
@@ -200,6 +203,10 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
             return diplomacy;
         }
 
+        @Override
+        public boolean isEnemy() {
+            return diplomacy == Diplomacy.ENEMY;
+        }
 
         public double getAngle() {
             return angle;

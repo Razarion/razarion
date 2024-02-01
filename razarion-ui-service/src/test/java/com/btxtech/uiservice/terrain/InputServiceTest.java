@@ -45,7 +45,7 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
         BaseItemUiService baseItemUiService = getWeldBean(BaseItemUiService.class);
 
         // Run ThreeJsRendererServiceAccess test
-        getThreeJsRendererServiceAccessMock().clear();
+        getBabylonRendererServiceAccessMock().clear();
 
         callOnViewChanged(new ViewField(0)
                 .bottomLeft(new DecimalPosition(0, 0))
@@ -53,10 +53,10 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
                 .topRight(new DecimalPosition(20, 20))
                 .topLeft(new DecimalPosition(0, 20)));
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
-        Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
+        Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
 
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
-        Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
+        Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
 
         callOnViewChanged(new ViewField(0)
                 .bottomLeft(new DecimalPosition(30, 30))
@@ -64,10 +64,10 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
                 .topRight(new DecimalPosition(50, 50))
                 .topLeft(new DecimalPosition(30, 50)));
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
-        Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
-        Assert.assertTrue(getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().get(0).isDisposed());
-        Assert.assertTrue(getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().get(1).isDisposed());
-        getThreeJsRendererServiceAccessMock().clear();
+        Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
+        Assert.assertTrue(getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().get(0).isDisposed());
+        Assert.assertTrue(getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().get(1).isDisposed());
+        getBabylonRendererServiceAccessMock().clear();
 
         callOnViewChanged(new ViewField(0)
                 .bottomLeft(new DecimalPosition(0, 0))
@@ -75,7 +75,7 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
                 .topRight(new DecimalPosition(20, 20))
                 .topLeft(new DecimalPosition(0, 20)));
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
-        Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
+        Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
 
         callOnViewChanged(new ViewField(0)
                 .bottomLeft(new DecimalPosition(1, 1))
@@ -83,7 +83,7 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
                 .topRight(new DecimalPosition(21, 21))
                 .topLeft(new DecimalPosition(1, 21)));
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
-        Assert.assertEquals(2, getThreeJsRendererServiceAccessMock().getBabylonBaseItemMocks().size());
+        Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
     }
 
     private NativeSyncBaseItemTickInfo[] setup2BaseItems(int baseId) {

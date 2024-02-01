@@ -4,24 +4,17 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
 import com.btxtech.uiservice.cdimock.BabylonRendererServiceAccessMock;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.gui.AbstractUiTestGuiRenderer;
-import com.btxtech.uiservice.gui.UiTestGuiDisplay;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
-import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-import javafx.scene.paint.Color;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -173,61 +166,5 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
         setupCockpit();
 
         return coldGameUiContext;
-    }
-
-    private void display() {
-        BabylonRendererServiceAccessMock threeJsRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
-        ResourceItemType resourceItemType = getWeldBean(ItemTypeService.class).getResourceItemType(FallbackConfig.RESOURCE_ITEM_TYPE_ID);
-        double radiusResource = resourceItemType.getRadius();
-        BoxItemType boxItemType = getWeldBean(ItemTypeService.class).getBoxItemType(FallbackConfig.BOX_ITEM_TYPE_ID);
-        double radiusBox = boxItemType.getRadius();
-        UiTestGuiDisplay.show(new AbstractUiTestGuiRenderer() {
-            @Override
-            protected void doRender() {
-                // Resource marker
-                threeJsRendererServiceAccessMock.getBabylonResourceItemMocks().forEach(babylonResourceItemMock -> {
-                    if (babylonResourceItemMock.getMarkerConfig() != null) {
-                        getGc().setFill(Color.YELLOW);
-                        getGc().fillOval(babylonResourceItemMock.getPosition().getX() - 2 * radiusResource,
-                                babylonResourceItemMock.getPosition().getY() - 2 * radiusResource,
-                                4 * radiusResource,
-                                4 * radiusResource);
-                    }
-                });
-                // Resource
-                getWeldBean(ResourceUiService.class).getResources().forEach((integer, syncResourceItemSimpleDto) -> {
-                    getGc().setFill(Color.PINK);
-                    getGc().fillOval(syncResourceItemSimpleDto.getPosition2d().getX() - radiusResource,
-                            syncResourceItemSimpleDto.getPosition2d().getY() - radiusResource,
-                            2 * radiusResource,
-                            2 * radiusResource);
-
-                });
-                // Box marker
-                threeJsRendererServiceAccessMock.getBabylonBoxItemMocks().forEach(babylonBoxItemMock -> {
-                    if (babylonBoxItemMock.getMarkerConfig() != null) {
-                        getGc().setFill(Color.YELLOW);
-                        getGc().fillOval(babylonBoxItemMock.getPosition().getX() - 2 * radiusBox,
-                                babylonBoxItemMock.getPosition().getY() - 2 * radiusBox,
-                                4 * radiusBox,
-                                4 * radiusBox);
-                    }
-                });
-                // Box
-                getWeldBean(BoxUiService.class).getBoxes().forEach((integer, syncBoxItemSimpleDto) -> {
-                    getGc().setFill(Color.LIGHTGREEN);
-                    getGc().fillOval(syncBoxItemSimpleDto.getPosition2d().getX() - radiusBox,
-                            syncBoxItemSimpleDto.getPosition2d().getY() - radiusBox,
-                            2 * radiusBox,
-                            2 * radiusBox);
-
-                });
-                // Field
-                ViewField viewField = getWeldBean(ResourceUiService.class).getViewField();
-                if (viewField != null) {
-                    strokePolygon(viewField.toList(), 1, Color.BLACK, false);
-                }
-            }
-        });
     }
 }

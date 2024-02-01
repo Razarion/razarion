@@ -1,12 +1,12 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.uiservice.renderer.BabylonBaseItem;
+import com.btxtech.uiservice.renderer.BabylonItem;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
+import com.btxtech.uiservice.renderer.MarkerConfig;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,61 +14,39 @@ import java.util.Set;
  * on 13.09.2017.
  */
 public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionMonitor {
-    private BaseItemUiService baseItemUiService;
     private Set<Integer> itemTypeFilter;
-    private Set<Integer> botIdFilter;
-    private List<Vertex> inViewVertices = new ArrayList<>();
-    private DecimalPosition nearestOutOfViewPosition;
-    private double minDistance;
-    private DecimalPosition viewFieldCenter;
+    private final Set<Integer> botIdFilter;
 
-    public SyncBaseItemSetPositionMonitor(BaseItemUiService baseItemUiService, Set<Integer> itemTypeFilter, Set<Integer> botIdFilter, Runnable releaseCallback) {
-        super(releaseCallback);
-        this.baseItemUiService = baseItemUiService;
+    public SyncBaseItemSetPositionMonitor(BabylonRendererService babylonRendererService, MarkerConfig markerConfig, Set<Integer> itemTypeFilter, Set<Integer> botIdFilter, Runnable releaseCallback) {
+        super(babylonRendererService, markerConfig, releaseCallback);
         this.itemTypeFilter = itemTypeFilter;
         this.botIdFilter = botIdFilter;
     }
 
-    public void init(DecimalPosition viewFieldCenter) {
-        this.viewFieldCenter = viewFieldCenter;
-        inViewVertices.clear();
-        nearestOutOfViewPosition = null;
-        minDistance = Double.MAX_VALUE;
-    }
-
-    public void inViewAabb(int baseId, Vertex position, BaseItemType baseItemType) {
-        if (!isAllowed(baseId, baseItemType)) {
+    @Override
+    public void addVisible(BabylonItem babylonItem) {
+        BabylonBaseItem babylonBaseItem = (BabylonBaseItem) babylonItem;
+        if (itemTypeFilter != null && !itemTypeFilter.contains(babylonBaseItem.getBaseItemType().getId())) {
             return;
         }
-        inViewVertices.add(position);
+        super.addVisible(babylonBaseItem);
     }
 
-    public void notInViewAabb(int baseId, DecimalPosition position, BaseItemType baseItemType) {
-        if (!isAllowed(baseId, baseItemType)) {
-            return;
-        }
-        double distance = position.getDistance(viewFieldCenter);
-        if (distance < minDistance) {
-            minDistance = distance;
-            nearestOutOfViewPosition = position;
+    public void setItemTypeFilter(Set<Integer> itemTypeFilter) {
+        this.itemTypeFilter = itemTypeFilter;
+        if(itemTypeFilter != null) {
+            check4Visible(babylonItem -> this.itemTypeFilter.contains(((BabylonBaseItem) babylonItem).getBaseItemType().getId()));
         }
     }
 
-    private boolean isAllowed(int baseId, BaseItemType baseItemType) {
-        if (itemTypeFilter != null) {
-            if (!itemTypeFilter.contains(baseItemType.getId())) {
-                return false;
+    public void setInvisibleSyncBaseItemTickInfo(DecimalPosition position, BaseItemType baseItemType, DecimalPosition viewFiledCenter) {
+        if (position != null) {
+            if (itemTypeFilter != null && !itemTypeFilter.contains(baseItemType.getId())) {
+                return;
             }
+            setInvisible(position, viewFiledCenter);
+        } else {
+            setInvisible(null, null);
         }
-        if (botIdFilter != null) {
-            Integer botId = baseItemUiService.getBase(baseId).getBotId();
-            if (botId == null) {
-                return false;
-            }
-            if (!botIdFilter.contains(botId)) {
-                return false;
-            }
-        }
-        return true;
     }
 }

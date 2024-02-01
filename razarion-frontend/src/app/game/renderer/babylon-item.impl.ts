@@ -1,5 +1,5 @@
-import { GwtHelper } from "../../gwtangular/GwtHelper";
-import { Mesh, MeshBuilder, NodeMaterial, Tools, TransformNode } from "@babylonjs/core";
+import {GwtHelper} from "../../gwtangular/GwtHelper";
+import {Mesh, MeshBuilder, NodeMaterial, Tools, TransformNode} from "@babylonjs/core";
 import {
   BabylonItem,
   BaseItemType,
@@ -10,9 +10,9 @@ import {
   ResourceItemType,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
-import { SimpleMaterial } from "@babylonjs/materials";
-import { BabylonModelService } from "./babylon-model.service";
-import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
+import {SimpleMaterial} from "@babylonjs/materials";
+import {BabylonModelService} from "./babylon-model.service";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
@@ -85,6 +85,10 @@ export class BabylonItemImpl implements BabylonItem {
 
   updateAngle(): void {
     this.container.rotation.y = Tools.ToRadians(90) - this.angle;
+  }
+
+  isEnemy(): boolean {
+    return this.diplomacy == Diplomacy.ENEMY;
   }
 
   select(active: boolean): void {

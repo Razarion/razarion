@@ -30,7 +30,7 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
 
             mark(markerConfig: MarkerConfig | null): void {
             }
-      
+
             select(active: boolean): void {
             }
 
@@ -39,6 +39,10 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
 
             setPosition(position: Vertex): void {
             }
+
+            isEnemy(): boolean {
+                return false;
+              }
 
             updateAngle(): void {
             }

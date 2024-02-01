@@ -46,6 +46,9 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
       updatePosition(): void {
       }
 
+      isEnemy(): boolean {
+        return false;
+      }
     };
   }
 }

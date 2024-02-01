@@ -10,6 +10,8 @@ import jsinterop.annotations.JsType;
 public interface BabylonBaseItem extends BabylonItem {
     BaseItemType getBaseItemType();
 
+    boolean isEnemy();
+
     void setHealth(double health);
 
     void setBuildingPosition(NativeVertexDto buildingPosition);

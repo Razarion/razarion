@@ -3,9 +3,13 @@ package com.btxtech.uiservice;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ColdGameUiContext;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
@@ -17,11 +21,16 @@ import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
+import com.btxtech.uiservice.gui.AbstractUiTestGuiRenderer;
+import com.btxtech.uiservice.gui.UiTestGuiDisplay;
 import com.btxtech.uiservice.i18n.I18nConstants;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.BoxUiService;
+import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainUiService;
+import javafx.scene.paint.Color;
 import org.easymock.EasyMock;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -61,7 +70,7 @@ public class WeldUiBaseIntegrationTest {
         return getWeldBean(TerrainUiService.class);
     }
 
-    protected BabylonRendererServiceAccessMock getThreeJsRendererServiceAccessMock() {
+    protected BabylonRendererServiceAccessMock getBabylonRendererServiceAccessMock() {
         return getWeldBean(BabylonRendererServiceAccessMock.class);
     }
 
@@ -101,6 +110,16 @@ public class WeldUiBaseIntegrationTest {
         syncBoxItemSimpleDto.setPosition2d(position3d.toXY());
         syncBoxItemSimpleDto.setPosition3d(position3d);
         return syncBoxItemSimpleDto;
+    }
+
+    protected BabylonRendererServiceAccessMock.BabylonBaseItemMock findBaseItem(int id) {
+        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
+        for (BabylonRendererServiceAccessMock.BabylonBaseItemMock babylonBaseItemMock : babylonRendererServiceAccessMock.getBabylonBaseItemMocks()) {
+            if (babylonBaseItemMock.getId() == id) {
+                return babylonBaseItemMock;
+            }
+        }
+        throw new IllegalArgumentException("No base item with id: " + id);
     }
 
     protected void setupCockpit() {
@@ -162,4 +181,83 @@ public class WeldUiBaseIntegrationTest {
             }
         });
     }
+
+    public void display() {
+        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
+        ResourceItemType resourceItemType = getWeldBean(ItemTypeService.class).getResourceItemType(FallbackConfig.RESOURCE_ITEM_TYPE_ID);
+        double radiusResource = resourceItemType.getRadius();
+        BoxItemType boxItemType = getWeldBean(ItemTypeService.class).getBoxItemType(FallbackConfig.BOX_ITEM_TYPE_ID);
+        double radiusBox = boxItemType.getRadius();
+        UiTestGuiDisplay.show(new AbstractUiTestGuiRenderer() {
+            @Override
+            protected void doRender() {
+                // Resource marker
+                babylonRendererServiceAccessMock.getBabylonResourceItemMocks().forEach(babylonResourceItemMock -> {
+                    if (babylonResourceItemMock.getMarkerConfig() != null) {
+                        getGc().setFill(Color.YELLOW);
+                        getGc().fillOval(babylonResourceItemMock.getPosition().getX() - 2 * radiusResource,
+                                babylonResourceItemMock.getPosition().getY() - 2 * radiusResource,
+                                4 * radiusResource,
+                                4 * radiusResource);
+                    }
+                });
+                // Resource
+                getWeldBean(ResourceUiService.class).getResources().forEach((integer, syncResourceItemSimpleDto) -> {
+                    getGc().setFill(Color.PINK);
+                    getGc().fillOval(syncResourceItemSimpleDto.getPosition2d().getX() - radiusResource,
+                            syncResourceItemSimpleDto.getPosition2d().getY() - radiusResource,
+                            2 * radiusResource,
+                            2 * radiusResource);
+
+                });
+                // Box marker
+                babylonRendererServiceAccessMock.getBabylonBoxItemMocks().forEach(babylonBoxItemMock -> {
+                    if (babylonBoxItemMock.getMarkerConfig() != null) {
+                        getGc().setFill(Color.YELLOW);
+                        getGc().fillOval(babylonBoxItemMock.getPosition().getX() - 2 * radiusBox,
+                                babylonBoxItemMock.getPosition().getY() - 2 * radiusBox,
+                                4 * radiusBox,
+                                4 * radiusBox);
+                    }
+                });
+                // Box
+                getWeldBean(BoxUiService.class).getBoxes().forEach((integer, syncBoxItemSimpleDto) -> {
+                    getGc().setFill(Color.LIGHTGREEN);
+                    getGc().fillOval(syncBoxItemSimpleDto.getPosition2d().getX() - radiusBox,
+                            syncBoxItemSimpleDto.getPosition2d().getY() - radiusBox,
+                            2 * radiusBox,
+                            2 * radiusBox);
+
+                });
+                // Base item marker
+                babylonRendererServiceAccessMock.getBabylonBaseItemMocks().forEach(babylonBaseItemMock -> {
+                    if (babylonBaseItemMock.getMarkerConfig() != null) {
+                        double radius = babylonBaseItemMock.getBaseItemType().getPhysicalAreaConfig().getRadius();
+                        getGc().setFill(Color.LIGHTBLUE);
+                        getGc().fillOval(babylonBaseItemMock.getPosition().getX() - 2 * radius,
+                                babylonBaseItemMock.getPosition().getY() - 2 * radius,
+                                4 * radius,
+                                4 * radius);
+                    }
+                });
+                // Base item
+                babylonRendererServiceAccessMock.getBabylonBaseItemMocks().forEach(babylonBaseItemMock -> {
+                    double radius = babylonBaseItemMock.getBaseItemType().getPhysicalAreaConfig().getRadius();
+                    getGc().setFill(Color.BLUE);
+                    getGc().fillOval(babylonBaseItemMock.getPosition().getX() - radius,
+                            babylonBaseItemMock.getPosition().getY() - radius,
+                            2 * radius,
+                            2 * radius);
+
+                });
+
+                // Field
+                ViewField viewField = getWeldBean(ResourceUiService.class).getViewField();
+                if (viewField != null) {
+                    strokePolygon(viewField.toList(), 1, Color.BLACK, false);
+                }
+            }
+        });
+    }
+
 }

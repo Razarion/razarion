@@ -118,7 +118,7 @@ public class ResourceUiService {
             return;
         }
         if (syncStaticItemSetPositionMonitor != null) {
-            syncStaticItemSetPositionMonitor.setInvisible(null,null);
+            syncStaticItemSetPositionMonitor.setInvisibleSyncItem(null,null);
         }
         DecimalPosition viewFiledCenter = viewFieldAabb.center();
         synchronized (resources) {
@@ -149,7 +149,7 @@ public class ResourceUiService {
                     }
 
                     if (syncStaticItemSetPositionMonitor != null) {
-                        syncStaticItemSetPositionMonitor.setInvisible(syncResourceItemSimpleDto, viewFiledCenter);
+                        syncStaticItemSetPositionMonitor.setInvisibleSyncItem(syncResourceItemSimpleDto, viewFiledCenter);
                     }
                 }
             });
@@ -193,7 +193,7 @@ public class ResourceUiService {
             DecimalPosition viewFieldCenter = viewField.calculateCenter();
             synchronized (resources) {
                 for (SyncResourceItemSimpleDto resource : resources.values()) {
-                    syncStaticItemSetPositionMonitor.setInvisible(resource, viewFieldCenter);
+                    syncStaticItemSetPositionMonitor.setInvisibleSyncItem(resource, viewFieldCenter);
                 }
             }
             syncStaticItemSetPositionMonitor.handleOutOfView(viewFieldCenter);

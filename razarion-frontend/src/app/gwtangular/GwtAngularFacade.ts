@@ -529,6 +529,8 @@ export interface BabylonItem {
 
   updateAngle(): void;
 
+  isEnemy(): boolean;
+
   select(active: boolean): void;
 
   hover(active: boolean): void;
