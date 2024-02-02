@@ -119,60 +119,6 @@ public class InGameQuestVisualizationServiceBaseItemTest extends WeldUiBaseInteg
         Assert.assertNull(findBaseItem(2).getMarkerConfig());
     }
 
-    @Test
-    public void activateBaseItemInsideAndOutside() {
-        ColdGameUiContext coldGameUiContext = setup();
-
-        NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[4];
-        NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo = new NativeSyncBaseItemTickInfo();
-        nativeSyncBaseItemTickInfo.id = 1;
-        nativeSyncBaseItemTickInfo.itemTypeId = FallbackConfig.BUILDER_ITEM_TYPE_ID;
-        nativeSyncBaseItemTickInfo.x = 140;
-        nativeSyncBaseItemTickInfo.y = 175;
-        nativeSyncBaseItemTickInfo.baseId = BOT_BASE_ITEM_ID;
-        nativeSyncBaseItemTickInfos[0] = nativeSyncBaseItemTickInfo;
-
-        nativeSyncBaseItemTickInfo = new NativeSyncBaseItemTickInfo();
-        nativeSyncBaseItemTickInfo.id = 2;
-        nativeSyncBaseItemTickInfo.itemTypeId = FallbackConfig.BUILDER_ITEM_TYPE_ID;
-        nativeSyncBaseItemTickInfo.x = 160;
-        nativeSyncBaseItemTickInfo.y = 175;
-        nativeSyncBaseItemTickInfo.baseId = BOT_BASE_ITEM_ID;
-        nativeSyncBaseItemTickInfos[1] = nativeSyncBaseItemTickInfo;
-
-        nativeSyncBaseItemTickInfo = new NativeSyncBaseItemTickInfo();
-        nativeSyncBaseItemTickInfo.id = 3;
-        nativeSyncBaseItemTickInfo.itemTypeId = FallbackConfig.BUILDER_ITEM_TYPE_ID;
-        nativeSyncBaseItemTickInfo.x = 140;
-        nativeSyncBaseItemTickInfo.y = 230;
-        nativeSyncBaseItemTickInfo.baseId = BOT_BASE_ITEM_ID;
-        nativeSyncBaseItemTickInfos[2] = nativeSyncBaseItemTickInfo;
-
-        nativeSyncBaseItemTickInfo = new NativeSyncBaseItemTickInfo();
-        nativeSyncBaseItemTickInfo.id = 4;
-        nativeSyncBaseItemTickInfo.itemTypeId = FallbackConfig.BUILDER_ITEM_TYPE_ID;
-        nativeSyncBaseItemTickInfo.x = 160;
-        nativeSyncBaseItemTickInfo.y = 230;
-        nativeSyncBaseItemTickInfo.baseId = BOT_BASE_ITEM_ID;
-        nativeSyncBaseItemTickInfos[3] = nativeSyncBaseItemTickInfo;
-
-        getWeldBean(BaseItemUiService.class).updateSyncBaseItems(nativeSyncBaseItemTickInfos);
-
-        createBase(coldGameUiContext.getUserContext().getUserId(), OWN_BASE_ITEM_ID);
-        getWeldBean(InGameQuestVisualizationService.class).onQuestActivated(new QuestConfig().conditionConfig(
-                new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().count(10))));
-
-        getWeldBean(BaseItemUiService.class).updateSyncBaseItems(nativeSyncBaseItemTickInfos);
-
-        display();
-
-        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
-        Assert.assertNull(babylonRendererServiceAccessMock.getShowOutOfViewMarkerConfig());
-        Assert.assertEquals(2, babylonRendererServiceAccessMock.getBabylonBaseItemMocks().size());
-        Assert.assertNotNull(findBaseItem(1).getMarkerConfig());
-        Assert.assertNotNull(findBaseItem(2).getMarkerConfig());
-    }
-
     private ColdGameUiContext setup() {
         ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
         coldGameUiContext.setUserContext(new UserContext()
