@@ -354,6 +354,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     private InGameQuestVisualConfig setupInGameQuestVisualConfig() {
         return new InGameQuestVisualConfig()
                 .nodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_NODES_MATERIAL))
+                .placeNodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_PLACE_NODES_MATERIAL))
                 .radius(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_RADIUS))
                 .outOfViewNodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_NODES_MATERIAL))
                 .outOfViewSize(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SIZE))

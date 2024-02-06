@@ -2,87 +2,64 @@ package com.btxtech.uiservice.questvisualization;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.Vertex4;
-import com.btxtech.shared.dto.InGameQuestVisualConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
-import com.btxtech.shared.utils.InterpolationUtils;
-import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.renderer.ViewService;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
+import com.btxtech.uiservice.renderer.MarkerConfig;
+import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by Beat
  * on 04.03.2018.
  */
-@Deprecated
 @Dependent
 public class QuestInGamePlaceVisualization {
-    private static final long ANIMATION_PERIOD_MILLIS = 2000;
     @Inject
-    private ViewService viewService;
-    @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
-    private InGameQuestVisualConfig inGameQuestVisualConfig;
+    private BabylonRendererService babylonRendererService;
     private PlaceConfig placeConfig;
     private DecimalPosition center;
-    private DecimalPosition lastViewCenter;
-    private Vertex4 placeConfigBoundary;
     private Rectangle2D placeConfigBoundaryRect;
-    private List<ModelMatrices> lastOutOfViewModelMatrices;
+    private MarkerConfig markerConfig;
 
-    public void init(PlaceConfig placeConfig, InGameQuestVisualConfig inGameQuestVisualConfig) {
+    public void init(PlaceConfig placeConfig, MarkerConfig markerConfig) {
         this.placeConfig = placeConfig;
         placeConfigBoundaryRect = placeConfig.toAabb();
-        center = placeConfigBoundaryRect.center();
-        placeConfigBoundary = new Vertex4(placeConfigBoundaryRect.startX(), placeConfigBoundaryRect.startY(), placeConfigBoundaryRect.endX(), placeConfigBoundaryRect.endY());
-        this.inGameQuestVisualConfig = inGameQuestVisualConfig;
-    }
-
-    public PlaceConfig getPlaceConfig() {
-        return placeConfig;
-    }
-
-    public Vertex4 getPlaceConfigBoundary() {
-        return placeConfigBoundary;
-    }
-
-    public Rectangle2D getPlaceConfigBoundaryRect() {
-        return placeConfigBoundaryRect;
-    }
-
-    public Integer getOutOfViewShape3DId() {
-        return inGameQuestVisualConfig.getOutOfViewNodesMaterialId();
-    }
-
-    public List<ModelMatrices> provideOutOfViewModelMatrices() {
-        DecimalPosition viewCenter = viewService.getCurrentViewField().calculateCenter();
-        if (lastViewCenter != null && lastViewCenter.equalsDelta(viewCenter)) {
-            return lastOutOfViewModelMatrices;
+        if (placeConfigBoundaryRect == null && placeConfig.getPosition() != null) {
+            // No radius set
+            placeConfigBoundaryRect = new Rectangle2D(
+                    placeConfig.getPosition().getX() - 1,
+                    placeConfig.getPosition().getY() - 1,
+                    2,
+                    2);
         }
-        lastViewCenter = viewCenter;
+        this.markerConfig = markerConfig;
+        center = placeConfigBoundaryRect.center();
+    }
+
+    public void onViewChanged(ViewField viewField, Rectangle2D viewFieldAabb) {
+        updateVisualization(viewField, viewFieldAabb);
+    }
+
+    public void release() {
+        babylonRendererService.showOutOfViewMarker(null, 0);
+        babylonRendererService.showPlaceMarker(null, null);
+    }
+
+    private void updateVisualization(ViewField viewField, Rectangle2D viewFieldAabb) {
         boolean outOfView = true;
-        if (viewService.getCurrentInnerAabb().adjoins(placeConfigBoundaryRect)) {
-            outOfView = !placeConfig.checkAdjoins(viewService.getCurrentInnerAabb());
+        if (viewFieldAabb.adjoins(placeConfigBoundaryRect)) {
+            outOfView = !placeConfig.checkAdjoins(viewField.calculateInnerAabbRectangle());
         }
         if (outOfView) {
-            double angle = viewCenter.getAngle(this.center);
-            lastOutOfViewModelMatrices = Collections.singletonList(ModelMatrices.createFromPositionAndZRotation(viewCenter.getX(), viewCenter.getY(), 0, angle, nativeMatrixFactory));
-            return lastOutOfViewModelMatrices;
+            double angle = viewField.calculateCenter().getAngle(this.center);
+            babylonRendererService.showOutOfViewMarker(markerConfig, angle);
+            babylonRendererService.showPlaceMarker(null, null);
         } else {
-            lastOutOfViewModelMatrices = null;
-            return null;
+            babylonRendererService.showOutOfViewMarker(null, 0);
+            babylonRendererService.showPlaceMarker(placeConfig, markerConfig);
         }
-    }
 
-    public double getAnimation() {
-        double sinValue = Math.sin(((System.currentTimeMillis() % ANIMATION_PERIOD_MILLIS) / (double) ANIMATION_PERIOD_MILLIS) * MathHelper.ONE_RADIANT);
-        return InterpolationUtils.interpolate(0, 1, -1, 1, sinValue);
     }
-
 }

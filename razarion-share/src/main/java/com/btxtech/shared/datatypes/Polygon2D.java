@@ -2,6 +2,8 @@ package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,8 @@ import java.util.List;
  * Created by Beat
  * 11.03.2016.
  */
+
+@JsType
 public class Polygon2D {
 
     // private Logger logger = Logger.getLogger(Polygon2D.class.getName());
@@ -22,10 +26,12 @@ public class Polygon2D {
     /**
      * Used by Errai
      */
+    @JsIgnore
     public Polygon2D() {
 
     }
 
+    @JsIgnore
     public Polygon2D(List<DecimalPosition> corners) {
         this.corners = new ArrayList<>(corners);
         for (int i = 0; i < corners.size(); i++) {
@@ -37,6 +43,7 @@ public class Polygon2D {
         }
     }
 
+    @JsIgnore
     public boolean isInside(DecimalPosition position) {
         int i, j;
         boolean c = false;
@@ -63,6 +70,7 @@ public class Polygon2D {
         return insideCornerCount;
     }
 
+    @JsIgnore
     public boolean isInside(Collection<DecimalPosition> positions) {
         for (DecimalPosition position : positions) {
             if (!isInside(position)) {
@@ -116,10 +124,14 @@ public class Polygon2D {
      * @param other Polygon
      * @return true if crossing
      */
+    @JsIgnore
+    @SuppressWarnings("unused") // Used ba angular
     public boolean isLineCrossing(Polygon2D other) {
         return isLineCrossing(other.getLines());
     }
 
+    @JsIgnore
+    @SuppressWarnings("unused") // Used ba angular
     public boolean isLineCrossing(Collection<Line> otherLines) {
         for (Line line : lines) {
             for (Line otherLine : otherLines) {
@@ -205,6 +217,15 @@ public class Polygon2D {
 
     public int size() {
         return corners.size();
+    }
+
+    @SuppressWarnings("unused") // Used ba angular
+    public DecimalPosition[] toCornersAngular() {
+        if (corners != null) {
+            return corners.toArray(new DecimalPosition[0]);
+        } else {
+            return new DecimalPosition[0];
+        }
     }
 
     public Polygon2D createReducedPolygon(int indexToReduce) {

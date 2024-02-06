@@ -17,7 +17,8 @@ import {
   DecimalPosition,
   BabylonBoxItem,
   BoxItemType,
-  MarkerConfig
+  MarkerConfig,
+  PlaceConfig,
 } from "src/app/gwtangular/GwtAngularFacade";
 import { BabylonTerrainTileImpl } from "./babylon-terrain-tile.impl";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
@@ -25,6 +26,7 @@ import { BabylonModelService } from "./babylon-model.service";
 import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
 import {
   Color3,
+  Constants,
   CubeTexture,
   DirectionalLight,
   Engine,
@@ -36,13 +38,15 @@ import {
   Node,
   NodeMaterial,
   PointerEventTypes,
+  PolygonMeshBuilder,
   Quaternion,
   Scene,
   ShadowGenerator,
   Tools,
   TransformNode,
   Vector2,
-  Vector3
+  Vector3,
+  VertexBuffer
 } from "@babylonjs/core";
 import { SimpleMaterial } from "@babylonjs/materials";
 import { GwtHelper } from "../../gwtangular/GwtHelper";
@@ -52,6 +56,8 @@ import { BabylonResourceItemImpl } from "./babylon-resource-item.impl";
 import { SelectionFrame } from "./selection-frame";
 import { GwtInstance } from "src/app/gwtangular/GwtInstance";
 import { BabylonBoxItemImpl } from "./babylon-box-item.impl";
+import { Geometry } from "src/app/common/geometry";
+import { PlaceConfigComponent } from "src/app/editor/common/place-config/place-config.component";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -134,6 +140,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private viewField?: ViewField;
   private outOfViewPlane?: Mesh;
   private outOfViewMaterial?: NodeMaterial;
+  private placeMarkerMesh?: Mesh;
 
   constructor(private gwtAngularService: GwtAngularService, private babylonModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
   }
@@ -401,6 +408,68 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.outOfViewPlane = undefined;
       }
     }
+  }
+
+  showPlaceMarker(placeConfig: PlaceConfig | null, markerConfig: MarkerConfig | null): void {
+    if (!placeConfig || !markerConfig) {
+      if (this.placeMarkerMesh) {
+        this.placeMarkerMesh.dispose();
+        this.placeMarkerMesh = undefined;
+      }
+    } else {
+      if (this.placeMarkerMesh) {
+        return;
+      }
+      if (placeConfig.getPolygon2D()) {
+        this.placeMarkerMesh = this.createPlacePolygonMarker(placeConfig);
+      } else if (placeConfig.getPosition()) {
+        this.placeMarkerMesh = this.createPlaceDiscMarker(placeConfig);
+      } else {
+        console.warn("Place marker has invalid place config");
+        return;
+      }
+      let nodeMaterial = this.babylonModelService.getNodeMaterial(markerConfig.placeNodesMaterialId!);
+      nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
+      // nodeMaterial.material.depthFunction = Constants.ALWAYS;
+      this.placeMarkerMesh.material = nodeMaterial;
+    }
+  }
+
+  private createPlacePolygonMarker(placeConfig: PlaceConfig): Mesh {
+    let polygonData = PlaceConfigComponent.toVertex2ArrayAngular(placeConfig.getPolygon2D()?.toCornersAngular()!)
+    let polygonTriangulation = new PolygonMeshBuilder("Place marker", polygonData, this.scene, Geometry.EAR_CUT);
+    const polygonMesh = polygonTriangulation.build();
+    polygonMesh.position.y = 0.1;
+    const boundingBox = polygonMesh.getBoundingInfo().boundingBox;
+    const width = boundingBox.maximum.x - boundingBox.minimum.x;
+    const height = boundingBox.maximum.z - boundingBox.minimum.z;
+    const meshUv = polygonMesh.getVerticesData(VertexBuffer.UVKind);
+    if (meshUv) {
+      for (let i = 0; i < meshUv.length; i += 2) {
+        meshUv[i] *= width;
+        meshUv[i + 1] *= height;
+      }
+      polygonMesh.setVerticesData(VertexBuffer.UVKind, meshUv);
+    }
+    return polygonMesh;
+  }
+
+  private createPlaceDiscMarker(placeConfig: PlaceConfig): Mesh {
+    let radius = placeConfig.toRadiusAngular() || 1;
+    const diskMesh = MeshBuilder.CreateDisc("Place marker", { radius: radius }, this.scene);
+    diskMesh.position.x = placeConfig.getPosition()?.getX()!;
+    diskMesh.position.y = 0.1;
+    diskMesh.position.z = placeConfig.getPosition()?.getY()!;
+    diskMesh.rotation.x = Tools.ToRadians(90);
+    diskMesh.isPickable = false;
+    const discUv = diskMesh.getVerticesData(VertexBuffer.UVKind);
+    if (discUv) {
+      for (let i = 0; i < discUv.length; i++) {
+        discUv[i] *= 2 * radius;
+      }
+      diskMesh.setVerticesData(VertexBuffer.UVKind, discUv);
+    }
+    return diskMesh;
   }
 
   public onViewFieldChanged() {

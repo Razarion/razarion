@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Color;
  */
 public class InGameQuestVisualConfig {
     private Integer nodesMaterialId;
+    private Integer placeNodesMaterialId;
     private double radius;
     private Integer outOfViewNodesMaterialId;
     public double outOfViewSize;
@@ -22,6 +23,14 @@ public class InGameQuestVisualConfig {
 
     public void setNodesMaterialId(Integer nodesMaterialId) {
         this.nodesMaterialId = nodesMaterialId;
+    }
+
+    public Integer getPlaceNodesMaterialId() {
+        return placeNodesMaterialId;
+    }
+
+    public void setPlaceNodesMaterialId(Integer placeNodesMaterialId) {
+        this.placeNodesMaterialId = placeNodesMaterialId;
     }
 
     public double getRadius() {
@@ -82,6 +91,11 @@ public class InGameQuestVisualConfig {
 
     public InGameQuestVisualConfig nodesMaterialId(Integer nodesMaterialId) {
         setNodesMaterialId(nodesMaterialId);
+        return this;
+    }
+
+    public InGameQuestVisualConfig placeNodesMaterialId(Integer nodesMaterialId) {
+        setPlaceNodesMaterialId(nodesMaterialId);
         return this;
     }
 

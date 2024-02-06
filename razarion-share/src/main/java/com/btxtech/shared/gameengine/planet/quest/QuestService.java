@@ -223,9 +223,15 @@ public class QuestService {
                     throw new UnsupportedOperationException();
                 }
             case SYNC_ITEM_POSITION:
-                BaseItemPositionComparison baseItemPositionComparison = instance.select(BaseItemPositionComparison.class).get();
-                baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTimeSeconds(), userId);
-                return baseItemPositionComparison;
+                if (comparisonConfig.getTypeCount() != null) {
+                    BaseItemPositionComparison baseItemPositionComparison = instance.select(BaseItemPositionComparison.class).get();
+                    baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTimeSeconds(), userId);
+                    return baseItemPositionComparison;
+                } else if (comparisonConfig.getCount() != null) {
+                    throw new IllegalArgumentException("SYNC_ITEM_POSITION and count not supported. Use item types instead.");
+                } else {
+                    throw new UnsupportedOperationException();
+                }
             default:
                 throw new IllegalArgumentException("QuestService.createAbstractComparison() Unknown conditionTrigger: " + conditionTrigger);
         }

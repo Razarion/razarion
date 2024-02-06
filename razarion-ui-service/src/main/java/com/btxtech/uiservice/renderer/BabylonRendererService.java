@@ -2,6 +2,7 @@ package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.dto.ViewFieldConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -46,6 +47,10 @@ public class BabylonRendererService {
 
     public void showOutOfViewMarker(MarkerConfig markerConfig, double angle) {
         babylonRenderServiceAccess.showOutOfViewMarker(markerConfig, angle);
+    }
+
+    public void showPlaceMarker(PlaceConfig placeConfig, MarkerConfig markerConfig) {
+        babylonRenderServiceAccess.showPlaceMarker(placeConfig, markerConfig);
     }
 
     public void runRenderer(MeshContainer[] meshContainers) {

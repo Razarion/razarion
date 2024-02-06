@@ -2,6 +2,7 @@ package com.btxtech.uiservice.cdimock;
 
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -91,6 +92,11 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
     public void showOutOfViewMarker(MarkerConfig markerConfig, double angle) {
         this.showOutOfViewMarkerConfig = markerConfig;
         this.showOutOfViewAngle = angle;
+    }
+
+    @Override
+    public void showPlaceMarker(PlaceConfig placeConfig, MarkerConfig markerConfig) {
+
     }
 
     public MarkerConfig getShowOutOfViewMarkerConfig() {

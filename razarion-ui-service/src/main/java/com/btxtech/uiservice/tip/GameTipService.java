@@ -3,13 +3,11 @@ package com.btxtech.uiservice.tip;
 import com.btxtech.shared.dto.GameTipConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.ViewService;
-import com.btxtech.uiservice.renderer.task.visualization.ItemVisualizationRenderTask;
 import com.btxtech.uiservice.tip.tiptask.AbstractTipTask;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 import com.btxtech.uiservice.tip.tiptask.TipTaskContainer;
@@ -32,8 +30,6 @@ import javax.inject.Inject;
 public class GameTipService {
     @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
-    private ItemVisualizationRenderTask tipRenderTask;
     @Inject
     private GuiTipVisualizationService guiTipVisualizationService;
     @Inject
@@ -159,13 +155,13 @@ public class GameTipService {
         if (inGameTipVisualization != null) {
             viewService.addViewFieldListeners(inGameTipVisualization);
             inGameTipVisualization.onViewChanged(viewService.getCurrentViewField(), viewService.getCurrentAabb());
-            tipRenderTask.activate(inGameTipVisualization);
+            // TODO tipRenderTask.activate(inGameTipVisualization);
         }
         inGameDirectionVisualization = currentTipTask.createInGameDirectionVisualization();
         if (inGameDirectionVisualization != null) {
             viewService.addViewFieldListeners(inGameDirectionVisualization);
             inGameDirectionVisualization.onViewChanged(viewService.getCurrentViewField(), viewService.getCurrentAabb());
-            tipRenderTask.activate(inGameDirectionVisualization);
+            // TODO tipRenderTask.activate(inGameDirectionVisualization);
         }
         guiTipVisualization = currentTipTask.createGuiTipVisualization();
         if (guiTipVisualization != null) {
@@ -176,13 +172,13 @@ public class GameTipService {
 
     private void cleanupVisualization() {
         if (inGameTipVisualization != null) {
-            tipRenderTask.deactivate();
+            // TODO tipRenderTask.deactivate();
             viewService.removeViewFieldListeners(inGameTipVisualization);
             inGameTipVisualization.cleanup();
             inGameTipVisualization = null;
         }
         if (inGameDirectionVisualization != null) {
-            tipRenderTask.deactivate();
+            // TODO tipRenderTask.deactivate();
             viewService.removeViewFieldListeners(inGameDirectionVisualization);
             inGameDirectionVisualization = null;
         }

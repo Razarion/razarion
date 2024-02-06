@@ -40,6 +40,7 @@ public enum DbPropertyKey {
     TIP_SCROLL_DIALOG_KEYBOARD_IMAGE("tip.scroll.dialog.keyboard.image"),
     // Quest in game visualization
     QUEST_IN_GAME_VISUALIZATION_NODES_MATERIAL("questInGameVisualization.nodes-material"),
+    QUEST_IN_GAME_VISUALIZATION_PLACE_NODES_MATERIAL("questInGameVisualization.place.nodes-material"),
     QUEST_IN_GAME_VISUALIZATION_RADIUS("questInGameVisualization.radius"),
     QUEST_IN_GAME_VISUALIZATION_MOVE_DURATION("questInGameVisualization.move.duration"),
     QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_NODES_MATERIAL("questInGameVisualization.outOfView.nodes-material"),

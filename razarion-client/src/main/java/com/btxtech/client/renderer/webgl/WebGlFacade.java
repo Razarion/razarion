@@ -62,8 +62,6 @@ public class WebGlFacade {
     private VisualUiService visualUiService;
     @Inject
     private WebGlProgramService webGlProgramService;
-    @Inject
-    private WebGLTextureContainer textureContainer;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
 
     public void init(WebGlFacadeConfig webGlFacadeConfig, List<String> glslVertexDefines, List<String> glslFragmentDefines, boolean oESStandardDerivatives) {
@@ -197,39 +195,11 @@ public class WebGlFacade {
     }
 
     public WebGlUniformTexture createWebGLTexture(int imageId, String uniformName) {
-        WebGLTexture webGLTexture = textureContainer.getTexture(imageId);
-        return createWebGLTexture(uniformName, () -> webGLTexture);
-    }
-
-    public WebGlUniformTexture createTerrainMarkerWebGLTexture(String uniformName) {
-        WebGLTexture webGLTexture = textureContainer.getTerrainMarkerTexture();
-        return createWebGLTexture(uniformName, () -> webGLTexture);
+        return createWebGLTexture(uniformName, () -> null);
     }
 
     public WebGlUniformTexture createFakeWebGLTexture(String uniformName) {
-        WebGLTexture webGLTexture = textureContainer.getFakeTexture();
-        return createWebGLTexture(uniformName, () -> webGLTexture);
-    }
-
-    public WebGlPhongMaterial createPhongMaterial(PhongMaterialConfig phongMaterialConfig, String variableName) {
-        if (phongMaterialConfig != null) {
-            return new WebGlPhongMaterial(this, phongMaterialConfig, variableName);
-        } else {
-            return null;
-        }
-    }
-
-    public WebGlSplatting createSplatting(GroundSplattingConfig splatting, String variableName) {
-        return new WebGlSplatting(this, splatting, variableName);
-    }
-
-
-    public WebGlUniformTexture createSaveWebGLTexture(Integer imageId, String samplerUniformName) {
-        if (imageId != null) {
-            return createWebGLTexture(imageId, samplerUniformName);
-        } else {
-            return createFakeWebGLTexture(samplerUniformName);
-        }
+        return createWebGLTexture(uniformName, () -> null);
     }
 
     public TextureIdHandler.WebGlTextureId createWebGlTextureId() {

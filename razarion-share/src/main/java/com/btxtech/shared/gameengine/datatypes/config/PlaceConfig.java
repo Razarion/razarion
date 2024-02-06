@@ -6,6 +6,8 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.system.Nullable;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
 
 import java.util.Collection;
 
@@ -13,6 +15,7 @@ import java.util.Collection;
  * Created by Beat
  * 23.07.2016.
  */
+@JsType
 public class PlaceConfig {
     private Polygon2D polygon2D;
     private DecimalPosition position;
@@ -40,6 +43,15 @@ public class PlaceConfig {
 
     public void setRadius(@Nullable Double radius) {
         this.radius = radius;
+    }
+
+    @SuppressWarnings("unused") // Used ba angular
+    public double toRadiusAngular() {
+        if (radius != null) {
+            return radius;
+        } else {
+            return 0;
+        }
     }
 
     public PlaceConfig polygon2D(Polygon2D polygon2D) {
@@ -78,6 +90,8 @@ public class PlaceConfig {
      * @param syncItem to check
      * @return true if inside
      */
+    @JsIgnore
+    @SuppressWarnings("unused") // Used ba angular
     public boolean checkInside(SyncItem syncItem) {
         if (position != null) {
             if (radius != null) {
@@ -100,6 +114,8 @@ public class PlaceConfig {
      * @param radius   radius to check
      * @return true if inside
      */
+    @JsIgnore
+    @SuppressWarnings("unused") // Used ba angular
     public boolean checkInside(DecimalPosition position, double radius) {
         if (this.position != null) {
             if (this.radius != null) {
@@ -114,6 +130,8 @@ public class PlaceConfig {
         }
     }
 
+    @JsIgnore
+    @SuppressWarnings("unused") // Used ba angular
     public boolean checkInside(DecimalPosition position) {
         if (this.position != null) {
             if (radius != null) {
@@ -134,6 +152,8 @@ public class PlaceConfig {
      * @param positions given positions
      * @return true if all positions are inside this PlaceConfig
      */
+    @JsIgnore
+    @SuppressWarnings("unused") // Used ba angular
     public boolean checkInside(Collection<DecimalPosition> positions) {
         return positions.stream().allMatch(this::checkInside);
     }

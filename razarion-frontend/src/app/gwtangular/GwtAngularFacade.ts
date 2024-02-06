@@ -439,6 +439,8 @@ export interface BabylonRenderServiceAccess {
   runRenderer(meshContainers: MeshContainer[]): void;
 
   showOutOfViewMarker(markerConfig: MarkerConfig | null, angle: number): void;
+
+  showPlaceMarker(placeConfig: PlaceConfig | null, markerConfig: MarkerConfig | null): void;
 }
 
 export interface TerrainTile {
@@ -464,6 +466,7 @@ export enum Diplomacy {
 export interface MarkerConfig {
   radius: number;
   nodesMaterialId: number | null;
+  placeNodesMaterialId: number | null;
   outOfViewNodesMaterialId: number | null;
   outOfViewSize: number;
   outOfViewDistanceFromCamera: number;
@@ -504,6 +507,18 @@ export interface TerrainObjectModel {
   position: Vertex;
   scale: Vertex | null;
   rotation: Vertex | null;
+}
+
+export interface Polygon2D {
+  toCornersAngular(): DecimalPosition[];
+}
+
+export interface PlaceConfig {
+  getPolygon2D(): Polygon2D | null;
+
+  getPosition(): DecimalPosition | null;
+
+  toRadiusAngular(): number;
 }
 
 export interface BabylonTerrainTile {

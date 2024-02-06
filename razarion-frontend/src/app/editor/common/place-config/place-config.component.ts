@@ -1,9 +1,10 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {DecimalPosition, PlaceConfig} from "../../../generated/razarion-share";
-import {BabylonRenderServiceAccessImpl} from "../../../game/renderer/babylon-render-service-access-impl.service";
-import {Vector2} from "@babylonjs/core";
-import {PolygonVisualization} from "./polygon-visualization";
-import {LocationVisualization} from "./location-visualization";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DecimalPosition, PlaceConfig } from "../../../generated/razarion-share";
+import { DecimalPosition as DecimalPositionGwt } from "../../../gwtangular/GwtAngularFacade";
+import { BabylonRenderServiceAccessImpl } from "../../../game/renderer/babylon-render-service-access-impl.service";
+import { Vector2 } from "@babylonjs/core";
+import { PolygonVisualization } from "./polygon-visualization";
+import { LocationVisualization } from "./location-visualization";
 
 enum Type {
   LOCATION,
@@ -33,8 +34,8 @@ export class PlaceConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.types = [
-      {name: 'Location', type: Type.LOCATION, icon: "pi-map-marker"},
-      {name: 'Region', type: Type.POLYGON, icon: "pi-map"},
+      { name: 'Location', type: Type.LOCATION, icon: "pi-map-marker" },
+      { name: 'Region', type: Type.POLYGON, icon: "pi-map" },
     ];
 
     if (this.placeConfig) {
@@ -141,7 +142,7 @@ export class PlaceConfigComponent implements OnInit {
       if (this.placeConfig.position) {
         this.placeConfig!.position!.x = value;
       } else {
-        this.placeConfig.position = {x: value, y: NaN}
+        this.placeConfig.position = { x: value, y: NaN }
       }
       if (this.visible) {
         this.locationVisualization!.setPositionXY()
@@ -176,7 +177,7 @@ export class PlaceConfigComponent implements OnInit {
       if (this.placeConfig.position) {
         this.placeConfig!.position!.y = value;
       } else {
-        this.placeConfig.position = {x: NaN, y: value}
+        this.placeConfig.position = { x: NaN, y: value }
       }
       if (this.visible) {
         this.locationVisualization!.setPositionXY()
@@ -206,15 +207,22 @@ export class PlaceConfigComponent implements OnInit {
   }
 
   static toVertex2Array(decimalPositions: DecimalPosition[]): Vector2[] {
-    const vector2s: any[] = [];
+    const vector2s: Vector2[] = [];
     decimalPositions.forEach(decimalPosition =>
       vector2s.push(new Vector2(decimalPosition.x, decimalPosition.y)));
     return vector2s;
   }
 
+  static toVertex2ArrayAngular(decimalPositions: DecimalPositionGwt[]): Vector2[] {
+    const vector2s: Vector2[] = [];
+    decimalPositions.forEach(decimalPosition =>
+      vector2s.push(new Vector2(decimalPosition.getX(), decimalPosition.getY())));
+    return vector2s;
+  }
+
   static toArray2Vertex(vector2s: Vector2[]): DecimalPosition[] {
     const vertices: DecimalPosition[] = [];
-    vector2s.forEach(vector => vertices.push({x: vector.x, y: vector.y}))
+    vector2s.forEach(vector => vertices.push({ x: vector.x, y: vector.y }))
     return vertices;
   }
 

@@ -25,7 +25,10 @@ import {
   RadarState,
   ScreenCover,
   WeaponType,
-  MarkerConfig
+  MarkerConfig,
+  PlaceConfig,
+  DecimalPosition,
+  Polygon2D
 } from "../gwtangular/GwtAngularFacade";
 import { GwtInstance } from "../gwtangular/GwtInstance";
 import { GwtHelper } from "../gwtangular/GwtHelper";
@@ -74,7 +77,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = false;
+      let runGwtMock = true;
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
@@ -290,13 +293,50 @@ export class GameComponent implements OnInit, ScreenCover {
 
               });
 
-              this.babylonRenderServiceAccessImpl.showOutOfViewMarker(new class implements MarkerConfig {
-                radius = 1;
-                nodesMaterialId = null;
-                outOfViewNodesMaterialId = 1;
-                outOfViewDistanceFromCamera = 3;
-                outOfViewSize = 1;
-              }, 0);
+              // this.babylonRenderServiceAccessImpl.showOutOfViewMarker(new class implements MarkerConfig {
+              //   radius = 1;
+              //  nodesMaterialId = null;
+              //  placeNodesMaterialId = null;
+              //  outOfViewNodesMaterialId = 1;
+              //  outOfViewDistanceFromCamera = 3;
+              //  outOfViewSize = 1;
+              // }, 0);
+
+              this.babylonRenderServiceAccessImpl.showPlaceMarker(
+                new class implements PlaceConfig {
+                  getPolygon2D(): Polygon2D | null {
+                    /*
+                    return new class implements Polygon2D {
+                      toCornersAngular(): DecimalPosition[] {
+                        return [
+                          GwtInstance.newDecimalPosition(10, 10),
+                          GwtInstance.newDecimalPosition(80, 30),
+                          GwtInstance.newDecimalPosition(80, 80),
+                          GwtInstance.newDecimalPosition(20, 80)
+                        ];
+                      }
+
+                    };
+                    */
+                    return null;
+                  }
+                  getPosition(): DecimalPosition | null {
+                    return GwtInstance.newDecimalPosition(10, 10);
+                  }
+
+                  toRadiusAngular(): number {
+                    return 10;
+                  }
+
+                },
+                new class implements MarkerConfig {
+                  radius = 1;
+                  nodesMaterialId = null;
+                  placeNodesMaterialId = 1;
+                  outOfViewNodesMaterialId = 1;
+                  outOfViewDistanceFromCamera = 3;
+                  outOfViewSize = 1;
+                });
             });
           });
         });

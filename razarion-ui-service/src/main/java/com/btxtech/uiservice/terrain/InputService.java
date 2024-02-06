@@ -7,6 +7,8 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
+import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
+import com.btxtech.uiservice.questvisualization.QuestInGamePlaceVisualization;
 import com.btxtech.uiservice.renderer.ViewField;
 import jsinterop.annotations.JsType;
 
@@ -26,6 +28,8 @@ public class InputService {
     private BoxUiService boxUiService;
     @Inject
     private TerrainMouseHandler terrainMouseHandler;
+    @Inject
+    private InGameQuestVisualizationService inGameQuestVisualizationService;
 
     @SuppressWarnings("unused") // Called by Angular
     public void onViewFieldChanged(double bottomLeftX, double bottomLeftY, double bottomRightX, double bottomRightY, double topRightX, double topRightY, double topLeftX, double topLeftY) {
@@ -39,6 +43,7 @@ public class InputService {
         baseItemUiService.onViewChanged(viewField, viewFieldAabb);
         resourceUiService.onViewChanged(viewField, viewFieldAabb);
         boxUiService.onViewChanged(viewField, viewFieldAabb);
+        inGameQuestVisualizationService.onViewChanged(viewField, viewFieldAabb);
     }
 
     @SuppressWarnings("unused") // Called by Babylonjs
