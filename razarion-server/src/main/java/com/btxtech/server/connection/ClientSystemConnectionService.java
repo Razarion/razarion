@@ -10,7 +10,6 @@ import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfoContainer;
@@ -38,7 +37,7 @@ public class ClientSystemConnectionService {
     private SessionService sessionService;
     @Inject
     private ConnectionTrackingPersistence connectionTrackingPersistence;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
     private final MapCollection<PlayerSession, ClientSystemConnection> systemConnections = new MapCollection<>();
 
     public void onOpen(ClientSystemConnection clientSystemConnection) {
@@ -90,10 +89,10 @@ public class ClientSystemConnectionService {
         }
     }
 
-    public void onLevelUp(int userId, UserContext newLevelId, List<LevelUnlockConfig> levelUnlockConfigs) {
+    public void onLevelUp(int userId, UserContext newLevelId, boolean availableUnlocks) {
         PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
-            sendToClient(playerSession, SystemConnectionPacket.LEVEL_UPDATE_SERVER, new LevelUpPacket().setUserContext(newLevelId).setLevelUnlockConfigs(levelUnlockConfigs));
+            sendToClient(playerSession, SystemConnectionPacket.LEVEL_UPDATE_SERVER, new LevelUpPacket().userContext(newLevelId).availableUnlocks(availableUnlocks));
         }
     }
 
@@ -104,10 +103,10 @@ public class ClientSystemConnectionService {
         }
     }
 
-    public void onUnlockedItemLimit(int userId, Map<Integer, Integer> unlockedItemLimit) {
+    public void onUnlockedItemLimit(int userId, Map<Integer, Integer> unlockedItemLimit, boolean blinking) {
         PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
-            sendToClient(playerSession, SystemConnectionPacket.UNLOCKED_ITEM_LIMIT, new UnlockedItemPacket().setUnlockedItemLimit(unlockedItemLimit));
+            sendToClient(playerSession, SystemConnectionPacket.UNLOCKED_ITEM_LIMIT, new UnlockedItemPacket().unlockedItemLimit(unlockedItemLimit).availableUnlocks(blinking));
         }
     }
 

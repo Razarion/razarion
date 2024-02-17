@@ -1,29 +1,14 @@
 package com.btxtech.client.dialog.framework;
 
 import com.btxtech.client.MainPanelService;
-import com.btxtech.client.cockpit.quest.QuestPassedDialog;
-import com.btxtech.client.dialog.boxcontent.BoxContentDialog;
 import com.btxtech.client.dialog.common.MessageDialog;
-import com.btxtech.client.dialog.common.MessageImage;
-import com.btxtech.client.dialog.common.MessageImageDialog;
 import com.btxtech.client.dialog.common.RegisterDialog;
-import com.btxtech.client.dialog.common.ScrollTipDialog;
 import com.btxtech.client.dialog.common.ServerRestartDialog;
 import com.btxtech.client.dialog.common.SetUserNameDialog;
-import com.btxtech.client.dialog.common.UserAccountDialog;
-import com.btxtech.client.dialog.levelup.LevelUpDialog;
-import com.btxtech.client.dialog.unlock.UnlockDialog;
-import com.btxtech.shared.datatypes.LevelUpPacket;
-import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.dialog.DialogButton;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
-import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
-import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.inject.Instance;
@@ -58,49 +43,10 @@ public class ClientModalDialogManagerImpl {
     private AudioService audioService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
-    private UnlockUiService unlockUiService;
     private ModalDialogPanel activeDialog;
     private List<DialogParameters> dialogQueue = new ArrayList<>();
     private List<ModalDialogPanel> stackedDialogs = new ArrayList<>();
     private BiConsumer<ModalDialogPanel, Boolean> trackerCallback;
-
-    protected void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener) {
-        show(I18nHelper.getConstants().questPassed(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestPassedDialog.class, questDescriptionConfig, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnQuestPassed(), DialogButton.Button.CLOSE);
-    }
-
-    protected void showLevelUp(LevelUpPacket levelUpPacket, Runnable closeListener) {
-        show(I18nHelper.getConstants().levelUpDialogTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, levelUpPacket, (button, value) -> {
-            closeListener.run();
-            if (unlockUiService.hasItems2Unlock()) {
-                show(I18nHelper.getConstants().unlockDialogTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, UnlockDialog.class, null, null, null, DialogButton.Button.CLOSE);
-            }
-        }, null, audioService.getAudioConfig().getOnLevelUp(), DialogButton.Button.CLOSE);
-    }
-
-    public void showBoxPicked(BoxContent boxContent) {
-        show(I18nHelper.getConstants().boxPicked(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null, null, audioService.getAudioConfig().getOnBoxPicked(), DialogButton.Button.CLOSE);
-    }
-
-    public void showUseInventoryItemLimitExceeded(BaseItemType baseItemType) {
-        show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemLimit(I18nHelper.getLocalizedString(baseItemType.getI18nName())), null, null, DialogButton.Button.CLOSE);
-    }
-
-    public void showUseInventoryHouseSpaceExceeded() {
-        show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemHouseSpace(), null, null, DialogButton.Button.CLOSE);
-    }
-
-    protected void showBaseLost(Runnable closeListener) {
-        show(I18nHelper.getConstants().baseLostTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, MessageDialog.class, I18nHelper.getConstants().baseLost(), (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnBaseLost(), DialogButton.Button.CLOSE);
-    }
-
-    public void showLeaveStartTutorial(Runnable closeListener) {
-        show(I18nHelper.getConstants().nextPlanet(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, MessageDialog.class, I18nHelper.getConstants().startTutorialFinished(), (button, value) -> closeListener.run(), null, DialogButton.Button.OK);
-    }
-
-    public void showMessageImageDialog(String title, String message, Integer imageId) {
-        show(title, Type.STACK_ABLE, MessageImageDialog.class, new MessageImage(message, imageId), null, null, DialogButton.Button.CLOSE);
-    }
 
     public void showRegisterDialog() {
         if (userUiServicesInstance.get().isRegistered()) {
@@ -120,24 +66,8 @@ public class ClientModalDialogManagerImpl {
         show(I18nHelper.getConstants().setName(), Type.QUEUE_ABLE, SetUserNameDialog.class, null, null, null, DialogButton.Button.CANCEL);
     }
 
-    public void showUserAccountDialog() {
-        if (!userUiServicesInstance.get().isRegistered()) {
-            throw new IllegalStateException("User is not registered");
-        }
-        show(I18nHelper.getConstants().userAccountDialogTitle(), Type.QUEUE_ABLE, UserAccountDialog.class, null, null, null, DialogButton.Button.CLOSE);
-    }
-
-
     public void showMessageDialog(String title, String message) {
         show(title, Type.STACK_ABLE, MessageDialog.class, message, null, null, DialogButton.Button.CLOSE);
-    }
-
-    public void showScrollTipDialog(ScrollTipDialogModel scrollTipDialogModel) {
-        show(scrollTipDialogModel.getDialogTitle(), Type.STACK_ABLE, ScrollTipDialog.class, scrollTipDialogModel, null, null, DialogButton.Button.CLOSE);
-    }
-
-    public void showMessageNoClosableDialog(String title, String message, Consumer<ModalDialogPanel> shownCallback) {
-        show(title, Type.STACK_ABLE, MessageDialog.class, message, null, shownCallback);
     }
 
     public void showSingleNoClosableDialog(String title, String message) {

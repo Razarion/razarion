@@ -4,9 +4,7 @@ import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.persistence.MongoDbService;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
-import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.history.HistoryPersistence;
-import com.btxtech.server.persistence.item.ItemTracking;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.CommonUrl;
@@ -25,7 +23,6 @@ import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 
@@ -42,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
@@ -478,8 +474,8 @@ public class TrackerPersistence {
         ServerTrackerStart serverTrackerStart = trackingContainerMongoDb.findServerTrackerStart(gameUiControlInput);
 
         PlanetEntity planetEntity = planetCrudPersistence.getEntity(serverTrackerStart.getTrackingStart().getPlanetId());
-        WarmGameUiContext warmGameUiContext = new WarmGameUiContext().setGameUiControlConfigId(-2).setGameEngineMode(GameEngineMode.PLAYBACK);
-        warmGameUiContext.setPlanetConfig(planetEntity.toPlanetConfig()).setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
+        WarmGameUiContext warmGameUiContext = new WarmGameUiContext().gameUiControlConfigId(-2).gameEngineMode(GameEngineMode.PLAYBACK);
+        warmGameUiContext.planetConfig(planetEntity.toPlanetConfig()).planetVisualConfig(planetEntity.toPlanetVisualConfig());
 
         PlaybackGameUiControlConfig playbackGameUiControlConfig = new PlaybackGameUiControlConfig();
         playbackGameUiControlConfig.setTrackingStart(serverTrackerStart.getTrackingStart()).setTrackingContainer(trackingContainerMongoDb.findServerTrackingContainer(gameUiControlInput));

@@ -1,4 +1,4 @@
-<p-table [value]="levelConfigs" dataKey="id">
+<p-table [value]="levelEditConfigs" dataKey="id">
     <ng-template pTemplate="header">
         <tr>
             <th style="width: 5rem">
@@ -15,23 +15,23 @@
             </th>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-levelConfig let-expanded="expanded">
+    <ng-template pTemplate="body" let-levelEditConfig let-expanded="expanded">
         <tr>
             <td>
-                <button type="button" pButton pRipple [pRowToggler]="levelConfig"
+                <button type="button" pButton pRipple [pRowToggler]="levelEditConfig"
                     class="p-button-text p-button-rounded p-button-plain"
                     [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
             </td>
-            <td>{{levelConfig.number}}</td>
-            <td>{{levelConfig.xp2LevelUp}}</td>
+            <td>{{levelEditConfig.number}}</td>
+            <td>{{levelEditConfig.xp2LevelUp}}</td>
             <td>
                 <p-button type="button" icon="pi pi-trash"
                     styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                    (onClick)="onRemove(levelConfig)"></p-button>
+                    (onClick)="onRemove(levelEditConfig)"></p-button>
             </td>
         </tr>
     </ng-template>
-    <ng-template pTemplate="rowexpansion" let-levelConfig>
+    <ng-template pTemplate="rowexpansion" let-levelEditConfig>
         <tr>
             <td colspan="7">
                 <div class="p-3">
@@ -39,14 +39,14 @@
                         <div class="grid grid-razarion-editor">
                             <span class="col-4">Id</span>
                             <div class="col-8">
-                              <p-inputNumber [disabled]="true" inputId="integeronly"
-                                             [(ngModel)]="levelConfig.id"></p-inputNumber>
+                                <p-inputNumber [disabled]="true" inputId="integeronly"
+                                    [(ngModel)]="levelEditConfig.id"></p-inputNumber>
                             </div>
-                          </div>                        
+                        </div>
                         <div class="grid grid-razarion-editor">
                             <span class="col-4">Number</span>
                             <div class="col-8">
-                                <p-inputNumber [(ngModel)]="levelConfig.number" [size]="8"
+                                <p-inputNumber [(ngModel)]="levelEditConfig.number" [size]="8"
                                     [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
                                     [showButtons]="true" (onInput)="sort()"></p-inputNumber>
                             </div>
@@ -54,14 +54,64 @@
                         <div class="grid grid-razarion-editor">
                             <span class="col-4">XP to level up</span>
                             <div class="col-8">
-                                <p-inputNumber [(ngModel)]="levelConfig.xp2LevelUp" [size]="8"></p-inputNumber>
+                                <p-inputNumber [(ngModel)]="levelEditConfig.xp2LevelUp" [size]="8"></p-inputNumber>
                             </div>
                         </div>
                         <div class="grid grid-razarion-editor">
                             <span class="col-4">Item type limitation</span>
                             <div class="col-8">
                                 <base-item-type-count
-                                    [(baseItemTypeCount)]="levelConfig.itemTypeLimitation"></base-item-type-count>
+                                    [(baseItemTypeCount)]="levelEditConfig.itemTypeLimitation"></base-item-type-count>
+                            </div>
+                        </div>
+
+
+                        <div class="grid grid-razarion-editor">
+                            <div class="col-12">
+                                <p-table [value]="levelEditConfig.levelUnlockConfigs">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th>Unlocks</th>
+                                            <th>Item type</th>
+                                            <th>Count</th>
+                                            <th>Crystal</th>
+                                            <th>
+                                                <p-button type="button" icon="pi pi-plus-circle"
+                                                styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+                                                (onClick)="onCreateUnlock(levelEditConfig)"></p-button>
+                                            </th>   
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-levelUnlockConfig>
+                                        <tr>
+                                            <td>
+                                                <image-item [(imageId)]="levelUnlockConfig.thumbnail"></image-item>
+                                            </td>
+                                            <td>
+                                                <base-item-type [(baseItemTypeId)]="levelUnlockConfig.baseItemType"></base-item-type>
+                                            </td>
+                                            <td>
+                                                <p-inputNumber [(ngModel)]="levelUnlockConfig.baseItemTypeCount"
+                                                    [size]="3"
+                                                    [min]="0"
+                                                    [step]="1"></p-inputNumber>
+                                            </td>
+                                            <td>
+                                                <p-inputNumber [(ngModel)]="levelUnlockConfig.crystalCost"
+                                                    [size]="3"
+                                                    [min]="0"
+                                                    [step]="1"></p-inputNumber>
+                                            </td>
+                                            <td>
+                                                <p-button type="button" icon="pi pi-trash"
+                                                    styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                                                    (onClick)="onRemoveUnlock(levelEditConfig, levelUnlockConfig)"></p-button>
+                                            </td>                                
+                                        </tr>
+                                
+                                    </ng-template>
+
+                                </p-table>
                             </div>
                         </div>
                     </div>

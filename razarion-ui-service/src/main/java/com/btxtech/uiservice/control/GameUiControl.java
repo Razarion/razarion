@@ -32,7 +32,6 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
-import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.btxtech.uiservice.user.UserUiService;
 import jsinterop.annotations.JsType;
 
@@ -91,8 +90,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private PlaybackControl playbackControl;
-    @Inject
-    private UnlockUiService unlockUiService;
     private ColdGameUiContext coldGameUiContext;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -109,6 +106,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void onWarmGameConfigLoaded(WarmGameUiContext warmGameUiContext) {
         this.coldGameUiContext.setWarmGameUiContext(warmGameUiContext);
         gameEngineMode = warmGameUiContext.getGameEngineMode();
+        cockpitService.blinkAvailableUnlock(coldGameUiContext.getWarmGameUiContext().isAvailableUnlocks());
         initServerQuest(warmGameUiContext.getSlaveQuestInfo());
     }
 
@@ -138,6 +136,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         abstractServerSystemConnection.sendGameSessionUuid();
         gameEngineMode = coldGameUiContext.getWarmGameUiContext().getGameEngineMode();
         terrainScrollHandler.setPlanetSize(getPlanetConfig().getSize());
+        cockpitService.blinkAvailableUnlock(coldGameUiContext.getWarmGameUiContext().isAvailableUnlocks());
     }
 
     public void start() {
@@ -230,7 +229,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void setColdGameUiContext(ColdGameUiContext coldGameUiContext) {
         this.coldGameUiContext = coldGameUiContext;
         userUiService.init(coldGameUiContext.getUserContext());
-        unlockUiService.setLevelUnlockConfigs(coldGameUiContext.getLevelUnlockConfigs());
+        cockpitService.blinkAvailableUnlock(coldGameUiContext.getWarmGameUiContext().isAvailableUnlocks());
 
         AlarmRaiser.onNull(coldGameUiContext.getWarmGameUiContext(), Alarm.Type.NO_WARM_GAME_UI_CONTEXT);
         gameEngineMode = coldGameUiContext.getWarmGameUiContext().getGameEngineMode();

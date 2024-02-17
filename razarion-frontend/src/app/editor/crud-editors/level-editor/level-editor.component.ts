@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { EditorPanel } from '../../editor-model';
-import { LevelConfig, LevelEditorControllerClient } from 'src/app/generated/razarion-share';
+import { I18nString, LevelConfig, LevelEditConfig, LevelEditorControllerClient, LevelUnlockConfig } from 'src/app/generated/razarion-share';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { HttpClient } from '@angular/common/http';
 
@@ -10,38 +10,56 @@ import { HttpClient } from '@angular/common/http';
 })
 export class LevelEditorComponent extends EditorPanel {
   private levelEditorControllerClient!: LevelEditorControllerClient;
-  levelConfigs: LevelConfig[] = [];
+  levelEditConfigs: LevelEditConfig[] = [];
 
   constructor(httpClient: HttpClient) {
     super();
     this.levelEditorControllerClient = new LevelEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
     this.levelEditorControllerClient.readAll().then(levelConfigs => {
-      this.levelConfigs = levelConfigs;
+      this.levelEditConfigs = levelConfigs;
       this.sort();
     });
 
   }
 
   onCreate() {
-    this.levelEditorControllerClient.create().then(levelConfig => {
-      this.levelConfigs.push(levelConfig);
+    this.levelEditorControllerClient.create().then(levelEditConfig => {
+      this.levelEditConfigs.push(levelEditConfig);
     });
   }
 
-  onRemove(level: LevelConfig) {
-    this.levelEditorControllerClient.delete(level.id).then(() => {
-      this.levelConfigs.splice(this.levelConfigs.indexOf(level), 1);
+  onRemove(levelEditConfig: LevelEditConfig) {
+    this.levelEditorControllerClient.delete(levelEditConfig.id).then(() => {
+      this.levelEditConfigs.splice(this.levelEditConfigs.indexOf(levelEditConfig), 1);
     });
+  }
+
+  onCreateUnlock(levelEditConfig: LevelEditConfig) {
+    levelEditConfig.levelUnlockConfigs.push(new class implements LevelUnlockConfig {
+      id = <any>null;
+      internalName = <any>null
+      thumbnail = null;
+      i18nName = <any>null
+      i18nDescription = <any>null
+      baseItemType = null;
+      baseItemTypeCount = 1;
+      crystalCost = 1;
+
+    });
+  }
+
+  onRemoveUnlock(levelEditConfig: LevelEditConfig, levelUnlockConfig: LevelUnlockConfig) {
+    levelEditConfig.levelUnlockConfigs.splice(levelEditConfig.levelUnlockConfigs.indexOf(levelUnlockConfig), 1);
   }
 
   onSave() {
-    this.levelConfigs.forEach(levelConfig => {
+    this.levelEditConfigs.forEach(levelConfig => {
       this.levelEditorControllerClient.update(levelConfig);
     });
   }
 
   sort() {
-    this.levelConfigs.sort((a, b) => a.number - b.number);
-    this.levelConfigs = [...this.levelConfigs];
+    this.levelEditConfigs.sort((a, b) => a.number - b.number);
+    this.levelEditConfigs = [...this.levelEditConfigs];
   }
 }

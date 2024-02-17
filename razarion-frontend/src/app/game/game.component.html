@@ -34,6 +34,10 @@
   <inventory *ngIf="showInventory" style="width: 100em;"></inventory>
 </p-dialog>
 
+<p-dialog header="Unlock" [(visible)]="showUnkock"  [style]="{width: '50vw'}">
+  <unlock *ngIf="showUnkock" style="width: 100em;"></unlock>
+</p-dialog>
+
 <p-dialog [(visible)]="modelDialogPresenter.title" [showHeader]="false"
   [style]="{'box-shadow': 'none', 'border': 'none'}" [contentStyle]="{'background-color': 'transparent'}"
   [resizable]="false">

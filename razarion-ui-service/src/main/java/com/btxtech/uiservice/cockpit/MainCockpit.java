@@ -30,5 +30,7 @@ public interface MainCockpit {
 
     void showRadar(GameUiControl.RadarState radarState);
 
+    void blinkAvailableUnlock(boolean show);
+
     void clean();
 }

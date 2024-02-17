@@ -151,9 +151,6 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             alarmService.riseAlarm(Alarm.Type.USER_HAS_NO_LEVEL, userContext.getUserId());
             userContext.setLevelId(levelCrudPersistence.getStarterLevelId());
         }
-        if (userContext.getLevelId() != null) {
-            coldGameUiContext.levelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext, userContext.getLevelId()));
-        }
         coldGameUiContext.meshContainers(assetCrudPersistence.readMeshContainers());
         coldGameUiContext.audioConfig(setupAudioConfig());
         coldGameUiContext.gameTipVisualConfig(setupGameTipVisualConfig());
@@ -180,6 +177,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
             warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
             warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getUserId()));
             warmGameUiContext.setBotSceneIndicationInfos(botService.getBotSceneIndicationInfos(userContext.getUserId()));
+            warmGameUiContext.setAvailableUnlocks(serverUnlockService.hasAvailableUnlocks(userContext));
         }
         return warmGameUiContext;
     }

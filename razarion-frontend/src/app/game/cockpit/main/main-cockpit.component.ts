@@ -1,6 +1,7 @@
-﻿import { Component, NgZone } from '@angular/core';
+﻿import { Component, NgZone, OnInit } from '@angular/core';
 import { MainCockpit, RadarState, Rectangle } from "../../../gwtangular/GwtAngularFacade";
 import { GameComponent } from '../../game.component';
+import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 
 
 @Component({
@@ -23,8 +24,11 @@ export class MainCockpitComponent implements MainCockpit {
   radarState!: RadarState;
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
+  blinkUnlockEnabled = false;
 
-  constructor(private zone: NgZone, private gameComponent: GameComponent) {
+  constructor(private zone: NgZone,
+    private gameComponent: GameComponent,
+    private gwtAngularService: GwtAngularService) {
   }
 
   show(admin: boolean): void {
@@ -94,4 +98,15 @@ export class MainCockpitComponent implements MainCockpit {
   onInventory(): void {
     this.gameComponent.openInventory();
   }
+
+  onUnlock(): void {
+    this.gameComponent.openUnlock();
+  }
+
+  blinkAvailableUnlock(show: boolean): void {
+    this.zone.run(() => {
+      this.blinkUnlockEnabled = show;
+    });
+  }
+
 }

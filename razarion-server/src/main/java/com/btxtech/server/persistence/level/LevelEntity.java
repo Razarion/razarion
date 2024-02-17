@@ -1,8 +1,11 @@
 package com.btxtech.server.persistence.level;
 
+import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PersistenceUtil;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -16,10 +19,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static com.btxtech.server.persistence.PersistenceUtil.fromConfigs;
+import static com.btxtech.server.persistence.PersistenceUtil.toConfigList;
 
 /**
  * Created by Beat
@@ -39,7 +44,7 @@ public class LevelEntity {
     private Map<BaseItemTypeEntity, Integer> itemTypeLimitation;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "level")
-    private Collection<LevelUnlockEntity> levelUnlockEntities;
+    private List<LevelUnlockEntity> levelUnlockEntities;
 
     public Integer getId() {
         return id;
@@ -51,24 +56,31 @@ public class LevelEntity {
                 .internalName(Integer.toString(number))
                 .number(number)
                 .xp2LevelUp(xp2LevelUp)
-                .itemTypeLimitation(PersistenceUtil.extractItemTypeLimitation(this.itemTypeLimitation));
+                .itemTypeLimitation(PersistenceUtil.extractItemTypeLimitation(itemTypeLimitation));
     }
 
-    public void fromLevelConfig(LevelConfig levelConfig, Map<BaseItemTypeEntity, Integer> itemTypeLimitation, Collection<LevelUnlockEntity> levelUnlockEntities) {
-        this.number = levelConfig.getNumber();
-        this.xp2LevelUp = levelConfig.getXp2LevelUp();
+    public LevelEditConfig toLevelEditConfig() {
+        return (LevelEditConfig) new LevelEditConfig()
+                .levelUnlockConfigs(toConfigList(levelUnlockEntities, LevelUnlockEntity::toLevelUnlockConfig))
+                .id(id)
+                .internalName(Integer.toString(number))
+                .number(number)
+                .xp2LevelUp(xp2LevelUp)
+                .itemTypeLimitation(PersistenceUtil.extractItemTypeLimitation(itemTypeLimitation));
+    }
+
+    public void fromLevelEditConfig(LevelEditConfig levelEditConfig, Map<BaseItemTypeEntity, Integer> itemTypeLimitation, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ImagePersistence imagePersistence) {
+        this.number = levelEditConfig.getNumber();
+        this.xp2LevelUp = levelEditConfig.getXp2LevelUp();
         if (this.itemTypeLimitation == null) {
             this.itemTypeLimitation = new HashMap<>();
         }
         this.itemTypeLimitation.clear();
         this.itemTypeLimitation.putAll(itemTypeLimitation);
-        if (this.levelUnlockEntities == null) {
-            this.levelUnlockEntities = new ArrayList<>();
-        }
-        this.levelUnlockEntities.clear();
-        if (levelUnlockEntities != null) {
-            this.levelUnlockEntities.addAll(levelUnlockEntities);
-        }
+        levelUnlockEntities = fromConfigs(levelUnlockEntities,
+                levelEditConfig.getLevelUnlockConfigs(),
+                LevelUnlockEntity::new,
+                (levelUnlockEntity, levelUnlockConfig) -> levelUnlockEntity.fromLevelUnlockConfig(levelUnlockConfig, baseItemTypeCrudPersistence, imagePersistence));
     }
 
     public int getNumber() {
@@ -79,11 +91,8 @@ public class LevelEntity {
         return xp2LevelUp;
     }
 
-    public LevelUnlockEntity getLevelUnlockEntity(int levelUnlockEntityId) {
-        if (levelUnlockEntities == null) {
-            throw new IllegalArgumentException("No LevelUnlockEntity for levelUnlockEntityId: " + levelUnlockEntityId + " in level with id: " + id);
-        }
-        return levelUnlockEntities.stream().filter(levelUnlockEntity -> levelUnlockEntityId == levelUnlockEntity.getId()).findFirst().orElseThrow(() -> new IllegalArgumentException("No LevelUnlockEntity for levelUnlockEntityId: " + levelUnlockEntityId + " in level with id: " + id));
+    public void setLevelUnlockEntity(List<LevelUnlockEntity> levelUnlockEntities) {
+        this.levelUnlockEntities = levelUnlockEntities;
     }
 
     @Override

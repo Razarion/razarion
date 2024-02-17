@@ -17,8 +17,8 @@ import java.util.Map;
  */
 @ApplicationScoped
 public class LevelService {
-    private Map<Integer, LevelConfig> levels = new HashMap<>();
-    private List<LevelConfig> orderedLevels = new ArrayList<>();
+    private final Map<Integer, LevelConfig> levels = new HashMap<>();
+    private final List<LevelConfig> orderedLevels = new ArrayList<>();
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
         init(engineInitEvent.getStaticGameConfig());

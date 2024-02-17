@@ -13,6 +13,7 @@ import java.util.List;
 public class WarmGameUiContext {
     private int gameUiControlConfigId;
     private GameEngineMode gameEngineMode;
+    private boolean availableUnlocks;
     private SlavePlanetConfig slavePlanetConfig;
     private SlaveQuestInfo slaveQuestInfo;
     private List<BotSceneIndicationInfo> botSceneIndicationInfos;
@@ -26,89 +27,143 @@ public class WarmGameUiContext {
         return gameUiControlConfigId;
     }
 
-    public WarmGameUiContext setGameUiControlConfigId(int gameUiControlConfigId) {
+    public void setGameUiControlConfigId(int gameUiControlConfigId) {
         this.gameUiControlConfigId = gameUiControlConfigId;
-        return this;
     }
 
     public GameEngineMode getGameEngineMode() {
         return gameEngineMode;
     }
 
-    public WarmGameUiContext setGameEngineMode(GameEngineMode gameEngineMode) {
+    public void setGameEngineMode(GameEngineMode gameEngineMode) {
         this.gameEngineMode = gameEngineMode;
-        return this;
+    }
+
+    public boolean isAvailableUnlocks() {
+        return availableUnlocks;
+    }
+
+    public void setAvailableUnlocks(boolean availableUnlocks) {
+        this.availableUnlocks = availableUnlocks;
     }
 
     public SlavePlanetConfig getSlavePlanetConfig() {
         return slavePlanetConfig;
     }
 
-    public WarmGameUiContext setSlavePlanetConfig(SlavePlanetConfig slavePlanetConfig) {
+    public void setSlavePlanetConfig(SlavePlanetConfig slavePlanetConfig) {
         this.slavePlanetConfig = slavePlanetConfig;
-        return this;
     }
 
     public SlaveQuestInfo getSlaveQuestInfo() {
         return slaveQuestInfo;
     }
 
-    public WarmGameUiContext setSlaveQuestInfo(SlaveQuestInfo slaveQuestInfo) {
+    public void setSlaveQuestInfo(SlaveQuestInfo slaveQuestInfo) {
         this.slaveQuestInfo = slaveQuestInfo;
-        return this;
     }
 
     public List<BotSceneIndicationInfo> getBotSceneIndicationInfos() {
         return botSceneIndicationInfos;
     }
 
-    public WarmGameUiContext setBotSceneIndicationInfos(List<BotSceneIndicationInfo> botSceneIndicationInfos) {
+    public void setBotSceneIndicationInfos(List<BotSceneIndicationInfo> botSceneIndicationInfos) {
         this.botSceneIndicationInfos = botSceneIndicationInfos;
-        return this;
     }
 
     public PlanetConfig getPlanetConfig() {
         return planetConfig;
     }
 
-    public WarmGameUiContext setPlanetConfig(PlanetConfig planetConfig) {
+    public void setPlanetConfig(PlanetConfig planetConfig) {
         this.planetConfig = planetConfig;
-        return this;
     }
 
     public List<SceneConfig> getSceneConfigs() {
         return sceneConfigs;
     }
 
-    public WarmGameUiContext setSceneConfigs(List<SceneConfig> sceneConfigs) {
+    public void setSceneConfigs(List<SceneConfig> sceneConfigs) {
         this.sceneConfigs = sceneConfigs;
-        return this;
     }
 
     public PlanetVisualConfig getPlanetVisualConfig() {
         return planetVisualConfig;
     }
 
-    public WarmGameUiContext setPlanetVisualConfig(PlanetVisualConfig planetVisualConfig) {
+    public void setPlanetVisualConfig(PlanetVisualConfig planetVisualConfig) {
         this.planetVisualConfig = planetVisualConfig;
-        return this;
     }
 
     public boolean isDetailedTracking() {
         return detailedTracking;
     }
 
-    public WarmGameUiContext setDetailedTracking(boolean detailedTracking) {
+    public void setDetailedTracking(boolean detailedTracking) {
         this.detailedTracking = detailedTracking;
-        return this;
     }
 
     public PlaybackGameUiControlConfig getPlaybackGameUiControlConfig() {
         return playbackGameUiControlConfig;
     }
 
-    public WarmGameUiContext setPlaybackGameUiControlConfig(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
+    public void setPlaybackGameUiControlConfig(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
         this.playbackGameUiControlConfig = playbackGameUiControlConfig;
+    }
+
+
+    public WarmGameUiContext gameUiControlConfigId(int gameUiControlConfigId) {
+        setGameUiControlConfigId(gameUiControlConfigId);
+        return this;
+    }
+
+    public WarmGameUiContext gameEngineMode(GameEngineMode gameEngineMode) {
+        setGameEngineMode(gameEngineMode);
+        return this;
+    }
+
+    public WarmGameUiContext availableUnlocks(boolean availableUnlocks) {
+        setAvailableUnlocks(availableUnlocks);
+        return this;
+    }
+
+    public WarmGameUiContext slavePlanetConfig(SlavePlanetConfig slavePlanetConfig) {
+        setSlavePlanetConfig(slavePlanetConfig);
+        return this;
+    }
+
+    public WarmGameUiContext slaveQuestInfo(SlaveQuestInfo slaveQuestInfo) {
+        setSlaveQuestInfo(slaveQuestInfo);
+        return this;
+    }
+
+    public WarmGameUiContext botSceneIndicationInfos(List<BotSceneIndicationInfo> botSceneIndicationInfos) {
+        setBotSceneIndicationInfos(botSceneIndicationInfos);
+        return this;
+    }
+
+    public WarmGameUiContext planetConfig(PlanetConfig planetConfig) {
+        setPlanetConfig(planetConfig);
+        return this;
+    }
+
+    public WarmGameUiContext sceneConfigs(List<SceneConfig> sceneConfigs) {
+        setSceneConfigs(sceneConfigs);
+        return this;
+    }
+
+    public WarmGameUiContext planetVisualConfig(PlanetVisualConfig planetVisualConfig) {
+        setPlanetVisualConfig(planetVisualConfig);
+        return this;
+    }
+
+    public WarmGameUiContext detailedTracking(boolean detailedTracking) {
+        setDetailedTracking(detailedTracking);
+        return this;
+    }
+
+    public WarmGameUiContext playbackGameUiControlConfig(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
+        setPlaybackGameUiControlConfig(playbackGameUiControlConfig);
         return this;
     }
 }

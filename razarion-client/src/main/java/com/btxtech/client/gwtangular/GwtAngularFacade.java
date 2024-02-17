@@ -46,7 +46,5 @@ public abstract class GwtAngularFacade {
     public ModelDialogPresenter modelDialogPresenter; // Initialized by Angular
     public InventoryTypeService inventoryTypeService; // Initialized by GWT
     public InventoryUiService inventoryUiService; // Initialized by GWT
-
-
     public abstract void onCrash();
 }

@@ -72,8 +72,9 @@ public class CommonUrl {
     public static final String SERVER_GAME_ENGINE_MGMT_PATH = "servergameenginemgmt";
     public static final String COMMON_EDITOR_PROVIDER_PATH = "commoneditorprovider";
     public static final String INVENTORY_CONTROLLER_PATH = "inventory-controller";
-    public static final String UNLOCK_PROVIDER_PATH = "unlockprovider";
+    public static final String UNLOCK_CONTROLLER_PATH = "unlock-controller";
     public static final String USER_SERVICE_PROVIDER_PATH = "userserviceprovider";
+    public static final String USER_MGMT_CONTROLLER_PATH = "user-mgmt";
     public static final String FRONTEND_PATH = "frontend";
     public static final String SERVER_TEST_HELPER = "servertesthelper";
     // Cookies

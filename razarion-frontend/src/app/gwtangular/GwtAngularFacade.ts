@@ -635,6 +635,8 @@ export interface MainCockpit {
 
   showRadar(radarState: RadarState): void;
 
+  blinkAvailableUnlock(show: boolean): void
+
   clean(): void;
 }
 
@@ -766,12 +768,6 @@ export interface ModelDialogPresenter {
 export interface EditorFrontendProvider {
   getGenericEditorFrontendProvider(): GenericEditorFrontendProvider;
 
-  getClientPerfmonStatistics(): PerfmonStatistic[];
-
-  getWorkerPerfmonStatistics(): Promise<PerfmonStatistic[]>;
-
-  getTerrainMarkerService(): TerrainMarkerService;
-
   getTerrainEditorService(): TerrainEditorService;
 }
 
@@ -782,25 +778,6 @@ export interface GenericEditorFrontendProvider {
 
   getPathForCollection(collectionName: string): string;
 }
-
-export interface TerrainMarkerService {
-  showPosition(x: number, y: number): void;
-
-  showPolygon(polygon: any): void;
-
-  activatePositionCursor(positionCallback: PositionCallback): void;
-
-  activatePolygonCursor(polygon: any, polygonCallback: PolygonCallback): void;
-}
-
-export interface PositionCallback {
-  position(x: number, y: number): void;
-}
-
-export interface PolygonCallback {
-  polygon(polygon: any): void;
-}
-
 export interface ObjectNameId {
   id: number;
   internalName: string;
@@ -855,12 +832,6 @@ export interface TerrainSlopeCorner {
   slopeDrivewayId: number | null;
 }
 
-export interface SlopeTerrainEditorUpdate {
-  createdSlopes: TerrainSlopePosition[];
-  updatedSlopes: TerrainSlopePosition[];
-  deletedSlopeIds: number[];
-}
-
 export interface TerrainObjectPosition {
   getId(): number;
 
@@ -892,21 +863,4 @@ export interface ImageGalleryItem {
   size: number;
   type: string;
   internalName: string
-}
-
-// ---------- Performance ----------
-export interface PerfmonStatistic {
-  getPerfmonEnumString(): string;
-
-  getPerfmonStatisticEntriesArray(): PerfmonStatisticEntry[];
-}
-
-export interface PerfmonStatisticEntry {
-  getFrequency(): number;
-
-  getAvgDuration(): number;
-
-  getSamples(): number;
-
-  getDateAsLong(): number;
 }

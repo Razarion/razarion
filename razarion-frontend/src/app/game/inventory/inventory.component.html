@@ -1,5 +1,5 @@
 <div class="crystals">Crystals: {{crystals}}</div>
-<p-dataView [value]="inventoryItems" [layout]="'grid'">
+<p-dataView [value]="inventoryItems" [layout]="'grid'"  [emptyMessage]="'Inventory is empty'">
     <ng-template let-inventoryItem pTemplate="gridItem">
         <div class="col-12 md:col-4">
             <div class="product-list-item">
@@ -8,7 +8,7 @@
                     <div class="product-name">{{inventoryItem.getI18nName().getString(gwtAngularService.gwtAngularFacade.language)}}</div>
                 </div>
                 <div class="product-list-action">
-                    <p-button icon="pi pi-play" label="Use" (click)="onUse(inventoryItem)"></p-button>
+                    <p-button icon="pi pi-play" label="Use" (onClick)="onUse(inventoryItem)"></p-button>
                 </div>
             </div>
         </div>

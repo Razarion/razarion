@@ -57,6 +57,7 @@ export class GameComponent implements OnInit, ScreenCover {
   removeCover: boolean = false;
   modelDialogPresenter: ModelDialogPresenterImpl;
   showInventory = false;
+  showUnkock = false;
 
   constructor(private frontendService: FrontendService,
     private router: Router,
@@ -77,7 +78,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = true;
+      let runGwtMock = false;
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
@@ -582,5 +583,10 @@ export class GameComponent implements OnInit, ScreenCover {
     this.showInventory = true;
   }
 
+  openUnlock() {
+    this.showUnkock = true;
+  }
+
+  
 }
 

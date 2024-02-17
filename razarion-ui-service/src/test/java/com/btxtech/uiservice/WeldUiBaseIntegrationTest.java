@@ -55,7 +55,7 @@ public class WeldUiBaseIntegrationTest {
     }
 
     protected void setupUiEnvironment(PlanetVisualConfig planetVisualConfig) {
-        setupUiEnvironment(new ColdGameUiContext().warmGameUiContext(new WarmGameUiContext().setPlanetVisualConfig(planetVisualConfig)));
+        setupUiEnvironment(new ColdGameUiContext().warmGameUiContext(new WarmGameUiContext().planetVisualConfig(planetVisualConfig)));
     }
 
     protected <T> T getWeldBean(Class<T> clazz) {
@@ -172,6 +172,11 @@ public class WeldUiBaseIntegrationTest {
 
             @Override
             public void showRadar(GameUiControl.RadarState radarState) {
+
+            }
+
+            @Override
+            public void blinkAvailableUnlock(boolean show) {
 
             }
 

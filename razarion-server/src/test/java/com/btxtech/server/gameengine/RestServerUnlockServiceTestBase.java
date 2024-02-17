@@ -174,11 +174,13 @@ public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
     }
 
     private void assertAvailableUnlocks(Integer... expectedLevelUnlockIds) throws Exception {
-        List<LevelUnlockConfig> actualLevelUnlockConfigs = gameUiContextCrudPersistence.loadCold(new GameUiControlInput(), Locale.ENGLISH, userService.getUserContextFromSession()).getLevelUnlockConfigs();
-        Assert.assertEquals(expectedLevelUnlockIds.length, actualLevelUnlockConfigs.size());
-        Collection<Integer> expectedCollection = new ArrayList<>(Arrays.asList(expectedLevelUnlockIds));
-        expectedCollection.removeAll(actualLevelUnlockConfigs.stream().map(LevelUnlockConfig::getId).collect(Collectors.toList()));
-        Assert.assertTrue(expectedCollection.isEmpty());
+        Assert.fail("...TODO...");
+
+//        List<LevelUnlockConfig> actualLevelUnlockConfigs = gameUiContextCrudPersistence.loadCold(new GameUiControlInput(), Locale.ENGLISH, userService.getUserContextFromSession()).getLevelUnlockConfigs();
+//        Assert.assertEquals(expectedLevelUnlockIds.length, actualLevelUnlockConfigs.size());
+//        Collection<Integer> expectedCollection = new ArrayList<>(Arrays.asList(expectedLevelUnlockIds));
+//        expectedCollection.removeAll(actualLevelUnlockConfigs.stream().map(LevelUnlockConfig::getId).collect(Collectors.toList()));
+//        Assert.assertTrue(expectedCollection.isEmpty());
     }
 
     private void assertRegisteredState(int userId, int expectedCrystals, Integer... expectedLevelUnlockEntityIds) {

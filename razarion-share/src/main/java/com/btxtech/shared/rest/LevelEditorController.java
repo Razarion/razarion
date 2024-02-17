@@ -1,7 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 
 import javax.ws.rs.Path;
 
@@ -10,5 +10,5 @@ import javax.ws.rs.Path;
  * on 22.08.2017.
  */
 @Path(CommonUrl.LEVEL_EDITOR_PATH)
-public interface LevelEditorController extends CrudController<LevelConfig>{
+public interface LevelEditorController extends CrudController<LevelEditConfig> {
 }

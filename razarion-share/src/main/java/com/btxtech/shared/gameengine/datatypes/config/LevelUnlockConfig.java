@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.datatypes.I18nString;
+import com.btxtech.shared.system.Nullable;
 
 /**
  * Created by Beat
@@ -23,71 +24,118 @@ public class LevelUnlockConfig {
         return id;
     }
 
-    public LevelUnlockConfig setId(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
-        return this;
-    }
-
-    public Integer getThumbnail() {
-        return thumbnail;
-    }
-
-    public LevelUnlockConfig setThumbnail(Integer thumbnail) {
-        this.thumbnail = thumbnail;
-        return this;
-    }
-
-    public I18nString getI18nName() {
-        return i18nName;
-    }
-
-    public LevelUnlockConfig setI18nName(I18nString i18nName) {
-        this.i18nName = i18nName;
-        return this;
-    }
-
-    public I18nString getI18nDescription() {
-        return i18nDescription;
-    }
-
-    public LevelUnlockConfig setI18nDescription(I18nString i18nDescription) {
-        this.i18nDescription = i18nDescription;
-        return this;
     }
 
     public String getInternalName() {
         return internalName;
     }
 
-    public LevelUnlockConfig setInternalName(String internalName) {
+    public void setInternalName(String internalName) {
         this.internalName = internalName;
-        return this;
     }
 
-    public Integer getBaseItemType() {
+    public @Nullable Integer getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(@Nullable Integer thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public I18nString getI18nName() {
+        return i18nName;
+    }
+
+    public void setI18nName(I18nString i18nName) {
+        this.i18nName = i18nName;
+    }
+
+    public I18nString getI18nDescription() {
+        return i18nDescription;
+    }
+
+    public void setI18nDescription(I18nString i18nDescription) {
+        this.i18nDescription = i18nDescription;
+    }
+
+    public @Nullable Integer getBaseItemType() {
         return baseItemType;
     }
 
-    public LevelUnlockConfig setBaseItemType(Integer baseItemType) {
+    public void setBaseItemType(@Nullable Integer baseItemType) {
         this.baseItemType = baseItemType;
-        return this;
     }
 
     public int getBaseItemTypeCount() {
         return baseItemTypeCount;
     }
 
-    public LevelUnlockConfig setBaseItemTypeCount(int baseItemTypeCount) {
+    public void setBaseItemTypeCount(int baseItemTypeCount) {
         this.baseItemTypeCount = baseItemTypeCount;
-        return this;
     }
 
     public int getCrystalCost() {
         return crystalCost;
     }
 
-    public LevelUnlockConfig setCrystalCost(int crystalCost) {
+    public void setCrystalCost(int crystalCost) {
         this.crystalCost = crystalCost;
+    }
+
+
+    public LevelUnlockConfig id(Integer id) {
+        setId(id);
         return this;
+    }
+
+    public LevelUnlockConfig internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
+    }
+
+    public LevelUnlockConfig thumbnail(Integer thumbnail) {
+        setThumbnail(thumbnail);
+        return this;
+    }
+
+    public LevelUnlockConfig i18nName(I18nString i18nName) {
+        setI18nName(i18nName);
+        return this;
+    }
+
+    public LevelUnlockConfig i18nDescription(I18nString i18nDescription) {
+        setI18nDescription(i18nDescription);
+        return this;
+    }
+
+    public LevelUnlockConfig baseItemType(Integer baseItemType) {
+        setBaseItemType(baseItemType);
+        return this;
+    }
+
+    public LevelUnlockConfig baseItemTypeCount(int baseItemTypeCount) {
+        setBaseItemTypeCount(baseItemTypeCount);
+        return this;
+    }
+
+    public LevelUnlockConfig crystalCost(int crystalCost) {
+        setCrystalCost(crystalCost);
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "LevelUnlockConfig{" +
+                "id=" + id +
+                ", internalName='" + internalName + '\'' +
+                ", thumbnail=" + thumbnail +
+                ", i18nName=" + i18nName +
+                ", i18nDescription=" + i18nDescription +
+                ", baseItemType=" + baseItemType +
+                ", baseItemTypeCount=" + baseItemTypeCount +
+                ", crystalCost=" + crystalCost +
+                '}';
     }
 }

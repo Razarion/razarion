@@ -1,5 +1,6 @@
 package com.btxtech.server.systemtests.testnormal;
 
+import com.btxtech.server.ServerTestHelper;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
@@ -7,23 +8,22 @@ import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.rest.GameUiContextController;
+import com.btxtech.shared.rest.UserMgmtController;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 public class GameUiContextControllerTest extends AbstractSystemTest {
     private GameUiContextController gameUiContextController;
+    private UserMgmtController userMgmtController;
 
     @Before
     public void setup() {
         gameUiContextController = setupRestAccess(GameUiContextController.class);
+        userMgmtController = setupRestAccess(UserMgmtController.class);
         setupDb();
     }
 
@@ -40,10 +40,7 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
                         hasProperty("levelId", equalTo(LEVEL_1_ID))
                 )),
                 staticGameConfigMatcher(),
-                shape3DMatcher(),
-                particleShapeMatcher(),
-                particleEmitterSequenceMatcher(),
-                hasProperty("warmGameUiContext", warmGameUiContextMatcher())
+                hasProperty("warmGameUiContext", warmGameUiContextMatcher(false, PLANET_1_ID, GameEngineMode.MASTER))
         ));
     }
 
@@ -60,10 +57,7 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
                         hasProperty("levelId", equalTo(LEVEL_1_ID))
                 )),
                 staticGameConfigMatcher(),
-                shape3DMatcher(),
-                particleShapeMatcher(),
-                particleEmitterSequenceMatcher(),
-                hasProperty("warmGameUiContext", warmGameUiContextMatcher())
+                hasProperty("warmGameUiContext", warmGameUiContextMatcher(false, PLANET_1_ID, GameEngineMode.MASTER))
         ));
     }
 
@@ -80,10 +74,47 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
                         hasProperty("levelId", equalTo(LEVEL_1_ID))
                 )),
                 staticGameConfigMatcher(),
-                shape3DMatcher(),
-                particleShapeMatcher(),
-                particleEmitterSequenceMatcher(),
-                hasProperty("warmGameUiContext", warmGameUiContextMatcher())
+                hasProperty("warmGameUiContext", warmGameUiContextMatcher(false, PLANET_1_ID, GameEngineMode.MASTER))
+        ));
+    }
+
+    @Test
+    public void coldUserLevel1() {
+        getDefaultRestConnection().loginAdmin();
+        userMgmtController.setLevel(userMgmtController.getUserIdForEmail(ServerTestHelper.NORMAL_USER_EMAIL), LEVEL_1_ID);
+
+        getDefaultRestConnection().loginUser();
+        ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
+
+        assertThat(coldGameUiContext, allOf(
+                hasProperty("userContext", allOf(
+                        hasProperty("userId", notNullValue()),
+                        hasProperty("registerState", equalTo(UserContext.RegisterState.EMAIL_VERIFIED)),
+                        hasProperty("admin", equalTo(false)),
+                        hasProperty("levelId", equalTo(LEVEL_1_ID))
+                )),
+                staticGameConfigMatcher(),
+                hasProperty("warmGameUiContext", warmGameUiContextMatcher(false, PLANET_1_ID, GameEngineMode.MASTER))
+        ));
+    }
+
+    @Test
+    public void coldUserLevel4() {
+        getDefaultRestConnection().loginAdmin();
+        userMgmtController.setLevel(userMgmtController.getUserIdForEmail(ServerTestHelper.NORMAL_USER_EMAIL), LEVEL_4_ID);
+
+        getDefaultRestConnection().loginUser();
+        ColdGameUiContext coldGameUiContext = gameUiContextController.loadColdGameUiContext(new GameUiControlInput());
+
+        assertThat(coldGameUiContext, allOf(
+                hasProperty("userContext", allOf(
+                        hasProperty("userId", notNullValue()),
+                        hasProperty("registerState", equalTo(UserContext.RegisterState.EMAIL_VERIFIED)),
+                        hasProperty("admin", equalTo(false)),
+                        hasProperty("levelId", equalTo(LEVEL_4_ID))
+                )),
+                staticGameConfigMatcher(),
+                hasProperty("warmGameUiContext", warmGameUiContextMatcher(true, PLANET_2_ID, GameEngineMode.SLAVE))
         ));
     }
 
@@ -91,7 +122,7 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
     public void warm() {
         WarmGameUiContext warmGameUiContext = gameUiContextController.loadWarmGameUiContext();
 
-        assertThat(warmGameUiContext, warmGameUiContextMatcher());
+        assertThat(warmGameUiContext, warmGameUiContextMatcher(false, PLANET_1_ID, GameEngineMode.MASTER));
 
     }
 
@@ -102,22 +133,11 @@ public class GameUiContextControllerTest extends AbstractSystemTest {
         ));
     }
 
-    private Matcher<ColdGameUiContext> shape3DMatcher() {
-        return hasProperty("shape3Ds", hasSize(0));
-    }
-
-    private Matcher<ColdGameUiContext> particleShapeMatcher() {
-        return hasProperty("particleShapeConfigs", hasSize(3));
-    }
-
-    private Matcher<ColdGameUiContext> particleEmitterSequenceMatcher() {
-        return hasProperty("particleEmitterSequenceConfigs", hasSize(3));
-    }
-
-    private Matcher<WarmGameUiContext> warmGameUiContextMatcher() {
+    private Matcher<WarmGameUiContext> warmGameUiContextMatcher(boolean availableUnlocks, int planetConfigId, GameEngineMode gameEngineMode) {
         return allOf(
-                hasProperty("gameEngineMode", equalTo(GameEngineMode.MASTER)),
-                hasProperty("planetConfig", notNullValue())
+                hasProperty("gameEngineMode", equalTo(gameEngineMode)),
+                hasProperty("planetConfig", hasProperty("id", equalTo(planetConfigId))),
+                hasProperty("availableUnlocks", equalTo(availableUnlocks))
         );
     }
 }

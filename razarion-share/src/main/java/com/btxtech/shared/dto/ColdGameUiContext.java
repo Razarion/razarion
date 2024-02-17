@@ -15,7 +15,6 @@ import java.util.List;
 public class ColdGameUiContext {
     // User
     private UserContext userContext;
-    private List<LevelUnlockConfig> levelUnlockConfigs;
     private StaticGameConfig staticGameConfig;
     private List<MeshContainer> meshContainers;
     private AudioConfig audioConfig;
@@ -29,14 +28,6 @@ public class ColdGameUiContext {
 
     public void setUserContext(UserContext userContext) {
         this.userContext = userContext;
-    }
-
-    public List<LevelUnlockConfig> getLevelUnlockConfigs() {
-        return levelUnlockConfigs;
-    }
-
-    public void setLevelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
-        this.levelUnlockConfigs = levelUnlockConfigs;
     }
 
     public StaticGameConfig getStaticGameConfig() {
@@ -89,11 +80,6 @@ public class ColdGameUiContext {
 
     public ColdGameUiContext userContext(UserContext userContext) {
         setUserContext(userContext);
-        return this;
-    }
-
-    public ColdGameUiContext levelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
-        setLevelUnlockConfigs(levelUnlockConfigs);
         return this;
     }
 

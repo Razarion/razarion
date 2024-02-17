@@ -42,7 +42,7 @@ public class ServerUnlockService {
         UserContext userContext = userService.readUserContext(userId);
         sessionService.updateUserContext(userId, userContext);
         baseItemService.updateUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
-        systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
+        systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit(), hasAvailableUnlocks(userContext));
         historyPersistence.onLevelUnlockEntityUsedViaCrystals(userId, levelUnlockEntityId);
     }
 
@@ -61,8 +61,12 @@ public class ServerUnlockService {
         return unlockedItemLimit;
     }
 
-    public List<LevelUnlockConfig> gatherAvailableUnlocks(UserContext userContext, int levelId) {
-        return levelCrudPersistence.readUnlocks(levelId, userService.unlockedEntityIds(userContext.getUserId()));
+    public boolean hasAvailableUnlocks(UserContext userContext) {
+        return levelCrudPersistence.hasAvailableUnlocks(userContext.getLevelId(), userService.unlockedEntityIds(userContext.getUserId()));
+    }
+
+    public List<LevelUnlockConfig> getAvailableLevelUnlockConfigs(UserContext userContext, int levelId) {
+        return levelCrudPersistence.readAvailableLevelUnlockConfigs(levelId, userService.unlockedEntityIds(userContext.getUserId()));
     }
 
     @SecurityCheck
@@ -71,6 +75,6 @@ public class ServerUnlockService {
         UserContext userContext = userService.readUserContext(userId);
         sessionService.updateUserContext(userId, userContext);
         baseItemService.updateUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
-        systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
+        systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit(), hasAvailableUnlocks(userContext));
     }
 }

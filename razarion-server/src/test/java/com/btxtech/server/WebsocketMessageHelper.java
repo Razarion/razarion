@@ -44,7 +44,7 @@ public class WebsocketMessageHelper {
 
     public <T> void assertMessageSent(int index, String packetString, Map<Integer, Integer> expected) throws IOException {
         UnlockedItemPacket actual = new ObjectMapper().readValue(assertAndExtractBody(index, packetString), UnlockedItemPacket.class);
-        ReflectionAssert.assertReflectionEquals(new UnlockedItemPacket().setUnlockedItemLimit(expected), actual);
+        ReflectionAssert.assertReflectionEquals(new UnlockedItemPacket().unlockedItemLimit(expected), actual);
     }
 
     public <T> void assertMessageSent(int index, String packetString, Class<T> expectedClass, T expected) throws IOException {

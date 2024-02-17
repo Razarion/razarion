@@ -1,0 +1,18 @@
+<div class="crystals">Crystals: {{crystals}}</div>
+<p-dataView [value]="levelUnlockConfigs" [layout]="'grid'" [emptyMessage]="'Nothing to unlock'">
+    <ng-template let-levelUnlockConfig pTemplate="gridItem">
+        <div class="col-12 md:col-4">
+            <div class="product-list-item">
+                <img [src]="getImageUrl(levelUnlockConfig.thumbnail)" />
+                <div class="product-list-detail">
+                    <div class="product-name"> {{gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(levelUnlockConfig.baseItemType).getI18nName().getString(gwtAngularService.gwtAngularFacade.language)}}   +{{levelUnlockConfig.baseItemTypeCount}}</div>
+                    <div class="product-name">Crystals {{levelUnlockConfig.crystalCost}}</div>
+                </div>
+                <div class="product-list-action">
+                    <p-button icon="pi pi-unlock" label="Unlock" (onClick)="onUse(levelUnlockConfig)" [disabled]="crystals !== undefined && levelUnlockConfig.crystalCost > crystals"></p-button>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</p-dataView>
+

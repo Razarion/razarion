@@ -14,7 +14,6 @@ import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
@@ -118,8 +117,9 @@ public class ServerLevelQuestService implements QuestListener {
                 userContext.setLevelId(newLevel.getId());
                 userContext.setXp(0);
                 historyPersistence.get().onLevelUp(userId, newLevel);
-                List<LevelUnlockConfig> levelUnlockConfigs = serverUnlockService.gatherAvailableUnlocks(userContext, newLevel.getId());
-                clientSystemConnectionService.onLevelUp(userId, userContext, levelUnlockConfigs);
+                clientSystemConnectionService.onLevelUp(userId,
+                        userContext,
+                        serverUnlockService.hasAvailableUnlocks(userContext));
                 serverGameEngineControlInstance.get().onLevelChanged(userId, newLevel.getId());
                 userService.persistLevel(userId, newLevel);
                 userService.persistXp(userId, 0);
@@ -134,6 +134,26 @@ public class ServerLevelQuestService implements QuestListener {
         userService.addCompletedServerQuest(userId, questConfig);
         // Activate next quest
         activateNextPossibleQuest(userId);
+    }
+
+    @Transactional
+    public void setUserLevel(int userId, int levelId) {
+        UserContext userContext = userService.getUserContext(userId);
+        LevelEntity currentLevel = levelCrudPersistence.getEntity(userContext.getLevelId());
+        LevelEntity newLevel = levelCrudPersistence.getEntity(levelId);
+        if (newLevel != null) {
+            userContext.setLevelId(newLevel.getId());
+            userContext.setXp(0);
+            historyPersistence.get().onLevelUp(userId, newLevel);
+            clientSystemConnectionService.onLevelUp(userId,
+                    userContext,
+                    serverUnlockService.hasAvailableUnlocks(userContext));
+            serverGameEngineControlInstance.get().onLevelChanged(userId, newLevel.getId());
+            userService.persistLevel(userId, newLevel);
+            userService.persistXp(userId, 0);
+        } else {
+            logger.warning("No next level found for: " + currentLevel);
+        }
     }
 
     public void activateNextPossibleQuest(int userId) {

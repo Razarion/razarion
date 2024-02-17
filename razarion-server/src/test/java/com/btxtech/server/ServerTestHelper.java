@@ -66,7 +66,7 @@ import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
@@ -456,7 +456,7 @@ public class ServerTestHelper {
             LevelEntity levelEntity1 = new LevelEntity();
             Map<BaseItemTypeEntity, Integer> itemTypeLimitation1 = new HashMap<>();
             itemTypeLimitation1.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-            levelEntity1.fromLevelConfig(new LevelConfig().number(1).xp2LevelUp(10), itemTypeLimitation1, null);
+            levelEntity1.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().number(1).xp2LevelUp(10), itemTypeLimitation1, null, null);
             entityManager.persist(levelEntity1);
             LEVEL_1_ID = levelEntity1.getId();
             // Level 2
@@ -464,7 +464,7 @@ public class ServerTestHelper {
             Map<BaseItemTypeEntity, Integer> itemTypeLimitation2 = new HashMap<>();
             itemTypeLimitation2.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
             itemTypeLimitation2.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
-            levelEntity2.fromLevelConfig(new LevelConfig().number(2).xp2LevelUp(20), itemTypeLimitation2, null);
+            levelEntity2.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().number(2).xp2LevelUp(20), itemTypeLimitation2, null, null);
             entityManager.persist(levelEntity2);
             LEVEL_2_ID = levelEntity2.getId();
             // Level 3
@@ -473,7 +473,7 @@ public class ServerTestHelper {
             itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
             itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
             itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
-            levelEntity3.fromLevelConfig(new LevelConfig().number(3).xp2LevelUp(30), itemTypeLimitation3, null);
+            levelEntity3.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().number(3).xp2LevelUp(30), itemTypeLimitation3, null, null);
             entityManager.persist(levelEntity3);
             LEVEL_3_ID = levelEntity3.getId();
             // Level 4
@@ -487,7 +487,8 @@ public class ServerTestHelper {
             levelUnlockEntity4_1.setBaseItemType(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID));
             levelUnlockEntity4_1.setBaseItemTypeCount(1);
             levelUnlockEntity4_1.setInternalName("levelUnlockEntity4_1");
-            levelEntity4.fromLevelConfig(new LevelConfig().number(4).xp2LevelUp(300), itemTypeLimitation4, Collections.singletonList(levelUnlockEntity4_1));
+            levelEntity4.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().number(4).xp2LevelUp(300), itemTypeLimitation4, null, null);
+            levelEntity4.setLevelUnlockEntity(Collections.singletonList(levelUnlockEntity4_1));
             entityManager.persist(levelEntity4);
             LEVEL_4_ID = levelEntity4.getId();
             LEVEL_UNLOCK_ID_L4_1 = levelUnlockEntity4_1.getId();
@@ -508,7 +509,8 @@ public class ServerTestHelper {
             levelUnlockEntity5_2.setBaseItemTypeCount(1);
             levelUnlockEntity5_2.setCrystalCost(20);
             levelUnlockEntity5_2.setInternalName("levelUnlockEntity5_2");
-            levelEntity5.fromLevelConfig(new LevelConfig().number(5).xp2LevelUp(400), itemTypeLimitation5, Arrays.asList(levelUnlockEntity5_1, levelUnlockEntity5_2));
+            levelEntity5.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().number(5).xp2LevelUp(400), itemTypeLimitation5, null, null);
+            levelEntity5.setLevelUnlockEntity(Arrays.asList(levelUnlockEntity5_1, levelUnlockEntity5_2));
             entityManager.persist(levelEntity5);
             LEVEL_5_ID = levelEntity5.getId();
             LEVEL_UNLOCK_ID_L5_1 = levelUnlockEntity5_1.getId();
@@ -554,10 +556,11 @@ public class ServerTestHelper {
                 new CleanupAfterTest().entity(TerrainSlopePositionEntity.class),
                 new CleanupAfterTest().entity(TerrainObjectPositionEntity.class),
                 new CleanupAfterTest().tableName("PLANET_LIMITATION"),
+                new CleanupAfterTest().entity(ServerGameEngineConfigEntity.class),
                 new CleanupAfterTest().entity(PlanetEntity.class)));
 
-//        ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
-//        serverGameEngineConfigEntity1.setPlanetEntity(planetEntity2);
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
+        serverGameEngineConfigEntity1.setPlanetEntity(entityManager.find(PlanetEntity.class, PLANET_2_ID));
 //
 //        ServerLevelQuestEntity serverLevelQuestEntityL4 = new ServerLevelQuestEntity();
 //        serverLevelQuestEntityL4.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_4_ID));
@@ -578,7 +581,7 @@ public class ServerTestHelper {
 //        serverLevelQuestEntityL5.setQuestConfigs(Arrays.asList(questConfigEntityL51, questConfigEntityL52, questConfigEntityL53));
 //
 //        serverGameEngineConfigEntity1.setServerQuestEntities(Arrays.asList(serverLevelQuestEntityL4, serverLevelQuestEntityL5));
-//        entityManager.persist(serverGameEngineConfigEntity1);
+        entityManager.persist(serverGameEngineConfigEntity1);
 //        SERVER_GAME_ENGINE_CONFIG_ID_1 = serverGameEngineConfigEntity1.getId();
 //        SERVER_QUEST_ID_L4_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(0).getId();
 //        SERVER_QUEST_ID_L4_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(1).getId();
@@ -750,18 +753,21 @@ public class ServerTestHelper {
         cleanTable(ComparisonConfigEntity.class);
         cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
 
+        // cleanSlopeEntities();
+        // cleanTable(TerrainObjectPositionEntity.class);
+        // cleanTable(PlanetEntity.class);
         cleanTable(WaterConfigEntity.class);
         cleanTable(GroundConfigEntity.class);
         cleanTable(ServerGameEngineConfigEntity.class);
     }
 
-    protected void cleanPlanetWithSlopes() throws Exception {
+    protected void cleanPlanetWithSlopes() {
         cleanSlopeEntities();
 
         cleanPlanets();
     }
 
-    protected void cleanPlanetFastTickGameEngine() throws Exception {
+    protected void cleanPlanetFastTickGameEngine() {
         PlanetService.TICK_TIME_MILLI_SECONDS = PlanetService.DEFAULT_TICK_TIME_MILLI_SECONDS;
         cleanPlanetWithSlopes();
     }

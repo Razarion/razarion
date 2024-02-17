@@ -3,10 +3,12 @@ package com.btxtech.server.persistence.level;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -17,9 +19,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
@@ -36,9 +38,11 @@ import java.util.stream.Collectors;
  * 05.05.2017.
  */
 @Singleton
-public class LevelCrudPersistence extends AbstractCrudPersistence<LevelConfig, LevelEntity> {
+public class LevelCrudPersistence extends AbstractCrudPersistence<LevelEditConfig, LevelEntity> {
     @Inject
     private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
+    @Inject
+    private ImagePersistence imagePersistence;
     @Inject
     private AlarmService alarmService;
     @PersistenceContext
@@ -59,35 +63,19 @@ public class LevelCrudPersistence extends AbstractCrudPersistence<LevelConfig, L
     }
 
     @Override
-    protected LevelConfig toConfig(LevelEntity entity) {
-        return entity.toLevelConfig();
+    protected LevelEditConfig toConfig(LevelEntity entity) {
+        return entity.toLevelEditConfig();
     }
 
     @Override
-    protected void fromConfig(LevelConfig config, LevelEntity entity) {
+    protected void fromConfig(LevelEditConfig config, LevelEntity entity) {
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation = new HashMap<>();
         if (config.getItemTypeLimitation() != null) {
             for (Map.Entry<Integer, Integer> entry : config.getItemTypeLimitation().entrySet()) {
                 itemTypeLimitation.put(baseItemTypeCrudPersistence.getEntity(entry.getKey()), entry.getValue());
             }
         }
-        Collection<LevelUnlockEntity> levelUnlockEntities = new ArrayList<>();
-//   TODO     LevelEntity levelEntity = read(levelEditConfig.getLevelId());
-//        if (levelEditConfig.getLevelUnlockConfigs() != null) {
-//            levelEditConfig.getLevelUnlockConfigs().forEach(levelUnlockConfig -> {
-//                LevelUnlockEntity levelUnlockEntity = new LevelUnlockEntity();
-//                levelUnlockEntity.setId(levelUnlockConfig.getId());
-//                levelUnlockEntity.setInternalName(levelUnlockConfig.getInternalName());
-//                levelUnlockEntity.setCrystalCost(levelUnlockConfig.getCrystalCost());
-//                levelUnlockEntity.setBaseItemType(itemTypePersistence.readBaseItemTypeEntity(levelUnlockConfig.getBaseItemType()));
-//                levelUnlockEntity.setBaseItemTypeCount(levelUnlockConfig.getBaseItemTypeCount());
-//                levelUnlockEntity.setThumbnail(imagePersistence.getImageLibraryEntity(levelUnlockConfig.getThumbnail()));
-//                levelUnlockEntity.setI18nName(I18nBundleEntity.fromI18nStringSafe(levelUnlockConfig.getI18nName(), levelUnlockEntity.getI18nName()));
-//                levelUnlockEntity.setI18nDescription(I18nBundleEntity.fromI18nStringSafe(levelUnlockConfig.getI18nDescription(), levelUnlockEntity.getI18nDescription()));
-//                levelUnlockEntities.add(levelUnlockEntity);
-//            });
-//        }
-        entity.fromLevelConfig(config, itemTypeLimitation, levelUnlockEntities);
+        entity.fromLevelEditConfig(config, itemTypeLimitation, baseItemTypeCrudPersistence, imagePersistence);
     }
 
     public LevelEntity getStarterLevel() {
@@ -101,6 +89,16 @@ public class LevelCrudPersistence extends AbstractCrudPersistence<LevelConfig, L
             alarmService.riseAlarm(Alarm.Type.NO_LEVELS);
         }
         return startLevel;
+    }
+
+    @Transactional
+    public List<LevelConfig> readLevelConfigs() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<LevelEntity> userQuery = criteriaBuilder.createQuery(LevelEntity.class);
+        Root<LevelEntity> root = userQuery.from(LevelEntity.class);
+        CriteriaQuery<LevelEntity> userSelect = userQuery.select(root);
+        Collection<LevelEntity> slopeConfigEntities = entityManager.createQuery(userSelect).getResultList();
+        return slopeConfigEntities.stream().map(LevelEntity::toLevelConfig).collect(Collectors.toList());
     }
 
     @Transactional
@@ -165,21 +163,30 @@ public class LevelCrudPersistence extends AbstractCrudPersistence<LevelConfig, L
     }
 
     @Transactional
-    public List<LevelUnlockConfig> readUnlocks(int levelId, Collection<Integer> unlockedEntityIds) {
+    public boolean hasAvailableUnlocks(int levelId, Collection<Integer> unlockedEntityIds) {
+        return !readAvailableLevelUnlockConfigs(levelId, unlockedEntityIds).isEmpty();
+    }
+
+    @Transactional
+    public List<LevelUnlockConfig> readAvailableLevelUnlockConfigs(int levelId, Collection<Integer> unlockedEntityIds) {
         LevelEntity levelEntity = getEntity(levelId);
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<LevelUnlockEntity> criteriaQuery = criteriaBuilder.createQuery(LevelUnlockEntity.class);
         Root<LevelEntity> root = criteriaQuery.from(LevelEntity.class);
-        CollectionJoin<LevelEntity, LevelUnlockEntity> collectionJoin = root.join(LevelEntity_.levelUnlockEntities);
-        CriteriaQuery<LevelUnlockEntity> userSelect = criteriaQuery.select(collectionJoin);
+        ListJoin<LevelEntity, LevelUnlockEntity> listJoin = root.join(LevelEntity_.levelUnlockEntities);
+        CriteriaQuery<LevelUnlockEntity> userSelect = criteriaQuery.select(listJoin);
         Predicate levelNumber = criteriaBuilder.lessThanOrEqualTo(root.get(LevelEntity_.number), levelEntity.getNumber());
         if (unlockedEntityIds != null && !unlockedEntityIds.isEmpty()) {
-            Predicate notIn = criteriaBuilder.not(collectionJoin.get(LevelUnlockEntity_.id).in(unlockedEntityIds));
+            Predicate notIn = criteriaBuilder.not(listJoin.get(LevelUnlockEntity_.id).in(unlockedEntityIds));
             userSelect.where(criteriaBuilder.and(levelNumber, notIn));
         } else {
             userSelect.where(levelNumber);
         }
-        return entityManager.createQuery(userSelect).getResultList().stream().map(LevelUnlockEntity::toLevelUnlockConfig).collect(Collectors.toList());
+        return entityManager.createQuery(userSelect)
+                .getResultList()
+                .stream()
+                .map(LevelUnlockEntity::toLevelUnlockConfig)
+                .collect(Collectors.toList());
     }
 
     @Transactional

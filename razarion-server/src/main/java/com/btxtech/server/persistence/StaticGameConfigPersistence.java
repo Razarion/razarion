@@ -52,7 +52,7 @@ public class StaticGameConfigPersistence {
         staticGameConfig.setBaseItemTypes(baseItemTypeCrudPersistence.read());
         staticGameConfig.setResourceItemTypes(resourceItemTypeCrudPersistence.read());
         staticGameConfig.setBoxItemTypes(boxItemTypeCrudPersistence.read());
-        staticGameConfig.setLevelConfigs(levelCrudPersistence.read());
+        staticGameConfig.setLevelConfigs(levelCrudPersistence.readLevelConfigs());
         staticGameConfig.setInventoryItems(inventoryItemCrudPersistence.read());
         staticGameConfig.setThreeJsModelConfigs(threeJsModelCrudPersistence.read());
         staticGameConfig.setThreeJsModelPackConfigs(threeJsModelPackCrudPersistence.read());

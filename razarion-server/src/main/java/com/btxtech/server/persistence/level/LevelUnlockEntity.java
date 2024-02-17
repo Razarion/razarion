@@ -1,8 +1,10 @@
 package com.btxtech.server.persistence.level;
 
-import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
+import com.btxtech.server.persistence.ImageLibraryEntity;
+import com.btxtech.server.persistence.ImagePersistence;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
+import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 
 import javax.persistence.CascadeType;
@@ -101,20 +103,35 @@ public class LevelUnlockEntity {
     }
 
     public LevelUnlockConfig toLevelUnlockConfig() {
-        LevelUnlockConfig levelUnlockConfig = new LevelUnlockConfig().setId(id).setInternalName(internalName).setBaseItemTypeCount(baseItemTypeCount).setCrystalCost(crystalCost);
+        LevelUnlockConfig levelUnlockConfig = new LevelUnlockConfig()
+                .id(id)
+                .internalName(internalName)
+                .baseItemTypeCount(baseItemTypeCount)
+                .crystalCost(crystalCost);
         if(i18nName != null) {
-            levelUnlockConfig.setI18nName(i18nName.toI18nString());
+            levelUnlockConfig.i18nName(i18nName.toI18nString());
         }
         if(i18nDescription != null) {
-            levelUnlockConfig.setI18nDescription(i18nDescription.toI18nString());
+            levelUnlockConfig.i18nDescription(i18nDescription.toI18nString());
         }
         if (baseItemType != null) {
-            levelUnlockConfig.setBaseItemType(baseItemType.getId());
+            levelUnlockConfig.baseItemType(baseItemType.getId());
         }
         if (thumbnail != null) {
-            levelUnlockConfig.setThumbnail(thumbnail.getId());
+            levelUnlockConfig.thumbnail(thumbnail.getId());
         }
         return levelUnlockConfig;
+    }
+
+    public void fromLevelUnlockConfig(LevelUnlockConfig levelUnlockConfig, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ImagePersistence imagePersistence) {
+        setId(levelUnlockConfig.getId());
+        setInternalName(levelUnlockConfig.getInternalName());
+        setCrystalCost(levelUnlockConfig.getCrystalCost());
+        setBaseItemType(baseItemTypeCrudPersistence.getEntity(levelUnlockConfig.getBaseItemType()));
+        setBaseItemTypeCount(levelUnlockConfig.getBaseItemTypeCount());
+        setThumbnail(imagePersistence.getImageLibraryEntity(levelUnlockConfig.getThumbnail()));
+        setI18nName(I18nBundleEntity.fromI18nStringSafe(levelUnlockConfig.getI18nName(), i18nName));
+        setI18nDescription(I18nBundleEntity.fromI18nStringSafe(levelUnlockConfig.getI18nDescription(), i18nDescription));
     }
 
     @Override

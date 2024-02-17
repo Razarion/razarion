@@ -26,9 +26,15 @@
       <input type="text" class="w-4" pInputText value="{{houseSpace}}" readonly="true">
     </div>
   </div>
-  <div class="flex cockpit-element">
-    <p-button icon="pi pi-box" title="Inventory" (onClick)="onInventory()">
-    </p-button>
+  <div class="flex flex-row">
+    <div class="flex cockpit-element">
+      <p-button icon="pi pi-box" title="Inventory" (onClick)="onInventory()">
+      </p-button>
+    </div>
+    <div class="flex cockpit-element">
+      <p-button icon="pi pi-angle-double-up" title="Unlock" (onClick)="onUnlock()" [ngClass]="{'blinking-button': blinkUnlockEnabled}">
+      </p-button>
+    </div>
   </div>
   <div class="flex cockpit-element">
     <div *ngIf="radarState == WORKING">

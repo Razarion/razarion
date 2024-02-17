@@ -1,31 +1,45 @@
-import { Injectable } from "@angular/core";
+import {Injectable} from "@angular/core";
 import {
   Alarm,
-  BaseItemType, BuilderType,
+  BabylonTerrainTile,
+  BaseItemType,
+  BaseItemUiService,
+  BuilderType,
+  Character,
+  ComparisonConfig,
+  ConditionConfig,
   DecimalPosition,
+  Diplomacy,
   DrivewayConfig,
   EditorFrontendProvider,
   GameUiControl,
   GenericEditorFrontendProvider,
   GroundConfig,
   GroundSplattingConfig,
-  GroundTerrainTile, HarvesterType, I18nString,
+  GroundTerrainTile,
+  HarvesterType,
+  I18nString,
   Index,
   InputService,
+  InventoryItem,
+  InventoryTypeService,
   ItemTypeService,
   Mesh,
   MeshContainer,
+  NativeSyncBaseItemTickInfo,
   ObjectNameId,
   ParticleSystemConfig,
-  PerfmonStatistic, PhysicalAreaConfig,
+  PhysicalAreaConfig,
   PlanetConfig,
+  PlayerBaseDto,
+  QuestConfig,
+  QuestProgressInfo,
   ResourceItemType,
   ShapeTransform,
   SlopeConfig,
   SlopeGeometry,
   StatusProvider,
   TerrainEditorService,
-  TerrainMarkerService,
   TerrainObjectConfig,
   TerrainObjectModel,
   TerrainObjectPosition,
@@ -37,15 +51,15 @@ import {
   ThreeJsModelConfig,
   ThreeJsModelPackConfig,
   ThreeJsModelPackService,
-  BabylonTerrainTile,
   Vertex,
-  WaterConfig, WeaponType, BaseItemUiService, Diplomacy, NativeSyncBaseItemTickInfo, PlayerBaseDto, Character, InventoryTypeService, InventoryItem, ConditionConfig, ComparisonConfig, QuestProgressInfo, QuestConfig
+  WaterConfig,
+  WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
-import { HttpClient } from "@angular/common/http";
-import { GwtInstance } from "../../gwtangular/GwtInstance";
-import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
-import { QuestCockpitComponent } from "../cockpit/quest/quest-cockpit.component";
-import { ConditionTrigger } from "src/app/generated/razarion-share";
+import {HttpClient} from "@angular/common/http";
+import {GwtInstance} from "../../gwtangular/GwtInstance";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import {QuestCockpitComponent} from "../cockpit/quest/quest-cockpit.component";
+import {ConditionTrigger} from "src/app/generated/razarion-share";
 
 let staticGameConfigJson: any = {};
 
@@ -116,19 +130,6 @@ export class GameMockService {
 
       };
     }
-
-    getClientPerfmonStatistics(): PerfmonStatistic[] {
-      throw new Error("Method not implemented.");
-    }
-
-    getWorkerPerfmonStatistics(): Promise<PerfmonStatistic[]> {
-      throw new Error("Method not implemented.");
-    }
-
-    getTerrainMarkerService(): TerrainMarkerService {
-      throw new Error("Method not implemented.");
-    }
-
     getTerrainEditorService(): TerrainEditorService {
       return new class implements TerrainEditorService {
         getTerrainObjectPositions(): Promise<TerrainObjectPosition[]> {

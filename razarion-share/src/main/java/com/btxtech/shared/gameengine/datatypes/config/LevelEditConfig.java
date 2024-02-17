@@ -16,4 +16,9 @@ public class LevelEditConfig extends LevelConfig {
     public void setLevelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
         this.levelUnlockConfigs = levelUnlockConfigs;
     }
+
+    public LevelEditConfig levelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
+        setLevelUnlockConfigs(levelUnlockConfigs);
+        return this;
+    }
 }

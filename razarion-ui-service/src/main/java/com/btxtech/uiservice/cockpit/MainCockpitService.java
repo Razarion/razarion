@@ -81,4 +81,10 @@ public class MainCockpitService {
     public void showRadar(GameUiControl.RadarState radarState) {
         mainCockpit.showRadar(radarState);
     }
+
+    public void blinkAvailableUnlock(boolean show) {
+        mainCockpit.blinkAvailableUnlock(show);
+
+    }
+
 }

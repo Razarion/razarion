@@ -14,7 +14,6 @@ import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
-import com.btxtech.uiservice.unlock.UnlockUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -42,8 +41,6 @@ public class UserUiService {
     private ModalDialogManager dialogManager;
     @Inject
     private Instance<GameUiControl> gameUiControlInstance;
-    @Inject
-    private UnlockUiService unlockUiService;
     @Inject
     private SimpleExecutorService simpleExecutorService;
     @Inject
@@ -103,7 +100,7 @@ public class UserUiService {
             gameEngineControl.updateLevel(newLevelConfig.getId());
             cockpitService.updateLevelAndXp(userContext);
             itemCockpitService.onStateChanged();
-            dialogManager.onLevelPassed(new LevelUpPacket().setUserContext(userContext));
+            dialogManager.onLevelPassed(new LevelUpPacket().userContext(userContext));
             gameUiControlInstance.get().onLevelUpdate(newLevelConfig);
         } else {
             userContext.setXp(xp);
@@ -115,7 +112,7 @@ public class UserUiService {
         userContext = levelUpPacket.getUserContext();
         cockpitService.updateLevelAndXp(userContext);
         itemCockpitService.onStateChanged();
-        unlockUiService.setLevelUnlockConfigs(levelUpPacket.getLevelUnlockConfigs());
+        cockpitService.blinkAvailableUnlock(levelUpPacket.getAvailableUnlocks());
         dialogManager.onLevelPassed(levelUpPacket);
     }
 
@@ -127,6 +124,7 @@ public class UserUiService {
     public void onUnlockItemLimitChanged(UnlockedItemPacket unlockedItemLimit) {
         userContext.setUnlockedItemLimit(unlockedItemLimit.getUnlockedItemLimit());
         itemCockpitService.onStateChanged();
+        cockpitService.blinkAvailableUnlock(unlockedItemLimit.isAvailableUnlocks());
     }
 
     public void setUserRegistrationListener(Consumer<UserContext> userRegistrationCallback) {
