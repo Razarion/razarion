@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {DecimalPosition} from "../../../generated/razarion-share";
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { DecimalPosition } from "../../../generated/razarion-share";
 
 @Component({
   selector: 'decimal-position',
@@ -20,22 +20,24 @@ export class DecimalPositionComponent {
   }
 
   ngOnInit(): void {
-    if(this.decimalPosition) {
-       this.x = this.decimalPosition.x;
-       this.y = this.decimalPosition.y;
+    if (this.decimalPosition) {
+      this.x = this.decimalPosition.x;
+      this.y = this.decimalPosition.y;
     }
   }
 
   onX(value?: number) {
+    this.x = value;
     this.fireDecimalPosition();
   }
 
   onY(value?: number) {
+    this.y = value;
     this.fireDecimalPosition();
   }
 
   private fireDecimalPosition() {
-    if ((!this.x && this.x !== 0) && (!this.y && this.y !== 0)) {
+    if ((this.x || this.x === 0) && (this.y || this.y === 0)) {
       this.decimalPosition = {
         x: this.x!,
         y: this.y!,
