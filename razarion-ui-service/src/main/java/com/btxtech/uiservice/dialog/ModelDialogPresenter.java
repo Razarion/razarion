@@ -1,10 +1,7 @@
 package com.btxtech.uiservice.dialog;
 
-import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative = true)
@@ -29,6 +26,4 @@ public interface ModelDialogPresenter {
     void showRegisterDialog();
 
     void showSetUserNameDialog();
-
-    void showScrollTipDialog(ScrollTipDialogModel scrollTipDialogModel);
 }

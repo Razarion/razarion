@@ -31,7 +31,6 @@ import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.system.boot.Boot;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.user.UserUiService;
 import jsinterop.annotations.JsType;
 
@@ -86,10 +85,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private Instance<ScreenCover> screenCover;
     @Inject
     private Instance<AbstractServerSystemConnection> serverSystemConnectionInstance;
-    @Inject
-    private TerrainScrollHandler terrainScrollHandler;
-    @Inject
-    private PlaybackControl playbackControl;
     private ColdGameUiContext coldGameUiContext;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -122,7 +117,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
                 Alarm.Type.INVALID_GAME_UI_CONTEXT,
                 "No planet",
                 coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
-        terrainScrollHandler.setPlanetSize(getPlanetConfig().getSize());
+        // TODO terrainScrollHandler.setPlanetSize(getPlanetConfig().getSize());
     }
 
     public void closeConnection() {
@@ -135,7 +130,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void initWarm() {
         abstractServerSystemConnection.sendGameSessionUuid();
         gameEngineMode = coldGameUiContext.getWarmGameUiContext().getGameEngineMode();
-        terrainScrollHandler.setPlanetSize(getPlanetConfig().getSize());
+        // TODO terrainScrollHandler.setPlanetSize(getPlanetConfig().getSize());
         cockpitService.blinkAvailableUnlock(coldGameUiContext.getWarmGameUiContext().isAvailableUnlocks());
     }
 
@@ -155,7 +150,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             return; // Scene started if slave synchronized (from GameEngine)
         } else if (gameEngineMode == GameEngineMode.PLAYBACK) {
             scenes = setupPlaybackScenes();
-            playbackControl.start(coldGameUiContext.getWarmGameUiContext().getPlaybackGameUiControlConfig());
+            // TODO playbackControl.start(coldGameUiContext.getWarmGameUiContext().getPlaybackGameUiControlConfig());
             questCockpitService.setBotSceneIndicationInfos(null);
         } else {
             throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiContext.getWarmGameUiContext().getGameEngineMode());

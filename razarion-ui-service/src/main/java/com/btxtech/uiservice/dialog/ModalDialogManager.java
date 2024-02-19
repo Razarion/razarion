@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -77,13 +76,6 @@ public class ModalDialogManager {
             modelDialogPresenter.showSetUserNameDialog();
         }
     }
-
-    public void showScrollTipDialog(ScrollTipDialogModel scrollTipDialogModel) {
-        if (modelDialogPresenter != null) {
-            modelDialogPresenter.showScrollTipDialog(scrollTipDialogModel);
-        }
-    }
-
 
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig) {
         showQuestPassed(questDescriptionConfig, () -> {

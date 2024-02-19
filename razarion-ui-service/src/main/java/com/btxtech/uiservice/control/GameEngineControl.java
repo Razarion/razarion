@@ -46,8 +46,6 @@ import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.btxtech.uiservice.tip.GameTipService;
-import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.inject.Inject;
@@ -63,8 +61,6 @@ public abstract class GameEngineControl {
     // private Logger logger = Logger.getLogger(GameEngineControl.class.getName());
     @Inject
     private BaseItemUiService baseItemUiService;
-    @Inject
-    private GameTipService gameTipService;
     @Inject
     private ResourceUiService resourceUiService;
     @Inject
@@ -161,22 +157,22 @@ public abstract class GameEngineControl {
 
     public void moveCmd(Collection<SyncBaseItemSimpleDto> items, DecimalPosition position) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_MOVE, SyncItemSimpleDtoUtils.toIds(items), position);
-        gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.MOVE));
+        // TODO gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.MOVE));
     }
 
     public void attackCmd(Collection<SyncBaseItemSimpleDto> attackers, SyncBaseItemSimpleDto target) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_ATTACK, SyncItemSimpleDtoUtils.toIds(attackers), target.getId());
-        gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.ATTACK));
+        // TODO gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.ATTACK));
     }
 
     public void harvestCmd(Collection<SyncBaseItemSimpleDto> harvesters, SyncResourceItemSimpleDto resource) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_HARVEST, SyncItemSimpleDtoUtils.toIds(harvesters), resource.getId());
-        gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.HARVEST));
+        // TODO gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.HARVEST));
     }
 
     public void pickBoxCmd(Collection<SyncBaseItemSimpleDto> pickers, SyncBoxItemSimpleDto box) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_PICK_BOX, SyncItemSimpleDtoUtils.toIds(pickers), box.getId());
-        gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.PICK_BOX).setSynBoxItemId(box.getId()));
+        // TODO gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.PICK_BOX).setSynBoxItemId(box.getId()));
     }
 
     public void loadContainerCmd(Collection<SyncBaseItemSimpleDto> contained, SyncBaseItemSimpleDto container) {
@@ -191,17 +187,17 @@ public abstract class GameEngineControl {
 
     public void buildCmd(SyncBaseItemSimpleDto builder, DecimalPosition position, BaseItemType toBeBuild) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_BUILD, builder.getId(), position, toBeBuild.getId());
-        gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.BUILD).setToBeBuiltId(toBeBuild.getId()));
+        // TODO gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.BUILD).setToBeBuiltId(toBeBuild.getId()));
     }
 
     public void finalizeBuildCmd(Collection<SyncBaseItemSimpleDto> builders, SyncBaseItemSimpleDto toBeFinalized) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_FINALIZE_BUILD, SyncItemSimpleDtoUtils.toIds(builders), toBeFinalized.getId());
-        gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.FINALIZE_BUILD).setToBeFinalizedId(toBeFinalized.getId()));
+        // TODO gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.FINALIZE_BUILD).setToBeFinalizedId(toBeFinalized.getId()));
     }
 
     public void fabricateCmd(int factoryId, BaseItemType toBeBuild) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_FABRICATE, factoryId, toBeBuild.getId());
-        gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.FABRICATE).setToBeBuiltId(toBeBuild.getId()));
+        // TODO gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.FABRICATE).setToBeBuiltId(toBeBuild.getId()));
     }
 
     public void sellItems(Collection<SyncBaseItemSimpleDto> items) {
@@ -325,10 +321,10 @@ public abstract class GameEngineControl {
                 break;
             case SYNC_ITEM_START_SPAWNED:
                 audioService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
-                gameTipService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
+                // TODO gameTipService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
                 break;
             case SYNC_ITEM_IDLE:
-                gameTipService.onSyncBaseItemIdle(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
+                // TODO gameTipService.onSyncBaseItemIdle(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
                 break;
             case RESOURCE_CREATED:
                 resourceUiService.addResource((SyncResourceItemSimpleDto) controlPackage.getSingleData());

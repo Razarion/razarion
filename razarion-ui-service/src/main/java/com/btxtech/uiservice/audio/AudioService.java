@@ -5,16 +5,13 @@ import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.logging.Logger;
@@ -25,10 +22,8 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_AUDIO_SERVICE;
  * Created by Beat
  * 24.12.2016.
  */
-public abstract class AudioService implements ViewService.ViewFieldListener {
+public abstract class AudioService /* implements ViewService.ViewFieldListener */ {
     private Logger logger = Logger.getLogger(AudioService.class.getName());
-    @Inject
-    private ViewService viewService;
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
@@ -44,11 +39,6 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
 
     public abstract void muteTerrainLoopAudio();
 
-
-    @PostConstruct
-    public void postConstruct() {
-        viewService.addViewFieldListeners(this);
-    }
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
         this.audioConfig = gameUiControlInitEvent.getColdGameUiContext().getAudioConfig();
@@ -82,11 +72,11 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
         if (audioId == null) {
             return;
         }
-        if (!nativeSyncBaseItemTickInfo.contained) {
-            if (viewService.getCurrentViewField().isInside(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo))) {
-                playAudio(audioId);
-            }
-        }
+        // TODO if (!nativeSyncBaseItemTickInfo.contained) {
+        // TODO    if (viewService.getCurrentViewField().isInside(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo))) {
+        // TODO        playAudio(audioId);
+        // TODO    }
+        // TODO }
     }
 
     public void onCommandSent() {
@@ -133,7 +123,7 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
         return audioConfig;
     }
 
-    @Override
+    // TODO @Override
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         if(getAudioConfig().getTerrainLoopLand() == null) {
             alarmService.riseAlarm(INVALID_AUDIO_SERVICE, "TerrainLoopLand");

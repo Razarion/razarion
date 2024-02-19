@@ -14,7 +14,6 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
-import com.btxtech.uiservice.tip.GameTipService;
 import jsinterop.annotations.JsType;
 
 import javax.inject.Inject;
@@ -38,8 +37,6 @@ public class InventoryUiService {
     private ModalDialogManager modalDialogManager;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
-    @Inject
-    private GameTipService gameTipService;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -69,6 +66,7 @@ public class InventoryUiService {
         dialogManager.showBoxPicked(boxContent);
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void useItem(InventoryItem inventoryItem) {
         if (inventoryItem.getRazarion() != null && inventoryItem.getRazarion() > 0) {
             gameEngineControl.useInventoryItem(new UseInventoryItem().setInventoryId(inventoryItem.getId()));
@@ -93,7 +91,7 @@ public class InventoryUiService {
                             inventoryItemIds.remove((Integer)inventoryItem.getId());
                         }
                     });
-                    gameTipService.onInventoryItemPlacerActivated(inventoryItem);
+                    // TODO gameTipService.onInventoryItemPlacerActivated(inventoryItem);
                 }
             } catch (Throwable e) {
                 exceptionHandler.handleException("InventoryUiService.useItem()", e);

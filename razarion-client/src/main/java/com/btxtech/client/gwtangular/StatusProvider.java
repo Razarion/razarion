@@ -1,6 +1,5 @@
 package com.btxtech.client.gwtangular;
 
-import com.btxtech.client.renderer.Stats;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.rest.AlarmServiceController;
 import com.btxtech.shared.system.alarm.Alarm;

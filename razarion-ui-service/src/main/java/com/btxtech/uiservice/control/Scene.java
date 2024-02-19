@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.control;
 
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -18,9 +17,6 @@ import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
-import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.renderer.ViewService;
-import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.context.Dependent;
@@ -36,15 +32,13 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_GAME_UI_CONTEXT
  */
 @Dependent
 // Better name: something with game-control
-public class Scene implements ViewService.ViewFieldListener {
+public class Scene {
     public static final long FADE_DURATION = 2000; // Edit in razarion.css
     private Logger logger = Logger.getLogger(Scene.class.getName());
     @Inject
     private ScreenCover screenCover;
     @Inject
     private BabylonRendererService threeJsRendererService;
-    @Inject
-    private ViewService viewService;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -55,8 +49,6 @@ public class Scene implements ViewService.ViewFieldListener {
     private ModalDialogManager modalDialogManager;
     @Inject
     private SimpleExecutorService simpleExecutorService;
-    @Inject
-    private GameTipService gameTipService;
     @Inject
     private AudioService audioService;
     @Inject
@@ -171,14 +163,14 @@ public class Scene implements ViewService.ViewFieldListener {
             scrollBouncePrevention = false;
             questCockpitService.showQuestSideBar(sceneConfig.getScrollUiQuest(), false);
             audioService.onQuestActivated();
-            viewService.addViewFieldListeners(this);
+            // TODO viewService.addViewFieldListeners(this);
         }
         if (sceneConfig.getBoxItemPositions() != null) {
             gameEngineControl.dropBoxes(sceneConfig.getBoxItemPositions());
         }
         if (sceneConfig.getGameTipConfig() != null) {
             inGameQuestVisualizationService.setSuppressed(true);
-            gameTipService.start(sceneConfig.getGameTipConfig());
+            // TODO gameTipService.start(sceneConfig.getGameTipConfig());
         }
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
             if(!gameUiControl.hasActiveServerQuest()) {
@@ -205,13 +197,13 @@ public class Scene implements ViewService.ViewFieldListener {
         threeJsRendererService.executeViewFieldConfig(viewFieldConfig, Optional.of(this::onComplete));
     }
 
-    @Override
-    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
-        if (!scrollBouncePrevention && viewField.isInside(sceneConfig.getScrollUiQuest().getScrollTargetRectangle())) {
-            scrollBouncePrevention = true;
-            onQuestPassed();
-        }
-    }
+    // TODO @Override
+    // TODO public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
+    // TODO     if (!scrollBouncePrevention && viewField.isInside(sceneConfig.getScrollUiQuest().getScrollTargetRectangle())) {
+    // TODO         scrollBouncePrevention = true;
+    // TODO         onQuestPassed();
+    // TODO     }
+    // TODO }
 
     private void onComplete() {
         if (completionCallbackCount == 0) {
@@ -244,10 +236,10 @@ public class Scene implements ViewService.ViewFieldListener {
         }
         if (sceneConfig.getGameTipConfig() != null) {
             inGameQuestVisualizationService.setSuppressed(false);
-            gameTipService.stop();
+            // TODO gameTipService.stop();
         }
         if (sceneConfig.getScrollUiQuest() != null) {
-            viewService.removeViewFieldListeners(this);
+            // TODO viewService.removeViewFieldListeners(this);
             questCockpitService.showQuestSideBar(null, false);
         }
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
@@ -268,7 +260,7 @@ public class Scene implements ViewService.ViewFieldListener {
                 modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig());
                 if (sceneConfig.getGameTipConfig() != null) {
                     inGameQuestVisualizationService.setSuppressed(false);
-                    gameTipService.stop();
+                    // TODO gameTipService.stop();
                 }
             }
             userUiService.increaseXp(sceneConfig.getQuestConfig().getXp());
@@ -281,7 +273,7 @@ public class Scene implements ViewService.ViewFieldListener {
                 modalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
                 if (sceneConfig.getGameTipConfig() != null) {
                     inGameQuestVisualizationService.setSuppressed(false);
-                    gameTipService.stop();
+                    // TODO gameTipService.stop();
                 }
             }
             userUiService.increaseXp(sceneConfig.getScrollUiQuest().getXp());

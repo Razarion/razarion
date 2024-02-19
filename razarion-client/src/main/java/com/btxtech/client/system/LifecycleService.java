@@ -1,9 +1,7 @@
 package com.btxtech.client.system;
 
 import com.btxtech.client.ClientTrackerService;
-import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.gwtangular.GwtAngularService;
-import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
@@ -19,7 +17,6 @@ import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.effects.TrailService;
-import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ItemMarkerService;
@@ -31,7 +28,6 @@ import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.http.client.Response;
@@ -65,8 +61,6 @@ public class LifecycleService {
     @Inject
     private ClientTrackerService clientTrackerService;
     @Inject
-    private GameCanvas gameCanvas;
-    @Inject
     private ClientPerformanceTrackerService clientPerformanceTrackerService;
     @Inject
     private PerfmonService perfmonService;
@@ -92,10 +86,6 @@ public class LifecycleService {
     private TerrainUiService terrainUiService;
     @Inject
     private AudioService audioService;
-    @Inject
-    private TerrainScrollHandler terrainScrollHandler;
-    @Inject
-    private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     private Instance<ScreenCover> screenCover;
     @Inject
@@ -151,7 +141,7 @@ public class LifecycleService {
             case HOLD:
                 clearAndHold(null);
                 if (lifecyclePacket.getDialog() == LifecyclePacket.Dialog.PLANET_RESTART) {
-                    modalDialogManager.showSingleNoClosableDialog(I18nHelper.getConstants().planetRestartTitle(), I18nHelper.getConstants().planetRestartMessage());
+                    // TODO modalDialogManager.showSingleNoClosableDialog(I18nHelper.getConstants().planetRestartTitle(), I18nHelper.getConstants().planetRestartMessage());
                 }
                 break;
             case RESTART:
@@ -175,7 +165,7 @@ public class LifecycleService {
         }
         clearAndHold(null);
         gameUiControl.closeConnection();
-        modalDialogManager.showSingleNoClosableServerRestartDialog();
+        // TODO modalDialogManager.showSingleNoClosableServerRestartDialog();
         startRestartWatchdog();
     }
 
@@ -188,8 +178,8 @@ public class LifecycleService {
                 deferredStartup.finished();
             }
         });
-        modalDialogManager.closeAll();
-        gameCanvas.stopRenderLoop();
+        // TODO modalDialogManager.closeAll();
+        // TODO gameCanvas.stopRenderLoop();
         clientPerformanceTrackerService.stop();
         perfmonService.stop();
         selectionHandler.clearSelection(true);
@@ -200,7 +190,7 @@ public class LifecycleService {
         trailService.clear();
         terrainUiService.clear();
         audioService.muteTerrainLoopAudio();
-        terrainScrollHandler.cleanup();
+        // TODO terrainScrollHandler.cleanup();
         // TODO ??? leftSideBarManager.close();
     }
 
@@ -250,7 +240,7 @@ public class LifecycleService {
             try {
                 ServerState serverState = ServerState.valueOf(serverStateString);
                 if (serverState == ServerState.RUNNING) {
-                    modalDialogManager.showSingleNoClosableDialog(I18nHelper.getConstants().connectionFailed(), I18nHelper.getConstants().connectionLost());
+                    // TODO modalDialogManager.showSingleNoClosableDialog(I18nHelper.getConstants().connectionFailed(), I18nHelper.getConstants().connectionLost());
                     simpleExecutorService.schedule(RESTART_DELAY, () -> Window.Location.replace("/"), SimpleExecutorService.Type.WAIT_RESTART);
                 } else {
                     handleServerRestart();

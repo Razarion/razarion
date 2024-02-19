@@ -20,10 +20,8 @@ import com.btxtech.uiservice.cockpit.CockpitMode;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
-import com.btxtech.uiservice.item.ItemMarkerService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
-import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTaskRunner;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -52,8 +50,6 @@ public class TerrainMouseHandler {
     @Inject
     private CockpitMode cockpitMode;
     @Inject
-    private SelectionFrameRenderTaskRunner selectionFrameRenderTaskRunner;
-    @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
     private ResourceUiService resourceUiService;
@@ -80,7 +76,6 @@ public class TerrainMouseHandler {
             if (primaryButtonDown) {
                 if (groupSelectionFrame != null) {
                     groupSelectionFrame.onMove(terrainPosition.toXY());
-                    selectionFrameRenderTaskRunner.onMove(groupSelectionFrame);
                 }
             } else {
                 SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
@@ -124,7 +119,6 @@ public class TerrainMouseHandler {
             }
 
             groupSelectionFrame = new GroupSelectionFrame(terrainPosition);
-            selectionFrameRenderTaskRunner.startGroupSelection(groupSelectionFrame);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -159,7 +153,6 @@ public class TerrainMouseHandler {
 
             boolean onlySelectionFrame = false;
             if (groupSelectionFrame != null) {
-                selectionFrameRenderTaskRunner.stop();
                 groupSelectionFrame.onMove(terrainPosition.toXY());
                 if (groupSelectionFrame.getRectangle2D() != null) {
                     onlySelectionFrame = true;
