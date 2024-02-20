@@ -58,6 +58,7 @@ import { GwtInstance } from "src/app/gwtangular/GwtInstance";
 import { BabylonBoxItemImpl } from "./babylon-box-item.impl";
 import { Geometry } from "src/app/common/geometry";
 import { PlaceConfigComponent } from "src/app/editor/common/place-config/place-config.component";
+import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -71,7 +72,7 @@ export interface RazarionMetadata {
 export enum RazarionMetadataType {
   GROUND,
   TERRAIN_OBJECT,
-  EDITOR_SLOPE
+  SLOPE
 }
 
 export class ViewField {
@@ -439,7 +440,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     let polygonData = PlaceConfigComponent.toVertex2ArrayAngular(placeConfig.getPolygon2D()?.toCornersAngular()!)
     let polygonTriangulation = new PolygonMeshBuilder("Place marker", polygonData, this.scene, Geometry.EAR_CUT);
     const polygonMesh = polygonTriangulation.build();
-    polygonMesh.position.y = 0.1;
+    polygonMesh.position.y = 0.1 + LocationVisualization.getHeightFromTerrain(polygonData[0].x, polygonData[0].y, this);
     const boundingBox = polygonMesh.getBoundingInfo().boundingBox;
     const width = boundingBox.maximum.x - boundingBox.minimum.x;
     const height = boundingBox.maximum.z - boundingBox.minimum.z;
@@ -458,7 +459,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     let radius = placeConfig.toRadiusAngular() || 1;
     const diskMesh = MeshBuilder.CreateDisc("Place marker", { radius: radius }, this.scene);
     diskMesh.position.x = placeConfig.getPosition()?.getX()!;
-    diskMesh.position.y = 0.1;
+    diskMesh.position.y = 0.1 + LocationVisualization.getHeightFromTerrain(placeConfig.getPosition()?.getX()!, placeConfig.getPosition()?.getY()!, this);
     diskMesh.position.z = placeConfig.getPosition()?.getY()!;
     diskMesh.rotation.x = Tools.ToRadians(90);
     diskMesh.isPickable = false;

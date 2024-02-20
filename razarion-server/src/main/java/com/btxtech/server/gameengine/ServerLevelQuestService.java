@@ -23,7 +23,6 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -172,19 +171,7 @@ public class ServerLevelQuestService implements QuestListener {
 
     @Transactional
     public List<Integer> readActiveOrPassedQuestIds(UserContext userContext) {
-        List<Integer> ignoredQuests = new ArrayList<>();
-        if (userContext.registered()) {
-            ignoredQuests.addAll(userService.findActivePassedQuestId(userContext.getUserId()));
-        } else {
-            UnregisteredUser unregisteredUser = sessionService.findPlayerSession(userContext.getUserId()).getUnregisteredUser();
-            if (unregisteredUser.getCompletedQuestIds() != null) {
-                ignoredQuests.addAll(unregisteredUser.getCompletedQuestIds());
-            }
-            if (unregisteredUser.getActiveQuest() != null) {
-                ignoredQuests.add(unregisteredUser.getActiveQuest().getId());
-            }
-        }
-        return ignoredQuests;
+        return userService.findActivePassedQuestId(userContext.getUserId());
     }
 
     @Transactional // Needs to be @Transactional if a quest if fulfilled during activation and a new quest is activated

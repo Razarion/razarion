@@ -126,6 +126,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
   private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: NodeMaterial): void {
     const slope = new Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
+    BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(slope, RazarionMetadataType.SLOPE, undefined, slopeConfig.getId());
     const vertexData = BabylonJsUtils.createVertexData(slopeGeometry.positions, slopeGeometry.norms);
     vertexData.uvs = slopeGeometry.uvs;
     vertexData.uvs2 = this.convertFloatTOVec2(slopeGeometry.slopeFactors);

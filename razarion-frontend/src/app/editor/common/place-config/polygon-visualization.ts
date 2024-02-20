@@ -1,4 +1,4 @@
-import {SimpleMaterial} from "@babylonjs/materials";
+import { SimpleMaterial } from "@babylonjs/materials";
 import {
   Constants,
   Mesh,
@@ -14,12 +14,13 @@ import {
   Vector2,
   Vector3
 } from "@babylonjs/core";
-import {BabylonRenderServiceAccessImpl} from "../../../game/renderer/babylon-render-service-access-impl.service";
-import {EventEmitter} from "@angular/core";
-import {DecimalPosition, PlaceConfig} from "../../../generated/razarion-share";
-import {PlaceConfigComponent} from "./place-config.component";
-import {Color3} from "@babylonjs/core/Maths/math.color";
+import { BabylonRenderServiceAccessImpl } from "../../../game/renderer/babylon-render-service-access-impl.service";
+import { EventEmitter } from "@angular/core";
+import { DecimalPosition, PlaceConfig } from "../../../generated/razarion-share";
+import { PlaceConfigComponent } from "./place-config.component";
+import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Geometry } from "src/app/common/geometry";
+import { LocationVisualization } from "./location-visualization";
 
 export class PolygonVisualization {
   static polygonMarkerMaterial: SimpleMaterial;
@@ -68,7 +69,7 @@ export class PolygonVisualization {
                 }
               }
             } else {
-              this.placeConfigComponent.placeConfig!.polygon2D = {corners: [], lines: []};
+              this.placeConfigComponent.placeConfig!.polygon2D = { corners: [], lines: [] };
               this.placeConfigComponent.placeConfig!.polygon2D!.corners = [
                 {
                   x: pickingInfo.pickedPoint!.x - PlaceConfigComponent.NEW_POLYGON_HALF_LENGTH,
@@ -144,12 +145,15 @@ export class PolygonVisualization {
   }
 
   private setupPolygonMesh() {
+    let polygon = PlaceConfigComponent.toVertex2Array(this.placeConfigComponent.placeConfig!.polygon2D!.corners);
+    // Must be called before dispose because it triggers an observable call due to matrix change
+    let height = LocationVisualization.getHeightFromTerrain(polygon[0].x, polygon[0].y, this.renderService);
     if (this.polygonMarker) {
       this.polygonMarker.dispose();
     }
-    let polygon = PlaceConfigComponent.toVertex2Array(this.placeConfigComponent.placeConfig!.polygon2D!.corners);
     const polygonMeshBuilder = new PolygonMeshBuilder(`Polygon marker`, polygon, this.renderService.getScene(), Geometry.EAR_CUT);
     this.polygonMarker = polygonMeshBuilder.build();
+    this.polygonMarker.position.y = height;
     this.polygonMarker.material = PolygonVisualization.polygonMarkerMaterial;
   }
 
@@ -188,9 +192,9 @@ export class PolygonVisualization {
 class DraggableCorner {
   static cornerDiscMaterial: SimpleMaterial;
   private readonly planeDragGizmo;
-  public readonly disc;
+  public readonly box;
 
-  constructor(private renderService: BabylonRenderServiceAccessImpl, corners: DecimalPosition[], public readonly index: number, onChange: () => any) {
+  constructor(renderService: BabylonRenderServiceAccessImpl, corners: DecimalPosition[], public readonly index: number, onChange: () => any) {
     if (!DraggableCorner.cornerDiscMaterial) {
       DraggableCorner.cornerDiscMaterial = new SimpleMaterial(`Location marker disc`, renderService.getScene());
       DraggableCorner.cornerDiscMaterial.diffuseColor.r = 1;
@@ -198,29 +202,29 @@ class DraggableCorner {
       DraggableCorner.cornerDiscMaterial.diffuseColor.b = 0.5;
       DraggableCorner.cornerDiscMaterial.depthFunction = Constants.ALWAYS;
     }
-    this.disc = MeshBuilder.CreateBox("Slope Editor Corner", {size: 0.1});
-    this.disc.material = DraggableCorner.cornerDiscMaterial;
-    this.disc.position.x = corners[index].x;
-    this.disc.position.y = 0;
-    this.disc.position.z = corners[index].y;
+    this.box = MeshBuilder.CreateBox("Polygon editor corner", { size: 0.1 });
+    this.box.material = DraggableCorner.cornerDiscMaterial;
+    this.box.position.x = corners[index].x;
+    this.box.position.y = LocationVisualization.getHeightFromTerrain(corners[0].x, corners[0].y, renderService);
+    this.box.position.z = corners[index].y;
 
     this.planeDragGizmo = new PlaneDragGizmo(new Vector3(0, 1, 0), new Color3(1, 0, 0));
-    this.planeDragGizmo.attachedMesh = this.disc;
+    this.planeDragGizmo.attachedMesh = this.box;
     if (!this.planeDragGizmo._rootMesh.metadata) {
       this.planeDragGizmo._rootMesh.metadata = {};
     }
     this.planeDragGizmo._rootMesh.metadata.DRAGGABLE_CORNER = this;
 
 
-    this.disc.onAfterWorldMatrixUpdateObservable.add(() => {
-      corners[index].x = this.disc.position.x;
-      corners[index].y = this.disc.position.z;
+    this.box.onAfterWorldMatrixUpdateObservable.add(() => {
+      corners[index].x = this.box.position.x;
+      corners[index].y = this.box.position.z;
       onChange();
     });
   }
 
   dispose(): void {
-    this.disc.dispose();
+    this.box.dispose();
     this.planeDragGizmo.dispose();
   }
 
