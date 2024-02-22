@@ -3,12 +3,13 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeFractionalSlope;
-import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeNode;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeTile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -140,8 +141,7 @@ public class TerrainShapeTile {
                     }
 
                 } catch (Throwable t) {
-                    logger.severe("TerrainShapeTile.iterateOverTerrainNodes: " + t.getMessage() + " nodeRelativeIndex: " + nodeRelativeIndex);
-                    throw t;
+                    logger.log(Level.SEVERE, "TerrainShapeTile.iterateOverTerrainNodes: " + t.getMessage() + " nodeRelativeIndex: " + nodeRelativeIndex, t);
                 }
             }
         }
