@@ -1,11 +1,8 @@
 package com.btxtech.server.user;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
-import com.btxtech.server.mgmt.UnlockedBackendInfo;
-import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
-import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
@@ -24,6 +21,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.shared.dto.RegisterResult;
+import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
 import javax.enterprise.inject.Instance;
@@ -46,6 +44,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -71,8 +71,6 @@ public class UserService {
     private Instance<ServerGameEngineControl> serverGameEngine;
     @Inject
     private Instance<HistoryPersistence> historyPersistence;
-    @Inject
-    private InventoryItemCrudPersistence inventoryPersistence;
     @Inject
     private RegisterService registerService;
 
@@ -341,14 +339,6 @@ public class UserService {
     }
 
     @Transactional
-    @SecurityCheck
-    public void persistRemoveUnlocked(int userId, int levelUnlockEntityId) {
-        UserEntity userEntity = getUserEntity(userId);
-        userEntity.getLevelUnlockEntities().removeIf(levelUnlockEntity -> levelUnlockEntity.getId() == levelUnlockEntityId);
-        entityManager.merge(userEntity);
-    }
-
-    @Transactional
     public QuestConfig getAndSaveNewQuest(Integer userId) {
         UserEntity userEntity = getUserEntity(userId);
         if (userEntity.getActiveQuest() == null) {
@@ -423,12 +413,8 @@ public class UserService {
 
     @Transactional
     public QuestConfig findActiveQuestConfig4CurrentUser(Locale locale) {
-        Integer userId = sessionHolder.getPlayerSession().getUserContext().getUserId();
-        if (userId != null) {
-            return getActiveQuest(userId, locale);
-        } else {
-            return sessionHolder.getPlayerSession().getUnregisteredUser().getActiveQuest();
-        }
+        return getActiveQuest(sessionHolder.getPlayerSession().getUserContext().getUserId(),
+                locale);
     }
 
     public UserEntity getUserEntity(int userId) {
@@ -440,46 +426,75 @@ public class UserService {
     }
 
     @Transactional
+    public List<UserBackendInfo> getUserBackendInfos() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
+        Root<UserEntity> root = userQuery.from(UserEntity.class);
+        CriteriaQuery<UserEntity> userSelect = userQuery.select(root);
+        return entityManager.createQuery(userSelect)
+                .getResultList()
+                .stream()
+                .map(UserService::userEntity2UserBackendInfo)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
     public UserBackendInfo findUserBackendInfo(int playerId) {
         UserEntity userEntity = getUserEntity4PlayerId(playerId);
         if (userEntity == null) {
             return null;
         }
-        UserBackendInfo userBackendInfo = new UserBackendInfo().setName(userEntity.getName()).setRegisterDate(userEntity.getRegisterDate()).setFacebookId(userEntity.getFacebookUserId()).setEmail(userEntity.getEmail());
-        userBackendInfo.setUserId(userEntity.getId()).setLevelNumber(userEntity.getLevel().getNumber()).setXp(userEntity.getXp()).setCrystals(userEntity.getCrystals());
-        if (userEntity.getActiveQuest() != null) {
-            userBackendInfo.setActiveQuest(userEntity.getActiveQuest().toQuestBackendInfo());
-        }
+        return userEntity2UserBackendInfo(userEntity);
+    }
+
+    private static UserBackendInfo userEntity2UserBackendInfo(UserEntity userEntity) {
+        UserBackendInfo userBackendInfo = new UserBackendInfo()
+                .name(userEntity.getName())
+                .creationDate(userEntity.getCreationDate())
+                .registerDate(userEntity.getRegisterDate())
+                .verificationDoneDate(userEntity.getVerificationDoneDate())
+                .facebookId(userEntity.getFacebookUserId())
+                .email(userEntity.getEmail())
+                .userId(userEntity.getId())
+                .levelId(extractId(userEntity.getLevel(), LevelEntity::getId))
+                .xp(userEntity.getXp())
+                .crystals(userEntity.getCrystals())
+                .activeQuest(extractId(userEntity.getActiveQuest(), QuestConfigEntity::getId));
         if (userEntity.getCompletedQuestIds() != null && !userEntity.getCompletedQuestIds().isEmpty()) {
-            userBackendInfo.setCompletedQuests(userEntity.getCompletedQuest().stream().map(QuestConfigEntity::toQuestBackendInfo).collect(Collectors.toList()));
+            userBackendInfo.completedQuestIds(userEntity.getCompletedQuest().stream().map(QuestConfigEntity::getId).collect(Collectors.toList()));
         }
         if (userEntity.getLevelUnlockEntities() != null && !userEntity.getLevelUnlockEntities().isEmpty()) {
-            userBackendInfo.setUnlockedBackendInfos(userEntity.getLevelUnlockEntities().stream().map(levelUnlockEntity -> new UnlockedBackendInfo().setId(levelUnlockEntity.getId()).setInternalName(levelUnlockEntity.getInternalName())).collect(Collectors.toList()));
+            userBackendInfo.unlockedIds(userEntity.getLevelUnlockEntities().stream().map(LevelUnlockEntity::getId).collect(Collectors.toList()));
         }
         return userBackendInfo;
     }
 
     @Transactional
-    public UserBackendInfo removeCompletedQuest(int playerId, int questId) {
-        UserEntity userEntity = getUserEntity4PlayerId(playerId);
-        if (userEntity == null) {
-            return null;
-        }
-        userEntity.removeCompletedQuest(entityManager.find(QuestConfigEntity.class, questId));
+    public void setCompletedQuest(int userId, List<Integer> completedQuestIds) {
+        UserEntity userEntity = getUserEntity(userId);
+        userEntity.setCompletedQuest(completedQuestIds.stream().map(questId -> {
+            QuestConfigEntity questConfigEntity = entityManager.find(QuestConfigEntity.class, questId);
+            if (questConfigEntity == null) {
+                throw new IllegalArgumentException("No QuestConfigEntity for id: " + questId);
+            }
+            return questConfigEntity;
+        }).collect(Collectors.toList()));
         entityManager.merge(userEntity);
-        return findUserBackendInfo(playerId);
     }
 
     @Transactional
-    public UserBackendInfo addCompletedQuest(int playerId, int questId) {
-        UserEntity userEntity = getUserEntity4PlayerId(playerId);
-        if (userEntity == null) {
-            return null;
-        }
-        userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, questId));
+    public void setUnlocked(int userId, List<Integer> unlockedIds) {
+        UserEntity userEntity = getUserEntity(userId);
+        userEntity.setLevelUnlockEntities(unlockedIds.stream().map(questId -> {
+            LevelUnlockEntity levelUnlockEntity = entityManager.find(LevelUnlockEntity.class, questId);
+            if (levelUnlockEntity == null) {
+                throw new IllegalArgumentException("No LevelUnlockEntity for id: " + questId);
+            }
+            return levelUnlockEntity;
+        }).collect(Collectors.toList()));
         entityManager.merge(userEntity);
-        return findUserBackendInfo(playerId);
     }
+
 
     private UserEntity getUserEntity4PlayerId(int playerId) {
         throw new UnsupportedOperationException("...TODO...");
@@ -654,4 +669,5 @@ public class UserService {
 // TODO       return humanPlayerId2RegisteredUserName;
         throw new UnsupportedOperationException("...TODO...");
     }
+
 }

@@ -1,9 +1,11 @@
-package com.btxtech.server.mgmt;
+package com.btxtech.shared.dto;
 
 /**
  * Created by Beat
  * on 23.09.2017.
  */
+
+@Deprecated
 public class UnlockedBackendInfo {
     private int id;
     private String internalName;

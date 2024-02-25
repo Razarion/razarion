@@ -8,7 +8,6 @@ import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.user.PlayerSession;
-import com.btxtech.server.user.UnregisteredUser;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.UserContext;
@@ -73,17 +72,9 @@ public class ServerLevelQuestService implements QuestListener {
             boolean activeQuest = questService.hasActiveQuest(userContext.getUserId());
             userContext.setLevelId(newLevelId);
             QuestConfig newQuest = null;
-            if (userContext.registered()) {
-                userService.persistLevel(userContext.getUserId(), newLevel);
-                if (!activeQuest) {
-                    newQuest = userService.getAndSaveNewQuest(userContext.getUserId());
-                }
-            } else {
-                if (!activeQuest) {
-                    UnregisteredUser unregisteredUser = sessionService.getSession(sessionId).getUnregisteredUser();
-                    newQuest = serverGameEngineCrudPersistence.getQuest4LevelAndCompleted(newLevel, unregisteredUser.getCompletedQuestIds()).toQuestConfig(playerSession.getLocale());
-                    unregisteredUser.setActiveQuest(newQuest);
-                }
+            userService.persistLevel(userContext.getUserId(), newLevel);
+            if (!activeQuest) {
+                newQuest = userService.getAndSaveNewQuest(userContext.getUserId());
             }
             if (newQuest != null) {
                 historyPersistence.get().onQuest(userContext.getUserId(), newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);

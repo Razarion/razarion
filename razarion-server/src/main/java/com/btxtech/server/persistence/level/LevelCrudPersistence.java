@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.level;
 
 import com.btxtech.server.gameengine.ServerUnlockService;
-import com.btxtech.server.mgmt.UnlockedBackendInfo;
+import com.btxtech.shared.dto.UnlockedBackendInfo;
 import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;

@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.history;
 
-import com.btxtech.server.mgmt.GameHistoryEntry;
+import com.btxtech.shared.dto.GameHistoryEntry;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;

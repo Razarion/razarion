@@ -124,6 +124,7 @@ import { BoxRegionComponent } from './editor/box-region/box-region.component';
 import { InventoryComponent } from './game/inventory/inventory.component';
 import { QuestDialogComponent } from './game/cockpit/quest/quest-dialog/quest-dialog.component';
 import { UnlockComponent } from './game/unlock/unlock.component';
+import { UserMgmtComponent } from './editor/user-mgmt/user-mgmt.component';
 
 @NgModule({
   declarations: [
@@ -202,6 +203,7 @@ import { UnlockComponent } from './game/unlock/unlock.component';
     InventoryComponent,
     QuestDialogComponent,
     UnlockComponent,
+    UserMgmtComponent,
   ],
   imports: [
     BrowserModule,

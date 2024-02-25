@@ -1,6 +1,5 @@
 package com.btxtech.server.persistence.quest;
 
-import com.btxtech.server.mgmt.QuestBackendInfo;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
@@ -114,10 +113,6 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
 
     public String getInternalName() {
         return internalName;
-    }
-
-    public QuestBackendInfo toQuestBackendInfo() {
-        throw new UnsupportedOperationException("FIX ME");
     }
 
     @Override

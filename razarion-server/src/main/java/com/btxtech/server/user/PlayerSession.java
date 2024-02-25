@@ -14,6 +14,7 @@ public class PlayerSession {
     private String httpSessionId;
     private UserContext userContext;
     private Locale locale;
+    @Deprecated
     private UnregisteredUser unregisteredUser;
     private Date time = new Date();
 
@@ -38,10 +39,12 @@ public class PlayerSession {
         return locale;
     }
 
+    @Deprecated
     public UnregisteredUser getUnregisteredUser() {
         return unregisteredUser;
     }
 
+    @Deprecated
     public void setUnregisteredUser(UnregisteredUser unregisteredUser) {
         this.unregisteredUser = unregisteredUser;
     }

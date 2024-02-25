@@ -180,11 +180,13 @@ public class UserEntity {
         completedQuest.add(quest);
     }
 
-    public void removeCompletedQuest(QuestConfigEntity quest) {
-        if (completedQuest == null) {
-            return;
+    public void setCompletedQuest(List<QuestConfigEntity> completedQuest) {
+        if (this.completedQuest != null) {
+            this.completedQuest.clear();
+            this.completedQuest.addAll(completedQuest);
+        } else {
+            this.completedQuest = completedQuest;
         }
-        completedQuest.remove(quest);
     }
 
     public List<QuestConfigEntity> getCompletedQuest() {
@@ -219,6 +221,14 @@ public class UserEntity {
 
     public String getFacebookUserId() {
         return facebookUserId;
+    }
+
+    public Date getVerificationDoneDate() {
+        return verificationDoneDate;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
     }
 
     public Date getRegisterDate() {

@@ -115,6 +115,7 @@
                         <class>com.btxtech.shared.rest.InventoryController</class>
                         <class>com.btxtech.shared.rest.QuestController</class>
                         <class>com.btxtech.shared.rest.UnlockController</class>
+                        <class>com.btxtech.shared.rest.UserMgmtController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

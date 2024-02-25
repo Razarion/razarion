@@ -69,9 +69,8 @@ public class ServerUnlockService {
         return levelCrudPersistence.readAvailableLevelUnlockConfigs(levelId, userService.unlockedEntityIds(userContext.getUserId()));
     }
 
-    @SecurityCheck
-    public void removeUnlocked(int userId, int levelUnlockEntityId) {
-        userService.persistRemoveUnlocked(userId, levelUnlockEntityId);
+    public void updateUnlocked(int userId, List<Integer> unlockedIds) {
+        userService.setUnlocked(userId, unlockedIds);
         UserContext userContext = userService.readUserContext(userId);
         sessionService.updateUserContext(userId, userContext);
         baseItemService.updateUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());

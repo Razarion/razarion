@@ -27,6 +27,7 @@ import { BaseMgmtComponent } from "../base-mgmt/base-mgmt.component";
 import { BoxItemTypeEditorComponent } from "../crud-editors/box-item-type-editor/box-item-type-editor.component";
 import { InventoryItemEditorComponent } from "../crud-editors/inventory-item-editor/inventory-item-editor.component";
 import { BoxRegionComponent } from "../box-region/box-region.component";
+import { UserMgmtComponent } from "../user-mgmt/user-mgmt.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -145,7 +146,7 @@ export class EditorDialogComponent {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Inventory item ditor", GeneratedCrudContainerComponent, InventoryItemEditorComponent));
   }
-  
+
   openPlanetEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Planet ditor", GeneratedCrudContainerComponent, PlanetEditorComponent));
@@ -154,5 +155,10 @@ export class EditorDialogComponent {
   openBaseMgmt() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Base management", BaseMgmtComponent));
+  }
+
+  openUserMgmt() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("User management", UserMgmtComponent));
   }
 }

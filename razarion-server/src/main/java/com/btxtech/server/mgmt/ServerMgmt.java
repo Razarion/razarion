@@ -6,7 +6,6 @@ import com.btxtech.server.gameengine.ClientGameConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.gameengine.ServerUnlockService;
-import com.btxtech.server.persistence.QuestPersistence;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
@@ -16,7 +15,7 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.ServerState;
-import com.btxtech.shared.dto.StartupTerminatedJson;
+import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -26,7 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -47,8 +45,6 @@ public class ServerMgmt {
     private SessionService sessionService;
     @Inject
     private LevelCrudPersistence levelCrudPersistence;
-    @Inject
-    private QuestPersistence questPersistence;
     @Inject
     private ServerUnlockService serverUnlockService;
     @Inject
@@ -136,28 +132,6 @@ public class ServerMgmt {
 //        userBackendInfo.setGameHistoryEntries(historyPersistence.readUserHistory(playerId));
 //        return userBackendInfo;
         throw new UnsupportedOperationException("...TODO...");
-    }
-
-    private UserBackendInfo setupUnregisteredUserBackendInfo(int userId, PlayerSession playerSession) {
-        UserBackendInfo userBackendInfo;
-        userBackendInfo = new UserBackendInfo().setUserId(userId);
-        if (playerSession.getUserContext() != null) {
-            userBackendInfo.setLevelNumber(levelCrudPersistence.getLevelNumber4Id(playerSession.getUserContext().getLevelId()));
-            userBackendInfo.setXp(playerSession.getUserContext().getXp());
-        }
-        if (playerSession.getUnregisteredUser() != null) {
-            userBackendInfo.setCrystals(playerSession.getUnregisteredUser().getCrystals());
-            if (playerSession.getUnregisteredUser().getActiveQuest() != null) {
-                userBackendInfo.setActiveQuest(questPersistence.findQuestBackendInfo(playerSession.getUnregisteredUser().getActiveQuest().getId()));
-            }
-            if (playerSession.getUnregisteredUser().getCompletedQuestIds() != null && !playerSession.getUnregisteredUser().getCompletedQuestIds().isEmpty()) {
-                userBackendInfo.setCompletedQuests(playerSession.getUnregisteredUser().getCompletedQuestIds().stream().map(questId -> questPersistence.findQuestBackendInfo(questId)).collect(Collectors.toList()));
-            }
-            if (playerSession.getUnregisteredUser().getLevelUnlockEntityIds() != null && !playerSession.getUnregisteredUser().getLevelUnlockEntityIds().isEmpty()) {
-                userBackendInfo.setUnlockedBackendInfos(playerSession.getUnregisteredUser().getLevelUnlockEntityIds().stream().map(levelUnlockId -> levelCrudPersistence.findUnlockedBackendInfo(levelUnlockId)).collect(Collectors.toList()));
-            }
-        }
-        return userBackendInfo;
     }
 
     @SecurityCheck

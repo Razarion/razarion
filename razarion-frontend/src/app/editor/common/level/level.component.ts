@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { LevelEditorControllerClient } from 'src/app/generated/razarion-share';
 import { EditorService } from '../../editor-service';
 
 @Component({
@@ -14,7 +13,6 @@ export class LevelComponent {
   @Input("readOnly")
   readOnly: boolean = false;
   levelOptions: { label: string, levelId: number }[] = [];
-  private levelEditorControllerClient!: LevelEditorControllerClient;
 
   constructor(editorService: EditorService) {
     editorService.readLevelObjectNameIds().then(objectNameIds => {

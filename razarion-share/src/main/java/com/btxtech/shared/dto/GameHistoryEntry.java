@@ -1,4 +1,4 @@
-package com.btxtech.server.mgmt;
+package com.btxtech.shared.dto;
 
 import java.util.Date;
 
