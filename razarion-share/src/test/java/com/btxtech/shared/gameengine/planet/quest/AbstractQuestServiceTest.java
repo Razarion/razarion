@@ -14,10 +14,10 @@ import java.util.Map;
  * 23.09.2016.
  */
 public abstract class AbstractQuestServiceTest extends BaseBasicTest {
-    private Map<Integer, QuestConfig> passedQuests = new HashMap<>();
+    private final Map<Integer, QuestConfig> passedQuests = new HashMap<>();
 
     protected QuestListener createQuestListener() {
-        return (key, value) -> passedQuests.put(key, value);
+        return passedQuests::put;
     }
 
     protected void assertQuestPassed(int userId) {

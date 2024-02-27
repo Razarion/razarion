@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.btxtech.shared.datatypes.I18nString.DEFAULT;
+
 /**
  * User: beat
  * Date: 07.01.13
@@ -24,7 +26,6 @@ import java.util.Map;
  */
 @Entity(name = "I18N_BUNDLE")
 public class I18nBundleEntity {
-    public static final String DEFAULT = "DEFAULT";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -43,7 +44,7 @@ public class I18nBundleEntity {
             return null;
         }
 
-        String language = I18nString.convert(locale.getLanguage());
+        String language = I18nString.convert(locale != null ? locale.getLanguage() : DEFAULT);
         return toI18nString().getString(language);
     }
 

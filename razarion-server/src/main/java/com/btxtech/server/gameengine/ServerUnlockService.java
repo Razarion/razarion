@@ -10,6 +10,7 @@ import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -36,6 +37,8 @@ public class ServerUnlockService {
     private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private HistoryPersistence historyPersistence;
+    @Inject
+    private QuestService questService;
 
     public void unlockViaCrystals(int userId, int levelUnlockEntityId) {
         userService.persistUnlockViaCrystals(userId, levelUnlockEntityId);
@@ -43,6 +46,7 @@ public class ServerUnlockService {
         sessionService.updateUserContext(userId, userContext);
         baseItemService.updateUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
         systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit(), hasAvailableUnlocks(userContext));
+        questService.onUnlock(userId);
         historyPersistence.onLevelUnlockEntityUsedViaCrystals(userId, levelUnlockEntityId);
     }
 

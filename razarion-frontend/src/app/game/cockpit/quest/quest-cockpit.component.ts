@@ -150,6 +150,10 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.setupSingleCount("Inventory items placed");
         break;
       }
+      case ConditionTrigger.UNLOCKED: {
+        this.setupSingleCount("Item unlocked");
+        break;
+      }
       default: {
         console.warn(`Unknown ConditionTrigger ${this.conditionConfig.getConditionTrigger()}`)
         this.progressRows.push({ text: `???`, done: false })
@@ -228,6 +232,9 @@ export class QuestCockpitComponent implements QuestCockpit {
       }
       case ConditionTrigger.INVENTORY_ITEM_PLACED: {
         return "Inventory";
+      }
+      case ConditionTrigger.UNLOCKED: {
+        return "Unlock";
       }
       default: {
         console.warn(`Unknown conditionTrigger ${conditionTrigger}`)

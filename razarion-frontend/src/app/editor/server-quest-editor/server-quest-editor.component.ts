@@ -27,6 +27,7 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
     ConditionTrigger.SYNC_ITEM_POSITION,
     ConditionTrigger.BOX_PICKED,
     ConditionTrigger.INVENTORY_ITEM_PLACED,
+    ConditionTrigger.UNLOCKED,
     ];
 
   constructor(public editorService: EditorService) {
@@ -55,6 +56,20 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
           this.options.push({ label: "?", value: levelQuest });
         }
       });
+
+      this.options.sort((a, b) => {
+        const numA = parseInt(a.label);
+        const numB = parseInt(b.label);
+    
+        if (numA < numB) {
+            return -1;
+        } else if (numA > numB) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+    
       this.selectedLevelQuest = tmpSelectedLevelQuest;
     });
   }

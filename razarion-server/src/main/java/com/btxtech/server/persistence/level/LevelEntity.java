@@ -6,6 +6,7 @@ import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -23,8 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.btxtech.server.persistence.PersistenceUtil.fromConfigs;
-import static com.btxtech.server.persistence.PersistenceUtil.toConfigList;
+import static com.btxtech.server.persistence.PersistenceUtil.*;
 
 /**
  * Created by Beat
@@ -77,10 +77,12 @@ public class LevelEntity {
         }
         this.itemTypeLimitation.clear();
         this.itemTypeLimitation.putAll(itemTypeLimitation);
-        levelUnlockEntities = fromConfigs(levelUnlockEntities,
+        levelUnlockEntities = fromConfigsNoClear(levelUnlockEntities,
                 levelEditConfig.getLevelUnlockConfigs(),
                 LevelUnlockEntity::new,
-                (levelUnlockEntity, levelUnlockConfig) -> levelUnlockEntity.fromLevelUnlockConfig(levelUnlockConfig, baseItemTypeCrudPersistence, imagePersistence));
+                (levelUnlockEntity, levelUnlockConfig) -> levelUnlockEntity.fromLevelUnlockConfig(levelUnlockConfig, baseItemTypeCrudPersistence, imagePersistence),
+                LevelUnlockConfig::getId,
+                LevelUnlockEntity::getId);
     }
 
     public int getNumber() {

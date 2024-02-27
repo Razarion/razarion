@@ -92,6 +92,12 @@ public enum ConditionTrigger {
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new InventoryItemConditionProgress(this, abstractComparison);
         }
+    },
+    UNLOCKED(true) {
+        @Override
+        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
+            return new ValueConditionProgress(this, abstractComparison);
+        }
     };
 
     private boolean comparisonNeeded;

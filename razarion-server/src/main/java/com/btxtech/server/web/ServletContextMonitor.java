@@ -17,6 +17,8 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import java.util.logging.Logger;
 
+import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_PROPERTY;
+
 /**
  * Created by Beat
  * 19.04.2017.
@@ -45,7 +47,12 @@ public class ServletContextMonitor implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         serverMgmt.setServerState(ServerState.STARTING);
-        alarmService.addListener(alarm -> logger.severe(alarm.toString()));
+        alarmService.addListener(alarm -> {
+            // Temporarily suppress INVALID_PROPERTY
+            if(alarm.getType() != INVALID_PROPERTY) {
+                logger.severe(alarm.toString());
+            }
+        });
         try {
             gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
         } catch (Exception e) {

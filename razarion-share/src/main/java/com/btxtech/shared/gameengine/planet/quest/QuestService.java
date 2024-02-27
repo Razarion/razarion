@@ -179,6 +179,10 @@ public class QuestService {
         triggerValue(userId, ConditionTrigger.BASE_KILLED, 1.0);
     }
 
+    public void onUnlock(int userId) {
+        triggerValue(userId, ConditionTrigger.UNLOCKED, 1.0);
+    }
+
     public void addQuestListener(QuestListener questListener) {
         questListeners.add(questListener);
     }
@@ -193,6 +197,7 @@ public class QuestService {
             case HARVEST:
             case BASE_KILLED:
             case BOX_PICKED:
+            case UNLOCKED:
                 if (comparisonConfig.getCount() != null) {
                     CountComparison countComparison = instance.select(CountComparison.class).get();
                     countComparison.init(comparisonConfig.getCount());

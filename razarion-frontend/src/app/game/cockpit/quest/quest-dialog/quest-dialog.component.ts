@@ -91,6 +91,9 @@ export class QuestDialogComponent implements OnInit {
       case ConditionTrigger.INVENTORY_ITEM_PLACED: {
         return `Inventory item placed ${questConfig.conditionConfig.comparisonConfig.count}`;
       }
+      case ConditionTrigger.UNLOCKED: {
+        return `Item unlocked ${questConfig.conditionConfig.comparisonConfig.count}`;
+      }
       default: {
         console.warn(`Unknown ConditionTrigger ${questConfig.conditionConfig.conditionTrigger}`);
         return "";
