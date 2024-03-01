@@ -686,7 +686,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     private void updateLevel(int levelId) {
-        userContext.setLevelId(levelId);
+        userContext.levelId(levelId);
         baseItemService.updateLevel(userContext.getUserId(), levelId);
     }
 

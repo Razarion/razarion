@@ -559,7 +559,7 @@ public class UserService {
         }
         userEntity.setName(name);
         entityManager.merge(userEntity);
-        userContext.setName(name);
+        userContext.name(name);
         serverGameEngine.get().updateUserName(userContext, name);
         return new SetNameResult().setUserName(name);
     }

@@ -195,7 +195,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
         handleUnregisteredLogin();
 
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
-        sessionHolder.getPlayerSession().getUserContext().setXp(32);
+        sessionHolder.getPlayerSession().getUserContext().xp(32);
         UnregisteredUser unregisteredUser = sessionHolder.getPlayerSession().getUnregisteredUser();
         unregisteredUser.setCrystals(99);
         unregisteredUser.addInventoryItemId(INVENTORY_ITEM_1_ID);

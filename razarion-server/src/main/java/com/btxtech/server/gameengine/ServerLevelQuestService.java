@@ -70,7 +70,7 @@ public class ServerLevelQuestService implements QuestListener {
         // This is only called from the client.
         if (gameUiControlConfigPersistence.get().load4Level(newLevelId).getGameEngineMode() == GameEngineMode.SLAVE) {
             boolean activeQuest = questService.hasActiveQuest(userContext.getUserId());
-            userContext.setLevelId(newLevelId);
+            userContext.levelId(newLevelId);
             QuestConfig newQuest = null;
             userService.persistLevel(userContext.getUserId(), newLevel);
             if (!activeQuest) {
@@ -104,8 +104,8 @@ public class ServerLevelQuestService implements QuestListener {
         if (newXp >= currentLevel.getXp2LevelUp()) {
             LevelEntity newLevel = levelCrudPersistence.getNextLevel(currentLevel);
             if (newLevel != null) {
-                userContext.setLevelId(newLevel.getId());
-                userContext.setXp(0);
+                userContext.levelId(newLevel.getId());
+                userContext.xp(0);
                 historyPersistence.get().onLevelUp(userId, newLevel);
                 clientSystemConnectionService.onLevelUp(userId,
                         userContext,
@@ -117,7 +117,7 @@ public class ServerLevelQuestService implements QuestListener {
                 logger.warning("No next level found for: " + currentLevel);
             }
         } else {
-            userContext.setXp(newXp);
+            userContext.xp(newXp);
             userService.persistXp(userId, newXp);
             clientSystemConnectionService.onXpChanged(userId, newXp);
         }
@@ -132,8 +132,8 @@ public class ServerLevelQuestService implements QuestListener {
         LevelEntity currentLevel = levelCrudPersistence.getEntity(userContext.getLevelId());
         LevelEntity newLevel = levelCrudPersistence.getEntity(levelId);
         if (newLevel != null) {
-            userContext.setLevelId(newLevel.getId());
-            userContext.setXp(0);
+            userContext.levelId(newLevel.getId());
+            userContext.xp(0);
             historyPersistence.get().onLevelUp(userId, newLevel);
             clientSystemConnectionService.onLevelUp(userId,
                     userContext,

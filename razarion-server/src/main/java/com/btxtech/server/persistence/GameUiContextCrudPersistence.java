@@ -149,7 +149,7 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
         coldGameUiContext.userContext(userContext);
         if (userContext.getLevelId() == null) {
             alarmService.riseAlarm(Alarm.Type.USER_HAS_NO_LEVEL, userContext.getUserId());
-            userContext.setLevelId(levelCrudPersistence.getStarterLevelId());
+            userContext.levelId(levelCrudPersistence.getStarterLevelId());
         }
         coldGameUiContext.meshContainers(assetCrudPersistence.readMeshContainers());
         coldGameUiContext.audioConfig(setupAudioConfig());

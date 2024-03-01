@@ -122,9 +122,9 @@ public class InGameQuestVisualizationServiceBaseItemTest extends WeldUiBaseInteg
     private ColdGameUiContext setup() {
         ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
         coldGameUiContext.setUserContext(new UserContext()
-                .setUserId(1)
-                .setUnlockedItemLimit(Collections.emptyMap())
-                .setLevelId(1));
+                .userId(1)
+                .unlockedItemLimit(Collections.emptyMap())
+                .levelId(1));
         setupUiEnvironment(coldGameUiContext);
         setupAlarmService();
 

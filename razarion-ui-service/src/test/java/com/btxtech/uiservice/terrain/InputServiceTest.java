@@ -24,9 +24,9 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
         // Setup
         ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
         coldGameUiContext.setUserContext(new UserContext()
-                .setUserId(1)
-                .setUnlockedItemLimit(Collections.emptyMap())
-                .setLevelId(1));
+                .userId(1)
+                .unlockedItemLimit(Collections.emptyMap())
+                .levelId(1));
         setupUiEnvironment(coldGameUiContext);
         setupAlarmService();
         setupI18nConstants();

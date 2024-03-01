@@ -72,7 +72,7 @@ public class ServerGameEngineConfigEntity {
     private List<BotSceneConfigEntity> botSceneConfigs;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "serverGameEngineConfig")
-    private List<ServerLevelQuestEntity> serverQuestEntities;
+    private List<ServerLevelQuestEntity> serverLevelQuestEntities;
 
     public ServerGameEngineConfig toServerGameEngineConfig(Locale locale) {
         return new ServerGameEngineConfig()
@@ -82,7 +82,7 @@ public class ServerGameEngineConfigEntity {
                 .resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
                 .startRegionConfigs(toConfigList(startRegionConfigs, StartRegionConfigEntity::toStartRegionConfig))
                 .botConfigs(toConfigList(botConfigs, BotConfigEntity::toBotConfig))
-                .serverLevelQuestConfig(toConfigList(serverQuestEntities, serverLevelQuestEntity -> serverLevelQuestEntity.toServerLevelQuestConfig(locale)))
+                .serverLevelQuestConfig(toConfigList(serverLevelQuestEntities, serverLevelQuestEntity -> serverLevelQuestEntity.toServerLevelQuestConfig(locale)))
                 .boxRegionConfigs(toConfigList(boxRegionConfigs, ServerBoxRegionConfigEntity::toBoxRegionConfig));
     }
 
@@ -101,7 +101,7 @@ public class ServerGameEngineConfigEntity {
                 config.getBotConfigs(),
                 BotConfigEntity::new,
                 (botConfigEntity, botConfig) -> botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, botConfig));
-        serverQuestEntities = fromConfigs(serverQuestEntities,
+        serverLevelQuestEntities = fromConfigs(serverLevelQuestEntities,
                 config.getServerLevelQuestConfigs(),
                 ServerLevelQuestEntity::new,
                 (serverLevelQuestEntity, serverLevelQuestConfig) -> serverLevelQuestEntity.fromServerLevelQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence, locale));
@@ -192,8 +192,12 @@ public class ServerGameEngineConfigEntity {
         return botConfigs;
     }
 
-    public List<ServerLevelQuestEntity> getServerQuestEntities() {
-        return serverQuestEntities;
+    public List<ServerLevelQuestEntity> getServerLevelQuestEntities() {
+        return serverLevelQuestEntities;
+    }
+
+    public void setServerLevelQuestEntities(List<ServerLevelQuestEntity> serverQuestEntities) {
+        this.serverLevelQuestEntities = serverQuestEntities;
     }
 
     public List<ServerBoxRegionConfigEntity> getServerBoxRegionConfigEntities() {

@@ -31,9 +31,10 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<ServerGameEngineConfig, ServerGameEngineConfigEntity> {
-    private Logger logger = Logger.getLogger(ServerGameEngineCrudPersistence.class.getName());
+    private final Logger logger = Logger.getLogger(ServerGameEngineCrudPersistence.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -152,55 +153,50 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Integer> userQuery = criteriaBuilder.createQuery(Integer.class);
         Root<ServerLevelQuestEntity> root = userQuery.from(ServerLevelQuestEntity.class);
-        CriteriaQuery<Integer> userSelect = userQuery.select(root.join(ServerLevelQuestEntity_.questConfigs).get(QuestConfigEntity_.id));
+        CriteriaQuery<Integer> userSelect = userQuery.select(root.join(ServerLevelQuestEntity_.serverLevelQuestEntryEntities).join(ServerLevelQuestEntryEntity_.quest).get(QuestConfigEntity_.id));
         return entityManager.createQuery(userSelect).getResultList();
     }
 
     public QuestConfigEntity getQuest4LevelAndCompleted(LevelEntity level, Collection<Integer> completedQuests) {
-        // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
-        // ServerGameEngineConfigEntity is not considered in this query
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Integer> criteriaQuery = criteriaBuilder.createQuery(Integer.class);
-        Root<ServerLevelQuestEntity> root = criteriaQuery.from(ServerLevelQuestEntity.class);
-        ListJoin<ServerLevelQuestEntity, QuestConfigEntity> listJoin = root.join(ServerLevelQuestEntity_.questConfigs);
-        CriteriaQuery<Integer> userSelect = criteriaQuery.select(listJoin.get(QuestConfigEntity_.id));
-        userSelect.where(criteriaBuilder.lessThanOrEqualTo(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number), level.getNumber()));
-        criteriaQuery.orderBy(criteriaBuilder.asc(listJoin.index()));
-        List<Integer> questIds = entityManager.createQuery(userSelect).getResultList();
-        if (questIds.isEmpty()) {
+        List<QuestConfigEntity> questConfigEntities = getQuests4Level(level, completedQuests);
+        if (questConfigEntities.isEmpty()) {
             return null;
         }
-        if (completedQuests != null) {
-            questIds.removeAll(completedQuests);
-        }
-        if (questIds.isEmpty()) {
-            return null;
-        }
-        return entityManager.find(QuestConfigEntity.class, questIds.get(0));
+        return questConfigEntities.get(0);
     }
 
     @Transactional
     public List<QuestConfig> getQuests4Dialog(LevelEntity level, Collection<Integer> ignoreQuests, Locale locale) {
+        return getQuests4Level(level, ignoreQuests).stream().map(questEntity -> questEntity.toQuestConfig(locale)).collect(Collectors.toList());
+    }
+
+    private List<QuestConfigEntity> getQuests4Level(LevelEntity level, Collection<Integer> ignoreQuests) {
         // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
         // ServerGameEngineConfigEntity is not considered in this query
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Integer> criteriaQuery = criteriaBuilder.createQuery(Integer.class);
+        CriteriaQuery<QuestConfigEntity> criteriaQuery = criteriaBuilder.createQuery(QuestConfigEntity.class);
         Root<ServerLevelQuestEntity> root = criteriaQuery.from(ServerLevelQuestEntity.class);
-        ListJoin<ServerLevelQuestEntity, QuestConfigEntity> listJoin = root.join(ServerLevelQuestEntity_.questConfigs);
-        CriteriaQuery<Integer> userSelect = criteriaQuery.select(listJoin.get(QuestConfigEntity_.id));
-        userSelect.where(criteriaBuilder.lessThanOrEqualTo(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number), level.getNumber()));
-        criteriaQuery.orderBy(criteriaBuilder.asc(listJoin.index()));
-        List<Integer> questIds = entityManager.createQuery(userSelect).getResultList();
-        if (questIds.isEmpty()) {
+        Join<ServerLevelQuestEntryEntity, QuestConfigEntity> join = root.join(ServerLevelQuestEntity_.serverLevelQuestEntryEntities).join(ServerLevelQuestEntryEntity_.quest);
+
+        criteriaQuery.select(join);
+        criteriaQuery.where(
+                criteriaBuilder.lessThanOrEqualTo(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number), level.getNumber())
+        );
+        criteriaQuery.orderBy(criteriaBuilder.asc(root.join(ServerLevelQuestEntity_.serverLevelQuestEntryEntities).get(ServerLevelQuestEntryEntity_.orderColumn)));
+        criteriaQuery.distinct(true); // Add DISTINCT keyword
+
+        TypedQuery<QuestConfigEntity> typedQuery = entityManager.createQuery(criteriaQuery);
+        List<QuestConfigEntity> questEntities = typedQuery.getResultList();
+
+        if (questEntities.isEmpty()) {
             return Collections.emptyList();
         }
+
         if (ignoreQuests != null) {
-            questIds.removeAll(ignoreQuests);
+            questEntities.removeIf(questEntity -> ignoreQuests.contains(questEntity.getId()));
         }
-        if (questIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return questIds.stream().map(questId -> entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(locale)).collect(Collectors.toList());
+
+        return questEntities;
     }
 
     @Transactional
@@ -211,7 +207,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         CriteriaQuery<LevelEntity> userQuery = criteriaBuilder.createQuery(LevelEntity.class);
         Root<ServerLevelQuestEntity> root = userQuery.from(ServerLevelQuestEntity.class);
         CriteriaQuery<LevelEntity> userSelect = userQuery.select(root.join(ServerLevelQuestEntity_.minimalLevel));
-        userSelect.where(criteriaBuilder.equal(root.join(ServerLevelQuestEntity_.questConfigs).get(QuestConfigEntity_.id), questId));
+        userSelect.where(criteriaBuilder.equal(root.join(ServerLevelQuestEntity_.serverLevelQuestEntryEntities).join(ServerLevelQuestEntryEntity_.quest).get(QuestConfigEntity_.id), questId));
         LevelEntity questLevelEntity = entityManager.createQuery(userSelect).getSingleResult();
         LevelEntity userLevelEntity = levelCrudPersistence.getEntity(levelId);
         if (userLevelEntity.getNumber() < questLevelEntity.getNumber()) {
@@ -265,7 +261,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     public void updateServerLevelQuestConfig(int serverGameEngineConfigId, List<ServerLevelQuestConfig> serverLevelQuestConfigs) {
         updateChildren(serverGameEngineConfigId,
                 serverLevelQuestConfigs,
-                ServerGameEngineConfigEntity::getServerQuestEntities,
+                ServerGameEngineConfigEntity::getServerLevelQuestEntities,
                 ServerLevelQuestConfig::getId,
                 (serverLevelQuestConfig, serverLevelQuestEntity) -> serverLevelQuestEntity.fromServerLevelQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence, Locale.GERMAN),
                 ServerLevelQuestEntity::new,
@@ -290,11 +286,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
                                        BiConsumer<C, E> fromConfig,
                                        Supplier<E> entityGenerator,
                                        Function<E, Integer> getEntityId) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
-        if (serverGameEngineConfigEntity.getId() != serverGameEngineConfigId) {
-            throw new RuntimeException("ServerGameEngineConfigEntity not found " + serverGameEngineConfigId);
-        }
-
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity = getEntity(serverGameEngineConfigId);
         Map<Integer, E> dbMap = getChildren.apply(serverGameEngineConfigEntity).stream()
                 .collect(Collectors.toMap(getEntityId, Function.identity()));
 

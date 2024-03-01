@@ -37,6 +37,7 @@ import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.scene.SceneEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
+import com.btxtech.server.persistence.server.ServerLevelQuestEntryEntity;
 import com.btxtech.server.persistence.surface.DrivewayConfigEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
@@ -66,6 +67,9 @@ import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -353,30 +357,30 @@ public class ServerTestHelper {
 
     protected void setupItemTypes() {
         BaseItemType factory = new BaseItemType();
-        factory.price(1).health(100).spawnDurationMillis(1000).buildup(3).setInternalName("Factory");
+        factory.price(1).health(100).spawnDurationMillis(1000).buildup(3).internalName("Factory");
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().radius(5).terrainType(TerrainType.LAND));
         BASE_ITEM_TYPE_FACTORY_ID = createBaseItemTypeEntity(factory);
 
         BaseItemType builder = new BaseItemType();
-        builder.health(100).spawnDurationMillis(1000).boxPickupRange(2).buildup(10).setInternalName("Builder");
+        builder.health(100).spawnDurationMillis(1000).boxPickupRange(2).buildup(10).internalName("Builder");
         builder.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(2.78).speed(17.0).angularVelocity(Math.toRadians(30)).radius(2));
         builder.setBuilderType(new BuilderType().progress(1).range(3).ableToBuildIds(Collections.singletonList(BASE_ITEM_TYPE_FACTORY_ID)));
         BASE_ITEM_TYPE_BULLDOZER_ID = createBaseItemTypeEntity(builder);
 
         BaseItemType harvester = new BaseItemType();
-        harvester.health(10).spawnDurationMillis(1000).buildup(10).setInternalName("Harvester");
+        harvester.health(10).spawnDurationMillis(1000).buildup(10).internalName("Harvester");
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(40.0).speed(80.0).angularVelocity(Math.toRadians(30)).radius(2));
         harvester.setHarvesterType(new HarvesterType().progress(10).range(4));
         BASE_ITEM_TYPE_HARVESTER_ID = createBaseItemTypeEntity(harvester);
 
         BaseItemType attacker = new BaseItemType();
-        attacker.health(100).spawnDurationMillis(1000).boxPickupRange(2).buildup(10).setInternalName("Attacker");
+        attacker.health(100).spawnDurationMillis(1000).boxPickupRange(2).buildup(10).internalName("Attacker");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(40.0).speed(10.0).angularVelocity(Math.toRadians(30)).radius(2));
         attacker.setWeaponType(new WeaponType().projectileSpeed(17.0).range(20).reloadTime(0.3).damage(1).turretType(new TurretType().setTurretCenter(new Vertex(1, 0, 0)).setMuzzlePosition(new Vertex(1, 0, 1)).setAngleVelocity(Math.toRadians(120))));
         BASE_ITEM_TYPE_ATTACKER_ID = createBaseItemTypeEntity(attacker);
 
         BaseItemType tower = new BaseItemType();
-        tower.health(100).spawnDurationMillis(1000).buildup(10).setInternalName("Tower");
+        tower.health(100).spawnDurationMillis(1000).buildup(10).internalName("Tower");
         tower.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).radius(3));
         tower.setWeaponType(new WeaponType().projectileSpeed(17.0).range(20).reloadTime(0.3).damage(1).turretType(new TurretType().setTurretCenter(new Vertex(2, 0, 0)).setMuzzlePosition(new Vertex(2, 0, 1)).setAngleVelocity(Math.toRadians(60))));
         BASE_ITEM_TYPE_TOWER_ID = createBaseItemTypeEntity(tower);
@@ -556,38 +560,55 @@ public class ServerTestHelper {
                 new CleanupAfterTest().entity(TerrainSlopePositionEntity.class),
                 new CleanupAfterTest().entity(TerrainObjectPositionEntity.class),
                 new CleanupAfterTest().tableName("PLANET_LIMITATION"),
-                new CleanupAfterTest().entity(ServerGameEngineConfigEntity.class),
                 new CleanupAfterTest().entity(PlanetEntity.class)));
+    }
 
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
-        serverGameEngineConfigEntity1.setPlanetEntity(entityManager.find(PlanetEntity.class, PLANET_2_ID));
-//
-//        ServerLevelQuestEntity serverLevelQuestEntityL4 = new ServerLevelQuestEntity();
-//        serverLevelQuestEntityL4.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_4_ID));
-//        QuestConfigEntity questConfigEntityL41 = new QuestConfigEntity();
-//        questConfigEntityL41.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L4 1").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
-//        QuestConfigEntity questConfigEntityL42 = new QuestConfigEntity();
-//        questConfigEntityL42.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L4 2").setXp(200).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(2))), Locale.US);
-//        serverLevelQuestEntityL4.setQuestConfigs(Arrays.asList(questConfigEntityL41, questConfigEntityL42));
-//
-//        ServerLevelQuestEntity serverLevelQuestEntityL5 = new ServerLevelQuestEntity();
-//        serverLevelQuestEntityL5.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_5_ID));
-//        QuestConfigEntity questConfigEntityL51 = new QuestConfigEntity();
-//        questConfigEntityL51.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L5 1").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
-//        QuestConfigEntity questConfigEntityL52 = new QuestConfigEntity();
-//        questConfigEntityL52.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L5 2").setXp(200).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BASE_KILLED).setComparisonConfig(new ComparisonConfig().setCount(2))), Locale.US);
-//        QuestConfigEntity questConfigEntityL53 = new QuestConfigEntity();
-//        questConfigEntityL53.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L5 3").setXp(50).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100))), Locale.US);
-//        serverLevelQuestEntityL5.setQuestConfigs(Arrays.asList(questConfigEntityL51, questConfigEntityL52, questConfigEntityL53));
-//
-//        serverGameEngineConfigEntity1.setServerQuestEntities(Arrays.asList(serverLevelQuestEntityL4, serverLevelQuestEntityL5));
-        entityManager.persist(serverGameEngineConfigEntity1);
-//        SERVER_GAME_ENGINE_CONFIG_ID_1 = serverGameEngineConfigEntity1.getId();
-//        SERVER_QUEST_ID_L4_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(0).getId();
-//        SERVER_QUEST_ID_L4_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(1).getId();
-//        SERVER_QUEST_ID_L5_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(0).getId();
-//        SERVER_QUEST_ID_L5_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(1).getId();
-//        SERVER_QUEST_ID_L5_3 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(2).getId();
+    public void setupServerGameEngineConfigDb() {
+        setupPlanetDb();
+
+        cleanupAfterTests.add(Arrays.asList(
+                new CleanupAfterTest().entity(ServerLevelQuestEntryEntity.class),
+                new CleanupAfterTest().entity(ServerLevelQuestEntity.class),
+                new CleanupAfterTest().entity(ServerGameEngineConfigEntity.class),
+                new CleanupAfterTest().entity(QuestConfigEntity.class)
+        ));
+
+        runInTransaction(entityManager -> {
+            ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
+            serverGameEngineConfigEntity1.setPlanetEntity(entityManager.find(PlanetEntity.class, PLANET_2_ID));
+
+            ServerLevelQuestEntity serverLevelQuestEntityL4 = new ServerLevelQuestEntity();
+            serverLevelQuestEntityL4.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_4_ID));
+            QuestConfigEntity questConfigEntityL41 = new QuestConfigEntity();
+            questConfigEntityL41.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L4 1").xp(100).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().count(1))), Locale.US);
+            QuestConfigEntity questConfigEntityL42 = new QuestConfigEntity();
+            questConfigEntityL42.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L4 2").xp(200).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().count(2))), Locale.US);
+            serverLevelQuestEntityL4.setServerLevelQuestEntryEntities(Arrays.asList(
+                    new ServerLevelQuestEntryEntity().quest(questConfigEntityL41).orderColumn(1),
+                    new ServerLevelQuestEntryEntity().quest(questConfigEntityL42).orderColumn(2)));
+
+            ServerLevelQuestEntity serverLevelQuestEntityL5 = new ServerLevelQuestEntity();
+            serverLevelQuestEntityL5.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_5_ID));
+            QuestConfigEntity questConfigEntityL51 = new QuestConfigEntity();
+            questConfigEntityL51.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L5 1").xp(100).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.BOX_PICKED).comparisonConfig(new ComparisonConfig().count(1))), Locale.US);
+            QuestConfigEntity questConfigEntityL52 = new QuestConfigEntity();
+            questConfigEntityL52.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L5 2").xp(200).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.BASE_KILLED).comparisonConfig(new ComparisonConfig().count(2))), Locale.US);
+            QuestConfigEntity questConfigEntityL53 = new QuestConfigEntity();
+            questConfigEntityL53.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L5 3").xp(50).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.HARVEST).comparisonConfig(new ComparisonConfig().count(100))), Locale.US);
+            serverLevelQuestEntityL5.setServerLevelQuestEntryEntities(Arrays.asList(
+                    new ServerLevelQuestEntryEntity().quest(questConfigEntityL51).orderColumn(1),
+                    new ServerLevelQuestEntryEntity().quest(questConfigEntityL52).orderColumn(2),
+                    new ServerLevelQuestEntryEntity().quest(questConfigEntityL53).orderColumn(3)));
+
+            serverGameEngineConfigEntity1.setServerLevelQuestEntities(Arrays.asList(serverLevelQuestEntityL4, serverLevelQuestEntityL5));
+            entityManager.persist(serverGameEngineConfigEntity1);
+            SERVER_GAME_ENGINE_CONFIG_ID_1 = serverGameEngineConfigEntity1.getId();
+            SERVER_QUEST_ID_L4_1 = serverGameEngineConfigEntity1.getServerLevelQuestEntities().get(0).getServerLevelQuestEntryEntities().get(0).getQuest().getId();
+            SERVER_QUEST_ID_L4_2 = serverGameEngineConfigEntity1.getServerLevelQuestEntities().get(0).getServerLevelQuestEntryEntities().get(1).getQuest().getId();
+            SERVER_QUEST_ID_L5_1 = serverGameEngineConfigEntity1.getServerLevelQuestEntities().get(1).getServerLevelQuestEntryEntities().get(0).getQuest().getId();
+            SERVER_QUEST_ID_L5_2 = serverGameEngineConfigEntity1.getServerLevelQuestEntities().get(1).getServerLevelQuestEntryEntities().get(1).getQuest().getId();
+            SERVER_QUEST_ID_L5_3 = serverGameEngineConfigEntity1.getServerLevelQuestEntities().get(1).getServerLevelQuestEntryEntities().get(2).getQuest().getId();
+        });
     }
 
     private TerrainSlopePositionEntity createLandSlope() {
@@ -643,7 +664,7 @@ public class ServerTestHelper {
         setupParticleEmitterSequences();
         setupParticleShapes();
         setupLevelDb();
-        setupPlanetDb();
+        setupServerGameEngineConfigDb();
         runInTransaction(entityManager -> {
             GameUiContextEntity gameUiControlConfigEntity1 = new GameUiContextEntity();
             gameUiControlConfigEntity1.fromConfig(new GameUiContextConfig().gameEngineMode(GameEngineMode.MASTER),

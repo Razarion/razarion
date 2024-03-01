@@ -95,15 +95,15 @@ public class UserUiService {
         LevelConfig levelConfig = levelService.getLevel(userContext.getLevelId());
         if (xp >= levelConfig.getXp2LevelUp()) {
             LevelConfig newLevelConfig = levelService.getNextLevel(levelConfig);
-            userContext.setLevelId(newLevelConfig.getId());
-            userContext.setXp(0);
+            userContext.levelId(newLevelConfig.getId());
+            userContext.xp(0);
             gameEngineControl.updateLevel(newLevelConfig.getId());
             cockpitService.updateLevelAndXp(userContext);
             itemCockpitService.onStateChanged();
             dialogManager.onLevelPassed(new LevelUpPacket().userContext(userContext));
             gameUiControlInstance.get().onLevelUpdate(newLevelConfig);
         } else {
-            userContext.setXp(xp);
+            userContext.xp(xp);
             cockpitService.updateLevelAndXp(userContext);
         }
     }
@@ -117,12 +117,12 @@ public class UserUiService {
     }
 
     public void onServerXpChange(Integer xp) {
-        userContext.setXp(xp);
+        userContext.xp(xp);
         cockpitService.updateLevelAndXp(userContext);
     }
 
     public void onUnlockItemLimitChanged(UnlockedItemPacket unlockedItemLimit) {
-        userContext.setUnlockedItemLimit(unlockedItemLimit.getUnlockedItemLimit());
+        userContext.unlockedItemLimit(unlockedItemLimit.getUnlockedItemLimit());
         itemCockpitService.onStateChanged();
         cockpitService.blinkAvailableUnlock(unlockedItemLimit.isAvailableUnlocks());
     }
@@ -162,7 +162,7 @@ public class UserUiService {
     }
 
     public void onUserNameSet(String userName) {
-        userContext.setName(userName);
+        userContext.name(userName);
         if (userRegistrationCallback != null) {
             userRegistrationCallback.accept(userContext);
         }

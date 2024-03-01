@@ -88,7 +88,7 @@ public class WeldMasterBaseTest extends AbstractIntegrationTest {
     }
 
     protected UserContext createLevel1UserContext(int userId) {
-        return new UserContext().setLevelId(FallbackConfig.LEVEL_ID_1).setUnlockedItemLimit(Collections.emptyMap()).setUserId(userId).setName("test user id:" + userId);
+        return new UserContext().levelId(FallbackConfig.LEVEL_ID_1).unlockedItemLimit(Collections.emptyMap()).userId(userId).name("test user id:" + userId);
     }
 
     protected UserContext createLevel1UserContext() {

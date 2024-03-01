@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -22,8 +23,8 @@ public interface QuestController {
     List<QuestConfig> readMyOpenQuests();
 
     @POST
-    @Path("activateQuest")
-    void activateQuest(int questId);
+    @Path("activateQuest/{id}")
+    void activateQuest(@PathParam("id") int questId);
 
     @POST
     @Path("activateNextPossibleQuest")

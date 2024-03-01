@@ -139,12 +139,12 @@ public class UserEntity {
         UserContext userContext = new UserContext()
                 .userId(id)
                 .registerState(createRegisterState())
-                .setName(name)
-                .setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities))
-                .setAdmin(admin)
-                .setXp(xp);
+                .name(name)
+                .unlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities))
+                .admin(admin)
+                .xp(xp);
         if (level != null) {
-            userContext.setLevelId(level.getId());
+            userContext.levelId(level.getId());
         }
         return userContext;
     }
