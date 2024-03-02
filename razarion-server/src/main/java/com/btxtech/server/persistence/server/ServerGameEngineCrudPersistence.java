@@ -182,21 +182,20 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         criteriaQuery.where(
                 criteriaBuilder.lessThanOrEqualTo(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number), level.getNumber())
         );
-        criteriaQuery.orderBy(criteriaBuilder.asc(root.join(ServerLevelQuestEntity_.serverLevelQuestEntryEntities).get(ServerLevelQuestEntryEntity_.orderColumn)));
-        criteriaQuery.distinct(true); // Add DISTINCT keyword
+
+        if (ignoreQuests != null && !ignoreQuests.isEmpty()) {
+            criteriaQuery.where(criteriaBuilder.not(join.get(QuestConfigEntity_.id).in(ignoreQuests)));
+        }
+
+        criteriaQuery.orderBy(
+                criteriaBuilder.asc(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number)),
+                criteriaBuilder.asc(root.join(ServerLevelQuestEntity_.serverLevelQuestEntryEntities).get(ServerLevelQuestEntryEntity_.orderColumn))
+        );
+        criteriaQuery.distinct(true);
 
         TypedQuery<QuestConfigEntity> typedQuery = entityManager.createQuery(criteriaQuery);
-        List<QuestConfigEntity> questEntities = typedQuery.getResultList();
 
-        if (questEntities.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        if (ignoreQuests != null) {
-            questEntities.removeIf(questEntity -> ignoreQuests.contains(questEntity.getId()));
-        }
-
-        return questEntities;
+        return typedQuery.getResultList();
     }
 
     @Transactional

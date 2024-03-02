@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class ServerLevelQuestService implements QuestListener {
-    private Logger logger = Logger.getLogger(ServerLevelQuestService.class.getName());
+    private final Logger logger = Logger.getLogger(ServerLevelQuestService.class.getName());
     @Inject
     private Instance<GameUiContextCrudPersistence> gameUiControlConfigPersistence;
     @Inject
