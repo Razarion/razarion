@@ -12,9 +12,8 @@ import java.util.logging.Logger;
  * 11.03.2016.
  */
 public class Polygon2I {
-    private Logger logger = Logger.getLogger(Polygon2I.class.getName());
     private List<Index> corners = new ArrayList<>();
-    private List<Line2I> lines = new ArrayList<>();
+    private final List<Line2I> lines = new ArrayList<>();
 
     public Polygon2I(List<Index> corners) {
         this.corners = new ArrayList<>(corners);

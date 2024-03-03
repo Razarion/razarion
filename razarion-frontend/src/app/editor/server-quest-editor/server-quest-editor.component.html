@@ -1,28 +1,21 @@
 <div [style]="{width:'500px'}">
   <div class="grid grid-razarion-editor">
     <div class="col">
-      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
-                (onClick)="onSave()"></p-button>
+      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm" (onClick)="onSave()"></p-button>
     </div>
     <div class="col-3">
-      <p-dropdown [options]="options"
-                  [(ngModel)]="selectedLevelQuest"></p-dropdown>
+      <p-dropdown [options]="options" [(ngModel)]="selectedLevelQuest"></p-dropdown>
     </div>
     <div class="col-1">
-      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
-                (onClick)="onCreate()"></p-button>
+      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm" (onClick)="onCreate()"></p-button>
     </div>
     <div class="col-1">
-      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                (onClick)="onDelete()"
-                [disabled]="!selectedLevelQuest"></p-button>
+      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm" (onClick)="onDelete()"
+        [disabled]="!selectedLevelQuest"></p-button>
     </div>
     <div class="col-6">
-      <p-button type="button"
-                label="{{EditorService.RESTART_BOTS.name}}"
-                icon="pi pi-cog"
-                styleClass="p-button-sm"
-                (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
+      <p-button type="button" label="{{EditorService.RESTART_BOTS.name}}" icon="pi pi-cog" styleClass="p-button-sm"
+        (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
     </div>
   </div>
 
@@ -36,7 +29,7 @@
     <span class="col-3">Id</span>
     <div class="col-9">
       <p-inputNumber [disabled]="true" inputId="integeronly"
-                     [(ngModel)]="selectedLevelQuest&&selectedLevelQuest.id"></p-inputNumber>
+        [(ngModel)]="selectedLevelQuest&&selectedLevelQuest.id"></p-inputNumber>
     </div>
   </div>
   <div class="field grid align-items-center">
@@ -48,8 +41,7 @@
   <div class="grid grid-razarion-editor">
     <span class="col-3">Create quest</span>
     <div class="col-9">
-      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
-                (onClick)="onCreateQuest()"></p-button>
+      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm" (onClick)="onCreateQuest()"></p-button>
     </div>
   </div>
   <p-accordion *ngIf="selectedLevelQuest">
@@ -58,36 +50,35 @@
         {{conditionTriggerToTitle(questConfig)}}
         <div class="col-1">
           <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                    (onClick)="onDeleteQuest(questConfig)"></p-button>
+            (onClick)="onDeleteQuest(questConfig)"></p-button>
         </div>
         <div class="col-1">
           <p-button type="button" icon="pi pi-angle-up" styleClass="p-button-sm"
-                    (onClick)="onQuestUp(questConfig)"></p-button>
+            (onClick)="onQuestUp(questConfig)"></p-button>
         </div>
         <div class="col-1">
           <p-button type="button" icon="pi pi-angle-down" styleClass="p-button-sm"
-                    (onClick)="onQuestDown(questConfig)"></p-button>
+            (onClick)="onQuestDown(questConfig)"></p-button>
         </div>
       </ng-template>
       <div class="grid grid-razarion-editor">
         <span class="col-3">Id</span>
         <div class="col-9">
-          <p-inputNumber [disabled]="true" inputId="integeronly"
-                         [(ngModel)]="questConfig.id"></p-inputNumber>
+          <p-inputNumber [disabled]="true" inputId="integeronly" [(ngModel)]="questConfig.id"></p-inputNumber>
         </div>
-      </div>    
+      </div>
       <div class="grid grid-razarion-editor">
         <span class="col-3">Title</span>
         <div class="col-9">
           <input [(ngModel)]="questConfig.title" type="text"
-                 class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+            class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
         </div>
       </div>
       <div class="grid grid-razarion-editor">
         <span class="col-3">Description</span>
         <div class="col-9">
           <input [(ngModel)]="questConfig.description" type="text"
-                 class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+            class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
         </div>
       </div>
 
@@ -100,10 +91,8 @@
       <div class="grid grid-razarion-editor">
         <span class="col-3">Trigger</span>
         <div class="col-9">
-          <p-dropdown [placeholder]="'...'"
-                      [options]="CONDITION_TRIGGERS"
-                      [(ngModel)]="questConfig.conditionConfig.conditionTrigger"
-                      [style]="{width:'100%'}">
+          <p-dropdown [placeholder]="'...'" [options]="CONDITION_TRIGGERS"
+            [(ngModel)]="questConfig.conditionConfig.conditionTrigger" [style]="{width:'100%'}">
           </p-dropdown>
         </div>
       </div>
@@ -111,7 +100,7 @@
         <span class="col-3">Count</span>
         <div class="col-9">
           <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.count" type="text"
-                 class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+            class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
         </div>
       </div>
       <div class="grid grid-razarion-editor">
@@ -122,10 +111,17 @@
         </div>
       </div>
       <div class="grid grid-razarion-editor">
+        <span class="col-3">Include existing</span>
+        <div class="col-9">
+          <p-checkbox [(ngModel)]="questConfig.conditionConfig.comparisonConfig.includeExisting"
+            [binary]="true"></p-checkbox>
+        </div>
+      </div>
+      <div class="grid grid-razarion-editor">
         <span class="col-3">Time Seconds</span>
         <div class="col-9">
           <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.timeSeconds" type="text"
-                 class="bg-primary-reverse text-base text-color p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+            class="bg-primary-reverse text-base text-color p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
         </div>
       </div>
       <div class="grid grid-razarion-editor">
@@ -146,19 +142,19 @@
         <div class="col-9">
           <p-inputNumber [(ngModel)]="questConfig.xp" [min]="0"></p-inputNumber>
         </div>
-      </div>    
+      </div>
       <div class="grid grid-razarion-editor">
         <span class="col-3">Razarion</span>
         <div class="col-9">
           <p-inputNumber [(ngModel)]="questConfig.razarion" [min]="0"></p-inputNumber>
         </div>
-      </div>    
+      </div>
       <div class="grid grid-razarion-editor">
         <span class="col-3">Crystals</span>
         <div class="col-9">
           <p-inputNumber [(ngModel)]="questConfig.crystal" [min]="0"></p-inputNumber>
         </div>
-      </div>    
+      </div>
     </p-accordionTab>
   </p-accordion>
 </div>

@@ -30,6 +30,7 @@ import java.util.Set;
 public class ComparisonConfig {
     private Integer count;
     private Map<Integer, Integer> typeCount;
+    private boolean includeExisting;
     private Integer timeSeconds;
     private PlaceConfig placeConfig;
     private List<Integer> botIds;
@@ -65,6 +66,14 @@ public class ComparisonConfig {
 
     public void setCount(@Nullable Integer count) {
         this.count = count;
+    }
+
+    public boolean isIncludeExisting() {
+        return includeExisting;
+    }
+
+    public void setIncludeExisting(boolean includeExisting) {
+        this.includeExisting = includeExisting;
     }
 
     public Map<Integer, Integer> getTypeCount() {
@@ -121,6 +130,11 @@ public class ComparisonConfig {
 
     public ComparisonConfig botIds(List<Integer> botIds) {
         setBotIds(botIds);
+        return this;
+    }
+
+    public ComparisonConfig includeExisting(boolean includeExisting) {
+        setIncludeExisting(includeExisting);
         return this;
     }
 }

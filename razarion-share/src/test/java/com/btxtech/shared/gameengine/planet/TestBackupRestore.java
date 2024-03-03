@@ -58,7 +58,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         PlayerBaseFull playerBaseFull1 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext1);
         testBaseRestoreProvider.addUserContext(userContext1);
         tickPlanetServiceBaseServiceActive();
-        QuestConfig questCreate1 = GameTestContent.createItemCountCreatedQuest();
+        QuestConfig questCreate1 = GameTestContent.createItemCountCreatedQuest10();
         getQuestService().activateCondition(playerBaseFull1.getUserId(), questCreate1);
         SyncBaseItem builder1 = findSyncBaseItem(playerBaseFull1, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         getCommandService().build(builder1, new DecimalPosition(40, 20), getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
@@ -182,7 +182,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         // Restore Quests
         getQuestService().clean();
-        getQuestService().activateCondition(playerBaseFull1Restore.getUserId(), GameTestContent.createItemCountCreatedQuest());
+        getQuestService().activateCondition(playerBaseFull1Restore.getUserId(), GameTestContent.createItemCountCreatedQuest10());
         getQuestService().restore(backupPlanetInfoUnregistered);
         QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(playerBaseFull1Restore.getUserId());
         Assert.assertEquals(4, (int) questProgressInfo.getCount());
@@ -245,7 +245,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         // Restore Quests
         getQuestService().clean();
-        getQuestService().activateCondition(playerBaseFull1Restore.getUserId(), GameTestContent.createItemCountCreatedQuest());
+        getQuestService().activateCondition(playerBaseFull1Restore.getUserId(), GameTestContent.createItemCountCreatedQuest10());
         getQuestService().restore(backupPlanetInfoRegistered);
         QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(playerBaseFull1Restore.getUserId());
         Assert.assertEquals(4, (int) questProgressInfo.getCount());

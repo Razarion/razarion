@@ -105,6 +105,7 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
           timeSeconds: null,
           placeConfig: null,
           botIds: [],
+          includeExisting: false
         },
         conditionTrigger: null
       },

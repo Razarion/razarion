@@ -21,12 +21,12 @@ import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
  * Time: 2:03:06 PM
  */
 public class PlayerBase {
-    private int baseId;
+    private final int baseId;
     private double resources;
     private String name;
-    private Character character;
+    private final Character character;
     private Integer userId;
-    private Integer botId;
+    private final Integer botId;
     private boolean abandoned;
 
     public PlayerBase(int baseId, String name, Character character, double resources, Integer userId, Integer botId) {

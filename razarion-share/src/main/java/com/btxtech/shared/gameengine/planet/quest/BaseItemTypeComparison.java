@@ -14,8 +14,10 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
@@ -31,12 +33,25 @@ import java.util.Set;
 public class BaseItemTypeComparison extends AbstractBaseItemComparison {
     @Inject
     private ItemTypeService itemTypeService;
+    @Inject
+    private BaseItemService baseItemService;
     private Map<BaseItemType, Integer> remaining;
     private Map<BaseItemType, Integer> total;
     private Set<Integer> botIds;
 
-    public void init(Map<BaseItemType, Integer> baseItemType, Set<Integer> botIds) {
-        remaining = new HashMap<>(baseItemType);
+    public void init(Map<BaseItemType, Integer> baseItemType, Integer includeExistingUserId, Set<Integer> botIds) {
+        remaining = new HashMap<>();
+        if (includeExistingUserId != null) {
+            PlayerBaseFull playerBaseFull = (PlayerBaseFull) baseItemService.getPlayerBase4UserId(includeExistingUserId);
+            baseItemType.forEach((existingBaseItemType, count) -> {
+                int existing = playerBaseFull.findItemsOfType(existingBaseItemType.getId()).size();
+                if (count > existing) {
+                    remaining.put(existingBaseItemType, count - existing);
+                }
+            });
+        } else {
+            remaining.putAll(baseItemType);
+        }
         total = new HashMap<>(baseItemType);
         this.botIds = botIds;
     }

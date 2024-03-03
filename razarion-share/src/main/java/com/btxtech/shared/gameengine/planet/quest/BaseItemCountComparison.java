@@ -13,10 +13,13 @@
 
 package com.btxtech.shared.gameengine.planet.quest;
 
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import java.util.Set;
 
 /**
@@ -26,13 +29,20 @@ import java.util.Set;
  */
 @Dependent
 public class BaseItemCountComparison extends AbstractBaseItemComparison {
+    @Inject
+    private BaseItemService baseItemService;
     private int count;
     private double countTotal;
     private Set<Integer> botIds;
 
-    public void init(int count, Set<Integer> botIds) {
+    public void init(int count, Integer includeExistingUserId, Set<Integer> botIds) {
         this.count = count;
         this.botIds = botIds;
+        if (includeExistingUserId != null) {
+            PlayerBaseFull playerBaseFull = (PlayerBaseFull) baseItemService.getPlayerBase4UserId(includeExistingUserId);
+            this.count = Math.max(this.count - playerBaseFull.getItemCount(), 0);
+        }
+
         countTotal = count;
     }
 

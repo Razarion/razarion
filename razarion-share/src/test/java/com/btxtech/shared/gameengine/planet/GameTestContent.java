@@ -20,16 +20,29 @@ import java.util.Map;
 public interface GameTestContent {
     int QUEST_CONFIG_1_ID = 1001;
     int QUEST_CONFIG_2_ID = 1002;
-    int QUEST_CONFIG_3_ID = 1002;
-    int QUEST_CONFIG_4_ID = 1003;
-    int QUEST_CONFIG_5_ID = 1004;
+    int QUEST_CONFIG_3_ID = 1003;
+    int QUEST_CONFIG_4_ID = 1004;
+    int QUEST_CONFIG_5_ID = 1005;
+    int QUEST_CONFIG_6_ID = 1006;
+    int QUEST_CONFIG_7_ID = 1007;
+    int QUEST_CONFIG_8_ID = 1008;
 
 
     static BaseItemType findBaseItemType(int baseItemTypeId, Collection<BaseItemType> baseItemTypes) {
         return baseItemTypes.stream().filter(baseItemType -> baseItemType.getId() == baseItemTypeId).findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
-    static QuestConfig createItemCountCreatedQuest() {
+    static QuestConfig createItemCountCreatedQuest3() {
+        return new QuestConfig().id(QUEST_CONFIG_7_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().count(3)));
+    }
+
+    static QuestConfig createItemCountCreatedQuest3IncludeExisting() {
+        QuestConfig questConfig =  createItemCountCreatedQuest3().id(QUEST_CONFIG_8_ID);
+        questConfig.getConditionConfig().getComparisonConfig().setIncludeExisting(true);
+        return questConfig;
+    }
+
+    static QuestConfig createItemCountCreatedQuest10() {
         return new QuestConfig().id(QUEST_CONFIG_1_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().count(10)));
     }
 
@@ -50,6 +63,12 @@ public interface GameTestContent {
         typeCount.put(FallbackConfig.ATTACKER_ITEM_TYPE_ID, 2);
         typeCount.put(FallbackConfig.HARVESTER_ITEM_TYPE_ID, 1);
         return new QuestConfig().id(QUEST_CONFIG_3_ID).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(typeCount)));
+    }
+
+    static QuestConfig createItemTypeCountCreatedQuest2IncludeExisting() {
+        QuestConfig questConfig = createItemTypeCountCreatedQuest2().id(QUEST_CONFIG_6_ID);
+        questConfig.getConditionConfig().getComparisonConfig().setIncludeExisting(true);
+        return questConfig;
     }
 
     static QuestConfig createNoPositionQuest() {

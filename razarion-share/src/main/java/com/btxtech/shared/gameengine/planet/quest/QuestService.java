@@ -22,9 +22,7 @@ import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -38,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger.SYNC_ITEM_CREATED;
+
 /**
  * User: beat
  * Date: 28.12.2010
@@ -46,18 +46,14 @@ import java.util.logging.Logger;
 @Singleton
 public class QuestService {
     private static final int TICKS_TO_SEND_DEFERRED = PlanetService.TICKS_PER_SECONDS * 2;
-    private Logger logger = Logger.getLogger(QuestService.class.getName());
+    private final Logger logger = Logger.getLogger(QuestService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
-    @Inject
-    private BaseItemService baseItemService;
-    @Inject
-    private SyncItemContainerService syncItemContainerService;
     @Inject
     private Instance<AbstractComparison> instance;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private Collection<QuestListener> questListeners = new ArrayList<>();
+    private final Collection<QuestListener> questListeners = new ArrayList<>();
     private final Map<Integer, AbstractConditionProgress> progressMap = new HashMap<>();
     private int tickCount;
 
@@ -137,7 +133,7 @@ public class QuestService {
         if (userId == null) {
             return;
         }
-        triggerSyncItem(userId, ConditionTrigger.SYNC_ITEM_CREATED, syncBaseItem);
+        triggerSyncItem(userId, SYNC_ITEM_CREATED, syncBaseItem);
     }
 
     public void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
@@ -216,13 +212,17 @@ public class QuestService {
                 }
             case SYNC_ITEM_KILLED:
             case SYNC_ITEM_CREATED:
+                Integer includeExistingUserId = null;
+                if (conditionTrigger == SYNC_ITEM_CREATED && comparisonConfig.isIncludeExisting()) {
+                    includeExistingUserId = userId;
+                }
                 if (comparisonConfig.getTypeCount() != null) {
                     BaseItemTypeComparison syncItemTypeComparison = instance.select(BaseItemTypeComparison.class).get();
-                    syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.toBotIdSet());
+                    syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()), includeExistingUserId, comparisonConfig.toBotIdSet());
                     return syncItemTypeComparison;
                 } else if (comparisonConfig.getCount() != null) {
                     BaseItemCountComparison baseItemCountComparison = instance.select(BaseItemCountComparison.class).get();
-                    baseItemCountComparison.init(comparisonConfig.getCount(), comparisonConfig.toBotIdSet());
+                    baseItemCountComparison.init(comparisonConfig.getCount(), includeExistingUserId, comparisonConfig.toBotIdSet());
                     return baseItemCountComparison;
                 } else {
                     throw new UnsupportedOperationException();
