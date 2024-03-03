@@ -43,12 +43,14 @@ public class BaseItemTypeComparison extends AbstractBaseItemComparison {
         remaining = new HashMap<>();
         if (includeExistingUserId != null) {
             PlayerBaseFull playerBaseFull = (PlayerBaseFull) baseItemService.getPlayerBase4UserId(includeExistingUserId);
-            baseItemType.forEach((existingBaseItemType, count) -> {
-                int existing = playerBaseFull.findItemsOfType(existingBaseItemType.getId()).size();
-                if (count > existing) {
-                    remaining.put(existingBaseItemType, count - existing);
-                }
-            });
+            if (playerBaseFull != null) {
+                baseItemType.forEach((existingBaseItemType, count) -> {
+                    int existing = playerBaseFull.findItemsOfType(existingBaseItemType.getId()).size();
+                    if (count > existing) {
+                        remaining.put(existingBaseItemType, count - existing);
+                    }
+                });
+            }
         } else {
             remaining.putAll(baseItemType);
         }
