@@ -4,7 +4,6 @@ import com.btxtech.server.persistence.AbstractCrudPersistence;
 import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
-import com.btxtech.server.persistence.bot.BotConfigEntity_;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
@@ -13,7 +12,6 @@ import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
-import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
@@ -30,17 +28,15 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -109,23 +105,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     }
 
     @Transactional
-    @SecurityCheck
-    public Map<Integer, String> getAllBotName2Id() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
-        Root<BotConfigEntity> root = cq.from(BotConfigEntity.class);
-        cq.multiselect(root.get(BotConfigEntity_.id), root.get(BotConfigEntity_.internalName));
-        Map<Integer, String> botId2Names = new HashMap<>();
-        entityManager.createQuery(cq).getResultList().forEach(tuple -> {
-            String name = tuple.get(1) != null ? tuple.get(1).toString() : null;
-            if (name != null) {
-                botId2Names.put((int) tuple.get(0), name);
-            }
-        });
-        return botId2Names;
-    }
-
-    @Transactional
     public Collection<BotSceneConfig> readBotSceneConfigs() {
         return serverGameEngineConfigEntity().getBotSceneConfigs();
     }
@@ -133,18 +112,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     @Transactional
     public Collection<BoxRegionConfig> readBoxRegionConfigs() {
         return serverGameEngineConfigEntity().getBoxRegionConfigs();
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void updatePlanetConfig(Integer planetConfigId) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
-        if (planetConfigId != null) {
-            serverGameEngineConfigEntity.setPlanetEntity(planetCrudPersistence.getEntity(planetConfigId));
-        } else {
-            serverGameEngineConfigEntity.setPlanetEntity(null);
-        }
-        entityManager.merge(serverGameEngineConfigEntity);
     }
 
     @Transactional
@@ -176,20 +143,28 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<QuestConfigEntity> criteriaQuery = criteriaBuilder.createQuery(QuestConfigEntity.class);
         Root<ServerLevelQuestEntity> root = criteriaQuery.from(ServerLevelQuestEntity.class);
-        Join<ServerLevelQuestEntryEntity, QuestConfigEntity> join = root.join(ServerLevelQuestEntity_.serverLevelQuestEntryEntities).join(ServerLevelQuestEntryEntity_.quest);
 
-        criteriaQuery.select(join);
-        criteriaQuery.where(
-                criteriaBuilder.lessThanOrEqualTo(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number), level.getNumber())
-        );
+        Join<ServerLevelQuestEntity, ServerLevelQuestEntryEntity> serverLevelQuestEntryEntityJoin = root.join(ServerLevelQuestEntity_.serverLevelQuestEntryEntities);
+        Join<ServerLevelQuestEntryEntity, QuestConfigEntity> questConfigEntityJoin = serverLevelQuestEntryEntityJoin.join(ServerLevelQuestEntryEntity_.quest);
+        Path<Integer> levelNumberPath = root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number);
+
+        criteriaQuery.select(questConfigEntityJoin);
 
         if (ignoreQuests != null && !ignoreQuests.isEmpty()) {
-            criteriaQuery.where(criteriaBuilder.not(join.get(QuestConfigEntity_.id).in(ignoreQuests)));
+            criteriaQuery.where(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(levelNumberPath, level.getNumber()),
+                            criteriaBuilder.not(questConfigEntityJoin.get(QuestConfigEntity_.id).in(ignoreQuests)))
+            );
+        } else {
+            criteriaQuery.where(
+                    criteriaBuilder.lessThanOrEqualTo(levelNumberPath, level.getNumber())
+            );
         }
 
         criteriaQuery.orderBy(
-                criteriaBuilder.asc(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number)),
-                criteriaBuilder.asc(root.join(ServerLevelQuestEntity_.serverLevelQuestEntryEntities).get(ServerLevelQuestEntryEntity_.orderColumn))
+                criteriaBuilder.asc(levelNumberPath),
+                criteriaBuilder.asc(serverLevelQuestEntryEntityJoin.get(ServerLevelQuestEntryEntity_.orderColumn))
         );
         criteriaQuery.distinct(true);
 
