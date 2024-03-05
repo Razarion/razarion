@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
  * on 25.09.2017.
  */
 public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
-    public static int DRIVEWAY_ID_1 = 1;
-
     protected void setupTerrainTypeService(StaticGameConfig staticGameConfig,
                                            List<SlopeConfig> slopeConfigs,
                                            List<DrivewayConfig> drivewayConfigs,

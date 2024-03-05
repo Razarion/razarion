@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.btxtech.shared.dto.FallbackConfig.DRIVEWAY_ID_ID;
+
 /**
  * Created by Beat
  * 03.04.2017.
@@ -57,7 +59,7 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         child.id(2);
         child.slopeConfigId(SLOPE_CONFIG_ID_1);
         child.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(100, 90, null), GameTestHelper.createTerrainSlopeCorner(170, 90, null),
-                GameTestHelper.createTerrainSlopeCorner(170, 130, DRIVEWAY_ID_1), GameTestHelper.createTerrainSlopeCorner(170, 200, DRIVEWAY_ID_1),
+                GameTestHelper.createTerrainSlopeCorner(170, 130, DRIVEWAY_ID_ID), GameTestHelper.createTerrainSlopeCorner(170, 200, DRIVEWAY_ID_ID),
                 GameTestHelper.createTerrainSlopeCorner(170, 240, null), GameTestHelper.createTerrainSlopeCorner(100, 240, null)));
         children.add(child);
 

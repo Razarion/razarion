@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.btxtech.shared.dto.FallbackConfig.DRIVEWAY_ID_ID;
+
 /**
  * Created by Beat
  * on 21.11.2017.
@@ -52,8 +54,8 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
     public void testWaterLand() {
         List<TerrainSlopePosition> grandChildren = setupSlope(1, false, null,
                 GameTestHelper.createTerrainSlopeCorner(140, 165, null),
-                GameTestHelper.createTerrainSlopeCorner(180, 165, 1),
-                GameTestHelper.createTerrainSlopeCorner(180, 260, 1),
+                GameTestHelper.createTerrainSlopeCorner(180, 165, DRIVEWAY_ID_ID),
+                GameTestHelper.createTerrainSlopeCorner(180, 260, DRIVEWAY_ID_ID),
                 GameTestHelper.createTerrainSlopeCorner(140, 260, null));
 
         List<TerrainSlopePosition> children = setupSlope(2, true, grandChildren,

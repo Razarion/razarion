@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.btxtech.shared.dto.FallbackConfig.DRIVEWAY_ID_ID;
+
 /**
  * Created by Beat
  * on 15.02.2018.
@@ -63,7 +65,7 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         terrainSlopePositionLand1.id(1);
         terrainSlopePositionLand1.slopeConfigId(1);
         terrainSlopePositionLand1.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(100, 60, 1), GameTestHelper.createTerrainSlopeCorner(100, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 60, DRIVEWAY_ID_ID), GameTestHelper.createTerrainSlopeCorner(100, 90, DRIVEWAY_ID_ID), // driveway
                 GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
         terrainSlopePositions.add(terrainSlopePositionLand1);
         // Land slope 2
@@ -71,8 +73,8 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         terrainSlopePositionLand2.id(2);
         terrainSlopePositionLand2.slopeConfigId(1);
         terrainSlopePositionLand2.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(165.39227716727615, 409.86546092796124, null),
-                GameTestHelper.createTerrainSlopeCorner(178.39227716727615, 431.36546092796124, 1),
-                GameTestHelper.createTerrainSlopeCorner(200.39227716727615, 467.36546092796124, 1),
+                GameTestHelper.createTerrainSlopeCorner(178.39227716727615, 431.36546092796124, DRIVEWAY_ID_ID),
+                GameTestHelper.createTerrainSlopeCorner(200.39227716727615, 467.36546092796124, DRIVEWAY_ID_ID),
                 GameTestHelper.createTerrainSlopeCorner(218.89227716727615, 498.86546092796124, null),
                 GameTestHelper.createTerrainSlopeCorner(111.89227716727615, 563.3654609279613, null),
                 GameTestHelper.createTerrainSlopeCorner(54.16666666666667, 442.99999999999983, null)));

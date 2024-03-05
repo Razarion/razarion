@@ -64,8 +64,8 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 null,
                 GameTestHelper.createTerrainSlopeCorner(50, 40, null),
                 GameTestHelper.createTerrainSlopeCorner(103, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(103, 60, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(103, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(103, 60, DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(103, 90, DRIVEWAY_ID_ID), // driveway
                 GameTestHelper.createTerrainSlopeCorner(103, 110, null),
                 GameTestHelper.createTerrainSlopeCorner(50, 110, null));
         // showDisplay();
@@ -81,11 +81,11 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 null,
                 null,
                 GameTestHelper.createTerrainSlopeCorner(50, 150, null),
-                GameTestHelper.createTerrainSlopeCorner(70, 150, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(90, 150, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(100, 150, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(100, 160, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(100, 180, 1),// driveway
+                GameTestHelper.createTerrainSlopeCorner(70, 150, DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(90, 150, DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 150, DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 160, DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 180, DRIVEWAY_ID_ID),// driveway
                 GameTestHelper.createTerrainSlopeCorner(100, 210, null),
                 GameTestHelper.createTerrainSlopeCorner(50, 210, null));
 
@@ -132,11 +132,11 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 null,
                 GameTestHelper.createTerrainSlopeCorner(30, 40, null),
                 GameTestHelper.createTerrainSlopeCorner(160, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(160, 60, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(160, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(160, 60, DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(160, 90, DRIVEWAY_ID_ID), // driveway
                 GameTestHelper.createTerrainSlopeCorner(160, 120, null),
-                GameTestHelper.createTerrainSlopeCorner(110, 120, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(70, 120, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(110, 120, DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(70, 120, DRIVEWAY_ID_ID), // driveway
                 GameTestHelper.createTerrainSlopeCorner(30, 120, null));
 
         // showDisplay();
@@ -163,8 +163,8 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 null,
                 GameTestHelper.createTerrainSlopeCorner(30, 40, null),
                 GameTestHelper.createTerrainSlopeCorner(80, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(80, 60, 1), // driveway
-                GameTestHelper.createTerrainSlopeCorner(80, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(80, 60, DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(80, 90, DRIVEWAY_ID_ID), // driveway
                 GameTestHelper.createTerrainSlopeCorner(80, 110, null),
                 GameTestHelper.createTerrainSlopeCorner(30, 110, null));
 

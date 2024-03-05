@@ -10,7 +10,7 @@ import jsinterop.annotations.JsType;
  */
 @JsType
 public class TerrainObjectPosition {
-    private Integer id;
+    private int id;
     private int terrainObjectConfigId;
     private DecimalPosition position;
     private Vertex scale;
@@ -23,10 +23,6 @@ public class TerrainObjectPosition {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public boolean hasId() {
-        return id != null;
     }
 
     public int getTerrainObjectConfigId() {
