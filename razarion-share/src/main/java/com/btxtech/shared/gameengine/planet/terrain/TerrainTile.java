@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
@@ -13,6 +14,7 @@ import java.util.Map;
  */
 @JsType
 public class TerrainTile {
+    @JsonIgnore
     private GroundTerrainTile[] groundTerrainTiles;
     private Index index;
     @Deprecated
@@ -59,10 +61,12 @@ public class TerrainTile {
         this.groundNorms = groundNorms;
     }
 
+    @JsonIgnore
     public GroundTerrainTile[] getGroundTerrainTiles() {
         return groundTerrainTiles;
     }
 
+    @JsonIgnore
     public void setGroundTerrainTiles(GroundTerrainTile[] groundTerrainTiles) {
         this.groundTerrainTiles = groundTerrainTiles;
     }

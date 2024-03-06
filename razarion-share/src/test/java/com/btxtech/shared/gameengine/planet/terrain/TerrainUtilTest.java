@@ -16,8 +16,8 @@ public class TerrainUtilTest {
                 new SlopeShape().slopeFactor(0.0));
         TerrainSlopeTileBuilder.Segment[] segments = TerrainUtil.setupSegmentLookup(slopeShapes);
         Assert.assertArrayEquals(new TerrainSlopeTileBuilder.Segment[]{
-                        TerrainSlopeTileBuilder.Segment.OUTER,
-                        TerrainSlopeTileBuilder.Segment.INNER}
+                        TerrainSlopeTileBuilder.Segment.CENTER,
+                        TerrainSlopeTileBuilder.Segment.CENTER}
                 , segments);
     }
 
@@ -45,9 +45,9 @@ public class TerrainUtilTest {
                 new SlopeShape().slopeFactor(0.0));
         TerrainSlopeTileBuilder.Segment[] segments = TerrainUtil.setupSegmentLookup(slopeShapes);
         Assert.assertArrayEquals(new TerrainSlopeTileBuilder.Segment[]{
-                        TerrainSlopeTileBuilder.Segment.INNER,
-                        TerrainSlopeTileBuilder.Segment.INNER,
-                        TerrainSlopeTileBuilder.Segment.INNER}
+                        TerrainSlopeTileBuilder.Segment.CENTER,
+                        TerrainSlopeTileBuilder.Segment.CENTER,
+                        TerrainSlopeTileBuilder.Segment.CENTER}
                 , segments);
     }
     @Test
@@ -59,9 +59,9 @@ public class TerrainUtilTest {
                 new SlopeShape().slopeFactor(0.0));
         TerrainSlopeTileBuilder.Segment[] segments = TerrainUtil.setupSegmentLookup(slopeShapes);
         Assert.assertArrayEquals(new TerrainSlopeTileBuilder.Segment[]{
-                        TerrainSlopeTileBuilder.Segment.OUTER,
                         TerrainSlopeTileBuilder.Segment.CENTER,
-                        TerrainSlopeTileBuilder.Segment.INNER}
+                        TerrainSlopeTileBuilder.Segment.CENTER,
+                        TerrainSlopeTileBuilder.Segment.CENTER}
                 , segments);
     }
 }
