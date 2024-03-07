@@ -72,7 +72,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         terrainSlopePositionLand.id(1);
         terrainSlopePositionLand.slopeConfigId(1);
         terrainSlopePositionLand.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(100, 60, 1), GameTestHelper.createTerrainSlopeCorner(100, 90, DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 60, DRIVEWAY_ID_ID), GameTestHelper.createTerrainSlopeCorner(100, 90, DRIVEWAY_ID_ID), // driveway
                 GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
         // Water slope

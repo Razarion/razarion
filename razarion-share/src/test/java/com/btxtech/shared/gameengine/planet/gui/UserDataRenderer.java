@@ -14,8 +14,9 @@ import java.util.List;
  * on 19.10.2017.
  */
 public class UserDataRenderer {
-    private WeldTestRenderer weldTestRenderer;
-    private Object[] userObjects;
+    private final WeldTestRenderer weldTestRenderer;
+    private final Object[] userObjects;
+    public boolean simplePathColorToggle;
 
     public UserDataRenderer(WeldTestRenderer weldTestRenderer, Object[] userObjects) {
         this.weldTestRenderer = weldTestRenderer;
@@ -56,7 +57,8 @@ public class UserDataRenderer {
     }
 
     private void render(SimplePath simplePath) {
-        weldTestRenderer.strokeLine(simplePath.getWayPositions(), WeldTestRenderer.FAT_LINE_WIDTH, Color.DEEPPINK, true);
+        weldTestRenderer.strokeLine(simplePath.getWayPositions(), WeldTestRenderer.FAT_LINE_WIDTH, simplePathColorToggle ? Color.DARKGREEN : Color.DEEPPINK, true);
+        simplePathColorToggle = !simplePathColorToggle;
     }
 
     private void render(List<DecimalPosition> userObject) {
