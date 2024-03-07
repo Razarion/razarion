@@ -37,7 +37,7 @@ public class PathingAccessTest extends AStarBaseTest {
 
     @Test
     public void land3() {
-        Assert.assertFalse(testCase(new DecimalPosition(154, 48), 4.0, TerrainType.LAND));
+        Assert.assertFalse(testCase(new DecimalPosition(157.783, 47.683), 4.0, TerrainType.LAND));
     }
 
     @Test
@@ -157,27 +157,42 @@ public class PathingAccessTest extends AStarBaseTest {
 
     @Test
     public void getObstacles() {
-        Collection<Obstacle> obstacles = getTerrainService().getPathingAccess().getObstacles(new DecimalPosition(160, 60), 8);
+        Collection<Obstacle> obstacles = getTerrainService().getPathingAccess().getObstacles(new DecimalPosition(180, 60), 8);
         List<Obstacle> obstacleList = new ArrayList<>(obstacles);
-        assertThat(obstacleList, hasSize(2));
+        assertThat(obstacleList, hasSize(3));
         assertThat(obstacleList, containsInAnyOrder(
                 allOf(
-                        hasProperty("point1", equalTo(new DecimalPosition(154.30127018922195, 51.0))),
-                        hasProperty("point2", equalTo(new DecimalPosition(154.30127018922195, 58.0))),
-                        hasProperty("previousDirection", equalTo(new DecimalPosition(0.9999999999999999, 0.0))),
+                        hasProperty("point1", equalTo(new DecimalPosition(179.68693548636554, 58.0))),
+                        hasProperty("point2", equalTo(new DecimalPosition(174.780725808768, 58.0))),
+                        hasProperty("previousDirection", equalTo(new DecimalPosition(0.0, 1.0))),
+                        hasProperty("point1Convex", equalTo(true)),
+                        hasProperty("point1Direction", equalTo(new DecimalPosition(-1.0, 0.0))),
+                        hasProperty("point2Convex", equalTo(true)),
+                        hasProperty("point2Direction", equalTo(new DecimalPosition(-1.0, 0.0)))),
+                allOf(
+                        hasProperty("point1", equalTo(new DecimalPosition(179.68693548636554, 51.0))),
+                        hasProperty("point2", equalTo(new DecimalPosition(179.68693548636554, 58.0))),
+                        hasProperty("previousDirection", equalTo(new DecimalPosition(1.0, 0.0))),
                         hasProperty("point1Convex", equalTo(true)),
                         hasProperty("point1Direction", equalTo(new DecimalPosition(0.0, 1.0))),
                         hasProperty("point2Convex", equalTo(true)),
-                        hasProperty("point2Direction", equalTo(new DecimalPosition(-0.9999999999999999, 0.0)))),
+                        hasProperty("point2Direction", equalTo(new DecimalPosition(-1.0, 0.0)))),
                 allOf(
-                        hasProperty("point1", equalTo(new DecimalPosition(154.30127018922195, 58.0))),
-                        hasProperty("point2", equalTo(new DecimalPosition(149.49001794597507, 58.0))),
-                        hasProperty("previousDirection", equalTo(new DecimalPosition(0.0, 1.0))),
+                        hasProperty("point1", equalTo(new DecimalPosition(174.780725808768, 58.0))),
+                        hasProperty("point2", equalTo(new DecimalPosition(169.87451613117048, 58.0))),
+                        hasProperty("previousDirection", equalTo(new DecimalPosition(-1.0, 0.0))),
                         hasProperty("point1Convex", equalTo(true)),
-                        hasProperty("point1Direction", equalTo(new DecimalPosition(-0.9999999999999999, 0.0))),
+                        hasProperty("point1Direction", equalTo(new DecimalPosition(-1.0, 0.0))),
                         hasProperty("point2Convex", equalTo(true)),
-                        hasProperty("point2Direction", equalTo(new DecimalPosition(-0.9999999999999999, 0.0))))
+                        hasProperty("point2Direction", equalTo(new DecimalPosition(-1.0, 0.0))))
         ));
+//        PositionMarker positionMarker = new PositionMarker().addCircleColor(new Circle2D(new DecimalPosition(180, 60), 8), new Color(1,0,0, 0.3));
+//        System.out.println("Size: " + obstacles.size());
+//        obstacles.forEach(obstacle -> {
+//            ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
+//            positionMarker.addLine(new Line(obstacleSlope.getPoint1(), obstacleSlope.getPoint2()), new Color(0, 0, 1, 0.3));
+//        });
+//        showDisplay(positionMarker);
     }
 
     // @Test
