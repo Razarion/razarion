@@ -6,7 +6,6 @@ import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -33,8 +32,13 @@ public class PathTest extends AStarBaseTest {
 
     @Test
     public void testCornerSkew() {
-        setup(new DecimalPosition(220, 392), new DecimalPosition(218, 410), 2);
-        Assert.fail("... TODO ...");
+        Path path = setup(new DecimalPosition(220, 392), new DecimalPosition(218, 410), 2);
+        assertPath(new DecimalPosition(242.000, 378.000), path, 2.0, new DecimalPosition(191.900, 406.275));
+        assertPath(new DecimalPosition(246.000, 378.000), path, 2.0, new DecimalPosition(194.700, 381.275));
+        assertPath(new DecimalPosition(252.000, 388.000), path, 2.0, new DecimalPosition(236.900, 371.075));
+        assertPath(new DecimalPosition(228.000, 412.000), path, 2.0, new DecimalPosition(268.500, 367.875));
+        assertPath(new DecimalPosition(218.000, 410.000), path, 2.0, new DecimalPosition(269.400, 420.075));
+        assertPath(new DecimalPosition(218.000, 410.000), path, 2.0, new DecimalPosition(204.000, 425.975));
     }
 
     private Path setup(DecimalPosition start, DecimalPosition target, double radius) {
@@ -47,19 +51,14 @@ public class PathTest extends AStarBaseTest {
 //        showDisplay(simplePath, new MouseMoveCallback() {
 //            @Override
 //            public Object[] onMouseMove(DecimalPosition position) {
-//                path.setupCurrentWayPoint(GameTestHelper.createSyncPhysicalMovable(radius, TerrainType.LAND, position, null, null, 0));
+//                path.setupCurrentWayPoint(GameTestHelper.createSyncPhysicalMovable(radius, -9998137, TerrainType.LAND, position, null, null));
 //                return new Object[]{new PositionMarker().addCircleColor(new Circle2D(position, radius), Color.PINK).addCircleColor(new Circle2D(path.getCurrentWayPoint(), radius), Color.AQUA)};
 //            }
-//        });
+//        }, new TestCaseGenerator().setTestCaseName("landWaterCoast").setTestGeneratorCallback((position, body) -> {
+//            path.setupCurrentWayPoint(GameTestHelper.createSyncPhysicalMovable(radius, -9998137, TerrainType.LAND, position, null, null));
+//            body.appendLine("assertPath(" + generate(path.getCurrentWayPoint()) + ", path, " + radius + ", " + generate(position) + ");");
+//        }));
         return path;
-//        for (int i = 0; i + 1 < way.size(); i++) {
-//            DecimalPosition current = way.get(i);
-//            path.setupCurrentWayPoint(GameTestHelper.createSyncPhysicalMovable(radius, TerrainType.LAND, current, null, null, 0));
-//            System.out.println("current: " + current + " -> " + path.getCurrentWayPoint());
-//
-//            DecimalPosition next = CollectionUtils.getCorrectedElement(i + 1, way);
-//            // Assert.assertEquals(next, path.getCurrentWayPoint());
-//        }
     }
 
     private void assertPath(DecimalPosition expected, Path path, double radius, DecimalPosition inputPosition) {
