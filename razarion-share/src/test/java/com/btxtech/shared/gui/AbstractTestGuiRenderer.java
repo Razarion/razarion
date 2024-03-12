@@ -211,7 +211,7 @@ public abstract class AbstractTestGuiRenderer {
 
     public void fillPolygon(List<DecimalPosition> polygon, Color color) {
         gc.setStroke(color);
-        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.1));
 
         double[] xCorners = new double[polygon.size()];
         double[] yCorners = new double[polygon.size()];
