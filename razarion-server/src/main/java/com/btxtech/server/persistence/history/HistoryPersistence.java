@@ -1,18 +1,14 @@
 package com.btxtech.server.persistence.history;
 
-import com.btxtech.shared.dto.GameHistoryEntry;
-import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
+import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.user.ForgotPasswordEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserEntity;
-import com.btxtech.server.user.UserService;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -22,9 +18,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.SingularAttribute;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -38,8 +32,6 @@ public class HistoryPersistence {
     private Logger logger = Logger.getLogger(HistoryPersistence.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
-    @Inject
-    private UserService userService;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -177,40 +169,6 @@ public class HistoryPersistence {
         }
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void onBotSceneConflictChanged(int userId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
-        try {
-            BotSceneIndicationEntity botSceneIndicationEntity = new BotSceneIndicationEntity();
-            botSceneIndicationEntity.setTimeStamp(new Date());
-            // TODO botSceneIndicationEntity.setHumanPlayerIdEntityId(userService.getHumanPlayerId(userId.getPlayerId()).getId());
-            botSceneIndicationEntity.setRaise(raise);
-            botSceneIndicationEntity.setNewBotSceneConflictConfigId(newConflict != null ? newConflict.getId() : null);
-            botSceneIndicationEntity.setOldBotSceneConflictConfigId(oldConflict != null ? oldConflict.getId() : null);
-            if (botSceneIndicationInfo != null) {
-                botSceneIndicationEntity.setBotSceneId(botSceneIndicationInfo.getBotSceneId());
-                botSceneIndicationEntity.setStep(botSceneIndicationInfo.getConflictStep());
-                botSceneIndicationEntity.setStepCount(botSceneIndicationInfo.getConflictStepCount());
-            }
-            // entityManager.persist(botSceneIndicationEntity);
-        } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
-        }
-    }
-
-    @Transactional
-    @SecurityCheck
-    public List<UserHistoryEntry> readLoginHistory() {
-        List<UserHistoryEntity> userHistoryEntities = entityManager.createNativeQuery("select * from HISTORY_USER order by (IFNULL(UNIX_TIMESTAMP(loggedIn), 0) + IFNULL(UNIX_TIMESTAMP(loggedOut), 0)) desc", UserHistoryEntity.class).setMaxResults(100).getResultList();
-        List<UserHistoryEntry> userHistoryEntries = new ArrayList<>();
-        for (UserHistoryEntity historyEntity : userHistoryEntities) {
-            UserHistoryEntry userHistoryEntry = new UserHistoryEntry().setId(historyEntity.getUserId()).setLogin(historyEntity.getLoggedIn()).setLogout(historyEntity.getLoggedOut()).setSessionId(historyEntity.getSessionId());
-            UserEntity userEntity = entityManager.find(UserEntity.class, historyEntity.getUserId());
-            // TODO userHistoryEntry.setName(userEntity.getName()).setPlayerId(userEntity.getHumanPlayerIdEntity().getId());
-            userHistoryEntries.add(userHistoryEntry);
-        }
-        return userHistoryEntries;
-    }
-
     @Transactional
     @SecurityCheck
     public Date readLastLoginDate(UserEntity userEntity) {
@@ -239,124 +197,5 @@ public class HistoryPersistence {
         }
         UserEntity userEntity = userEntities.get(0);
         return new SimpleUserBackend().setName(userEntity.getName()).setUserId(userEntity.getId());
-    }
-
-    @Transactional
-    @SecurityCheck
-    public List<GameHistoryEntry> readUserHistory(int playerId) {
-        List<GameHistoryEntry> history = new ArrayList<>();
-//   TODO     readAllHistory(entityManager, LevelHistoryEntity.class, playerId, LevelHistoryEntity_.humanPlayerIdEntityId, LevelHistoryEntity_.timeStamp).forEach(levelHistoryEntity -> history.add(new GameHistoryEntry().setDate(levelHistoryEntity.getTimeStamp()).setDescription("Level up: " + levelHistoryEntity.getLevelNumber() + " (" + levelHistoryEntity.getLevelId() + ")")));
-//        readAllHistory(entityManager, QuestHistoryEntity.class, playerId, QuestHistoryEntity_.humanPlayerIdEntityId, QuestHistoryEntity_.timeStamp).forEach(questHistoryEntity -> {
-//            GameHistoryEntry gameHistoryEntry = new GameHistoryEntry().setDate(questHistoryEntity.getTimeStamp());
-//            switch (questHistoryEntity.getType()) {
-//                case QUEST_ACTIVATED:
-//                    gameHistoryEntry.setDescription("Quest activated: " + questHistoryEntity.getQuestInternalName() + " (" + questHistoryEntity.getQuestId() + ")");
-//                    break;
-//                case QUEST_DEACTIVATED:
-//                    gameHistoryEntry.setDescription("Quest deactivated: " + questHistoryEntity.getQuestInternalName() + " (" + questHistoryEntity.getQuestId() + ")");
-//                    break;
-//                case QUEST_PASSED:
-//                    gameHistoryEntry.setDescription("Quest passed: " + questHistoryEntity.getQuestInternalName() + " (" + questHistoryEntity.getQuestId() + ")");
-//                    break;
-//                default:
-//                    gameHistoryEntry.setDescription(questHistoryEntity.getType() + " ??? : " + questHistoryEntity.getQuestInternalName() + " (" + questHistoryEntity.getQuestId() + ")");
-//            }
-//            history.add(gameHistoryEntry);
-//        });
-//        readAllHistory(entityManager, InventoryHistoryEntry.class, playerId, InventoryHistoryEntry_.humanPlayerIdEntityId, InventoryHistoryEntry_.timeStamp).forEach(inventoryHistoryEntry -> {
-//            GameHistoryEntry gameHistoryEntry = new GameHistoryEntry().setDate(inventoryHistoryEntry.getTimeStamp());
-//            switch (inventoryHistoryEntry.getType()) {
-//                case BOX_PICKED:
-//                    gameHistoryEntry.setDescription("Box picked. Crystals: " + inventoryHistoryEntry.getCrystals() + ". Inventory item " + inventoryHistoryEntry.getInventoryItemName() + " (" + inventoryHistoryEntry.getInventoryItemId() + ")");
-//                    break;
-//                case INVENTORY_ITEM_USED:
-//                    gameHistoryEntry.setDescription("Inventory item used. Inventory item " + inventoryHistoryEntry.getInventoryItemName() + " (" + inventoryHistoryEntry.getInventoryItemId() + ")");
-//                    break;
-//                default:
-//                    gameHistoryEntry.setDescription("Box or Inventory unknown type: " + inventoryHistoryEntry.getType() + " ???");
-//            }
-//            history.add(gameHistoryEntry);
-//        });
-//        readAllHistory(entityManager, LevelUnlockHistoryEntry.class, playerId, LevelUnlockHistoryEntry_.humanPlayerIdEntityId, LevelUnlockHistoryEntry_.timeStamp).forEach(levelUnlockHistoryEntry -> history.add(new GameHistoryEntry().setDate(levelUnlockHistoryEntry.getTimeStamp()).setDescription("Unlocked. Crystals: " + levelUnlockHistoryEntry.getCrystals() + ". Unlock item " + levelUnlockHistoryEntry.getUnlockEntityName() + " (" + levelUnlockHistoryEntry.getUnlockEntityId() + ")")));
-//        readAllHistory(entityManager, ConnectionTrackerEntity.class, playerId, ConnectionTrackerEntity_.humanPlayerId, ConnectionTrackerEntity_.timeStamp).forEach(connectionTrackerEntity -> {
-//            GameHistoryEntry gameHistoryEntry = new GameHistoryEntry().setDate(connectionTrackerEntity.getTimeStamp());
-//            switch (connectionTrackerEntity.getType()) {
-//                case SYSTEM_OPEN:
-//                    gameHistoryEntry.setDescription("System connection open");
-//                    break;
-//                case SYSTEM_CLOSE:
-//                    gameHistoryEntry.setDescription("System connection close");
-//                    break;
-//                case GAME_OPEN:
-//                    gameHistoryEntry.setDescription("Game connection open");
-//                    break;
-//                case GAME_CLOSE:
-//                    gameHistoryEntry.setDescription("Game connection close");
-//                    break;
-//                default:
-//                    gameHistoryEntry.setDescription("Connection unknown type: " + connectionTrackerEntity.getType() + " ???");
-//            }
-//            history.add(gameHistoryEntry);
-//        });
-//        readAllHistory(entityManager, ForgotPasswordHistoryEntity.class, playerId, ForgotPasswordHistoryEntity_.humanPlayerId, ForgotPasswordHistoryEntity_.timeStamp).forEach(forgotPasswordHistoryEntity -> {
-//            GameHistoryEntry gameHistoryEntry = new GameHistoryEntry().setDate(forgotPasswordHistoryEntity.getTimeStamp());
-//            switch (forgotPasswordHistoryEntity.getType()) {
-//                case INITIATED:
-//                    gameHistoryEntry.setDescription("Password reset initiated");
-//                    break;
-//                case TIMED_OUT:
-//                    gameHistoryEntry.setDescription("Password reset timed out");
-//                    break;
-//                case OVERRIDDEN:
-//                    gameHistoryEntry.setDescription("Password reset overridden by new password reset");
-//                    break;
-//                case CHANGED:
-//                    gameHistoryEntry.setDescription("Password changed");
-//                    break;
-//                default:
-//                    gameHistoryEntry.setDescription("Password reset unknown type: " + forgotPasswordHistoryEntity.getType() + " ???");
-//            }
-//            history.add(gameHistoryEntry);
-//        });
-//        readAllHistory(entityManager, BotSceneIndicationEntity.class, playerId, BotSceneIndicationEntity_.humanPlayerIdEntityId, BotSceneIndicationEntity_.timeStamp).forEach(botSceneIndicationEntity -> {
-//            GameHistoryEntry gameHistoryEntry = new GameHistoryEntry().setDate(botSceneIndicationEntity.getTimeStamp());
-//            String description;
-//            if (botSceneIndicationEntity.isRaise()) {
-//                description = "Bot scene conflict raised.";
-//            } else {
-//                description = "Bot scene conflict fallen.";
-//            }
-//            if (botSceneIndicationEntity.getStep() != null && botSceneIndicationEntity.getStepCount() != null) {
-//                description += " " + botSceneIndicationEntity.getStep() + "/" + botSceneIndicationEntity.getStepCount() + ".";
-//            }
-//            if (botSceneIndicationEntity.getBotSceneId() != null) {
-//                description += " BotSceneId: " + botSceneIndicationEntity.getBotSceneId() + ".";
-//            }
-//            if (botSceneIndicationEntity.getNewBotSceneConflictConfigId() == null && botSceneIndicationEntity.getOldBotSceneConflictConfigId() == null) {
-//                description += " CLEARED.";
-//            } else {
-//                if (botSceneIndicationEntity.getNewBotSceneConflictConfigId() != null) {
-//                    description += " new ConflictId: " + botSceneIndicationEntity.getNewBotSceneConflictConfigId();
-//                }
-//                if (botSceneIndicationEntity.getOldBotSceneConflictConfigId() != null) {
-//                    description += " old ConflictId: " + botSceneIndicationEntity.getOldBotSceneConflictConfigId();
-//                }
-//                description += ".";
-//            }
-//            gameHistoryEntry.setDescription(description);
-//            history.add(gameHistoryEntry);
-//        });
-//        history.sort(Comparator.comparing(GameHistoryEntry::getDate));
-        return history;
-    }
-
-    private <T> List<T> readAllHistory(EntityManager entityManager, Class<T> theClass, int playerId, SingularAttribute<T, Integer> humanPlayerIdAttr, SingularAttribute<T, Date> orderByAttribute) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<T> userQuery = criteriaBuilder.createQuery(theClass);
-        Root<T> from = userQuery.from(theClass);
-        CriteriaQuery<T> userSelect = userQuery.select(from);
-        userSelect.where(criteriaBuilder.equal(from.get(humanPlayerIdAttr), playerId));
-        userQuery.orderBy(criteriaBuilder.desc(from.get(orderByAttribute)));
-        return entityManager.createQuery(userSelect).getResultList();
     }
 }

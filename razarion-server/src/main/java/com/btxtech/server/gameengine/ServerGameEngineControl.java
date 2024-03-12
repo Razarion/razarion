@@ -5,7 +5,6 @@ import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
-import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.item.ItemTrackerPersistence;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
@@ -20,8 +19,6 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -55,7 +52,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PlanetTickListener {
-    private Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
+    private final Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
     @Inject
     private Event<StaticGameInitEvent> gameEngineInitEvent;
     @Inject
@@ -92,8 +89,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private ExceptionHandler exceptionHandler;
     @Inject
     private ItemTrackerPersistence itemTrackerPersistence;
-    @Inject
-    private HistoryPersistence historyPersistence;
     private boolean running;
     //    @Inject
 //    private DebugGui debugGui;
@@ -117,7 +112,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             planetService.addTickListener(this);
             resourceService.startResourceRegions();
             boxService.startBoxRegions(serverGameEngineCrudPersistence.readBoxRegionConfigs());
-            botService.startBots(serverGameEngineConfig.getBotConfigs(), serverGameEngineCrudPersistence.readBotSceneConfigs());
+            botService.startBots(serverGameEngineConfig.getBotConfigs());
             planetService.enableTracking(false);
         }, failText -> logger.severe("TerrainSetup failed: " + failText));
         if (activateQuests) {
@@ -147,7 +142,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void restartBots() {
         synchronized (reloadLook) {
             botService.killAllBots();
-            botService.startBots(serverGameEngineCrudPersistence.readBotConfigs(), serverGameEngineCrudPersistence.readBotSceneConfigs());
+            botService.startBots(serverGameEngineCrudPersistence.readBotConfigs());
         }
     }
 
@@ -314,17 +309,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Override
     public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
         systemConnectionService.onQuestProgressInfo(userId, questProgressInfo);
-    }
-
-    @Override
-    public void onBotSceneConflictChanged(int userId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
-        systemConnectionService.onBotSceneConflictChanged(userId, botService.getBotSceneIndicationInfos(userId));
-        historyPersistence.onBotSceneConflictChanged(userId, raise, newConflict, oldConflict, botSceneIndicationInfo);
-    }
-
-    @Override
-    public void onBotSceneConflictsChanged(Collection<Integer> activeUserIds, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
-        activeUserIds.forEach(humanPlayerId -> onBotSceneConflictChanged(humanPlayerId, raise, newConflict, oldConflict, botSceneIndicationInfo));
     }
 
     @Override

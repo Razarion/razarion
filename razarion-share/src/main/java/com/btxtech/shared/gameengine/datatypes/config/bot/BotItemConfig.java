@@ -153,25 +153,4 @@ public class BotItemConfig {
         setRePopTime(rePopTime);
         return this;
     }
-
-    public BotItemConfig clone4BotScene(DecimalPosition absoluteCenter) {
-        BotItemConfig botItemConfig = new BotItemConfig();
-        botItemConfig.baseItemTypeId = baseItemTypeId;
-        botItemConfig.count = count;
-        botItemConfig.createDirectly = createDirectly;
-        botItemConfig.noSpawn = noSpawn;
-        botItemConfig.place = PlaceConfig.cloneWithAbsolutePosition(place, absoluteCenter);
-        botItemConfig.angle = angle;
-        botItemConfig.moveRealmIfIdle = moveRealmIfIdle;
-        botItemConfig.idleTtl = idleTtl;
-        if (createDirectly) {
-            botItemConfig.noRebuild = true;
-            botItemConfig.rePopTime = null;
-        } else {
-            botItemConfig.noRebuild = noRebuild;
-            botItemConfig.rePopTime = rePopTime;
-        }
-        return botItemConfig;
-    }
-
 }

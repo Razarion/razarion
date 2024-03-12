@@ -3,7 +3,6 @@ package com.btxtech.server.persistence.server;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
-import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
@@ -15,7 +14,6 @@ import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.SlavePlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -65,11 +63,6 @@ public class ServerGameEngineConfigEntity {
             joinColumns = @JoinColumn(name = "serverGameEngineId"),
             inverseJoinColumns = @JoinColumn(name = "botConfigId"))
     private List<BotConfigEntity> botConfigs;
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "SERVER_GAME_ENGINE_BOT_SCENE_CONFIG",
-            joinColumns = @JoinColumn(name = "serverGameEngineId"),
-            inverseJoinColumns = @JoinColumn(name = "botSceneConfigId"))
-    private List<BotSceneConfigEntity> botSceneConfigs;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "serverGameEngineConfig")
     private List<ServerLevelQuestEntity> serverLevelQuestEntities;
@@ -134,13 +127,6 @@ public class ServerGameEngineConfigEntity {
             return Collections.emptyList();
         }
         return this.botConfigs.stream().map(BotConfigEntity::toBotConfig).collect(Collectors.toList());
-    }
-
-    public Collection<BotSceneConfig> getBotSceneConfigs() {
-        if (this.botSceneConfigs == null) {
-            return Collections.emptyList();
-        }
-        return this.botSceneConfigs.stream().map(BotSceneConfigEntity::toBotSceneConfig).collect(Collectors.toList());
     }
 
     public Collection<BoxRegionConfig> getBoxRegionConfigs() {

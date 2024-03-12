@@ -53,12 +53,4 @@ public class BotEnragementStateConfig {
         setEnrageUpKills(enrageUpKills);
         return this;
     }
-
-    public BotEnragementStateConfig clone4BotScene(DecimalPosition absoluteCenter) {
-        BotEnragementStateConfig botEnragementStateConfig = new BotEnragementStateConfig();
-        botEnragementStateConfig.name = name;
-        botEnragementStateConfig.botItems = botItems.stream().map(botItemConfig -> botItemConfig.clone4BotScene(absoluteCenter)).collect(Collectors.toList());
-        botEnragementStateConfig.enrageUpKills = enrageUpKills;
-        return botEnragementStateConfig;
-    }
 }

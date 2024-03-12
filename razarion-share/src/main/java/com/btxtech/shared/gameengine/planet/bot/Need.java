@@ -14,7 +14,7 @@ import java.util.Map;
  * Time: 14:08:04
  */
 public class Need {
-    private Collection<BotItemNeed> currentNeeds = new ArrayList<>();
+    private final Collection<BotItemNeed> currentNeeds = new ArrayList<>();
 
     public Need(Collection<BotItemConfig> botItemConfigs) {
         for (BotItemConfig botItemConfig : botItemConfigs) {
@@ -57,8 +57,8 @@ public class Need {
         }
     }
 
-    private class BotItemNeed {
-        private BotItemConfig botItemConfig;
+    private static class BotItemNeed {
+        private final BotItemConfig botItemConfig;
         private Long rePopTime;
 
         private BotItemNeed(BotItemConfig botItemConfig) {

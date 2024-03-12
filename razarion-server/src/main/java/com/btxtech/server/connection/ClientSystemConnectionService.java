@@ -11,8 +11,6 @@ import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfoContainer;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -58,13 +56,6 @@ public class ClientSystemConnectionService {
         PlayerSession playerSession = sessionService.findPlayerSession(userId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.QUEST_PROGRESS_CHANGED, questProgressInfo);
-        }
-    }
-
-    public void onBotSceneConflictChanged(int userId, List<BotSceneIndicationInfo> botSceneIndicationInfos) {
-        PlayerSession playerSession = sessionService.findPlayerSession(userId);
-        if (playerSession != null) {
-            sendToClient(playerSession, SystemConnectionPacket.BOT_SCENE_CONFLICT_INDICATOR_CHANGED, new BotSceneIndicationInfoContainer().setBotSceneIndicationInfos(botSceneIndicationInfos));
         }
     }
 

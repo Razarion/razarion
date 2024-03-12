@@ -1,16 +1,12 @@
 package com.btxtech.shared.system;
 
 import com.btxtech.shared.datatypes.ChatMessage;
-import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfoContainer;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-
-import java.util.List;
 
 /**
  * Created by Beat
@@ -29,8 +25,6 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     QUEST_ACTIVATED(QuestConfig.class),
     QUEST_PASSED(QuestConfig.class),
     QUEST_PROGRESS_CHANGED(QuestProgressInfo.class),
-    // Not scenes
-    BOT_SCENE_CONFLICT_INDICATOR_CHANGED(BotSceneIndicationInfoContainer.class),
     // XP
     XP_CHANGED(Integer.class),
     // Inventory

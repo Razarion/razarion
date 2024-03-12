@@ -5,8 +5,6 @@ import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -29,34 +27,20 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class BotService {
-    private Logger logger = Logger.getLogger(BotService.class.getName());
+    private final Logger logger = Logger.getLogger(BotService.class.getName());
     @Inject
     private Instance<BotRunner> botRunnerInstance;
     @Inject
-    private Instance<BotScene> defenceAreaInstance;
-    @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
-    private GameLogicService gameLogicService;
     private final Collection<BotRunner> botRunners = new ArrayList<>();
-    private final Collection<BotScene> botScenes = new ArrayList<>();
 
-    public void startBots(Collection<BotConfig> botConfigs, Collection<BotSceneConfig> botSceneConfigs) {
+    public void startBots(Collection<BotConfig> botConfigs) {
         if (botConfigs != null) {
             botConfigs.forEach(botConfig -> {
                 try {
                     startBot(botConfig);
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, "Starting bot failed: " + botConfig, e);
-                }
-            });
-        }
-        if (botSceneConfigs != null) {
-            botSceneConfigs.forEach(botSceneConfig -> {
-                try {
-                    startBotScene(botSceneConfig);
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Starting BotScene failed: " + botSceneConfig, e);
                 }
             });
         }
@@ -71,31 +55,11 @@ public class BotService {
         return botRunner;
     }
 
-    private void startBotScene(BotSceneConfig botSceneConfig) {
-        BotScene botScene = defenceAreaInstance.get();
-        synchronized (botScenes) {
-            botScenes.add(botScene);
-        }
-        botScene.start(botSceneConfig);
-    }
-
-
     public void killAllBots() {
-        Collection<Integer> activeUserIds = new ArrayList<>();
-        synchronized (botScenes) {
-            botScenes.forEach(botScene -> {
-                activeUserIds.addAll(botScene.allActiveConflicts());
-                botScene.stop();
-            });
-            botScenes.clear();
-        }
-
         synchronized (botRunners) {
             botRunners.forEach(BotRunner::kill);
             botRunners.clear();
         }
-
-        gameLogicService.onBotSceneConflictsChanged(activeUserIds, false, null, null, null);
     }
 
     private void killBot(int botId) {
@@ -112,18 +76,6 @@ public class BotService {
                 BotRunner botRunner = getBotRunner(target.getBase());
                 if (botRunner != null) {
                     botRunner.enrageOnKill(target, actor);
-                    handleKillInBotScene(botRunner.getBotConfig().getId(), actor);
-                }
-            } else if (target.getBase().getCharacter().isHuman()) {
-                BotRunner botRunner = getBotRunner(actor);
-                if (botRunner != null) {
-                    synchronized (botScenes) {
-                        for (BotScene botScene : botScenes) {
-                            if (botScene.onHumanKill(target.getBase().getUserId(), botRunner)) {
-                                break;
-                            }
-                        }
-                    }
                 }
             }
         } catch (Throwable t) {
@@ -200,24 +152,6 @@ public class BotService {
                     return;
                 }
             }
-        }
-    }
-
-    private void handleKillInBotScene(int botId, PlayerBase actor) {
-        synchronized (botScenes) {
-            botScenes.forEach(botScene -> {
-                try {
-                    botScene.onKillBotItem(botId, actor);
-                } catch (Throwable t) {
-                    exceptionHandler.handleException(t);
-                }
-            });
-        }
-    }
-
-    public List<BotSceneIndicationInfo> getBotSceneIndicationInfos(int userId) {
-        synchronized (botScenes) {
-            return botScenes.stream().map(botScene -> botScene.getBotSceneIndicationInfo(userId)).filter(Objects::nonNull).collect(Collectors.toList());
         }
     }
 }

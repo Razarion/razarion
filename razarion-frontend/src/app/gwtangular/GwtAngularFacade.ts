@@ -678,8 +678,6 @@ export interface QuestCockpit {
   setShowQuestInGameVisualisation(): void;
 
   onQuestProgress(questProgressInfo: QuestProgressInfo | null): void;
-
-  setBotSceneIndicationInfos(): void;
 }
 
 export interface InGameQuestVisualizationService {

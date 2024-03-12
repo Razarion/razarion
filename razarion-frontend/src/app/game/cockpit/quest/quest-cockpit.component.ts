@@ -77,9 +77,6 @@ export class QuestCockpitComponent implements QuestCockpit {
     });
   }
 
-  setBotSceneIndicationInfos(): void {
-  }
-
   private setupConditionConfig(): ConditionConfig | undefined {
     if (!this.questDescriptionConfig) {
       return undefined

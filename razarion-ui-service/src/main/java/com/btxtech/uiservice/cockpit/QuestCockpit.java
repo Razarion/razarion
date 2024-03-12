@@ -11,6 +11,4 @@ public interface QuestCockpit {
     void setShowQuestInGameVisualisation();
 
     void onQuestProgress(QuestProgressInfo questProgressInfo);
-
-    void setBotSceneIndicationInfos();
 }

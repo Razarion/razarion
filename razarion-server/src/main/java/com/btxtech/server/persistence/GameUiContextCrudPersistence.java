@@ -44,7 +44,6 @@ import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
 import org.xml.sax.SAXException;
@@ -97,8 +96,6 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     private ServerLevelQuestService serverLevelQuestService;
     @Inject
     private ServerUnlockService serverUnlockService;
-    @Inject
-    private BotService botService;
     @Inject
     private AlarmService alarmService;
     @Inject
@@ -176,7 +173,6 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
         if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
             warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
             warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getUserId()));
-            warmGameUiContext.setBotSceneIndicationInfos(botService.getBotSceneIndicationInfos(userContext.getUserId()));
             warmGameUiContext.setAvailableUnlocks(serverUnlockService.hasAvailableUnlocks(userContext));
         }
         return warmGameUiContext;

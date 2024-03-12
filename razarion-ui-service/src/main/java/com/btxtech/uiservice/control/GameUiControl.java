@@ -16,7 +16,6 @@ import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.system.alarm.Alarm;
@@ -139,28 +138,22 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         cockpitService.show(userUiService.getUserContext());
         chatUiService.start();
         nextSceneNumber = 0;
+        if (gameEngineMode == GameEngineMode.SLAVE) {
+            // Scene started if slave synchronized (from GameEngine)
+            return;
+        }
         if (gameEngineMode == GameEngineMode.MASTER) {
             if (coldGameUiContext.getWarmGameUiContext().isDetailedTracking()) {
                 trackerService.startDetailedTracking(getPlanetConfig().getId());
             }
             scenes = coldGameUiContext.getWarmGameUiContext().getSceneConfigs();
-            questCockpitService.setBotSceneIndicationInfos(null);
-        } else if (gameEngineMode == GameEngineMode.SLAVE) {
-            questCockpitService.setBotSceneIndicationInfos(coldGameUiContext.getWarmGameUiContext().getBotSceneIndicationInfos());
-            return; // Scene started if slave synchronized (from GameEngine)
-        } else if (gameEngineMode == GameEngineMode.PLAYBACK) {
-            scenes = setupPlaybackScenes();
-            // TODO playbackControl.start(coldGameUiContext.getWarmGameUiContext().getPlaybackGameUiControlConfig());
-            questCockpitService.setBotSceneIndicationInfos(null);
-        } else {
-            throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiContext.getWarmGameUiContext().getGameEngineMode());
+            if (scenes.isEmpty()) {
+                throw new AlarmRaisedException(Alarm.Type.INVALID_GAME_UI_CONTEXT, "No scenes defined", coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
+            }
+            runScene();
+            return;
         }
-        if (scenes.isEmpty()) {
-            throw new AlarmRaisedException(Alarm.Type.INVALID_GAME_UI_CONTEXT,
-                    "No scenes defined",
-                    coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
-        }
-        runScene();
+        throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiContext.getWarmGameUiContext().getGameEngineMode());
     }
 
     private void runScene() {
@@ -388,10 +381,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         if (currentScene != null) {
             currentScene.onQuestPassedServer(quest);
         }
-    }
-
-    public void onServerBotSceneIndicationChange(List<BotSceneIndicationInfo> botSceneIndicationInfos) {
-        questCockpitService.setBotSceneIndicationInfos(botSceneIndicationInfos);
     }
 
     public boolean hasActiveServerQuest() {

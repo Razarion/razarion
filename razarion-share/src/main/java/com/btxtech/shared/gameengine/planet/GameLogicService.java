@@ -5,8 +5,6 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
@@ -19,7 +17,6 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -229,13 +226,5 @@ public class GameLogicService {
 
     public void onResourcesBalanceChanged(PlayerBase playerBase, int resources) {
         gameLogicListener.ifPresent(listener -> listener.onResourcesBalanceChanged(playerBase, resources));
-    }
-
-    public void onBotSceneConflictChanged(int userId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
-        gameLogicListener.ifPresent(listener -> listener.onBotSceneConflictChanged(userId, raise, newConflict, oldConflict, botSceneIndicationInfo));
-    }
-
-    public void onBotSceneConflictsChanged(Collection<Integer> activeUserIds, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
-        gameLogicListener.ifPresent(listener -> listener.onBotSceneConflictsChanged(activeUserIds, raise, newConflict, oldConflict, botSceneIndicationInfo));
     }
 }

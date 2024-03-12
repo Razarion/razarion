@@ -85,7 +85,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().id(1).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name(botName).npc(false).auxiliaryId(auxiliaryId));
-        getBotService().startBots(botConfigs, null);
+        getBotService().startBots(botConfigs);
         tickPlanetServiceBaseServiceActive();
         PlayerBase botBase = getBotBase(botName);
         return findSyncBaseItem((PlayerBaseFull) botBase, itemTypeId);
@@ -144,7 +144,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().id(botId).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name(botName).npc(false));
-        getBotService().startBots(botConfigs, null);
+        getBotService().startBots(botConfigs);
         tickPlanetServiceBaseServiceActive();
         return (PlayerBaseFull) getBotBase(botId);
     }
@@ -158,7 +158,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().id(botId).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name(botName).npc(false));
-        getBotService().startBots(botConfigs, null);
+        getBotService().startBots(botConfigs);
         tickPlanetServiceBaseServiceActive();
         return (PlayerBaseFull) getBotBase(botId);
     }
@@ -172,7 +172,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().id(botId).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name(botName).npc(false));
-        getBotService().startBots(botConfigs, null);
+        getBotService().startBots(botConfigs);
         tickPlanetServiceBaseServiceActive();
         return (PlayerBaseFull) getBotBase(botId);
     }

@@ -32,7 +32,7 @@ public class BotServiceTest extends BaseBotServiceTest {
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().id(1).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name("Kenny").npc(false));
         // Start bot
-        startBots(botConfigs, null);
+        startBots(botConfigs);
 
         tickBotRunner();
         Assert.assertEquals(9, getSyncBaseItemInfos().size());
@@ -55,7 +55,7 @@ public class BotServiceTest extends BaseBotServiceTest {
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().id(1).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name("Kenny").npc(false));
         // Start bot
-        startBots(botConfigs, null);
+        startBots(botConfigs);
 
         tickBotRunner();
         Assert.assertEquals(3, getSyncBaseItemInfos().size());
@@ -76,7 +76,7 @@ public class BotServiceTest extends BaseBotServiceTest {
         botItems.add(new BotItemConfig().baseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).count(3).createDirectly(true).place(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 10, 10))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().id(1).autoAttack(true).realm(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 100, 100))).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name("Kenny").npc(false));
-        startBots(botConfigs, null);
+        startBots(botConfigs);
 
         tickBotRunner();
 
@@ -101,7 +101,7 @@ public class BotServiceTest extends BaseBotServiceTest {
         botItems.add(new BotItemConfig().baseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).count(3).createDirectly(true).place(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 10, 10))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().id(1).realm(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 100, 100))).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name("Kenny").npc(false));
-        startBots(botConfigs, null);
+        startBots(botConfigs);
 
         tickBotRunner();
 

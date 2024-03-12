@@ -208,20 +208,6 @@ public class BotConfig {
                 && minActiveMs <= maxActiveMs;
     }
 
-    public BotConfig clone4BotScene(DecimalPosition absoluteCenter) {
-        BotConfig botConfig = new BotConfig();
-        botConfig.id = id;
-        botConfig.internalName = internalName;
-        botConfig.auxiliaryId = auxiliaryId;
-        botConfig.npc = npc;
-        botConfig.actionDelay = actionDelay;
-        botConfig.realm = PlaceConfig.cloneWithAbsolutePosition(realm, absoluteCenter);
-        botConfig.name = name;
-        botConfig.autoAttack = autoAttack;
-        botConfig.botEnragementStateConfigs = botEnragementStateConfigs.stream().map(botEnragementStateConfig -> botEnragementStateConfig.clone4BotScene(absoluteCenter)).collect(Collectors.toList());
-        return botConfig;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

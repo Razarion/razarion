@@ -258,7 +258,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         botItems.add(new BotItemConfig().baseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).count(1).createDirectly(true).place(new PlaceConfig().position(new DecimalPosition(100, 70))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().id(1).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name("Kenny").npc(false));
-        getBotService().startBots(botConfigs, null);
+        getBotService().startBots(botConfigs);
         TestSimpleScheduledFuture botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT_TICKER);
         for (int i = 0; i < 1000; i++) {
             botScheduledFuture.invokeRun();

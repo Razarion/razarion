@@ -345,7 +345,7 @@ public class ItemContainerTest extends BaseBasicTest {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().id(1).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name("Test bot").npc(false).realm(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(96,312, 40, 40))));
-        getBotService().startBots(botConfigs, null);
+        getBotService().startBots(botConfigs);
         tickPlanetServiceBaseServiceActive();
     }
 }

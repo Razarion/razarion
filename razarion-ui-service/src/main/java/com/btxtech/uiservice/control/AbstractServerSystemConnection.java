@@ -7,7 +7,6 @@ import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfoContainer;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.SystemConnectionPacket;
@@ -75,9 +74,6 @@ public abstract class AbstractServerSystemConnection {
                 break;
             case QUEST_PASSED:
                 gameUiControl.onQuestPassedServer((QuestConfig) param);
-                break;
-            case BOT_SCENE_CONFLICT_INDICATOR_CHANGED:
-                gameUiControl.onServerBotSceneIndicationChange(((BotSceneIndicationInfoContainer) param).getBotSceneIndicationInfos());
                 break;
             case LEVEL_UPDATE_SERVER:
                 userUiService.onServerLevelChange((LevelUpPacket) param);

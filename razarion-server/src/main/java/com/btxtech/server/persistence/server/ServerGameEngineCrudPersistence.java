@@ -22,7 +22,6 @@ import com.btxtech.shared.dto.SlavePlanetConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -102,11 +101,6 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     @Transactional
     public Collection<BotConfig> readBotConfigs() {
         return serverGameEngineConfigEntity().getBotConfigs();
-    }
-
-    @Transactional
-    public Collection<BotSceneConfig> readBotSceneConfigs() {
-        return serverGameEngineConfigEntity().getBotSceneConfigs();
     }
 
     @Transactional

@@ -145,7 +145,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 sendTickUpdate = true;
                 break;
             case START_BOTS:
-                botService.startBots((Collection<BotConfig>) controlPackage.getSingleData(), null);
+                botService.startBots((Collection<BotConfig>) controlPackage.getSingleData());
                 break;
             case EXECUTE_BOT_COMMANDS:
                 botService.executeCommands((List<? extends AbstractBotCommandConfig>) controlPackage.getSingleData());

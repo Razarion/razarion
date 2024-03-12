@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.cockpit;
 
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.uiservice.control.GameUiControl;
 
@@ -43,15 +42,6 @@ public class QuestCockpitService {
             questCockpit.onQuestProgress(questProgressInfo);
         } else {
             logger.warning("No questCockpit onQuestProgress()");
-        }
-    }
-
-    @Deprecated
-    public void setBotSceneIndicationInfos(List<BotSceneIndicationInfo> botSceneIndicationInfos) {
-        if (questCockpit != null) {
-            questCockpit.setBotSceneIndicationInfos();
-        } else {
-            logger.warning("No questCockpit setBotSceneIndicationInfos()");
         }
     }
 }

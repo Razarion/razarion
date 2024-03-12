@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.bot;
 import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 import com.btxtech.shared.gameengine.planet.basic.BaseBasicTest;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -17,8 +16,8 @@ import java.util.List;
 public class BaseBotServiceTest extends BaseBasicTest {
     private TestSimpleScheduledFuture botScheduledFuture;
 
-    protected void startBots(List<BotConfig> botConfigs, List<BotSceneConfig> botSceneConfigs) {
-        getBotService().startBots(botConfigs, botSceneConfigs);
+    protected void startBots(List<BotConfig> botConfigs) {
+        getBotService().startBots(botConfigs);
         botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT_TICKER);
     }
 
