@@ -100,13 +100,14 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         permanentSalve.connectToMaster(userContext, this);
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(10, 20), userContext);
         tickPlanetServiceBaseServiceActive();
+        permanentSalve.tickPlanetServiceBaseServiceActive();
         permanentSalve.assertSyncItemCount(1, 0, 1);
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         // Pick box
         SyncBoxItem syncBoxItem = findSyncBoxItem(FallbackConfig.BOX_ITEM_TYPE_LONG_ID);
         getCommandService().pickupBox(builder, syncBoxItem);
-        verifySlavePick(permanentSalve, builder.getId(), syncBoxItem.getId());
         tickPlanetServiceBaseServiceActive();
+        verifySlavePick(permanentSalve, builder.getId(), syncBoxItem.getId());
         // Verify
         permanentSalve.assertSyncItemCount(1, 0, 0);
         Assert.assertEquals(1, getTestGameLogicListener().getBoxPicked().size());
@@ -176,8 +177,8 @@ public class BoxServiceTest extends WeldMasterBaseTest {
     private void verifySlavePick(WeldSlaveEmulator permanentSalve, int pickerId, int boxId) {
         SyncBaseItem syncBaseItem = permanentSalve.getSyncItemContainerService().getSyncBaseItem(pickerId);
         Assert.assertFalse(syncBaseItem.isIdle());
-        permanentSalve.getBaseItemService().tick();
-        Assert.assertFalse(syncBaseItem.isIdle());
+        permanentSalve.tickPlanetServiceBaseServiceActive();
+        Assert.assertTrue(syncBaseItem.isIdle());
     }
 
 }

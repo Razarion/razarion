@@ -33,17 +33,21 @@ public class ItemContainerTest extends BaseBasicTest {
         permSlave.connectToMaster(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
         getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Load 1.
         getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         // Verify loaded
         assertContainingSyncItems(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder());
         Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
@@ -55,6 +59,7 @@ public class ItemContainerTest extends BaseBasicTest {
         // Load 2.
         getCommandService().loadContainer(humanBaseContext.getAttacker1(), transporter);
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         // Verify loaded
         assertContainingSyncItems(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
@@ -69,9 +74,11 @@ public class ItemContainerTest extends BaseBasicTest {
         // Move to unload position
         getCommandService().move(transporter, new DecimalPosition(63, 222));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         // Unload
         getCommandService().unloadContainer(transporter, new DecimalPosition(47, 222));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         // Verify unloaded
         assertContainingSyncItems(transporter.getSyncItemContainer().getContainedItems());
         Assert.assertNull(humanBaseContext.getBuilder().getContainedIn());
@@ -95,12 +102,15 @@ public class ItemContainerTest extends BaseBasicTest {
         permSlave.connectToMaster(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
         getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Load 1.
@@ -126,12 +136,15 @@ public class ItemContainerTest extends BaseBasicTest {
         permSlave.connectToMaster(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
         getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Sell others
@@ -166,12 +179,15 @@ public class ItemContainerTest extends BaseBasicTest {
         permSlave.connectToMaster(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
         getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Sell others
@@ -185,7 +201,7 @@ public class ItemContainerTest extends BaseBasicTest {
         // Setup bot
         setupSimpleAttackerBot();
         // Kill transporter
-        getCommandService().move(transporter, new DecimalPosition(116, 352));
+        getCommandService().move(transporter, new DecimalPosition(116, 332));
         tickPlanetServiceBaseServiceActive();
         // Verify killed
         Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(transporter.getId())); // TODO Failed on 07.03.2018
@@ -208,12 +224,15 @@ public class ItemContainerTest extends BaseBasicTest {
         permSlave.connectToMaster(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
         getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Load 1.
