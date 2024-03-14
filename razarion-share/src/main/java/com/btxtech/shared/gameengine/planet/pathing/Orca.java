@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.planet.PlanetService.TICK_FACTOR;
 
@@ -24,7 +26,7 @@ public class Orca {
     public static final double TIME_HORIZON_ITEMS = 0.5;
     public static final double TIME_HORIZON_OBSTACLES = 0.5; // Do not make bigger, it becomes unstable
     public static final double EPSILON = 0.00001;
-    // private static final Logger LOGGER = Logger.getLogger(Orca.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Orca.class.getName());
     private final SyncPhysicalMovable syncPhysicalMovable;
     private final DecimalPosition position;
     private double radius;
@@ -79,56 +81,59 @@ public class Orca {
         double combinedRadius = radius + otherRadius;
         double combinedRadiusSq = combinedRadius * combinedRadius;
 
+        try {
+            OrcaLine orcaLine;
+            if (distanceSq >= combinedRadiusSq) {
+                // No collision.
+                DecimalPosition u;
+                DecimalPosition direction;
 
-        OrcaLine orcaLine;
-        if (distanceSq >= combinedRadiusSq) {
-            // No collision.
-            DecimalPosition u;
-            DecimalPosition direction;
+                DecimalPosition w = relativeVelocity.sub(relativePosition.divide(TIME_HORIZON_ITEMS));
 
-            DecimalPosition w = relativeVelocity.sub(relativePosition.divide(TIME_HORIZON_ITEMS));
+                // Vector from cutoff center to relative velocity.
+                double wLengthSq = w.magnitude() * w.magnitude();
+                double dotProduct1 = w.dotProduct(relativePosition);
 
-            // Vector from cutoff center to relative velocity.
-            double wLengthSq = w.magnitude() * w.magnitude();
-            double dotProduct1 = w.dotProduct(relativePosition);
+                if (dotProduct1 < 0.0 && dotProduct1 * dotProduct1 > combinedRadiusSq * wLengthSq) {
+                    // Project on cut-off circle.
+                    double wLength = Math.sqrt(wLengthSq);
+                    DecimalPosition unitW = w.divide(wLength);
 
-            if (dotProduct1 < 0.0 && dotProduct1 * dotProduct1 > combinedRadiusSq * wLengthSq) {
-                // Project on cut-off circle.
-                double wLength = Math.sqrt(wLengthSq);
-                DecimalPosition unitW = w.divide(wLength);
-
-                direction = new DecimalPosition(unitW.getY(), -unitW.getX()); // Rotate -90deg (clockwise)
-                u = unitW.multiply(combinedRadius / TIME_HORIZON_ITEMS - wLength);
-            } else {
-                // Project on legs.
-                double leg = Math.sqrt(distanceSq - combinedRadiusSq);
-
-                if (relativePosition.determinant(w) > 0.0) {
-                    // Project on left leg.
-                    direction = new DecimalPosition(relativePosition.getX() * leg - relativePosition.getY() * combinedRadius, relativePosition.getX() * combinedRadius + relativePosition.getY() * leg).divide(distanceSq);
+                    direction = new DecimalPosition(unitW.getY(), -unitW.getX()); // Rotate -90deg (clockwise)
+                    u = unitW.multiply(combinedRadius / TIME_HORIZON_ITEMS - wLength);
                 } else {
-                    // Project on right leg.
-                    direction = new DecimalPosition(relativePosition.getX() * leg + relativePosition.getY() * combinedRadius, -relativePosition.getX() * combinedRadius + relativePosition.getY() * leg).divide(-distanceSq);
-                }
+                    // Project on legs.
+                    double leg = Math.sqrt(distanceSq - combinedRadiusSq);
 
-                double dotProduct2 = relativeVelocity.dotProduct(direction);
-                u = direction.multiply(dotProduct2).sub(relativeVelocity);
+                    if (relativePosition.determinant(w) > 0.0) {
+                        // Project on left leg.
+                        direction = new DecimalPosition(relativePosition.getX() * leg - relativePosition.getY() * combinedRadius, relativePosition.getX() * combinedRadius + relativePosition.getY() * leg).divide(distanceSq);
+                    } else {
+                        // Project on right leg.
+                        direction = new DecimalPosition(relativePosition.getX() * leg + relativePosition.getY() * combinedRadius, -relativePosition.getX() * combinedRadius + relativePosition.getY() * leg).divide(-distanceSq);
+                    }
+
+                    double dotProduct2 = relativeVelocity.dotProduct(direction);
+                    u = direction.multiply(dotProduct2).sub(relativeVelocity);
+                }
+                DecimalPosition point = preferredVelocity.add(reciprocalFactor, u);
+                orcaLine = new OrcaLine(point, direction);
+            } else {
+                // Collision
+                double overlapDistance = combinedRadius - relativePosition.magnitude();
+                DecimalPosition overlapCorrection = position.sub(otherPosition).normalize(overlapDistance / TICK_FACTOR); // Make sure the collision is eliminated next tick
+                DecimalPosition point = preferredVelocity.add(overlapCorrection.sub(relativeVelocity).multiply(reciprocalFactor));
+                point = point.normalize(Math.min(speed, point.magnitude()));
+                DecimalPosition direction = new DecimalPosition(-relativePosition.getY(), relativePosition.getX()).normalize();
+                orcaLine = new OrcaLine(point, direction);
             }
-            DecimalPosition point = preferredVelocity.add(reciprocalFactor, u);
-            orcaLine = new OrcaLine(point, direction);
-        } else {
-            // Collision
-            double overlapDistance = combinedRadius - relativePosition.magnitude();
-            DecimalPosition overlapCorrection = position.sub(otherPosition).normalize(overlapDistance / TICK_FACTOR); // Make sure the collision is eliminated next tick
-            DecimalPosition point = preferredVelocity.add(overlapCorrection.sub(relativeVelocity).multiply(reciprocalFactor));
-            point = point.normalize(Math.min(speed, point.magnitude()));
-            DecimalPosition direction = new DecimalPosition(-relativePosition.getY(), relativePosition.getX()).normalize();
-            orcaLine = new OrcaLine(point, direction);
+            orcaLine.setRelativeVelocity(relativeVelocity);
+            orcaLine.setRelativePosition(relativePosition);
+            orcaLine.setCombinedRadius(combinedRadius);
+            itemOrcaLines.add(orcaLine);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Add addOrcaLine failed" , e);
         }
-        orcaLine.setRelativeVelocity(relativeVelocity);
-        orcaLine.setRelativePosition(relativePosition);
-        orcaLine.setCombinedRadius(combinedRadius);
-        itemOrcaLines.add(orcaLine);
     }
 
     public void add(ObstacleSlope obstacleSlope) {

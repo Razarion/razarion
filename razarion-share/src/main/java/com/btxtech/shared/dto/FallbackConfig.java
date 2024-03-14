@@ -150,7 +150,7 @@ public final class FallbackConfig {
         BaseItemType attacker = new BaseItemType();
         attacker.health(30).buildup(12).id(SHIP_ATTACKER_ITEM_TYPE_ID).internalName("Ship attacker test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).acceleration(0.5).angularVelocity(Math.toRadians(30)).radius(3).speed(10.0));
-        attacker.setWeaponType(new WeaponType().damage(5).range(15).projectileSpeed(20.0).reloadTime(2).turretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTurretCenter(new Vertex(0, 0, 1))));
+        attacker.setWeaponType(new WeaponType().damage(5).range(25).projectileSpeed(20.0).reloadTime(2).turretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTurretCenter(new Vertex(0, 0, 1))));
         baseItemTypes.add(attacker);
     }
 

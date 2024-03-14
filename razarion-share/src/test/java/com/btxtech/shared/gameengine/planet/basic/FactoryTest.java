@@ -68,7 +68,6 @@ public class FactoryTest extends BaseBasicTest {
 
     @Test
     public void landMultiple() {
-        Assert.fail("--- TODO ---");
         setup();
 
         UserContext userContext = createLevel1UserContext();

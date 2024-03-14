@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -87,8 +86,6 @@ public class AttackTest extends BaseBasicTest {
         botAttackCommandConfig.setActorItemTypeId(FallbackConfig.SHIP_ATTACKER_ITEM_TYPE_ID);
         getBotService().executeCommands(Collections.singletonList(botAttackCommandConfig));
 
-        // showDisplay();
-        Assert.fail("... FIX ME: below will block ...");
         tickPlanetServiceBaseServiceActive();
         assertSyncItemCount(3, 0, 0);
 
