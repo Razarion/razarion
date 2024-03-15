@@ -11,9 +11,6 @@ razarion-server/src/main/webapp/razarion_client
 razarion-server/src/main/webapp/razarion_client_worker
 razarion-server/src/main/webapp/debug
 razarion-server/src/main/webapp/WEB-INF/deploy
-razarion-server/src/main/angular/backend/node_modules/
-razarion-server/src/main/angular/frontend/node_modules/
-razarion-server/src/main/angular/frontend/three/
 razarion-server/src/main/webapp/marketinghist/node_modules/
 razarion-server/src/main/gwt-unitCache
 razarion-share/razarion-share.iml
@@ -55,5 +52,7 @@ razarion-unity-converter/razarion-unity-converter.iml
 /razarion-server/src/test/resources/sql/db/razarion/USER_LOGIN_COOKIE.sql
 /razarion-server/src/test/resources/sql/db/razarion/USER_UNLOCKED.sql
 
-/razarion-server/src/main/angular/frontend/threejs-models/
+/razarion-frontend/node_modules/
+/razarion-frontend/.angular/cache/
 /razarion-frontend/src/app/generated/
+
