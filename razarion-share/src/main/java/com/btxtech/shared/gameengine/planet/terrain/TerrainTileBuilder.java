@@ -69,30 +69,19 @@ public class TerrainTileBuilder {
     public TerrainTile generate(PlanetConfig planetConfig) {
         terrainTile.setTerrainWaterTiles(terrainWaterTileBuilder.generate());
 
-        Map<Integer, Float32ArrayEmu> terrainTileGroundPositions = new HashMap<>();
         Map<Integer, GroundTerrainTile> groundTerrainTiles = new HashMap<>();
         groundPositions.getMap().forEach((groundConfigId, vertices) -> {
             int correctedGroundConfigId = groundConfigId != null ? groundConfigId : planetConfig.getGroundConfigId();
             Float32ArrayEmu positions = jsInteropObjectFactory.newFloat32Array4Vertices(vertices);
-            terrainTileGroundPositions.put(correctedGroundConfigId, positions);
             GroundTerrainTile groundTerrainTile = new GroundTerrainTile();
             groundTerrainTile.groundConfigId = correctedGroundConfigId;
             groundTerrainTile.positions = positions;
             groundTerrainTiles.put(correctedGroundConfigId, groundTerrainTile);
         });
-        if (!terrainTileGroundPositions.isEmpty()) {
-            terrainTile.setGroundPositions(terrainTileGroundPositions);
-        }
-        Map<Integer, Float32ArrayEmu> terrainTileGroundNorms = new HashMap<>();
         groundNorms.getMap().forEach((groundConfigId, vertices) -> {
             int correctedGroundConfigId = groundConfigId != null ? groundConfigId : planetConfig.getGroundConfigId();
-            Float32ArrayEmu norms = jsInteropObjectFactory.newFloat32Array4Vertices(vertices);
-            terrainTileGroundNorms.put(correctedGroundConfigId, norms);
-            groundTerrainTiles.get(correctedGroundConfigId).norms = norms;
+            groundTerrainTiles.get(correctedGroundConfigId).norms = jsInteropObjectFactory.newFloat32Array4Vertices(vertices);
         });
-        if (!terrainTileGroundNorms.isEmpty()) {
-            terrainTile.setGroundNorms(terrainTileGroundNorms);
-        }
         terrainTile.setGroundTerrainTiles(groundTerrainTiles.values().toArray(new GroundTerrainTile[0]));
 
         if (terrainSlopeTileBuilders != null && !terrainSlopeTileBuilders.isEmpty()) {

@@ -261,7 +261,6 @@ public abstract class GameEngineControl {
     }
 
     private void onInitialized() {
-        terrainUiService.setLoaded();
         if (deferredStartup != null) {
             deferredStartup.finished();
             deferredStartup = null;

@@ -6,23 +6,24 @@ import {
   TerrainTile,
   BabylonTerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
-import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
-import {BabylonModelService} from "./babylon-model.service";
-import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import {Mesh, Node, NodeMaterial, TransformNode} from "@babylonjs/core";
-import {RazarionMetadataType, BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
-import {BabylonJsUtils} from "./babylon-js.utils";
-import {Nullable} from "@babylonjs/core/types";
+import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
+import { BabylonModelService } from "./babylon-model.service";
+import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
+import { Mesh, Node, NodeMaterial, TransformNode } from "@babylonjs/core";
+import { RazarionMetadataType, BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
+import { BabylonJsUtils } from "./babylon-js.utils";
+import { Nullable } from "@babylonjs/core/types";
+import { GwtHelper } from "src/app/gwtangular/GwtHelper";
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private readonly container: TransformNode;
 
   constructor(terrainTile: TerrainTile,
-              private defaultGroundConfigId: number,
-              private gwtAngularService: GwtAngularService,
-              private rendererService: BabylonRenderServiceAccessImpl,
-              private threeJsModelService: BabylonModelService,
-              private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+    private defaultGroundConfigId: number,
+    private gwtAngularService: GwtAngularService,
+    private rendererService: BabylonRenderServiceAccessImpl,
+    private threeJsModelService: BabylonModelService,
+    private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {

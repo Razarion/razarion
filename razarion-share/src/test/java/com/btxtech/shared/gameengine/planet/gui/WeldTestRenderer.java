@@ -14,7 +14,6 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -42,7 +41,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.mocks.TestFloat32Array;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.InterpolationUtils;
 import com.btxtech.shared.utils.MathHelper;
@@ -429,8 +427,8 @@ public class WeldTestRenderer {
         }
         if (weldTestController.renderTerrainTileGround()) {
             gc.setLineWidth(LINE_WIDTH);
-            if (terrainTile.getGroundPositions() != null) {
-                terrainTile.getGroundPositions().values().forEach(this::drawTriangles);
+            if (terrainTile.getGroundTerrainTiles() != null) {
+                Arrays.stream(terrainTile.getGroundTerrainTiles()).forEach(groundTerrainTile -> drawTriangles(groundTerrainTile.positions));
             }
         }
 

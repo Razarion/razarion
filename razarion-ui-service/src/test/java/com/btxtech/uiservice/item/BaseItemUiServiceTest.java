@@ -34,8 +34,6 @@ public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
         gameUiControl.setColdGameUiContext(coldGameUiContext);
         gameUiControl.init();
 
-        getWeldBean(TerrainUiService.class).setLoaded();
-
         getWeldBean(InputService.class).onViewFieldChanged(
                 250, 50,
                 300, 50,

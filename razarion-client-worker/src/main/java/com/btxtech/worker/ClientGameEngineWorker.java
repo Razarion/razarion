@@ -7,7 +7,6 @@ import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import elemental2.dom.DedicatedWorkerGlobalScope;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 import org.jboss.errai.ioc.client.api.EntryPoint;
@@ -26,8 +25,6 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private ClientPerformanceTrackerService clientPerformanceTrackerService;
-    @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
 
     @PostConstruct
     public void onModuleLoad() {
@@ -35,7 +32,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
         RestClient.setApplicationRoot(CommonUrl.getWorkerApplicationRoot());
         getDedicatedWorkerGlobalScope().setOnmessage(evt -> {
             try {
-                GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(evt.data, nativeMatrixFactory);
+                GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(evt.data);
                 dispatch(controlPackage);
             } catch (Throwable t) {
                 exceptionHandler.handleException("ClientGameEngineWorker: exception processing package on worker. Data: " + evt.data, t);

@@ -3,14 +3,8 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
@@ -36,30 +30,16 @@ import java.util.function.Consumer;
  */
 @ApplicationScoped
 public class TerrainUiService {
-    private static final double HIGHEST_POINT_IN_VIEW = 20;
-    private static final double LOWEST_POINT_IN_VIEW = -2;
     // private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
-    @Inject
-    private TerrainTypeService terrainTypeService;
     @Inject
     private GameEngineControl gameEngineControl;
     @Inject
     private Instance<UiTerrainTile> uiTerrainTileInstance;
-    private double highestPointInView; // Should be calculated
-    private double lowestPointInView; // Should be calculated
-    private MapCollection<DecimalPosition, BiConsumer<DecimalPosition, Double>> terrainZConsumers = new MapCollection<>();
+    private final MapCollection<DecimalPosition, BiConsumer<DecimalPosition, Double>> terrainZConsumers = new MapCollection<>();
     private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
-    private Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
-    private Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
-    private boolean loaded;
-
-    public TerrainUiService() {
-        highestPointInView = HIGHEST_POINT_IN_VIEW;
-        lowestPointInView = LOWEST_POINT_IN_VIEW;
-    }
-
+    private final Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
+    private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
     public void clear() {
-        loaded = false;
         terrainZConsumers.clear();
         clearTerrainTiles();
     }
@@ -103,14 +83,6 @@ public class TerrainUiService {
             cacheTerrainTiles.put(hidden.getKey(), hidden.getValue());
         }
         displayTerrainTiles = newDisplayTerrainTiles;
-    }
-
-    public double getHighestPointInView() {
-        return highestPointInView;
-    }
-
-    public double getLowestPointInView() {
-        return lowestPointInView;
     }
 
     public double calculateLandWaterProportion() {
@@ -159,9 +131,7 @@ public class TerrainUiService {
                 }
             }
         } else {
-            if (!isTerrainFreeInDisplay(terrainPosition, terrainType)) {
-                return false;
-            }
+            return isTerrainFreeInDisplay(terrainPosition, terrainType);
         }
         return true;
     }
@@ -173,34 +143,6 @@ public class TerrainUiService {
             throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay(Collection<DecimalPosition>, BaseItemType) UiTerrainTile not loaded: " + terrainTile);
         }
         return uiTerrainTile.isTerrainTypeAllowed(terrainType, terrainPosition);
-    }
-
-    public Vertex calculateMousePositionGroundMesh(Line3d worldPickRay) {
-        DecimalPosition groundPosition = worldPickRay.calculatePositionOnHeightLevel(0).toXY();
-        double z = calculateMousePositionGroundMesh(groundPosition);
-        return worldPickRay.calculatePositionOnHeightLevel(z);
-    }
-
-    public double calculateMousePositionGroundMesh(DecimalPosition groundPosition) {
-        Index terrainTile = TerrainUtil.toTile(groundPosition);
-        UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
-        if (uiTerrainTile == null) {
-            throw new IllegalStateException("TerrainUiService.calculateMousePositionGroundMesh(DecimalPosition) UiTerrainTile not loaded: " + terrainTile);
-        }
-        return uiTerrainTile.interpolateDisplayHeight(groundPosition);
-    }
-
-    public void getTerrainZ(DecimalPosition position, BiConsumer<DecimalPosition, Double> callback) {
-        boolean contains = terrainZConsumers.containsKey(position);
-        terrainZConsumers.put(position, callback);
-        if (contains) {
-            return;
-        }
-        gameEngineControl.askTerrainZ(position);
-    }
-
-    public void getTerrainPosition(DecimalPosition position, Consumer<Vertex> callback) {
-        getTerrainZ(position, (position1, z) -> callback.accept(new Vertex(position, z)));
     }
 
     public void onTerrainZAnswer(DecimalPosition position, double z) {
@@ -224,33 +166,5 @@ public class TerrainUiService {
 
     public void onTerrainTileResponse(TerrainTile terrainTile) {
         terrainTileConsumers.remove(terrainTile.getIndex()).accept(terrainTile);
-    }
-
-    public void enableEditMode(GroundConfig groundConfig) {
-        terrainTypeService.overrideGroundConfig(groundConfig);
-        onEditorTerrainChanged();
-    }
-
-    public void enableEditMode(SlopeConfig slopeConfig) {
-        terrainTypeService.overrideSlopeConfig(slopeConfig);
-        onEditorTerrainChanged();
-    }
-
-    public void enableEditMode(WaterConfig waterConfig) {
-        terrainTypeService.overrideWaterConfig(waterConfig);
-        onEditorTerrainChanged();
-    }
-
-    @Deprecated
-    public void onEditorTerrainChanged() {
-        clearTerrainTiles();
-    }
-
-    public boolean isLoaded() {
-        return loaded;
-    }
-
-    public void setLoaded() {
-        loaded = true;
     }
 }

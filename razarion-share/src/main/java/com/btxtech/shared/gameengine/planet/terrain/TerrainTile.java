@@ -14,13 +14,8 @@ import java.util.Map;
  */
 @JsType
 public class TerrainTile {
-    @JsonIgnore
     private GroundTerrainTile[] groundTerrainTiles;
     private Index index;
-    @Deprecated
-    private Map<Integer, Float32ArrayEmu> groundPositions;
-    @Deprecated
-    private Map<Integer, Float32ArrayEmu> groundNorms;
     private TerrainWaterTile[] terrainWaterTiles;
     private TerrainSlopeTile[] terrainSlopeTiles;
     private double landWaterProportion;
@@ -37,36 +32,10 @@ public class TerrainTile {
         this.index = index;
     }
 
-    @JsIgnore
-    @Deprecated
-    public Map<Integer, Float32ArrayEmu> getGroundPositions() {
-        return groundPositions;
-    }
-
-    @JsIgnore
-    @Deprecated
-    public void setGroundPositions(Map<Integer, Float32ArrayEmu> groundPositions) {
-        this.groundPositions = groundPositions;
-    }
-
-    @JsIgnore
-    @Deprecated
-    public Map<Integer, Float32ArrayEmu> getGroundNorms() {
-        return groundNorms;
-    }
-
-    @JsIgnore
-    @Deprecated
-    public void setGroundNorms(Map<Integer, Float32ArrayEmu> groundNorms) {
-        this.groundNorms = groundNorms;
-    }
-
-    @JsonIgnore
     public GroundTerrainTile[] getGroundTerrainTiles() {
         return groundTerrainTiles;
     }
 
-    @JsonIgnore
     public void setGroundTerrainTiles(GroundTerrainTile[] groundTerrainTiles) {
         this.groundTerrainTiles = groundTerrainTiles;
     }

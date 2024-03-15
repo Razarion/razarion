@@ -132,8 +132,6 @@ public class InGameQuestVisualizationServiceBaseItemTest extends WeldUiBaseInteg
         gameUiControl.setColdGameUiContext(coldGameUiContext);
         gameUiControl.init();
 
-        getWeldBean(TerrainUiService.class).setLoaded();
-
         getWeldBean(InputService.class).onViewFieldChanged(
                 60, 40,
                 240, 40,

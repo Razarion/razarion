@@ -21,11 +21,11 @@ import java.util.Map;
 @JsType
 @Singleton
 public class TerrainTypeService {
-    private Map<Integer, SlopeConfig> slopeConfigs = new HashMap<>();
-    private Map<Integer, GroundConfig> groundConfigs = new HashMap<>();
-    private Map<Integer, WaterConfig> waterConfigs = new HashMap<>();
-    private Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
-    private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
+    private final Map<Integer, SlopeConfig> slopeConfigs = new HashMap<>();
+    private final Map<Integer, GroundConfig> groundConfigs = new HashMap<>();
+    private final Map<Integer, WaterConfig> waterConfigs = new HashMap<>();
+    private final Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
+    private final Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
         init(engineInitEvent.getStaticGameConfig());
@@ -133,37 +133,12 @@ public class TerrainTypeService {
         return drivewayConfig;
     }
 
-    public GroundConfig getGroundConfig(Integer groundConfigId) {
+    @SuppressWarnings("unused") // Used by Angular
+    public GroundConfig getGroundConfig(int groundConfigId) {
         GroundConfig groundConfig = groundConfigs.get(groundConfigId);
         if (groundConfig == null) {
             throw new IllegalArgumentException("No GroundConfig for groundConfigId: " + groundConfigId);
         }
         return groundConfig;
-    }
-
-
-    // Methods used by the editors -----------------------------------------------------------------
-    public void overrideGroundConfig(GroundConfig groundConfig) {
-        groundConfigs.put(groundConfig.getId(), groundConfig);
-    }
-
-    public void overrideTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
-        terrainObjectConfigs.put(terrainObjectConfig.getId(), terrainObjectConfig);
-    }
-
-    public void deleteTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
-        terrainObjectConfigs.remove(terrainObjectConfig.getId());
-    }
-
-    public void overrideSlopeConfig(SlopeConfig slopeConfig) {
-        slopeConfigs.put(slopeConfig.getId(), slopeConfig);
-    }
-
-    public void overrideWaterConfig(WaterConfig waterConfig) {
-        waterConfigs.put(waterConfig.getId(), waterConfig);
-    }
-
-    public void deleteSlopeSkeletonConfig(SlopeConfig slopeConfig) {
-        slopeConfigs.remove(slopeConfig.getId());
     }
 }

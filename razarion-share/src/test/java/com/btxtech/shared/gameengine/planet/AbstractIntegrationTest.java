@@ -358,16 +358,6 @@ public class AbstractIntegrationTest {
             // Export TerrainTile
             List<TerrainTile> terrainTiles = Arrays.stream(terrainTileIndices)
                     .map(terrainTileIndex -> getTerrainService().generateTerrainTile(terrainTileIndex))
-                    .peek(terrainTile -> {
-                        if (terrainTile.getGroundPositions().containsKey(null)) {
-                            terrainTile.getGroundPositions().put(-1, terrainTile.getGroundPositions().get(null));
-                            terrainTile.getGroundPositions().remove(null);
-                        }
-                        if (terrainTile.getGroundNorms().containsKey(null)) {
-                            terrainTile.getGroundNorms().put(-1, terrainTile.getGroundNorms().get(null));
-                            terrainTile.getGroundNorms().remove(null);
-                        }
-                    })
                     .collect(Collectors.toList());
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(director, "terrain-tiles.json"), terrainTiles);
 

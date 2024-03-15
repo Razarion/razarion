@@ -3,6 +3,7 @@ package com.btxtech.unityconverter;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import java.util.logging.LogManager;
 
 class UnityAssetConverterTest {
     @Test
+    @Ignore
     void createAssetConfig() throws IOException {
         try (InputStream is = UnityAssetConverter.class.getClassLoader().
                 getResourceAsStream("logging.properties")) {

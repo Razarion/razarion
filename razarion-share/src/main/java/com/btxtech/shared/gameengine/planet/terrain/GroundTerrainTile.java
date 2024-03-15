@@ -5,7 +5,7 @@ import jsinterop.annotations.JsType;
 
 @JsType
 public class GroundTerrainTile {
-    public Integer groundConfigId;
+    public int groundConfigId;
     public Float32ArrayEmu positions;
     public Float32ArrayEmu norms;
 }

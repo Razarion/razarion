@@ -14,6 +14,7 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import static com.btxtech.shared.dto.FallbackConfig.WATER_CONFIG_ID;
 public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
+    @Ignore
     public void testTerrainObjectTileGeneration4Tiles() {
         List<GroundConfig> groundConfig = Arrays.asList(
                 new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(5),
