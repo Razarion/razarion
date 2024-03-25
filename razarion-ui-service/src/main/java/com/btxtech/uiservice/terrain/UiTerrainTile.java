@@ -37,12 +37,10 @@ public class UiTerrainTile {
     private TerrainTile terrainTile;
     private BabylonTerrainTile threeJsTerrainTile;
     private boolean active;
-    private Integer defaultGroundConfig;
 
     public void init(Index index) {
         this.index = index;
         terrainUiService.requestTerrainTile(index, this::terrainTileReceived);
-        defaultGroundConfig = gameUiControl.getPlanetConfig().getGroundConfigId();
     }
 
     public void setActive(boolean active) {
@@ -59,7 +57,7 @@ public class UiTerrainTile {
 
     private void terrainTileReceived(TerrainTile terrainTile) {
         this.terrainTile = terrainTile;
-        threeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, defaultGroundConfig);
+        threeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
 
         if (active) {
             threeJsTerrainTile.addToScene();

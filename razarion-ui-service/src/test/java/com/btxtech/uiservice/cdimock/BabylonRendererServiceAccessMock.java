@@ -34,7 +34,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
     private double showOutOfViewAngle;
 
     @Override
-    public BabylonTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId) {
+    public BabylonTerrainTile createTerrainTile(TerrainTile terrainTile) {
         logger.warning("createTerrainTile()");
         return null;
     }

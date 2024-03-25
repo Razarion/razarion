@@ -15,26 +15,18 @@ import {
   BaseItemType,
   BuilderType,
   CursorType,
-  Diplomacy,
   HarvesterType,
   I18nString,
   OwnItemCockpit,
   PhysicalAreaConfig,
-  QuestConfig,
-  QuestProgressInfo,
   RadarState,
   ScreenCover,
   WeaponType,
-  MarkerConfig,
-  PlaceConfig,
-  DecimalPosition,
-  Polygon2D
 } from "../gwtangular/GwtAngularFacade";
-import { GwtInstance } from "../gwtangular/GwtInstance";
 import { GwtHelper } from "../gwtangular/GwtHelper";
 import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
 import { ModelDialogPresenterImpl } from './model-dialog-presenter.impl';
-import { setIn } from 'vanilla-jsoneditor';
+import { Color3, MeshBuilder, StandardMaterial, Texture } from '@babylonjs/core';
 
 
 @Component({
@@ -63,7 +55,7 @@ export class GameComponent implements OnInit, ScreenCover {
     private router: Router,
     private gwtAngularService: GwtAngularService,
     private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
-    private threeJsModelService: BabylonModelService,
+    private babylonModelService: BabylonModelService,
     private gameMockService: GameMockService,
     private zone: NgZone) {
     this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, gwtAngularService);
@@ -90,7 +82,7 @@ export class GameComponent implements OnInit, ScreenCover {
         this.gwtAngularService.gwtAngularFacade.threeJsModelPackService = this.gameMockService.mockThreeJsModelPackService;
         this.gameMockService.loadMockStaticGameConfig().then(() => {
           this.gameMockService.loadMockAssetConfig().then(() => {
-            this.threeJsModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
+            this.babylonModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
               this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
               this.gameMockService.mockTerrainTile(this.babylonRenderServiceAccessImpl);
               this.mainCockpitComponent.show(true);
@@ -195,55 +187,78 @@ export class GameComponent implements OnInit, ScreenCover {
 
               };
 
-              {
-                let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
-                babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
-                babylonBaseItem1.setAngle(0);
 
-                babylonBaseItem1.updatePosition();
-                babylonBaseItem1.updateAngle();
+              let box1 = MeshBuilder.CreateBox("box ground", {width: 10, depth: 10}, this.babylonRenderServiceAccessImpl.getScene());
+              // box1.receiveShadows = true;
+              box1.position.x += 30
+              box1.position.y += 8
+              box1.position.z += 8
+              var groundMaterial = new StandardMaterial("ground", this.babylonRenderServiceAccessImpl.getScene());
+              groundMaterial.diffuseTexture = new Texture("/rest/images/9991", this.babylonRenderServiceAccessImpl.getScene());
+              groundMaterial.diffuseTexture.scale(10);
+              groundMaterial.specularColor = new Color3(0, 0, 0);
+              box1.material = groundMaterial;
 
-                babylonBaseItem1.select(false);
+              this.babylonRenderServiceAccessImpl.shadowGenerator.addShadowCaster(box1)
 
-                babylonBaseItem1.setConstructing(0.01);
-                babylonBaseItem1.setHealth(0.99);
-                // babylonBaseItem1.mark(MarkerConfig);
+              let box2 = MeshBuilder.CreateBox("box", {width: 5, depth: 10}, this.babylonRenderServiceAccessImpl.getScene());
+              // box2.receiveShadows = true;
+              box2.position.x += 10
+              box2.position.y += 2
+              box2.position.z += 20
+              this.babylonRenderServiceAccessImpl.shadowGenerator.addShadowCaster(box2)
 
-                // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
-                // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
-              }
-              {
-                let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
-                babylonBaseItem2.setPosition(GwtInstance.newVertex(8, 14, 0));
-                babylonBaseItem2.setAngle(0);
 
-                babylonBaseItem2.updatePosition();
-                babylonBaseItem2.updateAngle();
 
-                babylonBaseItem2.select(true);
-
-                babylonBaseItem2.setConstructing(0.33);
-                babylonBaseItem2.setHealth(0.66);
-
-                setInterval(() => babylonBaseItem2.setConstructing((Date.now() % 5000) / 5000), 500);
-                setInterval(() => babylonBaseItem2.setHealth((Date.now() % 10000) / 10000), 2000);
-              }
-              {
-                let babylonBaseItem3 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999997, baseItemType, Diplomacy.ENEMY);
-                babylonBaseItem3.setPosition(GwtInstance.newVertex(8, 20, 0));
-                babylonBaseItem3.setAngle(0);
-
-                babylonBaseItem3.updatePosition();
-                babylonBaseItem3.updateAngle();
-
-                babylonBaseItem3.select(true);
-
-                babylonBaseItem3.setConstructing(0.99);
-                babylonBaseItem3.setHealth(0.01);
-
-                // setInterval(() => babylonBaseItem3.setConstructing((Date.now() % 5000) / 5000), 500);
-                // setInterval(() => babylonBaseItem3.setHealth(1.0 - ((Date.now() + 1000) % 10000) / 10000), 2000);
-              }
+              // {
+              //   let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
+              //   babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
+              //   babylonBaseItem1.setAngle(0);
+              //
+              //   babylonBaseItem1.updatePosition();
+              //   babylonBaseItem1.updateAngle();
+              //
+              //   babylonBaseItem1.select(false);
+              //
+              //   babylonBaseItem1.setConstructing(0.01);
+              //   babylonBaseItem1.setHealth(0.99);
+              //   // babylonBaseItem1.mark(MarkerConfig);
+              //
+              //   // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
+              //   // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
+              // }
+              // {
+              //   let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
+              //   babylonBaseItem2.setPosition(GwtInstance.newVertex(8, 14, 0));
+              //   babylonBaseItem2.setAngle(0);
+              //
+              //   babylonBaseItem2.updatePosition();
+              //   babylonBaseItem2.updateAngle();
+              //
+              //   babylonBaseItem2.select(true);
+              //
+              //   babylonBaseItem2.setConstructing(0.33);
+              //   babylonBaseItem2.setHealth(0.66);
+              //
+              //   setInterval(() => babylonBaseItem2.setConstructing((Date.now() % 5000) / 5000), 500);
+              //   setInterval(() => babylonBaseItem2.setHealth((Date.now() % 10000) / 10000), 2000);
+              // }
+              // {
+              //   let babylonBaseItem3 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999997, baseItemType, Diplomacy.ENEMY);
+              //   babylonBaseItem3.setPosition(GwtInstance.newVertex(8, 20, 0));
+              //   babylonBaseItem3.setAngle(0);
+              //
+              //   babylonBaseItem3.updatePosition();
+              //   babylonBaseItem3.updateAngle();
+              //
+              //   babylonBaseItem3.select(true);
+              //
+              //   babylonBaseItem3.setConstructing(0.99);
+              //   babylonBaseItem3.setHealth(0.01);
+              //
+              //   // setInterval(() => babylonBaseItem3.setConstructing((Date.now() % 5000) / 5000), 500);
+              //   // setInterval(() => babylonBaseItem3.setHealth(1.0 - ((Date.now() + 1000) % 10000) / 10000), 2000);
+              // }
               // let buildingPosition: NativeVertexDto = new class implements NativeVertexDto {
               //   x = 16;
               //   y = 8;
@@ -303,41 +318,41 @@ export class GameComponent implements OnInit, ScreenCover {
               //  outOfViewSize = 1;
               // }, 0);
 
-              this.babylonRenderServiceAccessImpl.showPlaceMarker(
-                new class implements PlaceConfig {
-                  getPolygon2D(): Polygon2D | null {
-                    /*
-                    return new class implements Polygon2D {
-                      toCornersAngular(): DecimalPosition[] {
-                        return [
-                          GwtInstance.newDecimalPosition(10, 10),
-                          GwtInstance.newDecimalPosition(80, 30),
-                          GwtInstance.newDecimalPosition(80, 80),
-                          GwtInstance.newDecimalPosition(20, 80)
-                        ];
-                      }
-
-                    };
-                    */
-                    return null;
-                  }
-                  getPosition(): DecimalPosition | null {
-                    return GwtInstance.newDecimalPosition(10, 10);
-                  }
-
-                  toRadiusAngular(): number {
-                    return 10;
-                  }
-
-                },
-                new class implements MarkerConfig {
-                  radius = 1;
-                  nodesMaterialId = null;
-                  placeNodesMaterialId = 1;
-                  outOfViewNodesMaterialId = 1;
-                  outOfViewDistanceFromCamera = 3;
-                  outOfViewSize = 1;
-                });
+              // this.babylonRenderServiceAccessImpl.showPlaceMarker(
+              //   new class implements PlaceConfig {
+              //     getPolygon2D(): Polygon2D | null {
+              //       /*
+              //       return new class implements Polygon2D {
+              //         toCornersAngular(): DecimalPosition[] {
+              //           return [
+              //             GwtInstance.newDecimalPosition(10, 10),
+              //             GwtInstance.newDecimalPosition(80, 30),
+              //             GwtInstance.newDecimalPosition(80, 80),
+              //             GwtInstance.newDecimalPosition(20, 80)
+              //           ];
+              //         }
+              //
+              //       };
+              //       */
+              //       return null;
+              //     }
+              //     getPosition(): DecimalPosition | null {
+              //       return GwtInstance.newDecimalPosition(10, 10);
+              //     }
+              //
+              //     toRadiusAngular(): number {
+              //       return 10;
+              //     }
+              //
+              //   },
+              //   new class implements MarkerConfig {
+              //     radius = 1;
+              //     nodesMaterialId = null;
+              //     placeNodesMaterialId = 1;
+              //     outOfViewNodesMaterialId = 1;
+              //     outOfViewDistanceFromCamera = 3;
+              //     outOfViewSize = 1;
+              //   });
             });
           });
         });
@@ -587,6 +602,6 @@ export class GameComponent implements OnInit, ScreenCover {
     this.showUnkock = true;
   }
 
-  
+
 }
 

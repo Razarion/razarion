@@ -21,8 +21,8 @@ public class BabylonRendererService {
     @Inject
     private BabylonRenderServiceAccess babylonRenderServiceAccess;
 
-    public BabylonTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfig) {
-        return babylonRenderServiceAccess.createTerrainTile(terrainTile, defaultGroundConfig);
+    public BabylonTerrainTile createTerrainTile(TerrainTile terrainTile) {
+        return babylonRenderServiceAccess.createTerrainTile(terrainTile);
     }
 
     public BabylonBaseItem createSyncBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy) {

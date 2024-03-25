@@ -91,8 +91,21 @@ export class LocationVisualization {
   }
 
   public static getHeightFromTerrain(x: number, y: number, renderService: BabylonRenderServiceAccessImpl): number {
-    let pickingInfo = renderService.getScene().pickWithRay(new Ray(new Vector3(x, -100, y),
-      new Vector3(0, 1, 0), 1000),
+    let position = LocationVisualization.getTerrainPositionFromRay(
+      new Ray(
+        new Vector3(x, -100, y),
+        new Vector3(0, 1, 0),
+        1000),
+      renderService);
+      if(position) {
+        return position.y;
+      } else {
+        return 0;
+      }
+  }
+
+  public static getTerrainPositionFromRay(ray: Ray, renderService: BabylonRenderServiceAccessImpl): Vector3 | undefined {
+    let pickingInfo = renderService.getScene().pickWithRay(ray,
       (mesh: AbstractMesh) => {
         let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
         if (!razarionMetadata) {
@@ -101,9 +114,9 @@ export class LocationVisualization {
         return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.SLOPE;
       });
     if (pickingInfo && pickingInfo.hit) {
-      return pickingInfo.pickedPoint!.y;
+      return pickingInfo.pickedPoint!;
     } else {
-      return 0;
+      return undefined;
     }
   }
 

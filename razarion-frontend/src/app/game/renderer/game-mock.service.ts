@@ -720,7 +720,7 @@ export class GameMockService {
             }
           }
         };
-        const threeJsTerrainTile: BabylonTerrainTile = threeJsRendererService.createTerrainTile(terrainTile, 1);
+        const threeJsTerrainTile: BabylonTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
         threeJsTerrainTile.addToScene();
       }
     });

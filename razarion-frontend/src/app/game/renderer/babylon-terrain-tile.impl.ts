@@ -19,10 +19,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private readonly container: TransformNode;
 
   constructor(terrainTile: TerrainTile,
-    private defaultGroundConfigId: number,
     private gwtAngularService: GwtAngularService,
     private rendererService: BabylonRenderServiceAccessImpl,
-    private threeJsModelService: BabylonModelService,
+    babylonModelService: BabylonModelService,
     private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
     if (terrainTile.getGroundTerrainTiles() !== null) {
@@ -35,7 +34,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
           let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
           if (groundConfig.getTopThreeJsMaterial()) {
-            ground.material = threeJsModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
+            ground.material = babylonModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
           } else {
             ground.material = BabylonJsUtils.createErrorMaterial(`No top or bottom material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
           }
@@ -55,7 +54,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           if (terrainSlopeTile.centerSlopeGeometry) {
             this.setupSlopeGeometry(slopeConfig,
               terrainSlopeTile.centerSlopeGeometry,
-              threeJsModelService.getNodeMaterialNull(slopeConfig.getThreeJsMaterial(), `SlopeConfig has no threeJsMaterial: ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`));
+              babylonModelService.getNodeMaterialNull(slopeConfig.getThreeJsMaterial(), `SlopeConfig has no threeJsMaterial: ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`));
           }
         } catch (error) {
           // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
@@ -75,7 +74,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           }
           terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
             try {
-              BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, threeJsModelService, this.container);
+              BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, babylonModelService, this.container);
             } catch (error) {
               console.error(error);
             }
@@ -118,11 +117,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   addToScene(): void {
-    this.rendererService.addToScene(this.container);
+    this.rendererService.addTerrainTileToScene(this.container);
   }
 
   removeFromScene(): void {
-    this.rendererService.removeFromScene(this.container);
+    this.rendererService.removeTerrainTileFromScene(this.container);
   }
 
   private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: NodeMaterial): void {

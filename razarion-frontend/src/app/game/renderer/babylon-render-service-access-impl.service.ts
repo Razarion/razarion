@@ -26,7 +26,6 @@ import { BabylonModelService } from "./babylon-model.service";
 import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
 import {
   Color3,
-  Constants,
   CubeTexture,
   DirectionalLight,
   Engine,
@@ -40,6 +39,7 @@ import {
   PointerEventTypes,
   PolygonMeshBuilder,
   Quaternion,
+  Ray,
   Scene,
   ShadowGenerator,
   Tools,
@@ -173,7 +173,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   getCurrentViewField(): ViewField {
     if (!this.viewField) {
-      this.viewField = this.setupZeroLevelViewField();
+      this.viewField = this.setupViewField();
     }
     return this.viewField;
   }
@@ -221,15 +221,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.camera.setTarget(new Vector3(0, 0, 0));
 
     // ----- Light -----
-    this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0.5, -1, 0).normalize(), this.scene);
-    this.directionalLight.intensity = 5;
-
-    this.shadowGenerator = new ShadowGenerator(4096, this.directionalLight);
-    this.shadowGenerator.bias = 0.0004;
-    this.shadowGenerator.normalBias = 0.4000;
-    this.shadowGenerator.filter = ShadowGenerator.FILTER_PCF;
-    // this.shadowGenerator.usePoissonSampling = true;
-
+    this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0, -50, 0), this.scene);
+    this.directionalLight.intensity = 2;
+    this.directionalLight.autoUpdateExtends = false;
+    this.shadowGenerator = new ShadowGenerator(1024, this.directionalLight);
+    this.shadowGenerator.bias = 0.0005;
+    this.shadowGenerator.normalBias = 0.1;
 
     // ----- Resize listener -----
     new ResizeObserver(entries => {
@@ -259,10 +256,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     });
   }
 
-  createTerrainTile(terrainTile: TerrainTile, defaultGroundConfigId: number): BabylonTerrainTile {
+  createTerrainTile(terrainTile: TerrainTile): BabylonTerrainTile {
     try {
       return new BabylonTerrainTileImpl(terrainTile,
-        defaultGroundConfigId,
         this.gwtAngularService,
         this,
         this.babylonModelService,
@@ -354,7 +350,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.setupZeroLevelPosition(0, 0, Matrix.Invert(this.camera.getTransformationMatrix()));
   }
 
-  addToScene(transformNode: TransformNode): void {
+  addTerrainTileToScene(transformNode: TransformNode): void {
     this.scene.addTransformNode(transformNode);
     this.addShadowCaster(transformNode);
   }
@@ -365,7 +361,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     });
   }
 
-  removeFromScene(transformNode: TransformNode): void {
+  removeTerrainTileFromScene(transformNode: TransformNode): void {
     this.scene.removeTransformNode(transformNode);
     transformNode.getChildMeshes().forEach(childMesh => {
       this.shadowGenerator.removeShadowCaster(childMesh, true);
@@ -479,7 +475,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
     try {
 
-      this.viewField = this.setupZeroLevelViewField()
+      this.viewField = this.setupViewField()
+
+      this.directionalLight.orthoLeft = this.viewField.getBottomLeft().getX();
+      this.directionalLight.orthoBottom = this.viewField.getBottomLeft().getY();
+      this.directionalLight.orthoTop = this.viewField.getTopRight().getY();
+      this.directionalLight.orthoRight = this.viewField.getBottomRight().getX();
 
       this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
         this.viewField.getBottomLeft().getX(), this.viewField.getBottomLeft().getY(),
@@ -503,19 +504,44 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.camera.position.add(direction.multiplyByFloats(distanceToNullLevel, distanceToNullLevel, distanceToNullLevel));
   }
 
-  private setupZeroLevelViewField(): ViewField {
+  private setupTerrainPosition(ndcX: number, ndcY: number, invertCameraViewProj: Matrix): Vector3 | undefined {
+    let worldNearPosition = Vector3.TransformCoordinates(new Vector3(ndcX, ndcY, -1), invertCameraViewProj);
+    let direction = worldNearPosition.subtract(this.camera.position).normalize();
+
+    let terrainPosition = LocationVisualization.getTerrainPositionFromRay(
+      new Ray(
+        this.camera.position,
+        direction,
+        1000),
+      this);
+
+    if (terrainPosition) {
+      return terrainPosition;
+    } else {
+      return undefined;
+    }
+  }
+
+  private setupViewField(): ViewField {
     // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
     // getViewMatrix() forces recalculation of the camera view matrix
     this.camera.getViewMatrix();
 
     let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
 
-    const bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
-    const bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
-    const topRight = this.setupZeroLevelPosition(1, 1, invertCameraViewProj);
-    const topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
+    let bottomLeft = this.setupTerrainPosition(-1, -1, invertCameraViewProj);
+    let bottomRight = this.setupTerrainPosition(1, -1, invertCameraViewProj);
+    let topRight = this.setupTerrainPosition(1, 1, invertCameraViewProj);
+    let topLeft = this.setupTerrainPosition(-1, 1, invertCameraViewProj);
 
     // console.info(`ViewField BL ${bottomLeft.x}:${bottomLeft.z}:${bottomLeft.y} BR ${bottomRight.x}:${bottomRight.z}:${bottomRight.y} TR ${topRight.x}:${topRight.z}:${topRight.y} TL ${topLeft.x}:${topLeft.z}:${topLeft.y}`)
+
+    if (!bottomLeft || !bottomRight || !topRight || !topLeft) {
+      bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
+      bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
+      topRight = this.setupZeroLevelPosition(1, 1, invertCameraViewProj);
+      topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
+    }
 
     this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
       bottomLeft.x, bottomLeft.z,

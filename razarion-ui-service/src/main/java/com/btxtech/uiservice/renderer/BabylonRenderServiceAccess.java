@@ -11,7 +11,7 @@ import jsinterop.annotations.JsType;
 
 @JsType(isNative = true)
 public interface BabylonRenderServiceAccess {
-    BabylonTerrainTile createTerrainTile(TerrainTile terrainTile, Integer defaultGroundConfigId);
+    BabylonTerrainTile createTerrainTile(TerrainTile terrainTile);
 
     BabylonBaseItem createBabylonBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy);
 
