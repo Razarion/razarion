@@ -15,6 +15,7 @@ import {
   BaseItemType,
   BuilderType,
   CursorType,
+  Diplomacy,
   HarvesterType,
   I18nString,
   OwnItemCockpit,
@@ -26,7 +27,7 @@ import {
 import { GwtHelper } from "../gwtangular/GwtHelper";
 import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
 import { ModelDialogPresenterImpl } from './model-dialog-presenter.impl';
-import { Color3, MeshBuilder, StandardMaterial, Texture } from '@babylonjs/core';
+import { GwtInstance } from '../gwtangular/GwtInstance';
 
 
 @Component({
@@ -187,46 +188,23 @@ export class GameComponent implements OnInit, ScreenCover {
 
               };
 
-
-              let box1 = MeshBuilder.CreateBox("box ground", {width: 10, depth: 10}, this.babylonRenderServiceAccessImpl.getScene());
-              // box1.receiveShadows = true;
-              box1.position.x += 30
-              box1.position.y += 8
-              box1.position.z += 8
-              var groundMaterial = new StandardMaterial("ground", this.babylonRenderServiceAccessImpl.getScene());
-              groundMaterial.diffuseTexture = new Texture("/rest/images/9991", this.babylonRenderServiceAccessImpl.getScene());
-              groundMaterial.diffuseTexture.scale(10);
-              groundMaterial.specularColor = new Color3(0, 0, 0);
-              box1.material = groundMaterial;
-
-              this.babylonRenderServiceAccessImpl.shadowGenerator.addShadowCaster(box1)
-
-              let box2 = MeshBuilder.CreateBox("box", {width: 5, depth: 10}, this.babylonRenderServiceAccessImpl.getScene());
-              // box2.receiveShadows = true;
-              box2.position.x += 10
-              box2.position.y += 2
-              box2.position.z += 20
-              this.babylonRenderServiceAccessImpl.shadowGenerator.addShadowCaster(box2)
-
-
-
-              // {
-              //   let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
-              //   babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
-              //   babylonBaseItem1.setAngle(0);
-              //
-              //   babylonBaseItem1.updatePosition();
-              //   babylonBaseItem1.updateAngle();
-              //
-              //   babylonBaseItem1.select(false);
-              //
-              //   babylonBaseItem1.setConstructing(0.01);
-              //   babylonBaseItem1.setHealth(0.99);
-              //   // babylonBaseItem1.mark(MarkerConfig);
-              //
-              //   // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
-              //   // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
-              // }
+              {
+                 let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
+                 babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
+                 babylonBaseItem1.setAngle(0);
+              
+                 babylonBaseItem1.updatePosition();
+                 babylonBaseItem1.updateAngle();
+              
+                 babylonBaseItem1.select(false);
+              
+                 babylonBaseItem1.setConstructing(0.01);
+                 babylonBaseItem1.setHealth(0.99);
+                 // babylonBaseItem1.mark(MarkerConfig);
+              
+                 // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
+                 // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
+              }
               // {
               //   let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
               //   babylonBaseItem2.setPosition(GwtInstance.newVertex(8, 14, 0));

@@ -32,18 +32,6 @@ server.on({
 
 server.on({
   method: 'get',
-  path: '/gwt-mock/element-3D-Id_model-matrices',
-  reply: {
-    status: 200,
-    headers: {"content-type": "application/json"},
-    body: function loadAssetConfig() {
-      return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\mesh_container", "element3DId_modelMatrices.json"));
-    }
-  }
-});
-
-server.on({
-  method: 'get',
   path: '/gwt-mock/unity-asset-converter-test-asset-config',
   reply: {
     status: 200,

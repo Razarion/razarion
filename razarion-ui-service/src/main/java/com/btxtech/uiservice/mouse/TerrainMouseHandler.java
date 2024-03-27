@@ -60,7 +60,6 @@ public class TerrainMouseHandler {
     @Inject
     private AudioService audioService;
     private GroupSelectionFrame groupSelectionFrame;
-    // DOTO private EditorMouseListener editorMouseListener;
 
     public void clear() {
         groupSelectionFrame = null;
@@ -109,11 +108,6 @@ public class TerrainMouseHandler {
 
     public void onMouseDown(DecimalPosition terrainPosition) {
         try {
-// TODO           if (editorMouseListener != null) {
-//                editorMouseListener.onMouseDown(terrainPosition);
-//                return;
-//            }
-
             if (baseItemPlacerService.isActive()) {
                 return;
             }
@@ -141,11 +135,6 @@ public class TerrainMouseHandler {
 
     public void onMouseUp(Vertex terrainPosition) {
         try {
-// TODO           if (editorMouseListener != null) {
-//                editorMouseListener.onMouseUp();
-//                return;
-//            }
-
             if (baseItemPlacerService.isActive()) {
                 baseItemPlacerService.onMouseUpEvent(terrainPosition);
                 return;
@@ -172,14 +161,6 @@ public class TerrainMouseHandler {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
-    }
-
-    public void setEditorMouseListener(EditorMouseListener editorMouseListener) {
-        // TODO this.editorMouseListener = editorMouseListener;
-    }
-
-    private Vertex setupTerrainPosition(int x, int y) {
-        return new Vertex(x, y, 0);
     }
 
     private void executeMoveCommand(Group selection, DecimalPosition position) {

@@ -76,10 +76,10 @@ export enum RazarionMetadataType {
 }
 
 export class ViewField {
-  private bottomLeft: DecimalPosition;
-  private bottomRight: DecimalPosition;
-  private topRight: DecimalPosition;
-  private topLeft: DecimalPosition;
+  private readonly bottomLeft: DecimalPosition;
+  private readonly bottomRight: DecimalPosition;
+  private readonly topRight: DecimalPosition;
+  private readonly topLeft: DecimalPosition;
   private center?: DecimalPosition;
 
   constructor(bottomLeft: Vector3, bottomRight: Vector3, topRight: Vector3, topLeft: Vector3) {
@@ -140,7 +140,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private viewFieldListeners: ViewFieldListener[] = [];
   private viewField?: ViewField;
   private outOfViewPlane?: Mesh;
-  private outOfViewMaterial?: NodeMaterial;
   private placeMarkerMesh?: Mesh;
 
   constructor(private gwtAngularService: GwtAngularService, private babylonModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
