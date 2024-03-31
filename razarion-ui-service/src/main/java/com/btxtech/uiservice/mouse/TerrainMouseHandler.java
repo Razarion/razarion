@@ -79,27 +79,27 @@ public class TerrainMouseHandler {
             } else {
                 SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncBaseItem != null) {
-                    cursorService.handleMouseOverBaseItem(syncBaseItem);
-                    baseItemUiService.onHover(syncBaseItem);
+                    // cursorService.handleMouseOverBaseItem(syncBaseItem);
+                    // baseItemUiService.onHover(syncBaseItem);
                     return;
                 }
                 SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncResourceItem != null) {
-                    cursorService.handleMouseOverResourceItem();
-                    resourceUiService.onHover(syncResourceItem);
+                    // cursorService.handleMouseOverResourceItem();
+                    // resourceUiService.onHover(syncResourceItem);
                     return;
                 }
                 SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncBoxItem != null) {
-                    cursorService.handleMouseOverBoxItem();
-                    baseItemUiService.onHover(syncBoxItem);
-                    boxUiService.onHover(syncBoxItem);
+                    // cursorService.handleMouseOverBoxItem();
+                    // baseItemUiService.onHover(syncBoxItem);
+                    // boxUiService.onHover(syncBoxItem);
                     return;
                 }
-                cursorService.handleMouseOverTerrain(terrainPosition.toXY());
-                baseItemUiService.onHover(null);
-                resourceUiService.onHover(null);
-                boxUiService.onHover(null);
+                // cursorService.handleMouseOverTerrain(terrainPosition.toXY());
+                // baseItemUiService.onHover(null);
+                // resourceUiService.onHover(null);
+                // boxUiService.onHover(null);
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -180,6 +180,7 @@ public class TerrainMouseHandler {
         SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition);
         if (syncBaseItem != null) {
             if (baseItemUiService.isMyOwnProperty(syncBaseItem)) {
+                // ownItemClicked
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
                 if (syncBaseItem.checkBuildup() && baseItemType.getItemContainerType() != null) {
                     Collection<SyncBaseItemSimpleDto> contained = selectionHandler.getOwnSelection().getSyncBaseItemsMonitors().stream().filter(monitor -> baseItemType.getItemContainerType().isAbleToContain(monitor.getSyncBaseItemState().getSyncBaseItem().getItemTypeId())).map(monitor -> monitor.getSyncBaseItemState().getSyncBaseItem()).collect(Collectors.toList());
@@ -196,7 +197,8 @@ public class TerrainMouseHandler {
                 }
             } else {
                 if (baseItemUiService.isMyEnemy(syncBaseItem)) {
-                    Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem);
+                    // Enemy enemyItemClicked
+                    Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem.getItemTypeId());
                     if (!attackers.isEmpty()) {
                         audioService.onCommandSent();
                         gameEngineControl.attackCmd(attackers, syncBaseItem);
@@ -207,6 +209,7 @@ public class TerrainMouseHandler {
         }
         SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition);
         if (syncResourceItem != null) {
+            // resourceItemClicked
             Collection<SyncBaseItemSimpleDto> harvesters = selectionHandler.getOwnSelection().getHarvesters();
             if (!harvesters.isEmpty()) {
                 audioService.onCommandSent();
@@ -216,6 +219,7 @@ public class TerrainMouseHandler {
         }
         SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition);
         if (syncBoxItem != null) {
+            // boxItemClicked
             Collection<SyncBaseItemSimpleDto> pickers = selectionHandler.getOwnSelection().getMovables();
             if (!pickers.isEmpty()) {
                 audioService.onCommandSent();
@@ -253,7 +257,7 @@ public class TerrainMouseHandler {
                 }
             } else {
                 if (baseItemUiService.isMyEnemy(syncBaseItem)) {
-                    Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem);
+                    Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem.getItemTypeId());
                     return attackers.isEmpty();
                 }
             }

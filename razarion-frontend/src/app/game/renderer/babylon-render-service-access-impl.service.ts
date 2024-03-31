@@ -59,6 +59,7 @@ import { BabylonBoxItemImpl } from "./babylon-box-item.impl";
 import { Geometry } from "src/app/common/geometry";
 import { PlaceConfigComponent } from "src/app/editor/common/place-config/place-config.component";
 import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
+import { ActionService } from "../action.service";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -142,7 +143,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private outOfViewPlane?: Mesh;
   private placeMarkerMesh?: Mesh;
 
-  constructor(private gwtAngularService: GwtAngularService, private babylonModelService: BabylonModelService, private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+  constructor(private gwtAngularService: GwtAngularService,
+    private babylonModelService: BabylonModelService,
+    private threeJsWaterRenderService: ThreeJsWaterRenderService,
+    private actionService: ActionService) {
   }
 
   public static color4Diplomacy(diplomacy: Diplomacy): Color3 {
@@ -260,6 +264,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       return new BabylonTerrainTileImpl(terrainTile,
         this.gwtAngularService,
         this,
+        this.actionService,
         this.babylonModelService,
         this.threeJsWaterRenderService);
     } catch (e) {
@@ -275,6 +280,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         baseItemType,
         GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy),
         this,
+        this.actionService,
         this.babylonModelService);
     } catch (error) {
       console.error(error);
@@ -382,6 +388,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.outOfViewPlane.parent = this.camera;
         this.outOfViewPlane.position.z = markerConfig.outOfViewDistanceFromCamera;
         this.outOfViewPlane.rotation.x = this.camera.rotation.x;
+        this.outOfViewPlane.isPickable = false;
         let nodeMaterial = this.babylonModelService.getNodeMaterial(markerConfig.outOfViewNodesMaterialId!);
         // nodeMaterial = nodeMaterial.clone(`Out of view plane outOfViewNodesMaterialId: ${markerConfig.outOfViewNodesMaterialId}`);
         nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
@@ -578,6 +585,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       return new BabylonResourceItemImpl(id,
         resourceItemType,
         this,
+        this.actionService,
         this.babylonModelService);
     } catch (error) {
       console.error(error);
@@ -590,6 +598,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       return new BabylonBoxItemImpl(id,
         boxItemType,
         this,
+        this.actionService,
         this.babylonModelService);
     } catch (error) {
       console.error(error);
@@ -649,26 +658,26 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
-          this.selectionFrame.onPointerDown(this.scene.pointerX, this.scene.pointerY);
+          // this.selectionFrame.onPointerDown(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
-            this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
+            // TODO this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
           }
           break;
         }
         case PointerEventTypes.POINTERUP: {
-          this.selectionFrame.onPointerUp(this.scene.pointerX, this.scene.pointerY);
+          // this.selectionFrame.onPointerUp(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
-            this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
+            // TODO this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
           }
           break;
         }
         case PointerEventTypes.POINTERMOVE: {
-          this.selectionFrame.onPointerMove(this.scene.pointerX, this.scene.pointerY);
+          // this.selectionFrame.onPointerMove(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
-            this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y, (pointerInfo.event.buttons & 1) === 1);
+            // TODO this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y, (pointerInfo.event.buttons & 1) === 1);
           }
           break;
         }

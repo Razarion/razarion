@@ -145,14 +145,24 @@ public class Group {
         return builder;
     }
 
-    public Collection<SyncBaseItemSimpleDto> getAttackers(SyncBaseItemSimpleDto target) {
+    public boolean hasAttackers() {
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (baseItemType.getWeaponType() == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Collection<SyncBaseItemSimpleDto> getAttackers(int targetItemTypeId) {
         Collection<SyncBaseItemSimpleDto> attackers = new ArrayList<>();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (baseItemType.getWeaponType() == null) {
                 continue;
             }
-            if (baseItemType.getWeaponType().checkItemTypeDisallowed(target.getItemTypeId())) {
+            if (baseItemType.getWeaponType().checkItemTypeDisallowed(targetItemTypeId)) {
                 continue;
             }
             attackers.add(syncBaseItem);

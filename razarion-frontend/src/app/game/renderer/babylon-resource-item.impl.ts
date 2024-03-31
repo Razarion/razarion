@@ -2,10 +2,15 @@ import { BabylonItemImpl } from "./babylon-item.impl";
 import { BabylonResourceItem, Diplomacy, MarkerConfig, ResourceItemType, Vertex } from "../../gwtangular/GwtAngularFacade";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { BabylonModelService } from "./babylon-model.service";
+import { ActionService } from "../action.service";
 
 export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonResourceItem {
-  constructor(id: number, private resourceItemType: ResourceItemType, rendererService: BabylonRenderServiceAccessImpl, babylonModelService: BabylonModelService) {
-    super(id, resourceItemType, Diplomacy.RESOURCE, rendererService, babylonModelService, rendererService.resourceItemContainer);
+  constructor(id: number, 
+    private resourceItemType: ResourceItemType, 
+    rendererService: BabylonRenderServiceAccessImpl, 
+    actionService: ActionService, 
+    babylonModelService: BabylonModelService) {
+    super(id, resourceItemType, Diplomacy.RESOURCE, rendererService, babylonModelService, actionService, rendererService.resourceItemContainer);
   }
 
   public static createDummy(id: number): BabylonResourceItem {

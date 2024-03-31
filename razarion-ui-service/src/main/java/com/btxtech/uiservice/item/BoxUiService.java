@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.renderer.BabylonBoxItem;
@@ -69,6 +68,17 @@ public class BoxUiService {
             selectionHandler.boxItemRemove(box);
         }
         updateBabylonBoxItems();
+    }
+
+
+    public SyncBoxItemSimpleDto getItem4Id(int boxItemId) {
+        synchronized (boxes) {
+            SyncBoxItemSimpleDto syncBoxItemSimpleDto = boxes.get(boxItemId);
+            if (syncBoxItemSimpleDto != null) {
+                return syncBoxItemSimpleDto;
+            }
+        }
+        throw new IllegalArgumentException("No SyncBoxItemSimpleDto for " + boxItemId);
     }
 
     public SyncBoxItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {

@@ -5,6 +5,7 @@ import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.QuestCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
@@ -49,6 +50,8 @@ public class GwtAngularService {
     @Inject
     private InputService inputService;
     @Inject
+    private SelectionHandler selectionHandler;
+    @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
     private ItemTypeService itemTypeService;
@@ -74,6 +77,7 @@ public class GwtAngularService {
         gwtAngularFacade.inGameQuestVisualizationService = inGameQuestVisualizationService;
         gwtAngularFacade.statusProvider = statusProvider;
         gwtAngularFacade.inputService = inputService;
+        gwtAngularFacade.selectionHandler = selectionHandler;
         gwtAngularFacade.terrainTypeService = terrainTypeService;
         gwtAngularFacade.itemTypeService = itemTypeService;
         gwtAngularFacade.threeJsModelPackService = threeJsModelPackService;
@@ -97,8 +101,8 @@ public class GwtAngularService {
     }
 
     @Produces
-    public BabylonRenderServiceAccess threeJsRendererServiceAccess() {
-        return gwtAngularFacade.threeJsRendererServiceAccess;
+    public BabylonRenderServiceAccess babylonRenderServiceAccess() {
+        return gwtAngularFacade.babylonRenderServiceAccess;
     }
 
     @Produces

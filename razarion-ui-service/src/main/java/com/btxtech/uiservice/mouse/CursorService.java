@@ -79,7 +79,7 @@ public abstract class CursorService {
                 }
             }
         } else if (baseItemUiService.isMyEnemy(syncBaseItem)) {
-            Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem);
+            Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem.getItemTypeId());
             if (!attackers.isEmpty()) {
                 setCursor(CursorType.ATTACK, true);
             } else {

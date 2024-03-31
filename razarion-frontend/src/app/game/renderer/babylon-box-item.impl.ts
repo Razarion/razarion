@@ -2,10 +2,15 @@ import { BabylonBoxItem, BoxItemType, Diplomacy, MarkerConfig, Vertex } from "sr
 import { BabylonItemImpl } from "./babylon-item.impl";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { BabylonModelService } from "./babylon-model.service";
+import { ActionService } from "../action.service";
 
 export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxItem {
-    constructor(id: number, private boxItemType: BoxItemType, rendererService: BabylonRenderServiceAccessImpl, babylonModelService: BabylonModelService) {
-        super(id, boxItemType, Diplomacy.BOX, rendererService, babylonModelService, rendererService.boxItemContainer);
+    constructor(id: number, 
+        private boxItemType: BoxItemType, 
+        rendererService: BabylonRenderServiceAccessImpl, 
+        actionService: ActionService, 
+        babylonModelService: BabylonModelService) {
+        super(id, boxItemType, Diplomacy.BOX, rendererService, babylonModelService, actionService, rendererService.boxItemContainer);
     }
 
     static createDummy(id: number): BabylonBoxItem {

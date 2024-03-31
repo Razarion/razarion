@@ -23,6 +23,7 @@ import { GwtHelper } from "../../gwtangular/GwtHelper";
 import { BabylonItemImpl } from "./babylon-item.impl";
 import { BabylonModelService } from "./babylon-model.service";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
+import { ActionService } from "../action.service";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   private readonly PROGRESS_BAR_NODE_MATERIAL_ID = 54; // Put in properties
@@ -36,8 +37,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private healthInputBlock: InputBlock | undefined;
   private progressInputBlock: InputBlock | undefined;
 
-  constructor(id: number, private baseItemType: BaseItemType, diplomacy: Diplomacy, rendererService: BabylonRenderServiceAccessImpl, babylonModelService: BabylonModelService) {
-    super(id, baseItemType, diplomacy, rendererService, babylonModelService, rendererService.baseItemContainer);
+  constructor(id: number, 
+    private baseItemType: BaseItemType, 
+    diplomacy: Diplomacy, 
+    rendererService: BabylonRenderServiceAccessImpl,
+    actionService: ActionService, 
+    babylonModelService: BabylonModelService) {
+    super(id, baseItemType, diplomacy, rendererService, babylonModelService, actionService, rendererService.baseItemContainer);
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
   }

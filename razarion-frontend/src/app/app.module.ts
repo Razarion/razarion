@@ -125,6 +125,7 @@ import { InventoryComponent } from './game/inventory/inventory.component';
 import { QuestDialogComponent } from './game/cockpit/quest/quest-dialog/quest-dialog.component';
 import { UnlockComponent } from './game/unlock/unlock.component';
 import { UserMgmtComponent } from './editor/user-mgmt/user-mgmt.component';
+import { ActionService } from './game/action.service';
 
 @NgModule({
   declarations: [
@@ -262,7 +263,8 @@ import { UserMgmtComponent } from './editor/user-mgmt/user-mgmt.component';
     BabylonRenderServiceAccessImpl,
     ThreeJsWaterRenderService,
     GameMockService,
-    BabylonModelService
+    BabylonModelService,
+    ActionService
   ],
   bootstrap: [AppComponent]
 })

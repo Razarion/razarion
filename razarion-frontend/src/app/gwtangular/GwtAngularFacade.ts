@@ -15,8 +15,9 @@ export abstract class GwtAngularFacade {
   baseItemPlacerPresenter!: BaseItemPlacerPresenter;
   editorFrontendProvider!: EditorFrontendProvider;
   statusProvider!: StatusProvider;
-  threeJsRendererServiceAccess!: BabylonRenderServiceAccess;
+  babylonRenderServiceAccess!: BabylonRenderServiceAccess;
   inputService!: InputService;
+  selectionHandler!: SelectionHandler;
   terrainTypeService!: TerrainTypeService;
   itemTypeService!: ItemTypeService;
   threeJsModelPackService!: ThreeJsModelPackService;
@@ -125,12 +126,35 @@ export interface InputService {
     topRightX: number, topRightY: number,
     topLeftX: number, topLeftY: number): void;
 
+  ownItemClicked(id: number, baseItemType: BaseItemType): void;
+
+  friendItemClicked(id: number): void;
+
+  enemyItemClicked(id: number): void;
+
+  resourceItemClicked(id: number): void;
+
+  boxItemClicked(id: number): void;
+
+  terrainClicked(terrainPosition: DecimalPosition): void;
+
   onMouseMove(x: number, y: number, z: number, primaryButtonDown: boolean): void;
 
   onMouseDown(x: number, y: number, z: number): void;
 
   onMouseUp(x: number, y: number, z: number): void;
+}
 
+export interface SelectionHandler {
+  hasOwnSelection(): boolean;
+
+  hasOwnMovable(): boolean;
+
+  hasAttackers(): boolean;
+
+  canAttack(targetItemTypeId: number): boolean;
+
+  hasHarvesters(): boolean;
 }
 
 export interface ItemTypeService {

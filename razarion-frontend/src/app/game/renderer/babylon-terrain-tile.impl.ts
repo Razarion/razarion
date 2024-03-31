@@ -9,21 +9,45 @@ import {
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 import { BabylonModelService } from "./babylon-model.service";
 import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
-import { Mesh, Node, NodeMaterial, TransformNode } from "@babylonjs/core";
+import { ActionManager, ExecuteCodeAction, Mesh, Node, NodeMaterial, TransformNode } from "@babylonjs/core";
 import { RazarionMetadataType, BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { BabylonJsUtils } from "./babylon-js.utils";
 import { Nullable } from "@babylonjs/core/types";
-import { GwtHelper } from "src/app/gwtangular/GwtHelper";
+import { ActionService, SelectionInfo } from "../action.service";
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private readonly container: TransformNode;
+  private cursorTypeHandler: (selectionInfo: SelectionInfo) => void;
 
   constructor(terrainTile: TerrainTile,
     private gwtAngularService: GwtAngularService,
     private rendererService: BabylonRenderServiceAccessImpl,
+    actionService: ActionService,
     babylonModelService: BabylonModelService,
     private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
+
+    let actionManager = new ActionManager(rendererService.getScene());
+    actionManager.registerAction(
+      new ExecuteCodeAction(
+        ActionManager.OnPickTrigger,
+        () => {
+          let pickingInfo = rendererService.setupMeshPickPoint();
+          if (pickingInfo.hit) {
+            actionService.onTerrainClicked(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
+          }
+        }
+      )
+    );
+    this.cursorTypeHandler = (selectionInfo: SelectionInfo) => {
+      if (selectionInfo.hasOwnMovable) {
+        actionManager.hoverCursor = "url(\"/assets/cursors/go.png\") 15 15, auto"
+      } else {
+        actionManager.hoverCursor = "default"
+      }
+    }
+    actionService.addCursoHandler(this.cursorTypeHandler);
+
     if (terrainTile.getGroundTerrainTiles() !== null) {
       terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
         try {
@@ -40,6 +64,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           }
           ground.receiveShadows = true;
           ground.parent = this.container;
+          ground.actionManager = actionManager;
           this.container.getChildren().push(ground);
         } catch (error) {
           console.error(error);
@@ -122,6 +147,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
   removeFromScene(): void {
     this.rendererService.removeTerrainTileFromScene(this.container);
+    // TODO this.actionService.removeCursorHandler(this.cursorTypeHandler);
   }
 
   private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: NodeMaterial): void {

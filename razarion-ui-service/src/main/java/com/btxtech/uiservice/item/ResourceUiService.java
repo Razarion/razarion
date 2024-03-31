@@ -72,6 +72,16 @@ public class ResourceUiService {
         updateBabylonResourceItems();
     }
 
+    public SyncResourceItemSimpleDto getItem4Id(int resourceItemId) {
+        synchronized (resources) {
+            SyncResourceItemSimpleDto syncResourceItemSimpleDto = resources.get(resourceItemId);
+            if (syncResourceItemSimpleDto != null) {
+                return syncResourceItemSimpleDto;
+            }
+        }
+        throw new IllegalArgumentException("No SyncResourceItemSimpleDto for " + resourceItemId);
+    }
+
     public SyncResourceItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
         synchronized (resources) {
             for (SyncResourceItemSimpleDto resource : resources.values()) {

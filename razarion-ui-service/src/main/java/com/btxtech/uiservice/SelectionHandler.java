@@ -18,33 +18,32 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * User: beat
  * Date: May 19, 2009
  * Time: 9:09:40 PM
  */
+@JsType
 @ApplicationScoped
 public class SelectionHandler {
     @Inject
@@ -64,14 +63,35 @@ public class SelectionHandler {
         return selectedGroup;
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public boolean hasOwnSelection() {
         return selectedGroup != null && !selectedGroup.isEmpty();
     }
 
-    private void setOtherItemSelected(SyncItemSimpleDto syncBaseItem) {
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean hasOwnMovable() {
+        return selectedGroup != null && !selectedGroup.getMovables().isEmpty();
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean hasAttackers() {
+        return selectedGroup != null && !selectedGroup.hasAttackers();
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean canAttacker(int targetItemTypeId) {
+        return selectedGroup != null && !selectedGroup.getAttackers(targetItemTypeId).isEmpty();
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean hasHarvesters() {
+        return selectedGroup != null && !selectedGroup.getHarvesters().isEmpty();
+    }
+
+    public void setOtherItemSelected(SyncItemSimpleDto syncItemSimpleDto) {
         clearSelection(true);
-        selectedOtherSyncItem = syncBaseItem;
-        selectionEventEventTrigger.fire(new SelectionEvent(syncBaseItem));
+        selectedOtherSyncItem = syncItemSimpleDto;
+        selectionEventEventTrigger.fire(new SelectionEvent(syncItemSimpleDto));
     }
 
     private void setItemGroupSelected(Group selectedGroup) {
@@ -121,7 +141,7 @@ public class SelectionHandler {
         // clearSelection(false);
     }
 
-    private void onBaseItemsSelected(Collection<SyncBaseItemSimpleDto> selectedBaseItems) {
+    public void onBaseItemsSelected(Collection<SyncBaseItemSimpleDto> selectedBaseItems) {
         Collection<SyncBaseItemSimpleDto> own = new ArrayList<>();
         SyncBaseItemSimpleDto other = null;
         for (SyncBaseItemSimpleDto selectedSyncBaseItem : selectedBaseItems) {
@@ -154,6 +174,7 @@ public class SelectionHandler {
         selectionEventEventTrigger.fire(new SelectionEvent(suppressAudio));
     }
 
+    @JsIgnore
     public void baseItemRemoved(int[] removedSyncItemIds) {
         if (selectedGroup != null) {
             boolean changed = false;
@@ -179,6 +200,7 @@ public class SelectionHandler {
         }
     }
 
+    @JsIgnore
     public void baseItemRemoved(NativeSimpleSyncBaseItemTickInfo[] removedSyncBaseItems) {
         int[] removedIds = new int[removedSyncBaseItems.length];
         // Does not work here Arrays.stream(nativeSyncBaseItemTickInfos)

@@ -1,5 +1,5 @@
-import {GwtHelper} from "../../gwtangular/GwtHelper";
-import {Mesh, MeshBuilder, NodeMaterial, Tools, TransformNode} from "@babylonjs/core";
+import { GwtHelper } from "../../gwtangular/GwtHelper";
+import { ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, NodeMaterial, Tools, TransformNode } from "@babylonjs/core";
 import {
   BabylonItem,
   BaseItemType,
@@ -10,9 +10,10 @@ import {
   ResourceItemType,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
-import {SimpleMaterial} from "@babylonjs/materials";
-import {BabylonModelService} from "./babylon-model.service";
-import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import { SimpleMaterial } from "@babylonjs/materials";
+import { BabylonModelService } from "./babylon-model.service";
+import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
+import { ActionService, SelectionInfo } from "../action.service";
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
@@ -24,8 +25,15 @@ export class BabylonItemImpl implements BabylonItem {
   private visualizationMarkerDisc: Mesh | null = null;
   private selectActive: boolean = false;
   private hoverActive: boolean = false;
+  private itemCursorTypeHandler: (selectionInfo: SelectionInfo) => void;
 
-  constructor(private id: number, private itemType: ItemType, protected diplomacy: Diplomacy, protected rendererService: BabylonRenderServiceAccessImpl, protected babylonModelService: BabylonModelService, parent: TransformNode) {
+  constructor(private id: number,
+    private itemType: ItemType,
+    protected diplomacy: Diplomacy,
+    protected rendererService: BabylonRenderServiceAccessImpl,
+    protected babylonModelService: BabylonModelService,
+    private actionService: ActionService,
+    parent: TransformNode) {
     if (itemType.getThreeJsModelPackConfigId()) {
       this.container = this.babylonModelService.cloneMesh(itemType.getThreeJsModelPackConfigId()!, null);
     } else if (itemType.getMeshContainerId()) {
@@ -44,6 +52,58 @@ export class BabylonItemImpl implements BabylonItem {
     this.container.name = `${itemType.getInternalName()} '${id}')`;
     this.container.getChildMeshes().forEach(childMesh => {
       rendererService.shadowGenerator.addShadowCaster(childMesh, true);
+    });
+
+    let actionManager = new ActionManager(rendererService.getScene());
+    actionManager.registerAction(
+      new ExecuteCodeAction(
+        ActionManager.OnPickTrigger,
+        () => {
+          actionService.onItemClicked(itemType, id, diplomacy);
+        }
+      )
+    );
+    this.itemCursorTypeHandler = (selectionInfo: SelectionInfo) => {
+      if (diplomacy === Diplomacy.OWN) {
+        actionManager.hoverCursor = "pointer"
+        return;
+      }
+
+      if (diplomacy === Diplomacy.BOX) {
+        if (selectionInfo.hasOwnSelection) {
+          actionManager.hoverCursor = "url(\"/assets/cursors/pick.png\") 15 15, auto"
+        } else {
+          actionManager.hoverCursor = "pointer"
+        }
+        return;
+      }
+
+      if (diplomacy === Diplomacy.ENEMY) {
+        if (selectionInfo.hasAttackers) {
+          if (selectionInfo.canAttack) {
+            actionManager.hoverCursor = "url(\"/assets/cursors/attack.png\") 15 15, auto"
+          } else {
+            actionManager.hoverCursor = "url(\"/assets/cursors/attack-no.png\") 15 15, auto"
+          }
+        } else {
+          actionManager.hoverCursor = "pointer"
+        }
+        return;
+      }
+
+      if (diplomacy === Diplomacy.RESOURCE) {
+        if (selectionInfo.hasHarvesters) {
+          actionManager.hoverCursor = "url(\"/assets/cursors/collect.png\") 15 15, auto"
+        } else {
+          actionManager.hoverCursor = "pointer"
+        }
+        return;
+      }
+    }
+    actionService.addCursoHandler(this.itemCursorTypeHandler);
+
+    this.container.getChildMeshes().forEach(function (childMesh) {
+      childMesh.actionManager = actionManager;
     });
   }
 
@@ -68,6 +128,7 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   dispose(): void {
+    this.actionService.removeCursoHandler(this.itemCursorTypeHandler);
     this.container.getChildMeshes().forEach(childMesh => {
       this.rendererService.shadowGenerator.removeShadowCaster(childMesh, true);
     });

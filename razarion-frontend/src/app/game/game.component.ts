@@ -408,7 +408,7 @@ export class GameComponent implements OnInit, ScreenCover {
 
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;
-    this.gwtAngularService.gwtAngularFacade.threeJsRendererServiceAccess = this.babylonRenderServiceAccessImpl;
+    this.gwtAngularService.gwtAngularFacade.babylonRenderServiceAccess = this.babylonRenderServiceAccessImpl;
     this.gwtAngularService.gwtAngularFacade.angularCursorService = this.createAngularCursorService();
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
@@ -530,6 +530,7 @@ export class GameComponent implements OnInit, ScreenCover {
     let gameComponent = this;
     return new class implements AngularCursorService {
       setCursor(cursorType: CursorType, allowed: boolean): void {
+        /*
         cursorType = GwtHelper.gwtIssueStringEnum(cursorType, CursorType);
         switch (cursorType) {
           case CursorType.GO:
@@ -559,15 +560,15 @@ export class GameComponent implements OnInit, ScreenCover {
           default:
             gameComponent.cursor = "default"
             console.warn(`Unknown cursorType ${cursorType}`)
-        }
+        }*/
       }
 
       setDefaultCursor(): void {
-        gameComponent.cursor = "default"
+        // gameComponent.cursor = "default"
       }
 
       setPointerCursor(): void {
-        gameComponent.cursor = "pointer"
+        // gameComponent.cursor = "pointer"
       }
     }
   }

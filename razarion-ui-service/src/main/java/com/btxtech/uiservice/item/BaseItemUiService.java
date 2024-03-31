@@ -546,6 +546,15 @@ public class BaseItemUiService {
         return false;
     }
 
+    public SyncBaseItemSimpleDto getItem4Id(int baseItemId) {
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (nativeSyncBaseItemTickInfo.id == baseItemId) {
+                return SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo);
+            }
+        }
+        throw new IllegalArgumentException("No NativeSyncBaseItemTickInfo for " + baseItemId);
+    }
+
     public SyncBaseItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
             if (nativeSyncBaseItemTickInfo.contained) {

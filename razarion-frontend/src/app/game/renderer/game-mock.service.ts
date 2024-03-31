@@ -82,6 +82,24 @@ export class GameMockService {
   };
 
   inputService: InputService = new class implements InputService {
+    resourceItemClicked(id: number): unknown {
+      throw new Error("Method not implemented.");
+    }
+    enemyItemClicked(id: number): unknown {
+      throw new Error("Method not implemented.");
+    }
+    terrainClicked(arg0: DecimalPosition): unknown {
+      throw new Error("Method not implemented.");
+    }
+    friendItemClicked(id: number): unknown {
+      throw new Error("Method not implemented.");
+    }
+    ownItemClicked(id: number): unknown {
+      throw new Error("Method not implemented.");
+    }
+    boxItemClicked(id: number): void {
+      throw new Error("Method not implemented.");
+    }
     onMouseDown(x: number, y: number, z: number): void {
       // console.info(`Terrain Position ${x}:${y} (mouse down)`);
     }
