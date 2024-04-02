@@ -22,6 +22,7 @@ import com.btxtech.shared.utils.MathHelper;
  * Date: 08.11.2009
  * Time: 11:55:18
  */
+@Deprecated
 public class GroupSelectionFrame {
     private static final double MIN_DISTANCE = 0.1;
     private DecimalPosition start;

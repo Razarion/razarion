@@ -148,7 +148,7 @@ public class Group {
     public boolean hasAttackers() {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (baseItemType.getWeaponType() == null) {
+            if (baseItemType.getWeaponType() != null) {
                 return true;
             }
         }

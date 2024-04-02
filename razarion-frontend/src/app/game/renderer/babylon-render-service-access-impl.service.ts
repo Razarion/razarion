@@ -25,6 +25,7 @@ import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 import { BabylonModelService } from "./babylon-model.service";
 import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
 import {
+  AbstractMesh,
   Color3,
   CubeTexture,
   DirectionalLight,
@@ -241,7 +242,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
     }).observe(this.canvas);
 
-    this.selectionFrame = new SelectionFrame(this.scene);
+    this.selectionFrame = new SelectionFrame(this.scene, this.gwtAngularService.gwtAngularFacade.selectionHandler, this);
     this.setupPointerInteraction();
 
     // ----- Render loop -----
@@ -443,6 +444,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     let polygonTriangulation = new PolygonMeshBuilder("Place marker", polygonData, this.scene, Geometry.EAR_CUT);
     const polygonMesh = polygonTriangulation.build();
     polygonMesh.position.y = 0.1 + LocationVisualization.getHeightFromTerrain(polygonData[0].x, polygonData[0].y, this);
+    polygonMesh.isPickable = false;
     const boundingBox = polygonMesh.getBoundingInfo().boundingBox;
     const width = boundingBox.maximum.x - boundingBox.minimum.x;
     const height = boundingBox.maximum.z - boundingBox.minimum.z;
@@ -563,6 +565,16 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.scene.pick(this.scene.pointerX, this.scene.pointerY);
   }
 
+  public setupTerrainPickPoint(): PickingInfo {
+    return this.scene.pick(this.scene.pointerX, this.scene.pointerY, (mesh: AbstractMesh) => {
+      let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
+      if (!razarionMetadata) {
+        return false;
+      }
+      return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.SLOPE;
+    });
+  }
+
   public setupPickInfoFromNDC(ndcX: number, ndcY: number): PickingInfo {
     const x = (ndcX + 1) / 2 * this.engine.getRenderWidth();
     const y = (1 - ndcY) / 2 * this.engine.getRenderHeight();
@@ -658,7 +670,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
-          // this.selectionFrame.onPointerDown(this.scene.pointerX, this.scene.pointerY);
+          this.selectionFrame.onPointerDown(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
             // TODO this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
@@ -666,7 +678,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           break;
         }
         case PointerEventTypes.POINTERUP: {
-          // this.selectionFrame.onPointerUp(this.scene.pointerX, this.scene.pointerY);
+          this.selectionFrame.onPointerUp(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
             // TODO this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
@@ -674,7 +686,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           break;
         }
         case PointerEventTypes.POINTERMOVE: {
-          // this.selectionFrame.onPointerMove(this.scene.pointerX, this.scene.pointerY);
+          this.selectionFrame.onPointerMove(this.scene.pointerX, this.scene.pointerY);
           let pickingInfo = this.setupMeshPickPoint();
           if (pickingInfo.hit) {
             // TODO this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y, (pointerInfo.event.buttons & 1) === 1);

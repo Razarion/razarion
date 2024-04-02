@@ -42,11 +42,14 @@ public class BoxUiService {
     private Rectangle2D viewFieldAabb;
     private final Map<Integer, BabylonBoxItem> babylonBoxItems = new HashMap<>();
     private BabylonBoxItem selectedBabylonBoxItem;
+    private Integer selectedOutOfViewId;
     private BabylonBoxItem hoverBabylonBoxItem;
 
     public void clear() {
         boxes.clear();
         syncStaticItemSetPositionMonitor = null;
+        selectedOutOfViewId = null;
+        selectedBabylonBoxItem = null;
     }
 
     public void addBox(SyncBoxItemSimpleDto syncBoxItem) {
@@ -196,6 +199,11 @@ public class BoxUiService {
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.addVisible(visibleBox);
                         }
+                        if (id.equals(selectedOutOfViewId)) {
+                            selectedOutOfViewId = null;
+                            visibleBox.select(true);
+                            selectedBabylonBoxItem = visibleBox;
+                        }
                     } else {
                         unused.remove(id);
                     }
@@ -204,6 +212,10 @@ public class BoxUiService {
                     if (visibleBox != null) {
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.removeVisible(visibleBox);
+                        }
+                        if (selectedBabylonBoxItem != null && selectedBabylonBoxItem.getId() == id) {
+                            selectedBabylonBoxItem = null;
+                            selectedOutOfViewId = id;
                         }
                         visibleBox.dispose();
                         unused.remove(id);
@@ -216,6 +228,12 @@ public class BoxUiService {
             });
             unused.forEach(id -> {
                 BabylonBoxItem toRemove = babylonBoxItems.remove(id);
+                if (id.equals(selectedOutOfViewId)) {
+                    selectedOutOfViewId = null;
+                }
+                if (selectedBabylonBoxItem != null && selectedBabylonBoxItem.getId() == id) {
+                    selectedBabylonBoxItem = null;
+                }
                 if (syncStaticItemSetPositionMonitor != null) {
                     syncStaticItemSetPositionMonitor.removeVisible(toRemove);
                 }
@@ -228,6 +246,7 @@ public class BoxUiService {
     }
 
     public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+        selectedOutOfViewId = null;
         if (selectedBabylonBoxItem != null) {
             selectedBabylonBoxItem.select(false);
             selectedBabylonBoxItem = null;

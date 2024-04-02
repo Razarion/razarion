@@ -22,6 +22,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
@@ -56,6 +57,8 @@ public class SelectionHandler {
     private ResourceUiService resourceUiService;
     @Inject
     private BoxUiService boxUiService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Group selectedGroup;
     private SyncItemSimpleDto selectedOtherSyncItem;
 
@@ -75,11 +78,11 @@ public class SelectionHandler {
 
     @SuppressWarnings("unused") // Called by Angular
     public boolean hasAttackers() {
-        return selectedGroup != null && !selectedGroup.hasAttackers();
+        return selectedGroup != null && selectedGroup.hasAttackers();
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public boolean canAttacker(int targetItemTypeId) {
+    public boolean canAttack(int targetItemTypeId) {
         return selectedGroup != null && !selectedGroup.getAttackers(targetItemTypeId).isEmpty();
     }
 
@@ -100,25 +103,31 @@ public class SelectionHandler {
         selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, false));
     }
 
-    public void selectRectangle(Rectangle2D rectangle) {
-        Collection<SyncBaseItemSimpleDto> selectedBaseItems = baseItemUiService.findItemsInRect(rectangle);
-        if (!selectedBaseItems.isEmpty()) {
-            onBaseItemsSelected(selectedBaseItems);
-            return;
-        }
-        Collection<SyncBoxItemSimpleDto> selectedBoxItems = boxUiService.findItemsInRect(rectangle);
-        if (!selectedBoxItems.isEmpty()) {
-            setOtherItemSelected(CollectionUtils.getFirst(selectedBoxItems));
-            return;
-        }
+    @SuppressWarnings("unused") // Called by Angular
+    public void selectRectangle(double xStart, double yStart, double width, double height) {
+        try {
+            Rectangle2D rectangle = new Rectangle2D(xStart, yStart, width, height);
+            Collection<SyncBaseItemSimpleDto> selectedBaseItems = baseItemUiService.findItemsInRect(rectangle);
+            if (!selectedBaseItems.isEmpty()) {
+                onBaseItemsSelected(selectedBaseItems);
+                return;
+            }
+            Collection<SyncBoxItemSimpleDto> selectedBoxItems = boxUiService.findItemsInRect(rectangle);
+            if (!selectedBoxItems.isEmpty()) {
+                setOtherItemSelected(CollectionUtils.getFirst(selectedBoxItems));
+                return;
+            }
 
-        Collection<SyncResourceItemSimpleDto> selectedResourceItems = resourceUiService.findItemsInRect(rectangle);
-        if (!selectedResourceItems.isEmpty()) {
-            setOtherItemSelected(CollectionUtils.getFirst(selectedResourceItems));
-            return;
-        }
+            Collection<SyncResourceItemSimpleDto> selectedResourceItems = resourceUiService.findItemsInRect(rectangle);
+            if (!selectedResourceItems.isEmpty()) {
+                setOtherItemSelected(CollectionUtils.getFirst(selectedResourceItems));
+                return;
+            }
 
-        clearSelection(false);
+            clearSelection(false);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 
     public void selectPosition(DecimalPosition position) {

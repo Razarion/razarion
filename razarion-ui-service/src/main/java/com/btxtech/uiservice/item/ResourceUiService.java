@@ -44,11 +44,14 @@ public class ResourceUiService {
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
     private BabylonResourceItem selectedBabylonResourceItem;
+    private Integer selectedOutOfViewId;
     private BabylonResourceItem hoverBabylonResourceItem;
 
     public void clear() {
         resources.clear();
         syncStaticItemSetPositionMonitor = null;
+        selectedBabylonResourceItem = null;
+        selectedOutOfViewId = null;
     }
 
     public void addResource(SyncResourceItemSimpleDto syncResourceItem) {
@@ -145,6 +148,11 @@ public class ResourceUiService {
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.addVisible(visibleResource);
                         }
+                        if (id.equals(selectedOutOfViewId)) {
+                            selectedOutOfViewId = null;
+                            visibleResource.select(true);
+                            selectedBabylonResourceItem = visibleResource;
+                        }
                     } else {
                         unused.remove(id);
                     }
@@ -153,6 +161,10 @@ public class ResourceUiService {
                     if (visibleResource != null) {
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.removeVisible(visibleResource);
+                        }
+                        if (selectedBabylonResourceItem != null && selectedBabylonResourceItem.getId() == id) {
+                            selectedBabylonResourceItem = null;
+                            selectedOutOfViewId = id;
                         }
                         visibleResource.dispose();
                         unused.remove(id);
@@ -165,6 +177,12 @@ public class ResourceUiService {
             });
             unused.forEach(id -> {
                 BabylonResourceItem toRemove = babylonResourceItems.remove(id);
+                if (id.equals(selectedOutOfViewId)) {
+                    selectedOutOfViewId = null;
+                }
+                if (selectedBabylonResourceItem != null && selectedBabylonResourceItem.getId() == id) {
+                    selectedBabylonResourceItem = null;
+                }
                 if (syncStaticItemSetPositionMonitor != null) {
                     syncStaticItemSetPositionMonitor.removeVisible(toRemove);
                 }
@@ -222,6 +240,7 @@ public class ResourceUiService {
     }
 
     public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+        selectedOutOfViewId = null;
         if (selectedBabylonResourceItem != null) {
             selectedBabylonResourceItem.select(false);
             selectedBabylonResourceItem = null;

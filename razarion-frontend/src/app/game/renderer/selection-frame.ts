@@ -1,16 +1,24 @@
-import {MeshBuilder, Scene, Vector2, Vector3} from "@babylonjs/core";
-import {LinesMesh} from "@babylonjs/core/Meshes/linesMesh";
+import { MeshBuilder, Nullable, Scene, Vector2, Vector3 } from "@babylonjs/core";
+import { LinesMesh } from "@babylonjs/core/Meshes/linesMesh";
+import { SelectionHandler } from "src/app/gwtangular/GwtAngularFacade";
+import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 
 export class SelectionFrame {
+  private readonly MIN_DISTANCE = 0.5;
   private mousePos0: Vector2 | undefined;
   private mousePos1: Vector2 | undefined;
   private lines: LinesMesh | undefined;
+  private startTerrainPosition: Nullable<Vector3> = null;
 
-  constructor(private scene: Scene) {
+  constructor(private scene: Scene, private selectionHandler: SelectionHandler, private renderService: BabylonRenderServiceAccessImpl) {
   }
 
   onPointerDown(x: number, y: number) {
     this.mousePos0 = new Vector2(x, y);
+    let pickingInfo = this.renderService.setupTerrainPickPoint();
+    if (pickingInfo.hit) {
+      this.startTerrainPosition = pickingInfo.pickedPoint;
+    }
   }
 
   onPointerMove(x: number, y: number) {
@@ -48,6 +56,28 @@ export class SelectionFrame {
       this.lines = undefined;
     }
     this.mousePos0 = undefined;
+
+    if (!this.startTerrainPosition) {
+      console.warn("No startTerrainPosition in SelectionFrame")
+      return;
+    }
+    let pickingInfo = this.renderService.setupTerrainPickPoint();
+    if (!pickingInfo.hit) {
+      console.warn("No pickingInfo in SelectionFrame")
+    }
+    let endTerrainPosition = pickingInfo.pickedPoint!;
+
+    if (Math.abs(this.startTerrainPosition.x - endTerrainPosition.x) < this.MIN_DISTANCE &&
+      Math.abs(this.startTerrainPosition.z - endTerrainPosition.z) < this.MIN_DISTANCE) {
+      return;
+    }
+
+    this.selectionHandler.selectRectangle(
+      Math.min(this.startTerrainPosition.x, endTerrainPosition.x),
+      Math.min(this.startTerrainPosition.z, endTerrainPosition.z),
+      Math.abs(this.startTerrainPosition.x - endTerrainPosition.x),
+      Math.abs(this.startTerrainPosition.z - endTerrainPosition.z),
+    );
   }
 
   private setupLines() {

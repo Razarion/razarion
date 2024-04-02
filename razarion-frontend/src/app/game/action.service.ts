@@ -8,7 +8,6 @@ export class SelectionInfo {
   hasOwnSelection: boolean = false;
   hasOwnMovable: boolean = false;
   hasAttackers: boolean = false;
-  canAttack: boolean = false;
   hasHarvesters: boolean = false;
 }
 
@@ -37,7 +36,7 @@ export class ActionService {
       this.gwtAngularService.gwtAngularFacade.inputService.boxItemClicked(id);
     }
 
-    let selectionInfo = this.setupSelectionInfo(targetItemType);
+    let selectionInfo = this.setupSelectionInfo();
     this.cursorTypeHandlers.forEach(cursorTypeHandler => cursorTypeHandler(selectionInfo));
   }
 
@@ -53,16 +52,13 @@ export class ActionService {
     this.cursorTypeHandlers.splice(this.cursorTypeHandlers.indexOf(cursorTypeHandler), 1);
   }
 
-  private setupSelectionInfo(target?: BaseItemType): SelectionInfo {
+  setupSelectionInfo(): SelectionInfo {
     let selectionInfo = new SelectionInfo();
     selectionInfo.hasOwnSelection = this.gwtAngularService.gwtAngularFacade.selectionHandler.hasOwnSelection();
     if (selectionInfo.hasOwnSelection) {
       selectionInfo.hasOwnMovable = this.gwtAngularService.gwtAngularFacade.selectionHandler.hasOwnMovable();
     }
-    if (target) {
-      selectionInfo.hasAttackers = this.gwtAngularService.gwtAngularFacade.selectionHandler.hasAttackers();
-      selectionInfo.canAttack = this.gwtAngularService.gwtAngularFacade.selectionHandler.canAttack(target.getId());
-    }
+    selectionInfo.hasAttackers = this.gwtAngularService.gwtAngularFacade.selectionHandler.hasAttackers();
     selectionInfo.hasHarvesters = this.gwtAngularService.gwtAngularFacade.selectionHandler.hasHarvesters();
     return selectionInfo;
   }

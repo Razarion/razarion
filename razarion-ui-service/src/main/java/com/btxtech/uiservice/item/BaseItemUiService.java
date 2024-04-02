@@ -99,6 +99,7 @@ public class BaseItemUiService {
     private long lastUpdateTimeStamp;
     private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
     private final List<BabylonBaseItem> selectedBabylonBaseItems = new ArrayList<>();
+    private final List<Integer> selectedOutOfViewIds = new ArrayList<>();
     private BabylonBaseItem hoverBabylonBaseItem;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
@@ -121,6 +122,7 @@ public class BaseItemUiService {
         lastUpdateTimeStamp = 0;
         syncBaseItemSetPositionMonitor = null;
         selectedBabylonBaseItems.clear();
+        selectedOutOfViewIds.clear();
         hoverBabylonBaseItem = null;
     }
 
@@ -197,6 +199,12 @@ public class BaseItemUiService {
                     if (syncBaseItemSetPositionMonitor != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                         syncBaseItemSetPositionMonitor.addVisible(babylonBaseItem);
                     }
+                    int selectedIndex = selectedOutOfViewIds.indexOf(nativeSyncBaseItemTickInfo.id);
+                    if (selectedIndex >= 0) {
+                        selectedOutOfViewIds.remove(selectedIndex);
+                        selectedBabylonBaseItems.add(babylonBaseItem);
+                        babylonBaseItem.select(true);
+                    }
                 }
                 leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
 
@@ -245,6 +253,9 @@ public class BaseItemUiService {
             BabylonBaseItem toRemove = babylonBaseItems.remove(id);
             if (syncBaseItemSetPositionMonitor != null) {
                 syncBaseItemSetPositionMonitor.removeVisible(toRemove);
+            }
+            if (selectedBabylonBaseItems.remove(toRemove)) {
+                selectedOutOfViewIds.add(id);
             }
             toRemove.dispose();
         });
@@ -663,6 +674,7 @@ public class BaseItemUiService {
     public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
         selectedBabylonBaseItems.forEach(babylonBaseItem -> babylonBaseItem.select(false));
         selectedBabylonBaseItems.clear();
+        selectedOutOfViewIds.clear();
 
         if (selectionEvent.getType() == SelectionEvent.Type.OWN) {
             selectionEvent.getSelectedGroup().getItems().stream()

@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
  * 12.07.2015.
  */
 @ApplicationScoped
+@Deprecated
 public class TerrainMouseHandler {
     @Inject
     private ItemTypeService itemTypeService;
@@ -145,7 +146,7 @@ public class TerrainMouseHandler {
                 groupSelectionFrame.onMove(terrainPosition.toXY());
                 if (groupSelectionFrame.getRectangle2D() != null) {
                     onlySelectionFrame = true;
-                    selectionHandler.selectRectangle(groupSelectionFrame.getRectangle2D());
+                    // selectionHandler.selectRectangle(groupSelectionFrame.getRectangle2D());
                 } else {
                     if (isSelectionChangeNeeded(terrainPosition.toXY())) {
                         selectionHandler.selectPosition(groupSelectionFrame.getStart2D());

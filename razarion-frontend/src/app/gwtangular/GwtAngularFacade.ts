@@ -155,6 +155,8 @@ export interface SelectionHandler {
   canAttack(targetItemTypeId: number): boolean;
 
   hasHarvesters(): boolean;
+
+  selectRectangle(xStart: number, yStart: number, width: number, height: number): void;
 }
 
 export interface ItemTypeService {

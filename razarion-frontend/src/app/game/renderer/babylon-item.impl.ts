@@ -1,5 +1,5 @@
 import { GwtHelper } from "../../gwtangular/GwtHelper";
-import { ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, NodeMaterial, Tools, TransformNode } from "@babylonjs/core";
+import { AbstractMesh, ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, NodeMaterial, Tools, TransformNode } from "@babylonjs/core";
 import {
   BabylonItem,
   BaseItemType,
@@ -70,7 +70,7 @@ export class BabylonItemImpl implements BabylonItem {
       }
 
       if (diplomacy === Diplomacy.BOX) {
-        if (selectionInfo.hasOwnSelection) {
+        if (selectionInfo.hasOwnMovable) {
           actionManager.hoverCursor = "url(\"/assets/cursors/pick.png\") 15 15, auto"
         } else {
           actionManager.hoverCursor = "pointer"
@@ -80,11 +80,7 @@ export class BabylonItemImpl implements BabylonItem {
 
       if (diplomacy === Diplomacy.ENEMY) {
         if (selectionInfo.hasAttackers) {
-          if (selectionInfo.canAttack) {
-            actionManager.hoverCursor = "url(\"/assets/cursors/attack.png\") 15 15, auto"
-          } else {
-            actionManager.hoverCursor = "url(\"/assets/cursors/attack-no.png\") 15 15, auto"
-          }
+          actionManager.hoverCursor = "url(\"/assets/cursors/attack.png\") 15 15, auto"
         } else {
           actionManager.hoverCursor = "pointer"
         }
@@ -105,6 +101,11 @@ export class BabylonItemImpl implements BabylonItem {
     this.container.getChildMeshes().forEach(function (childMesh) {
       childMesh.actionManager = actionManager;
     });
+    if (this.container.hasOwnProperty('actionManager')) {
+      (<AbstractMesh>this.container).actionManager = actionManager;
+    }
+
+    this.itemCursorTypeHandler(this.actionService.setupSelectionInfo());
   }
 
   getId(): number {
@@ -177,6 +178,7 @@ export class BabylonItemImpl implements BabylonItem {
       this.visualizationMarkerDisc.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
       this.visualizationMarkerDisc.position.y = 0.01;
       this.visualizationMarkerDisc.rotation.x = Tools.ToRadians(90);
+      this.visualizationMarkerDisc.isPickable = false;
       this.visualizationMarkerDisc.parent = this.container;
       (<NodeMaterial>this.visualizationMarkerDisc.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
     } else {
