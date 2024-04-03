@@ -4,6 +4,7 @@ import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.uiservice.ActionServiceListener;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.QuestCockpit;
@@ -30,7 +31,7 @@ public abstract class GwtAngularFacade {
     public GameUiControl gameUiControl; // Initialized by GWT
     public String language; // Initialized by GWT
     public ScreenCover screenCover; // Initialized by GWT
-    public AngularCursorService angularCursorService; // Initialized by Angular
+    public ActionServiceListener actionServiceListener; // Initialized by Angular
     public MainCockpit mainCockpit; // Initialized by Angular
     public ItemCockpitFrontend itemCockpitFrontend; // Initialized by Angular
     public QuestCockpit questCockpit; // Initialized by Angular

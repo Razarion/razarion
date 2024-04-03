@@ -1,7 +1,7 @@
-import { MeshBuilder, Nullable, Scene, Vector2, Vector3 } from "@babylonjs/core";
+import { MeshBuilder, Nullable, PointerEventTypes, Scene, Vector2, Vector3 } from "@babylonjs/core";
 import { LinesMesh } from "@babylonjs/core/Meshes/linesMesh";
-import { SelectionHandler } from "src/app/gwtangular/GwtAngularFacade";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
+import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 
 export class SelectionFrame {
   private readonly MIN_DISTANCE = 0.5;
@@ -10,10 +10,31 @@ export class SelectionFrame {
   private lines: LinesMesh | undefined;
   private startTerrainPosition: Nullable<Vector3> = null;
 
-  constructor(private scene: Scene, private selectionHandler: SelectionHandler, private renderService: BabylonRenderServiceAccessImpl) {
+  constructor(private scene: Scene,
+    private renderService: BabylonRenderServiceAccessImpl,
+    private gwtAngularService: GwtAngularService) {
+    this.scene.onPointerObservable.add((pointerInfo) => {
+      switch (pointerInfo.type) {
+        case PointerEventTypes.POINTERDOWN: {
+          if(renderService.baseItemPlacerActive) {
+            return;
+          }
+          this.onPointerDown(this.scene.pointerX, this.scene.pointerY);
+          break;
+        }
+        case PointerEventTypes.POINTERUP: {
+          this.onPointerUp(this.scene.pointerX, this.scene.pointerY);
+          break;
+        }
+        case PointerEventTypes.POINTERMOVE: {
+          this.onPointerMove(this.scene.pointerX, this.scene.pointerY);
+          break;
+        }
+      }
+    });
   }
 
-  onPointerDown(x: number, y: number) {
+  private onPointerDown(x: number, y: number) {
     this.mousePos0 = new Vector2(x, y);
     let pickingInfo = this.renderService.setupTerrainPickPoint();
     if (pickingInfo.hit) {
@@ -21,7 +42,7 @@ export class SelectionFrame {
     }
   }
 
-  onPointerMove(x: number, y: number) {
+  private onPointerMove(x: number, y: number) {
     if (!this.mousePos0) {
       return;
     }
@@ -50,7 +71,7 @@ export class SelectionFrame {
     }
   }
 
-  onPointerUp(x: number, y: number) {
+  private onPointerUp(x: number, y: number) {
     if (this.lines) {
       this.lines.dispose();
       this.lines = undefined;
@@ -72,7 +93,7 @@ export class SelectionFrame {
       return;
     }
 
-    this.selectionHandler.selectRectangle(
+    this.gwtAngularService.gwtAngularFacade.selectionHandler.selectRectangle(
       Math.min(this.startTerrainPosition.x, endTerrainPosition.x),
       Math.min(this.startTerrainPosition.z, endTerrainPosition.z),
       Math.abs(this.startTerrainPosition.x - endTerrainPosition.x),

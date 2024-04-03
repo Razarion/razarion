@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ItemType, Diplomacy, BaseItemType } from '../gwtangular/GwtAngularFacade';
+import { ItemType, Diplomacy, BaseItemType, ActionServiceListener } from '../gwtangular/GwtAngularFacade';
 import { GwtAngularService } from '../gwtangular/GwtAngularService';
 import { GwtInstance } from '../gwtangular/GwtInstance';
 
@@ -14,10 +14,15 @@ export class SelectionInfo {
 @Injectable({
   providedIn: 'root'
 })
-export class ActionService {
+export class ActionService implements ActionServiceListener {
   private readonly cursorTypeHandlers: ((selectionInfo: SelectionInfo) => void)[] = [];
 
   constructor(private gwtAngularService: GwtAngularService) {
+  }
+
+  onSelectionChanged(): void {
+    let selectionInfo = this.setupSelectionInfo();
+    this.cursorTypeHandlers.forEach(cursorTypeHandler => cursorTypeHandler(selectionInfo));
   }
 
   onItemClicked(itemType: ItemType, id: number, diplomacy: Diplomacy) {
@@ -36,8 +41,6 @@ export class ActionService {
       this.gwtAngularService.gwtAngularFacade.inputService.boxItemClicked(id);
     }
 
-    let selectionInfo = this.setupSelectionInfo();
-    this.cursorTypeHandlers.forEach(cursorTypeHandler => cursorTypeHandler(selectionInfo));
   }
 
   onTerrainClicked(xTerrainPosition: number, yTerrainPosition: number) {

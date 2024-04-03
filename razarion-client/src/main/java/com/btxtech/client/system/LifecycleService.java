@@ -21,8 +21,6 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ItemMarkerService;
 import com.btxtech.uiservice.item.ResourceUiService;
-import com.btxtech.uiservice.mouse.CursorService;
-import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -74,10 +72,6 @@ public class LifecycleService {
     private ItemMarkerService itemMarkerService;
     @Inject
     private ResourceUiService resourceUiService;
-    @Inject
-    private TerrainMouseHandler terrainMouseHandler;
-    @Inject
-    private CursorService cursorService;
     @Inject
     private ProjectileUiService projectileUiService;
     @Inject
@@ -184,8 +178,6 @@ public class LifecycleService {
         perfmonService.stop();
         selectionHandler.clearSelection(true);
         itemMarkerService.clear();
-        terrainMouseHandler.clear();
-        cursorService.clear();
         projectileUiService.clear();
         trailService.clear();
         terrainUiService.clear();

@@ -2,7 +2,6 @@ package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -16,7 +15,6 @@ import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
-import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ViewField;
 import jsinterop.annotations.JsType;
@@ -38,8 +36,6 @@ public class InputService {
     private ResourceUiService resourceUiService;
     @Inject
     private BoxUiService boxUiService;
-    @Inject
-    private TerrainMouseHandler terrainMouseHandler;
     @Inject
     private InGameQuestVisualizationService inGameQuestVisualizationService;
     @Inject
@@ -168,6 +164,9 @@ public class InputService {
     @SuppressWarnings("unused") // Called by Babylonjs
     public void terrainClicked(DecimalPosition terrainPosition) {
         try {
+            if (!selectionHandler.hasOwnSelection()) {
+                return;
+            }
             Collection<SyncBaseItemSimpleDto> movables = selectionHandler.getOwnSelection().getMovables();
             movables = movables.stream().filter(syncBaseItemSimpleDto -> {
                 TerrainType terrainType = itemTypeService.getBaseItemType(syncBaseItemSimpleDto.getItemTypeId()).getPhysicalAreaConfig().getTerrainType();
@@ -182,24 +181,4 @@ public class InputService {
             exceptionHandler.handleException(t);
         }
     }
-
-    @SuppressWarnings("unused") // Called by Babylonjs
-    @Deprecated
-    public void onMouseMove(int x, int y, int z, boolean primaryButtonDown) {
-        terrainMouseHandler.onMouseMove(new Vertex(x, y, z), primaryButtonDown);
-    }
-
-    @SuppressWarnings("unused") // Called by Babylonjs
-    @Deprecated
-    public void onMouseDown(int x, int y, int z) {
-        terrainMouseHandler.onMouseDown(new DecimalPosition(x, y));
-    }
-
-    @SuppressWarnings("unused") // Called by Babylonjs
-    @Deprecated
-    public void onMouseUp(int x, int y, int z) {
-        terrainMouseHandler.onMouseUp(new Vertex(x, y, z));
-    }
-
-
 }

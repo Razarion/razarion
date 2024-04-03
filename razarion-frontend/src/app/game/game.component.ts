@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 import { GameMockService } from './renderer/game-mock.service';
 import { BabylonModelService } from './renderer/babylon-model.service';
 import {
-  AngularCursorService,
+  ActionServiceListener,
   BaseItemType,
   BuilderType,
   CursorType,
@@ -28,6 +28,7 @@ import { GwtHelper } from "../gwtangular/GwtHelper";
 import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
 import { ModelDialogPresenterImpl } from './model-dialog-presenter.impl';
 import { GwtInstance } from '../gwtangular/GwtInstance';
+import { ActionService } from './action.service';
 
 
 @Component({
@@ -57,6 +58,7 @@ export class GameComponent implements OnInit, ScreenCover {
     private gwtAngularService: GwtAngularService,
     private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
     private babylonModelService: BabylonModelService,
+    private actionService: ActionService,
     private gameMockService: GameMockService,
     private zone: NgZone) {
     this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, gwtAngularService);
@@ -409,7 +411,7 @@ export class GameComponent implements OnInit, ScreenCover {
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;
     this.gwtAngularService.gwtAngularFacade.babylonRenderServiceAccess = this.babylonRenderServiceAccessImpl;
-    this.gwtAngularService.gwtAngularFacade.angularCursorService = this.createAngularCursorService();
+    this.gwtAngularService.gwtAngularFacade.actionServiceListener = this.actionService;
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
     this.gwtAngularService.gwtAngularFacade.questCockpit = this.questCockpitContainer;
@@ -524,53 +526,6 @@ export class GameComponent implements OnInit, ScreenCover {
 
   removeEditorModel(editorModel: EditorModel) {
     this.editorModels.splice(this.editorModels.indexOf(editorModel), 1);
-  }
-
-  private createAngularCursorService(): AngularCursorService {
-    let gameComponent = this;
-    return new class implements AngularCursorService {
-      setCursor(cursorType: CursorType, allowed: boolean): void {
-        /*
-        cursorType = GwtHelper.gwtIssueStringEnum(cursorType, CursorType);
-        switch (cursorType) {
-          case CursorType.GO:
-            if (allowed) {
-              gameComponent.cursor = "url(\"/assets/cursors/go.png\"), auto"
-            } else {
-              gameComponent.cursor = "url(\"/assets/cursors/go-no.png\"), auto"
-            }
-            break;
-          case CursorType.ATTACK:
-            if (allowed) {
-              gameComponent.cursor = "url(\"/assets/cursors/attack.png\"), auto"
-            } else {
-              gameComponent.cursor = "url(\"/assets/cursors/attack-no.png\"), auto"
-            }
-            break;
-          case CursorType.COLLECT:
-            if (allowed) {
-              gameComponent.cursor = "url(\"/assets/cursors/collect.png\"), auto"
-            } else {
-              gameComponent.cursor = "url(\"/assets/cursors/collect-no.png\"), auto"
-            }
-            break;
-          case CursorType.PICKUP:
-            gameComponent.cursor = "url(\"/assets/cursors/pick.png\"), auto"
-            break;
-          default:
-            gameComponent.cursor = "default"
-            console.warn(`Unknown cursorType ${cursorType}`)
-        }*/
-      }
-
-      setDefaultCursor(): void {
-        // gameComponent.cursor = "default"
-      }
-
-      setPointerCursor(): void {
-        // gameComponent.cursor = "pointer"
-      }
-    }
   }
 
   openInventory() {

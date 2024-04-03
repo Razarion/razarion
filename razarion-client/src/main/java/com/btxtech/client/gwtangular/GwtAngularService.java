@@ -1,6 +1,5 @@
 package com.btxtech.client.gwtangular;
 
-import com.btxtech.client.ClientCursorService;
 import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -41,8 +40,6 @@ public class GwtAngularService {
     private ItemCockpitService itemCockpitService;
     @Inject
     private QuestCockpitService questCockpitService;
-    @Inject
-    private ClientCursorService clientCursorService;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
@@ -87,7 +84,7 @@ public class GwtAngularService {
         cockpitService.init(gwtAngularFacade.mainCockpit);
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
         questCockpitService.init(gwtAngularFacade.questCockpit);
-        clientCursorService.init(gwtAngularFacade.angularCursorService);
+        selectionHandler.setActionServiceListener(gwtAngularFacade.actionServiceListener);
         baseItemPlacerService.init(gwtAngularFacade.baseItemPlacerPresenter);
         modalDialogManager.init(gwtAngularFacade.modelDialogPresenter);
     }

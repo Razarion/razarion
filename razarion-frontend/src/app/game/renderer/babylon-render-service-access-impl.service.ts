@@ -61,6 +61,7 @@ import { Geometry } from "src/app/common/geometry";
 import { PlaceConfigComponent } from "src/app/editor/common/place-config/place-config.component";
 import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
 import { ActionService } from "../action.service";
+import { BaseItemPlacerPresenterImpl } from "./base-item-placer-presenter.impl";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -143,6 +144,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private viewField?: ViewField;
   private outOfViewPlane?: Mesh;
   private placeMarkerMesh?: Mesh;
+  baseItemPlacerActive = false;
 
   constructor(private gwtAngularService: GwtAngularService,
     private babylonModelService: BabylonModelService,
@@ -242,8 +244,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
     }).observe(this.canvas);
 
-    this.selectionFrame = new SelectionFrame(this.scene, this.gwtAngularService.gwtAngularFacade.selectionHandler, this);
-    this.setupPointerInteraction();
+    this.selectionFrame = new SelectionFrame(this.scene, this, this.gwtAngularService);
 
     // ----- Render loop -----
     let renderTime = Date.now();
@@ -663,82 +664,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return null;
   }
 
-  private setupPointerInteraction() {
-    this.scene.onPointerObservable.add((pointerInfo) => {
-      if (!this.gwtAngularService.gwtAngularFacade.inputService) {
-        return;
-      }
-      switch (pointerInfo.type) {
-        case PointerEventTypes.POINTERDOWN: {
-          this.selectionFrame.onPointerDown(this.scene.pointerX, this.scene.pointerY);
-          let pickingInfo = this.setupMeshPickPoint();
-          if (pickingInfo.hit) {
-            // TODO this.gwtAngularService.gwtAngularFacade.inputService.onMouseDown(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
-          }
-          break;
-        }
-        case PointerEventTypes.POINTERUP: {
-          this.selectionFrame.onPointerUp(this.scene.pointerX, this.scene.pointerY);
-          let pickingInfo = this.setupMeshPickPoint();
-          if (pickingInfo.hit) {
-            // TODO this.gwtAngularService.gwtAngularFacade.inputService.onMouseUp(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y);
-          }
-          break;
-        }
-        case PointerEventTypes.POINTERMOVE: {
-          this.selectionFrame.onPointerMove(this.scene.pointerX, this.scene.pointerY);
-          let pickingInfo = this.setupMeshPickPoint();
-          if (pickingInfo.hit) {
-            // TODO this.gwtAngularService.gwtAngularFacade.inputService.onMouseMove(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, pickingInfo.pickedPoint!.y, (pointerInfo.event.buttons & 1) === 1);
-          }
-          break;
-        }
-      }
-    });
-  }
-
   createBaseItemPlacerPresenter(): BaseItemPlacerPresenter {
-    const threeJsRendererServiceImpl = this;
-
-    let disc: Mesh | null = null;
-    const material = new SimpleMaterial("Base Item Placer", threeJsRendererServiceImpl.scene);
-    material.diffuseColor = Color3.Red()
-    return new class implements BaseItemPlacerPresenter {
-      activate(baseItemPlacer: BaseItemPlacer): void {
-        disc = MeshBuilder.CreateDisc("Base Item Placer", { radius: baseItemPlacer.getEnemyFreeRadius() }, threeJsRendererServiceImpl.scene);
-        disc.visibility = 0.5;
-        disc.material = material;
-        disc.rotation.x = Tools.ToRadians(90);
-        disc.isPickable = false;
-        this.updatePosition(disc, baseItemPlacer);
-        disc.position.y = 0.1;
-        material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
-        disc.onBeforeRenderObservable.add(() => {
-          if (disc) {
-            this.updatePosition(disc, baseItemPlacer);
-            material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
-          }
-        })
-      }
-
-      private updatePosition(disc: Mesh, baseItemPlacer: BaseItemPlacer) {
-        if (baseItemPlacer.getPosition()) {
-          disc.position.x = baseItemPlacer.getPosition().getX();
-          disc.position.y = baseItemPlacer.getPosition().getZ() + 0.01;
-          disc.position.z = baseItemPlacer.getPosition().getY();
-        } else {
-          let centerPosition = threeJsRendererServiceImpl.setupCenterGroundPosition();
-          disc.position.x = centerPosition.x;
-          disc.position.z = centerPosition.z;
-        }
-      }
-
-      deactivate(): void {
-        threeJsRendererServiceImpl.scene.removeMesh(disc!);
-        disc?.dispose();
-        disc = null;
-      }
-    };
+    return new BaseItemPlacerPresenterImpl(this);
   }
 
   private createMesh(threeJsModelId: number, element3DId: string, parent: Node, diplomacy: Diplomacy, shapeTransforms: ShapeTransform[] | null) {

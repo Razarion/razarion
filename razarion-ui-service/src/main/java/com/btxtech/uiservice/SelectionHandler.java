@@ -13,9 +13,7 @@
 
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -32,12 +30,11 @@ import jsinterop.annotations.JsType;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * User: beat
@@ -46,6 +43,7 @@ import java.util.List;
  */
 @JsType
 @ApplicationScoped
+// TODO Reanme to SelectionService
 public class SelectionHandler {
     @Inject
     private Event<SelectionEvent> selectionEventEventTrigger;
@@ -59,11 +57,17 @@ public class SelectionHandler {
     private BoxUiService boxUiService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    private ActionServiceListener actionServiceListener;
     private Group selectedGroup;
     private SyncItemSimpleDto selectedOtherSyncItem;
 
     public Group getOwnSelection() {
         return selectedGroup;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public void setActionServiceListener(ActionServiceListener actionServiceListener) {
+        this.actionServiceListener = actionServiceListener;
     }
 
     @SuppressWarnings("unused") // Called by Angular
@@ -128,26 +132,6 @@ public class SelectionHandler {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
-    }
-
-    public void selectPosition(DecimalPosition position) {
-        SyncBaseItemSimpleDto selectedBaseItem = baseItemUiService.findItemAtPosition(position);
-        if (selectedBaseItem != null) {
-            onBaseItemsSelected(Collections.singletonList(selectedBaseItem));
-            return;
-        }
-        SyncBoxItemSimpleDto selectedBoxItem = boxUiService.findItemAtPosition(position);
-        if (selectedBoxItem != null) {
-            setOtherItemSelected(selectedBoxItem);
-            return;
-        }
-        SyncResourceItemSimpleDto selectedResourceItem = resourceUiService.findItemAtPosition(position);
-        if (selectedResourceItem != null) {
-            setOtherItemSelected(selectedResourceItem);
-            return;
-        }
-
-        // clearSelection(false);
     }
 
     public void onBaseItemsSelected(Collection<SyncBaseItemSimpleDto> selectedBaseItems) {
@@ -237,41 +221,9 @@ public class SelectionHandler {
         }
     }
 
-    public void playbackSelection(List<Integer> selectedIds) {
-        if (selectedIds.isEmpty()) {
-            return;
-        }
-        Collection<SyncBaseItemSimpleDto> ownSelection = new ArrayList<>();
-        SingleHolder<SyncItemSimpleDto> other = new SingleHolder<>();
-
-        selectedIds.forEach(itemId -> {
-            SyncBaseItemSimpleDto syncBaseItemSimpleDto = baseItemUiService.getSyncBaseItemSimpleDto4IdPlayback(itemId);
-            if (syncBaseItemSimpleDto != null) {
-                if (baseItemUiService.isMyOwnProperty(syncBaseItemSimpleDto)) {
-                    ownSelection.add(syncBaseItemSimpleDto);
-                } else {
-                    other.setO(syncBaseItemSimpleDto);
-                }
-                return;
-            }
-            SyncResourceItemSimpleDto syncResourceItemSimpleDto = resourceUiService.getSyncResourceItemSimpleDto4IdPlayback(itemId);
-            if (syncResourceItemSimpleDto != null) {
-                other.setO(syncResourceItemSimpleDto);
-            }
-            SyncBoxItemSimpleDto syncBoxItemSimpleDto = boxUiService.getSyncBoxItemSimpleDto4IdPlayback(itemId);
-            if (syncBoxItemSimpleDto != null) {
-                other.setO(syncBoxItemSimpleDto);
-            }
-        });
-
-        if (!ownSelection.isEmpty()) {
-            Group group = groupInstance.get();
-            group.setItems(ownSelection);
-            setItemGroupSelected(group);
-        } else if (!other.isEmpty()) {
-            setOtherItemSelected(other.getO());
-        } else {
-            clearSelection(true);
+    public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {
+        if (this.actionServiceListener != null) {
+            this.actionServiceListener.onSelectionChanged();
         }
     }
 }

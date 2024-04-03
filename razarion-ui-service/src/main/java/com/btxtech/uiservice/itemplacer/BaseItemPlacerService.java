@@ -1,9 +1,7 @@
 package com.btxtech.uiservice.itemplacer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
-import com.btxtech.uiservice.mouse.CursorService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -20,9 +18,6 @@ import java.util.function.Consumer;
 public class BaseItemPlacerService {
     @Inject
     private Instance<BaseItemPlacer> instance;
-    @Inject
-    private CursorService cursorService;
-    private boolean canBeCanceled;
     private BaseItemPlacer baseItemPlacer;
     private BaseItemPlacerPresenter baseItemPlacerPresenter;
     private Consumer<Collection<DecimalPosition>> executionCallback;
@@ -33,10 +28,8 @@ public class BaseItemPlacerService {
     }
 
     public void activate(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<Collection<DecimalPosition>> executionCallback) {
-        cursorService.handleItemPlaceActivated();
-        this.canBeCanceled = canBeCanceled;
         this.executionCallback = executionCallback;
-        baseItemPlacer = instance.get().init(baseItemPlacerConfig);
+        baseItemPlacer = instance.get().init(baseItemPlacerConfig, canBeCanceled, this::onPlace);
         baseItemPlacerPresenter.activate(baseItemPlacer);
         new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.activatePlacer(baseItemPlacer));
     }
@@ -45,44 +38,15 @@ public class BaseItemPlacerService {
         deactivateInternal(true);
     }
 
-    public void deactivateFriendly() {
-        if (canBeCanceled) {
-            deactivateInternal(true);
-        }
-    }
-
     public boolean isActive() {
         return baseItemPlacer != null;
     }
 
-    public void onMouseUpEvent(Vertex terrainPosition) {
-        if (!isActive()) {
-            return;
-        }
-        baseItemPlacer.onMove(terrainPosition);
+    public void onPlace(DecimalPosition terrainPosition) {
         if (baseItemPlacer.isPositionValid()) {
-            executionCallback.accept(baseItemPlacer.setupAbsolutePositions());
+            executionCallback.accept(baseItemPlacer.setupAbsolutePositions(terrainPosition));
             deactivateInternal(false);
         }
-    }
-
-    public void onMouseMoveEvent(Vertex terrainPosition) {
-        if (!isActive()) {
-            return;
-        }
-        baseItemPlacer.onMove(terrainPosition);
-    }
-
-    public BaseItemPlacer getBaseItemPlacer() {
-        return baseItemPlacer;
-    }
-
-    public void addListener(BaseItemPlacerListener baseItemPlacerListener) {
-        listeners.add(baseItemPlacerListener);
-    }
-
-    public void removeListener(BaseItemPlacerListener baseItemPlacerListener) {
-        listeners.remove(baseItemPlacerListener);
     }
 
     private void deactivateInternal(boolean canceled) {

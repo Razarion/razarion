@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.itemplacer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -11,6 +10,7 @@ import jsinterop.annotations.JsType;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * User: beat
@@ -26,39 +26,53 @@ public class BaseItemPlacer {
     private ItemTypeService itemTypeService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private Vertex position;
+    private boolean canBeCanceled;
+    private Consumer<DecimalPosition> placeCallback;
     private BaseItemType baseItemType;
     private String errorText;
 
-    public BaseItemPlacer init(BaseItemPlacerConfig baseItemPlacerConfig) {
+    public BaseItemPlacer init(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<DecimalPosition> placeCallback) {
         baseItemType = itemTypeService.getBaseItemType(baseItemPlacerConfig.getBaseItemTypeId());
+        this.canBeCanceled = canBeCanceled;
+        this.placeCallback = placeCallback;
         baseItemPlacerChecker.init(baseItemType, baseItemPlacerConfig);
-        if (baseItemPlacerConfig.getSuggestedPosition() != null) {
-            onMove(new Vertex(baseItemPlacerConfig.getSuggestedPosition(), 0));
-        }
+//        if (baseItemPlacerConfig.getSuggestedPosition() != null) {
+//            onMove(new Vertex(baseItemPlacerConfig.getSuggestedPosition(), 0));
+//        }
         return this;
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public double getEnemyFreeRadius() {
         return baseItemPlacerChecker.getEnemyFreeRadius();
     }
 
-    void onMove(Vertex position) {
+    @SuppressWarnings("unused") // Called by Angular
+    public void onMove(double xTerrainPosition, double yTerrainPosition) {
+        DecimalPosition position = new DecimalPosition(xTerrainPosition, yTerrainPosition);
         try {
-            baseItemPlacerChecker.check(position.toXY());
+            baseItemPlacerChecker.check(position);
             setupErrorText();
-            this.position = position;
         } catch (Exception e) {
             exceptionHandler.handleException("BaseItemPlacer.onMove() " + position, e);
         }
     }
 
-    public boolean isPositionValid() {
-        return baseItemPlacerChecker.isPositionValid();
+    @SuppressWarnings("unused") // Called by Angular
+    public void onPlace(double xTerrainPosition, double yTerrainPosition) {
+        DecimalPosition position = new DecimalPosition(xTerrainPosition, yTerrainPosition);
+        try {
+            baseItemPlacerChecker.check(position);
+            setupErrorText();
+            placeCallback.accept(position);
+        } catch (Exception e) {
+            exceptionHandler.handleException("BaseItemPlacer.onMove() " + position, e);
+        }
     }
 
-    public Vertex getPosition() {
-        return position;
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean isPositionValid() {
+        return baseItemPlacerChecker.isPositionValid();
     }
 
     public String getErrorText() {
@@ -69,8 +83,8 @@ public class BaseItemPlacer {
         return baseItemType;
     }
 
-    Collection<DecimalPosition> setupAbsolutePositions() {
-        return baseItemPlacerChecker.setupAbsolutePositions(position.toXY());
+    Collection<DecimalPosition> setupAbsolutePositions(DecimalPosition terrainPosition) {
+        return baseItemPlacerChecker.setupAbsolutePositions(terrainPosition);
     }
 
     private void setupErrorText() {

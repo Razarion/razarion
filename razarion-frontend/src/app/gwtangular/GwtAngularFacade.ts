@@ -7,7 +7,8 @@ export abstract class GwtAngularFacade {
   gameUiControl!: GameUiControl;
   language!: string;
   screenCover!: ScreenCover;
-  angularCursorService!: AngularCursorService;
+  actionServiceListener!: ActionServiceListener;
+  // ActionServiceListener actionServiceListener
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
   questCockpit!: QuestCockpit;
@@ -137,12 +138,6 @@ export interface InputService {
   boxItemClicked(id: number): void;
 
   terrainClicked(terrainPosition: DecimalPosition): void;
-
-  onMouseMove(x: number, y: number, z: number, primaryButtonDown: boolean): void;
-
-  onMouseDown(x: number, y: number, z: number): void;
-
-  onMouseUp(x: number, y: number, z: number): void;
 }
 
 export interface SelectionHandler {
@@ -157,6 +152,8 @@ export interface SelectionHandler {
   hasHarvesters(): boolean;
 
   selectRectangle(xStart: number, yStart: number, width: number, height: number): void;
+
+  setSelectionListener(callback: () => void): void;
 }
 
 export interface ItemTypeService {
@@ -632,12 +629,8 @@ export enum CursorType {
   PICKUP = "PICKUP"
 }
 
-export interface AngularCursorService {
-  setDefaultCursor(): void;
-
-  setPointerCursor(): void;
-
-  setCursor(cursorType: CursorType, allowed: boolean): void;
+export interface ActionServiceListener {
+  onSelectionChanged(): void;
 }
 
 export interface MainCockpit {
@@ -719,9 +712,11 @@ export interface BaseItemPlacerPresenter {
 export interface BaseItemPlacer {
   isPositionValid(): boolean;
 
-  getPosition(): Vertex;
-
   getEnemyFreeRadius(): number;
+
+  onMove(xTerrainPosition: number, yTerrainPosition: number): void;
+
+  onPlace(xTerrainPosition: number, yTerrainPosition: number): void;
 }
 
 export interface AngularZoneRunner {
