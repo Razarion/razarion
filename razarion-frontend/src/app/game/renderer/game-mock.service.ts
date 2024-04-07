@@ -35,6 +35,7 @@ import {
   QuestConfig,
   QuestProgressInfo,
   ResourceItemType,
+  SelectionHandler,
   ShapeTransform,
   SlopeConfig,
   SlopeGeometry,
@@ -82,34 +83,23 @@ export class GameMockService {
   };
 
   inputService: InputService = new class implements InputService {
-    resourceItemClicked(id: number): unknown {
-      throw new Error("Method not implemented.");
+    resourceItemClicked(id: number): void {
+      console.info("resourceItemClicked");
     }
-    enemyItemClicked(id: number): unknown {
-      throw new Error("Method not implemented.");
+    enemyItemClicked(id: number): void {
+      console.info("enemyItemClicked");
     }
-    terrainClicked(arg0: DecimalPosition): unknown {
-      throw new Error("Method not implemented.");
+    terrainClicked(arg0: DecimalPosition): void {
+      console.info("terrainClicked");
     }
-    friendItemClicked(id: number): unknown {
-      throw new Error("Method not implemented.");
+    friendItemClicked(id: number): void {
+      console.info("friendItemClickedvoi");
     }
-    ownItemClicked(id: number): unknown {
-      throw new Error("Method not implemented.");
+    ownItemClicked(id: number): void {
+      console.info("ownItemClicked");
     }
     boxItemClicked(id: number): void {
-      throw new Error("Method not implemented.");
-    }
-    onMouseDown(x: number, y: number, z: number): void {
-      // console.info(`Terrain Position ${x}:${y} (mouse down)`);
-    }
-
-    onMouseMove(x: number, y: number, z: number, primaryButtonDown: boolean): void {
-      // console.info(`Terrain Position ${x}:${y}  (mouse move) ${primaryButtonDown}`);
-    }
-
-    onMouseUp(x: number, y: number, z: number): void {
-      // console.info(`Terrain Position  ${x}:${y} (mouse up)`);
+      console.info("boxItemClicked");
     }
 
     onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
@@ -996,6 +986,37 @@ export class GameMockService {
       }
 
     });
+  }
+
+  mockSelectionHandler(): SelectionHandler {
+    return new class implements SelectionHandler {
+      hasOwnSelection(): boolean {
+        return false;
+      }
+
+      hasOwnMovable(): boolean {
+        return false;
+      }
+
+      hasAttackers(): boolean {
+        return false;
+      }
+
+      canAttack(targetItemTypeId: number): boolean {
+        return false;
+      }
+
+      hasHarvesters(): boolean {
+        return false;
+      }
+
+      selectRectangle(xStart: number, yStart: number, width: number, height: number): void {
+        console.info("selectRectangle");
+      }
+
+      setSelectionListener(callback: () => void): void {
+      }
+    }
   }
 }
 

@@ -110,6 +110,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         }
       });
     }
+
+    this.cursorTypeHandler(actionService.setupSelectionInfo());
   }
 
   public static createTerrainObject(terrainObjectModel: TerrainObjectModel, terrainObjectConfig: TerrainObjectConfig, babylonModelService: BabylonModelService, parent: Nullable<Node>): TransformNode {

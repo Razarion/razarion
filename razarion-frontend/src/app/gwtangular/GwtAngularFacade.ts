@@ -8,7 +8,6 @@ export abstract class GwtAngularFacade {
   language!: string;
   screenCover!: ScreenCover;
   actionServiceListener!: ActionServiceListener;
-  // ActionServiceListener actionServiceListener
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
   questCockpit!: QuestCockpit;

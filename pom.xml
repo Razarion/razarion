@@ -77,7 +77,7 @@
         <module>razarion-client-worker</module>
         <module>razarion-client-common</module>
         <module>razarion-ui-service</module>
-<!--        <module>razarion-dev-tools</module>-->
+<!--        <module>razarion-nnl-pathing</module>-->
         <module>razarion-server</module>
         <module>razarion-unity-converter</module>
         <module>razarion-share</module>

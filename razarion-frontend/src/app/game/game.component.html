@@ -39,7 +39,7 @@
 </p-dialog>
 
 <p-dialog [(visible)]="modelDialogPresenter.title" [showHeader]="false"
-  [style]="{'box-shadow': 'none', 'border': 'none'}" [contentStyle]="{'background-color': 'transparent'}"
+  [style]="{'box-shadow': 'none', 'border': 'none', 'pointer-events': 'none'}" [contentStyle]="{'background-color': 'transparent'}"
   [resizable]="false">
   <div [style]="{'font-size': '17em', 'font-weight': 'bold'}">
     {{modelDialogPresenter.title}}

@@ -12,9 +12,9 @@ import { GameMockService } from './renderer/game-mock.service';
 import { BabylonModelService } from './renderer/babylon-model.service';
 import {
   ActionServiceListener,
+  BaseItemPlacer,
   BaseItemType,
   BuilderType,
-  CursorType,
   Diplomacy,
   HarvesterType,
   I18nString,
@@ -24,7 +24,6 @@ import {
   ScreenCover,
   WeaponType,
 } from "../gwtangular/GwtAngularFacade";
-import { GwtHelper } from "../gwtangular/GwtHelper";
 import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
 import { ModelDialogPresenterImpl } from './model-dialog-presenter.impl';
 import { GwtInstance } from '../gwtangular/GwtInstance';
@@ -77,6 +76,7 @@ export class GameComponent implements OnInit, ScreenCover {
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
+      this.gwtAngularService.gwtAngularFacade.selectionHandler = this.gameMockService.mockSelectionHandler();
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
@@ -191,21 +191,21 @@ export class GameComponent implements OnInit, ScreenCover {
               };
 
               {
-                 let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
-                 babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
-                 babylonBaseItem1.setAngle(0);
-              
-                 babylonBaseItem1.updatePosition();
-                 babylonBaseItem1.updateAngle();
-              
-                 babylonBaseItem1.select(false);
-              
-                 babylonBaseItem1.setConstructing(0.01);
-                 babylonBaseItem1.setHealth(0.99);
-                 // babylonBaseItem1.mark(MarkerConfig);
-              
-                 // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
-                 // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
+                let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
+                babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
+                babylonBaseItem1.setAngle(0);
+
+                babylonBaseItem1.updatePosition();
+                babylonBaseItem1.updateAngle();
+
+                babylonBaseItem1.select(false);
+
+                babylonBaseItem1.setConstructing(0.01);
+                babylonBaseItem1.setHealth(0.99);
+                // babylonBaseItem1.mark(MarkerConfig);
+
+                // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
+                // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
               }
               // {
               //   let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
@@ -407,6 +407,24 @@ export class GameComponent implements OnInit, ScreenCover {
       //   };
       //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBoxPicked(boxContent);
       // }, 100);
+      setTimeout(() => {
+        this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter.activate(new class implements BaseItemPlacer {
+          isPositionValid(): boolean {
+            return true;
+          }
+
+          getEnemyFreeRadius(): number {
+            return 5;
+          }
+
+          onMove(xTerrainPosition: number, yTerrainPosition: number): void {
+          }
+
+          onPlace(xTerrainPosition: number, yTerrainPosition: number): void {
+          }
+
+        });
+      }, 1000);
 
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;
