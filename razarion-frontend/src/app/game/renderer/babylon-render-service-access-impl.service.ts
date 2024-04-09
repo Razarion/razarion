@@ -231,7 +231,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.directionalLight.intensity = 2;
     this.directionalLight.autoUpdateExtends = false;
     this.shadowGenerator = new ShadowGenerator(1024, this.directionalLight);
-    this.shadowGenerator.bias = 0.0001;
+    this.shadowGenerator.bias = 0.0002;
     this.shadowGenerator.normalBias = 0;
 
     // ----- Resize listener -----
