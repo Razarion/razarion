@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  * on 17.06.2017.
  */
 public class TerrainShapeManager {
-    private static Logger logger = Logger.getLogger(TerrainShapeManager.class.getName());
+    private final static Logger logger = Logger.getLogger(TerrainShapeManager.class.getName());
     private TerrainShapeTile[][] terrainShapeTiles;
     private SurfaceAccess surfaceAccess;
     private PathingAccess pathingAccess;

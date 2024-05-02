@@ -40,10 +40,10 @@ public class TerrainTileBuilder {
     private int offsetIndexX;
     private int offsetIndexY;
     private Collection<TerrainSlopeTileBuilder> terrainSlopeTileBuilders;
-    private MapList<Integer, Vertex> groundPositions = new MapList<>();
-    private MapList<Integer, Vertex> groundNorms = new MapList<>();
+    private final MapList<Integer, Vertex> groundPositions = new MapList<>();
+    private final MapList<Integer, Vertex> groundNorms = new MapList<>();
     private Rectangle2D playGround;
-    private List<TerrainTileObjectList> terrainTileObjectLists = new ArrayList<>();
+    private final List<TerrainTileObjectList> terrainTileObjectLists = new ArrayList<>();
 
     public void init(Index terrainTileIndex, TerrainShapeTile terrainShapeTile, Rectangle2D playGround) {
         this.terrainTileIndex = terrainTileIndex;
