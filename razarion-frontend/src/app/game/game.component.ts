@@ -28,6 +28,7 @@ import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
 import { ModelDialogPresenterImpl } from './model-dialog-presenter.impl';
 import { GwtInstance } from '../gwtangular/GwtInstance';
 import { ActionService } from './action.service';
+import { Tools } from '@babylonjs/core';
 
 
 @Component({
@@ -192,8 +193,8 @@ export class GameComponent implements OnInit, ScreenCover {
 
               {
                 let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
-                babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 0));
-                babylonBaseItem1.setAngle(0);
+                babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 10));
+                babylonBaseItem1.setAngle(Tools.ToRadians(-45));
 
                 babylonBaseItem1.updatePosition();
                 babylonBaseItem1.updateAngle();
@@ -203,7 +204,22 @@ export class GameComponent implements OnInit, ScreenCover {
                 babylonBaseItem1.setConstructing(0.01);
                 babylonBaseItem1.setHealth(0.99);
                 // babylonBaseItem1.mark(MarkerConfig);
+                
+                let x = -10;
+                let y = 0;
+                setInterval(() => {
+                  babylonBaseItem1.setPosition(GwtInstance.newVertex(x, y, 10));
+                  babylonBaseItem1.updatePosition();
+                  x += 0.05;
+                  if(x > 10) {
+                    x = -10;
+                  }
+                  y -= 0.05;
+                  if(y < -20) {
+                    y = 0;
+                  }
 
+                }, 10)
                 // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
                 // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
               }

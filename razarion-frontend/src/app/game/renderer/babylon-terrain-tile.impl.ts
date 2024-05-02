@@ -9,13 +9,18 @@ import {
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 import { BabylonModelService } from "./babylon-model.service";
 import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
-import { ActionManager, ExecuteCodeAction, Mesh, Node, NodeMaterial, TransformNode } from "@babylonjs/core";
+import { ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, Node, NodeMaterial, TransformNode } from "@babylonjs/core";
 import { RazarionMetadataType, BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { BabylonJsUtils } from "./babylon-js.utils";
 import { Nullable } from "@babylonjs/core/types";
 import { ActionService, SelectionInfo } from "../action.service";
 
+const MIN_HEIGHT = -2;
+const MAX_HEIGHT = 23;
+
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
+  static readonly TILE_X_SIZE = 160;
+  static readonly TILE_Y_SIZE = 160;
   private readonly container: TransformNode;
   private cursorTypeHandler: (selectionInfo: SelectionInfo) => void;
 
@@ -48,47 +53,30 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
     actionService.addCursoHandler(this.cursorTypeHandler);
 
-    if (terrainTile.getGroundTerrainTiles() !== null) {
-      terrainTile.getGroundTerrainTiles().forEach(groundTerrainTile => {
-        try {
-          const vertexData = BabylonJsUtils.createVertexData(groundTerrainTile.positions, groundTerrainTile.norms);
-          const ground = new Mesh("Ground", null);
-          vertexData.applyToMesh(ground)
-          BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(ground, RazarionMetadataType.GROUND, undefined, groundTerrainTile.groundConfigId);
+    const ground = MeshBuilder.CreateGroundFromHeightMap("gorund", "/assets/height-map.png", { width: BabylonTerrainTileImpl.TILE_X_SIZE, height: BabylonTerrainTileImpl.TILE_X_SIZE, subdivisions: 160, minHeight: MIN_HEIGHT, maxHeight: MAX_HEIGHT });
+    ground.position.x = terrainTile.getIndex().getX() * BabylonTerrainTileImpl.TILE_X_SIZE;
+    ground.position.z = terrainTile.getIndex().getY() * BabylonTerrainTileImpl.TILE_Y_SIZE;
+    this.container.getChildren().push(ground);
+    ground.receiveShadows = true;
+    ground.parent = this.container;
+    ground.actionManager = actionManager;
 
-          let groundConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(groundTerrainTile.groundConfigId);
-          if (groundConfig.getTopThreeJsMaterial()) {
-            ground.material = babylonModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
-          } else {
-            ground.material = BabylonJsUtils.createErrorMaterial(`No top or bottom material in GroundConfig ${groundConfig.getInternalName()} '${groundConfig.getId()}'`);
-          }
-          ground.receiveShadows = true;
-          ground.parent = this.container;
-          ground.actionManager = actionManager;
-          this.container.getChildren().push(ground);
-        } catch (error) {
-          console.error(error);
-        }
-      });
-    }
+    let groundTerrainTile = terrainTile.getGroundTerrainTiles()[0];
 
-    if (terrainTile.getTerrainSlopeTiles() !== null) {
-      terrainTile.getTerrainSlopeTiles().forEach(terrainSlopeTile => {
-        try {
-          let slopeConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getSlopeConfig(terrainSlopeTile.slopeConfigId);
-          if (terrainSlopeTile.centerSlopeGeometry) {
-            this.setupSlopeGeometry(slopeConfig,
-              terrainSlopeTile.centerSlopeGeometry,
-              babylonModelService.getNodeMaterialNull(slopeConfig.getThreeJsMaterial(), `SlopeConfig has no threeJsMaterial: ${slopeConfig.getInternalName()} (${slopeConfig.getId()})`));
-          }
-        } catch (error) {
-          // throw new Error(`TerrainObjectConfig has no threeJsUuid: ${terrainObjectConfig.toString()}`);
-          console.error(error);
-        }
-      });
-    }
+    NodeMaterial.ParseFromFileAsync(
+      "Ground materail",
+      "/assets/nodeMaterial_land.json",
+      this.rendererService.getScene()
+    ).then(nodeMaterial => {
+      ground.material = nodeMaterial;
+    }).catch(reason => {
+      console.error(`Load NodeMaterial failed. Reason: ${reason}`);
+    })
 
-    this.threeJsWaterRenderService.setup(terrainTile.getTerrainWaterTiles(), this.container);
+    BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(ground, RazarionMetadataType.GROUND, undefined, groundTerrainTile.groundConfigId);
+
+    let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(1);
+    this.threeJsWaterRenderService.setup2(terrainTile.getIndex(), waterConfig, this.container);
 
     if (terrainTile.getTerrainTileObjectLists() !== null) {
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {

@@ -1,5 +1,5 @@
 import { GwtHelper } from "../../gwtangular/GwtHelper";
-import { AbstractMesh, ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, NodeMaterial, Tools, TransformNode } from "@babylonjs/core";
+import { AbstractMesh, ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, NodeMaterial, Ray, Tools, TransformNode, Vector3 } from "@babylonjs/core";
 import {
   BabylonItem,
   BaseItemType,
@@ -12,8 +12,9 @@ import {
 } from "../../gwtangular/GwtAngularFacade";
 import { SimpleMaterial } from "@babylonjs/materials";
 import { BabylonModelService } from "./babylon-model.service";
-import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
+import { BabylonRenderServiceAccessImpl, RazarionMetadataType } from "./babylon-render-service-access-impl.service";
 import { ActionService, SelectionInfo } from "../action.service";
+import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
@@ -140,8 +141,24 @@ export class BabylonItemImpl implements BabylonItem {
   updatePosition(): void {
     if (this.position) {
       this.container.position.x = this.position.getX();
-      this.container.position.y = this.position.getZ();
       this.container.position.z = this.position.getY();
+      this.container.position.y = LocationVisualization.getHeightFromTerrain(this.position.getX(), this.position.getY(), this.rendererService);
+      //-----
+      let ray = new Ray(new Vector3(this.position.getX(), -100, this.position.getY()), new Vector3(0, 1, 0), 1000);
+      let pickingInfo = this.rendererService.getScene().pickWithRay(ray,
+        (mesh: AbstractMesh) => {
+          let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
+          if (!razarionMetadata) {
+            return false;
+          }
+          return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.SLOPE;
+        });
+      if (pickingInfo && pickingInfo.hit) {
+         let normal = pickingInfo.getNormal();
+         this.container.rotation.x = -normal!.x;
+         this.container.rotation.z = -normal!.z;
+      }
+      //-----
     }
   }
 
