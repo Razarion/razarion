@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import { Injectable } from "@angular/core";
 import {
   Alarm,
   BabylonTerrainTile,
@@ -56,16 +56,22 @@ import {
   WaterConfig,
   WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
-import {HttpClient} from "@angular/common/http";
-import {GwtInstance} from "../../gwtangular/GwtInstance";
-import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
-import {QuestCockpitComponent} from "../cockpit/quest/quest-cockpit.component";
-import {ConditionTrigger} from "src/app/generated/razarion-share";
+import { HttpClient } from "@angular/common/http";
+import { GwtInstance } from "../../gwtangular/GwtInstance";
+import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
+import { QuestCockpitComponent } from "../cockpit/quest/quest-cockpit.component";
+import { ConditionTrigger } from "src/app/generated/razarion-share";
+import { BabylonTerrainTileImpl } from "./babylon-terrain-tile.impl";
 
-let staticGameConfigJson: any = {};
+let staticGameConfigJson: any = {
+  terrainObjectConfigs: []
+};
+
+let displayMockTerrainTile: BabylonTerrainTile[] = [];
 
 @Injectable()
 export class GameMockService {
+
   public unityAssetConverterTestAssetConfig: any = {};
   gameUiControl: GameUiControl = new class implements GameUiControl {
     getPlanetConfig(): PlanetConfig {
@@ -140,66 +146,6 @@ export class GameMockService {
     }
     getTerrainEditorService(): TerrainEditorService {
       return new class implements TerrainEditorService {
-        getTerrainObjectPositions(): Promise<TerrainObjectPosition[]> {
-          return Promise.resolve([new class implements TerrainObjectPosition {
-            getId(): number {
-              return 8;
-            }
-
-            setId(id: number): void {
-            }
-
-            getOffset(): Vertex {
-              return GwtInstance.newVertex(0, 0, 0);
-            }
-
-            getPosition(): DecimalPosition {
-              return GwtInstance.newDecimalPosition(0, 0);
-            }
-
-            getRotation(): Vertex {
-              return GwtInstance.newVertex(0, 0, 0);
-            }
-
-            getScale(): Vertex {
-              return GwtInstance.newVertex(0, 0, 0);
-            }
-
-            getTerrainObjectConfigId(): number {
-              return 0;
-            }
-
-            setOffset(offset: Vertex): void {
-            }
-
-            setPosition(position: DecimalPosition): void {
-            }
-
-            setRotation(rotation: Vertex): void {
-            }
-
-            setScale(scale: Vertex): void {
-            }
-
-            setTerrainObjectConfigId(terrainObjectConfigId: number): void {
-            }
-          }]);
-        }
-
-        getAllDriveways(): Promise<ObjectNameId[]> {
-          return Promise.resolve([new class implements ObjectNameId {
-            id: number = 1;
-            internalName: string = "Driveway";
-          }]);
-        }
-
-        getAllSlopes(): Promise<ObjectNameId[]> {
-          return Promise.resolve([new class implements ObjectNameId {
-            id: number = 1;
-            internalName: string = "Land";
-          }]);
-        }
-
         getAllTerrainObjects(): Promise<ObjectNameId[]> {
           let objectNameIds: ObjectNameId[] = [];
           staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
@@ -216,21 +162,6 @@ export class GameMockService {
           return Promise.resolve(objectNameIds);
         }
 
-        getCursorCorners(): number {
-          return 0;
-        }
-
-        getCursorRadius(): number {
-          return 0;
-        }
-
-        isDrivewayMode(): boolean {
-          return false;
-        }
-
-        isInvertedSlope(): boolean {
-          return false;
-        }
 
         save(createdTerrainObjects: TerrainObjectPosition[], updatedTerrainObjects: TerrainObjectPosition[]): Promise<string> {
           console.info("---- Save TerrainObjectPosition ----");
@@ -241,22 +172,9 @@ export class GameMockService {
           return Promise.resolve("Mock, see console");
         }
 
-        setCursorCorners(cursorCorners: number): void {
-        }
 
-        setCursorRadius(cursorRadius: number): void {
-        }
-
-        setDriveway4New(driveway4New: ObjectNameId): void {
-        }
-
-        setDrivewayMode(drivewayMode: boolean): void {
-        }
-
-        setInvertedSlope(invertedSlope: boolean): void {
-        }
-
-        setSlope4New(slope4New: ObjectNameId): void {
+        getDisplayTerrainTiles(): BabylonTerrainTile[] {
+          return displayMockTerrainTile;
         }
       }
     }
@@ -648,90 +566,56 @@ export class GameMockService {
   }
 
   mockTerrainTile(threeJsRendererService: BabylonRenderServiceAccessImpl) {
-    const _this = this;
-    this.http.get<TerrainTile[]>("/gwt-mock/terrain-tiles").subscribe((terrainTileJsonArray: any[]) => {
-      for (let i in terrainTileJsonArray) {
-        let terrainTileJson: any = terrainTileJsonArray[i];
-        const terrainTile = new class implements TerrainTile {
-          getGroundTerrainTiles(): GroundTerrainTile[] {
-            const groundTerrainTiles: GroundTerrainTile[] = [];
-            if (terrainTileJson.groundTerrainTiles === undefined || terrainTileJson.groundTerrainTiles === null) {
-              return groundTerrainTiles;
-            }
-            for (const [key, value] of Object.entries(terrainTileJson.groundTerrainTiles)) {
-              groundTerrainTiles.push(new class implements GroundTerrainTile {
-                groundConfigId: number = <number>(<any>value)["groundConfigId"];
-                positions: Float32Array = new Float32Array(<number>(<any>value)["positions"]);
-                norms: Float32Array = new Float32Array(<number>(<any>value)["norms"]);
-              });
-            }
-            return groundTerrainTiles;
-          };
-
-          getTerrainSlopeTiles(): TerrainSlopeTile[] {
-            const terrainSlopeTiles: TerrainSlopeTile[] = [];
-            if (terrainTileJson.terrainSlopeTiles === undefined || terrainTileJson.terrainSlopeTiles === null) {
-              return terrainSlopeTiles;
-            }
-            for (const [key, terrainSlopeTileJson] of Object.entries(terrainTileJson.terrainSlopeTiles)) {
-              terrainSlopeTiles.push(new class implements TerrainSlopeTile {
-                slopeConfigId: number = <number>(<any>terrainSlopeTileJson)["slopeConfigId"];
-                centerSlopeGeometry: SlopeGeometry | null = _this.setupGeometry("centerSlopeGeometry", <any>terrainSlopeTileJson);
-              });
-            }
-            return terrainSlopeTiles;
-          }
-
-          getTerrainWaterTiles(): TerrainWaterTile[] {
-            const terrainWaterTiles: TerrainWaterTile[] = [];
-            if (terrainTileJson.terrainWaterTiles === undefined || terrainTileJson.terrainWaterTiles === null) {
-              return terrainWaterTiles;
-            }
-            for (const [key, terrainWaterTileJson] of Object.entries(terrainTileJson.terrainWaterTiles)) {
-              terrainWaterTiles.push(new class implements TerrainWaterTile {
-                slopeConfigId: number = <number>(<any>terrainWaterTileJson)["slopeConfigId"];
-                positions: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["positions"]);
-                shallowPositions: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["shallowPositions"]);
-                shallowUvs: Float32Array = new Float32Array(<number>(<any>terrainWaterTileJson)["shallowUvs"]);
-              });
-            }
-            return terrainWaterTiles;
-          }
-
-          getTerrainTileObjectLists(): TerrainTileObjectList[] {
-            const terrainTileObjectLists: TerrainTileObjectList[] = [];
-            if (terrainTileJson.terrainTileObjectLists === undefined || terrainTileJson.terrainTileObjectLists === null) {
-              return terrainTileObjectLists;
-            }
-            for (const [key, terrainTileObjectListJson] of Object.entries(terrainTileJson.terrainTileObjectLists)) {
-              terrainTileObjectLists.push(new class implements TerrainTileObjectList {
-                terrainObjectModels: TerrainObjectModel[] = _this.setupTerrainObjectModels((<any>terrainTileObjectListJson)["terrainObjectModels"]);
-                terrainObjectConfigId = (<any>terrainTileObjectListJson)["terrainObjectConfigId"];
-              });
-            }
-            return terrainTileObjectLists;
-          }
-
-          getIndex(): Index {
-            return new class implements Index {
-              getX(): number {
-                return terrainTileJson.index.x;
-              }
-
-              getY(): number {
-                return terrainTileJson.index.y;
-              }
-
-              toString(): string {
-                return `${terrainTileJson.index.x}:${terrainTileJson.index.y}`;
-              }
-            }
-          }
-        };
-        const threeJsTerrainTile: BabylonTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
-        threeJsTerrainTile.addToScene();
+    fetch('/rest/terrain-shape', {
+      headers: {
+        'Content-Type': 'application/octet-stream'
       }
-    });
+    }).then(response => response.arrayBuffer())
+      .then(buffer => {
+        const uint16Array = new Uint16Array(buffer);
+        let xCount = 2;
+        let yCount = 2;
+        for (let x = 0; x < xCount; x++) {
+          for (let y = 0; y < yCount; y++) {
+            let start = x * BabylonTerrainTileImpl.NODE_X_COUNT + y * BabylonTerrainTileImpl.NODE_Y_COUNT;
+            let heightMap = uint16Array.slice(start, start + BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT);
+
+            const terrainTile = new class implements TerrainTile {
+              getGroundHeightMap(): Uint16Array {
+                return heightMap;
+              }
+
+              getGroundConfigId(): number | null {
+                return 1;
+              }
+
+              getTerrainTileObjectLists(): TerrainTileObjectList[] {
+                return [];
+              }
+
+              getIndex(): Index {
+                return new class implements Index {
+                  getX(): number {
+                    return x;
+                  }
+
+                  getY(): number {
+                    return y;
+                  }
+
+                  toString(): string {
+                    return `${x}:${y}`;
+                  }
+                }
+              }
+            }
+            const threeJsTerrainTile: BabylonTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
+            displayMockTerrainTile.push(threeJsTerrainTile);
+            threeJsTerrainTile.addToScene();
+          }
+        }
+      })
+      .catch(error => console.error('Error:', error));
   }
 
   mockThreeJsModelConfigs(): ThreeJsModelConfig[] {

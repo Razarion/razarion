@@ -1,5 +1,8 @@
 package com.btxtech.shared.gameengine.planet.terrain.container.json;
 
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Uint16ArrayEmu;
+
 import java.util.function.Consumer;
 
 /**
@@ -8,4 +11,6 @@ import java.util.function.Consumer;
  */
 public interface NativeTerrainShapeAccess {
     void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback);
+
+    Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex);
 }

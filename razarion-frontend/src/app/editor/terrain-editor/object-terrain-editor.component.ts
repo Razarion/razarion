@@ -87,14 +87,13 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
         this.newTerrainObjects.push(terrainObjectPosition);
       });
     });
-    this.activate()
   }
 
   ngOnDestroy(): void {
     this.deactivate();
   }
 
-  private activate() {
+  public activate() {
     this.mouseObservable = this.babylonRenderServiceAccess.getScene().onPointerObservable.add((pointerInfo) => {
       if (!this.gwtAngularService.gwtAngularFacade.inputService) {
         return;
@@ -139,7 +138,7 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
     });
   }
 
-  private deactivate() {
+  public deactivate() {
     this.babylonRenderServiceAccess.getScene().onPointerObservable.remove(this.mouseObservable);
     this.clearSelection();
   }
@@ -310,4 +309,5 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
     });
 
   }
+
 }

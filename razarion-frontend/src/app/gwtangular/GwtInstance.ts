@@ -4,6 +4,36 @@ import { DecimalPosition, TerrainObjectPosition, Vertex } from "./GwtAngularFaca
 import { environment } from "../../environments/environment";
 
 export class GwtInstance {
+  static newIndex(x: number, y: number): Index {
+    if (environment.gwtMock) {
+      return new class implements Index {
+        getX(): number {
+          return x;
+        }
+
+        getY(): number {
+          return y;
+        }
+
+        add(x: number, y: number): Index {
+          return GwtInstance.newIndex(this.getX() + x, this.getY() + y);
+        }
+
+        divide(x: number, y: number): Index {
+          return GwtInstance.newIndex(
+            this.getX() / x,
+            this.getY() / y
+          );
+        }
+        toString(): string {
+          return `Index(${this.getX()}, ${this.getY()})`;
+        }
+      }
+    } else {
+      return com.btxtech.shared.datatypes.Index.create(x, y);
+    }
+  }
+
   static newDecimalPosition(x: number, y: number): DecimalPosition {
     if (environment.gwtMock) {
       return new class implements DecimalPosition {

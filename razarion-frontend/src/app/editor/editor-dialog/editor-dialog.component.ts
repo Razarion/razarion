@@ -18,7 +18,6 @@ import { SlopeEditorComponent } from "../crud-editors/slope-editor/slope-editor.
 import { DrivewayEditorComponent } from "../crud-editors/driveway-editor/driveway-editor.component";
 import { TerrainEditor2dComponent } from "../../terrain-editor2d/terrain-editor2d.component";
 import { EditorService } from "../editor-service";
-import { ObjectTerrainEditorComponent } from "../terrain-editor/object-terrain-editor.component";
 import { LevelEditorComponent } from "../crud-editors/level-editor/level-editor.component";
 import { GeneratedCrudContainerComponent } from "../crud-editors/crud-container/generated-crud-container.component";
 import { BaseItemTypeEditorComponent } from "../crud-editors/base-item-type-editor/base-item-type-editor.component";
@@ -28,6 +27,7 @@ import { BoxItemTypeEditorComponent } from "../crud-editors/box-item-type-editor
 import { InventoryItemEditorComponent } from "../crud-editors/inventory-item-editor/inventory-item-editor.component";
 import { BoxRegionComponent } from "../box-region/box-region.component";
 import { UserMgmtComponent } from "../user-mgmt/user-mgmt.component";
+import { TerrainEditorComponent } from "../terrain-editor/terrain-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -77,7 +77,7 @@ export class EditorDialogComponent {
 
   openTerrainEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Object terrain editor", ObjectTerrainEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Terrain editor", TerrainEditorComponent));
   }
 
   openTerrainEditor2d() {

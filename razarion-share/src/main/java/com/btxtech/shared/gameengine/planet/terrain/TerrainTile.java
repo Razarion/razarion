@@ -1,12 +1,9 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
-
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -14,14 +11,22 @@ import java.util.Map;
  */
 @JsType
 public class TerrainTile {
+    @Deprecated
     private GroundTerrainTile[] groundTerrainTiles;
     private Index index;
+    @Deprecated
     private TerrainWaterTile[] terrainWaterTiles;
+    @Deprecated
     private TerrainSlopeTile[] terrainSlopeTiles;
+    @Deprecated
     private double landWaterProportion;
+    @Deprecated
     private TerrainNode[][] terrainNodes;
+    @Deprecated
     private double height;
     private TerrainTileObjectList[] terrainTileObjectLists;
+    private Integer groundConfigId;
+    private Uint16ArrayEmu groundHeightMap;
 
     public Index getIndex() {
         return index;
@@ -32,58 +37,72 @@ public class TerrainTile {
         this.index = index;
     }
 
+    @Deprecated
     public GroundTerrainTile[] getGroundTerrainTiles() {
         return groundTerrainTiles;
     }
 
+    @Deprecated
     public void setGroundTerrainTiles(GroundTerrainTile[] groundTerrainTiles) {
         this.groundTerrainTiles = groundTerrainTiles;
     }
 
+    @Deprecated
     public TerrainSlopeTile[] getTerrainSlopeTiles() {
         return terrainSlopeTiles;
     }
 
+    @Deprecated
     public void setTerrainSlopeTiles(TerrainSlopeTile[] terrainSlopeTiles) {
         this.terrainSlopeTiles = terrainSlopeTiles;
     }
 
+    @Deprecated
     public TerrainWaterTile[] getTerrainWaterTiles() {
         return terrainWaterTiles;
     }
 
+    @Deprecated
     public void setTerrainWaterTiles(TerrainWaterTile[] terrainWaterTiles) {
         this.terrainWaterTiles = terrainWaterTiles;
     }
 
+    @Deprecated
     public double getLandWaterProportion() {
         return landWaterProportion;
     }
 
+    @Deprecated
     public void setLandWaterProportion(double landWaterProportion) {
         this.landWaterProportion = landWaterProportion;
     }
 
+    @Deprecated
     public void initTerrainNodeField(int terrainTileNodesEdgeCount) {
         terrainNodes = new TerrainNode[terrainTileNodesEdgeCount][terrainTileNodesEdgeCount];
     }
 
+    @Deprecated
     public void insertTerrainNode(int x, int y, TerrainNode terrainNode) {
         terrainNodes[x][y] = terrainNode;
     }
 
+    @Deprecated
     public TerrainNode[][] getTerrainNodes() {
         return terrainNodes;
     }
 
+    @Deprecated
     public void setTerrainNodes(TerrainNode[][] terrainNodes) {
         this.terrainNodes = terrainNodes;
     }
 
+    @Deprecated
     public double getHeight() {
         return height;
     }
 
+    @Deprecated
     public void setHeight(double height) {
         this.height = height;
     }
@@ -94,5 +113,33 @@ public class TerrainTile {
 
     public void setTerrainTileObjectLists(TerrainTileObjectList[] terrainTileObjectLists) {
         this.terrainTileObjectLists = terrainTileObjectLists;
+    }
+
+    @SuppressWarnings("unused") // Used ba angular
+    public Integer getGroundConfigId() {
+        return groundConfigId;
+    }
+
+    public void setGroundConfigId(Integer groundConfigId) {
+        this.groundConfigId = groundConfigId;
+    }
+
+    public TerrainTile groundConfigId(Integer groundConfigId) {
+        setGroundConfigId(groundConfigId);
+        return this;
+    }
+
+    @SuppressWarnings("unused") // Used ba angular
+    public Uint16ArrayEmu getGroundHeightMap() {
+        return groundHeightMap;
+    }
+
+    public void setGroundHeightMap(Uint16ArrayEmu groundHeightMap) {
+        this.groundHeightMap = groundHeightMap;
+    }
+
+    public TerrainTile groundHeightMap(Uint16ArrayEmu groundHeightMap) {
+        setGroundHeightMap(groundHeightMap);
+        return this;
     }
 }

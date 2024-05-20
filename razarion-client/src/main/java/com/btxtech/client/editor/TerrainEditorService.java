@@ -7,6 +7,8 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.shared.rest.TerrainObjectEditorController;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.renderer.BabylonTerrainTile;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 import org.jboss.errai.common.client.api.Caller;
@@ -17,6 +19,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @JsType
 @ApplicationScoped
@@ -29,6 +32,8 @@ public class TerrainEditorService {
     private GameUiControl gameUiControl;
     @Inject
     private Caller<TerrainObjectEditorController> terrainObjectEditorController;
+    @Inject
+    private TerrainUiService terrainUiService;
 
     @SuppressWarnings("unused") // Called by Angular
     public Promise<String> save(TerrainObjectPosition[] createdTerrainObjects, TerrainObjectPosition[] updatedTerrainObjects) {
@@ -55,4 +60,15 @@ public class TerrainEditorService {
                 (RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> resolve.onInvoke(objectNameIds.toArray(new ObjectNameId[0])),
                 exceptionHandler.restErrorHandler("TerrainObjectEditorController.getObjectNameIds() failed: ")).getObjectNameIds());
     }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public BabylonTerrainTile[] getDisplayTerrainTiles() {
+        // initialize terrainUiService
+        return terrainUiService.getDisplayTerrainTiles()
+                .stream()
+                .map(uiTerrainTile -> uiTerrainTile.getBabylonTerrainTile())
+                .collect(Collectors.toList())
+                .toArray(new BabylonTerrainTile[0]);
+    }
+
 }

@@ -8,6 +8,7 @@ import jsinterop.annotations.JsType;
  * 03.04.2017.
  */
 @JsType
+@Deprecated
 public class TerrainSlopeTile {
     public int slopeConfigId;
     public SlopeGeometry outerSlopeGeometry;

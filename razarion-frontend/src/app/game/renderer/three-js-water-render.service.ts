@@ -11,9 +11,9 @@ export class ThreeJsWaterRenderService {
     private babylonModelService: BabylonModelService) {
   }
 
-  public setup2(index: Index, waterConfig: WaterConfig, container: TransformNode): void {
-    const water = MeshBuilder.CreateGround("Water", {width: BabylonTerrainTileImpl.TILE_X_SIZE, 
-      height: BabylonTerrainTileImpl.TILE_X_SIZE,
+  public setup(index: Index, waterConfig: WaterConfig, container: TransformNode): void {
+    const water = MeshBuilder.CreateGround("Water", {width: BabylonTerrainTileImpl.NODE_X_COUNT, 
+      height: BabylonTerrainTileImpl.NODE_X_COUNT,
       subdivisions:160});
 
     water.material = this.babylonModelService.getNodeMaterialNull(waterConfig.getMaterial(), `No material in WaterConfig ${waterConfig.getInternalName()} (${waterConfig.getId()})`);
@@ -21,8 +21,8 @@ export class ThreeJsWaterRenderService {
 
     water.receiveShadows = true;
     water.parent = container;
-    water.position.x = index.getX() * BabylonTerrainTileImpl.TILE_X_SIZE;
-    water.position.z = index.getY() * BabylonTerrainTileImpl.TILE_Y_SIZE;
+    water.position.x = index.getX() * BabylonTerrainTileImpl.NODE_X_COUNT + BabylonTerrainTileImpl.NODE_X_COUNT / 2;
+    water.position.z = index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT + BabylonTerrainTileImpl.NODE_Y_COUNT / 2;
     container.getChildren().push(water);
   }
 

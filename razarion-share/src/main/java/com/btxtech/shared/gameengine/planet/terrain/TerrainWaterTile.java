@@ -8,6 +8,7 @@ import jsinterop.annotations.JsType;
  * 10.04.2017.
  */
 @JsType
+@Deprecated
 public class TerrainWaterTile {
     public int slopeConfigId;
     public Float32ArrayEmu positions;

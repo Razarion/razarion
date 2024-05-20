@@ -747,7 +747,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     node.metadata.razarionMetadata = razarionMetadata;
   }
 
-  public static setRazarionMetadataSimple(node: Node, razarionMetadataType: RazarionMetadataType, id?: number, configId?: number) {
+  public static setRazarionMetadataSimple(node: Node, razarionMetadataType: RazarionMetadataType, id: any, configId: any) {
     BabylonRenderServiceAccessImpl.setRazarionMetadata(node, new class implements RazarionMetadata {
       type = razarionMetadataType;
       id = GwtHelper.gwtIssueNumber(id);

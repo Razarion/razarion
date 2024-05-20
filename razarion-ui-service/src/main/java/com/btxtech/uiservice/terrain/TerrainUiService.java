@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
@@ -39,6 +40,15 @@ public class TerrainUiService {
     private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
     private final Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
     private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
+    private int tileXCount;
+    private int tileYCount;
+
+    public void setPlanetConfig(PlanetConfig planetConfig) {
+        DecimalPosition planetSize = planetConfig.getSize();
+        tileXCount = TerrainUtil.toTileCeil(planetSize).getX();
+        tileYCount = TerrainUtil.toTileCeil(planetSize).getY();
+    }
+
     public void clear() {
         terrainZConsumers.clear();
         clearTerrainTiles();
@@ -60,6 +70,10 @@ public class TerrainUiService {
 
         Map<Index, UiTerrainTile> newDisplayTerrainTiles = new HashMap<>();
         for (Index index : display) {
+            if (index.getX() < 0 || index.getY() < 0 || index.getX() >= tileXCount || index.getY() >= tileYCount) {
+                continue;
+            }
+
             UiTerrainTile uiTerrainTile = displayTerrainTiles.remove(index);
             if (uiTerrainTile != null) {
                 newDisplayTerrainTiles.put(index, uiTerrainTile);
@@ -166,5 +180,9 @@ public class TerrainUiService {
 
     public void onTerrainTileResponse(TerrainTile terrainTile) {
         terrainTileConsumers.remove(terrainTile.getIndex()).accept(terrainTile);
+    }
+
+    public Collection<UiTerrainTile> getDisplayTerrainTiles() {
+        return displayTerrainTiles.values();
     }
 }

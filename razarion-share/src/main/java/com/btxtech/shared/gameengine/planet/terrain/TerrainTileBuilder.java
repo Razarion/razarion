@@ -10,6 +10,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.slope.CalculatedSlopeData;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
@@ -34,6 +35,8 @@ public class TerrainTileBuilder {
     private Instance<TerrainSlopeTileBuilder> terrainSlopeTileContextInstance;
     @Inject
     private TerrainWaterTileBuilder terrainWaterTileBuilder;
+    @Inject
+    private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     @Deprecated
     private Index terrainTileIndex;
     private TerrainTile terrainTile;
@@ -64,6 +67,7 @@ public class TerrainTileBuilder {
         } else {
             this.playGround = playGround;
         }
+        terrainTile.setGroundHeightMap(nativeTerrainShapeAccess.createGroundHeightMap(terrainTileIndex));
     }
 
     public TerrainTile generate(PlanetConfig planetConfig) {
@@ -90,6 +94,7 @@ public class TerrainTileBuilder {
         if (!terrainTileObjectLists.isEmpty()) {
             terrainTile.setTerrainTileObjectLists(terrainTileObjectLists.toArray(new TerrainTileObjectList[0]));
         }
+        terrainTile.setGroundConfigId(planetConfig.getGroundConfigId());
         return terrainTile;
     }
 

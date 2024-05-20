@@ -49,13 +49,13 @@ public class TerrainShapeManager {
         setupDimension(planetConfig);
         terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
         TerrainShapeManagerSetup terrainShapeSetup = new TerrainShapeManagerSetup(this, terrainTypeService, alarmService);
-        terrainShapeSetup.processSlopes(terrainSlopePositions);
-        terrainShapeSetup.processTerrainObject(terrainObjectPositions);
+        // terrainShapeSetup.processSlopes(terrainSlopePositions);
+        // terrainShapeSetup.processTerrainObject(terrainObjectPositions);
         terrainShapeSetup.finish();
         logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getId());
     }
 
-    public void lazyInit(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, NativeTerrainShapeAccess nativeTerrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {
+    public void lazyInit(PlanetConfig planetConfig, NativeTerrainShapeAccess nativeTerrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         setupDimension(planetConfig);
@@ -213,60 +213,6 @@ public class TerrainShapeManager {
         }
     }
 
-    public void terrainRegionImpactCallback(DecimalPosition absolutePosition, double radius, TerrainRegionImpactCallback.Control control, TerrainRegionImpactCallback terrainRegionImpactCallback) {
-        Circle2D circle2D = new Circle2D(absolutePosition, radius);
-        for (Index tileIndex : GeometricUtil.rasterizeCircle(circle2D, (int) TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH)) {
-            TerrainShapeTile terrainShapeTile = getTerrainShapeTile(tileIndex);
-            if (terrainShapeTile == null) {
-                // Land ground zero
-                terrainRegionImpactCallback.landNoTile(tileIndex);
-                return;
-            }
-            if (!terrainShapeTile.hasNodes()) {
-                terrainRegionImpactCallback.inTile(terrainShapeTile, tileIndex);
-                return;
-            }
-
-            SingleHolder<Boolean> tileCallbackCalled = new SingleHolder<>(false);
-
-            Index bottomLeftNodeIndex = TerrainUtil.tileToNode(tileIndex);
-            terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
-                Index absoluteNodeIndex = nodeRelativeIndex.add(bottomLeftNodeIndex);
-                Rectangle2D absoluteNodeRect = TerrainUtil.toAbsoluteNodeRectangle(absoluteNodeIndex);
-                if (circle2D.intersects(absoluteNodeRect)) {
-                    if (terrainShapeNode != null) {
-                        if (terrainShapeNode.hasSubNodes()) {
-                            terrainShapeNode.iterateOverTerrainSubNodes(new TerrainShapeNode.TerrainShapeSubNodeConsumer() {
-                                @Override
-                                public void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition relativeOffset, int depth) {
-                                    DecimalPosition absoluteSubNode = absoluteNodeRect.getStart().add(relativeOffset);
-                                    double subNodeLength = TerrainUtil.calculateSubNodeLength(depth);
-                                    Rectangle2D absoluteSubNodeRect = new Rectangle2D(absoluteSubNode.getX(), absoluteSubNode.getY(), subNodeLength, subNodeLength);
-                                    if (circle2D.intersects(absoluteSubNodeRect)) {
-                                        terrainRegionImpactCallback.inSubNode(terrainShapeSubNode);
-                                    }
-                                }
-                            });
-                        } else {
-                            terrainRegionImpactCallback.inNode(terrainShapeNode, nodeRelativeIndex, tileIndex);
-                            if (control.isStop()) {
-                                iterationControl.doStop();
-                            }
-                        }
-                    } else {
-                        if (!tileCallbackCalled.getO()) {
-                            terrainRegionImpactCallback.inTile(terrainShapeTile, tileIndex);
-                            tileCallbackCalled.setO(true);
-                            if (control.isStop()) {
-                                iterationControl.doStop();
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }
-
     /**
      * Get all nodes touching the circle
      *
@@ -313,20 +259,6 @@ public class TerrainShapeManager {
 
     public Rectangle2D getPlayGround() {
         return new Rectangle2D(DecimalPosition.NULL, planetSize);
-    }
-
-    private static class SimpleControl implements TerrainRegionImpactCallback.Control {
-        private boolean stop;
-
-        @Override
-        public void doStop() {
-            stop = true;
-        }
-
-        @Override
-        public boolean isStop() {
-            return stop;
-        }
     }
 
 }

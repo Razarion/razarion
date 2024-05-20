@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import jsinterop.annotations.JsType;
 
 @JsType
+@Deprecated
 public class GroundTerrainTile {
     public int groundConfigId;
     public Float32ArrayEmu positions;

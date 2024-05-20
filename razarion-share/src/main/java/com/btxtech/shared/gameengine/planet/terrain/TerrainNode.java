@@ -4,6 +4,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
  * Created by Beat
  * on 30.06.2017.
  */
+@Deprecated
 public class TerrainNode {
     private TerrainSubNode[][] terrainSubNodes;
     private double height;

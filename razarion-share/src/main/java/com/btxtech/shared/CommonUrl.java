@@ -62,6 +62,7 @@ public class CommonUrl {
     public static final String INVENTORY_ITEM_EDITOR_PATH = "editor/inventory-item";
     public static final String SHAPE_3D_CONTROLLER = G_ZIPPED + "/" + "shape3d-controller";
     public static final String TERRAIN_SHAPE_CONTROLLER = G_ZIPPED + "/" + "terrainshape";
+    public static final String TERRAIN_HEIGHT_MAP_CONTROLLER = "terrainHeightMap";
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
     public static final String COLLADA_CONVERTER = "collada-convert";
     public static final String TRACKER_PATH = "tracker";
@@ -110,6 +111,10 @@ public class CommonUrl {
 
     public static String terrainShapeController(int planetId) {
         return APPLICATION_PATH + "/" + TERRAIN_SHAPE_CONTROLLER + "/" + planetId;
+    }
+
+    public static String terrainHeightMapController(int planetId) {
+        return APPLICATION_PATH + "/" + TERRAIN_HEIGHT_MAP_CONTROLLER + "/" + planetId;
     }
 
     public static String fbClickTrackingReceiver() {

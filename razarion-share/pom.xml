@@ -109,6 +109,7 @@
                         <class>com.btxtech.shared.rest.MeshContainerEditorController</class>
                         <class>com.btxtech.shared.rest.ImageProvider</class>
                         <class>com.btxtech.shared.rest.PlanetEditorController</class>
+                        <class>com.btxtech.shared.rest.TerrainEditorController</class>
                         <class>com.btxtech.shared.rest.ServerGameEngineEditorController</class>
                         <class>com.btxtech.shared.rest.ServerGameEngineController</class>
                         <class>com.btxtech.shared.rest.InventoryItemEditorController</class>

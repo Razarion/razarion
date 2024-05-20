@@ -28,14 +28,10 @@ public class UiTerrainTile {
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
-    private GameUiControl gameUiControl;
-    @Inject
-    private BabylonRendererService threeJsRendererService;
+    private BabylonRendererService babylonRendererService;
     private Index index;
     private TerrainTile terrainTile;
-    private BabylonTerrainTile threeJsTerrainTile;
+    private BabylonTerrainTile babylonTerrainTile;
     private boolean active;
 
     public void init(Index index) {
@@ -45,11 +41,11 @@ public class UiTerrainTile {
 
     public void setActive(boolean active) {
         this.active = active;
-        if (threeJsTerrainTile != null) {
+        if (babylonTerrainTile != null) {
             if (active) {
-                threeJsTerrainTile.addToScene();
+                babylonTerrainTile.addToScene();
             } else {
-                threeJsTerrainTile.removeFromScene();
+                babylonTerrainTile.removeFromScene();
             }
 
         }
@@ -57,10 +53,10 @@ public class UiTerrainTile {
 
     private void terrainTileReceived(TerrainTile terrainTile) {
         this.terrainTile = terrainTile;
-        threeJsTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
+        babylonTerrainTile = babylonRendererService.createTerrainTile(terrainTile);
 
         if (active) {
-            threeJsTerrainTile.addToScene();
+            babylonTerrainTile.addToScene();
         }
     }
 
@@ -177,5 +173,9 @@ public class UiTerrainTile {
         } else {
             return terrainTileAccess.terrainTileNotLoaded();
         }
+    }
+
+    public BabylonTerrainTile getBabylonTerrainTile() {
+        return babylonTerrainTile;
     }
 }

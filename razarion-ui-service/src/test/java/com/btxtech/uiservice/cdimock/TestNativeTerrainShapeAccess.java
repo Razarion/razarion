@@ -1,5 +1,7 @@
 package com.btxtech.uiservice.cdimock;
 
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
@@ -16,4 +18,10 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
+        throw new UnsupportedOperationException();
+    }
+
 }

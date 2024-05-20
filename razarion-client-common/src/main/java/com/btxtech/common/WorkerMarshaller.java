@@ -403,6 +403,8 @@ public class WorkerMarshaller {
         indexArray.push(terrainTile.getIndex().getX());
         indexArray.push(terrainTile.getIndex().getY());
         array.push(indexArray);
+        array.push(terrainTile.getGroundConfigId());
+        array.push(terrainTile.getGroundHeightMap());
         array.push(marshallGroundTerrainTiles(terrainTile.getGroundTerrainTiles()));
         array.push(marshallTerrainSlopeTiles(terrainTile.getTerrainSlopeTiles()));
         array.push(marshallTerrainWaterTiles(terrainTile.getTerrainWaterTiles()));
@@ -565,13 +567,15 @@ public class WorkerMarshaller {
         Any[] array = Js.castToArray(data);
         TerrainTile terrainTile = new TerrainTile();
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
-        terrainTile.setGroundTerrainTiles(demarshallGroundTerrainTiles(array[1]));
-        terrainTile.setTerrainSlopeTiles(demarshallTerrainSlopeTiles(array[2]));
-        terrainTile.setTerrainWaterTiles(demarshallTerrainWaterTiles(array[3]));
-        terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[4]));
-        terrainTile.setHeight(array[5].asDouble());
-        terrainTile.setLandWaterProportion(array[6].asDouble());
-        terrainTile.setTerrainNodes(demarshallTerrainNodes(array[7]));
+        terrainTile.setGroundConfigId(array[1].asInt());
+        terrainTile.setGroundHeightMap(Js.uncheckedCast(array[2].asArrayLike()));
+        terrainTile.setGroundTerrainTiles(demarshallGroundTerrainTiles(array[3]));
+        terrainTile.setTerrainSlopeTiles(demarshallTerrainSlopeTiles(array[4]));
+        terrainTile.setTerrainWaterTiles(demarshallTerrainWaterTiles(array[5]));
+        terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[6]));
+        terrainTile.setHeight(array[7].asDouble());
+        terrainTile.setLandWaterProportion(array[8].asDouble());
+        terrainTile.setTerrainNodes(demarshallTerrainNodes(array[9]));
         return terrainTile;
     }
 

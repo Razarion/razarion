@@ -20,8 +20,6 @@ import java.util.function.Consumer;
 public class TerrainService {
     // private Logger logger = Logger.getLogger(TerrainService.class.getName());
     @Inject
-    private TerrainTypeService terrainTypeService;
-    @Inject
     private TerrainTileFactory terrainTileFactory;
     @Inject
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;
@@ -39,7 +37,7 @@ public class TerrainService {
 
     private void setup(Runnable finishCallback, Consumer<String> failCallback) {
         terrainShape = new TerrainShapeManager();
-        terrainShape.lazyInit(planetConfig, terrainTypeService, nativeTerrainShapeAccess, finishCallback, failCallback);
+        terrainShape.lazyInit(planetConfig, nativeTerrainShapeAccess, finishCallback, failCallback);
     }
 
     public PlanetConfig getPlanetConfig() {

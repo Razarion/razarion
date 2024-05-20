@@ -29,6 +29,9 @@ import { ModelDialogPresenterImpl } from './model-dialog-presenter.impl';
 import { GwtInstance } from '../gwtangular/GwtInstance';
 import { ActionService } from './action.service';
 import { Tools } from '@babylonjs/core';
+import { TerrainEditorComponent } from '../editor/terrain-editor/terrain-editor.component';
+import pako from 'pako';
+import { BabylonTerrainTileImpl } from './renderer/babylon-terrain-tile.impl';
 
 
 @Component({
@@ -78,8 +81,8 @@ export class GameComponent implements OnInit, ScreenCover {
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
       this.gwtAngularService.gwtAngularFacade.selectionHandler = this.gameMockService.mockSelectionHandler();
+      this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
       if (runGwtMock) {
-        this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
         this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
         this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
@@ -94,7 +97,7 @@ export class GameComponent implements OnInit, ScreenCover {
               this.babylonRenderServiceAccessImpl.runRenderer(this.gameMockService.createMeshContainers());
               setTimeout(() => {
                 // Some very strange babylon behavior, _projectionMatrix is zero matrix
-                this.babylonRenderServiceAccessImpl.setViewFieldCenter(5, 2);
+                this.babylonRenderServiceAccessImpl.setViewFieldCenter(0, 0);
                 this.fadeOutLoadingCover();
                 setTimeout(() => {
                   // Some very strange babylon behavior, _projectionMatrix is zero matrix
@@ -194,7 +197,7 @@ export class GameComponent implements OnInit, ScreenCover {
               {
                 let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
                 babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 10));
-                babylonBaseItem1.setAngle(Tools.ToRadians(-45));
+                babylonBaseItem1.setAngle(Tools.ToRadians(45));
 
                 babylonBaseItem1.updatePosition();
                 babylonBaseItem1.updateAngle();
@@ -205,18 +208,18 @@ export class GameComponent implements OnInit, ScreenCover {
                 babylonBaseItem1.setHealth(0.99);
                 // babylonBaseItem1.mark(MarkerConfig);
                 
-                let x = -10;
-                let y = 0;
+                let x = 20;
+                let y = 20;
                 setInterval(() => {
                   babylonBaseItem1.setPosition(GwtInstance.newVertex(x, y, 10));
                   babylonBaseItem1.updatePosition();
                   x += 0.05;
-                  if(x > 10) {
-                    x = -10;
+                  if(x > 50) {
+                    x = 20;
                   }
-                  y -= 0.05;
-                  if(y < -20) {
-                    y = 0;
+                  y += 0.05;
+                  if(y > 50) {
+                    y = 20;
                   }
 
                 }, 10)
@@ -349,6 +352,11 @@ export class GameComponent implements OnInit, ScreenCover {
               //     outOfViewDistanceFromCamera = 3;
               //     outOfViewSize = 1;
               //   });
+               
+              // setTimeout(() =>{
+              //   this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+              // }, 2000)
+              
             });
           });
         });
@@ -359,15 +367,15 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.displayXps(5, 20);
         this.mainCockpitComponent.displayLevel(1)
         this.mainCockpitComponent.displayEnergy(2, 10);
-        // this.addEditorModel(new EditorModel("???", BaseMgmtComponent));
+        this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
         // this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, BoxItemTypeEditorComponent));
         // this.showInventory = true;
         this.fadeOutLoadingCover();
         this.removeLoadingCover();
 
 
-        this.gameMockService.showQuestSideBar(this.questCockpitContainer);
-        this.gameMockService.onQuestProgress(this.questCockpitContainer);
+        // this.gameMockService.showQuestSideBar(this.questCockpitContainer);
+        // this.gameMockService.onQuestProgress(this.questCockpitContainer);
         // let questDialogVisible = false;
         // setInterval(() => {
         //  if (questDialogVisible) {
@@ -423,24 +431,24 @@ export class GameComponent implements OnInit, ScreenCover {
       //   };
       //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBoxPicked(boxContent);
       // }, 100);
-      setTimeout(() => {
-        this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter.activate(new class implements BaseItemPlacer {
-          isPositionValid(): boolean {
-            return true;
-          }
+      // setTimeout(() => {
+      //   this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter.activate(new class implements BaseItemPlacer {
+      //     isPositionValid(): boolean {
+      //       return true;
+      //     }
 
-          getEnemyFreeRadius(): number {
-            return 5;
-          }
+      //     getEnemyFreeRadius(): number {
+      //       return 5;
+      //     }
 
-          onMove(xTerrainPosition: number, yTerrainPosition: number): void {
-          }
+      //     onMove(xTerrainPosition: number, yTerrainPosition: number): void {
+      //     }
 
-          onPlace(xTerrainPosition: number, yTerrainPosition: number): void {
-          }
+      //     onPlace(xTerrainPosition: number, yTerrainPosition: number): void {
+      //     }
 
-        });
-      }, 1000);
+      //   });
+      // }, 1000);
 
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;

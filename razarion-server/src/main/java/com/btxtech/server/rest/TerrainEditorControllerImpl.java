@@ -11,11 +11,6 @@ import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
@@ -27,6 +22,7 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
     private ExceptionHandler exceptionHandler;
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
+    public static byte[] zippedHeightMap;
 
     @Override
     public List<TerrainSlopePosition> readTerrainSlopePositions(int planetId) {
@@ -103,5 +99,13 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
             exceptionHandler.handleException(e);
             throw e;
         }
+    }
+
+    @Override
+    @SecurityCheck
+    public void saveTerrainShape(int planetId, byte[] zippedHeightMap) {
+        System.out.println(planetId);
+        System.out.println(zippedHeightMap.length);
+        TerrainEditorControllerImpl.zippedHeightMap = zippedHeightMap;
     }
 }

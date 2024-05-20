@@ -236,7 +236,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 if (gameEngineMode == GameEngineMode.MASTER && detailedTracking) {
                     workerTrackerHandler = workerTrackerHandlerInstance.get();
                     workerTrackerHandler.start(gameSessionUuid);
-
                 }
                 sendToClient(GameEngineControlPackage.Command.INITIALIZED);
             }, failString -> {
@@ -266,7 +265,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void initWarmInternal(PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, Runnable finishCallback, Consumer<String> failCallback) {
         this.gameEngineMode = gameEngineMode;
         this.userContext = userContext;
-        planetService.initialise(planetConfig, gameEngineMode, null, finishCallback::run, failCallback);
+        planetService.initialise(planetConfig, gameEngineMode, null, finishCallback, failCallback);
     }
 
 

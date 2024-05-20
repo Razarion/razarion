@@ -1,5 +1,7 @@
 package com.btxtech.shared.cdimock;
 
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -38,12 +40,17 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             loadedCallback.accept(terrainShape.toNativeTerrainShape());
         } else if (nativeTerrainShapeAccess != null) {
             terrainShape = new TerrainShapeManager();
-            terrainShape.lazyInit(planetConfig, terrainTypeService, nativeTerrainShapeAccess, () -> {
+            terrainShape.lazyInit(planetConfig, nativeTerrainShapeAccess, () -> {
                 loadedCallback.accept(terrainShape.toNativeTerrainShape());
             }, failCallback);
         } else {
             throw new RuntimeException("++++++++++ Unexpected ++++++++++");
         }
+    }
+
+    @Override
+    public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
+        throw new UnsupportedOperationException();
     }
 
     public void setPlanetConfig(PlanetConfig planetConfig) {
@@ -67,6 +74,11 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             @Override
             public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
                 loadedCallback.accept(nativeTerrainShape);
+            }
+
+            @Override
+            public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
+                throw new UnsupportedOperationException();
             }
         };
         terrainSlopePositions = null;

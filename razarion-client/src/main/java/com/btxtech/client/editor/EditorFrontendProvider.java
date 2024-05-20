@@ -4,11 +4,14 @@ import com.btxtech.client.editor.generic.GenericEditorFrontendProvider;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.renderer.BabylonTerrainTile;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.stream.Collectors;
 
 @JsType
 @ApplicationScoped
@@ -21,6 +24,8 @@ public class EditorFrontendProvider {
     private GameEngineControl gameEngineControl;
     @Inject
     private TerrainEditorService terrainEditorService;
+    @Inject
+    private TerrainUiService terrainUiService;
 
     @SuppressWarnings("unused") // Called by Angular
     public GenericEditorFrontendProvider getGenericEditorFrontendProvider() {
@@ -41,5 +46,4 @@ public class EditorFrontendProvider {
     public TerrainEditorService getTerrainEditorService() {
         return terrainEditorService;
     }
-
 }

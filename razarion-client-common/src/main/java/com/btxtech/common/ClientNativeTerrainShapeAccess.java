@@ -1,15 +1,24 @@
 package com.btxtech.common;
 
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Uint16ArrayEmu;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
-import com.btxtech.shared.system.ExceptionHandler;
-import elemental2.dom.XMLHttpRequest;
+import elemental2.core.Uint16Array;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.Response;
 import jsinterop.base.Js;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH;
+import static elemental2.dom.DomGlobal.fetch;
 
 /**
  * Created by Beat
@@ -17,44 +26,73 @@ import java.util.function.Consumer;
  */
 @ApplicationScoped
 public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
+    private final Logger logger = Logger.getLogger(ClientNativeTerrainShapeAccess.class.getName());
     @Inject
-    private ExceptionHandler exceptionHandler;
+    private TerrainService terrainService;
+    private NativeTerrainShape nativeTerrainShape;
+    private Uint16Array terrainHeightMap;
+
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
-        XMLHttpRequest xmlHttpRequest = new XMLHttpRequest();
-        xmlHttpRequest.onload = progressEvent -> {
-            try {
-                if (xmlHttpRequest.readyState == 4 && xmlHttpRequest.status == 200) {
-                    loadedCallback.accept(Js.uncheckedCast(xmlHttpRequest.response));
-                } else if (xmlHttpRequest.status == 404) {
-                    failCallback.accept("No terrain shape for PlanetId: " + planetId);
-                } else {
-                    failCallback.accept("TerrainShapeController onload error. Status: '" + xmlHttpRequest.status + "' StatusText: '" + xmlHttpRequest.statusText + "'");
-                }
-            } catch (Throwable throwable) {
-                exceptionHandler.handleException(throwable);
-                failCallback.accept(throwable.toString());
+        nativeTerrainShape = null;
+        terrainHeightMap = null;
+
+        fetch(CommonUrl.terrainShapeController(planetId))
+                .then(Response::json)
+                .then(data -> {
+                    nativeTerrainShape = Js.uncheckedCast(data);
+                    if (terrainHeightMap != null) {
+                        loadedCallback.accept(nativeTerrainShape);
+                    }
+                    return null;
+                }).
+                catch_(error -> {
+                    logger.warning("Error loading " + CommonUrl.terrainShapeController(planetId) + " " + error);
+                    failCallback.accept(error.toString());
+                    return null;
+                });
+
+        fetch(CommonUrl.terrainHeightMapController(planetId))
+                .then(Response::arrayBuffer)
+                .then(data -> {
+                    try {
+                        terrainHeightMap = Js.uncheckedCast(new Uint16Array(data));
+                        DomGlobal.console.info("Callback ClientNativeTerrainShapeAccess");
+                        DomGlobal.console.info(terrainHeightMap);
+                    } catch (Throwable t) {
+                        logger.log(Level.WARNING, "Error converting HeightMap " + CommonUrl.terrainHeightMapController(planetId), t);
+                        terrainHeightMap = new Uint16Array(0);
+                    }
+                    if (nativeTerrainShape != null) {
+                        loadedCallback.accept(nativeTerrainShape);
+                    }
+                    return null;
+                }).
+                catch_(error -> {
+                    logger.warning("Error loading " + CommonUrl.terrainHeightMapController(planetId) + " " + error);
+                    terrainHeightMap = new Uint16Array(0);
+                    if (nativeTerrainShape != null) {
+                        loadedCallback.accept(nativeTerrainShape);
+                    }
+                    return null;
+                });
+    }
+
+    @Override
+    public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
+        int totalTileNodes = (int) TERRAIN_TILE_ABSOLUTE_LENGTH * (int) TERRAIN_TILE_ABSOLUTE_LENGTH;
+        int start = totalTileNodes * (terrainTileIndex.getY() * terrainService.getTerrainShape().getTileXCount() + terrainTileIndex.getX());
+        Uint16Array uint16Array = terrainHeightMap.slice(start, start + totalTileNodes);
+        int count = 0;
+        for (int i = 0; i < uint16Array.length; i++) {
+            if (uint16Array.getAt(i) != 0.0) {
+                count++;
             }
-        };
-        xmlHttpRequest.addEventListener("error", evt -> {
-            try {
-                failCallback.accept("TerrainShapeController call error. Status: '" + xmlHttpRequest.status + "' StatusText: '" + xmlHttpRequest.statusText + "'");
-            } catch (Throwable throwable) {
-                exceptionHandler.handleException(throwable);
-                failCallback.accept(throwable.toString());
-            }
-        });
-        xmlHttpRequest.onabort = progressEvent -> {
-            try {
-                failCallback.accept("TerrainShapeController call abort. Status: '" + xmlHttpRequest.status + "' StatusText: '" + xmlHttpRequest.statusText + "'");
-            } catch (Throwable throwable) {
-                exceptionHandler.handleException(throwable);
-                failCallback.accept(throwable.toString());
-            }
-        };
-        xmlHttpRequest.open("GET", CommonUrl.terrainShapeController(planetId));
-        xmlHttpRequest.responseType = "json";
-        xmlHttpRequest.send();
+        }
+        if (count > 0) {
+            logger.warning("start: " + start + " end: " + (start + totalTileNodes) + " length: " + uint16Array.length + " count: " + count + " terrainTileIndex: " + terrainTileIndex);
+        }
+        return Js.uncheckedCast(uint16Array);
     }
 }

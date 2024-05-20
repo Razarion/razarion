@@ -1,5 +1,7 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 
@@ -19,5 +21,10 @@ public class ServerNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
         loadedCallback.accept(serverTerrainShapeService.getNativeTerrainShape(planetId));
+    }
+
+    @Override
+    public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
+        throw new UnsupportedOperationException();
     }
 }

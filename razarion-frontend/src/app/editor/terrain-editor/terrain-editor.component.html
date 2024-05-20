@@ -1,0 +1,8 @@
+<p-tabView styleClass="tabview-custom" (onChange)="onTabViewChangeEvent($event.index)" [style]="{width:'400px'}">
+  <p-tabPanel header="Terrain shape">
+    <shape-terrain-editor #shapeEditor></shape-terrain-editor>
+  </p-tabPanel>
+  <p-tabPanel header="Terrain objects">
+    <object-terrain-editor #objectEditor></object-terrain-editor>
+  </p-tabPanel>
+</p-tabView>

@@ -118,6 +118,7 @@ public abstract class GameEngineControl {
     }
 
     public void init(ColdGameUiContext coldGameUiContext, DeferredStartup initializationReferredStartup) {
+        this.terrainUiService.setPlanetConfig(coldGameUiContext.getWarmGameUiContext().getPlanetConfig());
         this.deferredStartup = initializationReferredStartup;
         sendToWorker(GameEngineControlPackage.Command.INITIALIZE, coldGameUiContext.getStaticGameConfig(), coldGameUiContext.getWarmGameUiContext().getPlanetConfig(),
                 userUiService.getUserContext(), coldGameUiContext.getWarmGameUiContext().getGameEngineMode(), coldGameUiContext.getWarmGameUiContext().isDetailedTracking(),
@@ -125,6 +126,7 @@ public abstract class GameEngineControl {
     }
 
     public void initWarm(PlanetConfig planetConfig, GameEngineMode gameEngineMode, DeferredStartup deferredStartup) {
+        this.terrainUiService.setPlanetConfig(planetConfig);
         this.deferredStartup = deferredStartup;
         sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, userUiService.getUserContext(), gameEngineMode, boot.getGameSessionUuid());
     }

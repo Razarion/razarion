@@ -9,22 +9,26 @@ import {
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 import { BabylonModelService } from "./babylon-model.service";
 import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
-import { ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, Node, NodeMaterial, TransformNode } from "@babylonjs/core";
+import { ActionManager, ExecuteCodeAction, GroundMesh, Mesh, MeshBuilder, Node, NodeMaterial, TransformNode, Vector3, VertexData } from "@babylonjs/core";
 import { RazarionMetadataType, BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { BabylonJsUtils } from "./babylon-js.utils";
 import { Nullable } from "@babylonjs/core/types";
 import { ActionService, SelectionInfo } from "../action.service";
 
-const MIN_HEIGHT = -2;
-const MAX_HEIGHT = 23;
-
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
-  static readonly TILE_X_SIZE = 160;
-  static readonly TILE_Y_SIZE = 160;
+  static readonly NODE_X_COUNT = 160;
+  static readonly NODE_Y_COUNT = 160;
+  static readonly NODE_X_DISTANCE = 1;
+  static readonly NODE_Y_DISTANCE = 1;
+  static readonly HEIGH_MAP_SIZE = BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT;
+  static readonly HEIGH_PRECISION = 0.1;
+  static readonly HEIGH_MIN = -200;
+  static readonly HEIGH_DEFAULT = 0.5;
   private readonly container: TransformNode;
   private cursorTypeHandler: (selectionInfo: SelectionInfo) => void;
+  private groundMesh: Mesh;
 
-  constructor(terrainTile: TerrainTile,
+  constructor(public readonly terrainTile: TerrainTile,
     private gwtAngularService: GwtAngularService,
     private rendererService: BabylonRenderServiceAccessImpl,
     actionService: ActionService,
@@ -53,30 +57,28 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
     actionService.addCursoHandler(this.cursorTypeHandler);
 
-    const ground = MeshBuilder.CreateGroundFromHeightMap("gorund", "/assets/height-map.png", { width: BabylonTerrainTileImpl.TILE_X_SIZE, height: BabylonTerrainTileImpl.TILE_X_SIZE, subdivisions: 160, minHeight: MIN_HEIGHT, maxHeight: MAX_HEIGHT });
-    ground.position.x = terrainTile.getIndex().getX() * BabylonTerrainTileImpl.TILE_X_SIZE;
-    ground.position.z = terrainTile.getIndex().getY() * BabylonTerrainTileImpl.TILE_Y_SIZE;
-    this.container.getChildren().push(ground);
-    ground.receiveShadows = true;
-    ground.parent = this.container;
-    ground.actionManager = actionManager;
-
-    let groundTerrainTile = terrainTile.getGroundTerrainTiles()[0];
+    this.groundMesh = new Mesh("Ground", rendererService.getScene());
+    let vertexData = this.createVertexData(terrainTile.getGroundHeightMap());
+    vertexData.applyToMesh(this.groundMesh, true);
+    this.container.getChildren().push(this.groundMesh);
+    this.groundMesh.receiveShadows = true;
+    this.groundMesh.parent = this.container;
+    this.groundMesh.actionManager = actionManager;
 
     NodeMaterial.ParseFromFileAsync(
       "Ground materail",
       "/assets/nodeMaterial_land.json",
       this.rendererService.getScene()
     ).then(nodeMaterial => {
-      ground.material = nodeMaterial;
+      this.groundMesh!.material = nodeMaterial;
     }).catch(reason => {
       console.error(`Load NodeMaterial failed. Reason: ${reason}`);
     })
 
-    BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(ground, RazarionMetadataType.GROUND, undefined, groundTerrainTile.groundConfigId);
+    BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
-    let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(1);
-    this.threeJsWaterRenderService.setup2(terrainTile.getIndex(), waterConfig, this.container);
+    // let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(1);
+    // this.threeJsWaterRenderService.setup(terrainTile.getIndex(), waterConfig, this.container);
 
     if (terrainTile.getTerrainTileObjectLists() !== null) {
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
@@ -140,26 +142,76 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     // TODO this.actionService.removeCursorHandler(this.cursorTypeHandler);
   }
 
-  private setupSlopeGeometry(slopeConfig: SlopeConfig, slopeGeometry: SlopeGeometry, material: NodeMaterial): void {
-    const slope = new Mesh(`Slope (${slopeConfig.getInternalName()}[${slopeConfig.getId()}])`, null);
-    BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(slope, RazarionMetadataType.SLOPE, undefined, slopeConfig.getId());
-    const vertexData = BabylonJsUtils.createVertexData(slopeGeometry.positions, slopeGeometry.norms);
-    vertexData.uvs = slopeGeometry.uvs;
-    vertexData.uvs2 = this.convertFloatTOVec2(slopeGeometry.slopeFactors);
-    vertexData.applyToMesh(slope)
-
-    slope.parent = this.container;
-    slope.material = material;
-    slope.receiveShadows = true;
-
-    this.container.getChildren().push(slope);
+  getGroundMesh(): Mesh {
+    return this.groundMesh;
   }
 
-  private convertFloatTOVec2(vec1: Float32Array) {
-    let vec2Array = new Float32Array(vec1.length * 2);
-    for (let i = 0; i < vec1.length; i++) {
-      vec2Array[i * 2] = vec1[i];
+  private createVertexData(groundHeightMap: Uint16Array): VertexData {
+    const indices = [];
+    const positions = [];
+    const normals = [];
+    let xCount = BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE;
+    let yCount = BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE;
+    let xOffset = this.terrainTile.getIndex().getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
+    let yOffset = this.terrainTile.getIndex().getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
+
+    // Vertices
+    for (let y = 0; y < yCount; y++) {
+      for (let x = 0; x < xCount; x++) {
+        const index = x + y * xCount;
+        let height;
+        if (!groundHeightMap || groundHeightMap[index] === undefined) {
+          height = BabylonTerrainTileImpl.HEIGH_DEFAULT;
+        } else {
+          const uin16Height = groundHeightMap && groundHeightMap[index] || 0;
+          height = BabylonTerrainTileImpl.uint16ToHeight(uin16Height);
+        }
+
+
+        positions.push(
+          x * BabylonTerrainTileImpl.NODE_X_DISTANCE + xOffset,
+          height,
+          y * BabylonTerrainTileImpl.NODE_Y_DISTANCE + yOffset);
+        normals.push(0, 0, 0);
+      }
     }
-    return vec2Array;
+
+    // Indices
+    for (let y = 0; y < yCount - 1; y++) {
+      for (let x = 0; x < xCount - 1; x++) {
+        const bLIdx = x + y * xCount;
+        const bRIdx = x + 1 + y * xCount;
+        const tLIdx = x + (y + 1) * xCount;
+        const tRIdx = x + 1 + (y + 1) * xCount;
+
+        indices.push(bLIdx);
+        indices.push(bRIdx);
+        indices.push(tLIdx);
+
+        indices.push(bRIdx);
+        indices.push(tRIdx);
+        indices.push(tLIdx);
+      }
+    }
+
+    VertexData.ComputeNormals(positions, indices, normals);
+
+    const vertexData = new VertexData();
+
+    vertexData.indices = indices;
+    vertexData.positions = positions;
+    vertexData.normals = normals;
+
+    return vertexData;
   }
+
+  public static uint16ToHeight(uint16: number): number {
+    return uint16 * BabylonTerrainTileImpl.HEIGH_PRECISION + BabylonTerrainTileImpl.HEIGH_MIN;
+  }
+
+  public static heightToUnit16(height: number): number {
+    let value = (height - BabylonTerrainTileImpl.HEIGH_MIN) / BabylonTerrainTileImpl.HEIGH_PRECISION;
+    return Math.round(value * 10) / 10
+  }
+
 }

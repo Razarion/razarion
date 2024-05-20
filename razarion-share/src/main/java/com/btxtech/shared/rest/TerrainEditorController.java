@@ -8,6 +8,7 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -46,4 +47,9 @@ public interface TerrainEditorController {
     @Path("updateMiniMapImage/{planetId}")
     @Consumes(MediaType.TEXT_PLAIN)
     void updateMiniMapImage(@PathParam("planetId") int planetId, String dataUrl);
+
+    @POST
+    @Path("saveTerrainShape/{planetId}")
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    void saveTerrainShape(@PathParam("planetId") int planetId, byte[] zippedHeightMap);
 }

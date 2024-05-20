@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.slope.CalculatedSlopeData;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
@@ -46,13 +47,9 @@ public class TerrainTileFactory {
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
-    private JsInteropObjectFactory jsInteropObjectFactory;
-    @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private TerrainService terrainService;
-    @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
 
     private static double setupSlopeFactor(double slopeFactor, double drivewayHeightFactor) {
         if (MathHelper.compareWithPrecision(1.0, slopeFactor)) {
@@ -65,10 +62,10 @@ public class TerrainTileFactory {
         return slopeFactor * drivewayHeightFactor;
     }
 
-    public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShapeManager terrainShape, PlanetConfig planetConfig) {
-        TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
+    public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShapeManager terrainShapeManager, PlanetConfig planetConfig) {
+        TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(terrainTileIndex);
         TerrainTileBuilder terrainTileBuilder = terrainTileBuilderInstance.get();
-        terrainTileBuilder.init(terrainTileIndex, terrainShapeTile, terrainShape.getPlayGround());
+        terrainTileBuilder.init(terrainTileIndex, terrainShapeTile, terrainShapeManager.getPlayGround());
         insertSlopeGroundConnectionPart(terrainTileBuilder, terrainShapeTile);
         insertGroundPart(terrainTileBuilder, terrainShapeTile);
         insertSlopePart(terrainTileBuilder, terrainShapeTile);

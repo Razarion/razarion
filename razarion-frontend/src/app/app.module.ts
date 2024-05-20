@@ -126,6 +126,8 @@ import { QuestDialogComponent } from './game/cockpit/quest/quest-dialog/quest-di
 import { UnlockComponent } from './game/unlock/unlock.component';
 import { UserMgmtComponent } from './editor/user-mgmt/user-mgmt.component';
 import { ActionService } from './game/action.service';
+import {TerrainEditorComponent} from "./editor/terrain-editor/terrain-editor.component";
+import {ShapeTerrainEditorComponent} from "./editor/terrain-editor/shape-terrain-editor.component";
 
 @NgModule({
   declarations: [
@@ -205,6 +207,8 @@ import { ActionService } from './game/action.service';
     QuestDialogComponent,
     UnlockComponent,
     UserMgmtComponent,
+    TerrainEditorComponent,
+    ShapeTerrainEditorComponent
   ],
   imports: [
     BrowserModule,

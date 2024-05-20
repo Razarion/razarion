@@ -466,11 +466,9 @@ export interface BabylonRenderServiceAccess {
 }
 
 export interface TerrainTile {
-  getGroundTerrainTiles(): GroundTerrainTile[];
+  getGroundHeightMap(): Uint16Array;
 
-  getTerrainSlopeTiles(): TerrainSlopeTile[];
-
-  getTerrainWaterTiles(): TerrainWaterTile[];
+  getGroundConfigId(): number | null;
 
   getTerrainTileObjectLists(): TerrainTileObjectList[];
 
@@ -804,35 +802,11 @@ export interface ObjectNameId {
 }
 
 export interface TerrainEditorService {
+  getAllTerrainObjects(): Promise<ObjectNameId[]>;
+
   save(createdTerrainObjects: TerrainObjectPosition[], updatedTerrainObjects: TerrainObjectPosition[]): Promise<string>;
 
-  // --- Slope mode
-  getAllSlopes(): Promise<ObjectNameId[]>;
-
-  getCursorRadius(): number;
-
-  setCursorRadius(cursorRadius: number): void;
-
-  getCursorCorners(): number;
-
-  setCursorCorners(cursorCorners: number): void;
-
-  setSlope4New(slope4New: ObjectNameId): void;
-
-  isInvertedSlope(): boolean;
-
-  setInvertedSlope(invertedSlope: boolean): void
-
-  getAllDriveways(): Promise<ObjectNameId[]>;
-
-  setDrivewayMode(drivewayMode: boolean): void;
-
-  isDrivewayMode(): boolean;
-
-  setDriveway4New(driveway4New: ObjectNameId): void;
-
-  // --- Terrain Object Mode
-  getAllTerrainObjects(): Promise<ObjectNameId[]>;
+  getDisplayTerrainTiles(): BabylonTerrainTile[];
 }
 
 
