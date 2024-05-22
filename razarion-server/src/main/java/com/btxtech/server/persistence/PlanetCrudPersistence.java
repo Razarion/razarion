@@ -61,7 +61,7 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
     }
 
     private Map<BaseItemTypeEntity, Integer> baseItemTypeLimitation(Map<Integer, Integer> input) {
-        if(input == null) {
+        if (input == null) {
             return Collections.emptyMap();
         }
         return input.entrySet()
@@ -247,6 +247,25 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
             throw new IllegalArgumentException("No planet for id: " + planetId);
         }
         return planetEntity.getMiniMapImage();
+    }
+
+    @Transactional
+    @SecurityCheck
+    public void updateCompressedHeightMap(int planetId, byte[] data) {
+        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
+        if (planetEntity == null) {
+            throw new IllegalArgumentException("No planet for id: " + planetId);
+        }
+        planetEntity.setCompressedHeightMap(data);
+    }
+
+    @Transactional
+    public byte[] getCompressedHeightMap(int planetId) {
+        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
+        if (planetEntity == null) {
+            throw new IllegalArgumentException("No planet for id: " + planetId);
+        }
+        return planetEntity.getCompressedHeightMap();
     }
 
     public static class TerrainSlopePositionEntityChain {

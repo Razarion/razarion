@@ -22,7 +22,6 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
     private ExceptionHandler exceptionHandler;
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
-    public static byte[] zippedHeightMap;
 
     @Override
     public List<TerrainSlopePosition> readTerrainSlopePositions(int planetId) {
@@ -103,9 +102,12 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
 
     @Override
     @SecurityCheck
-    public void saveTerrainShape(int planetId, byte[] zippedHeightMap) {
-        System.out.println(planetId);
-        System.out.println(zippedHeightMap.length);
-        TerrainEditorControllerImpl.zippedHeightMap = zippedHeightMap;
+    public void updateCompressedHeightMap(int planetId, byte[] zippedHeightMap) {
+        try {
+            planetCrudPersistence.updateCompressedHeightMap(planetId, zippedHeightMap);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
     }
 }

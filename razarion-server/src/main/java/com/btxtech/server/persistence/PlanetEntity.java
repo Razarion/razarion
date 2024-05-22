@@ -29,6 +29,7 @@ import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +49,6 @@ public class PlanetEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private GroundConfigEntity groundConfig;
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "planet")
-    private List<TerrainSlopePositionEntity> terrainSlopePositionEntities;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "planet")
     private List<TerrainObjectPositionEntity> terrainObjectPositionEntities;
@@ -92,6 +90,9 @@ public class PlanetEntity {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] miniMapImage;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] compressedHeightMap;
 
     public Integer getId() {
         return id;
@@ -144,11 +145,9 @@ public class PlanetEntity {
         diffuse = planetVisualConfig.getDiffuse();
     }
 
+    @Deprecated
     public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {
-        if (terrainSlopePositionEntities == null) {
-            terrainSlopePositionEntities = new ArrayList<>();
-        }
-        return terrainSlopePositionEntities;
+        return Collections.emptyList();
     }
 
     public List<TerrainObjectPositionEntity> getTerrainObjectPositionEntities() {
@@ -164,6 +163,14 @@ public class PlanetEntity {
 
     public void setMiniMapImage(byte[] miniMapImage) {
         this.miniMapImage = miniMapImage;
+    }
+
+    public byte[] getCompressedHeightMap() {
+        return compressedHeightMap;
+    }
+
+    public void setCompressedHeightMap(byte[] compressedHeightMap) {
+        this.compressedHeightMap = compressedHeightMap;
     }
 
     @Override

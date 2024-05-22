@@ -61,7 +61,7 @@
 <p-divider align="left">
   <div class="inline-flex align-items-center">
     <i class="pi pi-save mr-2"></i>
-    <b>Action</b>
+    <b>Save</b>
   </div>
 </p-divider>
 
@@ -71,6 +71,26 @@
     <p-button icon="pi pi-save" (onClick)="save()"></p-button>
   </div>
 </div>
+<div class="field grid align-items-center">
+  <span class="col">Last saved</span>
+  <div class="col">
+    {{ lastSavedTimeStamp }}
+  </div>
+</div>
+<div class="field grid align-items-center">
+  <span class="col">Size (last saved)</span>
+  <div class="col">
+    {{ lastSavedSize }}
+  </div>
+</div>
+
+<p-divider align="left">
+  <div class="inline-flex align-items-center">
+    <i class="pi pi-bolt mr-2"></i>
+    <b>Action</b>
+  </div>
+</p-divider>
+
 <div class="field grid align-items-center">
   <span class="col">Restart Planet warm</span>
   <div class="col">

@@ -49,7 +49,7 @@ public interface TerrainEditorController {
     void updateMiniMapImage(@PathParam("planetId") int planetId, String dataUrl);
 
     @POST
-    @Path("saveTerrainShape/{planetId}")
+    @Path("updateCompressedHeightMap/{planetId}")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
-    void saveTerrainShape(@PathParam("planetId") int planetId, byte[] zippedHeightMap);
+    void updateCompressedHeightMap(@PathParam("planetId") int planetId, byte[] zippedHeightMap);
 }

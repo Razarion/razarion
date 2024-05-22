@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   DRIVEWAY_EDITOR_PATH,
   READ_TERRAIN_SLOPE_POSITIONS,
@@ -9,11 +9,13 @@ import { HttpClient } from "@angular/common/http";
 import { GwtAngularService } from "../../gwtangular/GwtAngularService";
 import { MessageService } from "primeng/api";
 import pako from 'pako';
+import { HttpClient as HttpClientAdapter, RestResponse } from '../../generated/razarion-share';
 import {
   ObjectNameId,
   PlanetConfig,
   TerrainSlopeCorner,
-  TerrainSlopePosition
+  TerrainSlopePosition,
+  TerrainTile
 } from "../../gwtangular/GwtAngularFacade";
 import {
   BabylonRenderServiceAccessImpl,
@@ -45,7 +47,7 @@ import { BabylonTerrainTileImpl } from 'src/app/game/renderer/babylon-terrain-ti
 import { EditorTerrainTile } from './editor-terrain-tile';
 import { GwtInstance } from 'src/app/gwtangular/GwtInstance';
 import { random } from '@turf/turf';
-import { TerrainEditorControllerClient } from 'src/app/generated/razarion-share';
+import { TerrainEditorControllerClient, TerrainHeightMapControllerClient } from 'src/app/generated/razarion-share';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 
 export enum UpDownMode {
@@ -58,7 +60,7 @@ export enum UpDownMode {
   selector: 'shape-terrain-editor',
   templateUrl: './shape-terrain-editor.component.html'
 })
-export class ShapeTerrainEditorComponent implements OnInit {
+export class ShapeTerrainEditorComponent implements OnDestroy {
   cursorHeight: number = 1;
   cursorDiameter: number = 10;
   cursorFalloff: number = 0;
@@ -75,8 +77,11 @@ export class ShapeTerrainEditorComponent implements OnInit {
   private xCount: number;
   private yCount: number;
   private terrainEditorControllerClient: TerrainEditorControllerClient;
+  lastSavedTimeStamp: string = "";
+  lastSavedSize: string = "";
+  private originalHeightMap?: Uint16Array;
 
-  constructor(private httpClient: HttpClient,
+  constructor(httpClient: HttpClient,
     public gwtAngularService: GwtAngularService,
     private messageService: MessageService,
     private renderService: BabylonRenderServiceAccessImpl,
@@ -92,6 +97,30 @@ export class ShapeTerrainEditorComponent implements OnInit {
         this.editorTerrainTiles[y][x] = new EditorTerrainTile(GwtInstance.newIndex(x, y));
       }
     }
+
+    let terrainHeightMapControllerClient = new TerrainHeightMapControllerClient(new class implements HttpClientAdapter {
+      request<R>(requestConfig: { method: string; url: string; queryParams?: any; data?: any; copyFn?: ((data: R) => R) | undefined; }): RestResponse<R> {
+        return <RestResponse<R>>fetch(requestConfig.url, {
+          headers: {
+            'Content-Type': 'application/octet-stream'
+          }
+        })
+      }
+    });
+
+    terrainHeightMapControllerClient.getCompressedHeightMap(this.planetConfig.getId())
+      .then(response => response.arrayBuffer())
+      .then(buffer => this.originalHeightMap = new Uint16Array(buffer))
+      .catch(error => this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message }));
+
+    this.renderService.setEditorTerrainTileCreationCallback((babylonTerrainTile: BabylonTerrainTileImpl) => {
+      this.setupEditorTerrainTile(babylonTerrainTile);
+      return undefined;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.renderService.setEditorTerrainTileCreationCallback(undefined);
   }
 
   ngOnInit(): void {
@@ -142,10 +171,16 @@ export class ShapeTerrainEditorComponent implements OnInit {
 
   private loadEditorTerrainTiles() {
     this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService().getDisplayTerrainTiles().forEach(babylonTerrainTile => {
-      let index = (<BabylonTerrainTileImpl>babylonTerrainTile).terrainTile.getIndex();
-      (<BabylonTerrainTileImpl>babylonTerrainTile).getGroundMesh().material!.wireframe = this.wireframe;
-      this.editorTerrainTiles[index.getY()][index.getX()].setBabylonTerrainTile(<BabylonTerrainTileImpl>babylonTerrainTile);
+      this.setupEditorTerrainTile((<BabylonTerrainTileImpl>babylonTerrainTile));
     });
+  }
+
+  private setupEditorTerrainTile(babylonTerrainTile: BabylonTerrainTileImpl) {
+    let index = babylonTerrainTile.terrainTile.getIndex();
+    if (babylonTerrainTile.getGroundMesh().material) {
+      babylonTerrainTile.getGroundMesh().material!.wireframe = this.wireframe;
+    }
+    this.editorTerrainTiles[index.getY()][index.getX()].setBabylonTerrainTile(babylonTerrainTile);
   }
 
   private onPointerDown(position: Vector3) {
@@ -192,43 +227,33 @@ export class ShapeTerrainEditorComponent implements OnInit {
     let index = 0;
     for (let y = 0; y < this.yCount; y++) {
       for (let x = 0; x < this.xCount; x++) {
-        let count = 0;
-        let indexBefor = index;
-        this.editorTerrainTiles[y][x].fillHeights(height => {
-          uint16Array[index++] = height;
-          if (height != 0) {
-            count++;
+        let editorTerrainTile = this.editorTerrainTiles[y][x];
+        if (editorTerrainTile.hasPositions()) {
+          this.editorTerrainTiles[y][x].fillHeights(height => {
+            uint16Array[index++] = height;
+          });
+        } else {
+          if (!this.originalHeightMap) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No original height map loaded' });
+            return;
           }
-        });
-        if (count > 0) {
-          console.log(`Tile ${x} ${y} has ${count} index ${indexBefor}`);
+          for (let i = 0; i < BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT; i++) {
+            uint16Array[index] = this.originalHeightMap![index];
+            index++;
+          }
         }
       }
     }
 
-
-    // for (let i = 0; i < typedArray.length; i++) {
-    //   // typedArray[i] = Math.random() * 65535;
-    //   typedArray[i] = 65535;
-    // }
-
-
-
-    // for (let x = 0; x < nodeXCount; x++) {
-    //   for (let y = 0; y < nodeYCount; y++) {
-    //     let index = x * nodeXCount + y;
-    //     typedArray[index] = index;
-    //   }
-    // } 
-
-    console.log(uint16Array); // Gibt das komprimierte Array aus
     let compressed = pako.gzip(new Uint8Array(uint16Array.buffer));
-    console.log(compressed); // Gibt das komprimierte Array aus
-    // Erstellen Sie einen Blob aus dem typisierten Array
     const blob = new Blob([compressed.buffer], { type: 'application/octet-stream' });
 
-    this.terrainEditorControllerClient.saveTerrainShape(-1, blob)
-      .then(() => { this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Terrain saved' }) })
+    this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
+      .then(() => {
+        this.lastSavedTimeStamp = new Date().toLocaleString();
+        this.lastSavedSize = `${compressed.length} bytes`;
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Terrain saved' })
+      })
       .catch(error => { this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message }) });
   }
 

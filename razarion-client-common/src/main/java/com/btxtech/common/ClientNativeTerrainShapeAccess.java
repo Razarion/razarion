@@ -7,7 +7,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import elemental2.core.Uint16Array;
-import elemental2.dom.DomGlobal;
 import elemental2.dom.Response;
 import jsinterop.base.Js;
 
@@ -58,8 +57,6 @@ public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
                 .then(data -> {
                     try {
                         terrainHeightMap = Js.uncheckedCast(new Uint16Array(data));
-                        DomGlobal.console.info("Callback ClientNativeTerrainShapeAccess");
-                        DomGlobal.console.info(terrainHeightMap);
                     } catch (Throwable t) {
                         logger.log(Level.WARNING, "Error converting HeightMap " + CommonUrl.terrainHeightMapController(planetId), t);
                         terrainHeightMap = new Uint16Array(0);
@@ -83,16 +80,6 @@ public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
     public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
         int totalTileNodes = (int) TERRAIN_TILE_ABSOLUTE_LENGTH * (int) TERRAIN_TILE_ABSOLUTE_LENGTH;
         int start = totalTileNodes * (terrainTileIndex.getY() * terrainService.getTerrainShape().getTileXCount() + terrainTileIndex.getX());
-        Uint16Array uint16Array = terrainHeightMap.slice(start, start + totalTileNodes);
-        int count = 0;
-        for (int i = 0; i < uint16Array.length; i++) {
-            if (uint16Array.getAt(i) != 0.0) {
-                count++;
-            }
-        }
-        if (count > 0) {
-            logger.warning("start: " + start + " end: " + (start + totalTileNodes) + " length: " + uint16Array.length + " count: " + count + " terrainTileIndex: " + terrainTileIndex);
-        }
-        return Js.uncheckedCast(uint16Array);
+        return Js.uncheckedCast(terrainHeightMap.slice(start, start + totalTileNodes));
     }
 }

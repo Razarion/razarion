@@ -12,13 +12,24 @@ export class EditorTerrainTile {
 
   setBabylonTerrainTile(babylonTerrainTileImpl: BabylonTerrainTileImpl) {
     this.babylonTerrainTileImpl = babylonTerrainTileImpl;
-    this.positions = [];
-    const vertexData: VertexData = VertexData.ExtractFromMesh(babylonTerrainTileImpl.getGroundMesh());
-    for (let i = 0; i < vertexData.positions!.length; i += 3) {
-      this.positions.push(new Vector3(
-        vertexData.positions![i],
-        vertexData.positions![i + 1],
-        vertexData.positions![i + 2]));
+    if (this.positions) {
+      let changedPosition: number[] = [];
+      this.positions.forEach(position => {
+        changedPosition.push(position.x);
+        changedPosition.push(position.y);
+        changedPosition.push(position.z);
+      });
+      this.babylonTerrainTileImpl.getGroundMesh().setVerticesData(VertexBuffer.PositionKind, changedPosition);
+      this.babylonTerrainTileImpl.getGroundMesh().createNormals(true);
+    } else {
+      this.positions = [];
+      const vertexData: VertexData = VertexData.ExtractFromMesh(babylonTerrainTileImpl.getGroundMesh());
+      for (let i = 0; i < vertexData.positions!.length; i += 3) {
+        this.positions.push(new Vector3(
+          vertexData.positions![i],
+          vertexData.positions![i + 1],
+          vertexData.positions![i + 2]));
+      }
     }
   }
 
@@ -121,5 +132,9 @@ export class EditorTerrainTile {
         callback(BabylonTerrainTileImpl.heightToUnit16(BabylonTerrainTileImpl.HEIGH_DEFAULT));
       }
     }
+  }
+
+  hasPositions(): boolean {
+    return !!this.positions;
   }
 }

@@ -1,5 +1,6 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.shared.rest.TerrainHeightMapController;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -10,16 +11,14 @@ import javax.ws.rs.core.StreamingOutput;
 public class TerrainHeightMapControllerImpl implements TerrainHeightMapController {
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private PlanetCrudPersistence planetCrudPersistence;
 
     @Override
-    public Response getHeightMap(int planetId) {
+    public Response getCompressedHeightMap(int planetId) {
         StreamingOutput stream = output -> {
             try {
-                if (TerrainEditorControllerImpl.zippedHeightMap != null) {
-                    output.write(TerrainEditorControllerImpl.zippedHeightMap);
-                } else {
-                    output.write(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-                }
+                output.write(planetCrudPersistence.getCompressedHeightMap(planetId));
             } catch (Exception e) {
                 exceptionHandler.handleException(e);
             }

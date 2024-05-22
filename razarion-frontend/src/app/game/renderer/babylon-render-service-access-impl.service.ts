@@ -145,6 +145,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private outOfViewPlane?: Mesh;
   private placeMarkerMesh?: Mesh;
   baseItemPlacerActive = false;
+  private editorTerrainTileCreationCallback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined;
 
   constructor(private gwtAngularService: GwtAngularService,
     private babylonModelService: BabylonModelService,
@@ -263,12 +264,16 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   createTerrainTile(terrainTile: TerrainTile): BabylonTerrainTile {
     try {
-      return new BabylonTerrainTileImpl(terrainTile,
+      let babylonTerrainTileImpl = new BabylonTerrainTileImpl(terrainTile,
         this.gwtAngularService,
         this,
         this.actionService,
         this.babylonModelService,
         this.threeJsWaterRenderService);
+      if (this.editorTerrainTileCreationCallback) {
+        this.editorTerrainTileCreationCallback(babylonTerrainTileImpl);
+      }
+      return babylonTerrainTileImpl;
     } catch (e) {
       console.error(`Error createTerrainTile() with index ${terrainTile.getIndex()}`)
       console.error(e);
@@ -738,6 +743,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     } else {
       console.warn(`Can not find element3DId '${element3DId}' in threeJsModelId '${threeJsModelId}'.`)
     }
+  }
+
+  setEditorTerrainTileCreationCallback(callback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined) {
+    this.editorTerrainTileCreationCallback = callback;
   }
 
   public static setRazarionMetadata(node: Node, razarionMetadata: RazarionMetadata) {
