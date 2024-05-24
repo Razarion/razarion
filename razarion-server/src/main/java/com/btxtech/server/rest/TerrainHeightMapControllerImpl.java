@@ -7,8 +7,10 @@ import com.btxtech.shared.system.ExceptionHandler;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import java.util.logging.Logger;
 
 public class TerrainHeightMapControllerImpl implements TerrainHeightMapController {
+    private static final Logger LOG = Logger.getLogger(TerrainHeightMapControllerImpl.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -18,7 +20,12 @@ public class TerrainHeightMapControllerImpl implements TerrainHeightMapControlle
     public Response getCompressedHeightMap(int planetId) {
         StreamingOutput stream = output -> {
             try {
-                output.write(planetCrudPersistence.getCompressedHeightMap(planetId));
+                byte[] compressedHeightMap = planetCrudPersistence.getCompressedHeightMap(planetId);
+                if (compressedHeightMap != null) {
+                    output.write(compressedHeightMap);
+                } else {
+                    LOG.severe("Planet " + planetId + " has no compressed heightmap");
+                }
             } catch (Exception e) {
                 exceptionHandler.handleException(e);
             }

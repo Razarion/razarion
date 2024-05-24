@@ -79,7 +79,7 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
   private terrainEditorControllerClient: TerrainEditorControllerClient;
   lastSavedTimeStamp: string = "";
   lastSavedSize: string = "";
-  private originalHeightMap?: Uint16Array;
+  private originalUint16HeightMap?: Uint16Array;
 
   constructor(httpClient: HttpClient,
     public gwtAngularService: GwtAngularService,
@@ -110,7 +110,7 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
 
     terrainHeightMapControllerClient.getCompressedHeightMap(this.planetConfig.getId())
       .then(response => response.arrayBuffer())
-      .then(buffer => this.originalHeightMap = new Uint16Array(buffer))
+      .then(buffer => this.originalUint16HeightMap = new Uint16Array(buffer))
       .catch(error => this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message }));
 
     this.renderService.setEditorTerrainTileCreationCallback((babylonTerrainTile: BabylonTerrainTileImpl) => {
@@ -222,7 +222,7 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
   }
 
   async save() {
-    const uint16Array = new Uint16Array(this.xCount * BabylonTerrainTileImpl.NODE_X_COUNT * this.yCount * BabylonTerrainTileImpl.NODE_Y_COUNT);
+    const uint16Array = new Uint16Array(this.xCount * this.yCount * (BabylonTerrainTileImpl.NODE_X_COUNT + 1) * (BabylonTerrainTileImpl.NODE_Y_COUNT + 1));
 
     let index = 0;
     for (let y = 0; y < this.yCount; y++) {
@@ -233,17 +233,22 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
             uint16Array[index++] = height;
           });
         } else {
-          if (!this.originalHeightMap) {
+          if (!this.originalUint16HeightMap) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No original height map loaded' });
             return;
           }
-          for (let i = 0; i < BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT; i++) {
-            uint16Array[index] = this.originalHeightMap![index];
+          for (let i = 0; i < (BabylonTerrainTileImpl.NODE_X_COUNT + 1) * (BabylonTerrainTileImpl.NODE_Y_COUNT + 1); i++) {
+            if (index < this.originalUint16HeightMap.length) {
+              uint16Array[index] = this.originalUint16HeightMap[index];
+            } else {
+              uint16Array[index] = BabylonTerrainTileImpl.heightToUnit16(BabylonTerrainTileImpl.HEIGH_DEFAULT);
+            }
             index++;
           }
         }
       }
     }
+
 
     let compressed = pako.gzip(new Uint8Array(uint16Array.buffer));
     const blob = new Blob([compressed.buffer], { type: 'application/octet-stream' });
@@ -254,7 +259,9 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
         this.lastSavedSize = `${compressed.length} bytes`;
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Terrain saved' })
       })
-      .catch(error => { this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message }) });
+      .catch(error => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message })
+      });
   }
 
   restartPlanetWarm() {

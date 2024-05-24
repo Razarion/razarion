@@ -12,7 +12,7 @@ export class ThreeJsWaterRenderService {
   }
 
   public setup(index: Index, waterConfig: WaterConfig, container: TransformNode): void {
-    const water = MeshBuilder.CreateGround("Water", {width: BabylonTerrainTileImpl.NODE_X_COUNT, 
+    const water = MeshBuilder.CreateGround("Water", {width: BabylonTerrainTileImpl.NODE_X_COUNT,
       height: BabylonTerrainTileImpl.NODE_X_COUNT,
       subdivisions:160});
 

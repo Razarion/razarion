@@ -78,7 +78,7 @@ public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
 
     @Override
     public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
-        int totalTileNodes = (int) TERRAIN_TILE_ABSOLUTE_LENGTH * (int) TERRAIN_TILE_ABSOLUTE_LENGTH;
+        int totalTileNodes = ((int) TERRAIN_TILE_ABSOLUTE_LENGTH + 1) * ((int) TERRAIN_TILE_ABSOLUTE_LENGTH + 1);
         int start = totalTileNodes * (terrainTileIndex.getY() * terrainService.getTerrainShape().getTileXCount() + terrainTileIndex.getX());
         return Js.uncheckedCast(terrainHeightMap.slice(start, start + totalTileNodes));
     }

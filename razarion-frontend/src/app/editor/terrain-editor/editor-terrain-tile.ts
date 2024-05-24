@@ -1,7 +1,7 @@
-import { Index } from "../../gwtangular/GwtAngularFacade";
-import { Vector3, VertexBuffer, VertexData } from "@babylonjs/core";
-import { BabylonTerrainTileImpl } from 'src/app/game/renderer/babylon-terrain-tile.impl';
-import { UpDownMode } from "./shape-terrain-editor.component";
+import {Index} from "../../gwtangular/GwtAngularFacade";
+import {Vector3, VertexBuffer, VertexData} from "@babylonjs/core";
+import {BabylonTerrainTileImpl} from 'src/app/game/renderer/babylon-terrain-tile.impl';
+import {UpDownMode} from "./shape-terrain-editor.component";
 
 export class EditorTerrainTile {
   private positions?: Vector3[];
@@ -123,15 +123,9 @@ export class EditorTerrainTile {
   }
 
   fillHeights(callback: (height: number) => void) {
-    if (this.positions) {
-      this.positions.forEach(position => {
-        callback(BabylonTerrainTileImpl.heightToUnit16(position.y))
-      });
-    } else {
-      for (let i = 0; i < BabylonTerrainTileImpl.HEIGH_MAP_SIZE; i++) {
-        callback(BabylonTerrainTileImpl.heightToUnit16(BabylonTerrainTileImpl.HEIGH_DEFAULT));
-      }
-    }
+    this.positions!.forEach(position => {
+      callback(BabylonTerrainTileImpl.heightToUnit16(position.y))
+    });
   }
 
   hasPositions(): boolean {

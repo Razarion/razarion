@@ -20,7 +20,6 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly NODE_Y_COUNT = 160;
   static readonly NODE_X_DISTANCE = 1;
   static readonly NODE_Y_DISTANCE = 1;
-  static readonly HEIGH_MAP_SIZE = BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT;
   static readonly HEIGH_PRECISION = 0.1;
   static readonly HEIGH_MIN = -200;
   static readonly HEIGH_DEFAULT = 0.5;
@@ -77,8 +76,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
-    // let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(1);
-    // this.threeJsWaterRenderService.setup(terrainTile.getIndex(), waterConfig, this.container);
+    let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(10);
+    this.threeJsWaterRenderService.setup(terrainTile.getIndex(), waterConfig, this.container);
 
     if (terrainTile.getTerrainTileObjectLists() !== null) {
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
@@ -150,8 +149,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const indices = [];
     const positions = [];
     const normals = [];
-    let xCount = BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE;
-    let yCount = BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE;
+    let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE) + 1;
+    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE) + 1;
     let xOffset = this.terrainTile.getIndex().getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
     let yOffset = this.terrainTile.getIndex().getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
 
@@ -166,7 +165,6 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           const uin16Height = groundHeightMap && groundHeightMap[index] || 0;
           height = BabylonTerrainTileImpl.uint16ToHeight(uin16Height);
         }
-
 
         positions.push(
           x * BabylonTerrainTileImpl.NODE_X_DISTANCE + xOffset,
