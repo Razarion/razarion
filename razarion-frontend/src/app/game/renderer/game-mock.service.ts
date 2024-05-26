@@ -217,7 +217,6 @@ export class GameMockService {
   }
 
   mockTerrainTypeService(): TerrainTypeService {
-    let _this = this;
     return new class implements TerrainTypeService {
       calculateGroundHeight(slopeConfigId: number): number {
         return 1;
@@ -362,8 +361,6 @@ export class GameMockService {
             getId(): number {
               return this._waterConfigJson.id
             };
-
-
           }
         });
         if (waterConfig !== null) {
@@ -566,7 +563,7 @@ export class GameMockService {
   }
 
   mockTerrainTile(threeJsRendererService: BabylonRenderServiceAccessImpl) {
-    fetch('/rest/terrain-shape', {
+    fetch('rest/terrainHeightMap/117', {
       headers: {
         'Content-Type': 'application/octet-stream'
       }

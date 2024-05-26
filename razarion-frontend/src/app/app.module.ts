@@ -128,6 +128,7 @@ import { UserMgmtComponent } from './editor/user-mgmt/user-mgmt.component';
 import { ActionService } from './game/action.service';
 import {TerrainEditorComponent} from "./editor/terrain-editor/terrain-editor.component";
 import {ShapeTerrainEditorComponent} from "./editor/terrain-editor/shape-terrain-editor.component";
+import { FixHeightBrushComponentComponent } from './editor/terrain-editor/brushes/fix-height-brush.component.component';
 
 @NgModule({
   declarations: [
@@ -208,7 +209,8 @@ import {ShapeTerrainEditorComponent} from "./editor/terrain-editor/shape-terrain
     UnlockComponent,
     UserMgmtComponent,
     TerrainEditorComponent,
-    ShapeTerrainEditorComponent
+    ShapeTerrainEditorComponent,
+    FixHeightBrushComponentComponent
   ],
   imports: [
     BrowserModule,

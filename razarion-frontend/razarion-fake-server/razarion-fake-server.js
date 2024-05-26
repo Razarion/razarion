@@ -355,13 +355,11 @@ server.on({
   }
 });
 
-let size = 160 * 160 * 2 * 4;
-let terrainShapeBuffer = new Uint8Array(size);
-for (let i = 0; i < size; i++) {
-  terrainShapeBuffer[i] = 0;
-}
+
+const uint16Array = new Uint16Array(161 * 161 * 2 * 2);
+uint16Array.fill(2005);
 let zipTerrainShapeBuffer;
-zlib.gzip(terrainShapeBuffer, (err, result) => {
+zlib.gzip(new Uint8Array(uint16Array.buffer), (err, result) => {
   if (err) {
     console.error(err);
   } else {
@@ -371,7 +369,10 @@ zlib.gzip(terrainShapeBuffer, (err, result) => {
 
 server.on({
   method: 'get',
-  path: '/rest/terrain-shape',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/terrainHeightMap/")
+  },
   reply: {
     status: 200,
     headers: {
@@ -379,15 +380,10 @@ server.on({
       "content-encoding": "gzip"
     },
     body: function loadAssetConfig(req) {
-      if (saveTerrainShapeBuffer) {
-        return saveTerrainShapeBuffer;
-      } else {
-        return zipTerrainShapeBuffer;
-      }
+      return zipTerrainShapeBuffer;
     }
   }
 });
-
 
 server.start(function () {
   console.info("Razarion fake server is running on port: " + PORT);

@@ -20,9 +20,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly NODE_Y_COUNT = 160;
   static readonly NODE_X_DISTANCE = 1;
   static readonly NODE_Y_DISTANCE = 1;
-  static readonly HEIGH_PRECISION = 0.1;
-  static readonly HEIGH_MIN = -200;
-  static readonly HEIGH_DEFAULT = 0.5;
+  static readonly HEIGHT_PRECISION = 0.1;
+  static readonly HEIGHT_MIN = -200;
+  static readonly HEIGHT_DEFAULT = 0.5;
   private readonly container: TransformNode;
   private cursorTypeHandler: (selectionInfo: SelectionInfo) => void;
   private groundMesh: Mesh;
@@ -77,6 +77,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
     let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(10);
+    // let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(1);
     this.threeJsWaterRenderService.setup(terrainTile.getIndex(), waterConfig, this.container);
 
     if (terrainTile.getTerrainTileObjectLists() !== null) {
@@ -160,7 +161,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         const index = x + y * xCount;
         let height;
         if (!groundHeightMap || groundHeightMap[index] === undefined) {
-          height = BabylonTerrainTileImpl.HEIGH_DEFAULT;
+          height = BabylonTerrainTileImpl.HEIGHT_DEFAULT;
         } else {
           const uin16Height = groundHeightMap && groundHeightMap[index] || 0;
           height = BabylonTerrainTileImpl.uint16ToHeight(uin16Height);
@@ -204,11 +205,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   public static uint16ToHeight(uint16: number): number {
-    return uint16 * BabylonTerrainTileImpl.HEIGH_PRECISION + BabylonTerrainTileImpl.HEIGH_MIN;
+    return uint16 * BabylonTerrainTileImpl.HEIGHT_PRECISION + BabylonTerrainTileImpl.HEIGHT_MIN;
   }
 
   public static heightToUnit16(height: number): number {
-    let value = (height - BabylonTerrainTileImpl.HEIGH_MIN) / BabylonTerrainTileImpl.HEIGH_PRECISION;
+    let value = (height - BabylonTerrainTileImpl.HEIGHT_MIN) / BabylonTerrainTileImpl.HEIGHT_PRECISION;
     return Math.round(value * 10) / 10
   }
 

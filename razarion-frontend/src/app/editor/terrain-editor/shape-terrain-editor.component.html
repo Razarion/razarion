@@ -1,49 +1,13 @@
 <p-divider align="left">
   <div class="inline-flex align-items-center">
     <i class="pi pi-pencil mr-2"></i>
-    <b>Cursor</b>
+    <b>Brush</b>
   </div>
 </p-divider>
 
-<div class="field grid align-items-center">
-  <span class="col">Height</span>
-  <div class="col">
-    <input type="text" pInputText [(ngModel)]="cursorHeight" class="w-full" />
-    <p-slider [(ngModel)]="cursorHeight" [step]="0.01" [min]="-2" [max]="23"></p-slider>
-  </div>
-</div>
-
-<div class="field grid align-items-center">
-  <span class="col">Diameter</span>
-  <div class="col">
-    <input type="text" pInputText [(ngModel)]="cursorDiameter" class="w-full" />
-    <p-slider [(ngModel)]="cursorDiameter" [step]="0.01" [min]="1" [max]="100"></p-slider>
-  </div>
-</div>
-
-<div class="field grid align-items-center">
-  <span class="col">Falloff</span>
-  <div class="col">
-    <input type="text" pInputText [(ngModel)]="cursorFalloff" class="w-full" />
-    <p-slider [(ngModel)]="cursorFalloff" [step]="0.01" [min]="0" [max]="50"></p-slider>
-  </div>
-</div>
-
-<div class="field grid align-items-center">
-  <span class="col">Random (Falloff)</span>
-  <div class="col">
-    <input type="text" pInputText [(ngModel)]="cursorRandom" class="w-full" />
-    <p-slider [(ngModel)]="cursorRandom" [step]="0.01" [min]="0" [max]="5"></p-slider>
-  </div>
-</div>
-
-<div class="field grid align-items-center">
-  <span class="col">Up or down</span>
-  <div class="col">
-    <p-selectButton [options]="upDownOptions" [(ngModel)]="upDownValue" optionLabel="label"
-      optionValue="value"></p-selectButton>
-  </div>
-</div>
+<p-selectButton [options]="brushOptions" [(ngModel)]="selectedBrush"
+  (onChange)="onBrushChange($event)"></p-selectButton>
+<ng-template #brushContainer></ng-template>
 
 <p-divider align="left">
   <div class="inline-flex align-items-center">
@@ -51,6 +15,7 @@
     <b>Settings</b>
   </div>
 </p-divider>
+
 <div class="field grid align-items-center">
   <span class="col">Wireframe</span>
   <div class="col">

@@ -2,6 +2,7 @@ import {Index} from "../../gwtangular/GwtAngularFacade";
 import {Vector3, VertexBuffer, VertexData} from "@babylonjs/core";
 import {BabylonTerrainTileImpl} from 'src/app/game/renderer/babylon-terrain-tile.impl';
 import {UpDownMode} from "./shape-terrain-editor.component";
+import {AbstractBrush} from "./brushes/abstract-brush";
 
 export class EditorTerrainTile {
   private positions?: Vector3[];
@@ -37,14 +38,14 @@ export class EditorTerrainTile {
     return true;
   }
 
-  onPointerDown(position: Vector3, radius: number, falloff: number, height: number, random: number, upDownMode: UpDownMode) {
-    this.modelTerrain(position, radius, falloff, height, random, upDownMode);
+  onPointerDown(brush: AbstractBrush, mousePosition: Vector3) {
+    this.modelTerrain(brush, mousePosition);
   }
 
 
-  onPointerMove(position: Vector3, buttonDown: boolean, cursorSize: number, cursorFalloff: number, cursorHeight: number, random: number, upDownMode: UpDownMode) {
+  onPointerMove(brush: AbstractBrush, mousePosition: Vector3, buttonDown: boolean) {
     if (buttonDown) {
-      this.modelTerrain(position, cursorSize, cursorFalloff, cursorHeight, random, upDownMode);
+      this.modelTerrain(brush, mousePosition);
     }
     // let minDistance = Number.MAX_VALUE;
     // for (let i = 0; i < this.heightMap.length; i++) {
@@ -59,7 +60,7 @@ export class EditorTerrainTile {
     // console.log(`Hit ${this.index.toString()} ${minDistance}`)
   }
 
-  private modelTerrain(position: Vector3, radius: number, falloff: number, height: number, random: number, upDownMode: UpDownMode) {
+  private modelTerrain(brush: AbstractBrush, mousePosition: Vector3) {
     if (!this.positions) {
       return;
     }
@@ -70,44 +71,15 @@ export class EditorTerrainTile {
       if (!oldPosition) {
         continue;
       }
-      position.y = oldPosition.y;
-      let distance = Vector3.Distance(oldPosition, position);
-      if (distance < (radius + falloff)) {
-        if (distance <= radius) {
-          oldPosition.y = height;
-        } else {
-          var newValue = (height / falloff) * (falloff + radius - distance) + random * (Math.random() - 0.5) * 2.0;
-          if (upDownMode === UpDownMode.DOWN) {
-            if (oldPosition.y > newValue) {
-              oldPosition.y = newValue;
-            }
-            if (oldPosition.y < height) {
-              oldPosition.y = height;
-            }
-          } else if (upDownMode === UpDownMode.UP) {
-            if (oldPosition.y < newValue) {
-              oldPosition.y = newValue;
-            }
-            if (oldPosition.y > height) {
-              oldPosition.y = height;
-            }
-          } else {
-            oldPosition.y = newValue;
-          }
-        }
-        // TODO if (vP.y < this._minY) {
-        //   vP.y = this._minY;
-        // } else if (vP.y > this._maxY) {
-        //   vP.y = this._maxY;
-        // }
-        this.positions[i] = oldPosition;
+      let newHeight = brush.calculateHeight(mousePosition, oldPosition);
+      if (newHeight || newHeight === 0) {
+        this.positions[i].y = newHeight;
         changed = true;
       }
 
       changedPosition.push(oldPosition.x);
-      changedPosition.push(BabylonTerrainTileImpl.uint16ToHeight(BabylonTerrainTileImpl.heightToUnit16(oldPosition.y)));
+      changedPosition.push(BabylonTerrainTileImpl.uint16ToHeight(BabylonTerrainTileImpl.heightToUnit16(this.positions[i].y)));
       changedPosition.push(oldPosition.z);
-
     }
 
     if (changed) {

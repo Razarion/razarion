@@ -1,54 +1,20 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  DRIVEWAY_EDITOR_PATH,
-  READ_TERRAIN_SLOPE_POSITIONS,
-  SLOPE_EDITOR_PATH,
-  UPDATE_SLOPES_TERRAIN_EDITOR
-} from "../../common";
+import { AfterViewInit, Component, ComponentFactoryResolver, OnDestroy, OnInit, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { GwtAngularService } from "../../gwtangular/GwtAngularService";
 import { MessageService } from "primeng/api";
 import pako from 'pako';
 import { HttpClient as HttpClientAdapter, RestResponse } from '../../generated/razarion-share';
-import {
-  ObjectNameId,
-  PlanetConfig,
-  TerrainSlopeCorner,
-  TerrainSlopePosition,
-  TerrainTile
-} from "../../gwtangular/GwtAngularFacade";
-import {
-  BabylonRenderServiceAccessImpl,
-  RazarionMetadataType
-} from "../../game/renderer/babylon-render-service-access-impl.service";
-import {
-  AxisDragGizmo,
-  HighlightLayer,
-  Mesh,
-  MeshBuilder,
-  Node,
-  Nullable,
-  Observer,
-  PickingInfo,
-  PointerEventTypes,
-  PointerInfo,
-  PolygonMeshBuilder,
-  Tools,
-  Vector2,
-  Vector3
-} from "@babylonjs/core";
-import { SimpleMaterial } from "@babylonjs/materials";
-
-import { BabylonJsUtils } from "../../game/renderer/babylon-js.utils";
-import { Color3 } from "@babylonjs/core/Maths/math.color";
-import { pointInPolygon } from "geometric";
+import { PlanetConfig } from "../../gwtangular/GwtAngularFacade";
+import { BabylonRenderServiceAccessImpl } from "../../game/renderer/babylon-render-service-access-impl.service";
+import { Nullable, Observer, PointerEventTypes, PointerInfo, Vector3 } from "@babylonjs/core";
 import { EditorService } from "../editor-service";
 import { BabylonTerrainTileImpl } from 'src/app/game/renderer/babylon-terrain-tile.impl';
 import { EditorTerrainTile } from './editor-terrain-tile';
 import { GwtInstance } from 'src/app/gwtangular/GwtInstance';
-import { random } from '@turf/turf';
 import { TerrainEditorControllerClient, TerrainHeightMapControllerClient } from 'src/app/generated/razarion-share';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
+import { AbstractBrush } from "./brushes/abstract-brush";
+import { FixHeightBrushComponentComponent } from './brushes/fix-height-brush.component.component';
 
 export enum UpDownMode {
   UP = 1,
@@ -60,16 +26,7 @@ export enum UpDownMode {
   selector: 'shape-terrain-editor',
   templateUrl: './shape-terrain-editor.component.html'
 })
-export class ShapeTerrainEditorComponent implements OnDestroy {
-  cursorHeight: number = 1;
-  cursorDiameter: number = 10;
-  cursorFalloff: number = 0;
-  cursorRandom: number = 0;
-  upDownOptions: any = [
-    { value: UpDownMode.UP, label: " Up " },
-    { value: UpDownMode.DOWN, label: "Down" },
-    { value: UpDownMode.OFF, label: "Off" }];
-  upDownValue: any = UpDownMode.UP;
+export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   wireframe: boolean = false;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private planetConfig: PlanetConfig;
@@ -81,11 +38,21 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
   lastSavedSize: string = "";
   private originalUint16HeightMap?: Uint16Array;
 
+  @ViewChild(' brushContainer', { read: ViewContainerRef })
+  brushContainer?: ViewContainerRef;
+  brushOptions = [
+    { label: 'Load Component', value: 'load' }
+  ];
+  selectedBrush?: string;
+
+  private currentBrush?: AbstractBrush
+
   constructor(httpClient: HttpClient,
     public gwtAngularService: GwtAngularService,
     private messageService: MessageService,
     private renderService: BabylonRenderServiceAccessImpl,
-    private editorService: EditorService) {
+    private editorService: EditorService,
+    private resolver: ComponentFactoryResolver) {
     this.terrainEditorControllerClient = new TerrainEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
 
     this.planetConfig = gwtAngularService.gwtAngularFacade.gameUiControl.getPlanetConfig();
@@ -99,7 +66,13 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
     }
 
     let terrainHeightMapControllerClient = new TerrainHeightMapControllerClient(new class implements HttpClientAdapter {
-      request<R>(requestConfig: { method: string; url: string; queryParams?: any; data?: any; copyFn?: ((data: R) => R) | undefined; }): RestResponse<R> {
+      request<R>(requestConfig: {
+        method: string;
+        url: string;
+        queryParams?: any;
+        data?: any;
+        copyFn?: ((data: R) => R) | undefined;
+      }): RestResponse<R> {
         return <RestResponse<R>>fetch(requestConfig.url, {
           headers: {
             'Content-Type': 'application/octet-stream'
@@ -119,16 +92,32 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.renderService.setEditorTerrainTileCreationCallback(undefined);
+  ngAfterViewInit(): void {
+    Promise.resolve().then(() => {
+      this.setupBurshComponent(FixHeightBrushComponentComponent);
+    });
   }
 
-  ngOnInit(): void {
+  ngOnDestroy(): void {
+    this.renderService.setEditorTerrainTileCreationCallback(undefined);
   }
 
   activate() {
     this.registerInputEvents();
     this.loadEditorTerrainTiles();
+  }
+
+  onBrushChange(event: any) {
+    if (event.value === 'load') {
+      this.setupBurshComponent(FixHeightBrushComponentComponent);
+    }
+  }
+
+  private setupBurshComponent(type: Type<AbstractBrush>) {
+    const componentFactory = this.resolver.resolveComponentFactory(type);
+    this.brushContainer!.clear();
+    let componentRef = this.brushContainer!.createComponent(componentFactory);
+    this.currentBrush = componentRef.instance;
   }
 
   onWireframeChanged(): void {
@@ -187,12 +176,7 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
     for (let x = 0; x < this.xCount; x++) {
       for (let y = 0; y < this.yCount; y++) {
         if (this.editorTerrainTiles[y][x].isInside(position)) {
-          this.editorTerrainTiles[y][x].onPointerDown(position,
-            this.cursorDiameter / 2.0,
-            this.cursorFalloff,
-            this.cursorHeight,
-            this.cursorRandom,
-            this.upDownValue);
+          this.editorTerrainTiles[y][x].onPointerDown(this.currentBrush!, position);
         }
       }
     }
@@ -202,13 +186,9 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
     for (let x = 0; x < this.xCount; x++) {
       for (let y = 0; y < this.yCount; y++) {
         if (this.editorTerrainTiles[y][x].isInside(position)) {
-          this.editorTerrainTiles[y][x].onPointerMove(position,
-            buttonDown,
-            this.cursorDiameter / 2.0,
-            this.cursorFalloff,
-            this.cursorHeight,
-            this.cursorRandom,
-            this.upDownValue);
+          this.editorTerrainTiles[y][x].onPointerMove(this.currentBrush!,
+            position,
+            buttonDown);
         }
       }
     }
@@ -241,7 +221,7 @@ export class ShapeTerrainEditorComponent implements OnDestroy {
             if (index < this.originalUint16HeightMap.length) {
               uint16Array[index] = this.originalUint16HeightMap[index];
             } else {
-              uint16Array[index] = BabylonTerrainTileImpl.heightToUnit16(BabylonTerrainTileImpl.HEIGH_DEFAULT);
+              uint16Array[index] = BabylonTerrainTileImpl.heightToUnit16(BabylonTerrainTileImpl.HEIGHT_DEFAULT);
             }
             index++;
           }
