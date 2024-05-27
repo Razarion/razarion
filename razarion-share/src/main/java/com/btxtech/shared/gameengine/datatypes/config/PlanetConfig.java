@@ -25,6 +25,8 @@ public class PlanetConfig implements Config {
     private Integer startBaseItemTypeId;
     @CollectionReference(CollectionReferenceType.GROUND)
     private Integer groundConfigId;
+    @CollectionReference(CollectionReferenceType.WATER)
+    private Integer waterConfigId;
 
     @Override
     public int getId() {
@@ -87,6 +89,14 @@ public class PlanetConfig implements Config {
 
     public void setGroundConfigId(@Nullable Integer groundConfigId) {
         this.groundConfigId = groundConfigId;
+    }
+
+    public @Nullable Integer getWaterConfigId() {
+        return waterConfigId;
+    }
+
+    public void setWaterConfigId(@Nullable Integer waterConfigId) {
+        this.waterConfigId = waterConfigId;
     }
 
     public int imitation4ItemType(int itemTypeId) {

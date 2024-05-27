@@ -468,7 +468,9 @@ export interface BabylonRenderServiceAccess {
 export interface TerrainTile {
   getGroundHeightMap(): Uint16Array;
 
-  getGroundConfigId(): number | null;
+  getGroundConfigId(): number;
+
+  getWaterConfigId(): number;
 
   getTerrainTileObjectLists(): TerrainTileObjectList[];
 

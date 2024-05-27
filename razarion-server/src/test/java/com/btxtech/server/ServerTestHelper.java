@@ -543,14 +543,14 @@ public class ServerTestHelper {
         runInTransaction(entityManager -> {
             PlanetEntity planetEntity = new PlanetEntity();
             planetEntity.fromPlanetConfig(new PlanetConfig().size(new DecimalPosition(960, 960))
-                    , entityManager.find(GroundConfigEntity.class, GROUND_1_ID), null, Collections.emptyMap());
+                    , entityManager.find(GroundConfigEntity.class, GROUND_1_ID), entityManager.find(WaterConfigEntity.class, WATER_1_ID), null, Collections.emptyMap());
             planetEntity.getTerrainSlopePositionEntities().add(createLandSlope());
             planetEntity.getTerrainObjectPositionEntities().addAll(createTerrainObjectPositions());
             entityManager.persist(planetEntity);
             PLANET_1_ID = planetEntity.getId();
 
             planetEntity = new PlanetEntity();
-            planetEntity.fromPlanetConfig(new PlanetConfig(), entityManager.find(GroundConfigEntity.class, GROUND_1_ID), null, Collections.emptyMap());
+            planetEntity.fromPlanetConfig(new PlanetConfig(), entityManager.find(GroundConfigEntity.class, GROUND_1_ID), entityManager.find(WaterConfigEntity.class, WATER_1_ID), null, Collections.emptyMap());
             entityManager.persist(planetEntity);
             PLANET_2_ID = planetEntity.getId();
         });

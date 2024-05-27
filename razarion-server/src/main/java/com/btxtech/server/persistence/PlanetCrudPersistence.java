@@ -37,6 +37,8 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
     @Inject
     private GroundCrudPersistence groundCrudPersistence;
     @Inject
+    private WaterCrudPersistence waterCrudPersistence;
+    @Inject
     private SlopeCrudPersistence slopeCrudPersistence;
     @Inject
     private DrivewayCrudPersistence drivewayCrudPersistence;
@@ -56,6 +58,7 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
     protected void fromConfig(PlanetConfig planetConfig, PlanetEntity planetEntity) {
         planetEntity.fromPlanetConfig(planetConfig,
                 groundCrudPersistence.getEntity(planetConfig.getGroundConfigId()),
+                waterCrudPersistence.getEntity(planetConfig.getWaterConfigId()),
                 baseItemTypeCrudPersistence.getEntity(planetConfig.getStartBaseItemTypeId()),
                 baseItemTypeLimitation(planetConfig.getItemTypeLimitation()));
     }

@@ -1,19 +1,17 @@
 import {
-  SlopeConfig,
-  SlopeGeometry,
+  BabylonTerrainTile,
   TerrainObjectConfig,
   TerrainObjectModel,
-  TerrainTile,
-  BabylonTerrainTile
+  TerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
-import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
-import { BabylonModelService } from "./babylon-model.service";
-import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
-import { ActionManager, ExecuteCodeAction, GroundMesh, Mesh, MeshBuilder, Node, NodeMaterial, TransformNode, Vector3, VertexData } from "@babylonjs/core";
-import { RazarionMetadataType, BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
-import { BabylonJsUtils } from "./babylon-js.utils";
-import { Nullable } from "@babylonjs/core/types";
-import { ActionService, SelectionInfo } from "../action.service";
+import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
+import {BabylonModelService} from "./babylon-model.service";
+import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
+import {ActionManager, ExecuteCodeAction, Mesh, Node, NodeMaterial, TransformNode, VertexData} from "@babylonjs/core";
+import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
+import {Nullable} from "@babylonjs/core/types";
+import {ActionService, SelectionInfo} from "../action.service";
+import { GwtHelper } from "src/app/gwtangular/GwtHelper";
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly NODE_X_COUNT = 160;
@@ -28,11 +26,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private groundMesh: Mesh;
 
   constructor(public readonly terrainTile: TerrainTile,
-    private gwtAngularService: GwtAngularService,
-    private rendererService: BabylonRenderServiceAccessImpl,
-    actionService: ActionService,
-    babylonModelService: BabylonModelService,
-    private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+              private gwtAngularService: GwtAngularService,
+              private rendererService: BabylonRenderServiceAccessImpl,
+              actionService: ActionService,
+              babylonModelService: BabylonModelService,
+              private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
 
     let actionManager = new ActionManager(rendererService.getScene());
@@ -76,8 +74,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
-    let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(10);
-    // let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(1);
+    let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(GwtHelper.gwtIssueNumber(terrainTile.getWaterConfigId()));
     this.threeJsWaterRenderService.setup(terrainTile.getIndex(), waterConfig, this.container);
 
     if (terrainTile.getTerrainTileObjectLists() !== null) {

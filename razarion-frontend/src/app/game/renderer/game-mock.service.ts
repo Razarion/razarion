@@ -582,7 +582,11 @@ export class GameMockService {
                 return heightMap;
               }
 
-              getGroundConfigId(): number | null {
+              getGroundConfigId(): number {
+                return 1;
+              }
+
+              getWaterConfigId(): number {
                 return 1;
               }
 

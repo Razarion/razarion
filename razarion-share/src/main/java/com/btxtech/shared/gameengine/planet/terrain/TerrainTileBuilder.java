@@ -95,6 +95,7 @@ public class TerrainTileBuilder {
             terrainTile.setTerrainTileObjectLists(terrainTileObjectLists.toArray(new TerrainTileObjectList[0]));
         }
         terrainTile.setGroundConfigId(planetConfig.getGroundConfigId());
+        terrainTile.setWaterConfigId(planetConfig.getWaterConfigId());
         return terrainTile;
     }
 

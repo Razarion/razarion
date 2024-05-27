@@ -25,7 +25,8 @@ public class TerrainTile {
     @Deprecated
     private double height;
     private TerrainTileObjectList[] terrainTileObjectLists;
-    private Integer groundConfigId;
+    private int groundConfigId;
+    private int waterConfigId;
     private Uint16ArrayEmu groundHeightMap;
 
     public Index getIndex() {
@@ -116,16 +117,30 @@ public class TerrainTile {
     }
 
     @SuppressWarnings("unused") // Used ba angular
-    public Integer getGroundConfigId() {
+    public int getGroundConfigId() {
         return groundConfigId;
     }
 
-    public void setGroundConfigId(Integer groundConfigId) {
+    public void setGroundConfigId(int groundConfigId) {
         this.groundConfigId = groundConfigId;
     }
 
-    public TerrainTile groundConfigId(Integer groundConfigId) {
+    public TerrainTile groundConfigId(int groundConfigId) {
         setGroundConfigId(groundConfigId);
+        return this;
+    }
+
+    @SuppressWarnings("unused") // Used ba angular
+    public int getWaterConfigId() {
+        return waterConfigId;
+    }
+
+    public void setWaterConfigId(int waterConfigId) {
+        this.waterConfigId = waterConfigId;
+    }
+
+    public TerrainTile waterConfigId(int waterConfigId) {
+        setWaterConfigId(waterConfigId);
         return this;
     }
 

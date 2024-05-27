@@ -404,6 +404,7 @@ public class WorkerMarshaller {
         indexArray.push(terrainTile.getIndex().getY());
         array.push(indexArray);
         array.push(terrainTile.getGroundConfigId());
+        array.push(terrainTile.getWaterConfigId());
         array.push(terrainTile.getGroundHeightMap());
         array.push(marshallGroundTerrainTiles(terrainTile.getGroundTerrainTiles()));
         array.push(marshallTerrainSlopeTiles(terrainTile.getTerrainSlopeTiles()));
@@ -568,14 +569,15 @@ public class WorkerMarshaller {
         TerrainTile terrainTile = new TerrainTile();
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
         terrainTile.setGroundConfigId(array[1].asInt());
-        terrainTile.setGroundHeightMap(Js.uncheckedCast(array[2].asArrayLike()));
-        terrainTile.setGroundTerrainTiles(demarshallGroundTerrainTiles(array[3]));
-        terrainTile.setTerrainSlopeTiles(demarshallTerrainSlopeTiles(array[4]));
-        terrainTile.setTerrainWaterTiles(demarshallTerrainWaterTiles(array[5]));
-        terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[6]));
-        terrainTile.setHeight(array[7].asDouble());
-        terrainTile.setLandWaterProportion(array[8].asDouble());
-        terrainTile.setTerrainNodes(demarshallTerrainNodes(array[9]));
+        terrainTile.setWaterConfigId(array[2].asInt());
+        terrainTile.setGroundHeightMap(Js.uncheckedCast(array[3].asArrayLike()));
+        terrainTile.setGroundTerrainTiles(demarshallGroundTerrainTiles(array[4]));
+        terrainTile.setTerrainSlopeTiles(demarshallTerrainSlopeTiles(array[5]));
+        terrainTile.setTerrainWaterTiles(demarshallTerrainWaterTiles(array[6]));
+        terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[7]));
+        terrainTile.setHeight(array[8].asDouble());
+        terrainTile.setLandWaterProportion(array[9].asDouble());
+        terrainTile.setTerrainNodes(demarshallTerrainNodes(array[10]));
         return terrainTile;
     }
 
