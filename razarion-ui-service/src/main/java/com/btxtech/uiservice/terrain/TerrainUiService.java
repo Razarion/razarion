@@ -104,7 +104,7 @@ public class TerrainUiService {
         int count = 0;
         for (UiTerrainTile uiTerrainTile : displayTerrainTiles.values()) {
             if (uiTerrainTile.getTerrainTile() != null) {
-                value += uiTerrainTile.getTerrainTile().getLandWaterProportion();
+                // TODO value += uiTerrainTile.getTerrainTile().getLandWaterProportion();
                 count++;
             }
         }

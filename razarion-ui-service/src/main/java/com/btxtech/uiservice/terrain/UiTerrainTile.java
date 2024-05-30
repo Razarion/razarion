@@ -2,15 +2,11 @@ package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
 
@@ -68,34 +64,6 @@ public class UiTerrainTile {
         // TODO check for three.js resource which must be released
     }
 
-    public double interpolateDisplayHeight(DecimalPosition terrainPosition) {
-        Double height = findNode(terrainPosition, new TerrainTileAccess<Double>() {
-            @Override
-            public Double terrainTileNotLoaded() {
-                return 0.0;
-            }
-
-            @Override
-            public Double onTerrainTile() {
-                return terrainTile.getHeight();
-            }
-
-            @Override
-            public Double onTerrainNode(TerrainNode terrainNode) {
-                return terrainNode.getHeight();
-            }
-
-            @Override
-            public Double onTerrainSubNode(TerrainSubNode terrainSubNode) {
-                return terrainSubNode.getHeight();
-            }
-        });
-        if (height != null) {
-            return height;
-        }
-        return 0;
-    }
-
     public boolean isTerrainTypeAllowed(TerrainType terrainType, DecimalPosition position) {
         return TerrainType.isAllowed(terrainType, getTerrainType(position));
     }
@@ -149,30 +117,7 @@ public class UiTerrainTile {
     }
 
     private <T> T findNode(DecimalPosition terrainPosition, TerrainTileAccess<T> terrainTileAccess) {
-        if (terrainTile != null) {
-            if (terrainTile.getTerrainNodes() == null) {
-                return terrainTileAccess.onTerrainTile();
-            }
-            Index relativeNodeIndex = TerrainUtil.toNode(terrainPosition.sub(TerrainUtil.toTileAbsolute(index)));
-            TerrainNode terrainNode = terrainTile.getTerrainNodes()[relativeNodeIndex.getX()][relativeNodeIndex.getY()];
-            if (terrainNode == null) {
-                return terrainTileAccess.onTerrainTile();
-
-            }
-            if (terrainNode.getTerrainSubNodes() == null) {
-                return terrainTileAccess.onTerrainNode(terrainNode);
-            }
-            // Subnodes quadtree access
-            DecimalPosition relativeNode = terrainPosition.sub(TerrainUtil.toNodeAbsolute(TerrainUtil.toNode(terrainPosition)));
-            TerrainSubNode terrainSubNode = QuadTreeAccess.getSubNode(relativeNode, terrainNode.getTerrainSubNodes());
-            if (terrainSubNode != null) {
-                return terrainTileAccess.onTerrainSubNode(terrainSubNode);
-            } else {
-                return terrainTileAccess.onTerrainNode(terrainNode);
-            }
-        } else {
-            return terrainTileAccess.terrainTileNotLoaded();
-        }
+        return terrainTileAccess.onTerrainTile();
     }
 
     public BabylonTerrainTile getBabylonTerrainTile() {

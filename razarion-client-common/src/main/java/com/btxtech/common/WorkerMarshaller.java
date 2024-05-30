@@ -1,7 +1,6 @@
 package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -20,20 +19,13 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
-import com.btxtech.shared.gameengine.planet.terrain.GroundTerrainTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainObjectModel;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
-import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsArrayNumber;
 import elemental2.core.Array;
-import elemental2.core.Float32Array;
 import elemental2.core.JsObject;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
@@ -46,8 +38,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import static jsinterop.base.Js.castToDouble;
 
 /**
  * Created by Beat
@@ -406,75 +396,8 @@ public class WorkerMarshaller {
         array.push(terrainTile.getGroundConfigId());
         array.push(terrainTile.getWaterConfigId());
         array.push(terrainTile.getGroundHeightMap());
-        array.push(marshallGroundTerrainTiles(terrainTile.getGroundTerrainTiles()));
-        array.push(marshallTerrainSlopeTiles(terrainTile.getTerrainSlopeTiles()));
-        array.push(marshallTerrainWaterTiles(terrainTile.getTerrainWaterTiles()));
         array.push(marshallTerrainTileObjectList(terrainTile.getTerrainTileObjectLists()));
-        array.push(terrainTile.getHeight());
-        array.push(terrainTile.getLandWaterProportion());
-        array.push(marshallTerrainNodes(terrainTile.getTerrainNodes()));
         return array;
-    }
-
-    private static Array<JsPropertyMapOfAny> marshallGroundTerrainTiles(GroundTerrainTile[] float32ArrayMap) {
-        Array<JsPropertyMapOfAny> result = new Array<>();
-        if (float32ArrayMap != null) {
-            for (GroundTerrainTile groundTerrainTile : float32ArrayMap) {
-                JsPropertyMapOfAny mapOfAny = JsPropertyMap.of();
-                mapOfAny.set("groundConfigId", groundTerrainTile.groundConfigId);
-                mapOfAny.set("positions", groundTerrainTile.positions);
-                mapOfAny.set("norms", groundTerrainTile.norms);
-                result.push(mapOfAny);
-            }
-        }
-        return result;
-    }
-
-    private static Array<JsPropertyMapOfAny> marshallTerrainSlopeTiles(TerrainSlopeTile[] terrainSlopeTiles) {
-        Array<JsPropertyMapOfAny> result = new Array<>();
-        if (terrainSlopeTiles != null) {
-            for (TerrainSlopeTile terrainSlopeTile : terrainSlopeTiles) {
-                JsPropertyMapOfAny mapOfAny = JsPropertyMap.of();
-                mapOfAny.set("slopeConfigId", terrainSlopeTile.getSlopeConfigId());
-                mapOfAny.set("outerSlopeGeometry", marshallSlopeGeometry(terrainSlopeTile.getOuterSlopeGeometry()));
-                mapOfAny.set("centerSlopeGeometry", marshallSlopeGeometry(terrainSlopeTile.getCenterSlopeGeometry()));
-                mapOfAny.set("innerSlopeGeometry", marshallSlopeGeometry(terrainSlopeTile.getInnerSlopeGeometry()));
-                result.push(mapOfAny);
-            }
-        }
-        return result;
-    }
-
-    private static Float32Array[] marshallSlopeGeometry(SlopeGeometry slopeGeometry) {
-        if (slopeGeometry != null) {
-            return new Float32Array[]{
-                    Js.uncheckedCast(slopeGeometry.getPositions()),
-                    Js.uncheckedCast(slopeGeometry.getNorms()),
-                    Js.uncheckedCast(slopeGeometry.getSlopeFactors()),
-                    Js.uncheckedCast(slopeGeometry.getUvs())
-            };
-        } else {
-            return new Float32Array[0];
-        }
-    }
-
-    private static Object marshallTerrainWaterTiles(TerrainWaterTile[] terrainWaterTiles) {
-        Array<JsPropertyMapOfAny> result = new Array<>();
-        if (terrainWaterTiles != null) {
-            for (TerrainWaterTile terrainWaterTile : terrainWaterTiles) {
-                JsPropertyMapOfAny mapOfAny = JsPropertyMap.of();
-                mapOfAny.set("slopeConfigId", terrainWaterTile.getSlopeConfigId());
-                if (terrainWaterTile.isPositionsSet()) {
-                    mapOfAny.set("positions", Js.uncheckedCast(terrainWaterTile.getPositions()));
-                }
-                if (terrainWaterTile.isShallowPositionsSet()) {
-                    mapOfAny.set("shallowPositions", Js.uncheckedCast(terrainWaterTile.getShallowPositions()));
-                    mapOfAny.set("shallowUvs", Js.uncheckedCast(terrainWaterTile.getShallowUvs()));
-                }
-                result.push(mapOfAny);
-            }
-        }
-        return result;
     }
 
     private static Object marshallTerrainTileObjectList(TerrainTileObjectList[] terrainTileObjectLists) {
@@ -505,65 +428,6 @@ public class WorkerMarshaller {
         return result;
     }
 
-    private static Object marshallTerrainNodes(TerrainNode[][] terrainNodes) {
-        if (terrainNodes == null || terrainNodes.length == 0) {
-            return null;
-        }
-        Array<Object> array = new Array<>();
-        Arrays.stream(terrainNodes).forEach(terrainNodesInner -> {
-            if (terrainNodesInner != null) {
-                Array<Object> arrayInner = new Array<>();
-                Arrays.stream(terrainNodesInner).forEach(terrainNode -> {
-                    if (terrainNode != null) {
-                        Array<Object> terrainNodeArray = new Array<>();
-                        terrainNodeArray.push(terrainNode.getHeight());
-                        terrainNodeArray.push(Any.of(terrainNode.getTerrainType()).asDouble());  // Int does not work here -> {a: -1}
-                        if (terrainNode.getTerrainSubNodes() != null) {
-                            terrainNodeArray.push(marshallTerrainSubNodes(terrainNode.getTerrainSubNodes()));
-                        }
-                        arrayInner.push(terrainNodeArray);
-                    } else {
-                        arrayInner.push((Object) null);
-                    }
-                });
-                array.push(arrayInner);
-            } else {
-                array.push((Object) null);
-            }
-        });
-        return array;
-    }
-
-    private static Object marshallTerrainSubNodes(TerrainSubNode[][] terrainSubNodes) {
-        Array<Object> array = new Array<>();
-        Arrays.stream(terrainSubNodes).forEach(terrainSubNodesInner -> {
-            if (terrainSubNodesInner != null) {
-                Array<Object> arrayInner = new Array<>();
-                Arrays.stream(terrainSubNodesInner).forEach(terrainSubNode -> {
-                    if (terrainSubNode != null) {
-                        Array<Object> terrainNodeArray = new Array<>();
-                        if (terrainSubNode.getHeight() != null) {
-                            terrainNodeArray.push(castToDouble(terrainSubNode.getHeight()));
-                        } else {
-                            terrainNodeArray.push((Object) null);
-                        }
-                        terrainNodeArray.push(Any.of(terrainSubNode.getTerrainType()).asDouble()); // Int does not work here -> {a: -1}
-                        if (terrainSubNode.getTerrainSubNodes() != null) {
-                            terrainNodeArray.push(marshallTerrainSubNodes(terrainSubNode.getTerrainSubNodes()));
-                        }
-                        arrayInner.push(terrainNodeArray);
-                    } else {
-                        arrayInner.push((Object) null);
-                    }
-                });
-                array.push(arrayInner);
-            } else {
-                array.push((Object) null);
-            }
-        });
-        return array;
-    }
-
     private static TerrainTile demarshallTerrainTile(Object data) {
         Any[] array = Js.castToArray(data);
         TerrainTile terrainTile = new TerrainTile();
@@ -571,75 +435,8 @@ public class WorkerMarshaller {
         terrainTile.setGroundConfigId(array[1].asInt());
         terrainTile.setWaterConfigId(array[2].asInt());
         terrainTile.setGroundHeightMap(Js.uncheckedCast(array[3].asArrayLike()));
-        terrainTile.setGroundTerrainTiles(demarshallGroundTerrainTiles(array[4]));
-        terrainTile.setTerrainSlopeTiles(demarshallTerrainSlopeTiles(array[5]));
-        terrainTile.setTerrainWaterTiles(demarshallTerrainWaterTiles(array[6]));
-        terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[7]));
-        terrainTile.setHeight(array[8].asDouble());
-        terrainTile.setLandWaterProportion(array[9].asDouble());
-        terrainTile.setTerrainNodes(demarshallTerrainNodes(array[10]));
+        terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[4]));
         return terrainTile;
-    }
-
-    private static GroundTerrainTile[] demarshallGroundTerrainTiles(Any any) {
-        JsPropertyMapOfAny[] array = Js.cast(any);
-        if (array.length == 0) {
-            return null;
-        }
-        return Arrays.stream(array).map(anyTerrainSlopeTile -> {
-            GroundTerrainTile groundTerrainTile = new GroundTerrainTile();
-            groundTerrainTile.groundConfigId = ((Any) anyTerrainSlopeTile.get("groundConfigId")).asInt();
-            groundTerrainTile.positions = ((Any) anyTerrainSlopeTile.get("positions")).uncheckedCast();
-            groundTerrainTile.norms = ((Any) anyTerrainSlopeTile.get("norms")).uncheckedCast();
-            return groundTerrainTile;
-        }).toArray(GroundTerrainTile[]::new);
-    }
-
-    private static TerrainSlopeTile[] demarshallTerrainSlopeTiles(Any any) {
-        JsPropertyMapOfAny[] array = Js.cast(any);
-        if (array.length == 0) {
-            return null;
-        }
-        return Arrays.stream(array).map(anyTerrainSlopeTile -> {
-            TerrainSlopeTile terrainSlopeTile = new TerrainSlopeTile();
-            terrainSlopeTile.setSlopeConfigId(((Any) anyTerrainSlopeTile.get("slopeConfigId")).asInt());
-            terrainSlopeTile.setOuterSlopeGeometry(demarshallSlopeGeometry(((Any) anyTerrainSlopeTile.get("outerSlopeGeometry")).asArray()));
-            terrainSlopeTile.setCenterSlopeGeometry(demarshallSlopeGeometry(((Any) anyTerrainSlopeTile.get("centerSlopeGeometry")).asArray()));
-            terrainSlopeTile.setInnerSlopeGeometry(demarshallSlopeGeometry(((Any) anyTerrainSlopeTile.get("innerSlopeGeometry")).asArray()));
-            return terrainSlopeTile;
-        }).toArray(TerrainSlopeTile[]::new);
-    }
-
-    private static SlopeGeometry demarshallSlopeGeometry(Any[] slopeGeometryAnyArray) {
-        if (slopeGeometryAnyArray == null || slopeGeometryAnyArray.length == 0) {
-            return null;
-        }
-        SlopeGeometry slopeGeometry = new SlopeGeometry();
-        slopeGeometry.setPositions(slopeGeometryAnyArray[0].uncheckedCast());
-        slopeGeometry.setNorms(slopeGeometryAnyArray[1].uncheckedCast());
-        slopeGeometry.setSlopeFactors(slopeGeometryAnyArray[2].uncheckedCast());
-        slopeGeometry.setUvs(slopeGeometryAnyArray[3].uncheckedCast());
-        return slopeGeometry;
-    }
-
-    private static TerrainWaterTile[] demarshallTerrainWaterTiles(Any any) {
-        JsPropertyMapOfAny[] array = Js.cast(any);
-        if (array.length == 0) {
-            return null;
-        }
-
-        return Arrays.stream(array).map(anyTerrainWaterTile -> {
-            TerrainWaterTile terrainWaterTile = new TerrainWaterTile();
-            terrainWaterTile.setSlopeConfigId(((Any) Js.uncheckedCast(anyTerrainWaterTile.get("slopeConfigId"))).asInt());
-            if (anyTerrainWaterTile.has("positions")) {
-                terrainWaterTile.setPositions(Js.uncheckedCast(anyTerrainWaterTile.get("positions")));
-            }
-            if (anyTerrainWaterTile.has("shallowPositions")) {
-                terrainWaterTile.setShallowPositions(Js.uncheckedCast((anyTerrainWaterTile.get("shallowPositions"))));
-                terrainWaterTile.setShallowUvs(Js.uncheckedCast((anyTerrainWaterTile.get("shallowUvs"))));
-            }
-            return terrainWaterTile;
-        }).toArray(TerrainWaterTile[]::new);
     }
 
     private static TerrainTileObjectList[] demarshallTerrainTileObjectLists(Any any) {
@@ -660,7 +457,7 @@ public class WorkerMarshaller {
         if (array.length == 0) {
             return null;
         }
-        return Arrays.stream(array).map(anyTerrainObjectModels-> {
+        return Arrays.stream(array).map(anyTerrainObjectModels -> {
             TerrainObjectModel terrainTileObjectList = new TerrainObjectModel();
             terrainTileObjectList.terrainObjectId = ((Any) Js.uncheckedCast(anyTerrainObjectModels.get("terrainObjectId"))).asInt();
             terrainTileObjectList.position = arrayToVertex(anyTerrainObjectModels.get("position"));
@@ -670,73 +467,6 @@ public class WorkerMarshaller {
         }).toArray(TerrainObjectModel[]::new);
     }
 
-    private static TerrainNode[][] demarshallTerrainNodes(Any any) {
-        if (any == null) {
-            return null;
-        }
-        Any[] array = Js.castToArray(any);
-        TerrainNode[][] terrainNodes = new TerrainNode[array.length][];
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == null) {
-                terrainNodes[i] = null;
-                continue;
-            }
-            Any[] innerArray = Js.castToArray(array[i]);
-            TerrainNode[] innerTerrainNodes = new TerrainNode[innerArray.length];
-            for (int j = 0; j < innerArray.length; j++) {
-                if (innerArray[j] == null) {
-                    innerTerrainNodes[j] = null;
-                    continue;
-                }
-                Any[] terrainNodeArray = Js.castToArray(innerArray[j]);
-                TerrainNode terrainNode = new TerrainNode();
-                terrainNode.setHeight(terrainNodeArray[0].asDouble());
-                terrainNode.setTerrainType(terrainNodeArray[1].asInt());
-                if (terrainNodeArray[2] != null) {
-                    terrainNode.setTerrainSubNodes(demarshallTerrainSubNodes(terrainNodeArray[2]));
-                }
-                innerTerrainNodes[j] = terrainNode;
-            }
-            terrainNodes[i] = innerTerrainNodes;
-        }
-
-        return terrainNodes;
-    }
-
-    private static TerrainSubNode[][] demarshallTerrainSubNodes(Any any) {
-        Any[] array = Js.castToArray(any);
-        if (array.length == 0) {
-            return null;
-        }
-        TerrainSubNode[][] terrainSubNodes = new TerrainSubNode[array.length][];
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == null) {
-                terrainSubNodes[i] = null;
-                continue;
-            }
-            Any[] innerArray = Js.castToArray(array[i]);
-            TerrainSubNode[] innerTerrainSubNodes = new TerrainSubNode[innerArray.length];
-            for (int j = 0; j < innerArray.length; j++) {
-                if (innerArray[j] == null) {
-                    innerTerrainSubNodes[j] = null;
-                    continue;
-                }
-                Any[] terrainSubNodeArray = Js.castToArray(innerArray[j]);
-                TerrainSubNode terrainSubNode = new TerrainSubNode();
-                if (terrainSubNodeArray[0] != null) {
-                    terrainSubNode.setHeight(terrainSubNodeArray[0].asDouble());
-                }
-                terrainSubNode.setTerrainType(terrainSubNodeArray[1].asInt());
-                if (terrainSubNodeArray[2] != null) {
-                    terrainSubNode.setTerrainSubNodes(demarshallTerrainSubNodes(terrainSubNodeArray[2]));
-                }
-                innerTerrainSubNodes[j] = terrainSubNode;
-            }
-            terrainSubNodes[i] = innerTerrainSubNodes;
-        }
-
-        return terrainSubNodes;
-    }
 
     private static JsArrayNumber vertexToArray(Vertex vertex) {
         if (vertex == null) {
@@ -753,7 +483,7 @@ public class WorkerMarshaller {
         if (xyz == null) {
             return null;
         }
-        Any[] jsArray = ((Any)xyz).asArray();
+        Any[] jsArray = ((Any) xyz).asArray();
         return new Vertex(jsArray[0].asDouble(),
                 jsArray[1].asDouble(),
                 jsArray[2].asDouble());

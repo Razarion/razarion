@@ -2,30 +2,12 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
-import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
-import com.btxtech.shared.gameengine.planet.terrain.slope.CalculatedSlopeData;
-import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.shared.system.JsInteropObjectFactory;
-import com.btxtech.shared.utils.InterpolationUtils;
-import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -40,324 +22,20 @@ import java.util.List;
  */
 @ApplicationScoped
 public class TerrainTileFactory {
-    public static final double IGNORE_SMALLER_TRIANGLE = 0.01;
     // private Logger logger = Logger.getLogger(TerrainTileFactory.class.getName());
     @Inject
     private Instance<TerrainTileBuilder> terrainTileBuilderInstance;
-    @Inject
-    private TerrainTypeService terrainTypeService;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private TerrainService terrainService;
 
-    private static double setupSlopeFactor(double slopeFactor, double drivewayHeightFactor) {
-        if (MathHelper.compareWithPrecision(1.0, slopeFactor)) {
-            return 1.0;
-        } else if (MathHelper.compareWithPrecision(0.0, slopeFactor)) {
-            return 0;
-        }
-        // Why -shapeTemplateEntry.getNormShift() and not + is unclear
-        // return (float) MathHelper.clamp(slopeSkeletonEntry.getSlopeFactor() - slopeSkeletonEntry.getNormShift(), 0.0, 1.0);
-        return slopeFactor * drivewayHeightFactor;
-    }
-
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShapeManager terrainShapeManager, PlanetConfig planetConfig) {
         TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(terrainTileIndex);
         TerrainTileBuilder terrainTileBuilder = terrainTileBuilderInstance.get();
-        terrainTileBuilder.init(terrainTileIndex, terrainShapeTile, terrainShapeManager.getPlayGround());
-        insertSlopeGroundConnectionPart(terrainTileBuilder, terrainShapeTile);
-        insertGroundPart(terrainTileBuilder, terrainShapeTile);
-        insertSlopePart(terrainTileBuilder, terrainShapeTile);
-        insertWaterPart(terrainTileBuilder, terrainShapeTile);
-        insertHeightAndType(terrainTileBuilder, terrainShapeTile);
+        terrainTileBuilder.init(terrainTileIndex, terrainShapeManager.getPlayGround());
         insertTerrainObjects(terrainTileBuilder, terrainShapeTile);
         return terrainTileBuilder.generate(planetConfig);
-    }
-
-    private void insertGroundPart(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
-        if (terrainShapeTile != null) {
-            terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
-                //////////////////////
-//                DecimalPosition absolute = TerrainUtil.toNodeAbsolute(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex));
-//                if(absolute.getX() == 120 && absolute.getY() == 144) {
-//                    System.out.println("***********************************");
-//                }
-                //////////////////////
-                if (terrainShapeTile.isRenderLand() && terrainShapeNode == null) {
-                    addGroundRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight(), null, terrainTileBuilder);
-                } else if (terrainShapeNode != null) {
-                    if (terrainShapeNode.isFullRenderEngineDriveway()) {
-                        addDrivewayGroundRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainShapeNode.getRenderGroundId(), terrainTileBuilder);
-                    } else {
-                        if (!terrainShapeNode.isRenderHideGround() && !terrainShapeNode.istDrivewayBreakingLine()) {
-                            addGroundRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getInnerGroundHeight(), terrainShapeNode.getRenderGroundId(), terrainTileBuilder);
-                        }
-                    }
-                }
-            });
-        } else {
-            for (int xNode = 0; xNode < TerrainUtil.TERRAIN_TILE_NODES_COUNT; xNode++) {
-                for (int yNode = 0; yNode < TerrainUtil.TERRAIN_TILE_NODES_COUNT; yNode++) {
-                    Index nodeRelativeIndex = new Index(xNode, yNode);
-                    addGroundRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), 0, null, terrainTileBuilder);
-                }
-            }
-        }
-    }
-
-    private void addGroundRectangle(Index absoluteNodeIndex, double groundHeight, Integer groundId, TerrainTileBuilder terrainTileBuilder) {
-        int xNode = absoluteNodeIndex.getX();
-        int yNode = absoluteNodeIndex.getY();
-        int rightXNode = xNode + 1;
-        int topYNode = yNode + 1;
-
-        Vertex vertexBL = terrainTileBuilder.setupVertexWithGroundSkeletonHeight(xNode, yNode, groundHeight);
-        Vertex vertexBR = terrainTileBuilder.setupVertexWithGroundSkeletonHeight(rightXNode, yNode, groundHeight);
-        Vertex vertexTR = terrainTileBuilder.setupVertexWithGroundSkeletonHeight(rightXNode, topYNode, groundHeight);
-        Vertex vertexTL = terrainTileBuilder.setupVertexWithGroundSkeletonHeight(xNode, topYNode, groundHeight);
-
-        if (!terrainTileBuilder.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
-            return;
-        }
-
-        Vertex normBL = terrainTileBuilder.addGroundSkeletonNorm(xNode, yNode, null);
-        Vertex normBR = terrainTileBuilder.addGroundSkeletonNorm(rightXNode, yNode, null);
-        Vertex normTR = terrainTileBuilder.addGroundSkeletonNorm(rightXNode, topYNode, null);
-        Vertex normTL = terrainTileBuilder.addGroundSkeletonNorm(xNode, topYNode, null);
-
-        addGroundRectangle(terrainTileBuilder, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, groundId);
-    }
-
-    private void addDrivewayGroundRectangle(Index absoluteNodeIndex, TerrainShapeNode terrainShapeNode, Integer groundId, TerrainTileBuilder terrainTileBuilder) {
-        int xNode = absoluteNodeIndex.getX();
-        int yNode = absoluteNodeIndex.getY();
-        int rightXNode = xNode + 1;
-        int topYNode = yNode + 1;
-
-        double drivewayHeightBL = terrainShapeNode.getDrivewayHeightBL();
-        double drivewayHeightBR = terrainShapeNode.getDrivewayHeightBR();
-        double drivewayHeightTR = terrainShapeNode.getDrivewayHeightTR();
-        double drivewayHeightTL = terrainShapeNode.getDrivewayHeightTL();
-
-        Vertex vertexBL = terrainTileBuilder.setupVertex(xNode, yNode, drivewayHeightBL);
-        Vertex vertexBR = terrainTileBuilder.setupVertex(rightXNode, yNode, drivewayHeightBR);
-        Vertex vertexTR = terrainTileBuilder.setupVertex(rightXNode, topYNode, drivewayHeightTR);
-        Vertex vertexTL = terrainTileBuilder.setupVertex(xNode, topYNode, drivewayHeightTL);
-
-        if (!terrainTileBuilder.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
-            return;
-        }
-
-        Vertex normBL = terrainTileBuilder.addGroundSkeletonNorm(xNode, yNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(0, 0)));
-        Vertex normBR = terrainTileBuilder.addGroundSkeletonNorm(rightXNode, yNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(1, 0)));
-        Vertex normTR = terrainTileBuilder.addGroundSkeletonNorm(rightXNode, topYNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(1, 1)));
-        Vertex normTL = terrainTileBuilder.addGroundSkeletonNorm(xNode, topYNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(0, 1)));
-
-        addGroundRectangle(terrainTileBuilder, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, groundId);
-    }
-
-    private void addGroundRectangle(TerrainTileBuilder terrainTileBuilder, Vertex vertexBL, Vertex vertexBR, Vertex vertexTR, Vertex vertexTL, Vertex normBL, Vertex normBR, Vertex normTR, Vertex normTL, Integer groundId) {
-        // Triangle 1
-        terrainTileBuilder.addGroundTriangleCorner(vertexBL, normBL, groundId);
-        terrainTileBuilder.addGroundTriangleCorner(vertexBR, normBR, groundId);
-        terrainTileBuilder.addGroundTriangleCorner(vertexTL, normTL, groundId);
-        // Triangle 2
-        terrainTileBuilder.addGroundTriangleCorner(vertexBR, normBR, groundId);
-        terrainTileBuilder.addGroundTriangleCorner(vertexTR, normTR, groundId);
-        terrainTileBuilder.addGroundTriangleCorner(vertexTL, normTL, groundId);
-    }
-
-    private void insertSlopePart(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
-        if (terrainShapeTile == null) {
-            return;
-        }
-        if (terrainShapeTile.getFractionalSlopes() != null) {
-            terrainShapeTile.getFractionalSlopes().forEach(fractionalSlope -> generateSlopeTerrainTile(terrainTileBuilder, fractionalSlope));
-        }
-    }
-
-    private void generateSlopeTerrainTile(TerrainTileBuilder terrainTileBuilder, FractionalSlope fractionalSlope) {
-        SlopeConfig slopeConfig = terrainTypeService.getSlopeConfig(fractionalSlope.getSlopeConfigId());
-        WaterConfig waterConfig = slopeConfig.hasWaterConfigId() ? terrainTypeService.getWaterConfig(slopeConfig.getWaterConfigId()) : null;
-        CalculatedSlopeData calculatedSlopeData = SlopeModeler.sculpt(slopeConfig, terrainTypeService.calculateGroundHeight(slopeConfig.getId()));
-        TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainTileBuilder.createTerrainSlopeTileContext(slopeConfig, calculatedSlopeData, fractionalSlope.getFractionalSlopeSegments().size());
-        terrainTileBuilder.getTerrainWaterTileBuilder().startWaterMesh();
-        int vertexColumn = 0;
-        for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
-            Matrix4 transformationMatrix = fractionalSlopeSegment.setupTransformation(fractionalSlope.isInverted());
-            // Setup Slope
-            double uvX = 0;
-            Vertex lastPosition = null;
-            for (int row = 0; row < calculatedSlopeData.getRows(); row++) {
-                Vertex skeletonVertex = calculatedSlopeData.setupVertex(fractionalSlopeSegment.getIndex(), row);
-                if (waterConfig != null && row == calculatedSlopeData.getRows() - 1) {
-                    skeletonVertex = new Vertex(skeletonVertex.getX(), skeletonVertex.getY(), waterConfig.getGroundLevel());
-                }
-                double slopeFactor = calculatedSlopeData.setupSlopeFactor(fractionalSlopeSegment.getIndex(), row);
-                if (fractionalSlopeSegment.getDrivewayHeightFactor() < 1.0) {
-                    skeletonVertex = skeletonVertex.multiply(1.0, 1.0, fractionalSlopeSegment.getDrivewayHeightFactor());
-                }
-                Vertex transformedPoint = transformationMatrix.multiply(skeletonVertex, 1.0);
-                transformedPoint = transformedPoint.add(0, 0, fractionalSlope.getGroundHeight());
-                if (lastPosition != null) {
-                    uvX += lastPosition.distance(transformedPoint);
-                }
-                DecimalPosition uvTermination = null;
-                if (fractionalSlopeSegment.hasUvYTermination()) {
-                    uvTermination = new DecimalPosition(uvX, fractionalSlopeSegment.getUvYTermination());
-                }
-                lastPosition = transformedPoint;
-                terrainSlopeTileBuilder.addVertex(vertexColumn,
-                        row,
-                        transformedPoint,
-                        new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()),
-                        uvTermination,
-                        setupSlopeFactor(slopeFactor, fractionalSlopeSegment.getDrivewayHeightFactor()),
-                        fractionalSlopeSegment.getDrivewayHeightFactor());
-            }
-            vertexColumn++;
-            if (slopeConfig.hasWaterConfigId()) {
-                terrainTileBuilder.getTerrainWaterTileBuilder().addShallowWaterMeshVertices(transformationMatrix,
-                        calculatedSlopeData.getWidth(),
-                        slopeConfig.getHorizontalSpace(),
-                        fractionalSlope.getGroundHeight() + (waterConfig != null ? waterConfig.getWaterLevel() : 0),
-                        fractionalSlopeSegment.getUvY(),
-                        fractionalSlopeSegment.getUvYTermination());
-            }
-        }
-        terrainSlopeTileBuilder.triangulation(fractionalSlope.isInverted(), slopeConfig.isInterpolateNorm());
-        terrainTileBuilder.getTerrainWaterTileBuilder().triangulateShallowWaterMesh(fractionalSlope.getSlopeConfigId());
-    }
-
-    private void insertSlopeGroundConnectionPart(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
-        if (terrainShapeTile == null) {
-            return;
-        }
-        terrainShapeTile.iterateOverTerrainNodes((nodeIndex, terrainShapeNode, iterationControl) -> {
-            if (terrainShapeNode != null && terrainShapeNode.getGroundSlopeConnections() != null) {
-//                if (terrainShapeNode.getGroundSlopeConnections().size() > 1) {
-//                    System.out.print("size: " + terrainShapeNode.getGroundSlopeConnections().size() + " at:" + TerrainUtil.toNodeAbsolute(terrainTileBuilder.toAbsoluteNodeIndex(nodeIndex)));
-//                    List<Polygon2D> checkForTouch = terrainShapeNode.getGroundSlopeConnections().stream().map(vertices -> new Polygon2D(Vertex.toXY(vertices))).collect(Collectors.toList());
-//                    Polygon2D polygon2 = checkForTouch.remove(0);
-//                    for (Polygon2D other : checkForTouch) {
-//                        if (polygon2.touches(other)) {
-//                            System.out.print(" ! ||" + polygon2.getCorners() + "||" + other.getCorners());
-//                        }
-//                    }
-//                    System.out.println();
-//                }
-
-                terrainShapeNode.getGroundSlopeConnections().forEach((groundId, connections) -> {
-                    try {
-                        connections.forEach(polygon -> Triangulator.calculate(polygon, IGNORE_SMALLER_TRIANGLE, (vertex1, vertex2, vertex3) -> terrainTileBuilder.addGroundTriangleSlopeConnection(vertex1, vertex2, vertex3, groundId)));
-                    } catch (Exception e) {
-                        Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(terrainTileBuilder.toAbsoluteNodeIndex(nodeIndex));
-                        exceptionHandler.handleException("TerrainTileFactory.insertSlopeGroundConnectionPart(); Triangulator.calculate() failed. terrainRect: " + terrainRect, e);
-                    }
-                });
-            }
-        });
-    }
-
-    private void insertWaterPart(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
-        if (terrainShapeTile == null) {
-            terrainTileBuilder.setLandWaterProportion(1);
-            return;
-        }
-        if (!terrainShapeTile.isRenderLand()) {
-            // TODO fill water part
-            terrainTileBuilder.setLandWaterProportion(0);
-        }
-
-
-        terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
-            if (terrainShapeNode == null && terrainShapeTile.getRenderFullWaterLevel() != null) {
-                terrainTileBuilder.getTerrainWaterTileBuilder().insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getRenderFullWaterLevel(), terrainShapeTile.getRenderFullWaterSlopeId());
-            } else if (terrainShapeNode != null && terrainShapeNode.getRenderFullWaterLevel() != null) {
-                terrainTileBuilder.getTerrainWaterTileBuilder().insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getRenderFullWaterLevel(), terrainShapeNode.getRenderInnerWaterSlopeId());
-            } else if (terrainShapeNode != null && terrainShapeNode.getWaterSegments() != null) {
-                terrainShapeNode.getWaterSegments().forEach(
-                        (slopeId, segments) -> segments.forEach(
-                                segment -> Triangulator.calculate(segment, IGNORE_SMALLER_TRIANGLE,
-                                        (vertex1, vertex2, vertex3) -> terrainTileBuilder.getTerrainWaterTileBuilder().insertWaterRim(vertex1, vertex2, vertex3, slopeId))));
-            }
-        });
-
-    }
-
-    private void insertHeightAndType(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
-        if (terrainShapeTile == null) {
-            return;
-        }
-        if (!terrainShapeTile.hasNodes()) {
-            return;
-        }
-
-        terrainTileBuilder.initTerrainNodeField(TerrainUtil.TERRAIN_TILE_NODES_COUNT);
-
-        terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
-            if (terrainShapeNode != null) {
-                TerrainNode terrainNode = new TerrainNode();
-                terrainNode.setTerrainType(TerrainType.toOrdinal(terrainShapeNode.getTerrainType()));
-                if (terrainShapeNode.isFullGameEngineDriveway()) {
-                    terrainNode.setHeight(InterpolationUtils.rectangleInterpolate(new DecimalPosition(0.5, 0.5), terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL()));
-                } else {
-                    terrainNode.setHeight(terrainShapeNode.getGameEngineHeight());
-                }
-                if (terrainShapeNode.hasSubNodes()) {
-                    terrainNode.initTerrainSubNodeField((int) Math.sqrt(terrainShapeNode.getTerrainShapeSubNodes().length));
-                    DecimalPosition nodePosition = TerrainUtil.toNodeAbsolute(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex));
-                    createTerrainSubNodes(nodePosition, new DecimalPosition(0, 0), terrainShapeNode, terrainShapeNode.getTerrainShapeSubNodes(), terrainNode::insertTerrainSubNode);
-                }
-                terrainTileBuilder.setTerrainNode(nodeRelativeIndex.getX(), nodeRelativeIndex.getY(), terrainNode);
-            }
-        });
-    }
-
-    private void createTerrainSubNodes(DecimalPosition parentPosition, DecimalPosition relativePosition, TerrainShapeNode terrainShapeNode, TerrainShapeSubNode[] children, SubNodeFeeder subNodeFeeder) {
-        TerrainShapeSubNode bottomLeftShape = children[0];
-        if (bottomLeftShape != null) {
-            subNodeFeeder.insertSubNode(0, 0, createTerrainSubNode(parentPosition, relativePosition, terrainShapeNode, bottomLeftShape));
-        }
-        TerrainShapeSubNode bottomRightShape = children[1];
-        if (bottomRightShape != null) {
-            double nodeLength = TerrainUtil.calculateSubNodeLength(bottomRightShape.getDepth());
-            subNodeFeeder.insertSubNode(1, 0, createTerrainSubNode(parentPosition, relativePosition.add(nodeLength, 0), terrainShapeNode, bottomRightShape));
-        }
-        TerrainShapeSubNode topRightShape = children[2];
-        if (topRightShape != null) {
-            double nodeLength = TerrainUtil.calculateSubNodeLength(topRightShape.getDepth());
-            subNodeFeeder.insertSubNode(1, 1, createTerrainSubNode(parentPosition, relativePosition.add(nodeLength, nodeLength), terrainShapeNode, topRightShape));
-        }
-        TerrainShapeSubNode topLeftShape = children[3];
-        if (topLeftShape != null) {
-            double nodeLength = TerrainUtil.calculateSubNodeLength(topLeftShape.getDepth());
-            subNodeFeeder.insertSubNode(0, 1, createTerrainSubNode(parentPosition, relativePosition.add(0, nodeLength), terrainShapeNode, topLeftShape));
-        }
-    }
-
-    private TerrainSubNode createTerrainSubNode(DecimalPosition nodePosition, DecimalPosition subNodePosition, TerrainShapeNode terrainShapeNode, TerrainShapeSubNode terrainShapeSubNode) {
-        TerrainSubNode terrainSubNode = new TerrainSubNode();
-        terrainSubNode.setTerrainType(TerrainType.toOrdinal(terrainShapeSubNode.getTerrainType()));
-        if (terrainShapeSubNode.isDriveway()) {
-            terrainSubNode.setHeight(InterpolationUtils.rectangleInterpolate(new DecimalPosition(0.5, 0.5), terrainShapeSubNode.getDrivewayHeightBL(), terrainShapeSubNode.getDrivewayHeightBR(), terrainShapeSubNode.getDrivewayHeightTR(), terrainShapeSubNode.getDrivewayHeightTL()));
-        } else if (terrainShapeSubNode.getHeight() != null) {
-            terrainSubNode.setHeight(terrainShapeSubNode.getHeight());
-        }
-        if (terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
-            terrainSubNode.initTerrainSubNodeField(2);
-            createTerrainSubNodes(nodePosition, subNodePosition, terrainShapeNode, terrainShapeSubNode.getTerrainShapeSubNodes(), terrainSubNode::insertTerrainSubNode);
-        }
-        return terrainSubNode;
-    }
-
-    private Vertex setupDrivewayGroundNorm(TerrainShapeNode terrainShapeNode, DecimalPosition relativePosition) {
-        if (!terrainShapeNode.isFullRenderEngineDriveway()) {
-            return null;
-        }
-
-        return InterpolationUtils.interpolateNormFromRectangle(relativePosition, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, terrainShapeNode.getDrivewayHeights());
     }
 
     private void insertTerrainObjects(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
@@ -408,9 +86,4 @@ public class TerrainTileFactory {
             terrainTileBuilder.addTerrainTileObjectList(terrainTileObjectList);
         });
     }
-
-    private interface SubNodeFeeder {
-        void insertSubNode(int x, int y, TerrainSubNode terrainSubNode);
-    }
-
 }

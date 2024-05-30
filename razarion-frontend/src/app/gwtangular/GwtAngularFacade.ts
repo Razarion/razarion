@@ -494,31 +494,6 @@ export interface MarkerConfig {
   outOfViewDistanceFromCamera: number;
 }
 
-export interface GroundTerrainTile {
-  groundConfigId: number;
-  positions: Float32Array;
-  norms: Float32Array
-}
-
-export interface TerrainSlopeTile {
-  slopeConfigId: number;
-  centerSlopeGeometry: SlopeGeometry | null;
-}
-
-export interface SlopeGeometry {
-  positions: Float32Array;
-  norms: Float32Array;
-  uvs: Float32Array;
-  slopeFactors: Float32Array;
-}
-
-export interface TerrainWaterTile {
-  slopeConfigId: number;
-  positions: Float32Array;
-  shallowPositions: Float32Array;
-  shallowUvs: Float32Array;
-}
-
 export interface TerrainTileObjectList {
   terrainObjectModels: TerrainObjectModel[];
   terrainObjectConfigId: number;

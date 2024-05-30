@@ -26,7 +26,6 @@ import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
@@ -412,37 +411,16 @@ public class WeldTestRenderer {
 
     public void drawTerrainTile(TerrainTile terrainTile) {
         if (weldTestController.renderTerrainTileWater()) {
-            if (terrainTile.getTerrainWaterTiles() != null) {
-                gc.setLineWidth(LINE_WIDTH);
-                gc.setStroke(Color.BLUE);
-//                terrainTile.getTerrainWaterTiles().forEach(terrainWaterTile -> {
-//                    if (terrainWaterTile.getPositions() != null) {
-//                        drawTriangles(terrainWaterTile.getPositions());
-//                    }
-//                    if (terrainWaterTile.getShallowPositions() != null) {
-//                        drawTriangles(terrainWaterTile.getShallowPositions());
-//                    }
-//                });
-            }
         }
         if (weldTestController.renderTerrainTileGround()) {
             gc.setLineWidth(LINE_WIDTH);
-            if (terrainTile.getGroundTerrainTiles() != null) {
-                Arrays.stream(terrainTile.getGroundTerrainTiles()).forEach(groundTerrainTile -> drawTriangles(groundTerrainTile.positions));
-            }
         }
 
         if (weldTestController.renderTerrainTileTerrainType() || weldTestController.renderTerrainTileHeight()) {
-            drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndex());
         }
 
         if (weldTestController.renderTerrainTileSlope()) {
             gc.setLineWidth(LINE_WIDTH);
-            if (terrainTile.getTerrainSlopeTiles() != null) {
-                for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
-                    drawTerrainSlopeTile(terrainSlopeTile);
-                }
-            }
         }
 
         if (weldTestController.renderTerrainTileTerrainObject()) {
@@ -567,84 +545,6 @@ public class WeldTestRenderer {
         double value = InterpolationUtils.interpolate(0, 1, zMin, zMax, z);
         value = MathHelper.clamp(value, 0, 1);
         return Color.color(value, 0, value);
-    }
-
-    private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
-        drawSlopeGeometry(terrainSlopeTile.getOuterSlopeGeometry());
-        drawSlopeGeometry(terrainSlopeTile.getCenterSlopeGeometry());
-        drawSlopeGeometry(terrainSlopeTile.getInnerSlopeGeometry());
-
-
-        gc.setLineWidth(LINE_WIDTH);
-        // TODO for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
-        // TODO    int vertexScalarIndex = vertexIndex * 3;
-        // fillTriangle(terrainSlopeTile.getVertices(), terrainSlopeTile.getNorms(), terrainSlopeTile.getTangents(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
-        // TODO strokeZTriangle(terrainSlopeTile.getVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
-
-//            double[] xCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex], terrainSlopeTile.getVertices()[vertexScalarIndex + 3], terrainSlopeTile.getVertices()[vertexScalarIndex + 6]};
-//            double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
-//            gc.setStroke(Color.GRAY);
-//            gc.strokePolygon(xCorners, yCorners, 3);
-        // gc.setFill(Color.color(1, 0, 0, 0.3));
-        // gc.fillPolygon(xCorners, yCorners, 3);
-        // TODO       }
-//        // Norm
-//        gc.setStroke(Color.RED);
-//        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
-//            int vertexScalarIndex = vertexIndex * 3;
-//
-//            double[] xCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex], terrainSlopeTile.getVertices()[vertexScalarIndex + 3], terrainSlopeTile.getVertices()[vertexScalarIndex + 6]};
-//            double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
-//
-//            //  x, y of norm
-//            final double AMPLIFIER = 2;
-//            double normX0 = terrainSlopeTile.getNorms()[vertexScalarIndex] * AMPLIFIER;
-//            double normY0 = terrainSlopeTile.getNorms()[vertexScalarIndex + 1] * AMPLIFIER;
-//            double normX1 = terrainSlopeTile.getNorms()[vertexScalarIndex + 3] * AMPLIFIER;
-//            double normY1 = terrainSlopeTile.getNorms()[vertexScalarIndex + 4] * AMPLIFIER;
-//            double normX2 = terrainSlopeTile.getNorms()[vertexScalarIndex + 6] * AMPLIFIER;
-//            double normY2 = terrainSlopeTile.getNorms()[vertexScalarIndex + 7] * AMPLIFIER;
-//
-//            gc.strokeLine(xCorners[0], yCorners[0], xCorners[0] + normX0, yCorners[0] + normY0);
-//            gc.strokeLine(xCorners[1], yCorners[1], xCorners[1] + normX1, yCorners[1] + normY1);
-//            gc.strokeLine(xCorners[2], yCorners[2], xCorners[2] + normX2, yCorners[2] + normY2);
-//        }
-//        // Tangent
-//        gc.setStroke(Color.BLUE);
-//        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
-//            int vertexScalarIndex = vertexIndex * 3;
-//
-//            double[] xCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex], terrainSlopeTile.getVertices()[vertexScalarIndex + 3], terrainSlopeTile.getVertices()[vertexScalarIndex + 6]};
-//            double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
-//
-//            //  x, y of norm
-//            final double AMPLIFIER = 2;
-//            double tangentX0 = terrainSlopeTile.getTangents()[vertexScalarIndex] * AMPLIFIER;
-//            double tangentY0 = terrainSlopeTile.getTangents()[vertexScalarIndex + 1] * AMPLIFIER;
-//            double tangentX1 = terrainSlopeTile.getTangents()[vertexScalarIndex + 3] * AMPLIFIER;
-//            double tangentY1 = terrainSlopeTile.getTangents()[vertexScalarIndex + 4] * AMPLIFIER;
-//            double tangentX2 = terrainSlopeTile.getTangents()[vertexScalarIndex + 6] * AMPLIFIER;
-//            double tangentY2 = terrainSlopeTile.getTangents()[vertexScalarIndex + 7] * AMPLIFIER;
-//
-//            gc.strokeLine(xCorners[0], yCorners[0], xCorners[0] + tangentX0, yCorners[0] + tangentY0);
-//            gc.strokeLine(xCorners[1], yCorners[1], xCorners[1] + tangentX1, yCorners[1] + tangentY1);
-//            gc.strokeLine(xCorners[2], yCorners[2], xCorners[2] + tangentX2, yCorners[2] + tangentY2);
-//
-//        }
-//        // SlopeFactor
-//        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
-//            int vertexScalarIndex = vertexIndex * 3;
-//
-//            double xCorner = terrainSlopeTile.getVertices()[vertexScalarIndex];
-//            double yCorner = terrainSlopeTile.getVertices()[vertexScalarIndex + 1];
-//
-//            double slopeFactor = terrainSlopeTile.getSlopeFactors()[vertexIndex];
-//
-//            gc.setFill(Color.color(slopeFactor, 0, 0, 0.1));
-//
-//            double radius = 1;
-//            gc.fillOval(xCorner - radius, yCorner - radius, radius * 2.0, radius * 2.0);
-//        }
     }
 
     private void drawSlopeGeometry(SlopeGeometry slopeGeometry) {

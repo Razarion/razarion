@@ -11,19 +11,7 @@ import jsinterop.annotations.JsType;
  */
 @JsType
 public class TerrainTile {
-    @Deprecated
-    private GroundTerrainTile[] groundTerrainTiles;
     private Index index;
-    @Deprecated
-    private TerrainWaterTile[] terrainWaterTiles;
-    @Deprecated
-    private TerrainSlopeTile[] terrainSlopeTiles;
-    @Deprecated
-    private double landWaterProportion;
-    @Deprecated
-    private TerrainNode[][] terrainNodes;
-    @Deprecated
-    private double height;
     private TerrainTileObjectList[] terrainTileObjectLists;
     private int groundConfigId;
     private int waterConfigId;
@@ -36,76 +24,6 @@ public class TerrainTile {
     @JsIgnore
     public void setIndex(Index index) {
         this.index = index;
-    }
-
-    @Deprecated
-    public GroundTerrainTile[] getGroundTerrainTiles() {
-        return groundTerrainTiles;
-    }
-
-    @Deprecated
-    public void setGroundTerrainTiles(GroundTerrainTile[] groundTerrainTiles) {
-        this.groundTerrainTiles = groundTerrainTiles;
-    }
-
-    @Deprecated
-    public TerrainSlopeTile[] getTerrainSlopeTiles() {
-        return terrainSlopeTiles;
-    }
-
-    @Deprecated
-    public void setTerrainSlopeTiles(TerrainSlopeTile[] terrainSlopeTiles) {
-        this.terrainSlopeTiles = terrainSlopeTiles;
-    }
-
-    @Deprecated
-    public TerrainWaterTile[] getTerrainWaterTiles() {
-        return terrainWaterTiles;
-    }
-
-    @Deprecated
-    public void setTerrainWaterTiles(TerrainWaterTile[] terrainWaterTiles) {
-        this.terrainWaterTiles = terrainWaterTiles;
-    }
-
-    @Deprecated
-    public double getLandWaterProportion() {
-        return landWaterProportion;
-    }
-
-    @Deprecated
-    public void setLandWaterProportion(double landWaterProportion) {
-        this.landWaterProportion = landWaterProportion;
-    }
-
-    @Deprecated
-    public void initTerrainNodeField(int terrainTileNodesEdgeCount) {
-        terrainNodes = new TerrainNode[terrainTileNodesEdgeCount][terrainTileNodesEdgeCount];
-    }
-
-    @Deprecated
-    public void insertTerrainNode(int x, int y, TerrainNode terrainNode) {
-        terrainNodes[x][y] = terrainNode;
-    }
-
-    @Deprecated
-    public TerrainNode[][] getTerrainNodes() {
-        return terrainNodes;
-    }
-
-    @Deprecated
-    public void setTerrainNodes(TerrainNode[][] terrainNodes) {
-        this.terrainNodes = terrainNodes;
-    }
-
-    @Deprecated
-    public double getHeight() {
-        return height;
-    }
-
-    @Deprecated
-    public void setHeight(double height) {
-        this.height = height;
     }
 
     @SuppressWarnings("unused") // Used ba angular

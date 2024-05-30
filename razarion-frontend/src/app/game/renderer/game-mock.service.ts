@@ -16,7 +16,6 @@ import {
   GenericEditorFrontendProvider,
   GroundConfig,
   GroundSplattingConfig,
-  GroundTerrainTile,
   HarvesterType,
   I18nString,
   Index,
@@ -38,17 +37,14 @@ import {
   SelectionHandler,
   ShapeTransform,
   SlopeConfig,
-  SlopeGeometry,
   StatusProvider,
   TerrainEditorService,
   TerrainObjectConfig,
   TerrainObjectModel,
   TerrainObjectPosition,
-  TerrainSlopeTile,
   TerrainTile,
   TerrainTileObjectList,
   TerrainTypeService,
-  TerrainWaterTile,
   ThreeJsModelConfig,
   ThreeJsModelPackConfig,
   ThreeJsModelPackService,
@@ -672,33 +668,6 @@ export class GameMockService {
     return particleSystemConfig;
   }
 
-  private setupGeometry(slopeGeometryName: string, terrainSlopeTileJson: any): SlopeGeometry | null {
-    if (slopeGeometryName in terrainSlopeTileJson) {
-      let slopeGeometry = terrainSlopeTileJson[slopeGeometryName];
-      return new class implements SlopeGeometry {
-        positions: Float32Array = new Float32Array(slopeGeometry["positions"]);
-        norms: Float32Array = new Float32Array(slopeGeometry["norms"]);
-        uvs: Float32Array = new Float32Array(slopeGeometry["uvs"]);
-        slopeFactors: Float32Array = new Float32Array(slopeGeometry["slopeFactors"]);
-      };
-    } else {
-      return null;
-    }
-
-  }
-
-  private setupTerrainObjectModels(terrainObjectModelsJsons: any): TerrainObjectModel[] {
-    let terrainObjectModels: TerrainObjectModel[] = [];
-    terrainObjectModelsJsons.forEach((terrainObjectModelsJson: any) => {
-      terrainObjectModels.push(new class implements TerrainObjectModel {
-        terrainObjectId: number = terrainObjectModelsJson.terrainObjectId;
-        position: Vertex = GwtInstance.newVertex(terrainObjectModelsJson.position.x, terrainObjectModelsJson.position.y, terrainObjectModelsJson.position.z);
-        scale: Vertex | null = terrainObjectModelsJson.scale ? GwtInstance.newVertex(terrainObjectModelsJson.scale.x, terrainObjectModelsJson.scale.y, terrainObjectModelsJson.scale.z) : null;
-        rotation: Vertex | null = terrainObjectModelsJson.rotation ? GwtInstance.newVertex(terrainObjectModelsJson.rotation.x, terrainObjectModelsJson.rotation.y, terrainObjectModelsJson.rotation.z) : null;
-      });
-    });
-    return terrainObjectModels;
-  }
 
   createMeshContainers(): MeshContainer[] {
     let meshContainers: MeshContainer[] = [];
