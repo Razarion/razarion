@@ -677,18 +677,12 @@ public class WeldTestRenderer {
         gc.strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
         displayNodes(absolute, terrainShapeTile);
 
-        if (weldTestController.renderShapeFractionalSlope()) {
-            displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
-        }
         if (weldTestController.renderShapeTerrainObject()) {
             displayShapeTerrainObject(terrainShapeTile.getNativeTerrainShapeObjectLists());
         }
     }
 
     private void displayNodes(DecimalPosition absoluteTile, TerrainShapeTile terrainShapeTile) {
-        if (!terrainShapeTile.hasNodes()) {
-            return;
-        }
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode == null) {
                 return;

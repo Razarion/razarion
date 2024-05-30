@@ -9,9 +9,5 @@ import jsinterop.annotations.JsType;
  */
 @JsType(name = "NativeTerrainShapeTile", isNative = true, namespace = "com.btxtech.shared.json")
 public class NativeTerrainShapeTile {
-    public Double fullWaterLevel;
-    public NativeFractionalSlope[] fractionalSlopes;
-    public Double uniformGroundHeight;
-    public NativeTerrainShapeNode[][] nativeTerrainShapeNodes;
     public NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists;
 }

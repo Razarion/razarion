@@ -26,6 +26,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * on 18.06.2017.
  */
+@Deprecated
 public class TerrainShapeNode {
     public static final double DEFAULT_HEIGHT = 0;
     private static Logger logger = Logger.getLogger(TerrainShapeNode.class.getName());

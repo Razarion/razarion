@@ -7,14 +7,12 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.InterpolationUtils;
 
-import java.util.logging.Logger;
-
 /**
  * Created by Beat
  * on 19.06.2017.
  */
 public class SurfaceAccess {
-    final private static Logger LOGGER = Logger.getLogger(SurfaceAccess.class.getName());
+    // final private static Logger LOGGER = Logger.getLogger(SurfaceAccess.class.getName());
     private TerrainShapeManager terrainShape;
 
     public SurfaceAccess(TerrainShapeManager terrainShape) {
@@ -34,67 +32,6 @@ public class SurfaceAccess {
                 return interpolateHeightFromGroundSkeletonConfig(absolutePosition);
             }
 
-            @Override
-            public Double inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                switch (terrainShapeTile.getTerrainType()) {
-                    case LAND:
-                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeTile.getUniformGroundHeight();
-                    case WATER:
-                        return terrainShapeTile.getUniformGroundHeight();
-                    default:
-                        throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() for TerrainShapeTile at: " + absolutePosition + " TerrainType: " + terrainShapeTile.getTerrainType());
-                }
-            }
-
-            @Override
-            public Double inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                if (terrainShapeNode.getTerrainType() == null) {
-                    return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getGameEngineHeight();
-                }
-                switch (terrainShapeNode.getTerrainType()) {
-                    case LAND:
-                        if (terrainShapeNode.isFullGameEngineDriveway()) {
-                            DecimalPosition relative = TerrainUtil.toNodeAbsolute(absolutePosition.sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex).add(TerrainUtil.toTileAbsolute(tileIndex))));
-                            return InterpolationUtils.rectangleInterpolate(relative, terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL());
-                        } else {
-                            return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getGameEngineHeight();
-                        }
-                    case WATER:
-                        return terrainShapeNode.getGameEngineFullWaterLevel();
-                    case LAND_COAST:
-                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getGameEngineHeight();
-                    case WATER_COAST:
-                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getGameEngineHeight();
-                    case BLOCKED:
-                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getGameEngineHeight();
-                }
-                throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() TerrainShapeNode at: " + absolutePosition + " TerrainType: " + terrainShapeNode.getTerrainType());
-            }
-
-            @Override
-            public Double inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                if (terrainShapeSubNode.getTerrainType() == null) {
-                    return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
-                }
-                switch (terrainShapeSubNode.getTerrainType()) {
-                    case BLOCKED:
-                    case LAND:
-                        if (terrainShapeSubNode.isDriveway()) {
-                            DecimalPosition relative = absolutePosition.sub(TerrainUtil.toTileAbsolute(tileIndex)).sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex)).sub(TerrainUtil.toSubNodeAbsolute(nodeRelative, terrainShapeSubNode.getDepth()));
-                            DecimalPosition normalizedRelative = relative.divide(TerrainUtil.calculateSubNodeLength(terrainShapeSubNode.getDepth()));
-                            return InterpolationUtils.rectangleInterpolate(normalizedRelative, terrainShapeSubNode.getDrivewayHeightBL(), terrainShapeSubNode.getDrivewayHeightBR(), terrainShapeSubNode.getDrivewayHeightTR(), terrainShapeSubNode.getDrivewayHeightTL());
-                        } else {
-                            return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
-                        }
-                    case WATER:
-                        return terrainShapeSubNode.getHeightSafe();
-                    case LAND_COAST:
-                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
-                    case WATER_COAST:
-                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
-                }
-                throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() TerrainShapeSubNode at: " + absolutePosition + " TerrainType: " + terrainShapeNode.getTerrainType());
-            }
         });
         if (z == null) {
             throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() TerrainShapeNode at: " + absolutePosition + "  has no z-position");
@@ -107,31 +44,6 @@ public class SurfaceAccess {
             @Override
             public Vertex landNoTile(Index tileIndex) {
                 return interpolateNormFromGroundSkeletonConfig(absolutePosition);
-            }
-
-            @Override
-            public Vertex inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                return interpolateNormFromGroundSkeletonConfig(absolutePosition);
-            }
-
-            @Override
-            public Vertex inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                if (terrainShapeNode.isFullGameEngineDriveway()) {
-                    DecimalPosition relative = absolutePosition.sub(TerrainUtil.toTileAbsolute(tileIndex)).sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex));
-                    return interpolateNormFromGroundSkeletonConfig(relative, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL());
-                } else {
-                    return interpolateNormFromGroundSkeletonConfig(absolutePosition);
-                }
-            }
-
-            @Override
-            public Vertex inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                if (terrainShapeSubNode.isDriveway()) {
-                    DecimalPosition relative = absolutePosition.sub(TerrainUtil.toTileAbsolute(nodeRelativeIndex)).sub(tileRelative).sub(nodeRelative);
-                    return interpolateNormFromGroundSkeletonConfig(relative, TerrainUtil.calculateSubNodeLength(terrainShapeSubNode.getDepth()), terrainShapeSubNode.getDrivewayHeightBL(), terrainShapeSubNode.getDrivewayHeightBR(), terrainShapeSubNode.getDrivewayHeightTR(), terrainShapeSubNode.getDrivewayHeightTL());
-                } else {
-                    return interpolateNormFromGroundSkeletonConfig(absolutePosition);
-                }
             }
         });
     }

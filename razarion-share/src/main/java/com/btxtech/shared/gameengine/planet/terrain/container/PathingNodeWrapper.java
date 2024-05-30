@@ -89,97 +89,12 @@ public class PathingNodeWrapper {
     }
 
     private void provideSuccessors(AStarContext aStarContext, Index direction, Consumer<PathingNodeWrapper> northNodeHandler) {
-        if (nodeIndex != null && terrainShapeSubNode == null) {
-            Index neighborNodeIndex = nodeIndex.add(direction);
-            if (!pathingAccess.isNodeInBoundary(neighborNodeIndex)) {
-                return;
-            }
-            TerrainShapeNode neighborNode = pathingAccess.getTerrainShapeNode(neighborNodeIndex);
-            if (neighborNode == null) {
-                if (aStarContext.isNullTerrainTypeAllowed()) {
-                    northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, neighborNodeIndex));
-                }
-            } else {
-                neighborNode.outerDirectionCallback(aStarContext, direction, TerrainUtil.toNodeAbsolute(neighborNodeIndex), new TerrainShapeNode.DirectionConsumer() {
-                    @Override
-                    public void onTerrainShapeNode(TerrainShapeNode terrainShapeNode) {
-                        northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, neighborNodeIndex, terrainShapeNode));
-                    }
-
-                    @Override
-                    public void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition subNodePosition) {
-                        northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, subNodePosition, terrainShapeSubNode));
-                    }
-                });
-            }
-        } else if (terrainShapeSubNode != null && subNodePosition != null) {
-            double subNodeLength = TerrainUtil.calculateSubNodeLength(terrainShapeSubNode.getDepth());
-            DecimalPosition neighborSubNodePosition;
-            if (direction.getX() > 0) {
-                neighborSubNodePosition = subNodePosition.add(subNodeLength, 0);
-            } else if (direction.getX() < 0) {
-                neighborSubNodePosition = subNodePosition.sub(TerrainUtil.MIN_SUB_NODE_LENGTH, 0);
-            } else if (direction.getY() > 0) {
-                neighborSubNodePosition = subNodePosition.add(0, subNodeLength);
-            } else if (direction.getY() < 0) {
-                neighborSubNodePosition = subNodePosition.sub(0, TerrainUtil.MIN_SUB_NODE_LENGTH);
-            } else {
-                throw new IllegalStateException("PathingNodeWrapper.provideSuccessors() direction: " + direction);
-            }
-            if (!pathingAccess.isPositionInBoundary(neighborSubNodePosition)) {
-                return;
-            }
-            pathingAccess.getTerrainShape().terrainImpactCallback(neighborSubNodePosition, new TerrainImpactCallback<Void>() {
-                @Override
-                public Void landNoTile(Index tileIndex) {
-                    if (aStarContext.isNullTerrainTypeAllowed()) {
-                        northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.toNode(neighborSubNodePosition)));
-                    }
-                    return null;
-                }
-
-                @Override
-                public Void inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                    if (aStarContext.isAllowed(terrainShapeTile.getTerrainType())) {
-                        northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.toNode(neighborSubNodePosition)));
-                    }
-                    return null;
-                }
-
-                @Override
-                public Void inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                    if (aStarContext.isAllowed(terrainShapeNode.getTerrainType())) {
-                        northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.tileToNode(tileIndex).add(nodeRelativeIndex), terrainShapeNode));
-                    }
-                    return null;
-                }
-
-                @Override
-                public Void inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                    Index nodeIndex = TerrainUtil.tileToNode(tileIndex).add(nodeRelativeIndex);
-                    if (PathingNodeWrapper.this.terrainShapeSubNode.getDepth() < terrainShapeSubNode.getDepth()) {
-                        DecimalPosition correctedSubNodePosition = TerrainUtil.toSubNodeAbsolute(TerrainUtil.toNodeAbsolute(nodeIndex).add(nodeRelative), PathingNodeWrapper.this.terrainShapeSubNode.getDepth());
-                        pathingAccess.outerDirectionCallback(aStarContext, correctedSubNodePosition, PathingNodeWrapper.this.terrainShapeSubNode.getDepth(), direction, new TerrainShapeNode.DirectionConsumer() {
-                            @Override
-                            public void onTerrainShapeNode(TerrainShapeNode terrainShapeNode) {
-                                throw new IllegalStateException("PathingNodeWrapper.provideSuccessors()");
-                            }
-
-                            @Override
-                            public void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition subNodePosition) {
-                                northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, subNodePosition, terrainShapeSubNode));
-                            }
-                        });
-                    } else {
-                        if (aStarContext.isAllowed(terrainShapeSubNode.getTerrainType())) {
-                            northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.toSubNodeAbsolute(neighborSubNodePosition, terrainShapeSubNode.getDepth()), terrainShapeSubNode));
-                        }
-                    }
-                    return null;
-                }
-            });
-        } else {
-            throw new IllegalStateException("PathingNodeWrapper.provideNorthSuccessors()");
+        Index neighborNodeIndex = nodeIndex.add(direction);
+        if (!pathingAccess.isNodeInBoundary(neighborNodeIndex)) {
+            return;
+        }
+        if (aStarContext.isNullTerrainTypeAllowed()) {
+            northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, neighborNodeIndex));
         }
     }
 

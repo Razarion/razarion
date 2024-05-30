@@ -225,15 +225,9 @@ public class WeldTestController implements Initializable {
         System.out.println("-----------------------------------------------");
         System.out.println("position: " + position);
         System.out.println("Node index: " + toNode(position));
-        TerrainShapeNode terrainShapeNode = terrainService.getPathingAccess().getTerrainShapeNode(toNode(position));
         System.out.println("SurfaceAccess: interpolated Z: " + terrainService.getSurfaceAccess().getInterpolatedZ(position));
         System.out.println("Interpolated norm: " + terrainService.getSurfaceAccess().getInterpolatedNorm(position));
-        if (terrainShapeNode == null) {
-            System.out.println("No terrain shape node at: " + position);
-            return;
-        }
 //        System.out.println("RenderEngineHeight: " + terrainShapeNode.getRenderEngineHeight());
-        System.out.println("GameEngineHeight: " + terrainShapeNode.getGameEngineHeight());
 //        if (terrainShapeNode.isFullDriveway()) {
 //            System.out.println("getDrivewayHeightBL: " + terrainShapeNode.getDrivewayHeightBL());
 //            System.out.println("getDrivewayHeightBR: " + terrainShapeNode.getDrivewayHeightBR());

@@ -15,11 +15,11 @@ import java.util.Map;
  */
 public class AStar {
     private static final int MAX_CLOSED_LIST_SIZE = 100000;
-    private Map<PathingNodeWrapper, AStarNode> closedList = new HashMap<>();
-    private AStarOpenList openList = new AStarOpenList();
-    private PathingNodeWrapper startNode;
-    private AStarNode destinationNode;
-    private AStarContext aStarContext;
+    private final Map<PathingNodeWrapper, AStarNode> closedList = new HashMap<>();
+    private final AStarOpenList openList = new AStarOpenList();
+    private final PathingNodeWrapper startNode;
+    private final AStarNode destinationNode;
+    private final AStarContext aStarContext;
     private boolean pathFound;
     private List<PathingNodeWrapper> tilePath;
     private double smallestHeuristic = Double.MAX_VALUE;

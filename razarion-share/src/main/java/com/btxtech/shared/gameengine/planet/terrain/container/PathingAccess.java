@@ -4,13 +4,12 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -19,34 +18,14 @@ import java.util.Set;
  * on 19.06.2017.
  */
 public class PathingAccess {
-    private TerrainShapeManager terrainShape;
+    private final TerrainShapeManager terrainShape;
 
     public PathingAccess(TerrainShapeManager terrainShape) {
         this.terrainShape = terrainShape;
     }
 
     public TerrainType getTerrainType(DecimalPosition position) {
-        return terrainShape.terrainImpactCallback(position, new TerrainImpactCallback<TerrainType>() {
-            @Override
-            public TerrainType landNoTile(Index tileIndex) {
-                return TerrainType.LAND;
-            }
-
-            @Override
-            public TerrainType inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                return terrainShapeTile.getTerrainType();
-            }
-
-            @Override
-            public TerrainType inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return terrainShapeNode.getTerrainType();
-            }
-
-            @Override
-            public TerrainType inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return terrainShapeSubNode.getTerrainType();
-            }
-        });
+        return TerrainType.LAND; // TODO
     }
 
     public boolean isTerrainTypeAllowed(TerrainType terrainType, DecimalPosition position) {
@@ -72,15 +51,7 @@ public class PathingAccess {
     }
 
     public Set<Obstacle> getObstacles(DecimalPosition position, double radius) {
-        Set<Obstacle> obstacles = new HashSet<>();
-        Circle2D circle2D = new Circle2D(position, radius);
-        terrainShape.terrainNodesInCircleCallback(position, radius, terrainShapeNode -> {
-            if (terrainShapeNode.getObstacles() != null) {
-                terrainShapeNode.getObstacles().stream().filter(obstacle -> obstacle.isIntersect(circle2D)).forEach(obstacles::add);
-            }
-            return true;
-        });
-        return obstacles;
+        return Collections.emptySet(); // TODO
     }
 
     public boolean isInSight(DecimalPosition start, double radius, DecimalPosition target) {
@@ -105,24 +76,6 @@ public class PathingAccess {
                 return new PathingNodeWrapper(PathingAccess.this, TerrainUtil.toNode(terrainPosition));
             }
 
-            @Override
-            public PathingNodeWrapper inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                if (terrainShapeTile.getTerrainType() == TerrainType.LAND) {
-                    return new PathingNodeWrapper(PathingAccess.this, TerrainUtil.toNode(terrainPosition));
-                } else {
-                    return null;
-                }
-            }
-
-            @Override
-            public PathingNodeWrapper inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return new PathingNodeWrapper(PathingAccess.this, TerrainUtil.toNode(terrainPosition), terrainShapeNode);
-            }
-
-            @Override
-            public PathingNodeWrapper inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return new PathingNodeWrapper(PathingAccess.this, TerrainUtil.toSubNodeAbsolute(terrainPosition, terrainShapeSubNode.getDepth()), terrainShapeSubNode);
-            }
         });
     }
 
@@ -136,31 +89,7 @@ public class PathingAccess {
         return fieldIndex.getX() >= 0 && fieldIndex.getY() >= 0 && fieldIndex.getX() < terrainShape.getTileXCount() && fieldIndex.getY() < terrainShape.getTileYCount();
     }
 
-    public TerrainShapeNode getTerrainShapeNode(Index nodeIndex) {
-        return terrainShape.getTerrainShapeNode(nodeIndex);
-    }
-
     public TerrainShapeManager getTerrainShape() {
         return terrainShape;
-    }
-
-    public void outerDirectionCallback(AStarContext aStarContext, DecimalPosition subNodePosition, int destinationDepth, Index direction, TerrainShapeNode.DirectionConsumer directionConsumer) {
-        Index nodeIndex = TerrainUtil.toNode(subNodePosition);
-        TerrainShapeNode terrainShapeNode = getTerrainShapeNode(nodeIndex);
-
-        double length = TerrainUtil.calculateSubNodeLength(0);
-        DecimalPosition nodeRelative = subNodePosition.sub(TerrainUtil.toNodeAbsolute(nodeIndex));
-        TerrainShapeSubNode[] terrainShapeSubNodes = terrainShapeNode.getTerrainShapeSubNodes();
-        if (nodeRelative.getX() < length && nodeRelative.getY() < length) {
-            terrainShapeSubNodes[0].outerDirectionCallback(aStarContext, nodeRelative, subNodePosition, destinationDepth, direction, directionConsumer);
-        } else if (nodeRelative.getX() >= length && nodeRelative.getY() < length) {
-            terrainShapeSubNodes[1].outerDirectionCallback(aStarContext, nodeRelative.sub(length, 0), subNodePosition, destinationDepth, direction, directionConsumer);
-        } else if (nodeRelative.getX() >= length && nodeRelative.getY() >= length) {
-            terrainShapeSubNodes[2].outerDirectionCallback(aStarContext, nodeRelative.sub(length, length), subNodePosition, destinationDepth, direction, directionConsumer);
-        } else if (nodeRelative.getX() < length && nodeRelative.getY() >= length) {
-            terrainShapeSubNodes[3].outerDirectionCallback(aStarContext, nodeRelative.sub(0, length), subNodePosition, destinationDepth, direction, directionConsumer);
-        } else {
-            throw new IllegalArgumentException("PathingAccess.outerDirectionCallback()");
-        }
     }
 }

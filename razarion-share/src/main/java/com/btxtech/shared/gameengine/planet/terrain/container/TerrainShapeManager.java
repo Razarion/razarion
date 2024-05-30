@@ -1,29 +1,22 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
-import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeFractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
-import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeTile;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.ExceptionUtil;
-import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +32,7 @@ public class TerrainShapeManager {
     private DecimalPosition planetSize;
     private int tileXCount;
     private int tileYCount;
+
     public TerrainShapeManager() {
     }
 
@@ -69,25 +63,6 @@ public class TerrainShapeManager {
                         if (nativeTerrainShapeTile != null) {
                             TerrainShapeTile terrainShapeTile = new TerrainShapeTile();
                             terrainShapeTiles[x][y] = terrainShapeTile;
-                            terrainShapeTile.setRenderFullWaterLevel(nativeTerrainShapeTile.fullWaterLevel);
-                            terrainShapeTile.setUniformGroundHeight(nativeTerrainShapeTile.uniformGroundHeight);
-                            if (nativeTerrainShapeTile.fractionalSlopes != null) {
-                                for (NativeFractionalSlope nativeFractionalSlope : nativeTerrainShapeTile.fractionalSlopes) {
-                                    terrainShapeTile.addFractionalSlope(new FractionalSlope(nativeFractionalSlope));
-                                }
-                            }
-                            if (nativeTerrainShapeTile.nativeTerrainShapeNodes != null) {
-                                TerrainShapeNode[][] terrainShapeNodes = new TerrainShapeNode[TerrainUtil.TERRAIN_TILE_NODES_COUNT][TerrainUtil.TERRAIN_TILE_NODES_COUNT];
-                                for (int nodeX = 0; nodeX < TerrainUtil.TERRAIN_TILE_NODES_COUNT; nodeX++) {
-                                    for (int nodeY = 0; nodeY < TerrainUtil.TERRAIN_TILE_NODES_COUNT; nodeY++) {
-                                        NativeTerrainShapeNode nativeTerrainShapeNode = nativeTerrainShapeTile.nativeTerrainShapeNodes[nodeX][nodeY];
-                                        if (nativeTerrainShapeNode != null) {
-                                            terrainShapeNodes[nodeX][nodeY] = new TerrainShapeNode(nativeTerrainShapeNode);
-                                        }
-                                    }
-                                }
-                                terrainShapeTile.setTerrainShapeNodes(terrainShapeNodes);
-                            }
                             terrainShapeTile.setNativeTerrainShapeObjectLists(nativeTerrainShapeTile.nativeTerrainShapeObjectLists);
                         }
                     }
@@ -136,33 +111,12 @@ public class TerrainShapeManager {
         return terrainShapeTiles[terrainTileIndex.getX()][terrainTileIndex.getY()];
     }
 
-    public TerrainShapeNode getTerrainShapeNode(Index terrainNodeIndex) {
-        Index terrainTileIndex = TerrainUtil.nodeToTile(terrainNodeIndex);
-        TerrainShapeTile terrainShapeTile = getTerrainShapeTile(terrainTileIndex);
-        if (terrainShapeTile == null) {
-            return null;
-        }
-        Index nodeRelativeIndex = terrainNodeIndex.sub(TerrainUtil.tileToNode(terrainTileIndex));
-        return terrainShapeTile.getTerrainShapeNode(nodeRelativeIndex);
-    }
-
     public TerrainShapeTile getOrCreateTerrainShapeTile(Index terrainTileIndex) {
         TerrainShapeTile terrainShapeTile = getTerrainShapeTile(terrainTileIndex);
         if (terrainShapeTile == null) {
             terrainShapeTile = createTerrainShapeTile(terrainTileIndex);
         }
         return terrainShapeTile;
-    }
-
-    public TerrainShapeNode getOrCreateTerrainShapeNode(Index terrainNodeIndex) {
-        TerrainShapeNode terrainShapeNode = getTerrainShapeNode(terrainNodeIndex);
-        if (terrainShapeNode != null) {
-            return terrainShapeNode;
-        }
-        Index terrainTileIndex = TerrainUtil.nodeToTile(terrainNodeIndex);
-        TerrainShapeTile terrainShapeTile = getOrCreateTerrainShapeTile(terrainTileIndex);
-        Index nodeRelativeIndex = terrainNodeIndex.sub(TerrainUtil.tileToNode(terrainTileIndex));
-        return terrainShapeTile.createTerrainShapeNode(nodeRelativeIndex);
     }
 
     private TerrainShapeTile createTerrainShapeTile(Index terrainTileIndex) {
@@ -184,55 +138,8 @@ public class TerrainShapeManager {
     }
 
     public <T> T terrainImpactCallback(DecimalPosition absolutePosition, TerrainImpactCallback<T> terrainImpactCallback) {
-        Index tileIndex = TerrainUtil.toTile(absolutePosition);
-        TerrainShapeTile terrainShapeTile = getTerrainShapeTile(tileIndex);
-        if (terrainShapeTile == null) {
-            // Land ground zero
-            return terrainImpactCallback.landNoTile(tileIndex);
-        }
-        if (!terrainShapeTile.hasNodes()) {
-            return terrainImpactCallback.inTile(terrainShapeTile, tileIndex);
-        }
-        DecimalPosition tileRelative = absolutePosition.sub(TerrainUtil.toTileAbsolute(tileIndex));
-        Index nodeRelativeIndex = TerrainUtil.toNode(tileRelative);
-        TerrainShapeNode terrainShapeNode = terrainShapeTile.getTerrainShapeNode(nodeRelativeIndex);
-        if (terrainShapeNode == null) {
-            return terrainImpactCallback.inTile(terrainShapeTile, tileIndex);
-        }
-
-        if (!terrainShapeNode.hasSubNodes()) {
-            return terrainImpactCallback.inNode(terrainShapeNode, nodeRelativeIndex, tileRelative, tileIndex);
-        }
-
-        DecimalPosition nodeRelative = tileRelative.sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex));
-        TerrainShapeSubNode terrainShapeSubNode = terrainShapeNode.getTerrainShapeSubNode(nodeRelative);
-        if (terrainShapeSubNode != null) {
-            return terrainImpactCallback.inSubNode(terrainShapeSubNode, terrainShapeNode, nodeRelative, nodeRelativeIndex, tileRelative, tileIndex);
-        } else {
-            return terrainImpactCallback.inNode(terrainShapeNode, nodeRelativeIndex, tileRelative, tileIndex);
-        }
+        return terrainImpactCallback.landNoTile(TerrainUtil.toTile(absolutePosition));
     }
-
-    /**
-     * Get all nodes touching the circle
-     *
-     * @param absolutePosition center
-     * @param radius           radius
-     * @param nodeCallback     callback. Return false to stop iteration
-     */
-
-    public void terrainNodesInCircleCallback(DecimalPosition absolutePosition, double radius, Function<TerrainShapeNode, Boolean> nodeCallback) {
-        List<Index> nodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(absolutePosition, radius), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-        for (Index nodeIndex : nodeIndices) {
-            TerrainShapeNode terrainShapeNode = getTerrainShapeNode(nodeIndex);
-            if (terrainShapeNode != null) {
-                if (!nodeCallback.apply(terrainShapeNode)) {
-                    return;
-                }
-            }
-        }
-    }
-
 
     public PathingAccess getPathingAccess() {
         return pathingAccess;
@@ -243,18 +150,7 @@ public class TerrainShapeManager {
     }
 
     public boolean isSightBlocked(Line line) {
-        List<Index> nodeIndices = GeometricUtil.rasterizeLine(line, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-        for (Index nodeIndex : nodeIndices) {
-            TerrainShapeNode terrainShapeNode = getTerrainShapeNode(nodeIndex);
-            if (terrainShapeNode != null && terrainShapeNode.getObstacles() != null) {
-                for (Obstacle obstacle : terrainShapeNode.getObstacles()) {
-                    if (obstacle.isPiercing(line)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return false; // TODO
     }
 
     public Rectangle2D getPlayGround() {
