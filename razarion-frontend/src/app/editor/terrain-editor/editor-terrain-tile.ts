@@ -1,8 +1,7 @@
-import {Index} from "../../gwtangular/GwtAngularFacade";
-import {Vector3, VertexBuffer, VertexData} from "@babylonjs/core";
-import {BabylonTerrainTileImpl} from 'src/app/game/renderer/babylon-terrain-tile.impl';
-import {UpDownMode} from "./shape-terrain-editor.component";
-import {AbstractBrush} from "./brushes/abstract-brush";
+import { Index } from "../../gwtangular/GwtAngularFacade";
+import { Vector3, VertexBuffer, VertexData } from "@babylonjs/core";
+import { BabylonTerrainTileImpl } from 'src/app/game/renderer/babylon-terrain-tile.impl';
+import { AbstractBrush } from "./brushes/abstract-brush";
 
 export class EditorTerrainTile {
   private positions?: Vector3[];
@@ -64,6 +63,20 @@ export class EditorTerrainTile {
     if (!this.positions) {
       return;
     }
+    var count = 0;
+    var heightSum = 0;
+    for (let i = 0; i < this.positions.length; i++) {
+      let oldPosition = this.positions[i];
+      if (!oldPosition) {
+        continue;
+      }
+      if (brush.isInRadius(mousePosition, oldPosition)) {
+        count++;
+        heightSum += oldPosition.y;
+      }
+    }
+    var avgHeight = count === 0 ? undefined : heightSum / count;
+
     let changedPosition = [];
     let changed = false;
     for (let i = 0; i < this.positions.length; i++) {
@@ -71,7 +84,7 @@ export class EditorTerrainTile {
       if (!oldPosition) {
         continue;
       }
-      let newHeight = brush.calculateHeight(mousePosition, oldPosition);
+      let newHeight = brush.calculateHeight(mousePosition, oldPosition, avgHeight);
       if (newHeight || newHeight === 0) {
         this.positions[i].y = newHeight;
         changed = true;

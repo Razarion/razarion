@@ -128,7 +128,8 @@ import { UserMgmtComponent } from './editor/user-mgmt/user-mgmt.component';
 import { ActionService } from './game/action.service';
 import {TerrainEditorComponent} from "./editor/terrain-editor/terrain-editor.component";
 import {ShapeTerrainEditorComponent} from "./editor/terrain-editor/shape-terrain-editor.component";
-import { FixHeightBrushComponentComponent } from './editor/terrain-editor/brushes/fix-height-brush.component.component';
+import { FixHeightBrushComponent } from './editor/terrain-editor/brushes/fix-height-brush.component';
+import {FlattenBrushComponent} from "./editor/terrain-editor/brushes/flattem-brush.component";
 
 @NgModule({
   declarations: [
@@ -210,7 +211,8 @@ import { FixHeightBrushComponentComponent } from './editor/terrain-editor/brushe
     UserMgmtComponent,
     TerrainEditorComponent,
     ShapeTerrainEditorComponent,
-    FixHeightBrushComponentComponent
+    FixHeightBrushComponent,
+    FlattenBrushComponent
   ],
   imports: [
     BrowserModule,

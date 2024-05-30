@@ -207,7 +207,7 @@ export class GameComponent implements OnInit, ScreenCover {
                 babylonBaseItem1.setConstructing(0.01);
                 babylonBaseItem1.setHealth(0.99);
                 // babylonBaseItem1.mark(MarkerConfig);
-                
+
                 let x = 20;
                 let y = 20;
                 setInterval(() => {
@@ -352,11 +352,11 @@ export class GameComponent implements OnInit, ScreenCover {
               //     outOfViewDistanceFromCamera = 3;
               //     outOfViewSize = 1;
               //   });
-               
-              // setTimeout(() =>{
-              //   this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
-              // }, 2000)
-              
+
+              setTimeout(() =>{
+                 this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+                 }, 2000)
+
             });
           });
         });

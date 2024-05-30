@@ -1,4 +1,13 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, OnDestroy, OnInit, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ComponentFactoryResolver,
+  OnDestroy,
+  OnInit,
+  Type,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { GwtAngularService } from "../../gwtangular/GwtAngularService";
 import { MessageService } from "primeng/api";
@@ -14,7 +23,8 @@ import { GwtInstance } from 'src/app/gwtangular/GwtInstance';
 import { TerrainEditorControllerClient, TerrainHeightMapControllerClient } from 'src/app/generated/razarion-share';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { AbstractBrush } from "./brushes/abstract-brush";
-import { FixHeightBrushComponentComponent } from './brushes/fix-height-brush.component.component';
+import { FixHeightBrushComponent } from './brushes/fix-height-brush.component';
+import { FlattenBrushComponent } from "./brushes/flattem-brush.component";
 
 export enum UpDownMode {
   UP = 1,
@@ -41,7 +51,8 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   @ViewChild(' brushContainer', { read: ViewContainerRef })
   brushContainer?: ViewContainerRef;
   brushOptions = [
-    { label: 'Load Component', value: 'load' }
+    { label: 'Fix height', value: FixHeightBrushComponent },
+    { label: 'Flatten', value: FlattenBrushComponent }
   ];
   selectedBrush?: string;
 
@@ -94,7 +105,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     Promise.resolve().then(() => {
-      this.setupBurshComponent(FixHeightBrushComponentComponent);
+      this.setupBrushComponent(FixHeightBrushComponent);
     });
   }
 
@@ -108,16 +119,15 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   onBrushChange(event: any) {
-    if (event.value === 'load') {
-      this.setupBurshComponent(FixHeightBrushComponentComponent);
-    }
+    this.setupBrushComponent(event.value);
   }
 
-  private setupBurshComponent(type: Type<AbstractBrush>) {
+  private setupBrushComponent(type: Type<AbstractBrush>) {
     const componentFactory = this.resolver.resolveComponentFactory(type);
     this.brushContainer!.clear();
     let componentRef = this.brushContainer!.createComponent(componentFactory);
     this.currentBrush = componentRef.instance;
+    this.currentBrush.shapeTerrainEditorComponent = this;
   }
 
   onWireframeChanged(): void {

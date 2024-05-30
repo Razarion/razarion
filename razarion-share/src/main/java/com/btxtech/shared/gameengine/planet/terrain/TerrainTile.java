@@ -108,6 +108,7 @@ public class TerrainTile {
         this.height = height;
     }
 
+    @SuppressWarnings("unused") // Used ba angular
     public TerrainTileObjectList[] getTerrainTileObjectLists() {
         return terrainTileObjectLists;
     }
@@ -153,6 +154,7 @@ public class TerrainTile {
         this.groundHeightMap = groundHeightMap;
     }
 
+    @SuppressWarnings("unused") // Used ba angular
     public TerrainTile groundHeightMap(Uint16ArrayEmu groundHeightMap) {
         setGroundHeightMap(groundHeightMap);
         return this;

@@ -50,7 +50,7 @@ public class TerrainShapeManager {
         terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
         TerrainShapeManagerSetup terrainShapeSetup = new TerrainShapeManagerSetup(this, terrainTypeService, alarmService);
         // terrainShapeSetup.processSlopes(terrainSlopePositions);
-        // terrainShapeSetup.processTerrainObject(terrainObjectPositions);
+        terrainShapeSetup.processTerrainObject(terrainObjectPositions);
         terrainShapeSetup.finish();
         logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getId());
     }
