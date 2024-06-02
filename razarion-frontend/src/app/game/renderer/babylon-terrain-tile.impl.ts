@@ -63,15 +63,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.groundMesh.parent = this.container;
     this.groundMesh.actionManager = actionManager;
 
-    NodeMaterial.ParseFromFileAsync(
-      "Ground materail",
-      "/assets/nodeMaterial_land.json",
-      this.rendererService.getScene()
-    ).then(nodeMaterial => {
-      this.groundMesh!.material = nodeMaterial;
-    }).catch(reason => {
-      console.error(`Load NodeMaterial failed. Reason: ${reason}`);
-    })
+    let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
+    let groundNodeMaterial = babylonModelService.getNodeMaterial(groundConfig.getTopThreeJsMaterial());
+    this.groundMesh!.material = groundNodeMaterial;
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 

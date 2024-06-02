@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
+import com.btxtech.shared.mocks.TestUint16Array;
 import com.btxtech.shared.system.alarm.AlarmService;
 
 import javax.inject.Inject;
@@ -50,7 +51,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
 
     @Override
     public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
-        throw new UnsupportedOperationException();
+        return new TestUint16Array();
     }
 
     public void setPlanetConfig(PlanetConfig planetConfig) {

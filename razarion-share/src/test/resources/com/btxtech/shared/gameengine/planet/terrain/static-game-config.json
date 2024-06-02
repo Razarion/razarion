@@ -1,10 +1,7 @@
 {
   "groundConfigs" : [ {
     "id" : 1,
-    "topThreeJsMaterial" : 5
-  }, {
-    "id" : 2,
-    "topThreeJsMaterial" : 11
+    "topThreeJsMaterial" : 60
   } ],
   "waterConfigs" : [ {
     "id" : 1,
@@ -18,92 +15,7 @@
     "distortionAnimationSeconds" : 0.0,
     "material" : 22
   } ],
-  "slopeConfigs" : [ {
-    "id" : 1,
-    "internalName" : "RI Slope",
-    "slopeShapes" : [ {
-      "position" : {
-        "x" : 0.0,
-        "y" : 0.0
-      },
-      "slopeFactor" : 1.0
-    }, {
-      "position" : {
-        "x" : 0.0,
-        "y" : 0.5
-      },
-      "slopeFactor" : 1.0
-    }, {
-      "position" : {
-        "x" : 0.5,
-        "y" : 0.5
-      },
-      "slopeFactor" : 1.0
-    } ],
-    "horizontalSpace" : 5.0,
-    "outerLineGameEngine" : 0.0,
-    "innerLineGameEngine" : 0.5,
-    "coastDelimiterLineGameEngine" : 0.0,
-    "interpolateNorm" : false,
-    "threeJsMaterial" : 7
-  }, {
-    "id" : 2,
-    "internalName" : "Beach",
-    "slopeShapes" : [ {
-      "slopeFactor" : 0.0
-    }, {
-      "position" : {
-        "x" : 2.0,
-        "y" : 0.0
-      },
-      "slopeFactor" : 1.0
-    }, {
-      "position" : {
-        "x" : 4.0,
-        "y" : -0.2
-      },
-      "slopeFactor" : 1.0
-    }, {
-      "position" : {
-        "x" : 6.0,
-        "y" : -0.4
-      },
-      "slopeFactor" : 1.0
-    }, {
-      "position" : {
-        "x" : 8.0,
-        "y" : -0.6
-      },
-      "slopeFactor" : 0.5
-    }, {
-      "position" : {
-        "x" : 10.0,
-        "y" : -0.8
-      },
-      "slopeFactor" : 0.0
-    }, {
-      "position" : {
-        "x" : 12.0,
-        "y" : -1.0
-      },
-      "slopeFactor" : 0.0
-    }, {
-      "position" : {
-        "x" : 14.0,
-        "y" : -1.2
-      },
-      "slopeFactor" : 0.0
-    } ],
-    "horizontalSpace" : 6.0,
-    "outerLineGameEngine" : 8.0,
-    "innerLineGameEngine" : 1.0,
-    "coastDelimiterLineGameEngine" : 0.5,
-    "groundConfigId" : 2,
-    "waterConfigId" : 1,
-    "interpolateNorm" : true,
-    "threeJsMaterial" : 15,
-    "shallowWaterThreeJsMaterial" : 23
-  } ],
+  "slopeConfigs" : [ ],
   "terrainObjectConfigs" : [ {
     "id" : 1,
     "internalName" : "banana_plant",
@@ -462,33 +374,8 @@
     "type" : "GLTF",
     "disabled" : false
   }, {
-    "id" : 7,
-    "internalName" : "RI Slope",
-    "type" : "NODES_MATERIAL",
-    "disabled" : false
-  }, {
-    "id" : 15,
-    "internalName" : "Slope Beach",
-    "type" : "NODES_MATERIAL",
-    "disabled" : false
-  }, {
-    "id" : 11,
-    "internalName" : "Ground Water",
-    "type" : "NODES_MATERIAL",
-    "disabled" : false
-  }, {
-    "id" : 5,
-    "internalName" : "Ground",
-    "type" : "NODES_MATERIAL",
-    "disabled" : false
-  }, {
     "id" : 22,
     "internalName" : "Water",
-    "type" : "NODES_MATERIAL",
-    "disabled" : false
-  }, {
-    "id" : 23,
-    "internalName" : "Shallow Water",
     "type" : "NODES_MATERIAL",
     "disabled" : false
   }, {
@@ -535,6 +422,11 @@
   }, {
     "id" : 55,
     "internalName" : "Health Bar Material",
+    "type" : "NODES_MATERIAL",
+    "disabled" : false
+  }, {
+    "id" : 60,
+    "internalName" : "Height Map",
     "type" : "NODES_MATERIAL",
     "disabled" : false
   } ],

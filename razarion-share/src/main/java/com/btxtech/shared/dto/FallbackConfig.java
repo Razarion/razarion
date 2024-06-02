@@ -325,6 +325,7 @@ public final class FallbackConfig {
         planetConfig.setSize(new DecimalPosition(960, 960));
         planetConfig.setStartBaseItemTypeId(BUILDER_ITEM_TYPE_ID);
         planetConfig.setGroundConfigId(GROUND_CONFIG_ID);
+        planetConfig.setWaterConfigId(WATER_CONFIG_ID);
         return planetConfig;
     }
 

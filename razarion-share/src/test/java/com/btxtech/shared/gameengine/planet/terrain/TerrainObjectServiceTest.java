@@ -7,7 +7,6 @@ import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -34,9 +33,8 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
     @Test
     @Ignore
     public void testTerrainObjectTileGeneration4Tiles() {
-        List<GroundConfig> groundConfig = Arrays.asList(
-                new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(5),
-                new GroundConfig().id(2).topThreeJsMaterial(11));
+        List<GroundConfig> groundConfig = Collections.singletonList(
+                new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(60));
 
         List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig()
                 .id(WATER_CONFIG_ID)
@@ -46,42 +44,6 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
 
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
         // Razarion Industries base
-        SlopeConfig razarionIndustriesConfig = new SlopeConfig();
-        razarionIndustriesConfig.id(1);
-        razarionIndustriesConfig.setInternalName("RI Slope");
-        razarionIndustriesConfig.horizontalSpace(5);
-        razarionIndustriesConfig.setThreeJsMaterial(7);
-        razarionIndustriesConfig.setInterpolateNorm(false);
-        razarionIndustriesConfig.setSlopeShapes(Arrays.asList(
-                new SlopeShape().position(new DecimalPosition(0, 0)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(0, 0.5)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(0.5, 0.5)).slopeFactor(1)));
-
-        razarionIndustriesConfig.outerLineGameEngine(0).innerLineGameEngine(0.5);
-        slopeConfigs.add(razarionIndustriesConfig);
-        // Beach
-        SlopeConfig beachConfig = new SlopeConfig();
-        beachConfig.id(2);
-        beachConfig.setInternalName("Beach");
-        beachConfig.setWaterConfigId(WATER_CONFIG_ID);
-        beachConfig.horizontalSpace(6);
-        beachConfig.setThreeJsMaterial(15);
-        beachConfig.setGroundConfigId(2);
-        beachConfig.setInterpolateNorm(true);
-        beachConfig.setSlopeShapes(Arrays.asList(
-                new SlopeShape().slopeFactor(0),
-                new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(4, -0.2)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(6, -0.4)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(8, -0.6)).slopeFactor(0.5),
-                new SlopeShape().position(new DecimalPosition(10, -0.8)).slopeFactor(0),
-                new SlopeShape().position(new DecimalPosition(12, -1)).slopeFactor(0),
-                new SlopeShape().position(new DecimalPosition(14, -1.2)).slopeFactor(0)));
-
-        beachConfig.outerLineGameEngine(8).innerLineGameEngine(1).coastDelimiterLineGameEngine(0.5);
-        beachConfig.setShallowWaterThreeJsMaterial(23);
-        slopeConfigs.add(beachConfig);
-
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         // Beach
         TerrainSlopePosition beachPosition = new TerrainSlopePosition();
@@ -113,12 +75,7 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
                 new ThreeJsModelConfig().id(49).internalName("Tropical Vegetation Pack 2").type(ThreeJsModelConfig.Type.GLTF),
                 new ThreeJsModelConfig().id(48).internalName("Rocks and Boulders").type(ThreeJsModelConfig.Type.GLTF),
-                new ThreeJsModelConfig().id(7).internalName("RI Slope").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(15).internalName("Slope Beach").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(11).internalName("Ground Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(5).internalName("Ground").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(22).internalName("Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(23).internalName("Shallow Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(44).internalName("[VC] Wheels").type(ThreeJsModelConfig.Type.GLTF),
                 new ThreeJsModelConfig().id(42).internalName("[VC] WheelsW").type(ThreeJsModelConfig.Type.GLTF),
                 new ThreeJsModelConfig().id(41).internalName("[VC] Vehicles main part").type(ThreeJsModelConfig.Type.GLTF).nodeMaterialId(46),
@@ -127,7 +84,8 @@ public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
                 new ThreeJsModelConfig().id(46).internalName("[VC] Node Material Vehicles main part").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
                 new ThreeJsModelConfig().id(50).internalName("Buildup Beam").type(ThreeJsModelConfig.Type.PARTICLE_SYSTEM_JSON),
                 new ThreeJsModelConfig().id(54).internalName("Progress Bar Material").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(55).internalName("Health Bar Material").type(ThreeJsModelConfig.Type.NODES_MATERIAL)
+                new ThreeJsModelConfig().id(55).internalName("Health Bar Material").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
+                new ThreeJsModelConfig().id(60).internalName("Height Map").type(ThreeJsModelConfig.Type.NODES_MATERIAL)
         );
 
         List<ThreeJsModelPackConfig> threeJsModelPackConfigs = Arrays.asList(
