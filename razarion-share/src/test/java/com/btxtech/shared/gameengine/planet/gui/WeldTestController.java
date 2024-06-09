@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.TestCaseGenerator;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -225,8 +224,8 @@ public class WeldTestController implements Initializable {
         System.out.println("-----------------------------------------------");
         System.out.println("position: " + position);
         System.out.println("Node index: " + toNode(position));
-        System.out.println("SurfaceAccess: interpolated Z: " + terrainService.getSurfaceAccess().getInterpolatedZ(position));
-        System.out.println("Interpolated norm: " + terrainService.getSurfaceAccess().getInterpolatedNorm(position));
+//        System.out.println("SurfaceAccess: interpolated Z: " + terrainService.getSurfaceAccess().getInterpolatedZ(position));
+//        System.out.println("Interpolated norm: " + terrainService.getSurfaceAccess().getInterpolatedNorm(position));
 //        System.out.println("RenderEngineHeight: " + terrainShapeNode.getRenderEngineHeight());
 //        if (terrainShapeNode.isFullDriveway()) {
 //            System.out.println("getDrivewayHeightBL: " + terrainShapeNode.getDrivewayHeightBL());

@@ -30,11 +30,11 @@ public class MoveTest extends BaseBasicTest {
         showDisplay();
         tickPlanetServiceBaseServiceActive();
         permSlave.tickPlanetServiceBaseServiceActive();
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(40, 144), builder.getSyncPhysicalArea().getPosition2d(), 0.5);
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(40, 144), builder.getSyncPhysicalArea().getPosition(), 0.5);
         Assert.assertNull(builder.getSyncPhysicalMovable().getVelocity());
 
         SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(40, 144), slaveBuilder.getSyncPhysicalArea().getPosition2d(), 0.5);
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(40, 144), slaveBuilder.getSyncPhysicalArea().getPosition(), 0.5);
         Assert.assertNull(slaveBuilder.getSyncPhysicalMovable().getVelocity());
     }
 
@@ -53,11 +53,11 @@ public class MoveTest extends BaseBasicTest {
         // showDisplay();
         tickPlanetServiceBaseServiceActive();
         permSlave.tickPlanetServiceBaseServiceActive();
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(152, 32), builder.getSyncPhysicalArea().getPosition2d(), 0.5);
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(152, 32), builder.getSyncPhysicalArea().getPosition(), 0.5);
         Assert.assertNull(builder.getSyncPhysicalMovable().getVelocity());
 
         SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(152, 32), slaveBuilder.getSyncPhysicalArea().getPosition2d(), 0.5);
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(152, 32), slaveBuilder.getSyncPhysicalArea().getPosition(), 0.5);
         Assert.assertNull(slaveBuilder.getSyncPhysicalMovable().getVelocity());
     }
 
@@ -80,11 +80,11 @@ public class MoveTest extends BaseBasicTest {
         permSlave.tickPlanetServiceBaseServiceActive();
 
         // showDisplay();
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(184, 120), builder.getSyncPhysicalArea().getPosition2d(), 0.5);
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(184, 120), builder.getSyncPhysicalArea().getPosition(), 0.5);
         Assert.assertNull(builder.getSyncPhysicalMovable().getVelocity());
 
         SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(184, 120), slaveBuilder.getSyncPhysicalArea().getPosition2d(), 0.5);
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(184, 120), slaveBuilder.getSyncPhysicalArea().getPosition(), 0.5);
         Assert.assertNull(slaveBuilder.getSyncPhysicalMovable().getVelocity());
     }
 

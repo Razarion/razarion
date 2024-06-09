@@ -45,7 +45,7 @@ public class Orca {
 
     public Orca(SyncPhysicalMovable syncPhysicalMovable) {
         this.syncPhysicalMovable = syncPhysicalMovable;
-        position = syncPhysicalMovable.getPosition2d();
+        position = syncPhysicalMovable.getPosition();
         radius = syncPhysicalMovable.getRadius();
         preferredVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity());
         speed = preferredVelocity.magnitude();
@@ -58,7 +58,7 @@ public class Orca {
         if (other instanceof SyncPhysicalMovable) {
             otherVelocity = ((SyncPhysicalMovable) other).getPreferredVelocity();
             if (otherVelocity != null) {
-                DecimalPosition relativePosition = position.sub(other.getPosition2d());
+                DecimalPosition relativePosition = position.sub(other.getPosition());
                 if (relativePosition.normalize().dotProduct(preferredVelocity.normalize()) > 0.0) {
                     // Ignore pusher from directly behind. We can't do anything against them.
                     return;
@@ -66,7 +66,7 @@ public class Orca {
                 reciprocalFactor = 0.5;
             }
         }
-        addOrcaLine(other.getPosition2d(), otherVelocity, other.getRadius(), reciprocalFactor);
+        addOrcaLine(other.getPosition(), otherVelocity, other.getRadius(), reciprocalFactor);
     }
 
     public void add(ObstacleTerrainObject obstacleTerrainObject) {

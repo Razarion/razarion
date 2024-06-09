@@ -863,7 +863,7 @@ public class WeldTestRenderer {
         if (!syncPhysicalArea.hasPosition()) {
             return;
         }
-        DecimalPosition position = syncPhysicalArea.getPosition2d();
+        DecimalPosition position = syncPhysicalArea.getPosition();
         if (syncItem instanceof SyncBaseItem) {
             gc.setFill(BASE_ITEM_TYPE_COLOR);
         } else if (syncItem instanceof SyncResourceItem) {
@@ -874,13 +874,13 @@ public class WeldTestRenderer {
             throw new IllegalArgumentException("Unknown SyncItem: " + syncItem);
         }
         if (syncItem.getSyncPhysicalArea().canMove()) {
-            fillDirectionMarker(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
+            fillDirectionMarker(syncItem.getSyncPhysicalArea().getPosition(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
             gc.setStroke(BASE_ITEM_TYPE_LINE_COLOR);
             gc.setLineWidth(0.1);
-            strokeDirectionMarker(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
+            strokeDirectionMarker(syncItem.getSyncPhysicalArea().getPosition(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
             gc.setStroke(BASE_ITEM_TYPE_HEADING_COLOR);
             gc.setLineWidth(0.5);
-            createHeadingLine(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
+            createHeadingLine(syncItem.getSyncPhysicalArea().getPosition(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
         } else {
             gc.fillOval(position.getX() - syncPhysicalArea.getRadius(), position.getY() - syncPhysicalArea.getRadius(), syncPhysicalArea.getRadius() * 2, syncPhysicalArea.getRadius() * 2);
         }
@@ -888,12 +888,7 @@ public class WeldTestRenderer {
         if (syncItem instanceof SyncBaseItem) {
             SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
             if (syncBaseItem.getSyncWeapon() != null) {
-                Matrix4 matrix4 = syncBaseItem.getSyncWeapon().createTurretMatrix();
-                DecimalPosition canonStart = matrix4.multiply(Vertex.ZERO, 1.0).toXY();
-                DecimalPosition canonEnd = matrix4.multiply(syncBaseItem.getSyncWeapon().getWeaponType().getTurretType().getMuzzlePosition(), 1.0).toXY();
-                gc.setStroke(BASE_ITEM_TYPE_WEAPON_COLOR);
-                gc.setLineWidth(0.5);
-                gc.strokeLine(canonStart.getX(), canonStart.getY(), canonEnd.getX(), canonEnd.getY());
+                // TODO
             }
             if (syncBaseItem.getSyncPhysicalArea().canMove()) {
                 Path path = syncBaseItem.getSyncPhysicalMovable().getPath();
@@ -901,7 +896,7 @@ public class WeldTestRenderer {
                     strokeCurveDecimalPosition(path.getWayPositions(), 0.1, Color.CADETBLUE, true);
                     gc.setStroke(Color.BLUEVIOLET);
                     gc.setLineWidth(0.5);
-                    gc.strokeLine(syncBaseItem.getSyncPhysicalArea().getPosition2d().getX(), syncBaseItem.getSyncPhysicalArea().getPosition2d().getY(), path.getCurrentWayPoint().getX(), path.getCurrentWayPoint().getY());
+                    gc.strokeLine(syncBaseItem.getSyncPhysicalArea().getPosition().getX(), syncBaseItem.getSyncPhysicalArea().getPosition().getY(), path.getCurrentWayPoint().getX(), path.getCurrentWayPoint().getY());
                 }
             }
         }

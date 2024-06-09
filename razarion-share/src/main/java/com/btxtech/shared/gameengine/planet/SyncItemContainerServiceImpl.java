@@ -259,7 +259,6 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
             }
             lastItemId++;
         }
-        syncItem.getSyncPhysicalArea().setupPosition3d();
     }
 
     private void initAndAddSlave(ItemType itemType, int syncItemId, SyncItem syncItem, SyncPhysicalArea syncPhysicalArea) {
@@ -270,9 +269,6 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
                 throw new IllegalArgumentException("SyncItemContainerService.initAndAddSlave(). Id is not free. New: " + syncItem + " old: " + old);
             }
             lastItemId = Math.max(lastItemId + 1, syncItemId + 1);
-        }
-        if (syncItem.getSyncPhysicalArea().hasPosition()) {
-            syncItem.getSyncPhysicalArea().setupPosition3d();
         }
     }
 
@@ -485,7 +481,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
                     logger.severe("SyncItemContainerService.afterPathingServiceTick() Received SyncBaseItem which can not move");
                     return;
                 }
-                onPositionChanged(syncBaseItem, syncBaseItem.getSyncPhysicalMovable().getOldPosition(), syncBaseItem.getSyncPhysicalMovable().getPosition2d());
+                onPositionChanged(syncBaseItem, syncBaseItem.getSyncPhysicalMovable().getOldPosition(), syncBaseItem.getSyncPhysicalMovable().getPosition());
             });
             pathingChangedItem.clear();
         }
@@ -497,7 +493,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
                 return;
             }
         }
-        Index cellIndex = position2Index(syncItem.getSyncPhysicalArea().getPosition2d());
+        Index cellIndex = position2Index(syncItem.getSyncPhysicalArea().getPosition());
         removeFromCell(cellIndex, syncItem);
     }
 
@@ -544,8 +540,8 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     @Override
     public void iterateCellRadiusItem(DecimalPosition center, double radius, Consumer<SyncItem> callback) {
         Set<SyncItem> syncItems = new TreeSet<>((o1, o2) -> {
-            double distance1 = o1.getSyncPhysicalArea().getPosition2d().getDistance(center);
-            double distance2 = o2.getSyncPhysicalArea().getPosition2d().getDistance(center);
+            double distance1 = o1.getSyncPhysicalArea().getPosition().getDistance(center);
+            double distance2 = o2.getSyncPhysicalArea().getPosition().getDistance(center);
             int comparision = Double.compare(distance1, distance2);
             if (comparision == 0) {
                 return Integer.compare(o1.getId(), o2.getId());
@@ -553,7 +549,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
             return comparision;
         });
         iterateCellQuadItem(center, 2.0 * radius + CELL_LENGTH, syncItem -> {
-            if (syncItem.getSyncPhysicalArea().getPosition2d().getDistance(center) <= radius) {
+            if (syncItem.getSyncPhysicalArea().getPosition().getDistance(center) <= radius) {
                 syncItems.add(syncItem);
             }
         });
@@ -575,7 +571,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
             DoubleHolder<SyncBaseItem, Double> best = new DoubleHolder<>();
             iterateCellQuadBaseItem(wayPosition, width, syncBaseItem -> {
                 if (syncBaseItem.getBase().getCharacter().isHuman()) {
-                    double distance = syncBaseItem.getSyncPhysicalArea().getPosition2d().getDistance(wayPosition);
+                    double distance = syncBaseItem.getSyncPhysicalArea().getPosition().getDistance(wayPosition);
                     if (best.getO1() != null) {
                         if (best.getO2() > distance) {
                             best.setO1(syncBaseItem);

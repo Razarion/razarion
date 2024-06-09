@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.planet.model;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
@@ -38,7 +37,6 @@ import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceEx
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
@@ -581,7 +579,6 @@ public class SyncBaseItem extends SyncItem {
     public void clearContained(DecimalPosition position) {
         containedIn = null;
         getSyncPhysicalArea().setPosition2d(position, false);
-        getSyncPhysicalArea().setupPosition3d();
     }
 
     public SyncBaseItem getContainedIn() {
@@ -688,16 +685,14 @@ public class SyncBaseItem extends SyncItem {
             if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
                 nativeSyncBaseItemTickInfo.turretAngle = syncWeapon.getSyncTurret().getAngle();
             }
-            Vertex position3d = getSyncPhysicalArea().getPosition3d();
-            nativeSyncBaseItemTickInfo.x = position3d.getX();
-            nativeSyncBaseItemTickInfo.y = position3d.getY();
-            nativeSyncBaseItemTickInfo.z = position3d.getZ();
+            nativeSyncBaseItemTickInfo.x = getSyncPhysicalArea().getPosition().getX();
+            nativeSyncBaseItemTickInfo.y = getSyncPhysicalArea().getPosition().getY();
             nativeSyncBaseItemTickInfo.angle = getSyncPhysicalArea().getAngle();
             if (syncHarvester != null && syncHarvester.isHarvesting()) {
-                nativeSyncBaseItemTickInfo.harvestingResourcePosition = NativeUtil.toNativeVertex(syncHarvester.getResource().getSyncPhysicalArea().getPosition3d());
+                nativeSyncBaseItemTickInfo.harvestingResourcePosition = syncHarvester.getResource().getSyncPhysicalArea().getPosition();
             }
             if (syncBuilder != null && syncBuilder.isBuilding()) {
-                nativeSyncBaseItemTickInfo.buildingPosition = NativeUtil.toNativeVertex(syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition3d());
+                nativeSyncBaseItemTickInfo.buildingPosition = syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition();
                 nativeSyncBaseItemTickInfo.constructing = syncBuilder.getCurrentBuildup().getBuildup();
                 nativeSyncBaseItemTickInfo.constructingBaseItemTypeId = syncBuilder.getCurrentBuildup().getBaseItemType().getId();
             }
@@ -706,10 +701,6 @@ public class SyncBaseItem extends SyncItem {
                 if (syncFactory.getToBeBuiltType() != null) {
                     nativeSyncBaseItemTickInfo.constructingBaseItemTypeId = syncFactory.getToBeBuiltType().getId();
                 }
-            }
-            if (getSyncPhysicalArea().canMove()) {
-                nativeSyncBaseItemTickInfo.interpolatableVelocity = getSyncPhysicalMovable().setupInterpolatableVelocity();
-                nativeSyncBaseItemTickInfo.interpolatableAngularVelocity = getSyncPhysicalMovable().setupInterpolatableAngularVelocity();
             }
             nativeSyncBaseItemTickInfo.contained = false;
         } else {

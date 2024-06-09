@@ -1,8 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
-
 /**
  * Created by Beat
  * 05.01.2017.
@@ -97,8 +94,7 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
         SyncBaseItemSimpleDto syncBaseItemSimpleDto = new SyncBaseItemSimpleDto();
         syncBaseItemSimpleDto.setId(nativeSyncBaseItemTickInfo.id);
         syncBaseItemSimpleDto.setItemTypeId(nativeSyncBaseItemTickInfo.itemTypeId);
-        syncBaseItemSimpleDto.setPosition2d(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo));
-        syncBaseItemSimpleDto.setPosition3d(NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo));
+        syncBaseItemSimpleDto.setPosition(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo));
         //  Matrix4 model is not set. Use this from NativeSyncBaseItemTickInfo
         syncBaseItemSimpleDto.setBaseId(nativeSyncBaseItemTickInfo.baseId);
         syncBaseItemSimpleDto.setBuildup(nativeSyncBaseItemTickInfo.buildup);

@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
@@ -14,6 +13,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrain
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeTile;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.ExceptionUtil;
+import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,9 +26,8 @@ import java.util.logging.Logger;
  */
 public class TerrainShapeManager {
     private final static Logger logger = Logger.getLogger(TerrainShapeManager.class.getName());
-    private NativeTerrainShapeAccess nativeTerrainShapeAccess;
+    private final NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private TerrainShapeTile[][] terrainShapeTiles;
-    private SurfaceAccess surfaceAccess;
     private PathingAccess pathingAccess;
     private DecimalPosition planetSize;
     private int tileXCount;
@@ -41,7 +40,6 @@ public class TerrainShapeManager {
     public TerrainShapeManager(PlanetConfig planetConfig, NativeTerrainShapeAccess nativeTerrainShapeAccess, TerrainTypeService terrainTypeService, AlarmService alarmService, List<TerrainObjectPosition> terrainObjectPositions) {
         long time = System.currentTimeMillis();
         this.nativeTerrainShapeAccess = nativeTerrainShapeAccess;
-        surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         setupDimension(planetConfig);
         terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
@@ -53,7 +51,6 @@ public class TerrainShapeManager {
     }
 
     public void lazyInit(PlanetConfig planetConfig, Runnable finishCallback, Consumer<String> failCallback) {
-        surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         setupDimension(planetConfig);
         nativeTerrainShapeAccess.load(planetConfig.getId(), nativeTerrainShape -> {
@@ -148,12 +145,11 @@ public class TerrainShapeManager {
         return pathingAccess;
     }
 
-    public SurfaceAccess getSurfaceAccess() {
-        return surfaceAccess;
-    }
-
     public boolean isSightBlocked(Line line) {
-        return true; // TODO
+        return GeometricUtil.rasterizeLine(line, (int) TerrainUtil.NODE_X_DISTANCE)
+                .stream()
+                .map(nodeIndex -> pathingAccess.getTerrainType(nodeIndex))
+                .anyMatch(terrainType -> terrainType != TerrainType.LAND);
     }
 
     public Rectangle2D getPlayGround() {

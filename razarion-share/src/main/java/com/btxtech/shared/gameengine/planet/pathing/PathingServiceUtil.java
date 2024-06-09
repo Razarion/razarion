@@ -9,7 +9,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
  */
 public interface PathingServiceUtil {
     static void setupPushAwayVelocity(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
-        DecimalPosition pushAwayDirection = shifty.getPosition2d().sub(pusher.getPosition2d()).normalize();
+        DecimalPosition pushAwayDirection = shifty.getPosition().sub(pusher.getPosition()).normalize();
         shifty.setupForPushAway(pushAwayDirection.multiply(DecimalPosition.zeroIfNull(pusher.getPreferredVelocity()).dotProduct(pushAwayDirection)));
     }
 

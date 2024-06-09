@@ -48,7 +48,7 @@ public class EffectVisualizationService {
     private void playParticle(long timeStamp, Vertex position, Vertex direction, Integer muzzleFlashParticleEmitterSequenceConfigId) {
     }
 
-    public void updateBuildingDemolitionEffect(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, Vertex position3d, BaseItemType baseItemType) {
+    public void updateBuildingDemolitionEffect(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, BaseItemType baseItemType) {
     }
 
     private void removeBuildingDemolitionEffect(int syncBaseItemId) {

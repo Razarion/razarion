@@ -66,34 +66,4 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         setupTerrainTypeService(null, slopeConfigs, null, waterConfigs, null, planetConfig, terrainSlopePositions, null, null, null, null, null);
     }
-
-
-    @Test
-    public void testBigSkewAreaSlope() {
-        setup(1);
-
-        // showDisplay();
-
-        Assert.assertEquals(0.0,
-                getTerrainService().getSurfaceAccess().getInterpolatedZ(new DecimalPosition(1000, 2000)),
-                0);
-        Assert.assertEquals(20.0,
-                getTerrainService().getSurfaceAccess().getInterpolatedZ(new DecimalPosition(4000, 1000)),
-                0);
-    }
-
-    @Test
-    public void testBigSkewWaterAreaSlope() {
-        setup(2);
-
-        // showDisplay();
-
-        Assert.assertEquals(0.0,
-                getTerrainService().getSurfaceAccess().getInterpolatedZ(new DecimalPosition(1000, 2000)),
-                0);
-        Assert.assertEquals(-0.2,
-                getTerrainService().getSurfaceAccess().getInterpolatedZ(new DecimalPosition(4000, 1000)),
-                0);
-
-    }
 }

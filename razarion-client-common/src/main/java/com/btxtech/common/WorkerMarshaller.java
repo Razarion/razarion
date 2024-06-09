@@ -84,8 +84,6 @@ public class WorkerMarshaller {
             case UPDATE_LEVEL:
             case PERFMON_RESPONSE:
             case INITIALISING_FAILED:
-            case SINGLE_Z_TERRAIN:
-            case SINGLE_Z_TERRAIN_ANSWER_FAIL:
             case TERRAIN_TILE_REQUEST:
             case PLAYBACK_PLAYER_BASE:
             case PLAYBACK_SYNC_ITEM_DELETED:
@@ -111,7 +109,6 @@ public class WorkerMarshaller {
             case BASE_DELETED:
             case BASE_UPDATED:
             case PROJECTILE_DETONATION:
-            case SINGLE_Z_TERRAIN_ANSWER:
             case ENERGY_CHANGED:
             case PROJECTILE_FIRED:
                 array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
@@ -313,16 +310,6 @@ public class WorkerMarshaller {
                 break;
             case PERFMON_RESPONSE:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
-                break;
-            case SINGLE_Z_TERRAIN:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), DecimalPosition.class));
-                break;
-            case SINGLE_Z_TERRAIN_ANSWER:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), DecimalPosition.class));
-                data.add(fromJson(array[DATA_OFFSET_1].asString(), Double.class));
-                break;
-            case SINGLE_Z_TERRAIN_ANSWER_FAIL:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), DecimalPosition.class));
                 break;
             case TERRAIN_TILE_REQUEST:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Index.class));

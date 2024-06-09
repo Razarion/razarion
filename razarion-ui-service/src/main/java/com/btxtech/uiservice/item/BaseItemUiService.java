@@ -39,7 +39,6 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -47,8 +46,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import static com.btxtech.shared.utils.MathHelper.clamp;
 
 /**
  * Created by Beat
@@ -100,7 +97,6 @@ public class BaseItemUiService {
     private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
     private final List<BabylonBaseItem> selectedBabylonBaseItems = new ArrayList<>();
     private final List<Integer> selectedOutOfViewIds = new ArrayList<>();
-    private BabylonBaseItem hoverBabylonBaseItem;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
 
@@ -123,11 +119,6 @@ public class BaseItemUiService {
         syncBaseItemSetPositionMonitor = null;
         selectedBabylonBaseItems.clear();
         selectedOutOfViewIds.clear();
-        hoverBabylonBaseItem = null;
-    }
-
-    public Collection<BaseItemType> getBaseItemTypes() {
-        return itemTypeService.getBaseItemTypes();
     }
 
     public void updateSyncBaseItems(NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos) {
@@ -151,7 +142,9 @@ public class BaseItemUiService {
             try {
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
                 DecimalPosition position2d = NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo);
-                Vertex position3d = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
+                if (position2d == null) {
+                    continue;
+                }
                 boolean isSpawning = nativeSyncBaseItemTickInfo.spawning < 1.0;
                 boolean isBuildup = nativeSyncBaseItemTickInfo.buildup >= 1.0;
                 boolean isHealthy = nativeSyncBaseItemTickInfo.health >= 1.0;
@@ -192,7 +185,7 @@ public class BaseItemUiService {
                             baseItemType,
                             diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo));
                     babylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
-                    babylonBaseItem.setPosition(NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo));
+                    babylonBaseItem.setPosition(position2d);
                     babylonBaseItem.updatePosition();
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
                     babylonBaseItem.updateAngle();
@@ -208,17 +201,14 @@ public class BaseItemUiService {
                 }
                 leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
 
-                Vertex position = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
-                if (position != null) {
-                    if (babylonBaseItem.getPosition() != null) {
-                        if (!babylonBaseItem.getPosition().equalsDelta(position, 0.000001)) {
-                            babylonBaseItem.setPosition(position);
-                            babylonBaseItem.updatePosition();
-                        }
-                    } else {
-                        babylonBaseItem.setPosition(position);
+                if (babylonBaseItem.getPosition() != null) {
+                    if (!babylonBaseItem.getPosition().equalsDelta(position2d, 0.000001)) {
+                        babylonBaseItem.setPosition(position2d);
                         babylonBaseItem.updatePosition();
                     }
+                } else {
+                    babylonBaseItem.setPosition(position2d);
+                    babylonBaseItem.updatePosition();
                 }
 
                 if (babylonBaseItem.getAngle() != nativeSyncBaseItemTickInfo.angle) {
@@ -233,7 +223,7 @@ public class BaseItemUiService {
                 // Demolition
                 if (!isSpawning && isBuildup && !isHealthy) {
                     if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
-                        effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, position3d, baseItemType);
+                        effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, baseItemType);
                     }
                     if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
                         // TODO weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
@@ -280,7 +270,7 @@ public class BaseItemUiService {
     public void onProjectileFired(int syncBaseItemId, Vertex destination) {
         BabylonBaseItem babylonBaseItem = babylonBaseItems.get(syncBaseItemId);
         if (babylonBaseItem != null) {
-            babylonBaseItem.onProjectileFired(destination);
+            babylonBaseItem.onProjectileFired();
             audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getWeaponType().getMuzzleFlashAudioItemConfigId());
         }
     }
@@ -426,25 +416,7 @@ public class BaseItemUiService {
         if (syncItemState == null) {
             return;
         }
-        syncItemState.update(nativeSyncBaseItemTickInfo, nativeSyncBaseItemTickInfo.interpolatableVelocity);
-    }
-
-    public SyncItemMonitor monitorMySyncBaseItemOfType(int itemTypeId) {
-        NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo = findMyItemOfType(itemTypeId);
-        if (nativeSyncBaseItemTickInfo != null) {
-            return monitorSyncItem(nativeSyncBaseItemTickInfo);
-        } else {
-            return null;
-        }
-    }
-
-    public SyncItemMonitor monitorMyEnemyItemWithPlace(PlaceConfig placeConfig) {
-        NativeSyncBaseItemTickInfo enemy = findMyEnemyItemWithPlace(placeConfig);
-        if (enemy != null) {
-            return monitorSyncItem(enemy);
-        } else {
-            return null;
-        }
+        syncItemState.update(nativeSyncBaseItemTickInfo);
     }
 
     public SyncBaseItemSetPositionMonitor createSyncItemSetPositionMonitor(MarkerConfig markerConfig, Set<Integer> itemTypeFilter, Set<Integer> botIdFilter) {
@@ -487,10 +459,6 @@ public class BaseItemUiService {
 
     public int getMyTotalHouseSpace() {
         return houseSpace + gameUiControl.get().getPlanetConfig().getHouseSpace();
-    }
-
-    public double setupInterpolationFactor(long timeStamp) {
-        return clamp((double) (timeStamp - lastUpdateTimeStamp) / 1000.0, 0.0, 1.0);
     }
 
     public int getMyItemCount(int baseItemTypeId) {
@@ -566,19 +534,6 @@ public class BaseItemUiService {
         throw new IllegalArgumentException("No NativeSyncBaseItemTickInfo for " + baseItemId);
     }
 
-    public SyncBaseItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
-        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
-            if (nativeSyncBaseItemTickInfo.contained) {
-                continue;
-            }
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
-            if (decimalPosition.getDistance(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y) <= baseItemType.getPhysicalAreaConfig().getRadius()) {
-                return SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo);
-            }
-        }
-        return null;
-    }
-
     public Collection<SyncBaseItemSimpleDto> findItemsInRect(Rectangle2D rectangle) {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
@@ -587,22 +542,6 @@ public class BaseItemUiService {
             }
             BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
             if (rectangle.adjoinsCircleExclusive(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo), baseItemType.getPhysicalAreaConfig().getRadius())) {
-                result.add(SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo));
-            }
-        }
-        return result;
-    }
-
-    public Collection<SyncBaseItemSimpleDto> findMyItemsOfType(int baseItemTypeId, boolean includeContained) {
-        Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
-        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
-            if (!includeContained && nativeSyncBaseItemTickInfo.contained) {
-                continue;
-            }
-            if (!isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
-                continue;
-            }
-            if (nativeSyncBaseItemTickInfo.itemTypeId == baseItemTypeId) {
                 result.add(SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo));
             }
         }
@@ -640,22 +579,11 @@ public class BaseItemUiService {
         return visibleNativeSyncBaseItemTickInfos.toArray(new NativeSyncBaseItemTickInfo[0]);
     }
 
-    public SyncBaseItemSimpleDto getSyncBaseItemSimpleDto4IdPlayback(int itemId) {
-        return Arrays.stream(nativeSyncBaseItemTickInfos).filter(syncBaseItemSimpleDto -> syncBaseItemSimpleDto.id == itemId).map(nativeSyncBaseItemTickInfo -> {
-            // Problem with NativeSyncBaseItemTickInfos and SyncBaseItemSimpleDto::from.
-            try {
-                return SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo);
-            } catch (Throwable t) {
-                exceptionHandler.handleException(t);
-                return null;
-            }
-        }).findFirst().orElse(null);
-    }
-
     public boolean hasRadar() {
         return hasRadar;
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public Diplomacy diplomacy4SyncBaseItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
             return Diplomacy.OWN;
@@ -693,23 +621,4 @@ public class BaseItemUiService {
             }
         }
     }
-
-    public void onHover(SyncItemSimpleDto syncItem) {
-        if (hoverBabylonBaseItem == null && syncItem != null) {
-            hoverBabylonBaseItem = babylonBaseItems.get(syncItem.getId());
-            if (hoverBabylonBaseItem != null) {
-                hoverBabylonBaseItem.hover(true);
-            }
-        } else if (hoverBabylonBaseItem != null && syncItem == null) {
-            hoverBabylonBaseItem.hover(false);
-            hoverBabylonBaseItem = null;
-        } else if (hoverBabylonBaseItem != null && hoverBabylonBaseItem.getId() != syncItem.getId()) {
-            hoverBabylonBaseItem.hover(false);
-            hoverBabylonBaseItem = babylonBaseItems.get(syncItem.getId());
-            if (hoverBabylonBaseItem != null) {
-                hoverBabylonBaseItem.hover(true);
-            }
-        }
-    }
-
 }

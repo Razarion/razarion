@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.questvisualization;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ColdGameUiContext;
@@ -27,7 +28,7 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
 
         getWeldBean(ResourceUiService.class).addResource(createResource(1,
                 FallbackConfig.RESOURCE_ITEM_TYPE_ID,
-                new Vertex(150, 175, 0)));
+                new DecimalPosition(150, 175)));
 
         createBase(coldGameUiContext.getUserContext().getUserId(), 21);
         getWeldBean(InGameQuestVisualizationService.class).onQuestActivated(new QuestConfig().conditionConfig(
@@ -58,7 +59,7 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
 
         getWeldBean(ResourceUiService.class).addResource(createResource(1,
                 FallbackConfig.RESOURCE_ITEM_TYPE_ID,
-                new Vertex(150, 250, 0)));
+                new DecimalPosition(150, 250)));
 
         createBase(coldGameUiContext.getUserContext().getUserId(), 21);
         getWeldBean(InGameQuestVisualizationService.class).onQuestActivated(new QuestConfig().conditionConfig(
@@ -87,7 +88,7 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
 
         getWeldBean(BoxUiService.class).addBox(createBox(2,
                 FallbackConfig.BOX_ITEM_TYPE_ID,
-                new Vertex(150, 175, 0)));
+                new DecimalPosition(150, 175)));
 
         createBase(coldGameUiContext.getUserContext().getUserId(), 21);
         getWeldBean(InGameQuestVisualizationService.class).onQuestActivated(new QuestConfig().conditionConfig(
@@ -118,7 +119,7 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
 
         getWeldBean(BoxUiService.class).addBox(createBox(2,
                 FallbackConfig.BOX_ITEM_TYPE_ID,
-                new Vertex(150, 250, 0)));
+                new DecimalPosition(150, 250)));
 
         createBase(coldGameUiContext.getUserContext().getUserId(), 21);
         getWeldBean(InGameQuestVisualizationService.class).onQuestActivated(new QuestConfig().conditionConfig(

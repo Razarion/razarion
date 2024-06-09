@@ -1,4 +1,4 @@
-import { BabylonBoxItem, BoxItemType, Diplomacy, MarkerConfig, Vertex } from "src/app/gwtangular/GwtAngularFacade";
+import { BabylonBoxItem, BoxItemType, DecimalPosition, Diplomacy, MarkerConfig, Vertex } from "src/app/gwtangular/GwtAngularFacade";
 import { BabylonItemImpl } from "./babylon-item.impl";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { BabylonModelService } from "./babylon-model.service";
@@ -26,7 +26,7 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
                 return id;
             }
 
-            getPosition(): Vertex | null {
+            getPosition(): DecimalPosition | null {
                 return null;
             }
 
@@ -42,7 +42,7 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
             setAngle(angle: number): void {
             }
 
-            setPosition(position: Vertex): void {
+            setPosition(position: DecimalPosition): void {
             }
 
             isEnemy(): boolean {

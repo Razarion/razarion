@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
-import com.btxtech.shared.nativejs.NativeVertexDto;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import jsinterop.annotations.JsType;
 
 /**
@@ -13,7 +13,6 @@ public class NativeSyncBaseItemTickInfo {
     public int itemTypeId;
     public double x;
     public double y;
-    public double z;
     public double angle;
     public int baseId;
     public double turretAngle;
@@ -22,10 +21,8 @@ public class NativeSyncBaseItemTickInfo {
     public double health;
     public double constructing;
     public int constructingBaseItemTypeId; // Id or > 0. Integer is not possible
-    public NativeVertexDto harvestingResourcePosition;
-    public NativeVertexDto buildingPosition;
-    public NativeVertexDto interpolatableVelocity;
-    public Double interpolatableAngularVelocity;
+    public DecimalPosition harvestingResourcePosition;
+    public DecimalPosition buildingPosition;
     public int containingItemCount;
     public double maxContainingRadius;
     public boolean contained;

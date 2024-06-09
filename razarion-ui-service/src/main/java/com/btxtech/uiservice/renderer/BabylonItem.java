@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative = true)
@@ -9,9 +9,9 @@ public interface BabylonItem {
 
     void dispose();
 
-    Vertex getPosition();
+    DecimalPosition getPosition();
 
-    void setPosition(Vertex position);
+    void setPosition(DecimalPosition position);
 
     void updatePosition();
 

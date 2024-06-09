@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -57,10 +57,10 @@ public interface GameLogicListener {
     default void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
     }
 
-    default void onProjectileFired(SyncBaseItem syncBaseItem, Vertex target) {
+    default void onProjectileFired(SyncBaseItem syncBaseItem, DecimalPosition target) {
     }
 
-    default void onProjectileDetonation(int baseItemTypeId, Vertex position) {
+    default void onProjectileDetonation(int baseItemTypeId, DecimalPosition position) {
     }
 
     default void onMasterCommandSent(SyncBaseItem syncItem) {

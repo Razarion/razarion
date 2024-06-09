@@ -1,6 +1,7 @@
 package com.btxtech.test.shared;
 
 import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Vertex;
@@ -28,6 +29,27 @@ import java.util.stream.Stream;
  * 01.11.2015.
  */
 public class SharedTestHelper {
+    public static final double DECIMAL_POTION_DELTA = 0.001;
+
+    public static void assertDecimalPosition(DecimalPosition expected, DecimalPosition actual) {
+        assertDecimalPosition(null, expected, actual, DECIMAL_POTION_DELTA);
+    }
+
+    public static void assertDecimalPosition(String message, DecimalPosition expected, DecimalPosition actual) {
+        assertDecimalPosition(message, expected, actual, DECIMAL_POTION_DELTA);
+    }
+
+    public static void assertDecimalPosition(String message, DecimalPosition expected, DecimalPosition actual, double delta) {
+        if (expected == null && actual == null) {
+            return;
+        } else if (expected != null && actual == null) {
+            Assert.fail("Expected is: " + expected + ". Actual is null");
+        } else if (expected == null) {
+            Assert.fail("Expected is null. Actual: " + actual);
+        }
+        Assert.assertTrue(message + " Expected: " + expected + " Actual: " + actual, expected.equalsDelta(actual, delta));
+    }
+
     public static void assertVertex(Vertex expected, Vertex actual) {
         String message = "Expected: " + expected + " but was: " + actual;
         assertVertex(message, expected, actual);

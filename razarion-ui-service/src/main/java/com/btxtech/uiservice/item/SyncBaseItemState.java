@@ -2,7 +2,6 @@ package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -19,7 +18,7 @@ public class SyncBaseItemState extends SyncItemState {
     private NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo;
 
     public SyncBaseItemState(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, double radius, Consumer<SyncItemState> releaseMonitorCallback) {
-        super(nativeSyncBaseItemTickInfo, nativeSyncBaseItemTickInfo.interpolatableVelocity, radius, releaseMonitorCallback);
+        super(nativeSyncBaseItemTickInfo, radius, releaseMonitorCallback);
         health = nativeSyncBaseItemTickInfo.health;
         constructing = nativeSyncBaseItemTickInfo.constructing;
         if (nativeSyncBaseItemTickInfo.constructingBaseItemTypeId > -1) {
@@ -55,8 +54,8 @@ public class SyncBaseItemState extends SyncItemState {
     }
 
     @Override
-    public void update(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, NativeVertexDto interpolatableVelocity) {
-        super.update(nativeSyncBaseItemTickInfo, interpolatableVelocity);
+    public void update(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        super.update(nativeSyncBaseItemTickInfo);
         this.nativeSyncBaseItemTickInfo = nativeSyncBaseItemTickInfo;
 
         if (health != nativeSyncBaseItemTickInfo.health) {

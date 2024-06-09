@@ -529,9 +529,9 @@ export interface BabylonItem {
 
   dispose(): void;
 
-  getPosition(): Vertex | null;
+  getPosition(): DecimalPosition | null;
 
-  setPosition(position: Vertex): void;
+  setPosition(position: DecimalPosition): void;
 
   updatePosition(): void;
 
@@ -555,15 +555,15 @@ export interface BabylonBaseItem extends BabylonItem {
 
   setHealth(health: number): void;
 
-  setBuildingPosition(buildingPosition: NativeVertexDto | null): void;
+  setBuildingPosition(buildingPosition: DecimalPosition | null): void;
 
-  setHarvestingPosition(harvestingPosition: NativeVertexDto | null): void;
+  setHarvestingPosition(harvestingPosition: DecimalPosition | null): void;
 
   setBuildup(buildup: number): void;
 
   setConstructing(progress: number): void;
 
-  onProjectileFired(destination: Vertex): void;
+  onProjectileFired(): void;
 
   onExplode(): void;
 }

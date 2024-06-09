@@ -86,7 +86,7 @@ public class DebugHelperStatic {
                 ", TerrainType." +
                 syncPhysicalMovable.getTerrainType() +
                 ", " +
-                generate(syncPhysicalMovable.getPosition2d()) +
+                generate(syncPhysicalMovable.getPosition()) +
                 ", " +
                 generate(syncPhysicalMovable.getVelocity()) +
                 ", " +
@@ -106,7 +106,7 @@ public class DebugHelperStatic {
                 ", TerrainType." +
                 syncPhysicalMovable.getTerrainType() +
                 ", " +
-                generate(syncPhysicalMovable.getPosition2d()) +
+                generate(syncPhysicalMovable.getPosition()) +
                 ", " +
                 generate(syncPhysicalMovable.getPreferredVelocity()) +
                 ")";
@@ -217,7 +217,7 @@ public class DebugHelperStatic {
             }
             TickSyncBaseItem tickSyncBaseItem = new TickSyncBaseItem();
             tickSyncBaseItem.setId(syncBaseItem.getId());
-            tickSyncBaseItem.setPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+            tickSyncBaseItem.setPosition(syncBaseItem.getSyncPhysicalArea().getPosition());
             tickSyncBaseItem.setVelocity(syncBaseItem.getSyncPhysicalMovable().getVelocity());
             tickSyncBaseItem.setAngle(syncBaseItem.getSyncPhysicalArea().getAngle());
             tickSyncBaseItem.setRadius(syncBaseItem.getSyncPhysicalArea().getRadius());

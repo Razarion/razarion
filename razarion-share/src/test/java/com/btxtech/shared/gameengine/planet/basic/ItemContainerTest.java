@@ -51,7 +51,7 @@ public class ItemContainerTest extends BaseBasicTest {
         // Verify loaded
         assertContainingSyncItems(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder());
         Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
-        Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
+        Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition());
         Assert.assertFalse(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
         assertNoCommand4Contained(humanBaseContext);
         assertAllSlaves(permSlave, transporter, 3, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
@@ -63,11 +63,11 @@ public class ItemContainerTest extends BaseBasicTest {
         // Verify loaded
         assertContainingSyncItems(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
-        Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
+        Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition());
         Assert.assertFalse(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
         assertNoCommand4Contained(humanBaseContext);
         Assert.assertEquals(transporter, humanBaseContext.getAttacker1().getContainedIn());
-        Assert.assertNull(humanBaseContext.getAttacker1().getSyncPhysicalArea().getPosition2d());
+        Assert.assertNull(humanBaseContext.getAttacker1().getSyncPhysicalArea().getPosition());
         Assert.assertFalse(humanBaseContext.getAttacker1().getSyncPhysicalArea().hasPosition());
         assertAllSlaves(permSlave, transporter, 3, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(3, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
@@ -82,10 +82,10 @@ public class ItemContainerTest extends BaseBasicTest {
         // Verify unloaded
         assertContainingSyncItems(transporter.getSyncItemContainer().getContainedItems());
         Assert.assertNull(humanBaseContext.getBuilder().getContainedIn());
-        Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
+        Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition());
         Assert.assertTrue(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
         Assert.assertNull(humanBaseContext.getAttacker1().getContainedIn());
-        Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getAttacker1().getSyncPhysicalArea().getPosition2d());
+        Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getAttacker1().getSyncPhysicalArea().getPosition());
         Assert.assertTrue(humanBaseContext.getAttacker1().getSyncPhysicalArea().hasPosition());
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);

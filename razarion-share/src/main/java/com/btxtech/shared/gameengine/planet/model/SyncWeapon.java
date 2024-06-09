@@ -14,7 +14,6 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
@@ -22,14 +21,11 @@ import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionExce
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
-import com.btxtech.shared.nativejs.NativeMatrixDto;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
@@ -44,8 +40,6 @@ import javax.inject.Inject;
 public class SyncWeapon extends SyncBaseAbility {
     private static final long CHECK_DELTA = 1000;
     @Inject
-    private GameLogicService gameLogicService;
-    @Inject
     private BaseItemService baseItemService;
     @Inject
     private ProjectileService projectileService;
@@ -55,8 +49,6 @@ public class SyncWeapon extends SyncBaseAbility {
     private PathingService pathingService;
     @Inject
     private Instance<SyncTurret> syncTurretInstance;
-    @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
     @Inject
     private SyncService syncService;
     private WeaponType weaponType;
@@ -98,7 +90,7 @@ public class SyncWeapon extends SyncBaseAbility {
             }
 
             if (syncTurret != null) {
-                syncTurret.tick(target.getSyncPhysicalArea().getPosition2d());
+                syncTurret.tick(target.getSyncPhysicalArea().getPosition());
             }
 
             if (!isInRange(target)) {
@@ -121,8 +113,8 @@ public class SyncWeapon extends SyncBaseAbility {
                 // Check if target has moved away
                 if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
                     if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis()) {
-                        if (!targetPosition.equals(target.getSyncPhysicalArea().getPosition2d())) {
-                            targetPosition = target.getSyncPhysicalArea().getPosition2d();
+                        if (!targetPosition.equals(target.getSyncPhysicalArea().getPosition())) {
+                            targetPosition = target.getSyncPhysicalArea().getPosition();
                             getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
                             syncService.notifySendSyncBaseItem(getSyncBaseItem());
                         }
@@ -136,7 +128,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 getSyncPhysicalMovable().stop();
             }
 
-            if (syncTurret != null && !syncTurret.isOnTarget(target.getSyncPhysicalArea().getPosition2d())) {
+            if (syncTurret != null && !syncTurret.isOnTarget(target.getSyncPhysicalArea().getPosition())) {
                 return true;
             }
 
@@ -169,7 +161,7 @@ public class SyncWeapon extends SyncBaseAbility {
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
         if (syncBaseItemInfo.getTarget() != null) {
             target = syncItemContainerService.getSyncBaseItemSave(syncBaseItemInfo.getTarget());
-            targetPosition = target.getSyncPhysicalArea().getPosition2d();
+            targetPosition = target.getSyncPhysicalArea().getPosition();
             targetPositionLastCheck = System.currentTimeMillis();
         } else {
             target = null;
@@ -212,21 +204,12 @@ public class SyncWeapon extends SyncBaseAbility {
         if (followTarget) {
             getSyncPhysicalMovable().setPath(attackCommand.getSimplePath());
         }
-        targetPosition = target.getSyncPhysicalArea().getPosition2d();
+        targetPosition = target.getSyncPhysicalArea().getPosition();
         targetPositionLastCheck = System.currentTimeMillis();
     }
 
     public boolean isItemTypeDisallowed(SyncBaseItem target) {
         return weaponType.checkItemTypeDisallowed(target.getBaseItemType().getId());
-    }
-
-    public boolean isAttackAllowedWithoutMoving(SyncItem target) throws TargetHasNoPositionException {
-        if (!(target instanceof SyncBaseItem)) {
-            return false;
-        }
-        SyncBaseItem baseTarget = (SyncBaseItem) target;
-        return !isItemTypeDisallowed(baseTarget) && isInRange(baseTarget);
-
     }
 
     boolean isAttackAllowed(SyncItem target) {
@@ -250,14 +233,5 @@ public class SyncWeapon extends SyncBaseAbility {
 
     public SyncTurret getSyncTurret() {
         return syncTurret;
-    }
-
-    public Matrix4 createTurretMatrix() {
-        return getSyncBaseItem().getModelMatrices().multiply(syncTurret.createMatrix());
-    }
-
-    @Deprecated
-    public NativeMatrixDto createTurretMatrix4Shape3D() {
-        return nativeMatrixFactory.createNativeMatrixDtoColumnMajorArray(getSyncBaseItem().getModelMatrices().multiply(syncTurret.createMatrix4Shape3D()).toWebGlArray());
     }
 }

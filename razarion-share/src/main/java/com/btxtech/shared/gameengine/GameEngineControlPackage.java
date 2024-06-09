@@ -65,9 +65,6 @@ public class GameEngineControlPackage {
         PROJECTILE_FIRED,
         PROJECTILE_DETONATION,
         // Terrain
-        SINGLE_Z_TERRAIN,
-        SINGLE_Z_TERRAIN_ANSWER,
-        SINGLE_Z_TERRAIN_ANSWER_FAIL,
         TERRAIN_TILE_REQUEST,
         TERRAIN_TILE_RESPONSE,
         // Playback

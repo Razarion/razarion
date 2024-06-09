@@ -223,10 +223,6 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.PERFMON_REQUEST);
     }
 
-    public void askTerrainZ(DecimalPosition position) {
-        sendToWorker(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN, position);
-    }
-
     public void requestTerrainTile(Index terrainTileIndex) {
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST, terrainTileIndex);
     }
@@ -365,12 +361,6 @@ public abstract class GameEngineControl {
                 break;
             case PERFMON_RESPONSE:
                 onPerfmonResponse((Collection<PerfmonStatistic>) controlPackage.getData(0));
-                break;
-            case SINGLE_Z_TERRAIN_ANSWER:
-                terrainUiService.onTerrainZAnswer((DecimalPosition) controlPackage.getData(0), (double) controlPackage.getData(1));
-                break;
-            case SINGLE_Z_TERRAIN_ANSWER_FAIL:
-                terrainUiService.onTerrainZAnswerFail((DecimalPosition) controlPackage.getData(0));
                 break;
             case TERRAIN_TILE_RESPONSE:
                 terrainUiService.onTerrainTileResponse((TerrainTile) controlPackage.getData(0));

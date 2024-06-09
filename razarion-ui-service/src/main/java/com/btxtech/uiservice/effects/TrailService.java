@@ -49,7 +49,7 @@ public class TrailService {
         if (baseItemType.getWreckageShape3DId() == null) {
             return;
         }
-        WreckageItem wreckageItem = new WreckageItem(baseItemType, new Vertex(nativeSimpleSyncBaseItemTickInfo.x, nativeSimpleSyncBaseItemTickInfo.y, nativeSimpleSyncBaseItemTickInfo.z), nativeMatrixFactory);
+        WreckageItem wreckageItem = new WreckageItem(baseItemType, new Vertex(nativeSimpleSyncBaseItemTickInfo.x, nativeSimpleSyncBaseItemTickInfo.y, /*TODO*/0), nativeMatrixFactory);
         wreckageItems.add(wreckageItem);
         wreckageModelMatrices.put(baseItemType, wreckageItem.getModelMatrices());
     }

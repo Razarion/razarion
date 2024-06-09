@@ -13,6 +13,7 @@ import {
 import {
   BabylonBaseItem,
   BaseItemType,
+  DecimalPosition,
   Diplomacy,
   MarkerConfig,
   NativeVertexDto,
@@ -24,6 +25,7 @@ import { BabylonItemImpl } from "./babylon-item.impl";
 import { BabylonModelService } from "./babylon-model.service";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { ActionService } from "../action.service";
+import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   private readonly PROGRESS_BAR_NODE_MATERIAL_ID = 54; // Put in properties
@@ -37,11 +39,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private healthInputBlock: InputBlock | undefined;
   private progressInputBlock: InputBlock | undefined;
 
-  constructor(id: number, 
-    private baseItemType: BaseItemType, 
-    diplomacy: Diplomacy, 
+  constructor(id: number,
+    private baseItemType: BaseItemType,
+    diplomacy: Diplomacy,
     rendererService: BabylonRenderServiceAccessImpl,
-    actionService: ActionService, 
+    actionService: ActionService,
     babylonModelService: BabylonModelService) {
     super(id, baseItemType, diplomacy, rendererService, babylonModelService, actionService, rendererService.baseItemContainer);
 
@@ -64,14 +66,14 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         return 0;
       }
 
-      getPosition(): Vertex | null {
+      getPosition(): DecimalPosition | null {
         return null;
       }
 
       setHealth(health: number): void {
       }
 
-      setPosition(position: Vertex): void {
+      setPosition(position: DecimalPosition): void {
       }
 
       getId(): number {
@@ -100,11 +102,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       mark(markerConfig: MarkerConfig | null): void {
       }
 
-      setBuildingPosition(buildingPosition: NativeVertexDto): void {
+      setBuildingPosition(buildingPosition: DecimalPosition): void {
 
       }
 
-      setHarvestingPosition(harvestingPosition: NativeVertexDto | null): void {
+      setHarvestingPosition(harvestingPosition: DecimalPosition | null): void {
       }
 
       setBuildup(buildup: number): void {
@@ -113,7 +115,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       setConstructing(progress: number): void {
       }
 
-      onProjectileFired(destination: Vertex): void {
+      onProjectileFired(): void {
       }
 
       onExplode(): void {
@@ -207,15 +209,15 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
   }
 
-  onProjectileFired(destination: Vertex): void {
+  onProjectileFired(): void {
     if (!this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()) {
       console.warn(`No MuzzleFlashParticleSystemConfigId for ${this.baseItemType.getInternalName()} '${this.baseItemType.getId()}'`);
       return;
     }
-    const correctDestination = new Vector3(destination.getX(), destination.getZ(), destination.getY());
     let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()!);
     const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath());
     emitterMesh.computeWorldMatrix(true);
+    const correctDestination = new Vector3(emitterMesh.position.x, emitterMesh.position.y + 10, emitterMesh.position.z);
     const particleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, correctDestination, false);
     particleSystem.disposeOnStop = true;
 
@@ -237,7 +239,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     });
   }
 
-  setBuildingPosition(razarionBuildingPosition: NativeVertexDto): void {
+  setBuildingPosition(razarionBuildingPosition: DecimalPosition): void {
     if (razarionBuildingPosition && this.buildingParticleSystem) {
       return;
     }
@@ -258,7 +260,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (razarionBuildingPosition && !this.buildingParticleSystem) {
       try {
         let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getBuilderType()?.getParticleSystemConfigId()!);
-        const buildingPosition = new Vector3(razarionBuildingPosition.x, razarionBuildingPosition.z, razarionBuildingPosition.y);
+        const height = LocationVisualization.getHeightFromTerrain(razarionBuildingPosition.getX(), razarionBuildingPosition.getY(), this.rendererService);
+        const buildingPosition = new Vector3(razarionBuildingPosition.getX(), height, razarionBuildingPosition.getY());
         const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath())
         emitterMesh.computeWorldMatrix(true);
         this.buildingParticleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, buildingPosition, true);
@@ -268,7 +271,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
   }
 
-  setHarvestingPosition(razarionHarvestingPosition: NativeVertexDto | null): void {
+  setHarvestingPosition(razarionHarvestingPosition: DecimalPosition | null): void {
     if (razarionHarvestingPosition && this.harvestingParticleSystem) {
       return;
     }
@@ -289,7 +292,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (razarionHarvestingPosition && !this.harvestingParticleSystem) {
       try {
         let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getHarvesterType()?.getParticleSystemConfigId()!);
-        const harvestingPosition = new Vector3(razarionHarvestingPosition.x, razarionHarvestingPosition.z, razarionHarvestingPosition.y);
+        const harvestingPosition = new Vector3(razarionHarvestingPosition.getX(), this.getContainer().position.y, razarionHarvestingPosition.getY());
         const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath())
         emitterMesh.computeWorldMatrix(true);
         this.harvestingParticleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, harvestingPosition, true);

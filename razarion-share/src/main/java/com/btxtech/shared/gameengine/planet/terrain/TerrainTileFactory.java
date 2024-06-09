@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -27,8 +26,6 @@ public class TerrainTileFactory {
     private Instance<TerrainTileBuilder> terrainTileBuilderInstance;
     @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
-    private TerrainService terrainService;
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShapeManager terrainShapeManager, PlanetConfig planetConfig) {
         TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(terrainTileIndex);
@@ -56,8 +53,7 @@ public class TerrainTileFactory {
             Arrays.stream(nativeTerrainShapeObjectList.terrainShapeObjectPositions).forEach(nativeTerrainObjectPosition -> {
                 try {
                     TerrainObjectModel terrainObjectModel = new TerrainObjectModel();
-                    double z = terrainService.getSurfaceAccess().getInterpolatedZ(new DecimalPosition(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y));
-                    terrainObjectModel.position = new Vertex(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y, z);
+                    terrainObjectModel.position = new Vertex(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y, 0);
                     if (nativeTerrainObjectPosition.offset != null) {
                         terrainObjectModel.position = terrainObjectModel.position.add(
                                 nativeTerrainObjectPosition.offset.x,

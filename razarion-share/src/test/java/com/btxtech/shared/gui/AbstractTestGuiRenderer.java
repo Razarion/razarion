@@ -235,8 +235,8 @@ public abstract class AbstractTestGuiRenderer {
             gc.setStroke(Color.LIGHTGRAY);
         }
         gc.setLineWidth(lineWidth);
-        gc.strokeOval(syncPhysicalArea.getPosition2d().getX() - syncPhysicalArea.getRadius(),
-                syncPhysicalArea.getPosition2d().getY() - syncPhysicalArea.getRadius(),
+        gc.strokeOval(syncPhysicalArea.getPosition().getX() - syncPhysicalArea.getRadius(),
+                syncPhysicalArea.getPosition().getY() - syncPhysicalArea.getRadius(),
                 2 * syncPhysicalArea.getRadius(),
                 2 * syncPhysicalArea.getRadius());
     }
@@ -254,7 +254,7 @@ public abstract class AbstractTestGuiRenderer {
             DecimalPosition v = syncPhysicalMovable.getPreferredVelocity();
             // double speedRadius = v.magnitude();
             // gc.strokeOval(syncPhysicalMovable.getPosition2d().getX() - syncPhysicalMovable.getRadius() - speedRadius, syncPhysicalMovable.getPosition2d().getY() - syncPhysicalMovable.getRadius() - speedRadius, 2 * (syncPhysicalMovable.getRadius() + speedRadius), 2 * (syncPhysicalMovable.getRadius() + speedRadius));
-            gc.strokeLine(syncPhysicalMovable.getPosition2d().getX(), syncPhysicalMovable.getPosition2d().getY(), syncPhysicalMovable.getPosition2d().getX() + v.getX(), syncPhysicalMovable.getPosition2d().getY() + v.getY());
+            gc.strokeLine(syncPhysicalMovable.getPosition().getX(), syncPhysicalMovable.getPosition().getY(), syncPhysicalMovable.getPosition().getX() + v.getX(), syncPhysicalMovable.getPosition().getY() + v.getY());
         }
     }
 

@@ -17,15 +17,12 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
@@ -73,12 +70,12 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void setupPreferredVelocity() {
-        oldPosition = getPosition2d();
+        oldPosition = getPosition();
         crowded = false;
         if (path != null) {
             path.setupCurrentWayPoint(this);
 
-            double desiredAngle = path.getCurrentWayPoint().sub(getPosition2d()).angle();
+            double desiredAngle = path.getCurrentWayPoint().sub(getPosition()).angle();
 
             // Fix velocity
             double originalSpeed = velocity != null ? velocity.magnitude() : 0;
@@ -116,7 +113,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void setupForPushAway(DecimalPosition preferredVelocity) {
-        oldPosition = getPosition2d();
+        oldPosition = getPosition();
         this.preferredVelocity = preferredVelocity;
         this.velocity = preferredVelocity;
     }
@@ -126,19 +123,19 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             return;
         }
 
-        if (oldPosition.equalsDelta(getPosition2d())) {
+        if (oldPosition.equalsDelta(getPosition())) {
             return;
         }
         if (crowded) {
             // Check target reached within radius and delta
             Circle2D circle = new Circle2D(path.getCurrentWayPoint(), getRadius() + CROWDED_STOP_DETECTION_DISTANCE);
-            if (circle.doesLineCut(new Line(oldPosition, getPosition2d()))) {
+            if (circle.doesLineCut(new Line(oldPosition, getPosition()))) {
                 // System.out.println("stopIfDestinationReached: " + getSyncItem().getId() + " crowded");
                 stop();
                 return;
             }
             // Check if other standing Units are blocking target
-            syncItemContainerService.iterateCellQuadBaseItem(getPosition2d(), STOP_DETECTION_OTHER_UNITS_RADIOS, otherSyncBaseItem -> {
+            syncItemContainerService.iterateCellQuadBaseItem(getPosition(), STOP_DETECTION_OTHER_UNITS_RADIOS, otherSyncBaseItem -> {
                 if (path == null) {
                     return; // TODO Ugly performance: can not stop iteration of syncItemContainerService.iterateCellQuadBaseItem()
                 }
@@ -162,7 +159,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             return;
         }
 
-        Line line = new Line(oldPosition, getPosition2d());
+        Line line = new Line(oldPosition, getPosition());
         if (line.isPointInLineInclusive(path.getCurrentWayPoint())) {
             // System.out.println("stopIfDestinationReached: " + getSyncItem().getId() + " normal");
             setPosition2d(path.getCurrentWayPoint(), false);
@@ -213,7 +210,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public DecimalPosition getDesiredPosition() {
-        DecimalPosition desiredPosition = getPosition2d();
+        DecimalPosition desiredPosition = getPosition();
         if (velocity != null) {
             desiredPosition = desiredPosition.add(velocity.multiply(PlanetService.TICK_FACTOR));
         }
@@ -223,48 +220,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     public void implementPosition() {
         if (velocity != null) {
             setPosition2d(getDesiredPosition(), true);
-        }
-    }
-
-    public NativeVertexDto setupInterpolatableVelocity() {
-        DecimalPosition interpolatableVelocity = null;
-        if (velocity != null && !velocity.equalsDeltaZero()) {
-            interpolatableVelocity = velocity;
-        }
-        if (interpolatableVelocity == null) {
-            return null;
-        }
-
-        if (path != null) {
-            if (path.isLastWayPoint()) {
-                double targetDistance = getPosition2d().getDistance(path.getCurrentWayPoint());
-                if (targetDistance < velocity.magnitude() * PlanetService.TICK_FACTOR) {
-                    interpolatableVelocity = velocity.normalize(targetDistance / PlanetService.TICK_FACTOR);
-                }
-            }
-        } else {
-            // TODO fix: item stutters if pushed away
-            return null;
-        }
-
-        Vertex originalVelocity = new Vertex(interpolatableVelocity, 0);
-        double angle = originalVelocity.unsignedAngle(getNorm()) - MathHelper.QUARTER_RADIANT;
-        double z = Math.tan(angle) * interpolatableVelocity.magnitude();
-        // Original x and y are taken because game engine does not consider heights
-        // -> On slopes, the 3D position is faster than normal due to the added z
-        return NativeUtil.toNativeVertex(interpolatableVelocity.getX(), interpolatableVelocity.getY(), z);
-    }
-
-    public Double setupInterpolatableAngularVelocity() {
-        if (velocity != null && !velocity.equalsDeltaZero()) {
-            double deltaAngle = MathHelper.negateAngle(velocity.angle() - getAngle());
-            if (Math.abs(deltaAngle) > angularVelocity * PlanetService.TICK_FACTOR) {
-                return Math.signum(deltaAngle) * angularVelocity; // TODO Math.signum() return 0 if deltaAngle = 0
-            } else {
-                return null;
-            }
-        } else {
-            return null;
         }
     }
 
@@ -306,7 +261,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void finalization() {
-        setupPosition3d();
         // Fix angle
         if (velocity != null) {
             double deltaAngle = MathHelper.negateAngle(velocity.angle() - getAngle());

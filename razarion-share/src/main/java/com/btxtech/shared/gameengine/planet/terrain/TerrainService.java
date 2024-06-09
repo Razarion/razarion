@@ -1,10 +1,8 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
-import com.btxtech.shared.gameengine.planet.terrain.container.SurfaceAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
@@ -50,10 +48,6 @@ public class TerrainService {
 
     public PathingAccess getPathingAccess() {
         return terrainShape.getPathingAccess();
-    }
-
-    public SurfaceAccess getSurfaceAccess() {
-        return terrainShape.getSurfaceAccess();
     }
 
     public TerrainShapeManager getTerrainShape() {

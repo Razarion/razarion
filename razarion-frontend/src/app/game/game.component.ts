@@ -196,7 +196,7 @@ export class GameComponent implements OnInit, ScreenCover {
 
               {
                 let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
-                babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 10));
+                babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
                 babylonBaseItem1.setAngle(Tools.ToRadians(45));
 
                 babylonBaseItem1.updatePosition();
@@ -211,7 +211,7 @@ export class GameComponent implements OnInit, ScreenCover {
                 let x = 20;
                 let y = 20;
                 setInterval(() => {
-                  babylonBaseItem1.setPosition(GwtInstance.newVertex(x, y, 10));
+                  babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(x, y));
                   babylonBaseItem1.updatePosition();
                   x += 0.05;
                   if(x > 50) {

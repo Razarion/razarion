@@ -4,11 +4,11 @@ import {
   BabylonItem,
   BaseItemType,
   BoxItemType,
+  DecimalPosition,
   Diplomacy,
   ItemType,
   MarkerConfig,
-  ResourceItemType,
-  Vertex
+  ResourceItemType
 } from "../../gwtangular/GwtAngularFacade";
 import { SimpleMaterial } from "@babylonjs/materials";
 import { BabylonModelService } from "./babylon-model.service";
@@ -20,7 +20,7 @@ export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
   static readonly HOVER_ALPHA: number = 0.6;
   private readonly container: TransformNode;
-  private position: Vertex | null = null;
+  private position: DecimalPosition | null = null;
   private angle: number = 0;
   private diplomacyMarkerDisc: Mesh | null = null;
   private visualizationMarkerDisc: Mesh | null = null;
@@ -121,11 +121,11 @@ export class BabylonItemImpl implements BabylonItem {
     this.angle = angle;
   }
 
-  setPosition(position: Vertex): void {
+  setPosition(position: DecimalPosition): void {
     this.position = position;
   }
 
-  getPosition(): Vertex | null {
+  getPosition(): DecimalPosition | null {
     return this.position;
   }
 
@@ -154,9 +154,9 @@ export class BabylonItemImpl implements BabylonItem {
           return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.SLOPE;
         });
       if (pickingInfo && pickingInfo.hit) {
-         let normal = pickingInfo.getNormal();
-         this.container.rotation.x = -normal!.x;
-         this.container.rotation.z = -normal!.z;
+        let normal = pickingInfo.getNormal();
+        this.container.rotation.x = -normal!.x;
+        this.container.rotation.z = -normal!.z;
       }
       //-----
     }

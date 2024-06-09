@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.cdimock;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -7,7 +8,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
 import com.btxtech.uiservice.renderer.BabylonBoxItem;
@@ -115,7 +115,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         private boolean disposed;
         private boolean select;
         private boolean hover;
-        private Vertex position;
+        private DecimalPosition position;
         private double angle;
         private MarkerConfig markerConfig;
 
@@ -172,12 +172,12 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         }
 
         @Override
-        public void setBuildingPosition(NativeVertexDto buildingPosition) {
+        public void setBuildingPosition(DecimalPosition buildingPosition) {
 
         }
 
         @Override
-        public void setHarvestingPosition(NativeVertexDto harvestingPosition) {
+        public void setHarvestingPosition(DecimalPosition harvestingPosition) {
 
         }
 
@@ -192,12 +192,12 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         }
 
         @Override
-        public Vertex getPosition() {
+        public DecimalPosition getPosition() {
             return position;
         }
 
         @Override
-        public void setPosition(Vertex position) {
+        public void setPosition(DecimalPosition position) {
             this.position = position;
         }
 
@@ -232,7 +232,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         }
 
         @Override
-        public void onProjectileFired(Vertex destination) {
+        public void onProjectileFired() {
 
         }
 
@@ -251,7 +251,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         private final int id;
         private final ResourceItemType resourceItemType;
         private final Consumer<BabylonResourceItemMock> onDisposeCallback;
-        private Vertex position;
+        private DecimalPosition position;
         private MarkerConfig markerConfig;
 
         public BabylonResourceItemMock(int id, ResourceItemType resourceItemType, Consumer<BabylonResourceItemMock> onDisposeCallback) {
@@ -301,12 +301,12 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         }
 
         @Override
-        public Vertex getPosition() {
+        public DecimalPosition getPosition() {
             return position;
         }
 
         @Override
-        public void setPosition(Vertex position) {
+        public void setPosition(DecimalPosition position) {
             this.position = position;
         }
 
@@ -320,7 +320,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         private final BoxItemType boxItemType;
         private final Consumer<BabylonBoxItemMock> onDisposeCallback;
         private MarkerConfig markerConfig;
-        private Vertex position;
+        private DecimalPosition position;
 
         public BabylonBoxItemMock(int id, BoxItemType boxItemType, Consumer<BabylonBoxItemMock> onDisposeCallback) {
             this.id = id;
@@ -339,12 +339,12 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         }
 
         @Override
-        public Vertex getPosition() {
+        public DecimalPosition getPosition() {
             return position;
         }
 
         @Override
-        public void setPosition(Vertex position) {
+        public void setPosition(DecimalPosition position) {
             this.position = position;
         }
 

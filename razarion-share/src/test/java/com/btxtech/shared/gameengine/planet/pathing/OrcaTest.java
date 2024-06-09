@@ -345,7 +345,7 @@ public class OrcaTest {
 
                 if (!orca.getNewVelocity().equalsDeltaZero()) {
                     strokeLine(new Line(DecimalPosition.NULL, orca.getNewVelocity()), 0.2, Color.DARKBLUE);
-                    strokeLine(new Line(protagonist.getPosition2d(), protagonist.getPosition2d().add(orca.getNewVelocity())), 0.2, Color.DARKBLUE);
+                    strokeLine(new Line(protagonist.getPosition(), protagonist.getPosition().add(orca.getNewVelocity())), 0.2, Color.DARKBLUE);
                     System.out.println("Speed: " + orca.getNewVelocity().length() + " Velocity: " + orca.getNewVelocity());
                 }
 

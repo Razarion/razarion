@@ -1,8 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 import jsinterop.annotations.JsType;
 
 
@@ -14,15 +13,15 @@ public interface BabylonBaseItem extends BabylonItem {
 
     void setHealth(double health);
 
-    void setBuildingPosition(NativeVertexDto buildingPosition);
+    void setBuildingPosition(DecimalPosition buildingPosition);
 
-    void setHarvestingPosition(NativeVertexDto harvestingPosition);
+    void setHarvestingPosition(DecimalPosition harvestingPosition);
 
     void setBuildup(double buildup);
 
     void setConstructing(double progress);
 
-    void onProjectileFired(Vertex destination);
+    void onProjectileFired();
 
     void onExplode();
 }

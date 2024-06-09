@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +20,6 @@ public class AStar {
     private final AStarNode destinationNode;
     private final AStarContext aStarContext;
     private boolean pathFound;
-    private List<PathingNodeWrapper> tilePath;
     private double smallestHeuristic = Double.MAX_VALUE;
     private AStarNode bestFitNode;
 
@@ -113,20 +111,8 @@ public class AStar {
         }
     }
 
-    public boolean isPathFound() {
-        return pathFound;
-    }
-
-    public List<PathingNodeWrapper> getTilePath() {
-        return tilePath;
-    }
-
-    public PathingNodeWrapper getBestFitTile() {
-        return bestFitNode.getPathingNodeWrapper();
-    }
-
     public List<PathingNodeWrapper> convertPath() {
-        tilePath = new ArrayList<>();
+        List<PathingNodeWrapper> tilePath = new ArrayList<>();
         AStarNode tempNode;
         if (pathFound) {
             tempNode = destinationNode.getPredecessor();
@@ -143,9 +129,5 @@ public class AStar {
         }
         Collections.reverse(tilePath);
         return tilePath;
-    }
-
-    public int getCloseListSize() {
-        return closedList.size();
     }
 }

@@ -83,7 +83,7 @@ public class BotSyncBaseItem {
         return syncBaseItem.getSyncWeapon() != null && syncBaseItem.getSyncPhysicalArea().canMove() && !syncBaseItem.getSyncWeapon().isItemTypeDisallowed(target)
                 && TerrainDestinationFinder.isAllowed(terrainService.getPathingAccess(),
                 syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius() + syncBaseItem.getSyncWeapon().getWeaponType().getRange() + target.getBaseItemType().getPhysicalAreaConfig().getRadius(),
-                target.getSyncPhysicalArea().getPosition2d(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getTerrainType(),
+                target.getSyncPhysicalArea().getPosition(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getTerrainType(),
                 target.getBaseItemType().getPhysicalAreaConfig().getTerrainType());
     }
 
@@ -181,7 +181,7 @@ public class BotSyncBaseItem {
     }
 
     public DecimalPosition getPosition() {
-        return syncBaseItem.getSyncPhysicalArea().getPosition2d();
+        return syncBaseItem.getSyncPhysicalArea().getPosition();
     }
 
     private void setIdle() {

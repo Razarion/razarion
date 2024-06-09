@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.item;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
@@ -9,14 +10,13 @@ import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
 import com.btxtech.uiservice.cdimock.BabylonRendererServiceAccessMock;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.InputService;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
 
 import static com.btxtech.shared.dto.FallbackConfig.BUILDER_ITEM_TYPE_ID;
-import static com.btxtech.test.shared.SharedTestHelper.assertVertex;
+import static com.btxtech.test.shared.SharedTestHelper.assertDecimalPosition;
 
 public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
     @Test
@@ -52,7 +52,6 @@ public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
         info.itemTypeId = BUILDER_ITEM_TYPE_ID;
         info.x = 274;
         info.y = 100;
-        info.z = 2;
         info.spawning = 1;
         info.health = 1;
         info.buildup = 1;
@@ -66,7 +65,7 @@ public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
         BabylonRendererServiceAccessMock threeJsRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
         Assert.assertEquals(1, threeJsRendererServiceAccessMock.getBabylonBaseItemMocks().size());
         BabylonRendererServiceAccessMock.BabylonBaseItemMock babylonBaseItemMock = threeJsRendererServiceAccessMock.getBabylonBaseItemMocks().get(0);
-        assertVertex(274, 100, 2, babylonBaseItemMock.getPosition());
+        assertDecimalPosition(new DecimalPosition(274, 100), babylonBaseItemMock.getPosition());
         Assert.assertEquals(0, babylonBaseItemMock.getAngle(), 0.0001);
         Assert.assertEquals(babylonBaseItemMock.getDiplomacy(), Diplomacy.OWN);
         Assert.assertFalse(babylonBaseItemMock.isSelect());

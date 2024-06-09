@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.planet.projectile;
 
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
@@ -11,30 +11,30 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
  */
 public class Projectile {
     private final SyncBaseItem actor;
-    private final Vertex start;
-    private final Vertex target;
+    private final DecimalPosition start;
+    private final DecimalPosition target;
     private final double tickDistance;
-    private Vertex position;
+    private DecimalPosition position;
 
-    Projectile(SyncBaseItem actor, Vertex target) {
+    Projectile(SyncBaseItem actor, DecimalPosition target) {
         this.actor = actor;
-        this.start = actor.getSyncPhysicalArea().getPosition3d();
+        this.start = actor.getSyncPhysicalArea().getPosition();
         this.target = target;
         position = start;
         tickDistance = actor.getSyncWeapon().getWeaponType().getProjectileSpeed() * PlanetService.TICK_FACTOR;
     }
 
     /**
-     * Ticke the projectile toward the target
+     * Tick the projectile toward the target
      *
      * @return true if more tick needed to reach target
      */
     public boolean tick() {
-        double remainingDistance = position.distance(target);
-        if(remainingDistance <= tickDistance) {
+        double remainingDistance = position.getDistance(target);
+        if (remainingDistance <= tickDistance) {
             return false;
         }
-        position = position.interpolate(tickDistance, target);
+        position = position.getPointWithDistance(tickDistance, target, false);
         return true;
     }
 
@@ -42,11 +42,11 @@ public class Projectile {
         return actor;
     }
 
-    public Vertex getTarget() {
+    public DecimalPosition getTarget() {
         return target;
     }
 
-    public Vertex getPosition() {
+    public DecimalPosition getPosition() {
         return position;
     }
 

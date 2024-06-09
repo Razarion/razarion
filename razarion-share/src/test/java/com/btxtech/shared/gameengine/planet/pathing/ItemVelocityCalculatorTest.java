@@ -66,7 +66,7 @@ public class ItemVelocityCalculatorTest {
     private List<SyncPhysicalMovable> calculateVelocity(List<SyncItemHelper> syncItemHelpers) {
         List<SyncPhysicalMovable> syncPhysicalMovables = new ArrayList<>();
         SyncItemContainerService syncItemContainerService = (center, radius, callback) -> syncPhysicalMovables.forEach(syncPhysicalMovable -> {
-            if (syncPhysicalMovable.getPosition2d().getDistance(center) <= radius) {
+            if (syncPhysicalMovable.getPosition().getDistance(center) <= radius) {
                 callback.accept(syncPhysicalMovable.getSyncItem());
             }
         });
@@ -98,7 +98,7 @@ public class ItemVelocityCalculatorTest {
                     strokeSyncPhysicalMovable(syncPhysicalMovable, 0.2, Color.GREEN);
                     if (syncPhysicalMovable.getVelocity() != null && !syncPhysicalMovable.getVelocity().equalsDeltaZero()) {
                         strokeLine(new Line(DecimalPosition.NULL, syncPhysicalMovable.getVelocity()), 0.2, Color.DARKBLUE);
-                        strokeLine(new Line(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getPosition2d().add(syncPhysicalMovable.getVelocity())), 0.2, Color.DARKBLUE);
+                        strokeLine(new Line(syncPhysicalMovable.getPosition(), syncPhysicalMovable.getPosition().add(syncPhysicalMovable.getVelocity())), 0.2, Color.DARKBLUE);
                     }
                 });
             }

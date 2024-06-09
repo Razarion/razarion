@@ -1,8 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.Vertex;
 
 /**
  * Created by Beat
@@ -11,9 +9,7 @@ import com.btxtech.shared.datatypes.Vertex;
 public abstract class SyncItemSimpleDto { // Rename to Snapshot or volatile
     protected int id;
     private int itemTypeId;
-    private DecimalPosition position2d;
-    private Vertex position3d;
-    private Matrix4 model;
+    private DecimalPosition position;
 
     public int getId() {
         return id;
@@ -31,28 +27,12 @@ public abstract class SyncItemSimpleDto { // Rename to Snapshot or volatile
         this.itemTypeId = itemTypeId;
     }
 
-    public DecimalPosition getPosition2d() {
-        return position2d;
+    public DecimalPosition getPosition() {
+        return position;
     }
 
-    public void setPosition2d(DecimalPosition position2d) {
-        this.position2d = position2d;
-    }
-
-    public Vertex getPosition3d() {
-        return position3d;
-    }
-
-    public void setPosition3d(Vertex position3d) {
-        this.position3d = position3d;
-    }
-
-    public Matrix4 getModel() {
-        return model;
-    }
-
-    public void setModel(Matrix4 model) {
-        this.model = model;
+    public void setPosition(DecimalPosition position) {
+        this.position = position;
     }
 
     @Override

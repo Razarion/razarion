@@ -83,7 +83,7 @@ public class ItemVelocityCalculator {
 
     private void addObstaclesOrcaLines(Orca orca) {
         double lookAheadTerrainDistance = orca.getSyncPhysicalMovable().getRadius() + DecimalPosition.zeroIfNull(orca.getSyncPhysicalMovable().getPreferredVelocity()).magnitude();
-        DecimalPosition position = orca.getSyncPhysicalMovable().getPosition2d();
+        DecimalPosition position = orca.getSyncPhysicalMovable().getPosition();
         List<ObstacleSlope> sortedObstacleSlope = new ArrayList<>();
         List<ObstacleTerrainObject> sortedObstacleTerrainObject = new ArrayList<>();
         pathingAccess.getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
@@ -136,13 +136,13 @@ public class ItemVelocityCalculator {
     private boolean isPiercing(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
         // 1) Check if pierced
         double totalRadius = shifty.getRadius() + pusher.getRadius();
-        Circle2D minkowskiSum = new Circle2D(shifty.getPosition2d(), totalRadius);
+        Circle2D minkowskiSum = new Circle2D(shifty.getPosition(), totalRadius);
         DecimalPosition pusherVelocity = DecimalPosition.zeroIfNull(pusher.getPreferredVelocity()).multiply(PlanetService.TICK_FACTOR);
         if (pusherVelocity.equalsDelta(DecimalPosition.NULL)) {
             return false;
         }
-        DecimalPosition pusherTarget = pusher.getPosition2d().add(pusherVelocity);
-        Line move = new Line(pusher.getPosition2d(), pusherTarget);
+        DecimalPosition pusherTarget = pusher.getPosition().add(pusherVelocity);
+        Line move = new Line(pusher.getPosition(), pusherTarget);
         return minkowskiSum.doesLineCut(move);
     }
 

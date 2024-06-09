@@ -13,5 +13,4 @@ public class NativeSimpleSyncBaseItemTickInfo {
     public boolean contained;
     public double x;
     public double y;
-    public double z;
 }

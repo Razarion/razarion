@@ -88,7 +88,7 @@ public class BoxUiService {
         synchronized (boxes) {
             for (SyncBoxItemSimpleDto box : boxes.values()) {
                 BoxItemType boxItemType = itemTypeService.getBoxItemType(box.getItemTypeId());
-                if (box.getPosition2d().getDistance(decimalPosition) <= boxItemType.getRadius()) {
+                if (box.getPosition().getDistance(decimalPosition) <= boxItemType.getRadius()) {
                     return box;
                 }
             }
@@ -101,7 +101,7 @@ public class BoxUiService {
         synchronized (boxes) {
             for (SyncBoxItemSimpleDto box : boxes.values()) {
                 BoxItemType boxItemType = itemTypeService.getBoxItemType(box.getItemTypeId());
-                if (rectangle.adjoinsCircleExclusive(box.getPosition2d(), boxItemType.getRadius())) {
+                if (rectangle.adjoinsCircleExclusive(box.getPosition(), boxItemType.getRadius())) {
                     result.add(box);
                 }
             }
@@ -142,7 +142,7 @@ public class BoxUiService {
 
     public SyncItemMonitor monitorSyncBoxItem(SyncBoxItemSimpleDto boxItemSimpleDto) {
         // No monitoring is done, since boxes do not move
-        return new SyncItemState(boxItemSimpleDto.getId(), boxItemSimpleDto.getPosition2d(), boxItemSimpleDto.getPosition3d(), itemTypeService.getBoxItemType(boxItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
+        return new SyncItemState(boxItemSimpleDto.getId(), boxItemSimpleDto.getPosition(), itemTypeService.getBoxItemType(boxItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 
     public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor(MarkerConfig markerConfig) {
@@ -189,11 +189,11 @@ public class BoxUiService {
             Set<Integer> unused = new HashSet<>(babylonBoxItems.keySet());
             boxes.forEach((id, syncBoxItemSimpleDto) -> {
                 BoxItemType boxItemType = itemTypeService.getBoxItemType(syncBoxItemSimpleDto.getItemTypeId());
-                if (viewFieldAabb.adjoinsCircleExclusive(syncBoxItemSimpleDto.getPosition2d(), boxItemType.getRadius())) {
+                if (viewFieldAabb.adjoinsCircleExclusive(syncBoxItemSimpleDto.getPosition(), boxItemType.getRadius())) {
                     BabylonBoxItem visibleBox = babylonBoxItems.get(id);
                     if (visibleBox == null) {
                         visibleBox = babylonRendererService.createBabylonBoxItem(id, boxItemType);
-                        visibleBox.setPosition(syncBoxItemSimpleDto.getPosition3d());
+                        visibleBox.setPosition(syncBoxItemSimpleDto.getPosition());
                         visibleBox.updatePosition();
                         babylonBoxItems.put(id, visibleBox);
                         if (syncStaticItemSetPositionMonitor != null) {

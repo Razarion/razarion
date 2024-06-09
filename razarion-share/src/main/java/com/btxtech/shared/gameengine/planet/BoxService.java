@@ -263,7 +263,7 @@ public class BoxService {
             return;
         }
         if (MathHelper.isRandomPossibility(syncBaseItem.getDropBoxPossibility())) {
-            dropBox(dropBoxItemTypeId, syncBaseItem.getSyncPhysicalArea().getPosition2d(), MathHelper.getRandomAngle());
+            dropBox(dropBoxItemTypeId, syncBaseItem.getSyncPhysicalArea().getPosition(), MathHelper.getRandomAngle());
         }
     }
 }

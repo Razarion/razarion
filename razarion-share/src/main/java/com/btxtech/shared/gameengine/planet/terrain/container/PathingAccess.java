@@ -30,11 +30,11 @@ public class PathingAccess {
         this.terrainShape = terrainShape;
     }
 
-    public TerrainType getTerrainType(Index position) {
-        double blHeight = getHeightNodeAt(position);
-        double brHeight = getHeightNodeAt(position.add(1, 0));
-        double trHeight = getHeightNodeAt(position.add(1, 1));
-        double tlHeight = getHeightNodeAt(position.add(0, 1));
+    public TerrainType getTerrainType(Index terrainNodeIndex) {
+        double blHeight = getHeightNodeAt(terrainNodeIndex);
+        double brHeight = getHeightNodeAt(terrainNodeIndex.add(1, 0));
+        double trHeight = getHeightNodeAt(terrainNodeIndex.add(1, 1));
+        double tlHeight = getHeightNodeAt(terrainNodeIndex.add(0, 1));
 
         double avgHeight = (blHeight + brHeight + trHeight + tlHeight) / 4.0;
         if (avgHeight < WATER_LEVEL) {

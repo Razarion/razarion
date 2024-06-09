@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  * 23.01.2017.
  */
 public class SyncItemMonitor {
-    private SyncItemState syncItemState;
+    private final SyncItemState syncItemState;
     private Consumer<SyncItemMonitor> positionChangeListener;
 
     public SyncItemMonitor(SyncItemState syncItemState) {
@@ -26,16 +26,8 @@ public class SyncItemMonitor {
         return syncItemState.getSyncItemId();
     }
 
-    public NativeVertexDto getInterpolatableVelocity() {
-        return syncItemState.getInterpolatableVelocity();
-    }
-
     public DecimalPosition getPosition2d() {
         return syncItemState.getPosition2d();
-    }
-
-    public Vertex getPosition3d() {
-        return syncItemState.getPosition3d();
     }
 
     public double getRadius() {

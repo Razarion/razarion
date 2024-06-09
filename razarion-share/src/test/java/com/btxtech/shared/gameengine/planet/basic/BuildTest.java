@@ -31,7 +31,7 @@ public class BuildTest extends BaseBasicTest {
 
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
-        assertDecimalPosition("Position", builder.getSyncPhysicalArea().getPosition2d(), slaveBuilder.getSyncPhysicalArea().getPosition2d());
+        assertDecimalPosition("Position", builder.getSyncPhysicalArea().getPosition(), slaveBuilder.getSyncPhysicalArea().getPosition());
 
         getCommandService().build(builder, new DecimalPosition(104, 144), getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
@@ -60,7 +60,7 @@ public class BuildTest extends BaseBasicTest {
 
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
-        assertDecimalPosition("Position", builder.getSyncPhysicalArea().getPosition2d(), slaveBuilder.getSyncPhysicalArea().getPosition2d());
+        assertDecimalPosition("Position", builder.getSyncPhysicalArea().getPosition(), slaveBuilder.getSyncPhysicalArea().getPosition());
 
         // Build harbour
         getCommandService().build(builder, new DecimalPosition(174.5, 194.5), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
@@ -78,7 +78,7 @@ public class BuildTest extends BaseBasicTest {
         Assert.assertTrue(factory.isBuildup());
         Assert.assertEquals(health, factory.getHealth(), 0.001);
         Assert.assertEquals(factoryItemTypeId, factory.getBaseItemType().getId());
-        assertDecimalPosition(null, position, factory.getSyncPhysicalArea().getPosition2d());
+        assertDecimalPosition(null, position, factory.getSyncPhysicalArea().getPosition());
     }
 
 }

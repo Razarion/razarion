@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
@@ -51,7 +50,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
-import com.btxtech.shared.gameengine.planet.terrain.NoInterpolatedTerrainTriangleException;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
@@ -68,14 +66,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 18.07.2016.
  */
 public abstract class GameEngineWorker implements PlanetTickListener, QuestListener, GameLogicListener {
-    private Logger logger = Logger.getLogger(GameEngineWorker.class.getName());
+    // private Logger logger = Logger.getLogger(GameEngineWorker.class.getName());
     @Inject
     private PlanetService planetService;
     @Inject
@@ -198,9 +195,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case PERFMON_REQUEST:
                 onPerfmonRequest();
                 break;
-            case SINGLE_Z_TERRAIN:
-                getTerrainZ((DecimalPosition) controlPackage.getData(0));
-                break;
             case TERRAIN_TILE_REQUEST:
                 getTerrainTile((Index) controlPackage.getData(0));
                 break;
@@ -297,13 +291,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             }
             BaseItemType baseItemType = syncBaseItem.getBaseItemType();
             if (baseItemType.getFactoryType() != null) {
-                factoryPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+                factoryPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition());
                 return true;
             }
             if (baseItemType.getBuilderType() != null) {
-                builderPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+                builderPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition());
             }
-            unitPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+            unitPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition());
             return null;
         });
 
@@ -407,9 +401,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         SyncResourceItemSimpleDto syncResourceItemSimpleDto = new SyncResourceItemSimpleDto();
         syncResourceItemSimpleDto.setId(syncResourceItem.getId());
         syncResourceItemSimpleDto.setItemTypeId(syncResourceItem.getItemType().getId());
-        syncResourceItemSimpleDto.setPosition2d(syncResourceItem.getSyncPhysicalArea().getPosition2d());
-        syncResourceItemSimpleDto.setPosition3d(syncResourceItem.getSyncPhysicalArea().getPosition3d());
-        syncResourceItemSimpleDto.setModel(syncResourceItem.getSyncPhysicalArea().getModelMatrices());
+        syncResourceItemSimpleDto.setPosition(syncResourceItem.getSyncPhysicalArea().getPosition());
         sendToClient(GameEngineControlPackage.Command.RESOURCE_CREATED, syncResourceItemSimpleDto);
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onResourceCreated(syncResourceItem);
@@ -429,9 +421,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         SyncBoxItemSimpleDto syncBoxItemSimpleDto = new SyncBoxItemSimpleDto();
         syncBoxItemSimpleDto.setId(syncBoxItem.getId());
         syncBoxItemSimpleDto.setItemTypeId(syncBoxItem.getItemType().getId());
-        syncBoxItemSimpleDto.setPosition2d(syncBoxItem.getSyncPhysicalArea().getPosition2d());
-        syncBoxItemSimpleDto.setPosition3d(syncBoxItem.getSyncPhysicalArea().getPosition3d());
-        syncBoxItemSimpleDto.setModel(syncBoxItem.getSyncPhysicalArea().getModelMatrices());
+        syncBoxItemSimpleDto.setPosition(syncBoxItem.getSyncPhysicalArea().getPosition());
         sendToClient(GameEngineControlPackage.Command.BOX_CREATED, syncBoxItemSimpleDto);
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onBoxCreated(syncBoxItem);
@@ -581,12 +571,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex target) {
+    public void onProjectileFired(SyncBaseItem syncBaseItem, DecimalPosition target) {
         sendToClient(GameEngineControlPackage.Command.PROJECTILE_FIRED, syncBaseItem.getId(), target);
     }
 
     @Override
-    public void onProjectileDetonation(int baseItemTypeId, Vertex position) {
+    public void onProjectileDetonation(int baseItemTypeId, DecimalPosition position) {
         sendToClient(GameEngineControlPackage.Command.PROJECTILE_DETONATION, baseItemTypeId, position);
     }
 
@@ -628,16 +618,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     private void onPerfmonRequest() {
         sendToClient(GameEngineControlPackage.Command.PERFMON_RESPONSE, perfmonService.peekClientPerfmonStatistics());
-    }
-
-    private void getTerrainZ(DecimalPosition position) {
-        try {
-            double z = terrainService.getSurfaceAccess().getInterpolatedZ(position);
-            sendToClient(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN_ANSWER, position, z);
-        } catch (NoInterpolatedTerrainTriangleException e) {
-            logger.warning("GameEngineWorker.getTerrainZ() " + e.getMessage());
-            sendToClient(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN_ANSWER_FAIL, position);
-        }
     }
 
     private void getTerrainTile(Index terrainTileIndex) {
@@ -737,10 +717,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             nativeSimpleSyncBaseItemTickInfo.itemTypeId = item.getBaseItemType().getId();
             nativeSimpleSyncBaseItemTickInfo.contained = item.isContainedIn();
             if (!nativeSimpleSyncBaseItemTickInfo.contained) {
-                Vertex position = item.getSyncPhysicalArea().getPosition3d();
-                nativeSimpleSyncBaseItemTickInfo.x = position.getX();
-                nativeSimpleSyncBaseItemTickInfo.y = position.getY();
-                nativeSimpleSyncBaseItemTickInfo.z = position.getZ();
+                nativeSimpleSyncBaseItemTickInfo.x = item.getSyncPhysicalArea().getPosition().getX();
+                nativeSimpleSyncBaseItemTickInfo.y = item.getSyncPhysicalArea().getPosition().getY();
             }
             return nativeSimpleSyncBaseItemTickInfo;
         }).toArray(value -> new NativeSimpleSyncBaseItemTickInfo[killedSyncBaseItems.size()]);

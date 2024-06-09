@@ -3,7 +3,6 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -22,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -36,7 +34,6 @@ public class TerrainUiService {
     private GameEngineControl gameEngineControl;
     @Inject
     private Instance<UiTerrainTile> uiTerrainTileInstance;
-    private final MapCollection<DecimalPosition, BiConsumer<DecimalPosition, Double>> terrainZConsumers = new MapCollection<>();
     private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
     private final Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
     private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
@@ -50,7 +47,6 @@ public class TerrainUiService {
     }
 
     public void clear() {
-        terrainZConsumers.clear();
         clearTerrainTiles();
     }
 
@@ -157,20 +153,6 @@ public class TerrainUiService {
             throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay(Collection<DecimalPosition>, BaseItemType) UiTerrainTile not loaded: " + terrainTile);
         }
         return uiTerrainTile.isTerrainTypeAllowed(terrainType, terrainPosition);
-    }
-
-    public void onTerrainZAnswer(DecimalPosition position, double z) {
-        Collection<BiConsumer<DecimalPosition, Double>> consumers = terrainZConsumers.remove(position);
-        for (BiConsumer<DecimalPosition, Double> consumer : consumers) {
-            consumer.accept(position, z);
-        }
-    }
-
-    public void onTerrainZAnswerFail(DecimalPosition position) {
-        Collection<BiConsumer<DecimalPosition, Double>> consumers = terrainZConsumers.remove(position);
-        for (BiConsumer<DecimalPosition, Double> consumer : consumers) {
-            consumer.accept(position, null);
-        }
     }
 
     public void requestTerrainTile(Index terrainTileIndex, Consumer<TerrainTile> terrainTileConsumer) {

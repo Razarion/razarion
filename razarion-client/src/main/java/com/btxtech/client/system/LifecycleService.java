@@ -19,7 +19,6 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.effects.TrailService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
-import com.btxtech.uiservice.item.ItemMarkerService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.system.boot.Boot;
@@ -69,8 +68,6 @@ public class LifecycleService {
     @Inject
     private BoxUiService boxUiService;
     @Inject
-    private ItemMarkerService itemMarkerService;
-    @Inject
     private ResourceUiService resourceUiService;
     @Inject
     private ProjectileUiService projectileUiService;
@@ -104,7 +101,7 @@ public class LifecycleService {
         boot.addStartupProgressListener(new StartupProgressListener() {
             @Override
             public void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
-                if(userUiService.isAdmin()) {
+                if (userUiService.isAdmin()) {
                     gwtAngularService.onCrash();
                     screenCover.get().removeLoadingCover();
                 }
@@ -177,7 +174,6 @@ public class LifecycleService {
         clientPerformanceTrackerService.stop();
         perfmonService.stop();
         selectionHandler.clearSelection(true);
-        itemMarkerService.clear();
         projectileUiService.clear();
         trailService.clear();
         terrainUiService.clear();

@@ -93,7 +93,6 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
         info1.itemTypeId = BUILDER_ITEM_TYPE_ID;
         info1.x = 10;
         info1.y = 10;
-        info1.z = 0;
         info1.spawning = 1;
         info1.health = 1;
         info1.buildup = 1;
@@ -104,7 +103,6 @@ public class InputServiceTest extends WeldUiBaseIntegrationTest {
         info2.itemTypeId = FACTORY_ITEM_TYPE_ID;
         info2.x = 12;
         info2.y = 10;
-        info2.z = 0;
         info2.spawning = 1;
         info2.health = 1;
         info2.buildup = 1;

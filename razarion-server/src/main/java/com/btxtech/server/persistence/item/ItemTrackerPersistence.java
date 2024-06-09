@@ -55,7 +55,7 @@ public class ItemTrackerPersistence {
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_SPAWN);
                 event.setItemId(syncBaseItem.getId());
-                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition());
                 event.setItemTypeId(syncBaseItem.getBaseItemType().getId());
                 event.setActorBaseId(syncBaseItem.getBase().getBaseId());
                 event.setActorBaseBotId(syncBaseItem.getBase().getBotId());
@@ -70,7 +70,7 @@ public class ItemTrackerPersistence {
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_SPAWN_DIRECTLY);
                 event.setItemId(syncBaseItem.getId());
-                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition());
                 event.setItemTypeId(syncBaseItem.getBaseItemType().getId());
                 event.setActorBaseId(syncBaseItem.getBase().getBaseId());
                 event.setActorBaseBotId(syncBaseItem.getBase().getBotId());
@@ -84,7 +84,7 @@ public class ItemTrackerPersistence {
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_BUILT);
                 event.setItemId(syncBaseItem.getId());
-                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition());
                 event.setItemTypeId(syncBaseItem.getBaseItemType().getId());
                 event.setActorBaseId(syncBaseItem.getBase().getBaseId());
                 event.setActorBaseBotId(syncBaseItem.getBase().getBotId());
@@ -99,7 +99,7 @@ public class ItemTrackerPersistence {
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_FACTORIZED);
                 event.setItemId(syncBaseItem.getId());
-                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition());
                 event.setItemTypeId(syncBaseItem.getBaseItemType().getId());
                 event.setActorBaseId(syncBaseItem.getBase().getBaseId());
                 event.setActorBaseBotId(syncBaseItem.getBase().getBotId());
@@ -116,7 +116,7 @@ public class ItemTrackerPersistence {
                 event.setType(ItemTracking.Type.BASE_ITEM_KILLED);
                 event.setItemId(syncBaseItem.getId());
                 event.setItemTypeId(syncBaseItem.getBaseItemType().getId());
-                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition());
                 event.setTargetBaseId(syncBaseItem.getBase().getBaseId());
                 event.setTargetBaseBotId(syncBaseItem.getBase().getBotId());
                 if (syncBaseItem.getBase().getUserId() != null) {
@@ -136,7 +136,7 @@ public class ItemTrackerPersistence {
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_REMOVED);
                 event.setItemId(syncBaseItem.getId());
-                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+                event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition());
                 event.setItemTypeId(syncBaseItem.getBaseItemType().getId());
                 event.setTargetBaseId(syncBaseItem.getBase().getBaseId());
                 event.setTargetBaseBotId(syncBaseItem.getBase().getBotId());
@@ -150,7 +150,7 @@ public class ItemTrackerPersistence {
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.RESOURCE_ITEM_CREATED);
                 event.setItemId(resource.getId());
-                event.setDecimalPosition(resource.getSyncPhysicalArea().getPosition2d());
+                event.setDecimalPosition(resource.getSyncPhysicalArea().getPosition());
                 event.setItemTypeId(resource.getItemType().getId());
             };
     private static final EventTranslatorTwoArg<ItemTracking, Date, SyncResourceItem> RESOURCE_ITEM_DELETED =
@@ -159,7 +159,7 @@ public class ItemTrackerPersistence {
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.RESOURCE_ITEM_DELETED);
                 event.setItemId(resource.getId());
-                event.setDecimalPosition(resource.getSyncPhysicalArea().getPosition2d());
+                event.setDecimalPosition(resource.getSyncPhysicalArea().getPosition());
                 event.setItemTypeId(resource.getItemType().getId());
             };
     private static final EventTranslatorTwoArg<ItemTracking, Date, SyncBoxItem> BOX_ITEM_CREATED =
@@ -168,7 +168,7 @@ public class ItemTrackerPersistence {
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BOX_ITEM_CREATED);
                 event.setItemId(box.getId());
-                event.setDecimalPosition(box.getSyncPhysicalArea().getPosition2d());
+                event.setDecimalPosition(box.getSyncPhysicalArea().getPosition());
                 event.setItemTypeId(box.getItemType().getId());
             };
     private static final EventTranslatorTwoArg<ItemTracking, Date, SyncBoxItem> BOX_ITEM_DELETED =
@@ -177,7 +177,7 @@ public class ItemTrackerPersistence {
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BOX_ITEM_DELETED);
                 event.setItemId(box.getId());
-                event.setDecimalPosition(box.getSyncPhysicalArea().getPosition2d());
+                event.setDecimalPosition(box.getSyncPhysicalArea().getPosition());
                 event.setItemTypeId(box.getItemType().getId());
             };
 

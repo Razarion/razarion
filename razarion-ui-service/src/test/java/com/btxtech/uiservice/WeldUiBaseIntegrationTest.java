@@ -1,7 +1,7 @@
 package com.btxtech.uiservice;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.PlanetVisualConfig;
@@ -94,21 +94,19 @@ public class WeldUiBaseIntegrationTest {
                 .character(Character.HUMAN));
     }
 
-    protected SyncResourceItemSimpleDto createResource(int id, int itemTypeId, Vertex position3d) {
+    protected SyncResourceItemSimpleDto createResource(int id, int itemTypeId, DecimalPosition position) {
         SyncResourceItemSimpleDto syncResourceItemSimpleDto = new SyncResourceItemSimpleDto();
         syncResourceItemSimpleDto.setId(id);
         syncResourceItemSimpleDto.setItemTypeId(itemTypeId);
-        syncResourceItemSimpleDto.setPosition2d(position3d.toXY());
-        syncResourceItemSimpleDto.setPosition3d(position3d);
+        syncResourceItemSimpleDto.setPosition(position);
         return syncResourceItemSimpleDto;
     }
 
-    protected SyncBoxItemSimpleDto createBox(int id, int itemTypeId, Vertex position3d) {
+    protected SyncBoxItemSimpleDto createBox(int id, int itemTypeId, DecimalPosition position) {
         SyncBoxItemSimpleDto syncBoxItemSimpleDto = new SyncBoxItemSimpleDto();
         syncBoxItemSimpleDto.setId(id);
         syncBoxItemSimpleDto.setItemTypeId(itemTypeId);
-        syncBoxItemSimpleDto.setPosition2d(position3d.toXY());
-        syncBoxItemSimpleDto.setPosition3d(position3d);
+        syncBoxItemSimpleDto.setPosition(position);
         return syncBoxItemSimpleDto;
     }
 
@@ -209,8 +207,8 @@ public class WeldUiBaseIntegrationTest {
                 // Resource
                 getWeldBean(ResourceUiService.class).getResources().forEach((integer, syncResourceItemSimpleDto) -> {
                     getGc().setFill(Color.PINK);
-                    getGc().fillOval(syncResourceItemSimpleDto.getPosition2d().getX() - radiusResource,
-                            syncResourceItemSimpleDto.getPosition2d().getY() - radiusResource,
+                    getGc().fillOval(syncResourceItemSimpleDto.getPosition().getX() - radiusResource,
+                            syncResourceItemSimpleDto.getPosition().getY() - radiusResource,
                             2 * radiusResource,
                             2 * radiusResource);
 
@@ -228,8 +226,8 @@ public class WeldUiBaseIntegrationTest {
                 // Box
                 getWeldBean(BoxUiService.class).getBoxes().forEach((integer, syncBoxItemSimpleDto) -> {
                     getGc().setFill(Color.LIGHTGREEN);
-                    getGc().fillOval(syncBoxItemSimpleDto.getPosition2d().getX() - radiusBox,
-                            syncBoxItemSimpleDto.getPosition2d().getY() - radiusBox,
+                    getGc().fillOval(syncBoxItemSimpleDto.getPosition().getX() - radiusBox,
+                            syncBoxItemSimpleDto.getPosition().getY() - radiusBox,
                             2 * radiusBox,
                             2 * radiusBox);
 

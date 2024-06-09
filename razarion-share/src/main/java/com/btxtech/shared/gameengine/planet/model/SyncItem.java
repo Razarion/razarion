@@ -62,14 +62,10 @@ public abstract class SyncItem {
         throw new IllegalStateException("SyncItem does not have a SyncPhysicalMovable: " + this);
     }
 
-    public Matrix4 getModelMatrices() {
-        return syncPhysicalArea.getModelMatrices();
-    }
-
     @Override
     public String toString() {
         if(syncPhysicalArea != null) {
-            return "SyncItem: id=" + id + "|" + itemType + "|" + syncPhysicalArea.getPosition2d();
+            return "SyncItem: id=" + id + "|" + itemType + "|" + syncPhysicalArea.getPosition();
         } else {
             return "SyncItem: id=" + id + "|" + itemType + "|no syncPhysicalArea";
         }

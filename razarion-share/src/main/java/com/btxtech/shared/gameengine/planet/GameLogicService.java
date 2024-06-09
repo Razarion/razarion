@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -113,11 +114,11 @@ public class GameLogicService {
     public void onSyncFactoryStopped(SyncBaseItem syncBaseItem) {
     }
 
-    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex target) {
+    public void onProjectileFired(SyncBaseItem syncBaseItem, DecimalPosition target) {
         gameLogicListener.ifPresent(listener -> listener.onProjectileFired(syncBaseItem, target));
     }
 
-    public void onProjectileDetonation(SyncBaseItem syncBaseItem, Vertex position) {
+    public void onProjectileDetonation(SyncBaseItem syncBaseItem, DecimalPosition position) {
         gameLogicListener.ifPresent(listener -> listener.onProjectileDetonation(syncBaseItem.getBaseItemType().getId(), position));
     }
 

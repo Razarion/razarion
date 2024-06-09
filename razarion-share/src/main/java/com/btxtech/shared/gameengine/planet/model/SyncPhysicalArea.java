@@ -7,7 +7,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.nativejs.NativeMatrixDto;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
@@ -26,26 +25,17 @@ import java.util.logging.Logger;
 public class SyncPhysicalArea {
     private Logger logger = Logger.getLogger(SyncPhysicalArea.class.getName());
     @Inject
-    private TerrainService terrainService;
-    @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
-    @Inject
     private SyncItemContainerServiceImpl syncItemContainerService;
     private SyncItem syncItem;
-    private DecimalPosition position2d;
+    private DecimalPosition position;
     private double angle;
-    private Vertex position3d;
-    private Vertex norm;
     private double radius;
-    private boolean fixVerticalNorm;
     private TerrainType terrainType;
     private Matrix4 modelMatrices;
-    private NativeMatrixDto modelNativeMatrixDto;
 
     public void init(SyncItem syncItem, double radius, boolean fixVerticalNorm, TerrainType terrainType, DecimalPosition position2d, double angle) {
         this.syncItem = syncItem;
         this.radius = radius;
-        this.fixVerticalNorm = fixVerticalNorm;
         this.terrainType = terrainType;
         setPosition2d(position2d, false);
         this.angle = angle;
@@ -59,20 +49,18 @@ public class SyncPhysicalArea {
         return terrainType;
     }
 
-    public DecimalPosition getPosition2d() {
-        return position2d;
+    public DecimalPosition getPosition() {
+        return position;
     }
 
     public boolean hasPosition() {
-        return position2d != null;
+        return position != null;
     }
 
     void setPosition2d(DecimalPosition position2d, boolean pathingService) {
-        DecimalPosition oldPosition = this.position2d;
-        this.position2d = position2d;
-        syncItemContainerService.onPositionChanged(getSyncItem(), oldPosition, this.position2d, pathingService);
-        position3d = null;
-        norm = null;
+        DecimalPosition oldPosition = this.position;
+        this.position = position2d;
+        syncItemContainerService.onPositionChanged(getSyncItem(), oldPosition, this.position, pathingService);
     }
 
     public double getAngle() {
@@ -83,63 +71,20 @@ public class SyncPhysicalArea {
         this.angle = angle;
     }
 
-    public void setupPosition3d() {
-        if (position3d != null && norm != null) {
-            return;
-        }
-        if (fixVerticalNorm) {
-            position3d = new Vertex(position2d, terrainService.getSurfaceAccess().getHighestZInRegion(position2d, radius));
-            norm = Vertex.Z_NORM;
-        } else {
-            position3d = new Vertex(position2d, terrainService.getSurfaceAccess().getInterpolatedZ(position2d));
-            norm = terrainService.getSurfaceAccess().getInterpolatedNorm(position2d);
-        }
-        modelMatrices = null;
-        modelNativeMatrixDto = null;
-    }
-
-    public Vertex getPosition3d() {
-        if (position3d == null) {
-            throw new IllegalStateException("Position3d is not set");
-        }
-        return position3d;
-    }
-
-    public Vertex getNorm() {
-        if (norm == null) {
-            throw new IllegalStateException("Norm is not set");
-        }
-        return norm;
-    }
-
-    public Matrix4 getModelMatrices() {
-        if (modelMatrices == null) {
-            modelMatrices = Matrix4.createTranslation(getPosition3d()).multiply(Matrix4.createFromNormAndYaw(getNorm(), angle));
-        }
-        return modelMatrices;
-    }
-
-    public NativeMatrixDto getModelNativeMatrixDto() {
-        if (modelNativeMatrixDto == null) {
-            modelNativeMatrixDto = nativeMatrixFactory.createNativeMatrixDtoColumnMajorArray(getModelMatrices().toWebGlArray());
-        }
-        return modelNativeMatrixDto;
-    }
-
     public boolean hasDestination() {
         return false;
     }
 
     public boolean overlap(DecimalPosition position) {
-        return position2d.getDistance(position) < radius;
+        return this.position.getDistance(position) < radius;
     }
 
     public boolean overlap(DecimalPosition position, double radius) {
-        return position2d.getDistance(position) < this.radius + radius;
+        return this.position.getDistance(position) < this.radius + radius;
     }
 
     public boolean overlap(Rectangle2D rectangle) {
-        return rectangle.adjoinsCircleExclusive(position2d, radius);
+        return rectangle.adjoinsCircleExclusive(position, radius);
     }
 
     boolean isInRange(double range, SyncItem target) {
@@ -155,11 +100,11 @@ public class SyncPhysicalArea {
     }
 
     public double getDistance(SyncPhysicalArea syncPhysicalArea) {
-        return getDistance(syncPhysicalArea.position2d, syncPhysicalArea.getRadius());
+        return getDistance(syncPhysicalArea.position, syncPhysicalArea.getRadius());
     }
 
     public double getDistance(DecimalPosition position, double radius) {
-        return position2d.getDistance(position) - this.radius - radius;
+        return this.position.getDistance(position) - this.radius - radius;
     }
 
     public double getDistance(SyncItem other) {
@@ -180,33 +125,24 @@ public class SyncPhysicalArea {
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
         // logger.severe("synchronize id: " + getSyncItem().getId() + ". " + syncPhysicalAreaInfo);
-        DecimalPosition oldPosition2d = position2d;
+        DecimalPosition oldPosition2d = position;
         double oldAngle = angle;
         // System.out.println("synchronize: " + getSyncItem().getId() + "|" + syncPhysicalAreaInfo);
-        if (position2d != null && syncPhysicalAreaInfo.getPosition() != null) {
-            if (position2d.getDistance(syncPhysicalAreaInfo.getPosition()) > 0.5) {
+        if (position != null && syncPhysicalAreaInfo.getPosition() != null) {
+            if (position.getDistance(syncPhysicalAreaInfo.getPosition()) > 0.5) {
                 // System.out.println("TELEPORTING: " + getSyncItem().getId() + " p: " + position2d + ". new p: " + syncPhysicalAreaInfo.getPosition() + ". distance: " + position2d.getDistance(syncPhysicalAreaInfo.getPosition()));
-                logger.severe("TELEPORTING: " + getSyncItem().getId() + " p: " + position2d + ". new p: " + syncPhysicalAreaInfo.getPosition() + ". distance: " + position2d.getDistance(syncPhysicalAreaInfo.getPosition()));
+                logger.severe("TELEPORTING: " + getSyncItem().getId() + " p: " + position + ". new p: " + syncPhysicalAreaInfo.getPosition() + ". distance: " + position.getDistance(syncPhysicalAreaInfo.getPosition()));
             }
         }
-        position2d = syncPhysicalAreaInfo.getPosition();
-        syncItemContainerService.onPositionChanged(getSyncItem(), oldPosition2d, position2d, false);
+        position = syncPhysicalAreaInfo.getPosition();
+        syncItemContainerService.onPositionChanged(getSyncItem(), oldPosition2d, position, false);
         angle = syncPhysicalAreaInfo.getAngle();
-        if (position2d != null) {
-            if (oldPosition2d == null || !oldPosition2d.equals(position2d) || oldAngle != angle) {
-                position3d = null;
-                norm = null;
-                setupPosition3d();
-            }
-        } else {
-            position3d = null;
-        }
     }
 
     public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {
         SyncPhysicalAreaInfo syncPhysicalAreaInfo = new SyncPhysicalAreaInfo();
         syncPhysicalAreaInfo.setAngle(angle);
-        syncPhysicalAreaInfo.setPosition(position2d);
+        syncPhysicalAreaInfo.setPosition(position);
         return syncPhysicalAreaInfo;
     }
 
@@ -214,8 +150,7 @@ public class SyncPhysicalArea {
     public String toString() {
         return "SyncPhysicalArea{" +
                 "itemId=" + syncItem.getId() +
-                ", position3d=" + position3d +
-                ", norm=" + norm +
+                "position2d=" + position +
                 ", radius=" + radius +
                 '}';
     }

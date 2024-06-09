@@ -89,7 +89,7 @@ public class ResourceUiService {
         synchronized (resources) {
             for (SyncResourceItemSimpleDto resource : resources.values()) {
                 ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resource.getItemTypeId());
-                if (resource.getPosition2d().getDistance(decimalPosition) <= resourceItemType.getRadius()) {
+                if (resource.getPosition().getDistance(decimalPosition) <= resourceItemType.getRadius()) {
                     return resource;
                 }
             }
@@ -102,7 +102,7 @@ public class ResourceUiService {
         synchronized (resources) {
             for (SyncResourceItemSimpleDto resource : resources.values()) {
                 ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resource.getItemTypeId());
-                if (rectangle.adjoinsCircleExclusive(resource.getPosition2d(), resourceItemType.getRadius())) {
+                if (rectangle.adjoinsCircleExclusive(resource.getPosition(), resourceItemType.getRadius())) {
                     result.add(resource);
                 }
             }
@@ -118,7 +118,7 @@ public class ResourceUiService {
                 if (resourceItemType.getId() != resourceTypeId) {
                     continue;
                 }
-                if (resourceSelection.checkInside(resource.getPosition2d(), resourceItemType.getRadius())) {
+                if (resourceSelection.checkInside(resource.getPosition(), resourceItemType.getRadius())) {
                     result.add(resource);
                 }
             }
@@ -131,18 +131,18 @@ public class ResourceUiService {
             return;
         }
         if (syncStaticItemSetPositionMonitor != null) {
-            syncStaticItemSetPositionMonitor.setInvisibleSyncItem(null,null);
+            syncStaticItemSetPositionMonitor.setInvisibleSyncItem(null, null);
         }
         DecimalPosition viewFiledCenter = viewFieldAabb.center();
         synchronized (resources) {
             Set<Integer> unused = new HashSet<>(babylonResourceItems.keySet());
             resources.forEach((id, syncResourceItemSimpleDto) -> {
                 ResourceItemType resourceItemType = itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId());
-                if (viewFieldAabb.adjoinsCircleExclusive(syncResourceItemSimpleDto.getPosition2d(), resourceItemType.getRadius())) {
+                if (viewFieldAabb.adjoinsCircleExclusive(syncResourceItemSimpleDto.getPosition(), resourceItemType.getRadius())) {
                     BabylonResourceItem visibleResource = babylonResourceItems.get(id);
                     if (visibleResource == null) {
                         visibleResource = babylonRendererService.createBabylonResourceItem(id, resourceItemType);
-                        visibleResource.setPosition(syncResourceItemSimpleDto.getPosition3d());
+                        visibleResource.setPosition(syncResourceItemSimpleDto.getPosition());
                         visibleResource.updatePosition();
                         babylonResourceItems.put(id, visibleResource);
                         if (syncStaticItemSetPositionMonitor != null) {
@@ -205,7 +205,7 @@ public class ResourceUiService {
 
     public SyncItemMonitor monitorSyncResourceItem(SyncResourceItemSimpleDto syncResourceItemSimpleDto) {
         // No monitoring is done, since resources do not move
-        return new SyncItemState(syncResourceItemSimpleDto.getId(), syncResourceItemSimpleDto.getPosition2d(), syncResourceItemSimpleDto.getPosition3d(), itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
+        return new SyncItemState(syncResourceItemSimpleDto.getId(), syncResourceItemSimpleDto.getPosition(), itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 
     public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor(MarkerConfig markerConfig) {
@@ -215,7 +215,7 @@ public class ResourceUiService {
         if (viewField == null) {
             throw new IllegalStateException("ResourceUiService.createSyncItemSetPositionMonitor() viewField != null");
         }
-        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(babylonRendererService, markerConfig,() -> syncStaticItemSetPositionMonitor = null);
+        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(babylonRendererService, markerConfig, () -> syncStaticItemSetPositionMonitor = null);
         babylonResourceItems.values().forEach(syncStaticItemSetPositionMonitor::addVisible);
         if (babylonResourceItems.isEmpty()) {
             DecimalPosition viewFieldCenter = viewField.calculateCenter();

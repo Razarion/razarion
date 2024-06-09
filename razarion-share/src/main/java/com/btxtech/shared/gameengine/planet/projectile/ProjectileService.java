@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.projectile;
 
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
@@ -15,7 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -47,12 +45,12 @@ public class ProjectileService {
             // projectileDetonation(projectileGroup);
             throw new UnsupportedOperationException();
         }
-        Projectile projectile = new Projectile(actor, target.getSyncPhysicalArea().getPosition3d());
+        Projectile projectile = new Projectile(actor, target.getSyncPhysicalArea().getPosition());
         synchronized (projectiles) {
             projectiles.add(projectile);
         }
 
-        gameLogicService.onProjectileFired(actor, target.getSyncPhysicalArea().getPosition3d());
+        gameLogicService.onProjectileFired(actor, target.getSyncPhysicalArea().getPosition());
     }
 
     public void tick() {
@@ -74,21 +72,15 @@ public class ProjectileService {
     private void projectileDetonation(Projectile detonationProjectile) {
         WeaponType weaponType = detonationProjectile.getActor().getSyncWeapon().getWeaponType();
         gameLogicService.onProjectileDetonation(detonationProjectile.getActor(), detonationProjectile.getTarget());
-        Collection<SyncBaseItem> possibleTargets = syncItemContainerService.findBaseItemInRect(Rectangle2D.generateRectangleFromMiddlePoint(detonationProjectile.getTarget().toXY(), weaponType.getRange(), weaponType.getRange()));
+        Collection<SyncBaseItem> possibleTargets = syncItemContainerService.findBaseItemInRect(Rectangle2D.generateRectangleFromMiddlePoint(detonationProjectile.getTarget(), weaponType.getRange(), weaponType.getRange()));
         for (SyncBaseItem target : possibleTargets) {
-            if (!target.getSyncPhysicalArea().overlap(detonationProjectile.getTarget().toXY(), weaponType.getDetonationRadius())) {
+            if (!target.getSyncPhysicalArea().overlap(detonationProjectile.getTarget(), weaponType.getDetonationRadius())) {
                 continue;
             }
             if (!baseItemService.isEnemy(detonationProjectile.getActor(), target)) {
                 continue;
             }
             target.onAttacked(weaponType.getDamage(), detonationProjectile.getActor());
-        }
-    }
-
-    public Collection<Projectile> getProjectiles() {
-        synchronized (projectiles) {
-            return Collections.unmodifiableCollection(projectiles);
         }
     }
 }
