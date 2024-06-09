@@ -81,7 +81,7 @@ public class DestinationFinder {
 
     private boolean isFree(PathingNodeWrapper pathingNodeWrapper) {
         for (Index index : subNodeIndexScope) {
-            if (!pathingAccess.isTerrainTypeAllowed(terrainType, pathingNodeWrapper.getCenter().add(TerrainUtil.smallestSubNodeCenter(index)))) {
+            if (!pathingAccess.isTerrainTypeAllowed(terrainType, pathingNodeWrapper.getNodeIndex().add(index))) {
                 return false;
             }
         }

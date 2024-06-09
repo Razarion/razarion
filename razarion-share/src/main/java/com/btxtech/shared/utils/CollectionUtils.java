@@ -131,8 +131,8 @@ public class CollectionUtils {
         }
     }
 
-    public static double getMax(Collection<Double> values) {
-        if (values == null || values.isEmpty()) {
+    public static double getMax(double... values) {
+        if (values == null || values.length == 0) {
             throw new IllegalArgumentException("values not allowed to be null or empty");
         }
         double last = Double.MIN_VALUE;
@@ -142,8 +142,8 @@ public class CollectionUtils {
         return last;
     }
 
-    public static double getMin(Collection<Double> values) {
-        if (values == null || values.isEmpty()) {
+    public static double getMin(double... values) {
+        if (values == null || values.length == 0) {
             throw new IllegalArgumentException("values not allowed to be null or empty");
         }
         double last = Double.MAX_VALUE;
@@ -179,4 +179,28 @@ public class CollectionUtils {
     public static List<BaseItemType> sortBaseItemTypeName(Collection<BaseItemType> baseItemTypes) {
         return baseItemTypes.stream().sorted(BaseItemType::nameComparator).collect(Collectors.toList());
     }
+
+    public static int[] convertToUnsignedIntArray(byte[] byteArray) {
+        if (byteArray == null || byteArray.length == 0) {
+            return null;
+        }
+
+        int length = (int) Math.ceil(byteArray.length / 2.0);
+        int[] unsignedIntArray = new int[length];
+
+        for (int i = 0; i < unsignedIntArray.length; i++) {
+            int lower = byteArray[i * 2];
+            if(lower < 0) {
+                lower = 256 + lower;
+            }
+            int upper = byteArray[i * 2 + 1];
+            if(upper < 0) {
+                upper = 256 + upper;
+            }
+
+            unsignedIntArray[i] = lower + (upper << 8);
+        }
+        return unsignedIntArray;
+    }
+
 }

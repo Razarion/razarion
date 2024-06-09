@@ -62,6 +62,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.terrainPositionToNodeIndex;
+
 
 /**
  * Created by Beat
@@ -374,26 +376,13 @@ public class WeldTestRenderer {
             for (double y = from.getY(); y < from.getY() + length; y++) {
                 DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
                 try {
-                    double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
-                    // Z
-                    gc.setFill(color4Z(z));
+                    TerrainType terrainType = terrainService.getPathingAccess().getTerrainType(terrainPositionToNodeIndex(samplePosition));
+                    gc.setFill(color4TerrainType(terrainType));
                 } catch (Exception e) {
                     gc.setFill(Color.RED);
                     e.printStackTrace();
                 }
-                gc.fillRect(x, y, 0.5, 0.5);
-                // Norm
-                Vertex norm = terrainService.getSurfaceAccess().getInterpolatedNorm(samplePosition);
-                if (MathHelper.compareWithPrecision(norm.magnitude(), 1.0)) {
-                    gc.setFill(color4Norm(norm));
-                } else {
-                    gc.setFill(Color.BLACK);
-                }
-                gc.fillRect(x + 0.5, y, 0.5, 0.5);
-                // TerrainType
-                TerrainType terrainType = terrainService.getPathingAccess().getTerrainType(samplePosition);
-                gc.setFill(color4TerrainType(terrainType));
-                gc.fillRect(x + 0.5, y + 0.5, 0.5, 0.5);
+                gc.fillRect(x, y, 1, 1);
             }
         }
     }
@@ -674,7 +663,7 @@ public class WeldTestRenderer {
         gc.setLineWidth(LINE_WIDTH * 4.0);
         gc.setStroke(Color.DARKGREEN);
         DecimalPosition absolute = TerrainUtil.toTileAbsolute(tileIndex);
-        gc.strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
+        // gc.strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
         displayNodes(absolute, terrainShapeTile);
 
         if (weldTestController.renderShapeTerrainObject()) {
@@ -1008,7 +997,7 @@ public class WeldTestRenderer {
             case WATER_COAST:
                 return Color.SANDYBROWN;
             case BLOCKED:
-                return Color.RED;
+                return Color.GRAY;
             default:
                 throw new IllegalArgumentException("Unknown terrainType: " + terrainType);
         }

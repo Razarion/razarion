@@ -16,7 +16,8 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH;
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.NODE_X_COUNT;
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.NODE_Y_COUNT;
 import static elemental2.dom.DomGlobal.fetch;
 
 /**
@@ -77,9 +78,14 @@ public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
     }
 
     @Override
-    public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
-        int totalTileNodes = ((int) TERRAIN_TILE_ABSOLUTE_LENGTH + 1) * ((int) TERRAIN_TILE_ABSOLUTE_LENGTH + 1);
+    public Uint16ArrayEmu createTileGroundHeightMap(Index terrainTileIndex) {
+        int totalTileNodes = (NODE_X_COUNT + 1) * (NODE_Y_COUNT + 1);
         int start = totalTileNodes * (terrainTileIndex.getY() * terrainService.getTerrainShape().getTileXCount() + terrainTileIndex.getX());
         return Js.uncheckedCast(terrainHeightMap.slice(start, start + totalTileNodes));
+    }
+
+    @Override
+    public int getGroundHeightAt(int index) {
+        return terrainHeightMap.getAt(index).intValue();
     }
 }

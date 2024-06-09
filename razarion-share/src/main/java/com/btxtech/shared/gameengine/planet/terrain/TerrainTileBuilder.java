@@ -24,7 +24,7 @@ public class TerrainTileBuilder {
     public void init(Index terrainTileIndex, Rectangle2D playGround) {
         terrainTile = new TerrainTile();
         terrainTile.setIndex(terrainTileIndex);
-        terrainTile.setGroundHeightMap(nativeTerrainShapeAccess.createGroundHeightMap(terrainTileIndex));
+        terrainTile.setGroundHeightMap(nativeTerrainShapeAccess.createTileGroundHeightMap(terrainTileIndex));
     }
 
     public TerrainTile generate(PlanetConfig planetConfig) {

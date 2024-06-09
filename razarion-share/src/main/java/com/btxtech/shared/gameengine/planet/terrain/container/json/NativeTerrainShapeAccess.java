@@ -12,5 +12,7 @@ import java.util.function.Consumer;
 public interface NativeTerrainShapeAccess {
     void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback);
 
-    Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex);
+    Uint16ArrayEmu createTileGroundHeightMap(Index terrainTileIndex);
+
+    int getGroundHeightAt(int index);
 }

@@ -239,7 +239,6 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
       }
     }
 
-
     let compressed = pako.gzip(new Uint8Array(uint16Array.buffer));
     const blob = new Blob([compressed.buffer], { type: 'application/octet-stream' });
 

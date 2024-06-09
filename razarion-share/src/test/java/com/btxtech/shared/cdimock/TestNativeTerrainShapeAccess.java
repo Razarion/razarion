@@ -14,9 +14,15 @@ import com.btxtech.shared.system.alarm.AlarmService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.zip.GZIPInputStream;
+
+import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray;
 
 /**
  * Created by Beat
@@ -32,26 +38,36 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     private List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
     private List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;
+    private int[] groundHeightMap;
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
         TerrainShapeManager terrainShape;
         if (terrainSlopePositions != null && terrainObjectPositions != null) {
-            terrainShape = new TerrainShapeManager(planetConfig, terrainTypeService, alarmService, terrainSlopePositions, terrainObjectPositions);
+            terrainShape = new TerrainShapeManager(planetConfig, nativeTerrainShapeAccess, terrainTypeService, alarmService, terrainObjectPositions);
             loadedCallback.accept(terrainShape.toNativeTerrainShape());
         } else if (nativeTerrainShapeAccess != null) {
-            terrainShape = new TerrainShapeManager();
-            terrainShape.lazyInit(planetConfig, nativeTerrainShapeAccess, () -> {
-                loadedCallback.accept(terrainShape.toNativeTerrainShape());
-            }, failCallback);
+            terrainShape = new TerrainShapeManager(nativeTerrainShapeAccess);
+            terrainShape.lazyInit(planetConfig, () -> loadedCallback.accept(terrainShape.toNativeTerrainShape()), failCallback);
         } else {
             throw new RuntimeException("++++++++++ Unexpected ++++++++++");
         }
     }
 
     @Override
-    public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
+    public Uint16ArrayEmu createTileGroundHeightMap(Index terrainTileIndex) {
         return new TestUint16Array();
+    }
+
+    @Override
+    public int getGroundHeightAt(int index) {
+        if (groundHeightMap == null) {
+            throw new IllegalStateException("groundHeightMap == null");
+        }
+        if(index < 0 || index >= groundHeightMap.length) {
+            throw new IllegalArgumentException("index out of bounds");
+        }
+        return groundHeightMap[index];
     }
 
     public void setPlanetConfig(PlanetConfig planetConfig) {
@@ -78,11 +94,39 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             }
 
             @Override
-            public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
+            public Uint16ArrayEmu createTileGroundHeightMap(Index terrainTileIndex) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public int getGroundHeightAt(int index) {
                 throw new UnsupportedOperationException();
             }
         };
         terrainSlopePositions = null;
         terrainObjectPositions = null;
     }
+
+    public void loadHeightMap(String expectedResource, Class resourceLoader) {
+        try {
+            InputStream inputStream = resourceLoader.getResourceAsStream(expectedResource);
+            if (inputStream == null) {
+                throw new IOException("No Resource " + expectedResource + " found in " + resourceLoader);
+            }
+            GZIPInputStream gis = new GZIPInputStream(inputStream);
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            byte[] tmp = new byte[256];
+            int n;
+            while ((n = gis.read(tmp)) != -1) {
+                buffer.write(tmp, 0, n);
+            }
+
+            groundHeightMap = convertToUnsignedIntArray(buffer.toByteArray());
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+
 }

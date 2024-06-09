@@ -72,12 +72,12 @@ public class NodeHandlerHelper {
         if (!expectedSubNodeDepthX.isEmpty()) {
             for (Iterator<PathingNodeWrapper> iterator = actual.iterator(); iterator.hasNext(); ) {
                 PathingNodeWrapper pathingNodeWrapper = iterator.next();
-                if (pathingNodeWrapper.getTerrainShapeSubNode() != null && pathingNodeWrapper.getTerrainShapeSubNode().getDepth() == depth) {
-                    if (!expectedSubNodeDepthX.remove(pathingNodeWrapper.getSubNodePosition())) {
-                        Assert.fail("Sub node with depth '" + depth + "' not expected: " + pathingNodeWrapper.getSubNodePosition());
-                    }
-                    iterator.remove();
-                }
+//                if (pathingNodeWrapper.getTerrainShapeSubNode() != null && pathingNodeWrapper.getTerrainShapeSubNode().getDepth() == depth) {
+//                    if (!expectedSubNodeDepthX.remove(pathingNodeWrapper.getSubNodePosition())) {
+//                        Assert.fail("Sub node with depth '" + depth + "' not expected: " + pathingNodeWrapper.getSubNodePosition());
+//                    }
+//                    iterator.remove();
+//                }
             }
             if (!expectedSubNodeDepthX.isEmpty()) {
                 Assert.fail("No all expected sub node with depth '" + depth + "' are in the actual collection: " + expectedSubNodeDepthX.stream().map(index -> index.toString() + ", ").collect(Collectors.joining()));

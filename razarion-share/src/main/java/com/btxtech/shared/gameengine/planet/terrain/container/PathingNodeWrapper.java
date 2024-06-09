@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
@@ -13,37 +12,18 @@ import java.util.function.Consumer;
  * on 11.07.2017.
  */
 public class PathingNodeWrapper {
-    private PathingAccess pathingAccess;
+    private TerrainType terrainType;
     private Index nodeIndex;
-    private TerrainShapeNode terrainShapeNode;
-    private TerrainShapeSubNode terrainShapeSubNode;
-    private DecimalPosition subNodePosition;
+    private PathingAccess pathingAccess;
 
-    public PathingNodeWrapper(PathingAccess pathingAccess, Index nodeIndex) {
-        this.pathingAccess = pathingAccess;
+    public PathingNodeWrapper(Index nodeIndex, TerrainType terrainType, PathingAccess pathingAccess) {
+        this.terrainType = terrainType;
         this.nodeIndex = nodeIndex;
-    }
-
-    public PathingNodeWrapper(PathingAccess pathingAccess, Index nodeIndex, TerrainShapeNode terrainShapeNode) {
         this.pathingAccess = pathingAccess;
-        this.nodeIndex = nodeIndex;
-        this.terrainShapeNode = terrainShapeNode;
-    }
-
-    public PathingNodeWrapper(PathingAccess pathingAccess, DecimalPosition subNodePosition, TerrainShapeSubNode terrainShapeSubNode) {
-        this.pathingAccess = pathingAccess;
-        this.subNodePosition = subNodePosition;
-        this.terrainShapeSubNode = terrainShapeSubNode;
     }
 
     public boolean isFree(TerrainType terrainType) {
-        if (terrainShapeNode == null && terrainShapeSubNode == null) {
-            return terrainType == TerrainType.LAND;
-        } else if (terrainShapeNode != null) {
-            return TerrainType.isAllowed(terrainType, terrainShapeNode.getTerrainType());
-        } else {
-            return TerrainType.isAllowed(terrainType, terrainShapeSubNode.getTerrainType());
-        }
+        return TerrainType.isAllowed(this.terrainType, terrainType);
     }
 
     public double getDistance(PathingNodeWrapper other) {
@@ -51,25 +31,8 @@ public class PathingNodeWrapper {
     }
 
     public DecimalPosition getCenter() {
-        if (nodeIndex != null) {
-            return TerrainUtil.toAbsoluteNodeCenter(nodeIndex);
-        } else if (subNodePosition != null) {
-            double length = TerrainUtil.calculateSubNodeLength(terrainShapeSubNode.getDepth()) / 2.0;
-            return subNodePosition.add(length, length);
-        } else {
-            throw new IllegalStateException("PathingNodeWrapper.getCenter()");
-        }
-    }
-
-    public Rectangle2D getRectangle() {
-        if (nodeIndex != null) {
-            return TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-        } else if (subNodePosition != null) {
-            double length = TerrainUtil.calculateSubNodeLength(terrainShapeSubNode.getDepth());
-            return new Rectangle2D(subNodePosition.getX(), subNodePosition.getY(), length, length);
-        } else {
-            throw new IllegalStateException("PathingNodeWrapper.getRectangle()");
-        }
+        return TerrainUtil.nodeIndexToTerrainPosition(nodeIndex)
+                .add(TerrainUtil.NODE_X_DISTANCE / 2.0, TerrainUtil.NODE_Y_DISTANCE / 2.0);
     }
 
     public void provideNorthSuccessors(AStarContext aStarContext, Consumer<PathingNodeWrapper> northNodeHandler) {
@@ -93,8 +56,9 @@ public class PathingNodeWrapper {
         if (!pathingAccess.isNodeInBoundary(neighborNodeIndex)) {
             return;
         }
-        if (aStarContext.isNullTerrainTypeAllowed()) {
-            northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, neighborNodeIndex));
+        TerrainType neighborTerrainType = pathingAccess.getTerrainType(neighborNodeIndex);
+        if (aStarContext.isAllowed(neighborTerrainType)) {
+            northNodeHandler.accept(new PathingNodeWrapper(neighborNodeIndex, neighborTerrainType, pathingAccess));
         }
     }
 
@@ -102,21 +66,9 @@ public class PathingNodeWrapper {
         return nodeIndex;
     }
 
-    public TerrainShapeNode getTerrainShapeNode() {
-        return terrainShapeNode;
-    }
-
-    public TerrainShapeSubNode getTerrainShapeSubNode() {
-        return terrainShapeSubNode;
-    }
-
-    public DecimalPosition getSubNodePosition() {
-        return subNodePosition;
-    }
-
     private Consumer<PathingNodeWrapper> checkScopeAdapter(AStarContext aStarContext, Consumer<PathingNodeWrapper> northNodeHandler) {
         return pathingNodeWrapper -> {
-            if (aStarContext.isStartSuck()) {
+            if (aStarContext.isStartStuck()) {
                 double distance = pathingNodeWrapper.getCenter().getDistance(aStarContext.getStartPosition());
                 if (distance < aStarContext.getMaxStuckDistance()) {
                     northNodeHandler.accept(pathingNodeWrapper);
@@ -129,21 +81,7 @@ public class PathingNodeWrapper {
     }
 
     public boolean isStuck(AStarContext aStarContext) {
-        if (aStarContext.hasSubNodeIndexScope()) {
-            if (getTerrainShapeSubNode() != null) {
-                for (Index index : aStarContext.getSubNodeIndexScope()) {
-                    DecimalPosition scanPosition = getCenter().add(TerrainUtil.smallestSubNodeCenter(index));
-                    if (!aStarContext.isAllowed(pathingAccess.getTerrainType(scanPosition))) {
-                        return true;
-                    }
-                }
-                return false;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        return false;
     }
 
     @Override
@@ -156,27 +94,17 @@ public class PathingNodeWrapper {
         }
 
         PathingNodeWrapper other = (PathingNodeWrapper) o;
-        if (nodeIndex != null) {
-            return other.nodeIndex != null && nodeIndex.equals(other.nodeIndex);
-        } else {
-            return other.subNodePosition != null && subNodePosition.equals(other.subNodePosition);
-        }
+        return nodeIndex.equals(other.nodeIndex);
     }
 
     @Override
     public int hashCode() {
-        if (nodeIndex != null) {
-            return nodeIndex.hashCode();
-        } else {
-            return subNodePosition.hashCode();
-        }
+        return nodeIndex.hashCode();
     }
 
     @Override
     public String toString() {
         return "PathingNodeWrapper{" +
-                "nodeIndex=" + nodeIndex +
-                ", subNodePosition=" + subNodePosition +
-                '}';
+                "nodeIndex=" + nodeIndex + '}';
     }
 }

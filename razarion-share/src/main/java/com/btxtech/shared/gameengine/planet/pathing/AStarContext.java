@@ -15,9 +15,9 @@ import java.util.Map;
  * on 23.10.2017.
  */
 public class AStarContext {
-    private TerrainType terrainType;
-    private List<Index> subNodeIndexScope;
-    private boolean startSuck;
+    private final TerrainType terrainType;
+    private final List<Index> subNodeIndexScope;
+    private boolean startStuck;
     private final Map<PathingNodeWrapper, Collection<PathingNodeWrapper>> cache = new HashMap<>();
     private DecimalPosition startPosition;
     private DecimalPosition destination;
@@ -28,12 +28,12 @@ public class AStarContext {
         this.subNodeIndexScope = subNodeIndexScope;
     }
 
-    public boolean isStartSuck() {
-        return startSuck;
+    public boolean isStartStuck() {
+        return startStuck;
     }
 
-    public void setStartSuck(boolean startSuck) {
-        this.startSuck = startSuck;
+    public void setStartStuck(boolean startStuck) {
+        this.startStuck = startStuck;
     }
 
     public boolean isNullTerrainTypeAllowed() {

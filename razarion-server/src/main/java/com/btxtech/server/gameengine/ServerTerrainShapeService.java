@@ -13,10 +13,15 @@ import com.btxtech.shared.system.alarm.AlarmService;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.TERRAIN_SHAPE_SETUP_FAILED;
+import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray;
 
 /**
  * Created by Beat
@@ -38,6 +43,7 @@ public class ServerTerrainShapeService {
     @Inject
     private StaticGameConfigPersistence staticGameConfigPersistence;
     private Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
+    private int[] groundHeightMap;
 
     public void start() {
         terrainShapes.clear();
@@ -52,10 +58,17 @@ public class ServerTerrainShapeService {
     }
 
     private void createTerrainShape(PlanetConfig planetConfig) {
+        try {
+            groundHeightMap = setupGroundHeightMap(planetCrudPersistence.getCompressedHeightMap(planetConfig.getId()));
+        } catch (Throwable t) {
+            alarmService.riseAlarm(TERRAIN_SHAPE_SETUP_FAILED, planetConfig.getId());
+            exceptionHandler.handleException(t);
+        }
+
         TerrainShapeManager terrainShape = new TerrainShapeManager(planetConfig,
+                null,
                 terrainTypeService,
                 alarmService,
-                planetCrudPersistence.getTerrainSlopePositions(planetConfig.getId()),
                 planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()));
         terrainShapes.put(planetConfig.getId(), terrainShape.toNativeTerrainShape());
     }
@@ -72,4 +85,31 @@ public class ServerTerrainShapeService {
         }
         return nativeTerrainShape;
     }
+
+    public int getGroundHeightAt(int index) {
+        return groundHeightMap[index];
+    }
+
+    private int[] setupGroundHeightMap(byte[] compressedHeightMap) throws IOException {
+        byte[] byteArray = decompressed(compressedHeightMap);
+        return convertToUnsignedIntArray(byteArray);
+    }
+
+    private byte[] decompressed(byte[] compressed) throws IOException {
+        if (compressed == null || compressed.length == 0) {
+            return null;
+        }
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(compressed);
+        GZIPInputStream gis = new GZIPInputStream(bis);
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        byte[] tmp = new byte[256];
+        int n;
+        while ((n = gis.read(tmp)) != -1) {
+            buffer.write(tmp, 0, n);
+        }
+        return buffer.toByteArray();
+    }
+
 }

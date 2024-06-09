@@ -36,24 +36,52 @@ public class Path {
      * @param path the path
      */
     public void init(SimplePath path) {
-        if (path.getWayPositions().isEmpty()) {
-            throw new IllegalArgumentException("At least one way point must be available");
+        if (path.getWayPositions().size() < 2) {
+            throw new IllegalArgumentException("At least two way points must be available");
         }
         wayPositions = path.getWayPositions();
     }
 
     public void setupCurrentWayPoint(SyncPhysicalArea syncPhysicalArea) {
-        DecimalPosition itemPosition = syncPhysicalArea.getPosition2d();
-        for (int i = wayPositions.size() - 1; i >= 0; i--) {
-            DecimalPosition wayPosition = wayPositions.get(i);
-            // Attention due to performance!! isInSight() surface data (Obstacle-Model) is not based on the AStar surface data -> AStar model must overlap Obstacle-Model
-            if (terrainService.getPathingAccess().isInSight(itemPosition, syncPhysicalArea.getRadius(), wayPosition)) {
-                currentWayPoint = wayPosition;
-                return;
-            }
-
+        if (wayPositions.size() < 3) {
+            currentWayPoint = wayPositions.get(1);
+            return;
         }
-        currentWayPoint = wayPositions.get(0);
+
+        DecimalPosition terrainPosition = syncPhysicalArea.getPosition2d();
+        DecimalPosition current = null;
+        DecimalPosition next = null;
+        DecimalPosition last = null;
+        double shortestDistance = Double.MAX_VALUE;
+        for (int i = 1; i < wayPositions.size() - 1; i++) {
+            DecimalPosition tmpCurrent = wayPositions.get(i);
+
+            if (current == null) {
+                last = wayPositions.get(i - 1);
+                current = tmpCurrent;
+                next = wayPositions.get(i + 1);
+            } else {
+                double tmpDistance = terrainPosition.getDistance(tmpCurrent);
+                if (shortestDistance > tmpDistance) {
+                    last = wayPositions.get(i - 1);
+                    current = tmpCurrent;
+                    next = wayPositions.get(i + 1);
+                    shortestDistance = tmpDistance;
+                }
+            }
+        }
+        if (current == null) {
+            throw new IllegalArgumentException("At least two way points must be available");
+        }
+
+        double distanceLast = terrainPosition.getDistance(last);
+        double distanceNext = terrainPosition.getDistance(next);
+
+        if (distanceLast < distanceNext) {
+            currentWayPoint = current;
+        } else {
+            currentWayPoint = next;
+        }
     }
 
     public DecimalPosition getCurrentWayPoint() {

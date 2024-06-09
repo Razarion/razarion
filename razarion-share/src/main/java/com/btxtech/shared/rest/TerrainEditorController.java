@@ -24,16 +24,6 @@ import java.util.List;
 public interface TerrainEditorController {
 
     @PUT
-    @Path("updateSlopes/{planetId}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void updateSlopes(@PathParam("planetId") int planetId, SlopeTerrainEditorUpdate slopeTerrainEditorUpdate);
-
-    @GET
-    @Path("readTerrainSlopePositions/{planetId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    List<TerrainSlopePosition> readTerrainSlopePositions(@PathParam("planetId") int planetId);
-
-    @PUT
     @Path("updateTerrain/{planetId}")
     @Consumes(MediaType.APPLICATION_JSON)
     void updateTerrain(@PathParam("planetId") int planetId, TerrainEditorUpdate terrainEditorUpdate);

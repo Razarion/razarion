@@ -220,20 +220,6 @@ public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig,
     }
 
     @Transactional
-    public List<TerrainSlopePosition> getTerrainSlopePositions(int planetId) {
-        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
-        if (planetEntity == null) {
-            throw new IllegalArgumentException("No planet for id: " + planetId);
-        }
-
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-        for (TerrainSlopePositionEntity terrainSlopePositionEntity : planetEntity.getTerrainSlopePositionEntities()) {
-            terrainSlopePositions.add(terrainSlopePositionEntity.toTerrainSlopePosition());
-        }
-        return terrainSlopePositions;
-    }
-
-    @Transactional
     @SecurityCheck
     public void updateMiniMapImage(int planetId, byte[] data) {
         PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);

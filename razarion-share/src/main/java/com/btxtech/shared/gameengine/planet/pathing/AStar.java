@@ -57,33 +57,33 @@ public class AStar {
     }
 
     private void handleAllSuccessorNodes(AStarNode current) {
-        Collection<PathingNodeWrapper> cached = aStarContext.getFromCache(current.getPathingNodeWrapper());
-        if (cached != null) {
-            cached.forEach(successor -> handleSuccessorNode(current, successor));
-            return;
-        }
-        Collection<PathingNodeWrapper> toBeCached = new ArrayList<>();
+//   TODO     Collection<PathingNodeWrapper> cached = aStarContext.getFromCache(current.getPathingNodeWrapper());
+//        if (cached != null) {
+//            cached.forEach(successor -> handleSuccessorNode(current, successor));
+//            return;
+//        }
+//        Collection<PathingNodeWrapper> toBeCached = new ArrayList<>();
         // North
         current.getPathingNodeWrapper().provideNorthSuccessors(aStarContext, northSuccessor -> {
-            toBeCached.add(northSuccessor);
+            // TODO toBeCached.add(northSuccessor);
             handleSuccessorNode(current, northSuccessor);
         });
         // East
         current.getPathingNodeWrapper().provideEastSuccessors(aStarContext, eastSuccessor -> {
-            toBeCached.add(eastSuccessor);
+            // TODO toBeCached.add(eastSuccessor);
             handleSuccessorNode(current, eastSuccessor);
         });
         // South
         current.getPathingNodeWrapper().provideSouthSuccessors(aStarContext, southSuccessor -> {
-            toBeCached.add(southSuccessor);
+            // TODO toBeCached.add(southSuccessor);
             handleSuccessorNode(current, southSuccessor);
         });
         // West
         current.getPathingNodeWrapper().provideWestSuccessors(aStarContext, westSuccessor -> {
-            toBeCached.add(westSuccessor);
+            // TODO toBeCached.add(westSuccessor);
             handleSuccessorNode(current, westSuccessor);
         });
-        aStarContext.putToCache(current.getPathingNodeWrapper(), toBeCached);
+        // TODO aStarContext.putToCache(current.getPathingNodeWrapper(), toBeCached);
     }
 
     private void handleSuccessorNode(AStarNode current, PathingNodeWrapper successorTilePosition) {

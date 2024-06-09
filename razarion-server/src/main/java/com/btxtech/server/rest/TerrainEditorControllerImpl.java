@@ -4,14 +4,11 @@ import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.PlanetVisualConfig;
-import com.btxtech.shared.dto.SlopeTerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -22,38 +19,6 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
     private ExceptionHandler exceptionHandler;
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
-
-    @Override
-    public List<TerrainSlopePosition> readTerrainSlopePositions(int planetId) {
-        try {
-            return planetCrudPersistence.getTerrainSlopePositions(planetId);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public void updateSlopes(int planetId, SlopeTerrainEditorUpdate slopeTerrainEditorUpdate) {
-        try {
-            // Check if terrain is valid
-            // this does not make any sense terrainShapeService.setupTerrainShapeDryRun(planetId, slopeTerrainEditorUpdate);
-
-            if (slopeTerrainEditorUpdate.getCreatedSlopes() != null && !slopeTerrainEditorUpdate.getCreatedSlopes().isEmpty()) {
-                planetCrudPersistence.createTerrainSlopePositions(planetId, slopeTerrainEditorUpdate.getCreatedSlopes());
-            }
-            if (slopeTerrainEditorUpdate.getUpdatedSlopes() != null && !slopeTerrainEditorUpdate.getUpdatedSlopes().isEmpty()) {
-                planetCrudPersistence.updateTerrainSlopePositions(planetId, slopeTerrainEditorUpdate.getUpdatedSlopes());
-            }
-            if (slopeTerrainEditorUpdate.getDeletedSlopeIds() != null && !slopeTerrainEditorUpdate.getDeletedSlopeIds().isEmpty()) {
-                planetCrudPersistence.deleteTerrainSlopePositions(planetId, slopeTerrainEditorUpdate.getDeletedSlopeIds());
-            }
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
 
     @Override
     @SecurityCheck

@@ -87,6 +87,7 @@ public class AbstractIntegrationTest {
         getWeldBean(GameLogicService.class).setGameLogicListener(testGameLogicListener);
         fireStaticGameConfig(staticGameConfig);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
+        getTestNativeTerrainShapeAccess().loadHeightMap("/CompressedHeightMap.bin", AbstractIntegrationTest.class);
     }
 
     public <T> T getWeldBean(Class<T> clazz) {

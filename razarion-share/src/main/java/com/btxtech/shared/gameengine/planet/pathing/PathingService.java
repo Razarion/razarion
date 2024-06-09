@@ -54,7 +54,7 @@ public class PathingService {
         return setupPathToDestination(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getTerrainType(), targetTerrainType, destination, totalRange);
     }
 
-    public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType terrainTerrain, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
+    public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType terrainType, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
         // Attention due to performance!! isInSight() surface data (Obstacle-Model) is not based on the AStar surface data -> AStar model must overlap Obstacle-Model
         double correctedRadius = radius + RADIUS_GROW;
         SimplePath path = new SimplePath();
@@ -70,27 +70,27 @@ public class PathingService {
             throw new PathFindingNotFreeException("Destination tile is not free: " + destination);
         }
         // long time = System.currentTimeMillis();
-        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+        List<Index> nodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         PathingNodeWrapper correctedDestinationNode;
         AStarContext aStarContext;
         DecimalPosition additionPathElement = null;
-        if (TerrainDestinationFinder.differentTerrain(terrainTerrain, targetTerrainType)) {
-            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(position, destination, totalRange, radius, terrainTerrain, terrainService.getPathingAccess());
+        if (TerrainDestinationFinder.differentTerrain(terrainType, targetTerrainType)) {
+            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(position, destination, totalRange, radius, terrainType, terrainService.getPathingAccess());
             terrainDestinationFinder.find();
             // destination = terrainDestinationFinder.getReachableDestination();
             correctedDestinationNode = terrainDestinationFinder.getReachableNode();
             additionPathElement = correctedDestinationNode.getCenter();
-            aStarContext = new AStarContext(terrainTerrain, subNodeIndexScope);
+            aStarContext = new AStarContext(terrainType, nodeIndexScope);
         } else {
-//            DestinationFinder destinationFinder = new DestinationFinder(position, destination, destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), subNodeIndexScope, terrainService.getPathingAccess());
+//            DestinationFinder destinationFinder = new DestinationFinder(position, destination, destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), nodeIndexScope, terrainService.getPathingAccess());
 //            destinationFinder.find();
 //            correctedDestinationNode = terrainService.getPathingAccess().getPathingNodeWrapper(destinationFinder.getCorrectedDestination());;
 //            destination = destinationFinder.getCorrectedDestination();
-            DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainTerrain, subNodeIndexScope, terrainService.getPathingAccess());
+            DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainType, nodeIndexScope, terrainService.getPathingAccess());
             correctedDestinationNode = destinationFinder.find();
-            aStarContext = new AStarContext(terrainTerrain, subNodeIndexScope);
+            aStarContext = new AStarContext(terrainType, nodeIndexScope);
         }
-        aStarContext.setStartSuck(startNode.isStuck(aStarContext));
+        aStarContext.setStartStuck(startNode.isStuck(aStarContext));
         aStarContext.setStartPosition(position);
         aStarContext.setMaxStuckDistance(correctedRadius);
         aStarContext.setDestination(destination);

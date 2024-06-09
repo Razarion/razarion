@@ -82,14 +82,15 @@ public class TerrainDestinationFinder {
     }
 
     private static void calculatePosition(PathingAccess pathingAccess, double distance, DecimalPosition destination, double radius, TerrainType terrainType, Predicate<DecimalPosition> callback) {
+        // TODO
         List<Index> indices = GeometricUtil.rasterizeCircle(new Circle2D(new DecimalPosition(0, 0), distance - 2.0 * TerrainUtil.MIN_SUB_NODE_LENGTH), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         Collection<DecimalPosition> allowedPositions = new ArrayList<>();
-        for (Index index : indices) {
-            DecimalPosition scanPosition = TerrainUtil.smallestSubNodeAbsolute(index).add(destination);
-            if (pathingAccess.isTerrainTypeAllowed(terrainType, scanPosition)) {
-                allowedPositions.add(scanPosition);
-            }
-        }
+//        for (Index index : indices) {
+//            DecimalPosition scanPosition = index.add(destination);
+//            if (pathingAccess.isTerrainTypeAllowed(terrainType, scanPosition)) {
+//                allowedPositions.add(scanPosition);
+//            }
+//        }
 
         for (DecimalPosition allowedPosition : allowedPositions) {
             PathingNodeWrapper pathingNodeWrapper = pathingAccess.getPathingNodeWrapper(allowedPosition);

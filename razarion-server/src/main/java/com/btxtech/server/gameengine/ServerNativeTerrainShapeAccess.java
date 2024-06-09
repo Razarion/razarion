@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 public class ServerNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     @Inject
     private ServerTerrainShapeService serverTerrainShapeService;
+    private int[] groundHeightMap;
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
@@ -24,7 +25,12 @@ public class ServerNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
     }
 
     @Override
-    public Uint16ArrayEmu createGroundHeightMap(Index terrainTileIndex) {
+    public Uint16ArrayEmu createTileGroundHeightMap(Index terrainTileIndex) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getGroundHeightAt(int index) {
+        return serverTerrainShapeService.getGroundHeightAt(index);
     }
 }

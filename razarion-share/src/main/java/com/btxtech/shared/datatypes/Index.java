@@ -288,6 +288,10 @@ public class Index {
         return new Index((int) (x / scale), (int) (y / scale));
     }
 
+    public Index scaleInverseXY(double scaleX, double scaleY) {
+        return new Index((int) (x / scaleX), (int) (y / scaleY));
+    }
+
     public DecimalPosition divide(double factor) {
         return new DecimalPosition(x / factor, y / factor);
     }

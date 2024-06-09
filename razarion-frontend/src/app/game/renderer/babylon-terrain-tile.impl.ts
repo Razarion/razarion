@@ -15,6 +15,7 @@ import { GwtHelper } from "src/app/gwtangular/GwtHelper";
 import { GwtInstance } from "src/app/gwtangular/GwtInstance";
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
+  // See GWT TerrainUtil
   static readonly NODE_X_COUNT = 160;
   static readonly NODE_Y_COUNT = 160;
   static readonly NODE_X_DISTANCE = 1;
@@ -208,10 +209,12 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     return vertexData;
   }
 
+  // See: Java Code PathingAccess.uint16ToHeight
   public static uint16ToHeight(uint16: number): number {
     return uint16 * BabylonTerrainTileImpl.HEIGHT_PRECISION + BabylonTerrainTileImpl.HEIGHT_MIN;
   }
 
+  // See: Java Code PathingAccess.heightToUnit16
   public static heightToUnit16(height: number): number {
     let value = (height - BabylonTerrainTileImpl.HEIGHT_MIN) / BabylonTerrainTileImpl.HEIGHT_PRECISION;
     return Math.round(value * 10) / 10

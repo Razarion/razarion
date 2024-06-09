@@ -22,12 +22,12 @@ public class MoveTest extends BaseBasicTest {
         UserContext userContext = createLevel1UserContext();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
         permSlave.connectToMaster(userContext, this);
-        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(88, 144), userContext);
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(17, 20), userContext);
         tickPlanetServiceBaseServiceActive();
         permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
-        getCommandService().move(builder, new DecimalPosition(40, 144));
-        // showDisplay();
+        getCommandService().move(builder, new DecimalPosition(55, 20));
+        showDisplay();
         tickPlanetServiceBaseServiceActive();
         permSlave.tickPlanetServiceBaseServiceActive();
         TestHelper.assertDecimalPosition(null, new DecimalPosition(40, 144), builder.getSyncPhysicalArea().getPosition2d(), 0.5);

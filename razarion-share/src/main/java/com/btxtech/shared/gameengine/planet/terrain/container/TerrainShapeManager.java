@@ -26,6 +26,7 @@ import java.util.logging.Logger;
  */
 public class TerrainShapeManager {
     private final static Logger logger = Logger.getLogger(TerrainShapeManager.class.getName());
+    private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private TerrainShapeTile[][] terrainShapeTiles;
     private SurfaceAccess surfaceAccess;
     private PathingAccess pathingAccess;
@@ -33,11 +34,13 @@ public class TerrainShapeManager {
     private int tileXCount;
     private int tileYCount;
 
-    public TerrainShapeManager() {
+    public TerrainShapeManager(NativeTerrainShapeAccess nativeTerrainShapeAccess) {
+        this.nativeTerrainShapeAccess = nativeTerrainShapeAccess;
     }
 
-    public TerrainShapeManager(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, AlarmService alarmService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+    public TerrainShapeManager(PlanetConfig planetConfig, NativeTerrainShapeAccess nativeTerrainShapeAccess, TerrainTypeService terrainTypeService, AlarmService alarmService, List<TerrainObjectPosition> terrainObjectPositions) {
         long time = System.currentTimeMillis();
+        this.nativeTerrainShapeAccess = nativeTerrainShapeAccess;
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         setupDimension(planetConfig);
@@ -49,7 +52,7 @@ public class TerrainShapeManager {
         logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getId());
     }
 
-    public void lazyInit(PlanetConfig planetConfig, NativeTerrainShapeAccess nativeTerrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {
+    public void lazyInit(PlanetConfig planetConfig, Runnable finishCallback, Consumer<String> failCallback) {
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         setupDimension(planetConfig);
@@ -150,11 +153,14 @@ public class TerrainShapeManager {
     }
 
     public boolean isSightBlocked(Line line) {
-        return false; // TODO
+        return true; // TODO
     }
 
     public Rectangle2D getPlayGround() {
         return new Rectangle2D(DecimalPosition.NULL, planetSize);
     }
 
+    public NativeTerrainShapeAccess getNativeTerrainShapeAccess() {
+        return nativeTerrainShapeAccess;
+    }
 }

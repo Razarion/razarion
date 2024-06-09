@@ -2,110 +2,98 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.dto.SlopeShape;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Beat
  * 28.03.2017.
  */
 public interface TerrainUtil {
+    // See Angular BabylonTerrainTileImpl
+    int NODE_X_COUNT = 160;
+    int NODE_Y_COUNT = 160;
+    double NODE_X_DISTANCE = 1;
+    double NODE_Y_DISTANCE = 1;
+    double HEIGHT_PRECISION = 0.1;
+    double HEIGHT_MIN = -200;
+    double HEIGHT_DEFAULT = 0.5;
+
+    static Index terrainPositionToNodeIndex(DecimalPosition terrainPosition) {
+        return terrainPosition.divide(NODE_X_DISTANCE, NODE_Y_DISTANCE).toIndex();
+    }
+
+    static DecimalPosition nodeIndexToTerrainPosition(Index nodeIndex) {
+        return new DecimalPosition(nodeIndex.scale(NODE_X_DISTANCE, NODE_Y_DISTANCE));
+    }
+
+    @Deprecated
     int TERRAIN_NODE_ABSOLUTE_LENGTH = 8;
+    @Deprecated
     int TERRAIN_TILE_NODES_COUNT = 20;
+    @Deprecated
     double TERRAIN_TILE_ABSOLUTE_LENGTH = TERRAIN_NODE_ABSOLUTE_LENGTH * TERRAIN_TILE_NODES_COUNT;
+    @Deprecated
     int MAX_SUB_NODE_DEPTH = 2;
+    @Deprecated
     double MIN_SUB_NODE_LENGTH = calculateSubNodeLength(MAX_SUB_NODE_DEPTH);
+    @Deprecated
     int TOTAL_MIN_SUB_NODE_COUNT = (int) (TERRAIN_NODE_ABSOLUTE_LENGTH / MIN_SUB_NODE_LENGTH);
 
+    @Deprecated
     static Index toTile(DecimalPosition absolute) {
         return absolute.divide(TERRAIN_TILE_ABSOLUTE_LENGTH).toIndexFloor();
     }
 
+    @Deprecated
     static Index toTileCeil(DecimalPosition absolute) {
         return absolute.divide(TERRAIN_TILE_ABSOLUTE_LENGTH).toIndexCeil();
     }
 
+    @Deprecated
     static DecimalPosition toTileAbsolute(Index tile) {
         return new DecimalPosition(tile.scale(TERRAIN_TILE_ABSOLUTE_LENGTH));
     }
 
-    static DecimalPosition toTileAbsoluteCenter(Index tile) {
-        return toTileAbsolute(tile).add(TERRAIN_TILE_ABSOLUTE_LENGTH / 2.0, TERRAIN_TILE_ABSOLUTE_LENGTH / 2.0);
-    }
-
-    static Rectangle2D toTileAbsolute(Rectangle tile) {
-        return new Rectangle2D(toTileAbsolute(tile.getStart()), toTileAbsolute(tile.getEnd()));
-    }
-
+    @Deprecated
     static Rectangle2D toAbsoluteTileRectangle(Index tile) {
         DecimalPosition start = toTileAbsolute(tile);
         return new Rectangle2D(start.getX(), start.getY(), TERRAIN_TILE_ABSOLUTE_LENGTH, TERRAIN_TILE_ABSOLUTE_LENGTH);
     }
 
-    static Rectangle2D toAbsoluteTileRectangle(DecimalPosition absolute) {
-        Index tileIndex = toTile(absolute);
-        return toAbsoluteTileRectangle(tileIndex);
-    }
-
+    @Deprecated
     static Index toNode(DecimalPosition absolute) {
         return absolute.divide(TERRAIN_NODE_ABSOLUTE_LENGTH).toIndexFloor();
     }
 
+    @Deprecated
     static DecimalPosition toNodeAbsolute(Index node) {
         return new DecimalPosition(node.scale(TERRAIN_NODE_ABSOLUTE_LENGTH));
     }
 
+    @Deprecated
     static DecimalPosition toNodeAbsolute(DecimalPosition node) {
         return node.divide(TERRAIN_NODE_ABSOLUTE_LENGTH);
     }
 
-    static Index toNodeAbsoluteIndex(Index node) {
-        return node.scale(TERRAIN_NODE_ABSOLUTE_LENGTH);
-    }
-
+    @Deprecated
     static Rectangle2D toAbsoluteNodeRectangle(Index node) {
         DecimalPosition start = toNodeAbsolute(node);
         return new Rectangle2D(start.getX(), start.getY(), TERRAIN_NODE_ABSOLUTE_LENGTH, TERRAIN_NODE_ABSOLUTE_LENGTH);
     }
 
-    static Rectangle2D toAbsoluteNodeRectangle(Rectangle node) {
-        return new Rectangle2D(toNodeAbsolute(node.getStart()), toNodeAbsolute(node.getEnd()));
-    }
-
+    @Deprecated
     static DecimalPosition toAbsoluteNodeCenter(Index node) {
         return toNodeAbsolute(node).add(toAbsoluteNodeCenter());
     }
 
+    @Deprecated
     static DecimalPosition toAbsoluteNodeCenter() {
         return new DecimalPosition(TERRAIN_NODE_ABSOLUTE_LENGTH / 2.0, TERRAIN_NODE_ABSOLUTE_LENGTH / 2.0);
     }
 
+    @Deprecated
     static Index nodeToTile(Index nodeIndex) {
         return nodeIndex.divide(TERRAIN_TILE_NODES_COUNT).toIndexFloor();
-    }
-
-    static int nodeToTile(int nodeIndex) {
-        return (int) Math.floor((double) nodeIndex / (double) TERRAIN_TILE_NODES_COUNT);
-    }
-
-    static Index tileToNode(Index tileIndex) {
-        return tileIndex.scale(TERRAIN_TILE_NODES_COUNT);
-    }
-
-    static int filedToArrayNodeIndex(Index index) {
-        return index.getX() + index.getY() * TERRAIN_TILE_NODES_COUNT;
-    }
-
-    static Index arrayToFiledNodeIndex(int index) {
-        return new Index(index % TERRAIN_TILE_NODES_COUNT, index / TERRAIN_TILE_NODES_COUNT);
-    }
-
-    static int toNodeIndex(int tileIndex) {
-        return tileIndex * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
     }
 
     /**
@@ -114,45 +102,18 @@ public interface TerrainUtil {
      * @param depth current dept start with 0
      * @return absolute length
      */
+    @Deprecated
     static double calculateSubNodeLength(int depth) {
         return TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH / (double) (1 << depth + 1);
     }
 
-    /**
-     * The index of the smallest possible sub node.
-     * At the moment, the smallest sub node is 1, therefore just the integer value of the position is used
-     *
-     * @param terrainAbsolute absolute terrain position
-     * @return sub node index
-     */
-    static Index smallestSubNodeIndex(DecimalPosition terrainAbsolute) {
-        return terrainAbsolute.toIndexFloor();
-    }
-
+    @Deprecated
     static DecimalPosition smallestSubNodeAbsolute(Index subNodeIndex) {
         return new DecimalPosition(subNodeIndex);
     }
 
+    @Deprecated
     static DecimalPosition smallestSubNodeCenter(Index subNodeIndex) {
         return smallestSubNodeAbsolute(subNodeIndex).add(0.5, 0.5);
     }
-
-    static Index smallestSubNodeToNode(Index subNodeIndex) {
-        return subNodeIndex.scaleInverse(TERRAIN_NODE_ABSOLUTE_LENGTH);
-    }
-
-    static DecimalPosition subNodeCenter(int depth) {
-        double length = calculateSubNodeLength(depth);
-        return new DecimalPosition(length / 2.0, length / 2.0);
-    }
-
-    static DecimalPosition toSubNodeAbsolute(DecimalPosition terrainAbsolute, int depth) {
-        double length = calculateSubNodeLength(depth);
-        return terrainAbsolute.divide(length).toIndexFloor().multiply(length);
-    }
-
-    static DecimalPosition toSubNodeAbsoluteCenter(DecimalPosition terrainAbsolute, int depth) {
-        return toSubNodeAbsolute(terrainAbsolute, depth).add(subNodeCenter(depth));
-    }
-
 }
