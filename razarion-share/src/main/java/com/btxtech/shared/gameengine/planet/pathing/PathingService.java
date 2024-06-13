@@ -70,7 +70,7 @@ public class PathingService {
             throw new PathFindingNotFreeException("Destination tile is not free: " + destination);
         }
         // long time = System.currentTimeMillis();
-        List<Index> nodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+        List<Index> scopeNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         PathingNodeWrapper correctedDestinationNode;
         AStarContext aStarContext;
         DecimalPosition additionPathElement = null;
@@ -80,15 +80,15 @@ public class PathingService {
             // destination = terrainDestinationFinder.getReachableDestination();
             correctedDestinationNode = terrainDestinationFinder.getReachableNode();
             additionPathElement = correctedDestinationNode.getCenter();
-            aStarContext = new AStarContext(terrainType, nodeIndexScope);
+            aStarContext = new AStarContext(terrainType, scopeNodeIndices);
         } else {
-//            DestinationFinder destinationFinder = new DestinationFinder(position, destination, destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), nodeIndexScope, terrainService.getPathingAccess());
+//            DestinationFinder destinationFinder = new DestinationFinder(position, destination, destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), scopeNodeIndices, terrainService.getPathingAccess());
 //            destinationFinder.find();
 //            correctedDestinationNode = terrainService.getPathingAccess().getPathingNodeWrapper(destinationFinder.getCorrectedDestination());;
 //            destination = destinationFinder.getCorrectedDestination();
-            DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainType, nodeIndexScope, terrainService.getPathingAccess());
+            DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainType, scopeNodeIndices, terrainService.getPathingAccess());
             correctedDestinationNode = destinationFinder.find();
-            aStarContext = new AStarContext(terrainType, nodeIndexScope);
+            aStarContext = new AStarContext(terrainType, scopeNodeIndices);
         }
         aStarContext.setStartStuck(startNode.isStuck(aStarContext));
         aStarContext.setStartPosition(position);

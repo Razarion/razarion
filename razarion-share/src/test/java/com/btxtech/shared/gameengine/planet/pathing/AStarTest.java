@@ -207,6 +207,7 @@ public class AStarTest extends AStarBaseTest {
     }
 
     @Test
+    @Ignore
     public void testCaseGenerator() {
         double actorRadius = 3;
         TerrainType actorTerrainType = TerrainType.LAND;
@@ -219,11 +220,17 @@ public class AStarTest extends AStarBaseTest {
         showDisplay(new MouseMoveCallback().setCallback(position -> {
             try {
                 SimplePath simplePath = setupPath(actorRadius, actorTerrainType, actorPosition, range, targetRadius, targetTerrainType, position);
-                return new Object[]{new PositionMarker().addCircleColor(new Circle2D(actorPosition, actorRadius), Color.DARKGRAY).addCircleColor(new Circle2D(position, targetRadius), Color.BLUEVIOLET), simplePath};
+                return new Object[]{
+                        new PositionMarker()
+                                .addCircleColor(new Circle2D(actorPosition, actorRadius), new Color(0.1, 0.1, 0.1, 0.5))
+                                .addCircleColor(new Circle2D(position, targetRadius), new Color(0.1, 0.4, 0.9, 0.5)),
+                        simplePath};
             } catch (Exception e) {
                 System.out.println("--- EXCEPTION: " + e.getMessage());
             }
-            return new Object[]{new PositionMarker().addCircleColor(new Circle2D(actorPosition, actorRadius), Color.DARKGRAY).addCircleColor(new Circle2D(position, targetRadius), Color.BLUEVIOLET)};
+            return new Object[]{new PositionMarker()
+                    .addCircleColor(new Circle2D(actorPosition, actorRadius), new Color(0.1, 0.1, 0.1, 0.5))
+                    .addCircleColor(new Circle2D(position, targetRadius), new Color(0.9, 0.1, 0.9, 0.5))};
         }), new TestCaseGenerator().setTestCaseName("landWaterCoast").setTestGeneratorCallback((position, body) -> {
             SimplePath simplePath = setupPath(actorRadius, actorTerrainType, actorPosition, range, targetRadius, targetTerrainType, position);
             body.appendLine("SimplePath simplePath = setupPath(" + actorRadius + ", " + InstanceStringGenerator.generate(actorTerrainType) + ", " + InstanceStringGenerator.generate(actorPosition) + ", " + range + ", " + targetRadius + ", " + InstanceStringGenerator.generate(targetTerrainType) + ", " + InstanceStringGenerator.generate(position) + ");");

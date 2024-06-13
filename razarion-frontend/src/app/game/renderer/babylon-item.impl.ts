@@ -1,5 +1,5 @@
 import { GwtHelper } from "../../gwtangular/GwtHelper";
-import { AbstractMesh, ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, NodeMaterial, Ray, Tools, TransformNode, Vector3 } from "@babylonjs/core";
+import { AbstractMesh, ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, NodeMaterial, Quaternion, Ray, Tools, TransformNode, Vector3 } from "@babylonjs/core";
 import {
   BabylonItem,
   BaseItemType,
@@ -27,6 +27,7 @@ export class BabylonItemImpl implements BabylonItem {
   private selectActive: boolean = false;
   private hoverActive: boolean = false;
   private itemCursorTypeHandler: (selectionInfo: SelectionInfo) => void;
+  private lastNormal: Vector3 | null = null;
 
   constructor(private id: number,
     private itemType: ItemType,
@@ -140,11 +141,8 @@ export class BabylonItemImpl implements BabylonItem {
 
   updatePosition(): void {
     if (this.position) {
-      this.container.position.x = this.position.getX();
-      this.container.position.z = this.position.getY();
-      this.container.position.y = LocationVisualization.getHeightFromTerrain(this.position.getX(), this.position.getY(), this.rendererService);
-      //-----
       let ray = new Ray(new Vector3(this.position.getX(), -100, this.position.getY()), new Vector3(0, 1, 0), 1000);
+
       let pickingInfo = this.rendererService.getScene().pickWithRay(ray,
         (mesh: AbstractMesh) => {
           let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
@@ -152,18 +150,50 @@ export class BabylonItemImpl implements BabylonItem {
             return false;
           }
           return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.SLOPE;
-        });
+        }
+      );
+
+      this.container.position.x = this.position.getX();
+      this.container.position.z = this.position.getY();
+
       if (pickingInfo && pickingInfo.hit) {
-        let normal = pickingInfo.getNormal();
-        this.container.rotation.x = -normal!.x;
-        this.container.rotation.z = -normal!.z;
+        // Position
+        this.container.position.y = pickingInfo.pickedPoint!.y;
+
+        // Rotation
+        let normal = pickingInfo.getNormal(true)!;
+        this.lastNormal = normal;
+        this.container.rotation = this.calculateRotation(normal);
+      } else {
+        this.container.position.y = 0;
+        this.container.rotation.y = Tools.ToRadians(90) - this.angle;
       }
-      //-----
     }
   }
 
+  private calculateRotation(normal: Vector3): Vector3 {
+    // const radians = (Tools.ToRadians(90) - this.angle) * (Math.PI / 180);
+
+    let direction = new Vector3(Math.cos(this.angle), 0, Math.sin(this.angle));
+    const forward = direction.normalize();
+    const right = Vector3.Cross(normal, forward).normalize();
+    const correctedForward = Vector3.Cross(right, normal).normalize();
+
+    const pitch = Math.asin(-correctedForward.y);
+    const yaw = Math.atan2(correctedForward.x, correctedForward.z);
+    const roll = Math.atan2(right.y, normal.y);
+
+    const correctedRoll = (normal.y < 0) ? roll + Math.PI : roll;
+
+    return new Vector3(pitch, yaw, correctedRoll);
+  }
+
   updateAngle(): void {
-    this.container.rotation.y = Tools.ToRadians(90) - this.angle;
+    if (this.lastNormal) {
+      this.container.rotation = this.calculateRotation(this.lastNormal);
+    } else {
+      this.container.rotation.y = Tools.ToRadians(90) - this.angle;
+    }
   }
 
   isEnemy(): boolean {

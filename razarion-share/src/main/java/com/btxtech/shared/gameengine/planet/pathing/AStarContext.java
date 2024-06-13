@@ -16,16 +16,16 @@ import java.util.Map;
  */
 public class AStarContext {
     private final TerrainType terrainType;
-    private final List<Index> subNodeIndexScope;
+    private final List<Index> scopeNodeIndices;
     private boolean startStuck;
     private final Map<PathingNodeWrapper, Collection<PathingNodeWrapper>> cache = new HashMap<>();
     private DecimalPosition startPosition;
     private DecimalPosition destination;
     private double maxStuckDistance;
 
-    public AStarContext(TerrainType terrainType, List<Index> subNodeIndexScope) {
+    public AStarContext(TerrainType terrainType, List<Index> scopeNodeIndices) {
         this.terrainType = terrainType;
-        this.subNodeIndexScope = subNodeIndexScope;
+        this.scopeNodeIndices = scopeNodeIndices;
     }
 
     public boolean isStartStuck() {
@@ -44,12 +44,12 @@ public class AStarContext {
         return TerrainType.isAllowed(this.terrainType, terrainType);
     }
 
-    public List<Index> getSubNodeIndexScope() {
-        return subNodeIndexScope;
+    public List<Index> getScopeNodeIndices() {
+        return scopeNodeIndices;
     }
 
-    public boolean hasSubNodeIndexScope() {
-        return subNodeIndexScope != null;
+    public boolean hasScope() {
+        return scopeNodeIndices != null;
     }
 
     public Collection<PathingNodeWrapper> getFromCache(PathingNodeWrapper key) {

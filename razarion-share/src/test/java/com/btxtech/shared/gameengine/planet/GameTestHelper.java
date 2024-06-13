@@ -42,7 +42,7 @@ public interface GameTestHelper {
 
     static SyncPhysicalMovable createSyncPhysicalMovable(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition preferredVelocity) {
         SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
-        SimpleTestEnvironment.injectService("position2d", syncPhysicalMovable, SyncPhysicalArea.class, position);
+        SimpleTestEnvironment.injectService("position", syncPhysicalMovable, SyncPhysicalArea.class, position);
         SimpleTestEnvironment.injectService("preferredVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, preferredVelocity);
         SimpleTestEnvironment.injectService("radius", syncPhysicalMovable, SyncPhysicalArea.class, radius);
         SimpleTestEnvironment.injectService("terrainType", syncPhysicalMovable, SyncPhysicalArea.class, terrainType);

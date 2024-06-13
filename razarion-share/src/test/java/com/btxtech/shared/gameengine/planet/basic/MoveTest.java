@@ -16,7 +16,7 @@ import org.junit.Test;
  */
 public class MoveTest extends BaseBasicTest {
     @Test
-    public void landSimpleTurn() {
+    public void landSimpleStraight() {
         setup();
 
         UserContext userContext = createLevel1UserContext();
@@ -27,14 +27,37 @@ public class MoveTest extends BaseBasicTest {
         permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         getCommandService().move(builder, new DecimalPosition(55, 20));
-        showDisplay();
+        // showDisplay();
         tickPlanetServiceBaseServiceActive();
         permSlave.tickPlanetServiceBaseServiceActive();
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(40, 144), builder.getSyncPhysicalArea().getPosition(), 0.5);
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(55, 20), builder.getSyncPhysicalArea().getPosition(), 0.5);
         Assert.assertNull(builder.getSyncPhysicalMovable().getVelocity());
 
         SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(40, 144), slaveBuilder.getSyncPhysicalArea().getPosition(), 0.5);
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(55, 20), slaveBuilder.getSyncPhysicalArea().getPosition(), 0.5);
+        Assert.assertNull(slaveBuilder.getSyncPhysicalMovable().getVelocity());
+    }
+
+    @Test
+    public void landAroundTerrain() {
+        setup();
+
+        UserContext userContext = createLevel1UserContext();
+        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        permSlave.connectToMaster(userContext, this);
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(184, 95), userContext);
+        tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        getCommandService().move(builder, new DecimalPosition(175, 72));
+        showDisplay();
+        tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(55, 20), builder.getSyncPhysicalArea().getPosition(), 0.5);
+        Assert.assertNull(builder.getSyncPhysicalMovable().getVelocity());
+
+        SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(55, 20), slaveBuilder.getSyncPhysicalArea().getPosition(), 0.5);
         Assert.assertNull(slaveBuilder.getSyncPhysicalMovable().getVelocity());
     }
 

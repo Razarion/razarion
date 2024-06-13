@@ -122,6 +122,8 @@ public class WeldTestController implements Initializable {
         zMinField.setText(Double.toString(weldTestRenderer.getZMin()));
         zMaxField.setText(Double.toString(weldTestRenderer.getZMax()));
 
+        shapeAccessCheck.setSelected(true);
+
         addRenderListener(terrainTileWaterCheck);
         addRenderListener(terrainTileGroundCheck);
         addRenderListener(terrainTileSlopeCheck);

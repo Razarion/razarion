@@ -12,9 +12,9 @@ import java.util.function.Consumer;
  * on 11.07.2017.
  */
 public class PathingNodeWrapper {
-    private TerrainType terrainType;
-    private Index nodeIndex;
-    private PathingAccess pathingAccess;
+    private final TerrainType terrainType;
+    private final Index nodeIndex;
+    private final PathingAccess pathingAccess;
 
     public PathingNodeWrapper(Index nodeIndex, TerrainType terrainType, PathingAccess pathingAccess) {
         this.terrainType = terrainType;
@@ -81,7 +81,17 @@ public class PathingNodeWrapper {
     }
 
     public boolean isStuck(AStarContext aStarContext) {
-        return false;
+        if (aStarContext.hasScope()) {
+            for (Index scopeNodeIndex : aStarContext.getScopeNodeIndices()) {
+                Index scanNodeIndex = nodeIndex.add(scopeNodeIndex);
+                if (!aStarContext.isAllowed(pathingAccess.getTerrainType(scanNodeIndex))) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return !aStarContext.isAllowed(terrainType);
+        }
     }
 
     @Override
