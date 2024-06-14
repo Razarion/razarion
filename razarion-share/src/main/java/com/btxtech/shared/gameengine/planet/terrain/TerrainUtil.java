@@ -9,13 +9,14 @@ import com.btxtech.shared.datatypes.Rectangle2D;
  * 28.03.2017.
  */
 public interface TerrainUtil {
-    // See Angular BabylonTerrainTileImpl
+    // See: Angular BabylonTerrainTileImpl
     int NODE_X_COUNT = 160;
     int NODE_Y_COUNT = 160;
     double NODE_X_DISTANCE = 1;
     double NODE_Y_DISTANCE = 1;
     double HEIGHT_PRECISION = 0.1;
     double HEIGHT_MIN = -200;
+    double WATER_LEVEL = 0;
     double HEIGHT_DEFAULT = 0.5;
 
     static Index terrainPositionToNodeIndex(DecimalPosition terrainPosition) {
@@ -24,6 +25,17 @@ public interface TerrainUtil {
 
     static DecimalPosition nodeIndexToTerrainPosition(Index nodeIndex) {
         return new DecimalPosition(nodeIndex.scale(NODE_X_DISTANCE, NODE_Y_DISTANCE));
+    }
+
+    // See: Angular Code BabylonTerrainTileImpl.uint16ToHeight
+    static double uint16ToHeight(int uint16) {
+        return uint16 * HEIGHT_PRECISION + HEIGHT_MIN;
+    }
+
+    // See: Angular Code BabylonTerrainTileImpl.heightToUnit16
+    static int heightToUnit16(double height) {
+        double value = (height - HEIGHT_MIN) / HEIGHT_PRECISION;
+        return (int) (Math.round(value * 10) / 10);
     }
 
     @Deprecated

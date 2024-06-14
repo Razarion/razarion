@@ -21,9 +21,6 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
  * on 19.06.2017.
  */
 public class PathingAccess {
-    public static double HEIGHT_PRECISION = 0.1;
-    public static double HEIGHT_MIN = -200;
-    public static double WATER_LEVEL = 0;
     private final TerrainShapeManager terrainShape;
 
     public PathingAccess(TerrainShapeManager terrainShape) {
@@ -43,7 +40,7 @@ public class PathingAccess {
 
         double maxHeight = CollectionUtils.getMax(blHeight, brHeight, trHeight, tlHeight);
         double minHeight = CollectionUtils.getMin(blHeight, brHeight, trHeight, tlHeight);
-        if (Math.abs(maxHeight - minHeight) < 1) {
+        if (Math.abs(maxHeight - minHeight) < 0.7) {
             return TerrainType.LAND;
         } else {
             return TerrainType.BLOCKED;
@@ -102,8 +99,8 @@ public class PathingAccess {
         double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
 
         Line line = new Line(start, target);
-        Line line1 = new Line(start.getPointWithDistance(angel1, radius), target.getPointWithDistance(angel1, radius));
-        Line line2 = new Line(start.getPointWithDistance(angel2, radius), target.getPointWithDistance(angel2, radius));
+        Line line1 = new Line(start.getPointWithDistance(angel1, radius * 0.1), target.getPointWithDistance(angel1, radius * 0.1));
+        Line line2 = new Line(start.getPointWithDistance(angel2, radius * 0.1), target.getPointWithDistance(angel2, radius * 0.1));
 
         return !terrainShape.isSightBlocked(line) && !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2);
     }
@@ -114,7 +111,7 @@ public class PathingAccess {
     }
 
     public boolean isNodeInBoundary(Index nodeIndex) {
-        if(nodeIndex.getX() < 0 || nodeIndex.getY() < 0) {
+        if (nodeIndex.getX() < 0 || nodeIndex.getY() < 0) {
             return false;
         }
         int xBoundary = terrainShape.getTileXCount() * NODE_X_COUNT;
@@ -124,16 +121,5 @@ public class PathingAccess {
 
     public TerrainShapeManager getTerrainShape() {
         return terrainShape;
-    }
-
-    // See: Angular Code BabylonTerrainTileImpl.uint16ToHeight
-    public static double uint16ToHeight(int uint16) {
-        return uint16 * HEIGHT_PRECISION + HEIGHT_MIN;
-    }
-
-    // See: Angular Code BabylonTerrainTileImpl.heightToUnit16
-    public static int heightToUnit16(double height) {
-        double value = (height - HEIGHT_MIN) / HEIGHT_PRECISION;
-        return (int) (Math.round(value * 10) / 10);
     }
 }
