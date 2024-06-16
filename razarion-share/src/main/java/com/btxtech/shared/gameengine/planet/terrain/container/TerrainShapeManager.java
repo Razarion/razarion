@@ -27,17 +27,20 @@ import java.util.logging.Logger;
 public class TerrainShapeManager {
     private final static Logger logger = Logger.getLogger(TerrainShapeManager.class.getName());
     private final NativeTerrainShapeAccess nativeTerrainShapeAccess;
+    private final TerrainTypeService terrainTypeService;
     private TerrainShapeTile[][] terrainShapeTiles;
     private PathingAccess pathingAccess;
     private DecimalPosition planetSize;
     private int tileXCount;
     private int tileYCount;
 
-    public TerrainShapeManager(NativeTerrainShapeAccess nativeTerrainShapeAccess) {
+    public TerrainShapeManager(TerrainTypeService terrainTypeService, NativeTerrainShapeAccess nativeTerrainShapeAccess) {
+        this.terrainTypeService = terrainTypeService;
         this.nativeTerrainShapeAccess = nativeTerrainShapeAccess;
     }
 
     public TerrainShapeManager(PlanetConfig planetConfig, NativeTerrainShapeAccess nativeTerrainShapeAccess, TerrainTypeService terrainTypeService, AlarmService alarmService, List<TerrainObjectPosition> terrainObjectPositions) {
+        this.terrainTypeService = terrainTypeService;
         long time = System.currentTimeMillis();
         this.nativeTerrainShapeAccess = nativeTerrainShapeAccess;
         pathingAccess = new PathingAccess(this);
@@ -154,6 +157,10 @@ public class TerrainShapeManager {
 
     public Rectangle2D getPlayGround() {
         return new Rectangle2D(DecimalPosition.NULL, planetSize);
+    }
+
+    public TerrainTypeService getTerrainTypeService() {
+        return terrainTypeService;
     }
 
     public NativeTerrainShapeAccess getNativeTerrainShapeAccess() {

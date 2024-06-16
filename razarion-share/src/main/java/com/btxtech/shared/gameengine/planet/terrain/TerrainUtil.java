@@ -27,6 +27,14 @@ public interface TerrainUtil {
         return new DecimalPosition(nodeIndex.scale(NODE_X_DISTANCE, NODE_Y_DISTANCE));
     }
 
+    static DecimalPosition nodeIndexToMiddleTerrainPosition(Index nodeIndex) {
+        return nodeIndexToTerrainPosition(nodeIndex).add(TerrainUtil.NODE_X_DISTANCE / 2.0, TerrainUtil.NODE_Y_DISTANCE / 2.0);
+    }
+
+    static Index nodeIndexToTileIndex(Index nodeIndex) {
+        return nodeIndex.scaleInverseXY(NODE_X_COUNT, NODE_Y_COUNT);
+    }
+
     // See: Angular Code BabylonTerrainTileImpl.uint16ToHeight
     static double uint16ToHeight(int uint16) {
         return uint16 * HEIGHT_PRECISION + HEIGHT_MIN;

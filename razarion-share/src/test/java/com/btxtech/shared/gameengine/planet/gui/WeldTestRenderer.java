@@ -818,13 +818,14 @@ public class WeldTestRenderer {
             return;
         }
         gc.setStroke(Color.BROWN);
+        gc.setFill(Color.RED);
         gc.setLineWidth(FAT_LINE_WIDTH);
         Arrays.stream(nativeTerrainShapeObjectLists).forEach(nativeTerrainShapeObjectList -> {
             if (nativeTerrainShapeObjectList.terrainShapeObjectPositions != null) {
                 double radius = terrainTypeService.getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
                 Arrays.stream(nativeTerrainShapeObjectList.terrainShapeObjectPositions).forEach(nativeTerrainShapeObjectPosition -> {
-                    // TODO double correctedRadius = radius * nativeTerrainShapeObjectPosition.scale;
-                    // TODO gc.strokeOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
+                     double correctedRadius = radius /* TODO * nativeTerrainShapeObjectPosition.scale*/;
+                     gc.fillOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
                 });
             }
         });

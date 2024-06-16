@@ -47,7 +47,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             terrainShape = new TerrainShapeManager(planetConfig, nativeTerrainShapeAccess, terrainTypeService, alarmService, terrainObjectPositions);
             loadedCallback.accept(terrainShape.toNativeTerrainShape());
         } else if (nativeTerrainShapeAccess != null) {
-            terrainShape = new TerrainShapeManager(nativeTerrainShapeAccess);
+            terrainShape = new TerrainShapeManager(terrainTypeService, nativeTerrainShapeAccess);
             terrainShape.lazyInit(planetConfig, () -> loadedCallback.accept(terrainShape.toNativeTerrainShape()), failCallback);
         } else {
             throw new RuntimeException("++++++++++ Unexpected ++++++++++");

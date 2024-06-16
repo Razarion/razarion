@@ -6,6 +6,8 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectPosition;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
@@ -28,6 +30,10 @@ public class PathingAccess {
     }
 
     public TerrainType getTerrainType(Index terrainNodeIndex) {
+        if (isBlockedByTerrainObject(terrainNodeIndex)) {
+            return TerrainType.BLOCKED;
+        }
+
         double blHeight = getHeightNodeAt(terrainNodeIndex);
         double brHeight = getHeightNodeAt(terrainNodeIndex.add(1, 0));
         double trHeight = getHeightNodeAt(terrainNodeIndex.add(1, 1));
@@ -47,13 +53,32 @@ public class PathingAccess {
         }
     }
 
+    private boolean isBlockedByTerrainObject(Index terrainNodeIndex) {
+        DecimalPosition scanPosition = nodeIndexToMiddleTerrainPosition(terrainNodeIndex);
+        Index terrainTileIndex = nodeIndexToTileIndex(terrainNodeIndex);
+        TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
+        for (NativeTerrainShapeObjectList nativeTerrainShapeObjectList : terrainShapeTile.getNativeTerrainShapeObjectLists()) {
+            double radius = terrainShape.getTerrainTypeService().getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
+            if (radius > 0.0) {
+                for (NativeTerrainShapeObjectPosition nativeTerrainShapeObjectPosition : nativeTerrainShapeObjectList.terrainShapeObjectPositions) {
+                    double distance = scanPosition.getDistance(nativeTerrainShapeObjectPosition.x, nativeTerrainShapeObjectPosition.y);
+                    if (distance - radius < 0) {
+                        return true;
+                    }
+                }
+            }
+
+        }
+        return false;
+    }
+
     public double getHeightNodeAt(Index terrainNodeIndex) {
         int uint16 = getUInt16GroundHeightAt(terrainNodeIndex);
         return uint16ToHeight(uint16);
     }
 
     public int getUInt16GroundHeightAt(Index terrainNodeIndex) {
-        Index terrainTileIndex = terrainNodeIndex.scaleInverseXY(NODE_X_COUNT, NODE_Y_COUNT);
+        Index terrainTileIndex = nodeIndexToTileIndex(terrainNodeIndex);
 
         int totalTileNodes = (NODE_X_COUNT + 1) * (NODE_Y_COUNT + 1);
         int startTileNodeIndex = totalTileNodes * (terrainTileIndex.getY() * terrainShape.getTileXCount() + terrainTileIndex.getX());

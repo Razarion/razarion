@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
@@ -18,6 +19,8 @@ import java.util.function.Consumer;
 public class TerrainService {
     // private Logger logger = Logger.getLogger(TerrainService.class.getName());
     @Inject
+    private TerrainTypeService terrainTypeService;
+    @Inject
     private TerrainTileFactory terrainTileFactory;
     @Inject
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;
@@ -34,7 +37,7 @@ public class TerrainService {
     }
 
     private void setup(Runnable finishCallback, Consumer<String> failCallback) {
-        terrainShape = new TerrainShapeManager(nativeTerrainShapeAccess);
+        terrainShape = new TerrainShapeManager(terrainTypeService, nativeTerrainShapeAccess);
         terrainShape.lazyInit(planetConfig, finishCallback, failCallback);
     }
 
