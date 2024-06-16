@@ -26,7 +26,7 @@ public class AStarTest extends AStarBaseTest {
 
     @Test
     public void land1() {
-        SimplePath simplePath = setupPath(3.0, TerrainType.LAND, new DecimalPosition(180.000, 100.000), 15.0, 3.0, TerrainType.LAND, new DecimalPosition(199.000, 89.000));
+        SimplePath simplePath = setupPath(2.0, TerrainType.LAND, new DecimalPosition(180.000, 100.000), 15.0, 2.0, TerrainType.LAND, new DecimalPosition(199.000, 89.000));
         assertSimplePath(simplePath, new DecimalPosition(181.5, 100.5), new DecimalPosition(182.5, 100.5), new DecimalPosition(183.5, 100.5), new DecimalPosition(184.5, 100.5), new DecimalPosition(185.5, 100.5), new DecimalPosition(186.5, 100.5), new DecimalPosition(187.5, 100.5), new DecimalPosition(188.5, 100.5), new DecimalPosition(188.5, 99.5), new DecimalPosition(189.5, 99.5), new DecimalPosition(189.5, 98.5), new DecimalPosition(190.5, 98.5), new DecimalPosition(190.5, 97.5), new DecimalPosition(191.5, 97.5), new DecimalPosition(192.5, 97.5), new DecimalPosition(192.5, 96.5), new DecimalPosition(193.5, 96.5), new DecimalPosition(193.5, 95.5), new DecimalPosition(194.5, 95.5), new DecimalPosition(194.5, 94.5), new DecimalPosition(195.5, 94.5), new DecimalPosition(195.5, 93.5), new DecimalPosition(195.5, 92.5), new DecimalPosition(196.5, 92.5), new DecimalPosition(197.5, 92.5), new DecimalPosition(197.5, 91.5), new DecimalPosition(198.5, 91.5), new DecimalPosition(198.5, 90.5), new DecimalPosition(198.5, 89.5), new DecimalPosition(199.0, 89.0));
     }
 
@@ -209,12 +209,12 @@ public class AStarTest extends AStarBaseTest {
     @Test
     @Ignore
     public void testCaseGenerator() {
-        double actorRadius = 3;
+        double actorRadius = 2;
         TerrainType actorTerrainType = TerrainType.LAND;
         DecimalPosition actorPosition = new DecimalPosition(180, 100); // Land
         // DecimalPosition actorPosition = new DecimalPosition(200, 180); // Water
         double range = 15;
-        double targetRadius = 3;
+        double targetRadius = 2;
         TerrainType targetTerrainType = TerrainType.LAND;
 
         showDisplay(new MouseMoveCallback().setCallback(position -> {

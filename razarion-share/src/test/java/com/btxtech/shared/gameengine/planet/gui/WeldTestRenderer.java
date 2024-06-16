@@ -71,7 +71,7 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.terrainPo
  */
 @Singleton
 public class WeldTestRenderer {
-    private static final double LINE_WIDTH = 0.1;
+    public static final double LINE_WIDTH = 0.1;
     public static final double FAT_LINE_WIDTH = 0.3;
     private static final int GRID_SPACING_100 = 100;
     private static final int GRID_SPACING_08 = 8;

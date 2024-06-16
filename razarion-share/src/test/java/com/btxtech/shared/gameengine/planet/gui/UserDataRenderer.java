@@ -57,7 +57,7 @@ public class UserDataRenderer {
     }
 
     private void render(SimplePath simplePath) {
-        weldTestRenderer.strokeLine(simplePath.getWayPositions(), WeldTestRenderer.FAT_LINE_WIDTH, simplePathColorToggle ? Color.DARKGREEN : Color.DEEPPINK, true);
+        weldTestRenderer.strokeLine(simplePath.getWayPositions(), WeldTestRenderer.LINE_WIDTH, simplePathColorToggle ? Color.DARKGREEN : Color.DEEPPINK, false);
         simplePathColorToggle = !simplePathColorToggle;
     }
 
