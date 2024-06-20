@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.effects;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -36,7 +37,7 @@ public class EffectVisualizationService {
         playParticle(System.currentTimeMillis(), muzzlePosition, target.sub(muzzlePosition), muzzleFlashParticleEmitterSequenceConfigId);
     }
 
-    public void onProjectileDetonation(int baseItemTypeId, Vertex position) {
+    public void onProjectileDetonation(int baseItemTypeId, DecimalPosition position) {
     }
 
     public void baseItemRemoved(int[] removeSyncBaseItemIds) {

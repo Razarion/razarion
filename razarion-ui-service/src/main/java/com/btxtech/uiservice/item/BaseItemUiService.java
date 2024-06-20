@@ -47,6 +47,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toDecimalPosition;
+
 /**
  * Created by Beat
  * 28.12.2015.
@@ -231,8 +233,8 @@ public class BaseItemUiService {
                 }
 
                 babylonBaseItem.setHealth(nativeSyncBaseItemTickInfo.health);
-                babylonBaseItem.setHarvestingPosition(nativeSyncBaseItemTickInfo.harvestingResourcePosition);
-                babylonBaseItem.setBuildingPosition(nativeSyncBaseItemTickInfo.buildingPosition);
+                babylonBaseItem.setHarvestingPosition(toDecimalPosition(nativeSyncBaseItemTickInfo.harvestingResourcePosition));
+                babylonBaseItem.setBuildingPosition(toDecimalPosition(nativeSyncBaseItemTickInfo.buildingPosition));
                 babylonBaseItem.setBuildup(nativeSyncBaseItemTickInfo.buildup);
                 babylonBaseItem.setConstructing(nativeSyncBaseItemTickInfo.constructing);
             } catch (Throwable t) {
@@ -267,10 +269,10 @@ public class BaseItemUiService {
         }
     }
 
-    public void onProjectileFired(int syncBaseItemId, Vertex destination) {
+    public void onProjectileFired(int syncBaseItemId, DecimalPosition destination) {
         BabylonBaseItem babylonBaseItem = babylonBaseItems.get(syncBaseItemId);
         if (babylonBaseItem != null) {
-            babylonBaseItem.onProjectileFired();
+            babylonBaseItem.onProjectileFired(destination);
             audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getWeaponType().getMuzzleFlashAudioItemConfigId());
         }
     }

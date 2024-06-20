@@ -232,7 +232,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         }
 
         @Override
-        public void onProjectileFired() {
+        public void onProjectileFired(DecimalPosition destination) {
 
         }
 

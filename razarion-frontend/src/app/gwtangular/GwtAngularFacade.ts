@@ -563,7 +563,7 @@ export interface BabylonBaseItem extends BabylonItem {
 
   setConstructing(progress: number): void;
 
-  onProjectileFired(): void;
+  onProjectileFired(destination: DecimalPosition): void;
 
   onExplode(): void;
 }

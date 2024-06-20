@@ -544,6 +544,11 @@ com = {
                         this.containingItemCount = 0;
                         this.maxContainingRadius = 0;
                         this.contained = false;
+                    },
+
+                    NativeDecimalPosition: function () {
+                        this.x = 0;
+                        this.y = 0;
                     }
                 }
             }

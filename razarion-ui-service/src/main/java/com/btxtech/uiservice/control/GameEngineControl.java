@@ -354,10 +354,10 @@ public abstract class GameEngineControl {
                 inventoryUiService.onOnBoxPicked((BoxContent) controlPackage.getSingleData());
                 break;
             case PROJECTILE_FIRED:
-                baseItemUiService.onProjectileFired((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1));
+                baseItemUiService.onProjectileFired((int) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
                 break;
             case PROJECTILE_DETONATION:
-                effectVisualizationService.onProjectileDetonation((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1));
+                effectVisualizationService.onProjectileDetonation((int) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
                 break;
             case PERFMON_RESPONSE:
                 onPerfmonResponse((Collection<PerfmonStatistic>) controlPackage.getData(0));

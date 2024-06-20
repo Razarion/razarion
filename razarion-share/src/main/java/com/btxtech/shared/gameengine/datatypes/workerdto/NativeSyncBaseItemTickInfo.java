@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import jsinterop.annotations.JsType;
 
 /**
@@ -21,8 +20,8 @@ public class NativeSyncBaseItemTickInfo {
     public double health;
     public double constructing;
     public int constructingBaseItemTypeId; // Id or > 0. Integer is not possible
-    public DecimalPosition harvestingResourcePosition;
-    public DecimalPosition buildingPosition;
+    public NativeDecimalPosition harvestingResourcePosition;
+    public NativeDecimalPosition buildingPosition;
     public int containingItemCount;
     public double maxContainingRadius;
     public boolean contained;

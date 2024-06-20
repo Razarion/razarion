@@ -115,7 +115,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       setConstructing(progress: number): void {
       }
 
-      onProjectileFired(): void {
+      onProjectileFired(destination: DecimalPosition): void {
       }
 
       onExplode(): void {
@@ -209,15 +209,24 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
   }
 
-  onProjectileFired(): void {
+  onProjectileFired(destination: DecimalPosition): void {
     if (!this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()) {
       console.warn(`No MuzzleFlashParticleSystemConfigId for ${this.baseItemType.getInternalName()} '${this.baseItemType.getId()}'`);
       return;
     }
+
+
+    let correctDestination;
+    let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(destination);
+    if (pickingInfo && pickingInfo.hit) {
+      correctDestination = pickingInfo.pickedPoint!;
+    } else {
+      correctDestination = new Vector3(destination.getX(), 0, destination.getY());
+    }
+
     let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()!);
     const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath());
     emitterMesh.computeWorldMatrix(true);
-    const correctDestination = new Vector3(emitterMesh.position.x, emitterMesh.position.y + 10, emitterMesh.position.z);
     const particleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, correctDestination, false);
     particleSystem.disposeOnStop = true;
 

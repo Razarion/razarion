@@ -302,11 +302,11 @@ public class WorkerMarshaller {
                 break;
             case PROJECTILE_FIRED:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
-                data.add(fromJson(array[DATA_OFFSET_1].asString(), Vertex.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), DecimalPosition.class));
                 break;
             case PROJECTILE_DETONATION:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
-                data.add(fromJson(array[DATA_OFFSET_1].asString(), Vertex.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), DecimalPosition.class));
                 break;
             case PERFMON_RESPONSE:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));

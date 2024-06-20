@@ -37,6 +37,7 @@ import {
   MeshBuilder,
   Node,
   NodeMaterial,
+  Nullable,
   PointerEventTypes,
   PolygonMeshBuilder,
   Quaternion,
@@ -565,6 +566,20 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     );
 
     return new ViewField(bottomLeft, bottomRight, topRight, topLeft);
+  }
+
+  public setupTerrainPickPointFromPosition(position: DecimalPosition): Nullable<PickingInfo> {
+    let ray = new Ray(new Vector3(position.getX(), -100, position.getY()), new Vector3(0, 1, 0), 1000);
+
+    return this.scene.pickWithRay(ray,
+      (mesh: AbstractMesh) => {
+        let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
+        if (!razarionMetadata) {
+          return false;
+        }
+        return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.SLOPE;
+      }
+    );
   }
 
   public setupMeshPickPoint(): PickingInfo {

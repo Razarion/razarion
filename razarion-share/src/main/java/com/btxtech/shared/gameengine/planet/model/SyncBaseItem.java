@@ -48,6 +48,8 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNativeDecimalPosition;
+
 /**
  * User: beat
  * Date: 04.12.2009
@@ -689,10 +691,10 @@ public class SyncBaseItem extends SyncItem {
             nativeSyncBaseItemTickInfo.y = getSyncPhysicalArea().getPosition().getY();
             nativeSyncBaseItemTickInfo.angle = getSyncPhysicalArea().getAngle();
             if (syncHarvester != null && syncHarvester.isHarvesting()) {
-                nativeSyncBaseItemTickInfo.harvestingResourcePosition = syncHarvester.getResource().getSyncPhysicalArea().getPosition();
+                nativeSyncBaseItemTickInfo.harvestingResourcePosition = toNativeDecimalPosition(syncHarvester.getResource().getSyncPhysicalArea().getPosition());
             }
             if (syncBuilder != null && syncBuilder.isBuilding()) {
-                nativeSyncBaseItemTickInfo.buildingPosition = syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition();
+                nativeSyncBaseItemTickInfo.buildingPosition = toNativeDecimalPosition(syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition());
                 nativeSyncBaseItemTickInfo.constructing = syncBuilder.getCurrentBuildup().getBuildup();
                 nativeSyncBaseItemTickInfo.constructingBaseItemTypeId = syncBuilder.getCurrentBuildup().getBaseItemType().getId();
             }

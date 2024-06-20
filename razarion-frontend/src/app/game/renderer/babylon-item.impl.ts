@@ -141,18 +141,8 @@ export class BabylonItemImpl implements BabylonItem {
 
   updatePosition(): void {
     if (this.position) {
-      let ray = new Ray(new Vector3(this.position.getX(), -100, this.position.getY()), new Vector3(0, 1, 0), 1000);
-
-      let pickingInfo = this.rendererService.getScene().pickWithRay(ray,
-        (mesh: AbstractMesh) => {
-          let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
-          if (!razarionMetadata) {
-            return false;
-          }
-          return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.SLOPE;
-        }
-      );
-
+      let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(this.position);
+      
       this.container.position.x = this.position.getX();
       this.container.position.z = this.position.getY();
 

@@ -45,4 +45,25 @@ public interface NativeUtil {
             return new DecimalPosition(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y);
         }
     }
+
+    static NativeDecimalPosition toNativeDecimalPosition(DecimalPosition decimalPosition) {
+        if (decimalPosition != null) {
+            NativeDecimalPosition nativeDecimalPosition = new NativeDecimalPosition();
+            nativeDecimalPosition.x = decimalPosition.getX();
+            nativeDecimalPosition.y = decimalPosition.getY();
+            return nativeDecimalPosition;
+        } else {
+            return null;
+        }
+    }
+
+    static DecimalPosition toDecimalPosition(NativeDecimalPosition nativeDecimalPosition) {
+        if (nativeDecimalPosition != null) {
+            return new DecimalPosition(nativeDecimalPosition.x, nativeDecimalPosition.y);
+        } else {
+            return null;
+        }
+    }
+
+
 }
