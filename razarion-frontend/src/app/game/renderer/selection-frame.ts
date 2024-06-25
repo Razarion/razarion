@@ -23,6 +23,9 @@ export class SelectionFrame {
           break;
         }
         case PointerEventTypes.POINTERUP: {
+          if(renderService.baseItemPlacerActive) {
+            return;
+          }
           this.onPointerUp(this.scene.pointerX, this.scene.pointerY);
           break;
         }

@@ -1,7 +1,8 @@
-﻿import { Component, NgZone, OnInit } from '@angular/core';
+﻿import { Component, NgZone } from '@angular/core';
 import { MainCockpit, RadarState, Rectangle } from "../../../gwtangular/GwtAngularFacade";
 import { GameComponent } from '../../game.component';
-import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
+import { Nullable, Observer, PointerEventTypes, PointerInfo } from '@babylonjs/core';
+import { BabylonRenderServiceAccessImpl } from '../../renderer/babylon-render-service-access-impl.service';
 
 
 @Component({
@@ -13,6 +14,9 @@ export class MainCockpitComponent implements MainCockpit {
   showCockpit: boolean = false;
   admin: boolean = false;
   editorDialog: boolean = false;
+  showCursorPosition: boolean = false;
+  cursorPosition?: string;
+  private mouseObservable: Nullable<Observer<PointerInfo>> = null;
   levelNumber!: number;
   xp!: number;
   xp2LevelUp!: number;
@@ -28,7 +32,7 @@ export class MainCockpitComponent implements MainCockpit {
 
   constructor(private zone: NgZone,
     private gameComponent: GameComponent,
-    private gwtAngularService: GwtAngularService) {
+    private renderService: BabylonRenderServiceAccessImpl) {
   }
 
   show(admin: boolean): void {
@@ -108,5 +112,28 @@ export class MainCockpitComponent implements MainCockpit {
       this.blinkUnlockEnabled = show;
     });
   }
+
+
+  onShowCursorPosition(): void {
+    if (this.showCursorPosition) {
+      this.cursorPosition = " x:---.-- y:---.-- height:---.--";
+      this.mouseObservable = this.renderService.getScene().onPointerObservable.add((pointerInfo) => {
+        if (pointerInfo.type === PointerEventTypes.POINTERMOVE) {
+          let terrainPisckInfo = this.renderService.setupTerrainPickPoint();
+          if (terrainPisckInfo.pickedPoint) {
+            this.cursorPosition = ` x: ${terrainPisckInfo.pickedPoint.x.toFixed(2)}, y: ${terrainPisckInfo.pickedPoint.z.toFixed(2)}, height: ${terrainPisckInfo.pickedPoint.y.toFixed(2)}`;
+          }
+        }
+      }
+      );
+    } else {
+      if (this.mouseObservable) {
+        this.renderService.getScene().onPointerObservable.remove(this.mouseObservable);
+        this.mouseObservable = null;
+      }
+      this.cursorPosition = undefined;
+    }
+  }
+
 
 }

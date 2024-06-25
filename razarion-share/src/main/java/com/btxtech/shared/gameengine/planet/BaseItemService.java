@@ -175,6 +175,7 @@ public class BaseItemService {
                 // Prevent user from having a base without any units.
                 deleteBaseSlave(playerBase.getBaseId());
             }
+            exceptionHandler.handleException(e);
             throw e;
         }
         return playerBase;

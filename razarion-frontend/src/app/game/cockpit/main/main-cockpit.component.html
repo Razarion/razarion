@@ -32,7 +32,8 @@
       </p-button>
     </div>
     <div class="flex cockpit-element">
-      <p-button icon="pi pi-angle-double-up" title="Unlock" (onClick)="onUnlock()" [ngClass]="{'blinking-button': blinkUnlockEnabled}">
+      <p-button icon="pi pi-angle-double-up" title="Unlock" (onClick)="onUnlock()"
+        [ngClass]="{'blinking-button': blinkUnlockEnabled}">
       </p-button>
     </div>
   </div>
@@ -47,5 +48,9 @@
   <div *ngIf="admin" class="flex cockpit-element">
     <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
       (onClick)="this.editorDialog = true"></p-button>
+  </div>
+  <div *ngIf="admin" class="flex cockpit-element">
+    <p-checkbox [(ngModel)]="showCursorPosition" (onChange)="onShowCursorPosition()" [binary]="true"></p-checkbox>
+    &nbsp;{{ cursorPosition ? cursorPosition : 'Show cursor'}}
   </div>
 </div>

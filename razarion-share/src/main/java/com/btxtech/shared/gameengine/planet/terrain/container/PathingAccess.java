@@ -57,6 +57,9 @@ public class PathingAccess {
         DecimalPosition scanPosition = nodeIndexToMiddleTerrainPosition(terrainNodeIndex);
         Index terrainTileIndex = nodeIndexToTileIndex(terrainNodeIndex);
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
+        if(terrainShapeTile == null) {
+            return false;
+        }
         for (NativeTerrainShapeObjectList nativeTerrainShapeObjectList : terrainShapeTile.getNativeTerrainShapeObjectLists()) {
             double radius = terrainShape.getTerrainTypeService().getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
             if (radius > 0.0) {
