@@ -90,9 +90,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         return false;
       }
 
-      updatePosition(): void {
-      }
-
       select(active: boolean): void {
       }
 

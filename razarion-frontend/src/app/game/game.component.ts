@@ -199,7 +199,6 @@ export class GameComponent implements OnInit, ScreenCover {
                 babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
                 babylonBaseItem1.setAngle(Tools.ToRadians(45));
 
-                babylonBaseItem1.updatePosition();
                 babylonBaseItem1.updateAngle();
 
                 babylonBaseItem1.select(false);
@@ -208,21 +207,20 @@ export class GameComponent implements OnInit, ScreenCover {
                 babylonBaseItem1.setHealth(0.99);
                 // babylonBaseItem1.mark(MarkerConfig);
 
-                let x = 20;
-                let y = 20;
+                let x = 5;
+                let y = 5;
                 setInterval(() => {
                   babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(x, y));
-                  babylonBaseItem1.updatePosition();
-                  x += 0.05;
+                  x += 0.5;
                   if(x > 50) {
-                    x = 20;
+                    x = 5;
                   }
-                  y += 0.05;
+                  y += 0.5;
                   if(y > 50) {
-                    y = 20;
+                    y = 5;
                   }
 
-                }, 10)
+                }, 100)
                 // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
                 // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
               }
@@ -353,9 +351,9 @@ export class GameComponent implements OnInit, ScreenCover {
               //     outOfViewSize = 1;
               //   });
 
-              setTimeout(() =>{
-                 this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
-                 }, 2000)
+              // setTimeout(() =>{
+              //    this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+              //    }, 2000);
 
             });
           });

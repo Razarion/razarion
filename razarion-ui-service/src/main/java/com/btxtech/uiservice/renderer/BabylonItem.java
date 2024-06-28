@@ -13,8 +13,6 @@ public interface BabylonItem {
 
     void setPosition(DecimalPosition position);
 
-    void updatePosition();
-
     double getAngle();
 
     void setAngle(double angle);

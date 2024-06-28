@@ -533,8 +533,6 @@ export interface BabylonItem {
 
   setPosition(position: DecimalPosition): void;
 
-  updatePosition(): void;
-
   getAngle(): number;
 
   setAngle(angle: number): void;

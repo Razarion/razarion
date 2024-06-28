@@ -52,9 +52,6 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
             updateAngle(): void {
             }
 
-            updatePosition(): void {
-            }
-
         };
     }
 }

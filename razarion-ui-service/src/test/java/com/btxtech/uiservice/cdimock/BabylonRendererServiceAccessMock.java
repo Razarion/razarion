@@ -138,11 +138,6 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         }
 
         @Override
-        public void updatePosition() {
-
-        }
-
-        @Override
         public void updateAngle() {
 
         }
@@ -271,10 +266,6 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         }
 
         @Override
-        public void updatePosition() {
-        }
-
-        @Override
         public double getAngle() {
             return 0;
         }
@@ -346,11 +337,6 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         @Override
         public void setPosition(DecimalPosition position) {
             this.position = position;
-        }
-
-        @Override
-        public void updatePosition() {
-
         }
 
         @Override

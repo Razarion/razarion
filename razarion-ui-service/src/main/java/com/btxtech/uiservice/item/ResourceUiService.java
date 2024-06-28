@@ -143,7 +143,6 @@ public class ResourceUiService {
                     if (visibleResource == null) {
                         visibleResource = babylonRendererService.createBabylonResourceItem(id, resourceItemType);
                         visibleResource.setPosition(syncResourceItemSimpleDto.getPosition());
-                        visibleResource.updatePosition();
                         babylonResourceItems.put(id, visibleResource);
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.addVisible(visibleResource);

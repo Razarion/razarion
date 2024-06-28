@@ -122,10 +122,6 @@ export class BabylonItemImpl implements BabylonItem {
     this.angle = angle;
   }
 
-  setPosition(position: DecimalPosition): void {
-    this.position = position;
-  }
-
   getPosition(): DecimalPosition | null {
     return this.position;
   }
@@ -139,7 +135,8 @@ export class BabylonItemImpl implements BabylonItem {
     this.container.dispose();
   }
 
-  updatePosition(): void {
+  setPosition(position: DecimalPosition): void {
+    this.position = position;
     if (this.position) {
       let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(this.position);
       

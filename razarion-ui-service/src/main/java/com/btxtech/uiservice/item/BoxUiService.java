@@ -194,7 +194,6 @@ public class BoxUiService {
                     if (visibleBox == null) {
                         visibleBox = babylonRendererService.createBabylonBoxItem(id, boxItemType);
                         visibleBox.setPosition(syncBoxItemSimpleDto.getPosition());
-                        visibleBox.updatePosition();
                         babylonBoxItems.put(id, visibleBox);
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.addVisible(visibleBox);

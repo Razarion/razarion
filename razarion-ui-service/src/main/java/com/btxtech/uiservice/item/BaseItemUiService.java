@@ -188,7 +188,6 @@ public class BaseItemUiService {
                             diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo));
                     babylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
                     babylonBaseItem.setPosition(position2d);
-                    babylonBaseItem.updatePosition();
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
                     babylonBaseItem.updateAngle();
                     if (syncBaseItemSetPositionMonitor != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
@@ -206,11 +205,9 @@ public class BaseItemUiService {
                 if (babylonBaseItem.getPosition() != null) {
                     if (!babylonBaseItem.getPosition().equalsDelta(position2d, 0.000001)) {
                         babylonBaseItem.setPosition(position2d);
-                        babylonBaseItem.updatePosition();
                     }
                 } else {
                     babylonBaseItem.setPosition(position2d);
-                    babylonBaseItem.updatePosition();
                 }
 
                 if (babylonBaseItem.getAngle() != nativeSyncBaseItemTickInfo.angle) {
