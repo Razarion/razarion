@@ -120,6 +120,11 @@ export class BabylonItemImpl implements BabylonItem {
 
   setAngle(angle: number): void {
     this.angle = angle;
+    if (this.lastNormal) {
+      this.container.rotation = this.calculateRotation(this.lastNormal);
+    } else {
+      this.container.rotation.y = Tools.ToRadians(90) - this.angle;
+    }
   }
 
   getPosition(): DecimalPosition | null {
@@ -183,14 +188,6 @@ export class BabylonItemImpl implements BabylonItem {
     const correctedRoll = (normal.y < 0) ? roll + Math.PI : roll;
 
     return new Vector3(pitch, yaw, correctedRoll);
-  }
-
-  updateAngle(): void {
-    if (this.lastNormal) {
-      this.container.rotation = this.calculateRotation(this.lastNormal);
-    } else {
-      this.container.rotation.y = Tools.ToRadians(90) - this.angle;
-    }
   }
 
   isEnemy(): boolean {

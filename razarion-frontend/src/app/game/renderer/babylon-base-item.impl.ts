@@ -90,9 +90,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       setup(): void {
       }
 
-      updateAngle(): void {
-      }
-
       isEnemy(): boolean {
         return false;
       }

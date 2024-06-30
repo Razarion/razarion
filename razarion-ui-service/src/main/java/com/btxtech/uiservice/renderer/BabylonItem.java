@@ -17,8 +17,6 @@ public interface BabylonItem {
 
     void setAngle(double angle);
 
-    void updateAngle();
-
     void select(boolean active);
 
     void hover(boolean active);

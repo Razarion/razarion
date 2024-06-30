@@ -45,9 +45,6 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
       setPosition(position: DecimalPosition): void {
       }
 
-      updateAngle(): void {
-      }
-
       isEnemy(): boolean {
         return false;
       }

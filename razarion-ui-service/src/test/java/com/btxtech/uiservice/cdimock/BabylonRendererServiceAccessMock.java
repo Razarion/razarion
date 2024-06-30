@@ -138,11 +138,6 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         }
 
         @Override
-        public void updateAngle() {
-
-        }
-
-        @Override
         public void setHealth(double health) {
 
         }
@@ -275,10 +270,6 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         }
 
         @Override
-        public void updateAngle() {
-        }
-
-        @Override
         public void select(boolean active) {
         }
 
@@ -348,12 +339,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         public void setAngle(double angle) {
 
         }
-
-        @Override
-        public void updateAngle() {
-
-        }
-
+        
         @Override
         public void select(boolean active) {
 

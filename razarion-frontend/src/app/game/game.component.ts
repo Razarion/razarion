@@ -203,8 +203,6 @@ export class GameComponent implements OnInit, ScreenCover {
                 babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
                 babylonBaseItem1.setAngle(Tools.ToRadians(45));
 
-                babylonBaseItem1.updateAngle();
-
                 babylonBaseItem1.select(false);
 
                 babylonBaseItem1.setConstructing(0.01);

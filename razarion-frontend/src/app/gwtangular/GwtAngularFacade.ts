@@ -539,8 +539,6 @@ export interface BabylonItem {
 
   setAngle(angle: number): void;
 
-  updateAngle(): void;
-
   isEnemy(): boolean;
 
   select(active: boolean): void;

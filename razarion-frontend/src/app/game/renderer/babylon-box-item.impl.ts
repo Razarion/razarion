@@ -5,10 +5,10 @@ import { BabylonModelService } from "./babylon-model.service";
 import { ActionService } from "../action.service";
 
 export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxItem {
-    constructor(id: number, 
-        private boxItemType: BoxItemType, 
-        rendererService: BabylonRenderServiceAccessImpl, 
-        actionService: ActionService, 
+    constructor(id: number,
+        private boxItemType: BoxItemType,
+        rendererService: BabylonRenderServiceAccessImpl,
+        actionService: ActionService,
         babylonModelService: BabylonModelService) {
         super(id, boxItemType, Diplomacy.BOX, rendererService, babylonModelService, actionService, rendererService.boxItemContainer);
     }
@@ -48,10 +48,6 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
             isEnemy(): boolean {
                 return false;
               }
-
-            updateAngle(): void {
-            }
-
         };
     }
 }

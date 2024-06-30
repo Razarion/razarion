@@ -189,7 +189,6 @@ public class BaseItemUiService {
                     babylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
                     babylonBaseItem.setPosition(position2d);
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
-                    babylonBaseItem.updateAngle();
                     if (syncBaseItemSetPositionMonitor != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                         syncBaseItemSetPositionMonitor.addVisible(babylonBaseItem);
                     }
@@ -212,7 +211,6 @@ public class BaseItemUiService {
 
                 if (babylonBaseItem.getAngle() != nativeSyncBaseItemTickInfo.angle) {
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
-                    babylonBaseItem.updateAngle();
                 }
 
                 if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
