@@ -16,9 +16,7 @@ import {
   DecimalPosition,
   Diplomacy,
   MarkerConfig,
-  NativeVertexDto,
-  ParticleSystemConfig,
-  Vertex
+  ParticleSystemConfig
 } from "../../gwtangular/GwtAngularFacade";
 import { GwtHelper } from "../../gwtangular/GwtHelper";
 import { BabylonItemImpl } from "./babylon-item.impl";
@@ -28,6 +26,8 @@ import { ActionService } from "../action.service";
 import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
+  // See GWT java PlanetService
+  static readonly TICK_TIME_MILLI_SECONDS: number = 100;
   private readonly PROGRESS_BAR_NODE_MATERIAL_ID = 54; // Put in properties
   private readonly HEALTH_BAR_NODE_MATERIAL_ID = 55; // Put in properties
   private buildingParticleSystem: ParticleSystem | null = null;
@@ -38,6 +38,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private readonly utilLayer: UtilityLayerRenderer;
   private healthInputBlock: InputBlock | undefined;
   private progressInputBlock: InputBlock | undefined;
+  private position3D: Vector3 | null = null;
+  private lastUpdateTime: number | null = null;
+  private oldPosition3D: Vector3 | null = null;
 
   constructor(id: number,
     private baseItemType: BaseItemType,
@@ -48,6 +51,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     super(id, baseItemType, diplomacy, rendererService, babylonModelService, actionService, rendererService.baseItemContainer);
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
+
+    if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
+      rendererService.addInterpolationListener(this);
+    }
   }
 
   public static createDummy(id: number): BabylonBaseItem {
@@ -122,6 +129,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   dispose() {
+    if (this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
+      this.rendererService.removeInterpolationListener(this);
+    }
     this.disposeBuildingParticleSystem();
     this.disposeHarvestingParticleSystem();
     if (this.healthBar) {
@@ -306,6 +316,26 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         console.error(e);
       }
     }
+  }
+
+  onPosition3D(position3D: Vector3): boolean {
+    let updateImmediatally = !this.position3D || !this.oldPosition3D || !this.lastUpdateTime;
+    this.oldPosition3D = this.position3D;
+    this.position3D = position3D.clone();
+    this.lastUpdateTime = Date.now();
+    return updateImmediatally;
+  }
+
+  interpolate(date: number): void {
+    if (!this.position3D || !this.oldPosition3D || !this.lastUpdateTime) {
+      return;
+    }
+
+    let t = (date - this.lastUpdateTime) / BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
+    if (t > 1) {
+      t = 1;
+    }
+    this.getContainer().position = Vector3.Lerp(this.oldPosition3D, this.position3D, t);
   }
 
   private disposeBuildingParticleSystem() {

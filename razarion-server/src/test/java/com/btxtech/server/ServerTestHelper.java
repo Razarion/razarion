@@ -760,11 +760,6 @@ public class ServerTestHelper {
         // TODO serverGameEngineControl.start(null, true);
     }
 
-    protected void setupPlanetFastTickGameEngine() throws Exception {
-        PlanetService.TICK_TIME_MILLI_SECONDS = 1;
-        setupPlanetWithSlopes();
-    }
-
     protected void cleanPlanets() {
         cleanTable(ServerLevelQuestEntity.class);
         cleanTableNative("SERVER_QUEST");
@@ -786,11 +781,6 @@ public class ServerTestHelper {
         cleanSlopeEntities();
 
         cleanPlanets();
-    }
-
-    protected void cleanPlanetFastTickGameEngine() {
-        PlanetService.TICK_TIME_MILLI_SECONDS = PlanetService.DEFAULT_TICK_TIME_MILLI_SECONDS;
-        cleanPlanetWithSlopes();
     }
 
     protected void cleanSlopeEntities() {

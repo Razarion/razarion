@@ -147,6 +147,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private placeMarkerMesh?: Mesh;
   baseItemPlacerActive = false;
   private editorTerrainTileCreationCallback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined;
+  private interpolationListeners: BabylonBaseItemImpl[] = [];
 
   constructor(private gwtAngularService: GwtAngularService,
     private babylonModelService: BabylonModelService,
@@ -252,7 +253,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     let renderTime = Date.now();
     this.engine.runRenderLoop(() => {
       try {
-        this.scrollCamera((Date.now() - renderTime) / 1000);
+        const date = Date.now();
+        this.scrollCamera((date - renderTime) / 1000);
+        this.interpolateItemPositions(date);
         this.scene.render();
         renderTime = Date.now();
       } catch (e) {
@@ -795,6 +798,21 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     } else {
       return null;
     }
+  }
+
+  addInterpolationListener(interpolationListener: BabylonBaseItemImpl) {
+    this.interpolationListeners.push(interpolationListener);
+  }
+
+  removeInterpolationListener(interpolationListener: BabylonBaseItemImpl) {
+    const index = this.interpolationListeners.indexOf(interpolationListener);
+    if (index !== -1) {
+      this.interpolationListeners.splice(index, 1);
+    }
+  }
+
+  private interpolateItemPositions(date: number) {
+    this.interpolationListeners.forEach(interpolationListener => interpolationListener.interpolate(date));
   }
 
 }

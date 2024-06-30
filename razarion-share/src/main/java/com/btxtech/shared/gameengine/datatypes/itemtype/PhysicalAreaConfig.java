@@ -123,6 +123,8 @@ public class PhysicalAreaConfig {
         return this;
     }
 
+
+    @SuppressWarnings("unused") // Used by Angular
     public boolean fulfilledMovable() {
         return angularVelocity != null && speed != null && acceleration != null;
     }

@@ -405,6 +405,9 @@ export class GameMockService {
               getRadius(): number {
                 return 3;
               }
+              fulfilledMovable(): boolean {
+                return true;
+              }
             };
           }
 

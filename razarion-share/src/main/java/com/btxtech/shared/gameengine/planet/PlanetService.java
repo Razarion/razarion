@@ -14,7 +14,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
-import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
@@ -23,7 +22,6 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -33,11 +31,11 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class PlanetService implements Runnable { // Only available in worker. On ui part is GameUiControl
-    public static final int DEFAULT_TICK_TIME_MILLI_SECONDS = 100;
-    public static int TICK_TIME_MILLI_SECONDS = DEFAULT_TICK_TIME_MILLI_SECONDS; // Only access in testing
+    // See Angular BabylonBaseItemImpl
+    public static final int TICK_TIME_MILLI_SECONDS = 100; // Only access in testing
     public static final int TICKS_PER_SECONDS = (int) (1000.0 / TICK_TIME_MILLI_SECONDS);
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
-    private Logger logger = Logger.getLogger(PlanetService.class.getName());
+    private final Logger logger = Logger.getLogger(PlanetService.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -67,8 +65,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
-    private Collection<PlanetTickListener> tickListeners = new ArrayList<>();
-    private PlanetServiceTracker planetServiceTracker = new PlanetServiceTracker();
+    private final Collection<PlanetTickListener> tickListeners = new ArrayList<>();
+    private final PlanetServiceTracker planetServiceTracker = new PlanetServiceTracker();
     private long tickCount;
     private GameEngineMode gameEngineMode;
     // private List<DebugHelperStatic.TickData> tickDatas = new ArrayList<>();
@@ -218,11 +216,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
     public void setTickCount(long tickCount) {
         this.tickCount = tickCount;
-    }
-
-    public List<DebugHelperStatic.TickData> getTickDatas() {
-        // return tickDatas;
-        return null;
     }
 
     public GameEngineMode getGameEngineMode() {

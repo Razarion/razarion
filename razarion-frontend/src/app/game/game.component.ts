@@ -185,6 +185,10 @@ export class GameComponent implements OnInit, ScreenCover {
                     getRadius(): number {
                       return 2;
                     }
+
+                    fulfilledMovable(): boolean {
+                      return true;
+                    }
                   };
                 }
 
@@ -212,11 +216,11 @@ export class GameComponent implements OnInit, ScreenCover {
                 setInterval(() => {
                   babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(x, y));
                   x += 0.5;
-                  if(x > 50) {
+                  y += 0.5;
+                  if (x > 50) {
                     x = 5;
                   }
-                  y += 0.5;
-                  if(y > 50) {
+                  if (y > 50) {
                     y = 5;
                   }
 
