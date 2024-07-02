@@ -209,19 +209,14 @@ export class GameComponent implements OnInit, ScreenCover {
                 babylonBaseItem1.setHealth(0.99);
                 // babylonBaseItem1.mark(MarkerConfig);
 
-                let x = 5;
-                let y = 5;
+                let x = 0;
                 setInterval(() => {
-                  babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(x, y));
-                  x += 0.5;
-                  y += 0.5;
-                  if (x > 50) {
-                    x = 5;
+                  babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
+                  babylonBaseItem1.setAngle(Tools.ToRadians(x));
+                  x += 20;
+                  if (x > 360) {
+                    x = 0;
                   }
-                  if (y > 50) {
-                    y = 5;
-                  }
-
                 }, 100)
                 // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
                 // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);

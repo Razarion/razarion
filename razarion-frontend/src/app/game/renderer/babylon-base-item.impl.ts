@@ -39,8 +39,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private healthInputBlock: InputBlock | undefined;
   private progressInputBlock: InputBlock | undefined;
   private position3D: Vector3 | null = null;
-  private lastUpdateTime: number | null = null;
   private oldPosition3D: Vector3 | null = null;
+  private lastPositionUpdateTime: number | null = null;
+  private rotation3D: Vector3 | null = null;
+  private oldRotation3D: Vector3 | null = null;
+  private lastRotationUpdateTime: number | null = null;
 
   constructor(id: number,
     private baseItemType: BaseItemType,
@@ -316,23 +319,42 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   onPosition3D(position3D: Vector3): boolean {
-    let updateImmediatally = !this.position3D || !this.oldPosition3D || !this.lastUpdateTime;
+    let updateImmediately = !this.position3D || !this.lastPositionUpdateTime;
     this.oldPosition3D = this.position3D;
     this.position3D = position3D.clone();
-    this.lastUpdateTime = Date.now();
-    return updateImmediatally;
+    this.lastPositionUpdateTime = Date.now();
+    return updateImmediately;
+  }
+
+  onRotation3D(rotation3D: Vector3): boolean {
+    let updateImmediately = !this.rotation3D || !this.lastRotationUpdateTime;
+    this.oldRotation3D = this.rotation3D;
+    this.rotation3D = rotation3D.clone();
+    this.lastRotationUpdateTime = Date.now();
+    return updateImmediately;
   }
 
   interpolate(date: number): void {
-    if (!this.position3D || !this.oldPosition3D || !this.lastUpdateTime) {
-      return;
+    if (this.lastPositionUpdateTime && this.position3D && this.oldPosition3D) {
+      let t = (date - this.lastPositionUpdateTime) / BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
+      if (t > 1) {
+        t = 1;
+      }
+      this.getContainer().position = Vector3.Lerp(this.oldPosition3D, this.position3D, t);
     }
 
-    let t = (date - this.lastUpdateTime) / BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
-    if (t > 1) {
-      t = 1;
+    if (this.lastRotationUpdateTime && this.rotation3D && this.oldRotation3D) {
+      let t = (date - this.lastRotationUpdateTime) / BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
+      if (t > 1) {
+        t = 1;
+      }
+      this.getContainer().rotation = new Vector3(
+        BabylonBaseItemImpl.interpolateAngleRadians(this.oldRotation3D.x, this.rotation3D.x, t),
+        BabylonBaseItemImpl.interpolateAngleRadians(this.oldRotation3D.y, this.rotation3D.y, t),
+        BabylonBaseItemImpl.interpolateAngleRadians(this.oldRotation3D.z, this.rotation3D.z, t)
+      );
     }
-    this.getContainer().position = Vector3.Lerp(this.oldPosition3D, this.position3D, t);
+
   }
 
   private disposeBuildingParticleSystem() {
@@ -416,6 +438,37 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
 
     return particleSystem;
+  }
+
+  static interpolateAngleRadians(startAngle: number, endAngle: number, t: number): number {
+    const twoPi = 2 * Math.PI;
+
+    startAngle = startAngle % twoPi;
+    endAngle = endAngle % twoPi;
+
+    if (startAngle < 0) {
+      startAngle += twoPi
+    }
+    if (endAngle < 0) {
+      endAngle += twoPi
+    }
+
+    let delta = endAngle - startAngle;
+
+    if (delta > Math.PI) {
+      delta -= twoPi;
+    } else if (delta < -Math.PI) {
+      delta += twoPi;
+    }
+
+    let interpolatedAngle = startAngle + delta * t;
+
+    interpolatedAngle = interpolatedAngle % twoPi;
+    if (interpolatedAngle < 0) {
+      interpolatedAngle += twoPi;
+    }
+
+    return interpolatedAngle;
   }
 
 }

@@ -1,5 +1,15 @@
 import { GwtHelper } from "../../gwtangular/GwtHelper";
-import { AbstractMesh, ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, NodeMaterial, Quaternion, Ray, Tools, TransformNode, Vector3 } from "@babylonjs/core";
+import {
+  AbstractMesh,
+  ActionManager,
+  ExecuteCodeAction,
+  Mesh,
+  MeshBuilder,
+  NodeMaterial,
+  Tools,
+  TransformNode,
+  Vector3
+} from "@babylonjs/core";
 import {
   BabylonItem,
   BaseItemType,
@@ -12,9 +22,8 @@ import {
 } from "../../gwtangular/GwtAngularFacade";
 import { SimpleMaterial } from "@babylonjs/materials";
 import { BabylonModelService } from "./babylon-model.service";
-import { BabylonRenderServiceAccessImpl, RazarionMetadataType } from "./babylon-render-service-access-impl.service";
+import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { ActionService, SelectionInfo } from "../action.service";
-import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
@@ -120,10 +129,14 @@ export class BabylonItemImpl implements BabylonItem {
 
   setAngle(angle: number): void {
     this.angle = angle;
+    let rotation3D: Vector3;
     if (this.lastNormal) {
-      this.container.rotation = this.calculateRotation(this.lastNormal);
+      rotation3D = this.calculateRotation(this.lastNormal);
     } else {
-      this.container.rotation.y = Tools.ToRadians(90) - this.angle;
+      rotation3D = new Vector3(0, Tools.ToRadians(90) - this.angle, 0)
+    }
+    if (this.onRotation3D(rotation3D)) {
+      this.container.rotation = rotation3D;
     }
   }
 
@@ -144,6 +157,7 @@ export class BabylonItemImpl implements BabylonItem {
     this.position = position;
     if (this.position) {
       let position3D = new Vector3(position.getX(), 0, position.getY());
+      let rotation3D: Vector3;
 
       let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(this.position);
 
@@ -154,17 +168,20 @@ export class BabylonItemImpl implements BabylonItem {
         // Rotation
         let normal = pickingInfo.getNormal(true)!;
         this.lastNormal = normal;
-        this.container.rotation = this.calculateRotation(normal);
+        rotation3D = this.calculateRotation(normal);
       } else {
         // Position
         position3D.y = 0;
 
         // Rotation
-        this.container.rotation.y = Tools.ToRadians(90) - this.angle;
+        rotation3D = new Vector3(0, Tools.ToRadians(90) - this.angle, 0)
       }
 
       if (this.onPosition3D(position3D)) {
         this.container.position = position3D;
+      }
+      if (this.onRotation3D(rotation3D)) {
+        this.container.rotation = rotation3D;
       }
     }
   }
@@ -173,9 +190,11 @@ export class BabylonItemImpl implements BabylonItem {
     return true;
   }
 
-  private calculateRotation(normal: Vector3): Vector3 {
-    // const radians = (Tools.ToRadians(90) - this.angle) * (Math.PI / 180);
+  onRotation3D(rotation3D: Vector3): boolean {
+    return true;
+  }
 
+  private calculateRotation(normal: Vector3): Vector3 {
     let direction = new Vector3(Math.cos(this.angle), 0, Math.sin(this.angle));
     const forward = direction.normalize();
     const right = Vector3.Cross(normal, forward).normalize();
