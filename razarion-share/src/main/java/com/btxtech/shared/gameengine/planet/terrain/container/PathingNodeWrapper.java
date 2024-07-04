@@ -84,6 +84,9 @@ public class PathingNodeWrapper {
         if (aStarContext.hasScope()) {
             for (Index scopeNodeIndex : aStarContext.getScopeNodeIndices()) {
                 Index scanNodeIndex = nodeIndex.add(scopeNodeIndex);
+                if (!pathingAccess.isNodeInBoundary(scanNodeIndex)) {
+                    return true;
+                }
                 if (!aStarContext.isAllowed(pathingAccess.getTerrainType(scanNodeIndex))) {
                     return true;
                 }

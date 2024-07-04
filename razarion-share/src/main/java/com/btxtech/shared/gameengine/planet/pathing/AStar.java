@@ -13,7 +13,7 @@ import java.util.Map;
  * 28.01.2017.
  */
 public class AStar {
-    private static final int MAX_CLOSED_LIST_SIZE = 100000;
+    private static final int MAX_CLOSED_LIST_SIZE = 5000;
     private final Map<PathingNodeWrapper, AStarNode> closedList = new HashMap<>();
     private final AStarOpenList openList = new AStarOpenList();
     private final PathingNodeWrapper startNode;

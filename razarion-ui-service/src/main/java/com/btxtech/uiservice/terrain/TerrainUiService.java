@@ -150,7 +150,7 @@ public class TerrainUiService {
         Index terrainTile = TerrainUtil.toTile(terrainPosition);
         UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
         if (uiTerrainTile == null) {
-            throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay(Collection<DecimalPosition>, BaseItemType) UiTerrainTile not loaded: " + terrainTile);
+            return false;
         }
         return uiTerrainTile.isTerrainTypeAllowed(terrainType, terrainPosition);
     }
