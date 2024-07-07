@@ -110,13 +110,13 @@ public class PathingAccessTest extends AStarBaseTest {
 //        showDisplay(positionMarker);
     }
 
-    // @Test
+    @Test
     public void generateTestCase() {
         double radius = 5;
         TerrainType terrainType = TerrainType.LAND;
         showDisplay(new MouseMoveCallback().setCallback(position -> {
             if (testCase(position, radius, terrainType)) {
-                return new Object[]{new PositionMarker().addCircleColor(new Circle2D(position, radius), Color.GREEN)};
+                return new Object[]{new PositionMarker().addCircleColor(new Circle2D(position, radius), Color.GREENYELLOW)};
             } else {
                 return new Object[]{new PositionMarker().addCircleColor(new Circle2D(position, radius), Color.RED)};
             }
