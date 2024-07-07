@@ -1,13 +1,15 @@
-import { Index } from "../../gwtangular/GwtAngularFacade";
-import { Vector3, VertexBuffer, VertexData } from "@babylonjs/core";
+import { Index, TerrainTile } from "../../gwtangular/GwtAngularFacade";
+import { Color3, Mesh, MeshBuilder, StandardMaterial, Texture, Vector3, VertexBuffer, VertexData } from "@babylonjs/core";
 import { BabylonTerrainTileImpl } from 'src/app/game/renderer/babylon-terrain-tile.impl';
 import { AbstractBrush } from "./brushes/abstract-brush";
+import { BabylonRenderServiceAccessImpl } from "src/app/game/renderer/babylon-render-service-access-impl.service";
 
 export class EditorTerrainTile {
   private positions?: Vector3[];
   private babylonTerrainTileImpl: BabylonTerrainTileImpl | null = null;
+  private decalMesh: Mesh | null = null;
 
-  constructor(private index: Index) {
+  constructor(private renderService: BabylonRenderServiceAccessImpl, private index: Index) {
   }
 
   setBabylonTerrainTile(babylonTerrainTileImpl: BabylonTerrainTileImpl) {
@@ -46,17 +48,6 @@ export class EditorTerrainTile {
     if (buttonDown) {
       this.modelTerrain(brush, mousePosition);
     }
-    // let minDistance = Number.MAX_VALUE;
-    // for (let i = 0; i < this.heightMap.length; i++) {
-    //   let vP = this.heightMap[i];
-    //   if (!vP) continue;
-    //   position.y = vP.y;
-    //   let distance = Vector3.Distance(vP, position);
-    //   if (distance < minDistance) {
-    //     minDistance = distance;
-    //   }
-    // }
-    // console.log(`Hit ${this.index.toString()} ${minDistance}`)
   }
 
   private modelTerrain(brush: AbstractBrush, mousePosition: Vector3) {
@@ -116,4 +107,80 @@ export class EditorTerrainTile {
   hasPositions(): boolean {
     return !!this.positions;
   }
+
+  public showTerrainType() {
+    this.hideTerrainType();
+    this.decalMesh = this.createTerrainTypeDecal();
+  }
+
+  public hideTerrainType() {
+    if (this.decalMesh) {
+      this.decalMesh.dispose();
+    }
+    this.decalMesh = null;
+  }
+
+  private createTerrainTypeDecal(): Mesh {
+    let xOffset = BabylonTerrainTileImpl.NODE_X_COUNT / 2 + this.index.getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
+    let yOffset = BabylonTerrainTileImpl.NODE_Y_COUNT / 2 + this.index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
+    var decalSize = new Vector3(BabylonTerrainTileImpl.NODE_X_COUNT, BabylonTerrainTileImpl.NODE_Y_COUNT, 100);
+    var decal = MeshBuilder.CreateDecal("Terrain type", this.babylonTerrainTileImpl!.getGroundMesh(), {
+      position: new Vector3(xOffset, 0.5, yOffset), normal: new Vector3(0, 1, 0), size: decalSize
+    });
+    var decalMaterial = new StandardMaterial("decalMat", this.renderService.getScene());
+    decalMaterial.diffuseTexture = this.createDynamicTexture();
+    decalMaterial.diffuseTexture.hasAlpha = true;
+    decalMaterial.specularColor = new Color3(0, 0, 0)
+    decal.material = decalMaterial;
+    decal.isPickable = false;
+    return decal
+  }
+
+  private createDynamicTexture(): Texture {
+    const factor = 10;
+    const border = 0.3;
+    const effectiveBorder = factor * border;
+    const canvas = document.createElement('canvas');
+    canvas.width = BabylonTerrainTileImpl.NODE_X_COUNT * factor;
+    canvas.height = BabylonTerrainTileImpl.NODE_Y_COUNT * factor;
+    const context = canvas.getContext('2d');
+
+    let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE) + 1;
+    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE) + 1;
+    if (context) {
+      for (let y = 0; y < yCount - 1; y++) {
+        for (let x = 0; x < xCount - 1; x++) {
+          const blHeight = this.positions![x + y * xCount].y;
+          const brHeight = this.positions![x + 1 + y * xCount].y;
+          const tlHeight = this.positions![x + (y + 1) * xCount].y;
+          const trHeight = this.positions![x + 1 + (y + 1) * xCount].y;
+          const avgHeight = (blHeight + brHeight + trHeight + tlHeight) / 4.0;
+
+          if (avgHeight < BabylonTerrainTileImpl.WATER_LEVEL) {
+            // return TerrainType.WATER;
+            context.fillStyle = "rgba(0, 0, 255, 0.5)";
+          } else {
+            const maxHeight = Math.max(blHeight, brHeight, trHeight, tlHeight);
+            const minHeight = Math.min(blHeight, brHeight, trHeight, tlHeight);
+            if (Math.abs(maxHeight - minHeight) < 0.7) {
+              // return TerrainType.LAND;
+              context.fillStyle = "rgba(0, 255, 0, 0.5)";
+            } else {
+              // return TerrainType.BLOCKED;
+              context.fillStyle = "rgba(255, 0, 0, 0.5)";
+            }
+          }
+          context.fillRect(
+            y * factor - effectiveBorder * 2,
+            x * factor - effectiveBorder * 2,
+            factor - effectiveBorder * 2,
+            factor - effectiveBorder * 2);
+        }
+      }
+    }
+    const dynamicTexture = new Texture(canvas.toDataURL(), this.renderService.getScene());
+    dynamicTexture
+    return dynamicTexture;
+  }
+
 }

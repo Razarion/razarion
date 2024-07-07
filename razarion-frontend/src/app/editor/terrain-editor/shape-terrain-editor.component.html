@@ -12,7 +12,7 @@
 <p-divider align="left">
   <div class="inline-flex align-items-center">
     <i class="pi pi-cog mr-2"></i>
-    <b>Settings</b>
+    <b>View</b>
   </div>
 </p-divider>
 
@@ -20,6 +20,13 @@
   <span class="col">Wireframe</span>
   <div class="col">
     <p-checkbox [(ngModel)]="wireframe" (onChange)="onWireframeChanged()" [binary]="true"></p-checkbox>
+  </div>
+</div>
+
+<div class="field grid align-items-center">
+  <span class="col">Show terrain type</span>
+  <div class="col">
+    <p-checkbox [(ngModel)]="showTerrainType" (onChange)="onShowTerrainTypeChanged()" [binary]="true"></p-checkbox>
   </div>
 </div>
 

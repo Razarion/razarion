@@ -595,6 +595,9 @@ export class GameMockService {
 
               getIndex(): Index {
                 return new class implements Index {
+                  add(deltaX: number, deltaY: number): Index {
+                    throw GwtInstance.newIndex(this.getX() + deltaX, this.getY() + deltaY);
+                  }
                   getX(): number {
                     return x;
                   }

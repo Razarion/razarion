@@ -47,6 +47,8 @@ export interface Index {
 
   getY(): number;
 
+  add(deltaX: number, deltaY: number): Index;
+
   toString(): string;
 }
 

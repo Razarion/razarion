@@ -1,18 +1,19 @@
 import {
   BabylonTerrainTile,
+  Index,
   TerrainObjectConfig,
   TerrainObjectModel,
   TerrainTile
 } from "src/app/gwtangular/GwtAngularFacade";
-import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
-import {BabylonModelService} from "./babylon-model.service";
-import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
-import {ActionManager, ExecuteCodeAction, Mesh, Node, Ray, TransformNode, Vector3, VertexData} from "@babylonjs/core";
-import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
-import {Nullable} from "@babylonjs/core/types";
-import {ActionService, SelectionInfo} from "../action.service";
-import {GwtHelper} from "src/app/gwtangular/GwtHelper";
-import {GwtInstance} from "src/app/gwtangular/GwtInstance";
+import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
+import { BabylonModelService } from "./babylon-model.service";
+import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
+import { ActionManager, Color3, ExecuteCodeAction, Mesh, MeshBuilder, Node, Ray, StandardMaterial, Texture, TransformNode, Vector3, VertexData } from "@babylonjs/core";
+import { BabylonRenderServiceAccessImpl, RazarionMetadataType } from "./babylon-render-service-access-impl.service";
+import { Nullable } from "@babylonjs/core/types";
+import { ActionService, SelectionInfo } from "../action.service";
+import { GwtHelper } from "src/app/gwtangular/GwtHelper";
+import { GwtInstance } from "src/app/gwtangular/GwtInstance";
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // See: GWT Java Code TerrainUtil
@@ -22,17 +23,18 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly NODE_Y_DISTANCE = 1;
   static readonly HEIGHT_PRECISION = 0.1;
   static readonly HEIGHT_MIN = -200;
+  static readonly WATER_LEVEL = 0;
   static readonly HEIGHT_DEFAULT = 0.5;
   private readonly container: TransformNode;
   private cursorTypeHandler: (selectionInfo: SelectionInfo) => void;
   private groundMesh: Mesh;
 
   constructor(public readonly terrainTile: TerrainTile,
-              private gwtAngularService: GwtAngularService,
-              private rendererService: BabylonRenderServiceAccessImpl,
-              actionService: ActionService,
-              babylonModelService: BabylonModelService,
-              private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+    private gwtAngularService: GwtAngularService,
+    private rendererService: BabylonRenderServiceAccessImpl,
+    actionService: ActionService,
+    babylonModelService: BabylonModelService,
+    private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
 
     let actionManager = new ActionManager(rendererService.getScene());
@@ -164,17 +166,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     for (let y = 0; y < yCount; y++) {
       for (let x = 0; x < xCount; x++) {
         const index = x + y * xCount;
-        let height;
-        if (!groundHeightMap || groundHeightMap[index] === undefined) {
-          height = BabylonTerrainTileImpl.HEIGHT_DEFAULT;
-        } else {
-          const uin16Height = groundHeightMap && groundHeightMap[index] || 0;
-          height = BabylonTerrainTileImpl.uint16ToHeight(uin16Height);
-        }
-
         positions.push(
           x * BabylonTerrainTileImpl.NODE_X_DISTANCE + xOffset,
-          height,
+          BabylonTerrainTileImpl.setupHeight(index, groundHeightMap),
           y * BabylonTerrainTileImpl.NODE_Y_DISTANCE + yOffset);
         normals.push(0, 0, 0);
       }
@@ -208,6 +202,16 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     return vertexData;
   }
+
+  public static setupHeight(index: number, groundHeightMap: Uint16Array): number {
+    if (!groundHeightMap || groundHeightMap[index] === undefined) {
+      return BabylonTerrainTileImpl.HEIGHT_DEFAULT;
+    } else {
+      const uin16Height = groundHeightMap && groundHeightMap[index] || 0;
+      return BabylonTerrainTileImpl.uint16ToHeight(uin16Height);
+    }
+  }
+
 
   // See: GWT Java Code TerrainUtil.uint16ToHeight
   public static uint16ToHeight(uint16: number): number {
