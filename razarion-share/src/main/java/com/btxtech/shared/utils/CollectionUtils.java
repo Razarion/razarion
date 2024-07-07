@@ -135,7 +135,7 @@ public class CollectionUtils {
         if (values == null || values.length == 0) {
             throw new IllegalArgumentException("values not allowed to be null or empty");
         }
-        double last = Double.MIN_VALUE;
+        double last = -Double.MAX_VALUE;
         for (Double value : values) {
             last = Math.max(last, value);
         }
