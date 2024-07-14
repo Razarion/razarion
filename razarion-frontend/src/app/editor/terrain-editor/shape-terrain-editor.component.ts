@@ -39,6 +39,7 @@ export enum UpDownMode {
 export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   wireframe: boolean = false;
   showTerrainType: boolean = false;
+  showTerrainTypeWorker: boolean = false;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private planetConfig: PlanetConfig;
   private editorTerrainTiles: EditorTerrainTile[][] = [];
@@ -73,7 +74,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
     for (let y = 0; y < this.yCount; y++) {
       this.editorTerrainTiles[y] = [];
       for (let x = 0; x < this.xCount; x++) {
-        this.editorTerrainTiles[y][x] = new EditorTerrainTile(renderService, GwtInstance.newIndex(x, y));
+        this.editorTerrainTiles[y][x] = new EditorTerrainTile(renderService, gwtAngularService.gwtAngularFacade.inputService, GwtInstance.newIndex(x, y));
       }
     }
 
@@ -152,7 +153,20 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
         }
       }
     }
+  }
 
+  onShowTerrainTypeWorkerChanged(): void {
+    for (let x = 0; x < this.xCount; x++) {
+      for (let y = 0; y < this.yCount; y++) {
+        if (this.editorTerrainTiles[y][x].hasPositions()) {
+          if (this.showTerrainTypeWorker) {
+            this.editorTerrainTiles[y][x].showTerrainTypeWorker();
+          } else {
+            this.editorTerrainTiles[y][x].hideTerrainTypeWorker();
+          }
+        }
+      }
+    }
   }
 
   private registerInputEvents() {
@@ -196,7 +210,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
       babylonTerrainTile.getGroundMesh().material!.wireframe = this.wireframe;
     }
     this.editorTerrainTiles[index.getY()][index.getX()].setBabylonTerrainTile(babylonTerrainTile);
-    if(this.showTerrainType) {
+    if (this.showTerrainType) {
       this.editorTerrainTiles[index.getY()][index.getX()].showTerrainType();
     }
   }

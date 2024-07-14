@@ -13,7 +13,9 @@ import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
@@ -24,12 +26,25 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
  */
 public class PathingAccess {
     private final TerrainShapeManager terrainShape;
+    private final Map<Index, TerrainType> terrainTypeCache = new HashMap<>();
 
     public PathingAccess(TerrainShapeManager terrainShape) {
         this.terrainShape = terrainShape;
     }
 
     public TerrainType getTerrainType(Index terrainNodeIndex) {
+        TerrainType cached = terrainTypeCache.get(terrainNodeIndex);
+        if (cached != null) {
+            return cached;
+        }
+
+        TerrainType terrainType = getTerrainTypeNoCache(terrainNodeIndex);
+        terrainTypeCache.put(terrainNodeIndex, terrainType);
+
+        return terrainType;
+    }
+
+    private TerrainType getTerrainTypeNoCache(Index terrainNodeIndex) {
         if (isBlockedByTerrainObject(terrainNodeIndex)) {
             return TerrainType.BLOCKED;
         }
@@ -57,7 +72,7 @@ public class PathingAccess {
         DecimalPosition scanPosition = nodeIndexToMiddleTerrainPosition(terrainNodeIndex);
         Index terrainTileIndex = nodeIndexToTileIndex(terrainNodeIndex);
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
-        if(terrainShapeTile == null) {
+        if (terrainShapeTile == null) {
             return false;
         }
         for (NativeTerrainShapeObjectList nativeTerrainShapeObjectList : terrainShapeTile.getNativeTerrainShapeObjectLists()) {

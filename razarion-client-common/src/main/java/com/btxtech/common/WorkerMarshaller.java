@@ -22,6 +22,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleD
 import com.btxtech.shared.gameengine.planet.terrain.TerrainObjectModel;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsArrayNumber;
@@ -94,6 +95,7 @@ public class WorkerMarshaller {
             case SELL_ITEMS:
             case USE_INVENTORY_ITEM:
             case INITIAL_SLAVE_SYNCHRONIZED:
+            case GET_TERRAIN_TYPE:
                 array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -111,6 +113,7 @@ public class WorkerMarshaller {
             case PROJECTILE_DETONATION:
             case ENERGY_CHANGED:
             case PROJECTILE_FIRED:
+            case GET_TERRAIN_TYPE_ANSWER:
                 array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.setAt(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
@@ -310,6 +313,13 @@ public class WorkerMarshaller {
                 break;
             case PERFMON_RESPONSE:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                break;
+            case GET_TERRAIN_TYPE:
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Index.class));
+                break;
+            case GET_TERRAIN_TYPE_ANSWER:
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Index.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), TerrainType.class));
                 break;
             case TERRAIN_TILE_REQUEST:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Index.class));

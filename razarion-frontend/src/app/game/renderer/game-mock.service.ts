@@ -85,6 +85,9 @@ export class GameMockService {
   };
 
   inputService: InputService = new class implements InputService {
+    getTerrainTypeOnTerrain(nodeIndex: Index): Promise<any> {
+      throw new Error("Method not implemented.");
+    }
     resourceItemClicked(id: number): void {
       console.info("resourceItemClicked");
     }

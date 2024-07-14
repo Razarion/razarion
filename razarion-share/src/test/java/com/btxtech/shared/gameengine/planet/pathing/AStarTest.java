@@ -207,7 +207,7 @@ public class AStarTest extends AStarBaseTest {
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void testCaseGenerator() {
         double actorRadius = 2;
         TerrainType actorTerrainType = TerrainType.LAND;

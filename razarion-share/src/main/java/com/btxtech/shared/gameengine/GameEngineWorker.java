@@ -52,6 +52,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
@@ -215,6 +216,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 break;
             case SELL_ITEMS:
                 sellItems((List<Integer>) controlPackage.getData(0));
+                break;
+            case GET_TERRAIN_TYPE:
+                getTerrainType((Index) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -733,5 +737,18 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         int[] removedIds = removedSyncBaseItemIds.stream().mapToInt(integer -> integer).toArray();
         removedSyncBaseItemIds.clear();
         return nativeMatrixFactory.intArrayConverter(removedIds);
+    }
+
+
+    private void getTerrainType(Index nodeIndex) {
+        try {
+            sendToClient(GameEngineControlPackage.Command.GET_TERRAIN_TYPE_ANSWER,
+                    nodeIndex,
+                    terrainService.getPathingAccess().getTerrainType(nodeIndex));
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            sendToClient(GameEngineControlPackage.Command.GET_TERRAIN_TYPE_ANSWER, nodeIndex, TerrainType.BLOCKED);
+
+        }
     }
 }

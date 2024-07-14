@@ -139,6 +139,8 @@ export interface InputService {
   boxItemClicked(id: number): void;
 
   terrainClicked(terrainPosition: DecimalPosition): void;
+
+  getTerrainTypeOnTerrain(nodeIndex: Index): Promise<any>;
 }
 
 export interface SelectionHandler {

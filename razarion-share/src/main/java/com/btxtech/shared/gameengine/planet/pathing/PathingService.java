@@ -24,6 +24,7 @@ import java.util.List;
 
 @Singleton
 public class PathingService {
+    // private static final Logger LOGGER = Logger.getLogger(PathingService.class.getName());
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
     public static final double RADIUS_GROW = 1;
     @Inject
@@ -32,9 +33,6 @@ public class PathingService {
     private TerrainService terrainService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private SynchronizationSendingContext synchronizationSendingContext;
-    //    @Inject
-//    private DebugHelper debugHelper;
     private PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
@@ -55,6 +53,7 @@ public class PathingService {
     }
 
     public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType terrainType, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
+        // long time = System.currentTimeMillis();
         // Attention due to performance!! isInSight() surface data (Obstacle-Model) is not based on the AStar surface data -> AStar model must overlap Obstacle-Model
         double correctedRadius = radius + RADIUS_GROW;
         SimplePath path = new SimplePath();
@@ -64,12 +63,12 @@ public class PathingService {
         if (startNode.equals(destinationNode)) {
             positions.add(destination);
             path.setWayPositions(positions);
+            // LOGGER.severe("Time for Pathing in same node: " + (System.currentTimeMillis() - time));
             return path;
         }
         if (!destinationNode.isFree(targetTerrainType)) {
             throw new PathFindingNotFreeException("Destination tile is not free: " + destination);
         }
-        // long time = System.currentTimeMillis();
         List<Index> scopeNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         PathingNodeWrapper correctedDestinationNode;
         AStarContext aStarContext;
@@ -100,7 +99,7 @@ public class PathingService {
         for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
             positions.add(pathingNodeWrapper.getCenter());
         }
-        // logger.severe("Time for Pathing: " + (System.currentTimeMillis() - time) + " CloseListSize: " + aStar.getCloseListSize());
+        // LOGGER.severe("Time for Pathing: " + (System.currentTimeMillis() - time) + " CloseListSize: " + aStar.getCloseListSize());
         if (additionPathElement != null) {
             positions.add(additionPathElement);
         }
@@ -112,7 +111,6 @@ public class PathingService {
     public void tick(SynchronizationSendingContext synchronizationSendingContext) {
         try {
             // DebugHelperStatic.setCurrentTick(-1);
-            this.synchronizationSendingContext = synchronizationSendingContext;
             pathingServiceTracker.startTick();
             setupPreferredVelocity();
             pathingServiceTracker.afterPreparation();
@@ -131,7 +129,6 @@ public class PathingService {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
-        this.synchronizationSendingContext = null;
     }
 
     private void calculateItemVelocity() {
@@ -178,13 +175,6 @@ public class PathingService {
             syncBaseItem.getSyncPhysicalMovable().finalization();
         });
     }
-
-//    private void onPathingChanged(SyncPhysicalMovable syncBaseItem, SyncPhysicalMovable other) {
-//        syncBaseItem.setCrowded();
-//        if (synchronizationSendingContext != null) {
-//            synchronizationSendingContext.addCollision(syncBaseItem, other);
-//        }
-//    }
 }
 
 

@@ -2,8 +2,6 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ColdGameUiContext;
@@ -17,10 +15,6 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
@@ -29,6 +23,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaisedException;
@@ -45,9 +40,11 @@ import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
+import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
@@ -87,6 +84,8 @@ public abstract class GameEngineControl {
     private ExceptionHandler exceptionHandler;
     @Inject
     private PerfmonService perfmonService;
+    @Inject
+    private Instance<InputService> inputServices;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
     private Runnable stopCallback;
@@ -279,24 +278,8 @@ public abstract class GameEngineControl {
         }
     }
 
-    public void playbackPlayerBase(PlayerBaseTracking playerBaseTracking) {
-        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_PLAYER_BASE, playerBaseTracking);
-    }
-
-    public void playbackSyncItemDeleted(SyncItemDeletedInfo syncItemDeletedInfo) {
-        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_ITEM_DELETED, syncItemDeletedInfo);
-    }
-
-    public void playbackSyncBaseItem(SyncBaseItemInfo syncBaseItemInfo) {
-        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_BASE_ITEM, syncBaseItemInfo);
-    }
-
-    public void playbackSyncResourceItem(SyncResourceItemInfo syncResourceItemInfo) {
-        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_RESOURCE_ITEM, syncResourceItemInfo);
-    }
-
-    public void playbackSyncBoxItem(SyncBoxItemInfo syncBoxItemInfo) {
-        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_BOX_ITEM, syncBoxItemInfo);
+    public void getTerrainType(Index nodePosition) {
+        sendToWorker(GameEngineControlPackage.Command.GET_TERRAIN_TYPE, nodePosition);
     }
 
     protected void dispatch(GameEngineControlPackage controlPackage) {
@@ -379,6 +362,9 @@ public abstract class GameEngineControl {
                 break;
             case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE: // Marshaller can not handle null value
                 gameUiControl.onInitialSlaveSynchronized(null);
+                break;
+            case GET_TERRAIN_TYPE_ANSWER:
+                inputServices.get().onGetTerrainTypeAnswer((Index) controlPackage.getData(0), (TerrainType) controlPackage.getData(1));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

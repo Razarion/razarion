@@ -1,6 +1,8 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -17,12 +19,14 @@ import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ViewField;
+import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @JsType
@@ -48,6 +52,7 @@ public class InputService {
     private ItemTypeService itemTypeService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    private final MapCollection<Index, Consumer<TerrainType>> terrainTypeOnTerrainConsumers = new MapCollection<>();
 
     @SuppressWarnings("unused") // Called by Angular
     public void onViewFieldChanged(double bottomLeftX, double bottomLeftY, double bottomRightX, double bottomRightY, double topRightX, double topRightY, double topLeftX, double topLeftY) {
@@ -179,6 +184,24 @@ public class InputService {
             gameEngineControl.moveCmd(movables, terrainPosition);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
+        }
+    }
+
+    @SuppressWarnings("unused") // Called by Babylonjs
+    public Promise<TerrainType> getTerrainTypeOnTerrain(Index nodeIndex) {
+        return new Promise<>((resolve, reject) -> {
+            boolean contains = terrainTypeOnTerrainConsumers.containsKey(nodeIndex);
+            terrainTypeOnTerrainConsumers.put(nodeIndex, resolve::onInvoke);
+            if (!contains) {
+                gameEngineControl.getTerrainType(nodeIndex);
+            }
+        });
+    }
+
+    public void onGetTerrainTypeAnswer(Index nodeIndex, TerrainType terrainType) {
+        Collection<Consumer<TerrainType>> consumers = terrainTypeOnTerrainConsumers.remove(nodeIndex);
+        for (Consumer<TerrainType> consumer : consumers) {
+            consumer.accept(terrainType);
         }
     }
 }

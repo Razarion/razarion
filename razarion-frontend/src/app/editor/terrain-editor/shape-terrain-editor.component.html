@@ -30,6 +30,13 @@
   </div>
 </div>
 
+<div class="field grid align-items-center">
+  <span class="col">Show terrain type worker (slow)</span>
+  <div class="col">
+    <p-checkbox [(ngModel)]="showTerrainTypeWorker" (onChange)="onShowTerrainTypeWorkerChanged()" [binary]="true"></p-checkbox>
+  </div>
+</div>
+
 <p-divider align="left">
   <div class="inline-flex align-items-center">
     <i class="pi pi-save mr-2"></i>

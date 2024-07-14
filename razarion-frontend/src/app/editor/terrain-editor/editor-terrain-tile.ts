@@ -1,15 +1,18 @@
-import { Index, TerrainTile } from "../../gwtangular/GwtAngularFacade";
+import { Index, InputService, TerrainTile } from "../../gwtangular/GwtAngularFacade";
 import { Color3, Mesh, MeshBuilder, StandardMaterial, Texture, Vector3, VertexBuffer, VertexData } from "@babylonjs/core";
 import { BabylonTerrainTileImpl } from 'src/app/game/renderer/babylon-terrain-tile.impl';
 import { AbstractBrush } from "./brushes/abstract-brush";
 import { BabylonRenderServiceAccessImpl } from "src/app/game/renderer/babylon-render-service-access-impl.service";
+import { GwtInstance } from "src/app/gwtangular/GwtInstance";
+import { TerrainType } from "src/app/generated/razarion-share";
 
 export class EditorTerrainTile {
   private positions?: Vector3[];
   private babylonTerrainTileImpl: BabylonTerrainTileImpl | null = null;
   private decalMesh: Mesh | null = null;
+  private decalMeshWorker: Mesh | null = null;
 
-  constructor(private renderService: BabylonRenderServiceAccessImpl, private index: Index) {
+  constructor(private renderService: BabylonRenderServiceAccessImpl, private inputeService: InputService, private index: Index) {
   }
 
   setBabylonTerrainTile(babylonTerrainTileImpl: BabylonTerrainTileImpl) {
@@ -120,6 +123,20 @@ export class EditorTerrainTile {
     this.decalMesh = null;
   }
 
+  public showTerrainTypeWorker() {
+    if (this.decalMeshWorker) {
+      this.decalMeshWorker.setEnabled(true);
+      return;
+    }
+    this.decalMeshWorker = this.createTerrainTypeDecalWorker()
+  }
+
+  public hideTerrainTypeWorker() {
+    if (this.decalMeshWorker) {
+      this.decalMeshWorker.setEnabled(false);
+    }
+  }
+
   private createTerrainTypeDecal(): Mesh {
     let xOffset = BabylonTerrainTileImpl.NODE_X_COUNT / 2 + this.index.getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
     let yOffset = BabylonTerrainTileImpl.NODE_Y_COUNT / 2 + this.index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
@@ -162,6 +179,7 @@ export class EditorTerrainTile {
           } else {
             const maxHeight = Math.max(blHeight, brHeight, trHeight, tlHeight);
             const minHeight = Math.min(blHeight, brHeight, trHeight, tlHeight);
+            // if (Math.abs(maxHeight - minHeight) < 0.6999998) {
             if (Math.abs(maxHeight - minHeight) < 0.7) {
               // return TerrainType.LAND;
               context.fillStyle = "rgba(0, 255, 0, 0.5)";
@@ -171,16 +189,81 @@ export class EditorTerrainTile {
             }
           }
           context.fillRect(
-            y * factor - effectiveBorder * 2,
-            x * factor - effectiveBorder * 2,
+            (y + 1) * factor - effectiveBorder * 2,
+            (x + 1) * factor - effectiveBorder * 2,
             factor - effectiveBorder * 2,
             factor - effectiveBorder * 2);
         }
       }
     }
     const dynamicTexture = new Texture(canvas.toDataURL(), this.renderService.getScene());
-    dynamicTexture
     return dynamicTexture;
+  }
+
+  private createTerrainTypeDecalWorker(): Mesh {
+    let xOffset = BabylonTerrainTileImpl.NODE_X_COUNT / 2 + this.index.getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
+    let yOffset = BabylonTerrainTileImpl.NODE_Y_COUNT / 2 + this.index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
+    var decalSize = new Vector3(BabylonTerrainTileImpl.NODE_X_COUNT, BabylonTerrainTileImpl.NODE_Y_COUNT, 100);
+    var decal = MeshBuilder.CreateDecal("Terrain type", this.babylonTerrainTileImpl!.getGroundMesh(), {
+      position: new Vector3(xOffset, 0.5, yOffset), normal: new Vector3(0, 1, 0), size: decalSize
+    });
+    var decalMaterial = new StandardMaterial("decalMat", this.renderService.getScene());
+    this.createDynamicTextureGameEngine(decalMaterial)
+    decalMaterial.specularColor = new Color3(0, 0, 0)
+    decal.material = decalMaterial;
+    decal.isPickable = false;
+    return decal
+  }
+
+  private createDynamicTextureGameEngine(decalMaterial: StandardMaterial) {
+    const factor = 10;
+    const border = 0.3;
+    const effectiveBorder = factor * border;
+    const canvas = document.createElement('canvas');
+    canvas.width = BabylonTerrainTileImpl.NODE_X_COUNT * factor;
+    canvas.height = BabylonTerrainTileImpl.NODE_Y_COUNT * factor;
+    const context = canvas.getContext('2d');
+
+    let xCount = BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE;
+    let yCount = BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE;
+
+    const xNodeOffest = this.index.getX() * xCount;
+    const yNodeOffest = this.index.getY() * yCount;
+
+    let remaining = xCount * yCount;
+
+    if (context) {
+      for (let y = 0; y < yCount; y++) {
+        for (let x = 0; x < xCount; x++) {
+          this.inputeService.getTerrainTypeOnTerrain(GwtInstance.newIndex(x + xNodeOffest, y + yNodeOffest))
+            .then(terrainType => {
+              const terrainTypeString = terrainType.d // Ugly gwt enum hack
+
+              if (TerrainType.WATER == terrainTypeString) {
+                context.fillStyle = "rgba(0, 0, 255, 0.5)";
+              } else if (TerrainType.LAND == terrainTypeString) {
+                context.fillStyle = "rgba(0, 255, 0, 0.5)";
+              } else {
+                context.fillStyle = "rgba(255, 0, 0, 0.5)";
+              }
+              context.fillRect(
+                (y + 1) * factor - effectiveBorder * 2,
+                (x + 1) * factor - effectiveBorder * 2,
+                factor - effectiveBorder * 2,
+                factor - effectiveBorder * 2);
+
+              remaining--;
+              if (remaining === 0) {
+                const dynamicTexture = new Texture(canvas.toDataURL(), this.renderService.getScene());
+                decalMaterial.diffuseTexture = dynamicTexture;
+                decalMaterial.diffuseTexture.hasAlpha = true;
+              }
+
+            })
+            .catch(error => console.warn(error));
+        }
+      }
+    }
   }
 
 }
