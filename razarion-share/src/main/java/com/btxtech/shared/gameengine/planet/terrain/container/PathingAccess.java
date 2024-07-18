@@ -98,11 +98,10 @@ public class PathingAccess {
     public int getUInt16GroundHeightAt(Index terrainNodeIndex) {
         Index terrainTileIndex = nodeIndexToTileIndex(terrainNodeIndex);
 
-        int totalTileNodes = (NODE_X_COUNT + 1) * (NODE_Y_COUNT + 1);
-        int startTileNodeIndex = totalTileNodes * (terrainTileIndex.getY() * terrainShape.getTileXCount() + terrainTileIndex.getX());
+        int startTileNodeIndex = TILE_NODE_SIZE * (terrainTileIndex.getY() * terrainShape.getTileXCount() + terrainTileIndex.getX());
 
         Index offset = terrainNodeIndex.sub(terrainTileIndex.scale(NODE_X_COUNT, NODE_Y_COUNT));
-        int offsetTileNodeIndex = offset.getY() * (NODE_X_COUNT + 1) + offset.getX();
+        int offsetTileNodeIndex = offset.getY() * NODE_X_COUNT + offset.getX();
 
         return terrainShape.getNativeTerrainShapeAccess().getGroundHeightAt(startTileNodeIndex + offsetTileNodeIndex);
     }
