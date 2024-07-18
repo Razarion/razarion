@@ -102,8 +102,14 @@ export class EditorTerrainTile {
   }
 
   fillHeights(callback: (height: number) => void) {
+    let index = 0;
     this.positions!.forEach(position => {
-      callback(BabylonTerrainTileImpl.heightToUnit16(position.y))
+      const xNode = index % (BabylonTerrainTileImpl.NODE_X_COUNT + 1);
+      const yNode = Math.floor(index / (BabylonTerrainTileImpl.NODE_Y_COUNT + 1))
+      if(xNode < BabylonTerrainTileImpl.NODE_X_COUNT && yNode < BabylonTerrainTileImpl.NODE_Y_COUNT) {
+        callback(BabylonTerrainTileImpl.heightToUnit16(position.y));
+      }
+      index++;
     });
   }
 

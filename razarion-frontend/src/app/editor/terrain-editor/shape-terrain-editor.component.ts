@@ -245,7 +245,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   async save() {
-    const uint16Array = new Uint16Array(this.xCount * this.yCount * (BabylonTerrainTileImpl.NODE_X_COUNT + 1) * (BabylonTerrainTileImpl.NODE_Y_COUNT + 1));
+    const uint16Array = new Uint16Array(this.xCount * this.yCount * BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT);
 
     let index = 0;
     for (let y = 0; y < this.yCount; y++) {
@@ -260,7 +260,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No original height map loaded' });
             return;
           }
-          for (let i = 0; i < (BabylonTerrainTileImpl.NODE_X_COUNT + 1) * (BabylonTerrainTileImpl.NODE_Y_COUNT + 1); i++) {
+          for (let i = 0; i < BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT; i++) {
             if (index < this.originalUint16HeightMap.length) {
               uint16Array[index] = this.originalUint16HeightMap[index];
             } else {

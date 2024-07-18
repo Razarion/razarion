@@ -12,6 +12,7 @@ public interface TerrainUtil {
     // See: Angular BabylonTerrainTileImpl
     int NODE_X_COUNT = 160;
     int NODE_Y_COUNT = 160;
+    int TILE_NODE_SIZE = NODE_X_COUNT * NODE_Y_COUNT;
     double NODE_X_DISTANCE = 1;
     double NODE_Y_DISTANCE = 1;
     double HEIGHT_PRECISION = 0.1;
@@ -33,6 +34,10 @@ public interface TerrainUtil {
 
     static Index nodeIndexToTileIndex(Index nodeIndex) {
         return nodeIndex.scaleInverseXY(NODE_X_COUNT, NODE_Y_COUNT);
+    }
+
+    static Index tileIndexToNodeIndex(Index nodeIndex) {
+        return nodeIndex.scale(NODE_X_COUNT, NODE_Y_COUNT);
     }
 
     // See: Angular Code BabylonTerrainTileImpl.uint16ToHeight
