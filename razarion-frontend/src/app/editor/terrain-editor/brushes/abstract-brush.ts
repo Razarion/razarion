@@ -1,6 +1,5 @@
 import { Vector3 } from "@babylonjs/core";
 import { ShapeTerrainEditorComponent } from "../shape-terrain-editor.component";
-import { EditorTerrainTile } from "../editor-terrain-tile";
 
 export abstract class AbstractBrush {
     shapeTerrainEditorComponent!: ShapeTerrainEditorComponent;
