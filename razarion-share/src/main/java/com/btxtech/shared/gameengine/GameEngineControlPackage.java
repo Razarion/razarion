@@ -33,6 +33,7 @@ public class GameEngineControlPackage {
         COMMAND_FABRICATE,
         COMMAND_HARVEST,
         COMMAND_MOVE,
+        COMMAND_MOVE_ACK,
         COMMAND_PICK_BOX,
         COMMAND_LOAD_CONTAINER,
         COMMAND_UNLOAD_CONTAINER,

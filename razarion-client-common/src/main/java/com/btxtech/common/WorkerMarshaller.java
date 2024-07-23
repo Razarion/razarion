@@ -70,6 +70,7 @@ public class WorkerMarshaller {
             case TICK_UPDATE_RESPONSE_FAIL:
             case CONNECTION_LOST:
             case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE: // Marshaller can not handle null value
+            case COMMAND_MOVE_ACK:
                 break;
             // Single JSON data
             case START_BOTS:
@@ -179,6 +180,7 @@ public class WorkerMarshaller {
             case TICK_UPDATE_RESPONSE_FAIL:
             case CONNECTION_LOST:
             case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE: // Marshaller can not handle null value
+            case COMMAND_MOVE_ACK:
                 break;
             case INITIALIZE:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), StaticGameConfig.class));
@@ -429,7 +431,7 @@ public class WorkerMarshaller {
         Any[] array = Js.castToArray(data);
         TerrainTile terrainTile = new TerrainTile();
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
-        terrainTile.setGroundConfigId(array[1].asInt());
+        terrainTile.setGroundConfigId(array[1].asInt()); // GWT DevMode crashes here
         terrainTile.setWaterConfigId(array[2].asInt());
         terrainTile.setGroundHeightMap(Js.uncheckedCast(array[3].asArrayLike()));
         terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[4]));

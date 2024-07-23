@@ -53,6 +53,8 @@ public class InputService {
     @Inject
     private ExceptionHandler exceptionHandler;
     private final MapCollection<Index, Consumer<TerrainType>> terrainTypeOnTerrainConsumers = new MapCollection<>();
+    private boolean hasPendingMoveCommand;
+    private MoveCommandEntry queuedMoveCommandEntry;
 
     @SuppressWarnings("unused") // Called by Angular
     public void onViewFieldChanged(double bottomLeftX, double bottomLeftY, double bottomRightX, double bottomRightY, double topRightX, double topRightY, double topLeftX, double topLeftY) {
@@ -181,7 +183,13 @@ public class InputService {
                 return;
             }
             audioService.onCommandSent();
-            gameEngineControl.moveCmd(movables, terrainPosition);
+
+            if (hasPendingMoveCommand) {
+                queuedMoveCommandEntry = new MoveCommandEntry(movables, terrainPosition);
+            } else {
+                gameEngineControl.moveCmd(movables, terrainPosition);
+            }
+            hasPendingMoveCommand = true;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -203,5 +211,17 @@ public class InputService {
         for (Consumer<TerrainType> consumer : consumers) {
             consumer.accept(terrainType);
         }
+    }
+
+    public void onMoveCommandAck() {
+        if (!hasPendingMoveCommand) {
+            return;
+        }
+        if (queuedMoveCommandEntry != null) {
+            gameEngineControl.moveCmd(queuedMoveCommandEntry.getMovables(), queuedMoveCommandEntry.getTerrainPosition());
+        } else {
+            hasPendingMoveCommand = false;
+        }
+        queuedMoveCommandEntry = null;
     }
 }

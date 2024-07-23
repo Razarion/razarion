@@ -179,7 +179,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 commandService.harvest((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
                 break;
             case COMMAND_MOVE:
-                commandService.move((List<Integer>) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
+                commandMove((List<Integer>) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
                 break;
             case COMMAND_PICK_BOX:
                 commandService.pickupBox((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
@@ -222,6 +222,16 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
+        }
+    }
+
+    private void commandMove(Collection<Integer> syncBaseItemIds, DecimalPosition destination) {
+        try {
+            commandService.move(syncBaseItemIds, destination);
+            sendToClient(GameEngineControlPackage.Command.COMMAND_MOVE_ACK);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            sendToClient(GameEngineControlPackage.Command.COMMAND_MOVE_ACK);
         }
     }
 

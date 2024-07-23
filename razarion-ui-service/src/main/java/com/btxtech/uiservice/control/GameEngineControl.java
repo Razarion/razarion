@@ -156,8 +156,8 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.USE_INVENTORY_ITEM, useInventoryItem);
     }
 
-    public void moveCmd(Collection<SyncBaseItemSimpleDto> items, DecimalPosition position) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_MOVE, SyncItemSimpleDtoUtils.toIds(items), position);
+    public void moveCmd(Collection<SyncBaseItemSimpleDto> items, DecimalPosition terrainPosition) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_MOVE, SyncItemSimpleDtoUtils.toIds(items), terrainPosition);
         // TODO gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.MOVE));
     }
 
@@ -365,6 +365,9 @@ public abstract class GameEngineControl {
                 break;
             case GET_TERRAIN_TYPE_ANSWER:
                 inputServices.get().onGetTerrainTypeAnswer((Index) controlPackage.getData(0), (TerrainType) controlPackage.getData(1));
+                break;
+            case COMMAND_MOVE_ACK:
+                inputServices.get().onMoveCommandAck();
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
