@@ -59,7 +59,7 @@ class BrushValues {
     </div>
 
     <div class="field grid align-items-center">
-      <span class="col">Name</span>
+      <span class="col">Name <span [style]="{'color':'red','font-weight':'bolder'}">(Bug: jump on save)</span></span>
       <div class="col">
         <input [(ngModel)]="activeBrush.value.internalName"
                type="text"
