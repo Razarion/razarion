@@ -58,6 +58,8 @@ public class BaseItemType extends ItemType {
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer buildupTextureId;
     private Integer explosionAudioItemConfigId;
+    @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
+    private Integer explosionParticleId;
 
     public PhysicalAreaConfig getPhysicalAreaConfig() {
         return physicalAreaConfig;
@@ -275,6 +277,14 @@ public class BaseItemType extends ItemType {
         this.explosionAudioItemConfigId = explosionAudioItemConfigId;
     }
 
+    public @Nullable Integer getExplosionParticleId() {
+        return explosionParticleId;
+    }
+
+    public void setExplosionParticleId(@Nullable Integer explosionParticleId) {
+        this.explosionParticleId = explosionParticleId;
+    }
+
     public static int nameComparator(BaseItemType b1, BaseItemType b2) {
         if (b1.getInternalName() == null && b2.getInternalName() == null) {
             return 0;
@@ -420,6 +430,11 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType explosionAudioItemConfigId(Integer explosionAudioItemConfigId) {
         setExplosionAudioItemConfigId(explosionAudioItemConfigId);
+        return this;
+    }
+
+    public BaseItemType explosionParticleId(Integer explosionParticleId) {
+        setExplosionParticleId(explosionParticleId);
         return this;
     }
 }

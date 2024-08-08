@@ -14,9 +14,6 @@ import { ServerBotEditorComponent } from "../server-bot-editor/server-bot-editor
 import { ServerStartRegionComponent } from "../server-start-region/server-start-region.component";
 import { ServerResourceRegionComponent } from "../server-resource-region/server-resource-region.component";
 import { ManuallyCrudContainerComponent } from "../crud-editors/crud-container/manually-crud-container.component";
-import { SlopeEditorComponent } from "../crud-editors/slope-editor/slope-editor.component";
-import { DrivewayEditorComponent } from "../crud-editors/driveway-editor/driveway-editor.component";
-import { TerrainEditor2dComponent } from "../../terrain-editor2d/terrain-editor2d.component";
 import { EditorService } from "../editor-service";
 import { LevelEditorComponent } from "../crud-editors/level-editor/level-editor.component";
 import { GeneratedCrudContainerComponent } from "../crud-editors/crud-container/generated-crud-container.component";
@@ -28,6 +25,7 @@ import { InventoryItemEditorComponent } from "../crud-editors/inventory-item-edi
 import { BoxRegionComponent } from "../box-region/box-region.component";
 import { UserMgmtComponent } from "../user-mgmt/user-mgmt.component";
 import { TerrainEditorComponent } from "../terrain-editor/terrain-editor.component";
+import { ParticleSystemEditorComponent } from "../crud-editors/particle-system-editor/particle-system-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -80,12 +78,6 @@ export class EditorDialogComponent {
     this.gameComponent.addEditorModel(new EditorModel("Terrain editor", TerrainEditorComponent));
   }
 
-  openTerrainEditor2d() {
-    this.mainCockpitComponent.editorDialog = false;
-    const url = `/terrain-editor/?${TerrainEditor2dComponent.PLANET_ID_PARAM}=${this.editorService.getPlanetId()}`;
-    window.open(url, "_blank", "resizable=yes");
-  }
-
   openQuestEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Quest editor", ServerQuestEditorComponent));
@@ -111,19 +103,14 @@ export class EditorDialogComponent {
     this.gameComponent.addEditorModel(new EditorModel("Box region editor", BoxRegionComponent));
   }
 
-  openSlopeEditor() {
-    this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Slope editor", ManuallyCrudContainerComponent, SlopeEditorComponent));
-  }
-
-  openDrivewayEditor() {
-    this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Driveway editor", ManuallyCrudContainerComponent, DrivewayEditorComponent));
-  }
-
   openImageEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Image editor", ImageEditorComponent));
+  }
+
+  openParticleSystemEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Particle systems editor", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
   }
 
   openBabylonInspector() {

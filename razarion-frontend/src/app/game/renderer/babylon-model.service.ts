@@ -1,10 +1,10 @@
-import {Injectable} from "@angular/core";
-import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "src/app/common";
-import {ParticleSystemConfig, ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
-import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {GwtHelper} from "../../gwtangular/GwtHelper";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {MessageService} from "primeng/api";
+import { Injectable } from "@angular/core";
+import { URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR } from "src/app/common";
+import { ParticleSystemConfig, ThreeJsModelConfig } from "src/app/gwtangular/GwtAngularFacade";
+import { GwtAngularService } from "../../gwtangular/GwtAngularService";
+import { GwtHelper } from "../../gwtangular/GwtHelper";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { MessageService } from "primeng/api";
 import {
   AssetContainer,
   IInspectable,
@@ -12,13 +12,14 @@ import {
   Mesh,
   Node,
   NodeMaterial,
+  ParticleSystem,
   Scene,
   SceneLoader,
   TransformNode
 } from "@babylonjs/core";
-import {GLTFFileLoader} from "@babylonjs/loaders";
+import { GLTFFileLoader } from "@babylonjs/loaders";
 import JSZip from "jszip";
-import {BabylonJsUtils} from "./babylon-js.utils";
+import { BabylonJsUtils } from "./babylon-js.utils";
 import Type = ThreeJsModelConfig.Type;
 
 @Injectable()
@@ -162,11 +163,11 @@ export class BabylonModelService {
     try {
       let hasError = false;
       const result = SceneLoader.LoadAssetContainer(url, '', this.scene, assetContainer => {
-          if (!hasError) {
-            this.assetContainers.set(threeJsModelConfig.getId(), assetContainer);
-            handleResolve();
-          }
-        },
+        if (!hasError) {
+          this.assetContainers.set(threeJsModelConfig.getId(), assetContainer);
+          handleResolve();
+        }
+      },
         () => {
         },
         (scene: Scene, message: string, exception?: any) => {
@@ -296,7 +297,7 @@ export class BabylonModelService {
         propertyName: "dummy",
         callback: () => {
           const json = this.serializeNodeMaterial(nodeMaterial);
-          this.babylonModelUpload(threeJsModelConfig.getId(), new Blob([json], {type: 'application/json'}));
+          this.babylonModelUpload(threeJsModelConfig.getId(), new Blob([json], { type: 'application/json' }));
         },
         type: InspectableType.Button
       }
@@ -351,7 +352,7 @@ export class BabylonModelService {
       let pending = this.threeJsModelConfigs.length;
       this.threeJsModelConfigs.forEach(babylonModelConfig => {
         this.httpClient.get(`${URL_THREE_JS_MODEL}/${babylonModelConfig.getId()}`,
-          {responseType: 'blob'})
+          { responseType: 'blob' })
           .subscribe({
             next(blob) {
               zip.file(`id_${babylonModelConfig.getId()}`, blob);
@@ -409,5 +410,10 @@ export class BabylonModelService {
     }
 
     throw new Error(`No ParticleSystemJson.threeJsModelConfig('${id}') JSON found`);
+  }
+
+  updateParticleSystemJson(babylonModelId: number, particleSystem: ParticleSystem) {
+    const json = JSON.stringify(particleSystem!.serialize());
+    this.babylonModelUpload(babylonModelId, new Blob([json], { type: 'application/json' }));
   }
 }

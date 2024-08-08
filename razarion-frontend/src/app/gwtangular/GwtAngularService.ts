@@ -13,7 +13,7 @@ export class GwtAngularService {
   gwtAngularFacade!: GwtAngularFacade;
   crashListener!: () => void;
 
-  constructor(private zone: NgZone, threeJsModelService: BabylonModelService) {
+  constructor(zone: NgZone, threeJsModelService: BabylonModelService) {
     const self = this;
     this.gwtAngularFacade = new class extends GwtAngularFacade {
       onCrash(): void {

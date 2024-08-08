@@ -84,11 +84,9 @@ import { ServerStartRegionComponent } from './editor/server-start-region/server-
 import { DecimalPositionComponent } from './editor/common/decimal-position/decimal-position.component';
 import { ServerResourceRegionComponent } from "./editor/server-resource-region/server-resource-region.component";
 import { ResourceItemTypeComponent } from './editor/common/resource-item-type/resource-item-type.component';
-import { SlopeEditorComponent } from "./editor/crud-editors/slope-editor/slope-editor.component";
 import { GroundComponent } from './editor/common/ground/ground.component';
 import { WaterComponent } from './editor/common/water/water.component';
-import { BabylonModelComponent } from './editor/common/babylon-material/babylon-model.component';
-import { DrivewayEditorComponent } from './editor/crud-editors/driveway-editor/driveway-editor.component';
+import { BabylonModelComponent } from './editor/common/babylon-model/babylon-model.component';
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { TerrainEditor2dComponent } from './terrain-editor2d/terrain-editor2d.component';
 import { MenuModule } from 'primeng/menu';
@@ -130,6 +128,8 @@ import {TerrainEditorComponent} from "./editor/terrain-editor/terrain-editor.com
 import {ShapeTerrainEditorComponent} from "./editor/terrain-editor/shape-terrain-editor.component";
 import { FixHeightBrushComponent } from './editor/terrain-editor/brushes/fix-height-brush.component';
 import {FlattenBrushComponent} from "./editor/terrain-editor/brushes/flattem-brush.component";
+import { ParticleSystemEditorComponent } from './editor/crud-editors/particle-system-editor/particle-system-editor.component';
+import { VertexEditorComponent } from './editor/common/vertex-editor/vertex-editor.component';
 
 @NgModule({
   declarations: [
@@ -172,14 +172,12 @@ import {FlattenBrushComponent} from "./editor/terrain-editor/brushes/flattem-bru
     DecimalPositionComponent,
     ServerResourceRegionComponent,
     ResourceItemTypeComponent,
-    SlopeEditorComponent,
     AbstractCrudContainerComponent,
     ManuallyCrudContainerComponent,
     GeneratedCrudContainerComponent,
     GroundComponent,
     WaterComponent,
     BabylonModelComponent,
-    DrivewayEditorComponent,
     TerrainEditor2dComponent,
     TerrainObjectGeneratorComponent,
     BackendComponent,
@@ -212,7 +210,10 @@ import {FlattenBrushComponent} from "./editor/terrain-editor/brushes/flattem-bru
     TerrainEditorComponent,
     ShapeTerrainEditorComponent,
     FixHeightBrushComponent,
-    FlattenBrushComponent
+    FlattenBrushComponent,
+    ParticleSystemComponent,
+    ParticleSystemEditorComponent,
+    VertexEditorComponent
   ],
   imports: [
     BrowserModule,

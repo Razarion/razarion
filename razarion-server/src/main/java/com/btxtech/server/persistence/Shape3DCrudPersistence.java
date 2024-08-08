@@ -73,19 +73,6 @@ public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfi
     }
 
     @Transactional
-    public List<Shape3D> getShape3Ds() {
-        List<Shape3D> shape3Ds = new ArrayList<>();
-        for (ColladaEntity colladaEntity : getEntities()) {
-            try {
-                shape3Ds.add(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity, null).createShape3D(colladaEntity.getId()));
-            } catch (Exception e) {
-                exceptionHandler.handleException(e);
-            }
-        }
-        return shape3Ds;
-    }
-
-    @Transactional
     public List<VertexContainerBuffer> getVertexContainerBuffers() throws ParserConfigurationException, SAXException, IOException {
         List<VertexContainerBuffer> vertexContainerBuffers = new ArrayList<>();
         for (ColladaEntity colladaEntity : getEntities()) {

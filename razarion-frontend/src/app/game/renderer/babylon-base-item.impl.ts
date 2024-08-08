@@ -16,7 +16,6 @@ import {
   DecimalPosition,
   Diplomacy,
   MarkerConfig,
-  ParticleSystemConfig
 } from "../../gwtangular/GwtAngularFacade";
 import { GwtHelper } from "../../gwtangular/GwtHelper";
 import { BabylonItemImpl } from "./babylon-item.impl";
@@ -24,6 +23,7 @@ import { BabylonModelService } from "./babylon-model.service";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { ActionService } from "../action.service";
 import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
+import { GwtInstance } from "../../gwtangular/GwtInstance";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   // See GWT java PlanetService
@@ -222,7 +222,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       return;
     }
 
-
     let correctDestination;
     let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(destination);
     if (pickingInfo && pickingInfo.hit) {
@@ -234,25 +233,34 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()!);
     const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath());
     emitterMesh.computeWorldMatrix(true);
-    const particleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, correctDestination, false);
+    const particleSystem = this.rendererService.createParticleSystem(particleSystemConfig.getThreeJsModelId(), particleSystemConfig.getImageId(), emitterMesh.absolutePosition, correctDestination, false);
     particleSystem.disposeOnStop = true;
+    particleSystem.start();
 
     this.createProjectile(emitterMesh.absolutePosition, correctDestination);
   }
 
   onExplode(): void {
-    ParticleHelper.CreateAsync("explosion", this.rendererService.getScene()).then((set) => {
-      const scale = 0.3;
-      set.systems.forEach(s => {
-        s.disposeOnStop = true;
-        s.minSize *= scale;
-        s.maxSize *= scale;
-        s.minEmitPower *= scale;
-        s.maxEmitPower *= scale;
-      });
-      set.emitterNode = this.getContainer().position.clone();
-      set.start();
-    });
+    if (GwtHelper.gwtIssueNumber(this.baseItemType.getExplosionParticleId() == null)) {
+      console.warn(`No ExplosionParticleId for base item type ${this.getId()}`)
+      return;
+    }
+
+    let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getExplosionParticleId()!);
+
+    let positionOffset = particleSystemConfig.getPositionOffset() || GwtInstance.newVertex(0, 0, 0);
+
+    let emittingPosition = new Vector3(this.getContainer().position.x + positionOffset.getX(),
+      this.getContainer().position.y + positionOffset.getZ(),
+      this.getContainer().position.z + positionOffset.getY());
+
+    const particleSystem = this.rendererService.createParticleSystem(particleSystemConfig.getThreeJsModelId(),
+      particleSystemConfig.getImageId(),
+      emittingPosition,
+      emittingPosition.add(new Vector3(0, 1, 0)),
+      false);
+    particleSystem.disposeOnStop = true;
+    particleSystem.start();
   }
 
   setBuildingPosition(razarionBuildingPosition: DecimalPosition): void {
@@ -280,7 +288,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         const buildingPosition = new Vector3(razarionBuildingPosition.getX(), height, razarionBuildingPosition.getY());
         const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath())
         emitterMesh.computeWorldMatrix(true);
-        this.buildingParticleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, buildingPosition, true);
+        this.buildingParticleSystem = this.rendererService.createParticleSystem(particleSystemConfig.getThreeJsModelId(), particleSystemConfig.getImageId(), emitterMesh.absolutePosition, buildingPosition, true);
+        this.buildingParticleSystem.start();
       } catch (e) {
         console.error(e);
       }
@@ -311,7 +320,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         const harvestingPosition = new Vector3(razarionHarvestingPosition.getX(), this.getContainer().position.y, razarionHarvestingPosition.getY());
         const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterMeshPath())
         emitterMesh.computeWorldMatrix(true);
-        this.harvestingParticleSystem = this.createParticleSystem(particleSystemConfig, emitterMesh, harvestingPosition, true);
+        this.harvestingParticleSystem = this.rendererService.createParticleSystem(particleSystemConfig.getThreeJsModelId(), particleSystemConfig.getImageId(), emitterMesh.absolutePosition, harvestingPosition, true);
+        this.harvestingParticleSystem.start();
       } catch (e) {
         console.error(e);
       }
@@ -419,25 +429,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.rendererService.getScene().removeMesh(mesh);
       mesh.dispose();
     };
-  }
-
-  private createParticleSystem(particleSystemConfig: ParticleSystemConfig, emitterMesh: Mesh, destination: Vector3, stretchToDestination: boolean): ParticleSystem {
-    const particleJsonConfig = this.babylonModelService.getParticleSystemJson(particleSystemConfig.getThreeJsModelId());
-
-    const particleSystem = ParticleSystem.Parse(particleJsonConfig, this.rendererService.getScene(), "");
-    particleSystem.emitter = emitterMesh.absolutePosition;
-    const beam = destination.subtract(emitterMesh.absolutePosition);
-    const delta = 2;
-    const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
-    const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
-    particleSystem.createPointEmitter(direction1, direction2);
-    if (stretchToDestination) {
-      const distance = beam.length();
-      particleSystem.minLifeTime = distance;
-      particleSystem.maxLifeTime = distance;
-    }
-
-    return particleSystem;
   }
 
   static interpolateAngleRadians(startAngle: number, endAngle: number, t: number): number {

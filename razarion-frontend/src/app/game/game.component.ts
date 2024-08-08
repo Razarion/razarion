@@ -32,6 +32,8 @@ import { Tools } from '@babylonjs/core';
 import { TerrainEditorComponent } from '../editor/terrain-editor/terrain-editor.component';
 import pako from 'pako';
 import { BabylonTerrainTileImpl } from './renderer/babylon-terrain-tile.impl';
+import { GeneratedCrudContainerComponent } from '../editor/crud-editors/crud-container/generated-crud-container.component';
+import { ParticleSystemEditorComponent } from '../editor/crud-editors/particle-system-editor/particle-system-editor.component';
 
 
 @Component({
@@ -168,6 +170,10 @@ export class GameComponent implements OnInit, ScreenCover {
                   }
                 }
 
+                getExplosionParticleId(): number | null {
+                  return 1;
+                }
+
                 getId(): number {
                   return 0;
                 }
@@ -208,6 +214,10 @@ export class GameComponent implements OnInit, ScreenCover {
                 babylonBaseItem1.setConstructing(0.01);
                 babylonBaseItem1.setHealth(0.99);
                 // babylonBaseItem1.mark(MarkerConfig);
+                setTimeout(() => {
+                  babylonBaseItem1.onExplode();
+                }, 2000);
+
 
                 /*
                 let x = 0;
@@ -351,7 +361,7 @@ export class GameComponent implements OnInit, ScreenCover {
               //   });
 
               setTimeout(() => {
-                this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+                this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
               }, 2000);
 
             });

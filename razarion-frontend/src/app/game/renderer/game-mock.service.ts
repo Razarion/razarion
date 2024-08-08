@@ -403,6 +403,10 @@ export class GameMockService {
             return null;
           }
 
+          getExplosionParticleId(): number | null {
+            throw new Error('Method not implemented.');
+          }
+
           getPhysicalAreaConfig(): PhysicalAreaConfig {
             return new class implements PhysicalAreaConfig {
               getRadius(): number {
@@ -671,6 +675,14 @@ export class GameMockService {
 
         getInternalName(): string {
           return particleSystemConfigJson.internalName;
+        }
+
+        getPositionOffset(): Vertex | null {
+          return GwtInstance.newVertex(0, 0, 0);
+        }
+
+        getImageId(): number | null {
+          return 0;
         }
       });
     });

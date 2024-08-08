@@ -1,8 +1,10 @@
 package com.btxtech.shared.datatypes.shape;
 
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 @JsType
@@ -12,6 +14,9 @@ public class ParticleSystemConfig implements Config {
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
     private Integer threeJsModelId;
     private String[] emitterMeshPath;
+    private Vertex positionOffset;
+    @CollectionReference(CollectionReferenceType.IMAGE)
+    private Integer imageId;
 
     @Override
     public int getId() {
@@ -28,11 +33,11 @@ public class ParticleSystemConfig implements Config {
         this.internalName = internalName;
     }
 
-    public Integer getThreeJsModelId() {
+    public @Nullable Integer getThreeJsModelId() {
         return threeJsModelId;
     }
 
-    public void setThreeJsModelId(Integer threeJsModelId) {
+    public void setThreeJsModelId(@Nullable Integer threeJsModelId) {
         this.threeJsModelId = threeJsModelId;
     }
 
@@ -44,6 +49,21 @@ public class ParticleSystemConfig implements Config {
         this.emitterMeshPath = emitterMeshPath;
     }
 
+    public @Nullable Vertex getPositionOffset() {
+        return positionOffset;
+    }
+
+    public void setPositionOffset(@Nullable Vertex positionOffset) {
+        this.positionOffset = positionOffset;
+    }
+
+    public @Nullable Integer getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(@Nullable Integer imageId) {
+        this.imageId = imageId;
+    }
 
     public ParticleSystemConfig id(int id) {
         this.id = id;
@@ -62,6 +82,16 @@ public class ParticleSystemConfig implements Config {
 
     public ParticleSystemConfig emitterMeshPath(String[] emitterMeshPath) {
         setEmitterMeshPath(emitterMeshPath);
+        return this;
+    }
+
+    public ParticleSystemConfig positionOffset(Vertex positionOffset) {
+        setPositionOffset(positionOffset);
+        return this;
+    }
+
+    public ParticleSystemConfig imageId(Integer imageId) {
+        setImageId(imageId);
         return this;
     }
 }

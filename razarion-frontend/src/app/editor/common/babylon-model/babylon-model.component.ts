@@ -14,7 +14,7 @@ export class BabylonModelComponent {
   readOnly: boolean = false;
   babylonModelOptions: { name: string, id: number }[] = [];
 
-  constructor(private editorService: EditorService) {
+  constructor(editorService: EditorService) {
     editorService.readBabylonMaterialObjectNameIds().then(objectNameIds => {
       this.babylonModelOptions = [];
       objectNameIds.forEach(objectNameId => {

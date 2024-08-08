@@ -7,6 +7,7 @@ import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
+import com.btxtech.server.persistence.ParticleSystemEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.asset.MeshContainerEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -117,6 +118,9 @@ public class BaseItemTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private AudioLibraryEntity explosionAudioLibraryEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ParticleSystemEntity explosionParticleSystem;
 
     public Integer getId() {
         return id;
@@ -127,7 +131,8 @@ public class BaseItemTypeEntity {
                 .price(price)
                 .xpOnKilling(xpOnKilling)
                 .dropBoxPossibility(dropBoxPossibility)
-                .explosionAudioItemConfigId(extractId(explosionAudioLibraryEntity, AudioLibraryEntity::getId));
+                .explosionAudioItemConfigId(extractId(explosionAudioLibraryEntity, AudioLibraryEntity::getId))
+                .explosionParticleId(extractId(explosionParticleSystem, ParticleSystemEntity::getId));
         ;
         if (dropBoxItemTypeEntity != null) {
             baseItemType.setDropBoxItemTypeId(dropBoxItemTypeEntity.getId());
@@ -317,6 +322,7 @@ public class BaseItemTypeEntity {
             demolitionStepEffectEntities = new ArrayList<>();
         }
         demolitionStepEffectEntities.clear();
+        explosionParticleSystem = particleSystemCrudPersistence.getEntity(baseItemType.getExplosionParticleId());
     }
 
     public void setThreeJsModelPackConfigEntity(ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity) {

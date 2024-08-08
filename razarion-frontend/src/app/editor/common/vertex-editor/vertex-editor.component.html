@@ -3,5 +3,6 @@
         [minFractionDigits]="1" [maxFractionDigits]="6" [allowEmpty]="true"></p-inputNumber>
     <p-inputNumber [(ngModel)]="y" (onInput)="onY($event.value)" [prefix]="'y: '" [size]="3" [disabled]="readOnly"
         [minFractionDigits]="1" [maxFractionDigits]="6" [allowEmpty]="true"></p-inputNumber>
-    <p-toggleButton [(ngModel)]="checkedEditMode" onIcon="pi pi-times" offIcon="pi pi-map-marker" (onChange)="onPick()"></p-toggleButton>
+    <p-inputNumber [(ngModel)]="z" (onInput)="onZ($event.value)" [prefix]="'z: '" [size]="3" [disabled]="readOnly"
+        [minFractionDigits]="1" [maxFractionDigits]="6" [allowEmpty]="true"></p-inputNumber>
 </div>

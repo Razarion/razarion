@@ -37,6 +37,13 @@
             <image-item [(imageId)]="baseItemType.thumbnail"></image-item>
         </div>
     </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Explosion particle system</span>
+        <div class="col-8">
+            <particle-system
+                [(particleSystemId)]="baseItemType.explosionParticleId"></particle-system>
+        </div>
+    </div>
 
     <p-divider align="left">
         <div class="inline-flex align-items-center">
@@ -133,7 +140,7 @@
             <b>&nbsp;Abilities</b>
         </div>
     </p-divider>
-   <p-panel header="Builder" [toggleable]="true" [collapsed]="!baseItemType.builderType" collapseIcon="pi pi-trash"
+    <p-panel header="Builder" [toggleable]="true" [collapsed]="!baseItemType.builderType" collapseIcon="pi pi-trash"
         (collapsedChange)="onBuilderTypeChange(!$event)">
         <div *ngIf="baseItemType.builderType">
             <div class="grid grid-razarion-editor">

@@ -53,7 +53,7 @@ export class GeneratedCrudContainerComponent extends AbstractCrudContainerCompon
   }
 
   getEditorName(): string {
-    throw new Error('Method not implemented.');
+    return "GeneratedCrudContainerComponent";
   }
 
 }

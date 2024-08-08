@@ -1,11 +1,13 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DecimalPosition } from "../../../generated/razarion-share";
+import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
+import { Nullable, Observer, PointerEventTypes, PointerInfo } from '@babylonjs/core';
 
 @Component({
   selector: 'decimal-position',
   templateUrl: './decimal-position.component.html'
 })
-export class DecimalPositionComponent {
+export class DecimalPositionComponent implements OnInit {
   @Input("decimalPosition")
   decimalPosition: DecimalPosition | null = null;
   @Output()
@@ -16,7 +18,11 @@ export class DecimalPositionComponent {
   x?: number
   y?: number
 
-  constructor() {
+  checkedEditMode = false;
+
+  private mouseObservable: Nullable<Observer<PointerInfo>> = null;
+
+  constructor(private renderService: BabylonRenderServiceAccessImpl) {
   }
 
   ngOnInit(): void {
@@ -34,6 +40,30 @@ export class DecimalPositionComponent {
   onY(value?: number) {
     this.y = value;
     this.fireDecimalPosition();
+  }
+
+  onPick() {
+    if (this.checkedEditMode) {
+      this.mouseObservable = this.renderService.getScene().onPointerObservable.add((pointerInfo) => {
+        if (pointerInfo.type === PointerEventTypes.POINTERDOWN) {
+          let pickingInfo = this.renderService.setupMeshPickPoint();
+          if (pickingInfo.hit) {
+            this.x = pickingInfo.pickedPoint!.x;
+            this.y = pickingInfo.pickedPoint!.z;
+            this.renderService.getScene().onPointerObservable.remove(this.mouseObservable);
+            this.mouseObservable = null;
+            this.checkedEditMode = false;
+            this.fireDecimalPosition();
+          }
+        }
+      });
+    } else {
+      if (this.mouseObservable) {
+        this.renderService.getScene().onPointerObservable.remove(this.mouseObservable);
+        this.mouseObservable = null;
+      }
+    }
+
   }
 
   private fireDecimalPosition() {

@@ -19,6 +19,7 @@ import {
   BoxItemType,
   MarkerConfig,
   PlaceConfig,
+  ParticleSystemConfig,
 } from "src/app/gwtangular/GwtAngularFacade";
 import { BabylonTerrainTileImpl } from "./babylon-terrain-tile.impl";
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
@@ -38,12 +39,14 @@ import {
   Node,
   NodeMaterial,
   Nullable,
+  ParticleSystem,
   PointerEventTypes,
   PolygonMeshBuilder,
   Quaternion,
   Ray,
   Scene,
   ShadowGenerator,
+  Texture,
   Tools,
   TransformNode,
   Vector2,
@@ -63,6 +66,7 @@ import { PlaceConfigComponent } from "src/app/editor/common/place-config/place-c
 import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
 import { ActionService } from "../action.service";
 import { BaseItemPlacerPresenterImpl } from "./base-item-placer-presenter.impl";
+import { getImageUrl } from "src/app/common";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -813,6 +817,32 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   private interpolateItemPositions(date: number) {
     this.interpolationListeners.forEach(interpolationListener => interpolationListener.interpolate(date));
+  }
+
+  public createParticleSystem(babylonModelId: number | null, imageId: number | null, emitterPosition: Vector3, destination: Vector3, stretchToDestination: boolean): ParticleSystem {
+    if (!babylonModelId && babylonModelId !== 0) {
+      throw new Error("babylonModelId not set");
+    }
+    const particleJsonConfig = this.babylonModelService.getParticleSystemJson(babylonModelId);
+
+    const particleSystem = ParticleSystem.Parse(particleJsonConfig, this.scene, "");
+    particleSystem.emitter = emitterPosition;
+
+    let correctedImageId = GwtHelper.gwtIssueNumber(imageId);
+    if (correctedImageId || correctedImageId === 0) {
+      particleSystem.particleTexture = new Texture(getImageUrl(correctedImageId));
+    }
+    const beam = destination.subtract(emitterPosition);
+    const delta = 2;
+    const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
+    const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
+    particleSystem.createPointEmitter(direction1, direction2);
+    if (stretchToDestination) {
+      const distance = beam.length();
+      particleSystem.minLifeTime = distance;
+      particleSystem.maxLifeTime = distance;
+    }
+    return particleSystem;
   }
 
 }

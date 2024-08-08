@@ -176,26 +176,6 @@ server.on({
 
 server.on({
   method: 'GET',
-  path: '/rest/planeteditor/readTerrainSlopePositions/1',
-  reply: {
-    status: 200,
-    headers: { "content-type": "application/json" },
-    body: '[{"id":1,"slopeConfigId":1,"inverted":false,"editorParentIdIfCreated":null, "polygon": [{"position": {"x": 20, "y": 20}, "slopeDrivewayId": 1},{"position": {"x": 50, "y": 20}, "slopeDrivewayId": 1},{"position": {"x": 50, "y": 50}, "slopeDrivewayId": null},{"position": {"x": 20, "y": 50}, "slopeDrivewayId": null}]}]'
-  }
-});
-
-server.on({
-  method: 'GET',
-  path: '/rest/editor/slope/objectNameIds',
-  reply: {
-    status: 200,
-    headers: { "content-type": "application/json" },
-    body: '[{"id":1,"internalName":"Beach"},{"id":2,"internalName":"Razar Industries"}]'
-  }
-});
-
-server.on({
-  method: 'GET',
   path: '/rest/editor/driveway/objectNameIds',
   reply: {
     status: 200,
@@ -248,37 +228,6 @@ server.on({
   }
 });
 
-const slopesJson = require("./slopes.json");
-server.on({
-  method: 'GET',
-  path: '/rest/editor/slope/objectNameIds',
-  reply: {
-    status: 200,
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(slopesJson.objectNameIds)
-  }
-});
-
-server.on({
-  method: 'GET',
-  path: '/rest/editor/slope/read/1',
-  reply: {
-    status: 200,
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(slopesJson._1)
-  }
-});
-
-server.on({
-  method: 'GET',
-  path: '/rest/editor/slope/read/22',
-  reply: {
-    status: 200,
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(slopesJson._22)
-  }
-});
-
 const groundsJson = require("./grounds.json");
 server.on({
   method: 'GET',
@@ -311,6 +260,29 @@ server.on({
     body: JSON.stringify(waterJson.objectNameIds)
   }
 });
+
+const particleSystem = require("./particle-system.json");
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/particle-system/read/1',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(particleSystem._1)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/particle-system/objectNameIds',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(particleSystem.objectNameIds)
+  }
+});
+
 
 server.on({
   method: 'GET',

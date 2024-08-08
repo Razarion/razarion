@@ -1,6 +1,6 @@
 // ---------- Root ----------
 
-import { ConditionTrigger } from "../generated/razarion-share";
+import {ConditionTrigger} from "../generated/razarion-share";
 
 export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
@@ -381,6 +381,8 @@ export interface BaseItemType extends ItemType {
   getWeaponType(): WeaponType | null;
 
   getHarvesterType(): HarvesterType | null;
+
+  getExplosionParticleId(): number | null;
 }
 
 export interface ResourceItemType extends ItemType {
@@ -583,9 +585,13 @@ export interface ParticleSystemConfig {
 
   getInternalName(): string;
 
-  getThreeJsModelId(): number;
+  getThreeJsModelId(): number | null;
 
   getEmitterMeshPath(): string[];
+
+  getPositionOffset(): Vertex | null;
+
+  getImageId(): number | null;
 }
 
 // ---------- Item Cockpit ----------
@@ -773,6 +779,7 @@ export interface GenericEditorFrontendProvider {
 
   getPathForCollection(collectionName: string): string;
 }
+
 export interface ObjectNameId {
   id: number;
   internalName: string;

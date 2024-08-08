@@ -9,6 +9,8 @@ import javax.inject.Singleton;
 public class ParticleSystemCrudPersistence extends AbstractCrudPersistence<ParticleSystemConfig, ParticleSystemEntity> {
     @Inject
     private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
+    @Inject
+    private ImagePersistence imagePersistence;
 
     public ParticleSystemCrudPersistence() {
         super(ParticleSystemEntity.class, ParticleSystemEntity_.id, ParticleSystemEntity_.internalName);
@@ -21,6 +23,6 @@ public class ParticleSystemCrudPersistence extends AbstractCrudPersistence<Parti
 
     @Override
     protected void fromConfig(ParticleSystemConfig config, ParticleSystemEntity entity) {
-        entity.fromConfig(config, threeJsModelCrudPersistence);
+        entity.fromConfig(config, threeJsModelCrudPersistence, imagePersistence);
     }
 }
