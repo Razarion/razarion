@@ -819,7 +819,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.interpolationListeners.forEach(interpolationListener => interpolationListener.interpolate(date));
   }
 
-  public createParticleSystem(babylonModelId: number | null, imageId: number | null, emitterPosition: Vector3, destination: Vector3, stretchToDestination: boolean): ParticleSystem {
+  public createParticleSystem(babylonModelId: number | null, imageId: number | null, emitterPosition: Vector3, destination: Vector3 | null, stretchToDestination: boolean): ParticleSystem {
     if (!babylonModelId && babylonModelId !== 0) {
       throw new Error("babylonModelId not set");
     }
@@ -832,15 +832,17 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     if (correctedImageId || correctedImageId === 0) {
       particleSystem.particleTexture = new Texture(getImageUrl(correctedImageId));
     }
-    const beam = destination.subtract(emitterPosition);
-    const delta = 2;
-    const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
-    const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
-    particleSystem.createPointEmitter(direction1, direction2);
-    if (stretchToDestination) {
-      const distance = beam.length();
-      particleSystem.minLifeTime = distance;
-      particleSystem.maxLifeTime = distance;
+    if (destination) {
+      const beam = destination.subtract(emitterPosition);
+      const delta = 2;
+      const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
+      const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
+      particleSystem.createPointEmitter(direction1, direction2);
+      if (stretchToDestination) {
+        const distance = beam.length();
+        particleSystem.minLifeTime = distance;
+        particleSystem.maxLifeTime = distance;
+      }
     }
     return particleSystem;
   }

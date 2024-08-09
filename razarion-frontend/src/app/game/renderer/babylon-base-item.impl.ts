@@ -257,7 +257,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     const particleSystem = this.rendererService.createParticleSystem(particleSystemConfig.getThreeJsModelId(),
       particleSystemConfig.getImageId(),
       emittingPosition,
-      emittingPosition.add(new Vector3(0, 1, 0)),
+      null,
       false);
     particleSystem.disposeOnStop = true;
     particleSystem.start();

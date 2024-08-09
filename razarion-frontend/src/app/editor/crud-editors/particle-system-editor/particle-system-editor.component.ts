@@ -46,7 +46,7 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
         this.particleSystem = this.rendererService.createParticleSystem(this.particleSystemConfig.threeJsModelId,
           this.particleSystemConfig.imageId,
           emittingPosition,
-          emittingPosition.add(new Vector3(0, 1, 0)),
+          null,
           false);
         this.currecntInfo = `${this.particleSystemConfig.internalName} '${this.particleSystemConfig.id}' BablyonModel Id '${this.particleSystemConfig.threeJsModelId}'`;
         this.particleSystem.name = `Editor ${this.currecntInfo}`;
