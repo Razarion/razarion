@@ -10,9 +10,11 @@ import com.btxtech.server.util.ServerUtil;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
+import com.btxtech.shared.dto.ClientLogRecord;
 import com.btxtech.shared.dto.FrontendLoginState;
 import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.shared.dto.RegisterResult;
+import com.btxtech.shared.dto.UserRequest;
 import com.btxtech.shared.rest.FrontendController;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -81,15 +83,15 @@ public class FrontendControllerImpl implements FrontendController {
     }
 
     @Override
-    public void log(String message, String url, String error) {
+    public void log(ClientLogRecord clientLogRecord) {
         String aditionalString = "";
-        if (url != null) {
-            aditionalString += "\nUrl: " + url;
+        if (clientLogRecord.getUrl() != null) {
+            aditionalString += "\nUrl: " + clientLogRecord.getUrl();
         }
-        if (error != null) {
-            aditionalString += "\nError: " + error;
+        if (clientLogRecord.getError() != null) {
+            aditionalString += "\nError: " + clientLogRecord.getError();
         }
-        logger.warning("FrontendLogger log: " + LoggingProviderImpl.setupUserWebString(sessionHolder) + "\nMessage: " + message + aditionalString);
+        logger.warning("FrontendLogger log: " + LoggingProviderImpl.setupUserWebString(sessionHolder) + "\nMessage: " + clientLogRecord.getMessage() + aditionalString);
     }
 
     @Override
@@ -115,11 +117,11 @@ public class FrontendControllerImpl implements FrontendController {
     }
 
     @Override
-    public LoginResult loginUser(String email, String password, boolean rememberMe) {
+    public LoginResult loginUser(UserRequest userRequest) {
         try {
-            LoginResult loginResult = userService.loginUser(email, password);
-            if (loginResult == LoginResult.OK && rememberMe) {
-                httpServletResponse.addCookie(generateLoginServletCookie(registerService.setupLoginCookieEntry(email)));
+            LoginResult loginResult = userService.loginUser(userRequest.getEmail(), userRequest.getPassword());
+            if (loginResult == LoginResult.OK && userRequest.isRememberMe()) {
+                httpServletResponse.addCookie(generateLoginServletCookie(registerService.setupLoginCookieEntry(userRequest.getEmail())));
             }
             return loginResult;
         } catch (Throwable t) {
@@ -192,6 +194,11 @@ public class FrontendControllerImpl implements FrontendController {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
+    }
+
+    @Override
+    public void clearRememberMe() {
+        httpServletResponse.addCookie(FrontendControllerImpl.generateExpiredLoginServletCookie());
     }
 
     @Override

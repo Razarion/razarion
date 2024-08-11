@@ -1,14 +1,19 @@
-<div class="homePageMain">
-  <div class="homePageMiddle">
-    <div class="homePageMiddleCenter">
+<div class="container">
 
-      <div class="logout">
-        <h2>Auf Wiedersehen!</h2>
-        <div>
-          <button (click)="onLogin()" class="homePageButton">Anmelden</button>
-        </div>
+  <div class="logout">
+    <h2>Good bye!</h2>
+    <div>
+      <div class="mb-2">
+        <p-button type="button" label="Login" icon="pi pi-sign-in" styleClass="p-button-sm" [style]="{'width':'13em'}"
+          (onClick)="onLogin()"></p-button>
       </div>
-
+    </div>
+    <div>
+      <div class="mb-2">
+        <p-button type="button" label="Clear remember me" icon="pi pi-trash" styleClass="p-button-sm"
+          [style]="{'width':'13em'}" (onClick)="clearRemeberMe()"></p-button>
+      </div>
     </div>
   </div>
+
 </div>

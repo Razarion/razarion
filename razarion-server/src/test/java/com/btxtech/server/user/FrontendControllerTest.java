@@ -14,6 +14,7 @@ import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.rest.BackendController;
 import com.btxtech.shared.rest.FrontendController;
 import com.btxtech.shared.rest.GameUiContextController;
+import com.btxtech.shared.dto.UserRequest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -160,17 +161,26 @@ public class FrontendControllerTest extends ClientArquillianBaseTest {
         Assert.assertFalse(frontendController.isLoggedIn("", "").isLoggedIn());
         Assert.assertFalse(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         // Login wrong password
-        Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendController.loginUser("xxx@yyy.com", "qwerttzz", false));
+        Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendController.loginUser(new UserRequest()
+                .email("xxx@yyy.com")
+                .password("qwerttzz")
+                .rememberMe(false)));
         Assert.assertFalse(frontendController.isLoggedIn("", "").isLoggedIn());
         Assert.assertFalse(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         Assert.assertNull(testSessionContext.getLoginTokenCookie());
         // Login wrong email
-        Assert.assertEquals(LoginResult.WRONG_EMAIL, frontendController.loginUser("qqqq@yyy.com", "qwerttzz", false));
+        Assert.assertEquals(LoginResult.WRONG_EMAIL, frontendController.loginUser(new UserRequest()
+                .email("xxx@yyy.com")
+                .password("qwerttzz")
+                .rememberMe(false)));
         Assert.assertFalse(frontendController.isLoggedIn("", "").isLoggedIn());
         Assert.assertFalse(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         Assert.assertNull(testSessionContext.getLoginTokenCookie());
         // Login
-        Assert.assertEquals(LoginResult.OK, frontendController.loginUser("xxx@yyy.com", "123456789", false));
+        Assert.assertEquals(LoginResult.OK, frontendController.loginUser(new UserRequest()
+                .email("xxx@yyy.com")
+                .password("123456789")
+                .rememberMe(false)));
         Assert.assertTrue(frontendController.isLoggedIn("", "").isLoggedIn());
         Assert.assertTrue(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         Assert.assertNull(testSessionContext.getLoginTokenCookie());
@@ -259,7 +269,10 @@ public class FrontendControllerTest extends ClientArquillianBaseTest {
         Assert.assertFalse(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         // Login email & password
         testSessionContext.setLoginTokenCookie(null);
-        Assert.assertEquals(LoginResult.OK, frontendController.loginUser("xxx@yyy.com", "123456789", true));
+        Assert.assertEquals(LoginResult.OK, frontendController.loginUser(new UserRequest()
+                .email("xxx@yyy.com")
+                .password("123456789")
+                .rememberMe(false)));
         Assert.assertTrue(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         Assert.assertNotNull(testSessionContext.getLoginTokenCookie());
         Cookie loginCookie2 = testSessionContext.getLoginTokenCookie();
@@ -331,7 +344,10 @@ public class FrontendControllerTest extends ClientArquillianBaseTest {
         GameUiContextController gameUiControlProvider = testSessionContext.proxy(GameUiContextController.class);
         Assert.assertFalse(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         // Login with new password
-        Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendController.loginUser("xxx@yyy.com", "asdasdasdasd", false));
+        Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendController.loginUser(new UserRequest()
+                .email("xxx@yyy.com")
+                .password("asdasdasdasd")
+                .rememberMe(false)));
         Assert.assertFalse(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         // Change password
         Assert.assertTrue(frontendController.savePassword(uuid, "987654321"));
@@ -340,10 +356,16 @@ public class FrontendControllerTest extends ClientArquillianBaseTest {
         frontendController.logout();
         Assert.assertFalse(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         // Login with old password
-        Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendController.loginUser("xxx@yyy.com", "123456789", false));
+        Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendController.loginUser(new UserRequest()
+                .email("xxx@yyy.com")
+                .password("123456789")
+                .rememberMe(false)));
         Assert.assertFalse(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         // Login with new password
-        Assert.assertEquals(LoginResult.OK, frontendController.loginUser("xxx@yyy.com", "987654321", false));
+        Assert.assertEquals(LoginResult.OK, frontendController.loginUser(new UserRequest()
+                .email("xxx@yyy.com")
+                .password("987654321")
+                .rememberMe(false)));
         Assert.assertTrue(gameUiControlProvider.loadColdGameUiContext(new GameUiControlInput()).getUserContext().registered());
         // Logout
         frontendController.logout();

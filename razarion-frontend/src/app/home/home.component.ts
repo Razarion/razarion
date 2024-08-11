@@ -1,7 +1,7 @@
 ﻿import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {FrontendService} from "../service/frontend.service";
-import {LoginResult} from "../common";
+import { LoginResult } from '../generated/razarion-share';
 
 
 @Component({
@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit {
         case LoginResult.WRONG_PASSWORD:
           this.loginError = "Falsches Passworte";
           break;
-        case LoginResult.UNKNOWN:
+        default:
           this.loginError = "Unbekannter Fehler";
           break;
       }

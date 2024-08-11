@@ -3,6 +3,7 @@ package com.btxtech.server.systemtests.framework;
 import com.btxtech.server.ServerTestHelper;
 import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.shared.dto.LoginResult;
+import com.btxtech.shared.dto.UserRequest;
 import com.btxtech.shared.rest.FrontendController;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
@@ -26,6 +27,7 @@ public class RestConnection {
             this.password = password;
         }
     }
+
     public static String URL = "http://localhost:8080";
     public static String REST_URL = URL + "/rest/";
     private TestUser loggedIn = TestUser.NONE;
@@ -67,12 +69,15 @@ public class RestConnection {
     }
 
     public void login(TestUser testUser) {
-        if(testUser == loggedIn) {
+        if (testUser == loggedIn) {
             return;
         }
         logout();
         if (testUser != TestUser.NONE) {
-            LoginResult loginResult = target.proxy(FrontendController.class).loginUser(testUser.email, testUser.password, false);
+            LoginResult loginResult = target.proxy(FrontendController.class).loginUser(new UserRequest()
+                    .email(testUser.email)
+                    .password(testUser.password)
+                    .rememberMe(false));
             if (loginResult != LoginResult.OK) {
                 throw new AssertionError("Can not login with email: " + testUser.email + " and password: " + testUser.password + ". Result: " + loginResult);
             }

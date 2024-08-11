@@ -119,6 +119,7 @@
                         <class>com.btxtech.shared.rest.UnlockController</class>
                         <class>com.btxtech.shared.rest.UserMgmtController</class>
                         <class>com.btxtech.shared.rest.BrushEditorController</class>
+                        <class>com.btxtech.shared.rest.FrontendController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

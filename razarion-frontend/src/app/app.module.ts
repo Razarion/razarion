@@ -8,7 +8,6 @@ import { GameComponent } from "./game/game.component";
 import { RegisterComponent } from "./register/register.component";
 import { GlobalErrorHandler } from "./global.error.fandler";
 import { NoCookies } from "./nocookies/nocookies.component";
-import { FacebookAppStart } from "./facebookappstart/facebook-app-start.component";
 import { EmailVerification } from "./emailverification/email-verification.component";
 import { FormsModule } from "@angular/forms";
 import { ResetPasswordComponent } from "./resetpassword/reset-password.component";
@@ -138,7 +137,6 @@ import { VertexEditorComponent } from './editor/common/vertex-editor/vertex-edit
     GameComponent,
     RegisterComponent,
     NoCookies,
-    FacebookAppStart,
     EmailVerification,
     ResetPasswordComponent,
     ChangePasswordComponent,

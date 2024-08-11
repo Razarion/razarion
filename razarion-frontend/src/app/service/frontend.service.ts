@@ -1,21 +1,23 @@
-import {Injectable} from "@angular/core";
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {FbAuthResponse, FrontendLoginState, LoginResult, RegisterResult, URL_FRONTEND} from "../common";
-import {Router} from "@angular/router";
-
-declare const FB: any;
-const FB_TIMEOUT: number = 8000;
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { RegisterResult, URL_FRONTEND } from "../common";
+import { Router } from "@angular/router";
+import {
+  ClientLogRecord,
+  FrontendControllerClient,
+  LoginResult,
+  UserRequest
+} from "../generated/razarion-share";
+import { TypescriptGenerator } from "../backend/typescript-generator";
 
 @Injectable()
 export class FrontendService {
   private language: string = "";
-  private resolve: any;
-  private fbTimerId: number = 0;
-  private loggedIn?: boolean;
+  loggedIn?: boolean;
   private cookieAllowed: boolean = false;
-  private fbScriptLoadedCallbacks: any[] = [];
+  private frontendControllerClient: FrontendControllerClient;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private httpClient: HttpClient, private router: Router) {
     try {
       let d = new Date();
       d.setTime(d.getTime() + 5000);
@@ -27,6 +29,7 @@ export class FrontendService {
     } catch (err) {
       this.log("Cookie check failed", err);
     }
+    this.frontendControllerClient = new FrontendControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
 
   static validateEmail(email: any) {
@@ -35,16 +38,6 @@ export class FrontendService {
     }
     let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
-  }
-
-  static onFbScriptLoaded(frontendService: FrontendService) {
-    for (let i = 0; i < frontendService.fbScriptLoadedCallbacks.length; i++) {
-      try {
-        frontendService.fbScriptLoadedCallbacks[i]();
-      } catch (err) {
-        frontendService.log("rontendService.fbScriptLoadedCallbacks failed", err);
-      }
-    }
   }
 
   isCookieAllowed(): boolean {
@@ -56,39 +49,44 @@ export class FrontendService {
       return Promise.resolve(this.loggedIn);
     }
     return new Promise((resolve) => {
-      this.resolve = resolve;
-      this.http.get<FrontendLoginState>(URL_FRONTEND + '/isloggedin').toPromise().then(loginState => {
-        try {
-          if (loginState !== undefined) {
-            this.language = loginState.language;
-            if (loginState.loggedIn) {
-              this.loggedIn = true;
-              resolve(true);
+      this.frontendControllerClient.isLoggedIn()
+        .then(frontendLoginState => {
+          try {
+            if (frontendLoginState !== undefined) {
+              this.language = frontendLoginState.language;
+              if (frontendLoginState.loggedIn) {
+                this.loggedIn = true;
+                resolve(true);
+              } else {
+                this.loggedIn = false;
+                resolve(false);
+              }
             } else {
-              this.fbTimerId = window.setTimeout(() => this.onFbTimeout(), FB_TIMEOUT);
-              this.fbScriptLoaded().then(() => this.checkFbLoginState());
+              this.log("loginState === undefined", null);
+              this.loggedIn = false;
+              resolve(false);
             }
-          } else {
-            this.log("loginState === undefined", null);
+          } catch (err) {
+            this.log("Handle isloggedin response", err);
             this.loggedIn = false;
             resolve(false);
           }
-        } catch (err) {
-          this.log("Handle isloggedin response", err);
+        })
+        .catch(err => {
+          this.log("isloggedin catch", err);
           this.loggedIn = false;
           resolve(false);
-        }
-      }).catch(err => {
-        this.log("isloggedin catch", err);
-        this.loggedIn = false;
-        resolve(false);
-      });
+        });
     });
   }
 
   log(message: string, error: any): void {
-    let body = new HttpParams().set(`message`, message);
-    body = body.set(`url`, JSON.stringify(this.router.url).toString());
+    let clientLogRecord: ClientLogRecord = {
+      message: message,
+      url: JSON.stringify(this.router.url).toString(),
+      error: ""
+    };
+
     if (error) {
       try {
         let errorMessage: string = "";
@@ -100,102 +98,27 @@ export class FrontendService {
             errorMessage += '\nstack: ' + error.stack;
           }
         }
-        body = body.set(`error`, errorMessage);
+        clientLogRecord.error = errorMessage;
       } catch (innerErr) {
-        body = body.set(`error`, "Error handling error: '" + "" + innerErr + "' Original error '" + error.toString() + "'");
+        clientLogRecord.error = "Error handling error: '" + "" + innerErr + "' Original error '" + error.toString() + "'";
       }
     }
-    this.http.post<void>(URL_FRONTEND + '/log', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe();
-  }
-
-  logWindowClosed(event: any): void {
-    try {
-      let params: String = encodeURIComponent(this.router.url) + "/" + encodeURIComponent(JSON.stringify(new Date())) + "/" + encodeURIComponent(JSON.stringify(event));
-      this.http.get<boolean>(URL_FRONTEND + '/windowclosed/' + params).subscribe(() => {
-        },
-        error => {
-          this.log("logWindowClosed 1 error", error);
-        });
-    } catch (err) {
-      this.log("logWindowClosed 2 error", err);
-    }
+    this.frontendControllerClient.log(clientLogRecord);
   }
 
   getLanguage(): string {
     return this.language;
   }
 
-  onFbAuthorized(authResponse: any): Promise<boolean> {
+  login(email: string, password: string, rememberMe: boolean): Promise<LoginResult | null> {
     return new Promise((resolve) => {
-      let fbAuthResponse: FbAuthResponse = {
-        accessToken: authResponse.accessToken,
-        expiresIn: authResponse.expiresIn,
-        signedRequest: authResponse.signedRequest,
-        userID: authResponse.userID
-      };
-      this.http.post<boolean>(URL_FRONTEND + '/facebookauthenticated', fbAuthResponse, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
-        loggedIn => {
-          this.loggedIn = loggedIn;
-          resolve(loggedIn);
-        },
-        error => {
-          this.log("facebookauthenticated catch", error);
-          this.loggedIn = false;
-          resolve(false);
-        });
-    });
-  }
-
-  subscribeFbAuthChange(facebookEventCallback: any) {
-    try {
-      FB.Event.subscribe("auth.statusChange", facebookEventCallback);
-    } catch (err) {
-      this.log("subscribeFbAuthChange", err);
-    }
-  }
-
-  unsubscribeFbAuthChange(facebookEventCallback: any) {
-    try {
-      FB.Event.unsubscribe("auth.statusChange", facebookEventCallback);
-    } catch (err) {
-      this.log("unsubscribeFbAuthChange", err);
-    }
-  }
-
-  parseFbXFBML() {
-    try {
-      FB.XFBML.parse();
-    } catch (err) {
-      this.log("parseFbXFBML", err);
-    }
-  }
-
-  fbLogin(facebookLoginCallback: any) {
-    try {
-      FB.login(facebookLoginCallback);
-    } catch (err) {
-      this.log("fbLogin: ", err);
-      facebookLoginCallback();
-    }
-  }
-
-  fbScriptLoaded(): Promise<void> {
-    if ((<any>window).RAZ_fbScriptLoadedFlag) {
-      return Promise.resolve();
-    } else {
-      (<any>window).RAZ_fbScriptLoadedFrontendService = this;
-      (<any>window).RAZ_fbScriptLoadedCallback = FrontendService.onFbScriptLoaded;
-      return new Promise((resolve) => {
-        this.fbScriptLoadedCallbacks.push(resolve);
-      });
-    }
-  }
-
-  login(email: string, password: string, rememberMe: boolean): Promise<LoginResult> {
-    return new Promise((resolve) => {
-      const body = new HttpParams().set('email', email).set('password', password).set('rememberMe', rememberMe.toString());
-      this.http.post<LoginResult>(URL_FRONTEND + '/login', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
-        loginResult => {
+      let userRequest: UserRequest = {
+        email: email,
+        password: password,
+        rememberMe: rememberMe
+      }
+      this.frontendControllerClient.loginUser(userRequest)
+        .then(loginResult => {
           if (loginResult == LoginResult.OK) {
             this.loggedIn = true;
             resolve(loginResult);
@@ -203,11 +126,11 @@ export class FrontendService {
             this.loggedIn = false;
             resolve(loginResult);
           }
-        },
-        error => {
+        })
+        .catch(error => {
           this.log("login catch", error);
           this.loggedIn = false;
-          resolve(LoginResult.UNKNOWN);
+          resolve(null);
         });
     });
   }
@@ -215,7 +138,7 @@ export class FrontendService {
   register(email: string, password: string, rememberMe: boolean): Promise<RegisterResult> {
     return new Promise((resolve) => {
       const body = new HttpParams().set(`email`, email).set(`password`, password).set('rememberMe', rememberMe.toString());
-      this.http.post<RegisterResult>(URL_FRONTEND + '/createunverifieduser', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
+      this.httpClient.post<RegisterResult>(URL_FRONTEND + '/createunverifieduser', body, { headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded') }).subscribe(
         registerResult => {
           if (registerResult == RegisterResult.OK) {
             this.loggedIn = true;
@@ -232,7 +155,7 @@ export class FrontendService {
 
   verifyEmail(email: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.get<boolean>(URL_FRONTEND + '/isemailfree/' + encodeURIComponent(email)).subscribe(
+      this.httpClient.get<boolean>(URL_FRONTEND + '/isemailfree/' + encodeURIComponent(email)).subscribe(
         valid => resolve(valid),
         error => {
           this.log("verifyEmail catch", error);
@@ -243,7 +166,7 @@ export class FrontendService {
 
   verifyEmailLink(verificationId: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.post<boolean>(URL_FRONTEND + '/verifyemaillink', new HttpParams().set(`verificationId`, verificationId), {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
+      this.httpClient.post<boolean>(URL_FRONTEND + '/verifyemaillink', new HttpParams().set(`verificationId`, verificationId), { headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded') }).subscribe(
         success => {
           if (success) {
             this.loggedIn = true;
@@ -260,7 +183,7 @@ export class FrontendService {
 
   sendEmailForgotPassword(email: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.post<boolean>(URL_FRONTEND + '/sendemailforgotpassword', new HttpParams().set(`email`, email), {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
+      this.httpClient.post<boolean>(URL_FRONTEND + '/sendemailforgotpassword', new HttpParams().set(`email`, email), { headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded') }).subscribe(
         sent => resolve(sent),
         error => {
           this.log("sendemailforgotpassword catch", error);
@@ -273,7 +196,7 @@ export class FrontendService {
   savePassword(password: string, uuid: string): Promise<boolean> {
     return new Promise((resolve) => {
       const body = new HttpParams().set(`password`, password).set(`uuid`, uuid);
-      this.http.post<boolean>(URL_FRONTEND + '/savepassword', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
+      this.httpClient.post<boolean>(URL_FRONTEND + '/savepassword', body, { headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded') }).subscribe(
         success => {
           if (success) {
             this.loggedIn = true;
@@ -289,24 +212,15 @@ export class FrontendService {
   }
 
   logout() {
-    this.http.post<void>(URL_FRONTEND + '/logout', {}).subscribe(
-      () => {
-        this.loggedIn = false;
-      },
-      error => {
-        this.log("logout catch", error);
-      });
-    try {
-      FB.logout((response: any) => {
-        // user is now logged out
-      });
-    } catch (err) {
-      this.log("FB.logout catch", err);
-    }
+    this.frontendControllerClient.logout().then(() => {
+      this.loggedIn = false;
+    }).catch(error => {
+      this.log("logout catch", error);
+    });
   }
 
   trackNavigation(url: string) {
-    this.http.post<boolean>(URL_FRONTEND + '/tracknavigation', new HttpParams().set(`url`, url), {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
+    this.httpClient.post<boolean>(URL_FRONTEND + '/tracknavigation', new HttpParams().set(`url`, url), { headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded') }).subscribe(
       () => {
       },
       error => {
@@ -315,33 +229,8 @@ export class FrontendService {
     );
   }
 
-  private onFbTimeout() {
-    this.log("Facebook timed out", null);
-    this.loggedIn = false;
-    this.resolve(false);
+  clearRemeberMe() {
+    this.frontendControllerClient.clearRememberMe();
   }
 
-  private checkFbLoginState() {
-    try {
-      FB.getLoginStatus((fbResponse: { status: string; authResponse: any; }) => {
-        if (this.fbTimerId != null) {
-          window.clearInterval(this.fbTimerId);
-          this.fbTimerId = 0;
-        }
-        if (fbResponse.status === 'connected') {
-          // the user is logged in and has authenticated your app
-          this.onFbAuthorized(fbResponse.authResponse).then(loggedIn => {
-            this.resolve(loggedIn);
-          });
-        } else {
-          this.loggedIn = false;
-          this.resolve(false);
-        }
-      });
-    } catch (err) {
-      this.log("checkFbLoginState", err);
-      this.loggedIn = false;
-      this.resolve(false);
-    }
-  }
 }

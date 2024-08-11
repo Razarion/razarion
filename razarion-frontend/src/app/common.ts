@@ -25,18 +25,6 @@ export const READ_TERRAIN_SLOPE_POSITIONS = TERRAIN_EDITOR + "/readTerrainSlopeP
 export const UPDATE_SLOPES_TERRAIN_EDITOR = TERRAIN_EDITOR + "/updateSlopes";
 export const UPDATE_MINI_MAP_IMAGE = TERRAIN_EDITOR + "/updateMiniMapImage";
 
-export interface FrontendLoginState {
-  loggedIn: boolean;
-  language: string;
-}
-
-export interface FbAuthResponse {
-  accessToken: string;
-  expiresIn: number;
-  signedRequest: string;
-  userID: string;
-}
-
 export enum RegisterResult {
   USER_ALREADY_LOGGED_IN = 'USER_ALREADY_LOGGED_IN',
   INVALID_EMAIL = 'INVALID_EMAIL',
@@ -44,13 +32,6 @@ export enum RegisterResult {
   INVALID_PASSWORD = 'INVALID_PASSWORD',
   OK = 'OK',
   UNKNOWN_ERROR = 'UNKNOWN_ERROR'
-}
-
-export enum LoginResult {
-  WRONG_PASSWORD = 'WRONG_PASSWORD',
-  WRONG_EMAIL = 'WRONG_EMAIL',
-  OK = 'OK',
-  UNKNOWN = 'UNKNOWN'
 }
 
 export function getImageUrl(id: number): string {

@@ -30,8 +30,6 @@ import { GwtInstance } from '../gwtangular/GwtInstance';
 import { ActionService } from './action.service';
 import { Tools } from '@babylonjs/core';
 import { TerrainEditorComponent } from '../editor/terrain-editor/terrain-editor.component';
-import pako from 'pako';
-import { BabylonTerrainTileImpl } from './renderer/babylon-terrain-tile.impl';
 import { GeneratedCrudContainerComponent } from '../editor/crud-editors/crud-container/generated-crud-container.component';
 import { ParticleSystemEditorComponent } from '../editor/crud-editors/particle-system-editor/particle-system-editor.component';
 

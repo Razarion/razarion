@@ -1,6 +1,6 @@
-﻿import {Component, OnInit} from '@angular/core';
-import {NavigationStart, Router} from "@angular/router";
-import {FrontendService} from "../service/frontend.service";
+﻿import { Component, OnInit } from '@angular/core';
+import { NavigationStart, Router } from "@angular/router";
+import { FrontendService } from "../service/frontend.service";
 
 
 @Component({
@@ -17,10 +17,18 @@ export class LogoutComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.frontendService.logout()
+    try {
+      this.frontendService.logout()
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   onLogin(): void {
     window.location.replace('/');
+  }
+
+  clearRemeberMe() {
+    this.frontendService.clearRemeberMe();
   }
 }

@@ -45,6 +45,10 @@
       <radar-no-power></radar-no-power>
     </div>
   </div>
+  <div class="flex cockpit-element">
+    <p-button type="button" icon="pi pi-sign-out" styleClass="p-button-sm" title="Sign out"
+      [disabled]="!frontendService.loggedIn" (onClick)="onSignOut()"></p-button>
+  </div>
   <div *ngIf="admin" class="flex cockpit-element">
     <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
       (onClick)="this.editorDialog = true"></p-button>

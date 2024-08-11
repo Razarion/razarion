@@ -2,9 +2,11 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
+import com.btxtech.shared.dto.ClientLogRecord;
 import com.btxtech.shared.dto.FrontendLoginState;
 import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.shared.dto.RegisterResult;
+import com.btxtech.shared.dto.UserRequest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
@@ -35,9 +37,9 @@ public interface FrontendController {
     boolean facebookAuthenticated(FbAuthResponse fbAuthResponse);
 
     @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("log")
-    void log(@FormParam("message") String message, @FormParam("url") String url, @FormParam("error") String error);
+    void log(ClientLogRecord clientLogRecord);
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -56,9 +58,9 @@ public interface FrontendController {
 
     @POST
     @Path("login")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    LoginResult loginUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe);
+    LoginResult loginUser(UserRequest userRequest);
 
     @POST
     @Path("createunverifieduser")
@@ -88,6 +90,10 @@ public interface FrontendController {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
     boolean savePassword(@FormParam("uuid") String uuid, @FormParam("password") String password);
+
+    @POST
+    @Path("clearrememberme")
+    void clearRememberMe();
 
     @POST
     @Path("logout")

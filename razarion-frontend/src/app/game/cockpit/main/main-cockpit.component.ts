@@ -3,6 +3,8 @@ import { MainCockpit, RadarState, Rectangle } from "../../../gwtangular/GwtAngul
 import { GameComponent } from '../../game.component';
 import { Nullable, Observer, PointerEventTypes, PointerInfo } from '@babylonjs/core';
 import { BabylonRenderServiceAccessImpl } from '../../renderer/babylon-render-service-access-impl.service';
+import { Router } from '@angular/router';
+import { FrontendService } from 'src/app/service/frontend.service';
 
 
 @Component({
@@ -32,7 +34,9 @@ export class MainCockpitComponent implements MainCockpit {
 
   constructor(private zone: NgZone,
     private gameComponent: GameComponent,
-    private renderService: BabylonRenderServiceAccessImpl) {
+    private renderService: BabylonRenderServiceAccessImpl,
+    private router: Router,
+    public frontendService: FrontendService) {
   }
 
   show(admin: boolean): void {
@@ -135,5 +139,8 @@ export class MainCockpitComponent implements MainCockpit {
     }
   }
 
+  onSignOut() {
+    this.router.navigate(['/logout']);
+  }
 
 }
