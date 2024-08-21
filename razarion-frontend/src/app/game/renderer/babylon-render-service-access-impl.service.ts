@@ -575,6 +575,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return new ViewField(bottomLeft, bottomRight, topRight, topLeft);
   }
 
+  public setupMeshPickPoint(): PickingInfo {
+    return this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+  }
+
   public setupTerrainPickPointFromPosition(position: DecimalPosition): Nullable<PickingInfo> {
     let ray = new Ray(new Vector3(position.getX(), -100, position.getY()), new Vector3(0, 1, 0), 1000);
 
@@ -587,10 +591,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.SLOPE;
       }
     );
-  }
-
-  public setupMeshPickPoint(): PickingInfo {
-    return this.scene.pick(this.scene.pointerX, this.scene.pointerY);
   }
 
   public setupTerrainPickPoint(): PickingInfo {

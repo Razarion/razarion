@@ -31,7 +31,6 @@ public class WeldMasterBaseTest extends AbstractIntegrationTest {
 
     protected void setupMasterEnvironment(StaticGameConfig staticGameConfig, List<TerrainSlopePosition> terrainSlopePositions) {
         setupEnvironment(staticGameConfig, FallbackConfig.setupPlanetConfig());
-        getTestNativeTerrainShapeAccess().setTerrainSlopeAndObjectPositions(terrainSlopePositions, null);
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
     }
 

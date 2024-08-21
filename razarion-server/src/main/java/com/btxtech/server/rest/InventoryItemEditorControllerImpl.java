@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
@@ -17,7 +17,7 @@ public class InventoryItemEditorControllerImpl extends AbstractCrudController<In
     private InventoryItemCrudPersistence inventoryPersistence;
 
     @Override
-    protected AbstractCrudPersistence<InventoryItem, InventoryItemEntity> getCrudPersistence() {
+    protected AbstractConfigCrudPersistence<InventoryItem, InventoryItemEntity> getCrudPersistence() {
         return inventoryPersistence;
     }
 }

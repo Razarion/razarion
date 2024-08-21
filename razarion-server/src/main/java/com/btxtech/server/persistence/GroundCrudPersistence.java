@@ -6,11 +6,9 @@ import com.btxtech.shared.dto.GroundConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 @Singleton
-public class GroundCrudPersistence extends AbstractCrudPersistence<GroundConfig, GroundConfigEntity> {
+public class GroundCrudPersistence extends AbstractConfigCrudPersistence<GroundConfig, GroundConfigEntity> {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject

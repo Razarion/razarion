@@ -1,27 +1,28 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
-import com.btxtech.shared.datatypes.Circle2D;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
+import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectPosition;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeVertex;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
-import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.terrainPositionToTileIndex;
 
 /**
  * Created by Beat
@@ -32,14 +33,11 @@ public class TerrainShapeManagerSetup {
     private final TerrainShapeManager terrainShape;
     private final TerrainTypeService terrainTypeService;
     private final AlarmService alarmService;
-    private final TerrainShapeSubNodeFactory terrainShapeSubNodeFactory;
-    private final Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes = new HashMap<>();
 
     public TerrainShapeManagerSetup(TerrainShapeManager terrainShape, TerrainTypeService terrainTypeService, AlarmService alarmService) {
         this.terrainShape = terrainShape;
         this.terrainTypeService = terrainTypeService;
         this.alarmService = alarmService;
-        terrainShapeSubNodeFactory = new TerrainShapeSubNodeFactory();
     }
 
     public void processTerrainObject(List<TerrainObjectPosition> terrainObjectPositions) {
@@ -73,10 +71,6 @@ public class TerrainShapeManagerSetup {
             return 1;
         }
         return Math.max(scale.getX(), scale.getY());
-    }
-
-    public void finish() {
-        terrainShapeSubNodeFactory.concentrate(dirtyTerrainShapeNodes);
     }
 
     private void fillInRenderTerrainObject(Map<Index, MapList<Integer, TerrainObjectPosition>> renderTerrainObjects) {
@@ -119,4 +113,23 @@ public class TerrainShapeManagerSetup {
         });
     }
 
+    public void processBotDecals(List<BabylonDecal> babylonDecals) {
+        MapList<Index, NativeBabylonDecal> tileDecals = new MapList<>();
+        babylonDecals.forEach(babylonDecal -> {
+            Index tileIndex = terrainPositionToTileIndex(new DecimalPosition(babylonDecal.xPos, babylonDecal.yPos));
+            NativeBabylonDecal nativeBabylonDecal = new NativeBabylonDecal();
+            nativeBabylonDecal.babylonMaterialId = babylonDecal.babylonMaterialId;
+            nativeBabylonDecal.xPos = babylonDecal.xPos;
+            nativeBabylonDecal.yPos = babylonDecal.yPos;
+            nativeBabylonDecal.xSize = babylonDecal.xSize;
+            nativeBabylonDecal.ySize = babylonDecal.ySize;
+            tileDecals.put(tileIndex, nativeBabylonDecal);
+        });
+
+        tileDecals.getMap().forEach((tileIndex, nativeBabylonDecals) -> {
+            terrainShape.getOrCreateTerrainShapeTile(tileIndex).setNativeBabylonDecals(nativeBabylonDecals.toArray(new NativeBabylonDecal[0]));
+        });
+
+
+    }
 }

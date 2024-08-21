@@ -26,6 +26,7 @@ import { BoxRegionComponent } from "../box-region/box-region.component";
 import { UserMgmtComponent } from "../user-mgmt/user-mgmt.component";
 import { TerrainEditorComponent } from "../terrain-editor/terrain-editor.component";
 import { ParticleSystemEditorComponent } from "../crud-editors/particle-system-editor/particle-system-editor.component";
+import { BabylonMaterialEditorComponent } from "../crud-editors/babylon-material-editor/babylon-material-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -111,6 +112,11 @@ export class EditorDialogComponent {
   openParticleSystemEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Particle systems editor", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
+  }
+
+  openBabylonMaterialEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Babylon material editor", GeneratedCrudContainerComponent, BabylonMaterialEditorComponent));
   }
 
   openBabylonInspector() {

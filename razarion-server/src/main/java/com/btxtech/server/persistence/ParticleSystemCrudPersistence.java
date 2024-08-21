@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class ParticleSystemCrudPersistence extends AbstractCrudPersistence<ParticleSystemConfig, ParticleSystemEntity> {
+public class ParticleSystemCrudPersistence extends AbstractConfigCrudPersistence<ParticleSystemConfig, ParticleSystemEntity> {
     @Inject
     private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
     @Inject

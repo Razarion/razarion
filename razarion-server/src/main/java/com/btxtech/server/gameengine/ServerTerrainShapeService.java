@@ -5,6 +5,8 @@ import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -17,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
@@ -42,14 +45,16 @@ public class ServerTerrainShapeService {
     private Event<StaticGameInitEvent> gameEngineInitEvent;
     @Inject
     private StaticGameConfigPersistence staticGameConfigPersistence;
+    @Inject
+    private BotService botService;
     private Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
     private int[] groundHeightMap;
 
-    public void start() {
+    public void start(List<BotConfig> botConfigs) {
         terrainShapes.clear();
         planetCrudPersistence.read().forEach(planetConfig -> {
             try {
-                createTerrainShape(planetConfig);
+                createTerrainShape(botConfigs, planetConfig);
             } catch (Throwable t) {
                 alarmService.riseAlarm(TERRAIN_SHAPE_SETUP_FAILED, planetConfig.getId());
                 exceptionHandler.handleException(t);
@@ -57,7 +62,7 @@ public class ServerTerrainShapeService {
         });
     }
 
-    private void createTerrainShape(PlanetConfig planetConfig) {
+    private void createTerrainShape(List<BotConfig> botConfigs, PlanetConfig planetConfig) {
         try {
             groundHeightMap = setupGroundHeightMap(planetCrudPersistence.getCompressedHeightMap(planetConfig.getId()));
         } catch (Throwable t) {
@@ -66,16 +71,16 @@ public class ServerTerrainShapeService {
         }
 
         TerrainShapeManager terrainShape = new TerrainShapeManager(planetConfig,
-                null,
                 terrainTypeService,
                 alarmService,
-                planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()));
+                planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()),
+                BotService.generateBotDecals(botConfigs));
         terrainShapes.put(planetConfig.getId(), terrainShape.toNativeTerrainShape());
     }
 
-    public void createTerrainShape(int planetConfigId) {
+    public void createTerrainShape(List<BotConfig> botConfigs, int planetConfigId) {
         gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
-        createTerrainShape(planetCrudPersistence.read(planetConfigId));
+        createTerrainShape(botConfigs, planetCrudPersistence.read(planetConfigId));
     }
 
     public NativeTerrainShape getNativeTerrainShape(int planetId) {

@@ -15,7 +15,7 @@ import javax.transaction.Transactional;
  * 06.07.2016.
  */
 @Singleton
-public class TerrainObjectCrudPersistence extends AbstractCrudPersistence<TerrainObjectConfig, TerrainObjectEntity> {
+public class TerrainObjectCrudPersistence extends AbstractConfigCrudPersistence<TerrainObjectConfig, TerrainObjectEntity> {
     @Inject
     private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
     @PersistenceContext

@@ -1,6 +1,5 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 
 import javax.persistence.EntityManager;
@@ -11,25 +10,26 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.transaction.Transactional;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @param <C> Config
- * @param <E> Entity
- */
-public abstract class AbstractCrudPersistence<C extends Config, E> {
+public class AbstractEntityCrudPersistence<E> {
     @PersistenceContext
     private EntityManager entityManager;
-    private Class<E> entityClass;
-    private SingularAttribute<E, Integer> id;
-    private SingularAttribute<E, String> internalName;
+    private final Class<E> entityClass;
+    private final SingularAttribute<E, Integer> id;
+    private final SingularAttribute<E, String> internalName;
 
-    public AbstractCrudPersistence(Class<E> entityClass, SingularAttribute<E, Integer> id, SingularAttribute<E, String> internalName) {
+    public AbstractEntityCrudPersistence(Class<E> entityClass, SingularAttribute<E, Integer> id, SingularAttribute<E, String> internalName) {
         this.entityClass = entityClass;
         this.id = id;
         this.internalName = internalName;
+    }
+
+    public <B extends BaseEntity> AbstractEntityCrudPersistence(Class<B> entityClass) {
+        this.entityClass = (Class<E>) entityClass;
+        this.id = (SingularAttribute<E, Integer>) BaseEntity_.id;
+        this.internalName = (SingularAttribute<E, String>) BaseEntity_.internalName;
     }
 
     @Transactional
@@ -43,13 +43,6 @@ public abstract class AbstractCrudPersistence<C extends Config, E> {
     }
 
     @Transactional
-    public C create() {
-        E entity = newEntity();
-        entityManager.persist(entity);
-        return toConfig(entity);
-    }
-
-    @Transactional
     public void delete(int id) {
         E entity = entityManager.find(entityClass, id);
         if (entity == null) {
@@ -58,45 +51,9 @@ public abstract class AbstractCrudPersistence<C extends Config, E> {
         entityManager.remove(entity);
     }
 
-    @Transactional
-    public void update(C config) {
-        E entity = entityManager.find(entityClass, config.getId());
-        fromConfig(config, entity);
-        entityManager.merge(entity);
-    }
-
-    @Transactional
-    public C read(int id) {
-        return toConfig(entityManager.find(entityClass, id));
-    }
-
-    @Transactional
-    public List<C> read() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<E> userQuery = criteriaBuilder.createQuery(entityClass);
-        Root<E> root = userQuery.from(entityClass);
-        CriteriaQuery<E> userSelect = userQuery.select(root);
-        Collection<E> slopeConfigEntities = entityManager.createQuery(userSelect).getResultList();
-
-        return slopeConfigEntities.stream().map(this::toConfig).collect(Collectors.toList());
-    }
-
-    protected abstract C toConfig(E entity);
-
-    protected abstract void fromConfig(C config, E entity);
-
-    protected C newConfig() {
-        return null;
-    }
-
     protected E newEntity() {
         try {
-            E entity = entityClass.newInstance();
-            C config = newConfig();
-            if (config != null) {
-                fromConfig(config, entity);
-            }
-            return entity;
+            return entityClass.newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -119,5 +76,27 @@ public abstract class AbstractCrudPersistence<C extends Config, E> {
         Root<E> root = userQuery.from(entityClass);
         CriteriaQuery<E> userSelect = userQuery.select(root);
         return entityManager.createQuery(userSelect).getResultList();
+    }
+
+    @Transactional
+    public E createBaseEntity() {
+        E e = newEntity();
+        entityManager.persist(e);
+        return e;
+    }
+
+    @Transactional
+    public E getBaseEntity(Integer id) {
+        return getEntity(id);
+    }
+
+    @Transactional
+    public void updateBaseEntity(E entity) {
+        entityManager.merge(entity);
+    }
+
+    @Transactional
+    public List<E> readAllBaseEntities() {
+        return getEntities();
     }
 }

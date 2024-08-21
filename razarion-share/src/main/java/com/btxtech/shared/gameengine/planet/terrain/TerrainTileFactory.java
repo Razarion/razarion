@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -30,8 +31,9 @@ public class TerrainTileFactory {
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShapeManager terrainShapeManager, PlanetConfig planetConfig) {
         TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(terrainTileIndex);
         TerrainTileBuilder terrainTileBuilder = terrainTileBuilderInstance.get();
-        terrainTileBuilder.init(terrainTileIndex, terrainShapeManager.getPlayGround());
+        terrainTileBuilder.init(terrainTileIndex);
         insertTerrainObjects(terrainTileBuilder, terrainShapeTile);
+        insertBabylonDecals(terrainTileBuilder, terrainShapeTile);
         return terrainTileBuilder.generate(planetConfig);
     }
 
@@ -81,5 +83,28 @@ public class TerrainTileFactory {
             terrainTileObjectList.setTerrainObjectModels(terrainObjectModels.toArray(new TerrainObjectModel[0]));
             terrainTileBuilder.addTerrainTileObjectList(terrainTileObjectList);
         });
+    }
+
+    private void insertBabylonDecals(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
+        if (terrainShapeTile == null) {
+            return;
+        }
+        NativeBabylonDecal[] nativeBabylonDecals = terrainShapeTile.getNativeBabylonDecals();
+        if (nativeBabylonDecals == null || nativeBabylonDecals.length == 0) {
+            return;
+        }
+
+        BabylonDecal[] babylonDecals = new BabylonDecal[nativeBabylonDecals.length];
+        for (int i = 0; i < nativeBabylonDecals.length; i++) {
+            NativeBabylonDecal nativeBabylonDecal = nativeBabylonDecals[i];
+            BabylonDecal babylonDecal = new BabylonDecal();
+            babylonDecal.babylonMaterialId = nativeBabylonDecal.babylonMaterialId;
+            babylonDecal.xPos = nativeBabylonDecal.xPos;
+            babylonDecal.yPos = nativeBabylonDecal.yPos;
+            babylonDecal.xSize = nativeBabylonDecal.xSize;
+            babylonDecal.ySize = nativeBabylonDecal.ySize;
+            babylonDecals[i] = babylonDecal;
+        }
+        terrainTileBuilder.setBabylonDecals(babylonDecals);
     }
 }

@@ -27,6 +27,7 @@ public class BotConfig {
     private Integer minActiveMs;
     private Integer maxActiveMs;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
+    private Integer groundBabylonMaterialId;
 
     public @Nullable Integer getId() {
         return id;
@@ -132,6 +133,14 @@ public class BotConfig {
         this.botEnragementStateConfigs = botEnragementStateConfigs;
     }
 
+    public @Nullable Integer getGroundBabylonMaterialId() {
+        return groundBabylonMaterialId;
+    }
+
+    public void setGroundBabylonMaterialId(@Nullable Integer groundBabylonMaterialId) {
+        this.groundBabylonMaterialId = groundBabylonMaterialId;
+    }
+
     public BotConfig id(Integer id) {
         setId(id);
         return this;
@@ -194,6 +203,11 @@ public class BotConfig {
 
     public BotConfig botEnragementStateConfigs(List<BotEnragementStateConfig> botEnragementStateConfigs) {
         setBotEnragementStateConfigs(botEnragementStateConfigs);
+        return this;
+    }
+
+    public BotConfig groundBabylonMaterialId(Integer groundBabylonMaterialId) {
+        setGroundBabylonMaterialId(groundBabylonMaterialId);
         return this;
     }
 

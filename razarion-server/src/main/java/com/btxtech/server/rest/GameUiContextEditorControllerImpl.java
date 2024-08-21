@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.GameUiContextCrudPersistence;
 import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.shared.dto.GameUiContextConfig;
@@ -13,7 +13,7 @@ public class GameUiContextEditorControllerImpl extends AbstractCrudController<Ga
     private GameUiContextCrudPersistence gameUiContextCrudPersistence;
 
     @Override
-    protected AbstractCrudPersistence<GameUiContextConfig, GameUiContextEntity> getCrudPersistence() {
+    protected AbstractConfigCrudPersistence<GameUiContextConfig, GameUiContextEntity> getCrudPersistence() {
         return gameUiContextCrudPersistence;
     }
 }

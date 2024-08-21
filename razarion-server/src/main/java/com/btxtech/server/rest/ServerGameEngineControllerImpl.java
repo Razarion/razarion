@@ -3,7 +3,9 @@ package com.btxtech.server.rest;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.mgmt.ServerMgmt;
+import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.rest.ServerGameEngineController;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -26,6 +28,8 @@ public class ServerGameEngineControllerImpl implements ServerGameEngineControlle
     private ServerTerrainShapeService serverTerrainShapeService;
     @Inject
     private ServerMgmt serverMgmt;
+    @Inject
+    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
 
     @SecurityCheck
     public void restartBots() {
@@ -60,7 +64,8 @@ public class ServerGameEngineControllerImpl implements ServerGameEngineControlle
     @SecurityCheck
     public void reloadPlanetShapes() {
         try {
-            serverTerrainShapeService.start();
+            ServerGameEngineConfig serverGameEngineConfig = serverGameEngineCrudPersistence.read().get(0);
+            serverTerrainShapeService.start(serverGameEngineConfig.getBotConfigs());
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

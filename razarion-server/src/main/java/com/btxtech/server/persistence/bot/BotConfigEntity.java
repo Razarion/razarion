@@ -1,5 +1,7 @@
 package com.btxtech.server.persistence.bot;
 
+import com.btxtech.server.persistence.BabylonMaterialCrudPersistence;
+import com.btxtech.server.persistence.BabylonMaterialEntity;
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -13,11 +15,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.btxtech.server.persistence.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -44,6 +49,9 @@ public class BotConfigEntity {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "botConfig", nullable = false)
     private List<BotEnragementStateConfigEntity> botEnragementStateConfigs;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private BabylonMaterialEntity groundBabylonMaterialEntity;
 
     public Integer getId() {
         return id;
@@ -60,10 +68,26 @@ public class BotConfigEntity {
                 botEnragementStateConfigs.add(botEnragementStateConfigEnity.toBotEnragementStateConfig());
             }
         }
-        return new BotConfig().auxiliaryId(auxiliaryId).id(id).internalName(internalName).autoAttack(autoAttack).npc(npc).actionDelay(actionDelay).realm(realm).name(name).minInactiveMs(minInactiveMs).maxInactiveMs(maxInactiveMs).minActiveMs(minActiveMs).maxActiveMs(maxActiveMs).botEnragementStateConfigs(botEnragementStateConfigs);
+        return new BotConfig()
+                .auxiliaryId(auxiliaryId)
+                .id(id)
+                .internalName(internalName)
+                .autoAttack(autoAttack)
+                .npc(npc)
+                .actionDelay(actionDelay)
+                .realm(realm)
+                .name(name)
+                .minInactiveMs(minInactiveMs)
+                .maxInactiveMs(maxInactiveMs)
+                .minActiveMs(minActiveMs)
+                .maxActiveMs(maxActiveMs)
+                .botEnragementStateConfigs(botEnragementStateConfigs)
+                .groundBabylonMaterialId(extractId(groundBabylonMaterialEntity, BabylonMaterialEntity::getId));
     }
 
-    public void fromBotConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotConfig botConfig) {
+    public void fromBotConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
+                              BabylonMaterialCrudPersistence babylonMaterialCrudPersistence,
+                              BotConfig botConfig) {
         internalName = botConfig.getInternalName();
         auxiliaryId = botConfig.getAuxiliaryId();
         npc = botConfig.isNpc();
@@ -91,6 +115,7 @@ public class BotConfigEntity {
                 this.botEnragementStateConfigs.add(botEnragementStateConfigEntity);
             }
         }
+        groundBabylonMaterialEntity = babylonMaterialCrudPersistence.getEntity(botConfig.getGroundBabylonMaterialId());
     }
 
     public BotConfigEntity setAutoAttack(boolean autoAttack) {

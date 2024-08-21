@@ -10,4 +10,5 @@ import jsinterop.annotations.JsType;
 @JsType(name = "NativeTerrainShapeTile", isNative = true, namespace = "com.btxtech.shared.json")
 public class NativeTerrainShapeTile {
     public NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists;
+    public NativeBabylonDecal[] nativeBabylonDecals;
 }

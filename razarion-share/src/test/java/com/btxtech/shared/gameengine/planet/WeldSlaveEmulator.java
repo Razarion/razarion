@@ -25,7 +25,6 @@ public class WeldSlaveEmulator extends AbstractIntegrationTest {
     public void connectToMaster(UserContext userContext, WeldMasterBaseTest weldMasterBaseTest) {
         this.weldMasterBaseTest = weldMasterBaseTest;
         setupEnvironment(weldMasterBaseTest.getStaticGameConfig(), weldMasterBaseTest.getPlanetConfig());
-        getTestNativeTerrainShapeAccess().setNativeTerrainShapeAccess(weldMasterBaseTest.getTerrainService().getTerrainShape().toNativeTerrainShape());
         getWeldBean(PlanetService.class).initialise(getPlanetConfig(), GameEngineMode.SLAVE, null, () -> {
             getWeldBean(PlanetService.class).start();
         }, null);

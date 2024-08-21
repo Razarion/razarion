@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.asset;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 
 import javax.inject.Singleton;
@@ -10,7 +10,7 @@ import javax.inject.Singleton;
  * 06.07.2016.
  */
 @Singleton
-public class MeshContainerCrudPersistence extends AbstractCrudPersistence<MeshContainer, MeshContainerEntity> {
+public class MeshContainerCrudPersistence extends AbstractConfigCrudPersistence<MeshContainer, MeshContainerEntity> {
     public MeshContainerCrudPersistence() {
         super(MeshContainerEntity.class, MeshContainerEntity_.id, MeshContainerEntity_.internalName);
     }

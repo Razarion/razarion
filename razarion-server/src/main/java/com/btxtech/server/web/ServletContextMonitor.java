@@ -5,7 +5,9 @@ import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.chat.ChatPersistence;
+import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.shared.datatypes.ServerState;
+import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -15,6 +17,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_PROPERTY;
@@ -43,6 +46,8 @@ public class ServletContextMonitor implements ServletContextListener {
     private AlarmService alarmService;
     @Inject
     private Event<StaticGameInitEvent> gameEngineInitEvent;
+    @Inject
+    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -59,7 +64,8 @@ public class ServletContextMonitor implements ServletContextListener {
             exceptionHandler.handleException(e);
         }
         try {
-            serverTerrainShapeService.start();
+            ServerGameEngineConfig serverGameEngineConfig = serverGameEngineCrudPersistence.read().get(0);
+            serverTerrainShapeService.start(serverGameEngineConfig.getBotConfigs());
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }

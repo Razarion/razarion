@@ -14,7 +14,7 @@ import javax.inject.Singleton;
  * 06.07.2016.
  */
 @Singleton
-public class BoxItemTypeCrudPersistence extends AbstractCrudPersistence<BoxItemType, BoxItemTypeEntity> {
+public class BoxItemTypeCrudPersistence extends AbstractConfigCrudPersistence<BoxItemType, BoxItemTypeEntity> {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject

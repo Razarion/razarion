@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.BrushConfig;
 import javax.inject.Singleton;
 
 @Singleton
-public class BrushCrudPersistence extends AbstractCrudPersistence<BrushConfig, BrushConfigEntity> {
+public class BrushCrudPersistence extends AbstractConfigCrudPersistence<BrushConfig, BrushConfigEntity> {
     public BrushCrudPersistence() {
         super(BrushConfigEntity.class, BrushConfigEntity_.id, BrushConfigEntity_.internalName);
     }

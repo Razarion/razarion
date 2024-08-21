@@ -28,7 +28,7 @@ import { QuestCockpitComponent } from "./cockpit/quest/quest-cockpit.component";
 import { ModelDialogPresenterImpl } from './model-dialog-presenter.impl';
 import { GwtInstance } from '../gwtangular/GwtInstance';
 import { ActionService } from './action.service';
-import { Tools } from '@babylonjs/core';
+import { MeshBuilder, Tools } from '@babylonjs/core';
 import { TerrainEditorComponent } from '../editor/terrain-editor/terrain-editor.component';
 import { GeneratedCrudContainerComponent } from '../editor/crud-editors/crud-container/generated-crud-container.component';
 import { ParticleSystemEditorComponent } from '../editor/crud-editors/particle-system-editor/particle-system-editor.component';
@@ -358,10 +358,9 @@ export class GameComponent implements OnInit, ScreenCover {
               //     outOfViewSize = 1;
               //   });
 
-              setTimeout(() => {
-                this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
-              }, 2000);
-
+              // setTimeout(() => {
+              //  this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
+              // }, 2000);
             });
           });
         });

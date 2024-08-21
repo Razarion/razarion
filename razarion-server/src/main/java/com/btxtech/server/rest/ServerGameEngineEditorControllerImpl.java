@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
@@ -23,7 +23,7 @@ public class ServerGameEngineEditorControllerImpl extends AbstractCrudController
     private ExceptionHandler exceptionHandler;
 
     @Override
-    protected AbstractCrudPersistence<ServerGameEngineConfig, ServerGameEngineConfigEntity> getCrudPersistence() {
+    protected AbstractConfigCrudPersistence<ServerGameEngineConfig, ServerGameEngineConfigEntity> getCrudPersistence() {
         return serverGameEngineCrudPersistence;
     }
 

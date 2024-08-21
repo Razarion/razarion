@@ -4,7 +4,7 @@ import com.btxtech.server.persistence.surface.DrivewayConfigEntity;
 import com.btxtech.server.persistence.surface.DrivewayConfigEntity_;
 import com.btxtech.shared.dto.DrivewayConfig;
 
-public class DrivewayCrudPersistence extends AbstractCrudPersistence<DrivewayConfig, DrivewayConfigEntity> {
+public class DrivewayCrudPersistence extends AbstractConfigCrudPersistence<DrivewayConfig, DrivewayConfigEntity> {
     public DrivewayCrudPersistence() {
         super(DrivewayConfigEntity.class, DrivewayConfigEntity_.id, DrivewayConfigEntity_.internalName);
     }

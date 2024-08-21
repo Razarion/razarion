@@ -68,7 +68,6 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
         staticGameConfig.setParticleSystemConfigs(particleSystemConfigs);
         setupEnvironment(staticGameConfig, planetConfig);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
-        getTestNativeTerrainShapeAccess().setTerrainSlopeAndObjectPositions(terrainSlopePositions, terrainObjectPositions);
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
         if (getAlarmService().hasAlarms()) {
             throw new RuntimeException("Setup Terrain failed. Check AlarmService and Log");

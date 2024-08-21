@@ -664,21 +664,11 @@ public class WeldTestRenderer {
         gc.setStroke(Color.DARKGREEN);
         DecimalPosition absolute = TerrainUtil.toTileAbsolute(tileIndex);
         // gc.strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
-        displayNodes(absolute, terrainShapeTile);
+        // displayNodes(absolute, terrainShapeTile);
 
         if (weldTestController.renderShapeTerrainObject()) {
             displayShapeTerrainObject(terrainShapeTile.getNativeTerrainShapeObjectLists());
         }
-    }
-
-    private void displayNodes(DecimalPosition absoluteTile, TerrainShapeTile terrainShapeTile) {
-        terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
-            if (terrainShapeNode == null) {
-                return;
-            }
-            displayNode(absoluteTile, nodeRelativeIndex, terrainShapeNode);
-        });
-
     }
 
     private void displayNode(DecimalPosition absoluteTile, Index nodeRelativeIndex, TerrainShapeNode terrainShapeNode) {

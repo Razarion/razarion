@@ -1,20 +1,19 @@
 package com.btxtech.server.persistence.inventory;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.persistence.metamodel.SingularAttribute;
 
 /**
  * Created by Beat
  * 13.05.2017.
  */
 @Singleton
-public class InventoryItemCrudPersistence extends AbstractCrudPersistence<InventoryItem, InventoryItemEntity> {
+public class InventoryItemCrudPersistence extends AbstractConfigCrudPersistence<InventoryItem, InventoryItemEntity> {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject

@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -50,5 +50,5 @@ public abstract class AbstractCrudController<C extends Config, E> implements Cru
         return getCrudPersistence().read();
     }
 
-    protected abstract AbstractCrudPersistence<C, E> getCrudPersistence();
+    protected abstract AbstractConfigCrudPersistence<C, E> getCrudPersistence();
 }

@@ -2,23 +2,18 @@ package com.btxtech.shared.cdimock;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Uint16ArrayEmu;
-import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import com.btxtech.shared.mocks.TestUint16Array;
-import com.btxtech.shared.system.alarm.AlarmService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
 
@@ -32,21 +27,14 @@ import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray
 public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     @Inject
     private TerrainTypeService terrainTypeService;
-    @Inject
-    private AlarmService alarmService;
     private PlanetConfig planetConfig;
-    private List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-    private List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private int[] groundHeightMap;
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
         TerrainShapeManager terrainShape;
-        if (terrainSlopePositions != null && terrainObjectPositions != null) {
-            terrainShape = new TerrainShapeManager(planetConfig, nativeTerrainShapeAccess, terrainTypeService, alarmService, terrainObjectPositions);
-            loadedCallback.accept(terrainShape.toNativeTerrainShape());
-        } else if (nativeTerrainShapeAccess != null) {
+        if (nativeTerrainShapeAccess != null) {
             terrainShape = new TerrainShapeManager(terrainTypeService, nativeTerrainShapeAccess);
             terrainShape.lazyInit(planetConfig, () -> loadedCallback.accept(terrainShape.toNativeTerrainShape()), failCallback);
         } else {
@@ -64,7 +52,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
         if (groundHeightMap == null) {
             throw new IllegalStateException("groundHeightMap == null");
         }
-        if(index < 0 || index >= groundHeightMap.length) {
+        if (index < 0 || index >= groundHeightMap.length) {
             throw new IllegalArgumentException("index out of bounds");
         }
         return groundHeightMap[index];
@@ -72,39 +60,6 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
 
     public void setPlanetConfig(PlanetConfig planetConfig) {
         this.planetConfig = planetConfig;
-    }
-
-    public void setTerrainSlopeAndObjectPositions(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-        this.terrainSlopePositions = terrainSlopePositions;
-        if (this.terrainSlopePositions == null) {
-            this.terrainSlopePositions = new ArrayList<>();
-        }
-        this.terrainObjectPositions = terrainObjectPositions;
-        if (this.terrainObjectPositions == null) {
-            this.terrainObjectPositions = new ArrayList<>();
-        }
-        nativeTerrainShapeAccess = null;
-    }
-
-    public void setNativeTerrainShapeAccess(NativeTerrainShape nativeTerrainShape) {
-        this.nativeTerrainShapeAccess = new NativeTerrainShapeAccess() {
-            @Override
-            public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
-                loadedCallback.accept(nativeTerrainShape);
-            }
-
-            @Override
-            public Uint16ArrayEmu createTileGroundHeightMap(Index terrainTileIndex) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public int getGroundHeightAt(int index) {
-                throw new UnsupportedOperationException();
-            }
-        };
-        terrainSlopePositions = null;
-        terrainObjectPositions = null;
     }
 
     public void loadHeightMap(String expectedResource, Class resourceLoader) {

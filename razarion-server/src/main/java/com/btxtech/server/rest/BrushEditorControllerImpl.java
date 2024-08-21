@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.BrushConfigEntity;
 import com.btxtech.server.persistence.BrushCrudPersistence;
 import com.btxtech.shared.datatypes.BrushConfig;
@@ -13,7 +13,7 @@ public class BrushEditorControllerImpl extends AbstractCrudController<BrushConfi
     private BrushCrudPersistence persistenceService;
 
     @Override
-    protected AbstractCrudPersistence<BrushConfig, BrushConfigEntity> getCrudPersistence() {
+    protected AbstractConfigCrudPersistence<BrushConfig, BrushConfigEntity> getCrudPersistence() {
         return this.persistenceService;
     }
 }

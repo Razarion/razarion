@@ -15,6 +15,7 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.ServerState;
+import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -201,7 +202,8 @@ public class ServerMgmt {
     private void restartPlanet(LifecyclePacket.Type type) {
         try {
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
-            serverTerrainShapeService.createTerrainShape(serverGameEngineCrudPersistence.read().get(0).getPlanetConfigId());
+            ServerGameEngineConfig serverGameEngineConfig = serverGameEngineCrudPersistence.read().get(0);
+            serverTerrainShapeService.createTerrainShape(serverGameEngineConfig.getBotConfigs(), serverGameEngineConfig.getPlanetConfigId());
             serverGameEngineControl.restartPlanet();
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(type));
         } catch (Throwable e) {

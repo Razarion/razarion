@@ -69,7 +69,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.NO_GAME_UI_CONTROL_CONF
  * 03.08.2016.
  */
 @Singleton
-public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUiContextConfig, GameUiContextEntity> {
+public class GameUiContextCrudPersistence extends AbstractConfigCrudPersistence<GameUiContextConfig, GameUiContextEntity> {
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -104,6 +104,8 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
     private InventoryItemCrudPersistence inventoryPersistence;
     @Inject
     private ImagePersistence imagePersistence;
+    @Inject
+    private BabylonMaterialCrudPersistence babylonMaterialCrudPersistence;
 
     public GameUiContextCrudPersistence() {
         super(GameUiContextEntity.class, GameUiContextEntity_.id, GameUiContextEntity_.internalName);
@@ -200,7 +202,9 @@ public class GameUiContextCrudPersistence extends AbstractCrudPersistence<GameUi
         if (sceneConfig.getBotConfigs() != null) {
             for (BotConfig botConfig : sceneConfig.getBotConfigs()) {
                 BotConfigEntity botConfigEntity = new BotConfigEntity();
-                botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, botConfig);
+                botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence,
+                        babylonMaterialCrudPersistence,
+                        botConfig);
                 sceneEntity.addBotConfigEntity(botConfigEntity);
             }
         }

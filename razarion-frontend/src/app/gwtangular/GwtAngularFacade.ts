@@ -1,6 +1,6 @@
 // ---------- Root ----------
 
-import {ConditionTrigger} from "../generated/razarion-share";
+import { ConditionTrigger } from "../generated/razarion-share";
 
 export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
@@ -32,7 +32,7 @@ export abstract class GwtAngularFacade {
 // ---------- Boot ----------
 
 export interface GwtAngularBoot {
-  loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[]): Promise<void>;
+  loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[], babylonMaterialIds: number[]): Promise<void>;
 }
 
 // ---------- Common ----------
@@ -482,7 +482,17 @@ export interface TerrainTile {
 
   getTerrainTileObjectLists(): TerrainTileObjectList[];
 
+  getBabylonDecals(): BabylonDecal[];
+
   getIndex(): Index;
+}
+
+export interface BabylonDecal {
+  babylonMaterialId: number;
+  xPos: number;
+  yPos: number;
+  xSize: number;
+  ySize: number;
 }
 
 export enum Diplomacy {

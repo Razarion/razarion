@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.ParticleSystemEntity;
 import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
@@ -13,7 +13,7 @@ public class ParticleSystemEditorControllerImpl extends AbstractCrudController<P
     private ParticleSystemCrudPersistence particleSystemCrudPersistence;
 
     @Override
-    protected AbstractCrudPersistence<ParticleSystemConfig, ParticleSystemEntity> getCrudPersistence() {
+    protected AbstractConfigCrudPersistence<ParticleSystemConfig, ParticleSystemEntity> getCrudPersistence() {
         return particleSystemCrudPersistence;
     }
 }

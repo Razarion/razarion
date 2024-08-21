@@ -15,8 +15,6 @@ import java.util.List;
 @Singleton
 public class ChatUiService {
     private static final int MESSAGE_COUNT = 100;
-    @Inject
-    private Instance<ChatCockpit> instance;
     private ChatCockpit chatCockpit;
     private List<ChatMessage> chatMessages = new ArrayList<>();
 

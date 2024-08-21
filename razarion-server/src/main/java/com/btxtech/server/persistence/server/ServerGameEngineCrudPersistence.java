@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.server;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
+import com.btxtech.server.persistence.BabylonMaterialCrudPersistence;
 import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
@@ -52,7 +53,7 @@ import java.util.stream.Collectors;
  * 09.05.2017.
  */
 @Singleton
-public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<ServerGameEngineConfig, ServerGameEngineConfigEntity> {
+public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersistence<ServerGameEngineConfig, ServerGameEngineConfigEntity> {
     private final Logger logger = Logger.getLogger(ServerGameEngineCrudPersistence.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
@@ -68,6 +69,8 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
     private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private BoxItemTypeCrudPersistence boxItemTypeCrudPersistence;
+    @Inject
+    private BabylonMaterialCrudPersistence babylonMaterialCrudPersistence;
 
     public ServerGameEngineCrudPersistence() {
         super(ServerGameEngineConfigEntity.class, ServerGameEngineConfigEntity_.id, ServerGameEngineConfigEntity_.internalName);
@@ -80,7 +83,14 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
 
     @Override
     protected void fromConfig(ServerGameEngineConfig config, ServerGameEngineConfigEntity entity) {
-        entity.fromServerGameEngineConfig(config, planetCrudPersistence, resourceItemTypeCrudPersistence, levelCrudPersistence, baseItemTypeCrudPersistence, botConfigEntityPersistence, Locale.GERMAN);
+        entity.fromServerGameEngineConfig(config,
+                planetCrudPersistence,
+                resourceItemTypeCrudPersistence,
+                levelCrudPersistence,
+                baseItemTypeCrudPersistence,
+                botConfigEntityPersistence,
+                babylonMaterialCrudPersistence,
+                Locale.GERMAN);
     }
 
     @Transactional
@@ -220,7 +230,7 @@ public class ServerGameEngineCrudPersistence extends AbstractCrudPersistence<Ser
                 botConfigs,
                 ServerGameEngineConfigEntity::getBotConfigEntities,
                 BotConfig::getId,
-                (botConfig, botConfigEntity) -> botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, botConfig),
+                (botConfig, botConfigEntity) -> botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, babylonMaterialCrudPersistence, botConfig),
                 BotConfigEntity::new,
                 BotConfigEntity::getId);
     }

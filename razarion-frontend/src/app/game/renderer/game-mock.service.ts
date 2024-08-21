@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import {
   Alarm,
+  BabylonDecal,
   BabylonTerrainTile,
   BaseItemType,
   BaseItemUiService,
@@ -597,6 +598,10 @@ export class GameMockService {
               }
 
               getTerrainTileObjectLists(): TerrainTileObjectList[] {
+                return [];
+              }
+
+              getBabylonDecals(): BabylonDecal[] {
                 return [];
               }
 

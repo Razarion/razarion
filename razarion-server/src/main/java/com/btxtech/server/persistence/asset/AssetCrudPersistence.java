@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.asset;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
 import com.btxtech.shared.datatypes.asset.AssetConfig;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * 06.07.2016.
  */
 @Singleton
-public class AssetCrudPersistence extends AbstractCrudPersistence<AssetConfig, AssetConfigEntity> {
+public class AssetCrudPersistence extends AbstractConfigCrudPersistence<AssetConfig, AssetConfigEntity> {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject

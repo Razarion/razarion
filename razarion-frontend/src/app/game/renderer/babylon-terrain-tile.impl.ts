@@ -8,7 +8,7 @@ import {
 import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
 import { BabylonModelService } from "./babylon-model.service";
 import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
-import { ActionManager, Color3, ExecuteCodeAction, Mesh, MeshBuilder, Node, Ray, StandardMaterial, Texture, TransformNode, Vector3, VertexData } from "@babylonjs/core";
+import { ActionManager, Color3, ExecuteCodeAction, Mesh, MeshBuilder, Node, PBRMaterial, Ray, StandardMaterial, Texture, TransformNode, Vector3, VertexData } from "@babylonjs/core";
 import { BabylonRenderServiceAccessImpl, RazarionMetadataType } from "./babylon-render-service-access-impl.service";
 import { Nullable } from "@babylonjs/core/types";
 import { ActionService, SelectionInfo } from "../action.service";
@@ -33,7 +33,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     private gwtAngularService: GwtAngularService,
     private rendererService: BabylonRenderServiceAccessImpl,
     actionService: ActionService,
-    babylonModelService: BabylonModelService,
+    private babylonModelService: BabylonModelService,
     private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
 
@@ -75,7 +75,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     let waterConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getWaterConfig(GwtHelper.gwtIssueNumber(terrainTile.getWaterConfigId()));
     this.threeJsWaterRenderService.setup(terrainTile.getIndex(), waterConfig, this.container);
 
-    if (terrainTile.getTerrainTileObjectLists() !== null) {
+    if (terrainTile.getTerrainTileObjectLists()) {
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
         try {
           let terrainObjectConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
@@ -109,6 +109,28 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
 
     this.cursorTypeHandler(actionService.setupSelectionInfo());
+
+    if (terrainTile.getBabylonDecals()) {
+      terrainTile.getBabylonDecals().forEach(babylonDecal => {
+        const material = this.babylonModelService.getBabylonMaterial(babylonDecal.babylonMaterialId);
+
+        let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(babylonDecal.xPos, babylonDecal.yPos));
+        if (pickingInfo && pickingInfo.hit) {
+          const decal = MeshBuilder.CreateDecal("Bot ground", this.groundMesh, {
+            position: new Vector3(babylonDecal.xPos, pickingInfo.pickedPoint!.y, babylonDecal.yPos),
+            size: new Vector3(babylonDecal.xSize, babylonDecal.ySize, 10)
+          });
+          decal.material = material;
+          decal.setParent(this.container);
+          decal.receiveShadows = true;
+          decal.actionManager = actionManager;
+          BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(decal, RazarionMetadataType.GROUND, undefined, undefined);
+        } else {
+          console.warn(`Can not create BabylonDecals ${babylonDecal}`)
+        }
+
+      });
+    }
   }
 
   public static createTerrainObject(terrainObjectModel: TerrainObjectModel, terrainObjectConfig: TerrainObjectConfig, babylonModelService: BabylonModelService, parent: Nullable<Node>): TransformNode {

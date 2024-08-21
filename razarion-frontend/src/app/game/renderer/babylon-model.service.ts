@@ -7,8 +7,10 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { MessageService } from "primeng/api";
 import {
   AssetContainer,
+  Color3,
   IInspectable,
   InspectableType,
+  Material,
   Mesh,
   Node,
   NodeMaterial,
@@ -21,20 +23,28 @@ import { GLTFFileLoader } from "@babylonjs/loaders";
 import JSZip from "jszip";
 import { BabylonJsUtils } from "./babylon-js.utils";
 import Type = ThreeJsModelConfig.Type;
+import { BabylonMaterialControllerClient } from "src/app/generated/razarion-share";
+import { TypescriptGenerator } from "src/app/backend/typescript-generator";
+import { SimpleMaterial } from "@babylonjs/materials";
 
 @Injectable()
 export class BabylonModelService {
   private assetContainers: Map<number, AssetContainer> = new Map();
   private nodeMaterials: Map<number, NodeMaterial> = new Map();
+  private babylonMaterials: Map<number, Material> = new Map();
   private gwtAngularService!: GwtAngularService;
   private scene!: Scene;
   private threeJsModelConfigs!: ThreeJsModelConfig[];
   private threeJsModelConfigMap: Map<number, ThreeJsModelConfig> = new Map();
   private particleSystemConfigs: Map<number, ParticleSystemConfig> = new Map();
   private particleSystemJson: Map<number, any> = new Map();
+  private babylonMaterialsLoaded = false;
+  private gwtResolver: any;
+  private babylonMaterialControllerClient: BabylonMaterialControllerClient;
 
   constructor(private httpClient: HttpClient, private messageService: MessageService) {
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
+    this.babylonMaterialControllerClient = new BabylonMaterialControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
   }
 
   init(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[], gwtAngularService: GwtAngularService): Promise<void> {
@@ -44,14 +54,20 @@ export class BabylonModelService {
 
     this.threeJsModelConfigs.forEach(threeJsModelConfig => this.threeJsModelConfigMap.set(threeJsModelConfig.getId(), threeJsModelConfig))
 
+    this.loadBabylonMaterials();
+
     return new Promise<void>((resolve, reject) => {
       try {
         let loadingCount = this.threeJsModelConfigs.length;
 
-        function handleResolve() {
+        let handleResolve = () => {
           loadingCount--;
           if (loadingCount === 0) {
-            resolve();
+            if (this.babylonMaterialsLoaded) {
+              resolve();
+            } else {
+              this.gwtResolver = resolve;
+            }
           }
         }
 
@@ -84,6 +100,69 @@ export class BabylonModelService {
         reject(error);
       }
     });
+  }
+
+  private loadBabylonMaterials() {
+    this.babylonMaterialControllerClient.readAll()
+      .then(materials => {
+        if (materials.length === 0) {
+          this.babylonMaterialsLoaded = true;
+          if (this.gwtResolver) {
+            this.gwtResolver();
+          }
+          return;
+        }
+
+        const materialLoadingControl = {
+          loadingCount: materials.length
+        }
+
+        materials.forEach(material => {
+          this.loadMaterial(material.id, materialLoadingControl);
+        });
+      }).catch(err => {
+        console.warn(err);
+      });
+  }
+
+  private loadMaterial(materialId: number, materialLoadingControl: { loadingCount: number; }) {
+    this.babylonMaterialControllerClient.getData(materialId)
+      .then(data => {
+        try {
+          let material = Material.Parse(data, this.scene, "/rest/images/");
+          if (material) {
+            this.babylonMaterials.set(materialId, material);
+          } else {
+            console.error(`Error parsing material`);
+          }
+          materialLoadingControl.loadingCount--;
+          if (materialLoadingControl.loadingCount <= 0) {
+            this.babylonMaterialsLoaded = true;
+            if (this.gwtResolver) {
+              this.gwtResolver();
+            }
+          }
+        } catch (e) {
+          console.error(`Error parsing material '${e}'`);
+          materialLoadingControl.loadingCount--;
+          if (materialLoadingControl.loadingCount <= 0) {
+            this.babylonMaterialsLoaded = true;
+            if (this.gwtResolver) {
+              this.gwtResolver();
+            }
+          }
+        }
+      })
+      .catch(err => {
+        console.error(`Error loading Babylon file '${err}'`);
+        materialLoadingControl.loadingCount--;
+        if (materialLoadingControl.loadingCount <= 0) {
+          this.babylonMaterialsLoaded = true;
+          if (this.gwtResolver) {
+            this.gwtResolver();
+          }
+        }
+      })
   }
 
   cloneMesh(threeJsModelPackConfigId: number, parent: Node | null): TransformNode {
@@ -344,6 +423,27 @@ export class BabylonModelService {
           });
         }
       })
+  }
+
+  getBabylonMaterial(babylonMaterialId: number): Material {
+    if (babylonMaterialId === undefined) {
+      throw new Error(`getBabylonMaterial(): babylonMaterialId undefined`);
+    }
+    babylonMaterialId = GwtHelper.gwtIssueNumber(babylonMaterialId);
+
+    let material: Material = <NodeMaterial>this.babylonMaterials.get(babylonMaterialId);
+    if (!material) {
+      console.error(`No material for babylonMaterialId '${babylonMaterialId}'`);
+      material = this.createMissingBabylonMaterial(babylonMaterialId);
+    }
+
+    return material;
+  }
+
+  private createMissingBabylonMaterial(babylonMaterialId: number): Material {
+    let material = new SimpleMaterial(`Missin material '${babylonMaterialId}'`, this.scene);
+    material.diffuseColor = new Color3(1, 0, 0);
+    return material;
   }
 
   dumpAll(): Promise<JSZip> {

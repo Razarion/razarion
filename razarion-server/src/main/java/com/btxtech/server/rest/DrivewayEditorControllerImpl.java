@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.DrivewayCrudPersistence;
 import com.btxtech.server.persistence.surface.DrivewayConfigEntity;
 import com.btxtech.shared.dto.DrivewayConfig;
@@ -13,7 +13,7 @@ public class DrivewayEditorControllerImpl extends AbstractCrudController<Drivewa
     private DrivewayCrudPersistence drivewayCrudPersistence;
 
     @Override
-    protected AbstractCrudPersistence<DrivewayConfig, DrivewayConfigEntity> getCrudPersistence() {
+    protected AbstractConfigCrudPersistence<DrivewayConfig, DrivewayConfigEntity> getCrudPersistence() {
         return drivewayCrudPersistence;
     }
 }

@@ -1,8 +1,7 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 
@@ -10,7 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class ResourceItemTypeCrudPersistence extends AbstractCrudPersistence<ResourceItemType, ResourceItemTypeEntity> {
+public class ResourceItemTypeCrudPersistence extends AbstractConfigCrudPersistence<ResourceItemType, ResourceItemTypeEntity> {
     @Inject
     private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
     @Inject

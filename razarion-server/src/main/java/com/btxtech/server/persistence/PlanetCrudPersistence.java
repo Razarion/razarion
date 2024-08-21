@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * 08.07.2016.
  */
 @Singleton
-public class PlanetCrudPersistence extends AbstractCrudPersistence<PlanetConfig, PlanetEntity> {
+public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetConfig, PlanetEntity> {
     @Inject
     private TerrainObjectCrudPersistence terrainObjectCrudPersistence;
     @Inject

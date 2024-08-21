@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.GroundCrudPersistence;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.shared.dto.GroundConfig;
@@ -13,7 +13,7 @@ public class GroundEditorControllerImpl extends AbstractCrudController<GroundCon
     private GroundCrudPersistence groundCrudPersistence;
 
     @Override
-    protected AbstractCrudPersistence<GroundConfig, GroundConfigEntity> getCrudPersistence() {
+    protected AbstractConfigCrudPersistence<GroundConfig, GroundConfigEntity> getCrudPersistence() {
         return groundCrudPersistence;
     }
 }

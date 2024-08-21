@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
@@ -15,7 +15,7 @@ public class ThreeJsModelPackEditorControllerImpl extends AbstractCrudController
     private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
 
     @Override
-    protected AbstractCrudPersistence<ThreeJsModelPackConfig, ThreeJsModelPackConfigEntity> getCrudPersistence() {
+    protected AbstractConfigCrudPersistence<ThreeJsModelPackConfig, ThreeJsModelPackConfigEntity> getCrudPersistence() {
         return threeJsModelPackCrudPersistence;
     }
 

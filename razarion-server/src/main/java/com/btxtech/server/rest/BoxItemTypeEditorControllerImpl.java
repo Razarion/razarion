@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -17,7 +17,7 @@ public class BoxItemTypeEditorControllerImpl extends AbstractCrudController<BoxI
     private BoxItemTypeCrudPersistence persistenceService;
 
     @Override
-    protected AbstractCrudPersistence<BoxItemType, BoxItemTypeEntity> getCrudPersistence() {
+    protected AbstractConfigCrudPersistence<BoxItemType, BoxItemTypeEntity> getCrudPersistence() {
         return persistenceService;
     }
 }

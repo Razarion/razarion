@@ -52,6 +52,12 @@
     </div>
   </div>
   <div class="grid grid-razarion-editor">
+    <span class="col-3">Bot ground</span>
+    <div class="col-9">
+      <babylon-material *ngIf="selectedBot" [(babylonMaterialId)]="selectedBot!.groundBabylonMaterialId"></babylon-material>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
     <span class="col-3">Action delay [ms]</span>
     <div class="col-9">
       <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.actionDelay"></p-inputNumber>

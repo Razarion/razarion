@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.server;
 
+import com.btxtech.server.persistence.BabylonMaterialCrudPersistence;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
@@ -79,7 +80,14 @@ public class ServerGameEngineConfigEntity {
                 .boxRegionConfigs(toConfigList(boxRegionConfigs, ServerBoxRegionConfigEntity::toBoxRegionConfig));
     }
 
-    public void fromServerGameEngineConfig(ServerGameEngineConfig config, PlanetCrudPersistence planetCrudPersistence, ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence, LevelCrudPersistence levelCrudPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotConfigEntityPersistence botConfigEntityPersistence, Locale locale) {
+    public void fromServerGameEngineConfig(ServerGameEngineConfig config,
+                                           PlanetCrudPersistence planetCrudPersistence,
+                                           ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence,
+                                           LevelCrudPersistence levelCrudPersistence,
+                                           BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
+                                           BotConfigEntityPersistence botConfigEntityPersistence,
+                                           BabylonMaterialCrudPersistence babylonMaterialCrudPersistence,
+                                           Locale locale) {
         internalName = config.getInternalName();
         planetEntity = planetCrudPersistence.getEntity(config.getPlanetConfigId());
         resourceRegionConfigs = fromConfigs(resourceRegionConfigs,
@@ -93,7 +101,7 @@ public class ServerGameEngineConfigEntity {
         botConfigs = fromConfigs(botConfigs,
                 config.getBotConfigs(),
                 BotConfigEntity::new,
-                (botConfigEntity, botConfig) -> botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, botConfig));
+                (botConfigEntity, botConfig) -> botConfigEntity.fromBotConfig(baseItemTypeCrudPersistence, babylonMaterialCrudPersistence, botConfig));
         serverLevelQuestEntities = fromConfigs(serverLevelQuestEntities,
                 config.getServerLevelQuestConfigs(),
                 ServerLevelQuestEntity::new,

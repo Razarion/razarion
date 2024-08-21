@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Singleton
-public class ThreeJsModelCrudPersistence extends AbstractCrudPersistence<ThreeJsModelConfig, ThreeJsModelConfigEntity> {
+public class ThreeJsModelCrudPersistence extends AbstractConfigCrudPersistence<ThreeJsModelConfig, ThreeJsModelConfigEntity> {
     @PersistenceContext
     private EntityManager entityManager;
 

@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class WaterCrudPersistence extends AbstractCrudPersistence<WaterConfig, WaterConfigEntity> {
+public class WaterCrudPersistence extends AbstractConfigCrudPersistence<WaterConfig, WaterConfigEntity> {
     @Inject
     private ImagePersistence imagePersistence;
 

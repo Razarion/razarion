@@ -20,6 +20,10 @@ public interface TerrainUtil {
     double WATER_LEVEL = 0;
     double HEIGHT_DEFAULT = 0.5;
 
+    static Index terrainPositionToTileIndex(DecimalPosition terrainPosition) {
+        return terrainPosition.divide(NODE_X_COUNT, NODE_Y_COUNT).toIndexFloor();
+    }
+
     static Index terrainPositionToNodeIndex(DecimalPosition terrainPosition) {
         return terrainPosition.divide(NODE_X_DISTANCE, NODE_Y_DISTANCE).toIndex();
     }

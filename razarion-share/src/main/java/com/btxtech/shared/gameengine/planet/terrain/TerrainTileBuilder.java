@@ -20,8 +20,9 @@ public class TerrainTileBuilder {
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private TerrainTile terrainTile;
     private final List<TerrainTileObjectList> terrainTileObjectLists = new ArrayList<>();
+    private BabylonDecal[] babylonDecals;
 
-    public void init(Index terrainTileIndex, Rectangle2D playGround) {
+    public void init(Index terrainTileIndex) {
         terrainTile = new TerrainTile();
         terrainTile.setIndex(terrainTileIndex);
         terrainTile.setGroundHeightMap(nativeTerrainShapeAccess.createTileGroundHeightMap(terrainTileIndex));
@@ -33,10 +34,15 @@ public class TerrainTileBuilder {
         }
         terrainTile.setGroundConfigId(planetConfig.getGroundConfigId());
         terrainTile.setWaterConfigId(planetConfig.getWaterConfigId());
+        terrainTile.setBabylonDecals(babylonDecals);
         return terrainTile;
     }
 
     public void addTerrainTileObjectList(TerrainTileObjectList terrainTileObjectList) {
         terrainTileObjectLists.add(terrainTileObjectList);
+    }
+
+    public void setBabylonDecals(BabylonDecal[] babylonDecals) {
+        this.babylonDecals = babylonDecals;
     }
 }

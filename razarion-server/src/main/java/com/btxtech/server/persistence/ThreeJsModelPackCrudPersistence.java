@@ -1,13 +1,11 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
-import com.btxtech.shared.dto.ObjectNameId;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -17,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Singleton
-public class ThreeJsModelPackCrudPersistence extends AbstractCrudPersistence<ThreeJsModelPackConfig, ThreeJsModelPackConfigEntity> {
+public class ThreeJsModelPackCrudPersistence extends AbstractConfigCrudPersistence<ThreeJsModelPackConfig, ThreeJsModelPackConfigEntity> {
     @Inject
     private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
     @PersistenceContext

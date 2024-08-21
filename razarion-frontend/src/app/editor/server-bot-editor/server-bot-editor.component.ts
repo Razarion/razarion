@@ -46,7 +46,8 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
       minInactiveMs: null,
       name: "",
       npc: false,
-      realm: null
+      realm: null,
+      groundBabylonMaterialId: null
     }
     this.serverGameEngineConfig!.botConfigs.push(this.selectedBot)
   }

@@ -129,6 +129,8 @@ import { FixHeightBrushComponent } from './editor/terrain-editor/brushes/fix-hei
 import {FlattenBrushComponent} from "./editor/terrain-editor/brushes/flattem-brush.component";
 import { ParticleSystemEditorComponent } from './editor/crud-editors/particle-system-editor/particle-system-editor.component';
 import { VertexEditorComponent } from './editor/common/vertex-editor/vertex-editor.component';
+import { BabylonMaterialEditorComponent } from './editor/crud-editors/babylon-material-editor/babylon-material-editor.component';
+import { BabylonMaterialComponent } from './editor/common/babylon-material/babylon-material.component';
 
 @NgModule({
   declarations: [
@@ -211,7 +213,9 @@ import { VertexEditorComponent } from './editor/common/vertex-editor/vertex-edit
     FlattenBrushComponent,
     ParticleSystemComponent,
     ParticleSystemEditorComponent,
-    VertexEditorComponent
+    VertexEditorComponent,
+    BabylonMaterialEditorComponent,
+    BabylonMaterialComponent
   ],
   imports: [
     BrowserModule,

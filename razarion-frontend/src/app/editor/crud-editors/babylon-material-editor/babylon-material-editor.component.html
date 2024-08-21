@@ -1,0 +1,50 @@
+<div style="width: 40em">
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Id</span>
+        <div class="col-8">
+            <p-inputNumber [disabled]="true" [(ngModel)]="babylonMaterialEntity.id"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Internal name</span>
+        <div class="col-8">
+            <input [(ngModel)]="babylonMaterialEntity.internalName" type="text"
+                class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Import material</span>
+        <div class="col-8">
+            <p-fileUpload #fileUploadElement chooseLabel="Choose..." chooseIcon="pi pi-folder-open" mode="basic"
+                styleClass="p-button-sm" [auto]=true [customUpload]=true (uploadHandler)="onImportMaterial($event)">
+            </p-fileUpload>
+        </div>
+    </div>
+
+    <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-cloud-upload mr-2"></i>
+          <b>Edit selected</b>
+        </div>
+      </p-divider>
+      <div class="grid grid-razarion-editor">
+        <span class="col-4">Selected material</span>
+        <div class="col-8">
+            <span>{{selectedMaterial?.name}}</span>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Selected material type</span>
+        <div class="col-8">
+            <span>{{selectedMaterial?.getClassName()}}</span>
+        </div>
+    </div>
+    <div class="grid grid-razarion-editor">
+        <span class="col-4">Upload selected material</span>
+        <div class="col-8">
+            <p-button icon="pi pi-upload" (onClick)="uploadSelectedMaterial()"></p-button>
+        </div>
+    </div>
+
+
+</div>

@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainObjectModel;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
@@ -394,9 +395,26 @@ public class WorkerMarshaller {
         array.push(indexArray);
         array.push(terrainTile.getGroundConfigId());
         array.push(terrainTile.getWaterConfigId());
+        array.push(marshallBabylonDecals(terrainTile.getBabylonDecals()));
         array.push(terrainTile.getGroundHeightMap());
         array.push(marshallTerrainTileObjectList(terrainTile.getTerrainTileObjectLists()));
         return array;
+    }
+
+    private static Object marshallBabylonDecals(BabylonDecal[] babylonDecals) {
+        Array<JsPropertyMapOfAny> result = new Array<>();
+        if (babylonDecals != null) {
+            for (BabylonDecal babylonDecal : babylonDecals) {
+                JsPropertyMapOfAny mapOfBabylonDecal = JsPropertyMap.of();
+                mapOfBabylonDecal.set("babylonMaterialId", babylonDecal.babylonMaterialId);
+                mapOfBabylonDecal.set("xPos", babylonDecal.xPos);
+                mapOfBabylonDecal.set("yPos", babylonDecal.yPos);
+                mapOfBabylonDecal.set("xSize", babylonDecal.xSize);
+                mapOfBabylonDecal.set("ySize", babylonDecal.ySize);
+                result.push(mapOfBabylonDecal);
+            }
+        }
+        return result;
     }
 
     private static Object marshallTerrainTileObjectList(TerrainTileObjectList[] terrainTileObjectLists) {
@@ -433,9 +451,26 @@ public class WorkerMarshaller {
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
         terrainTile.setGroundConfigId(array[1].asInt()); // GWT DevMode crashes here
         terrainTile.setWaterConfigId(array[2].asInt());
-        terrainTile.setGroundHeightMap(Js.uncheckedCast(array[3].asArrayLike()));
-        terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[4]));
+        terrainTile.setBabylonDecals(demarshallBabylonDecals(array[3]));
+        terrainTile.setGroundHeightMap(Js.uncheckedCast(array[4].asArrayLike()));
+        terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[5]));
         return terrainTile;
+    }
+
+    private static BabylonDecal[] demarshallBabylonDecals(Any any) {
+        JsPropertyMapOfAny[] array = Js.cast(any);
+        if (array.length == 0) {
+            return null;
+        }
+        return Arrays.stream(array).map(anyBabylonDecal -> {
+            BabylonDecal babylonDecal = new BabylonDecal();
+            babylonDecal.babylonMaterialId = ((Any) Js.uncheckedCast(anyBabylonDecal.get("babylonMaterialId"))).asInt();
+            babylonDecal.xPos = ((Any) Js.uncheckedCast(anyBabylonDecal.get("xPos"))).asDouble();
+            babylonDecal.yPos = ((Any) Js.uncheckedCast(anyBabylonDecal.get("yPos"))).asDouble();
+            babylonDecal.xSize = ((Any) Js.uncheckedCast(anyBabylonDecal.get("xSize"))).asDouble();
+            babylonDecal.ySize = ((Any) Js.uncheckedCast(anyBabylonDecal.get("ySize"))).asDouble();
+            return babylonDecal;
+        }).toArray(BabylonDecal[]::new);
     }
 
     private static TerrainTileObjectList[] demarshallTerrainTileObjectLists(Any any) {

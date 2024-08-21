@@ -1,12 +1,14 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.inject.Instance;
@@ -15,10 +17,8 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -33,8 +33,10 @@ public class BotService {
     @Inject
     private ExceptionHandler exceptionHandler;
     private final Collection<BotRunner> botRunners = new ArrayList<>();
+    private Collection<BotConfig> botConfigs;
 
     public void startBots(Collection<BotConfig> botConfigs) {
+        this.botConfigs = botConfigs;
         if (botConfigs != null) {
             botConfigs.forEach(botConfig -> {
                 try {
@@ -153,5 +155,44 @@ public class BotService {
                 }
             }
         }
+    }
+
+    static public List<BabylonDecal> generateBotDecals(List<BotConfig> botConfigs) {
+        List<BabylonDecal> babylonDecals = new ArrayList<>();
+        if (botConfigs != null) {
+            botConfigs.forEach(botConfig -> {
+                if (botConfig.getGroundBabylonMaterialId() != null && botConfig.getRealm() != null) {
+                    PlaceConfig placeConfig = botConfig.getRealm();
+                    if (placeConfig.getPolygon2D() != null) {
+                        Rectangle2D aabb = placeConfig.getPolygon2D().toAabb();
+                        babylonDecals.add(createBaseBabylonDecal(botConfig,
+                                aabb.center(),
+                                aabb.width(),
+                                aabb.height()));
+                    } else if (placeConfig.getPosition() != null) {
+                        if (placeConfig.getRadius() != null) {
+                            babylonDecals.add(createBaseBabylonDecal(botConfig,
+                                    placeConfig.getPosition(),
+                                    placeConfig.getRadius() * 2,
+                                    placeConfig.getRadius() * 2));
+                        }
+                    } else {
+                        throw new IllegalArgumentException("Illegal PlaceConfig: to find a random place, a polygon or a position must be set");
+                    }
+
+                }
+            });
+        }
+        return babylonDecals;
+    }
+
+    private static BabylonDecal createBaseBabylonDecal(BotConfig botConfig, DecimalPosition center, double width, double height) {
+        BabylonDecal babylonDecal = new BabylonDecal();
+        babylonDecal.babylonMaterialId = botConfig.getGroundBabylonMaterialId();
+        babylonDecal.xPos = center.getX();
+        babylonDecal.yPos = center.getY();
+        babylonDecal.xSize = width;
+        babylonDecal.ySize = height;
+        return babylonDecal;
     }
 }

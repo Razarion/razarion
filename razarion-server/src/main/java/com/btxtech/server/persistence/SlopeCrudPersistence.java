@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class SlopeCrudPersistence extends AbstractCrudPersistence<SlopeConfig, SlopeConfigEntity> {
+public class SlopeCrudPersistence extends AbstractConfigCrudPersistence<SlopeConfig, SlopeConfigEntity> {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject

@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.persistence.AbstractCrudPersistence;
+import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
@@ -10,7 +10,6 @@ import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.server.persistence.asset.MeshContainerCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -19,7 +18,7 @@ import javax.inject.Singleton;
  * 06.07.2016.
  */
 @Singleton
-public class BaseItemTypeCrudPersistence extends AbstractCrudPersistence<BaseItemType, BaseItemTypeEntity> {
+public class BaseItemTypeCrudPersistence extends AbstractConfigCrudPersistence<BaseItemType, BaseItemTypeEntity> {
     @Inject
     private Shape3DCrudPersistence shape3DPersistence;
     @Inject

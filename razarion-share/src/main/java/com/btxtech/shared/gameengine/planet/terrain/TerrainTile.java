@@ -16,6 +16,7 @@ public class TerrainTile {
     private int groundConfigId;
     private int waterConfigId;
     private Uint16ArrayEmu groundHeightMap;
+    private BabylonDecal[] babylonDecals;
 
     public Index getIndex() {
         return index;
@@ -72,9 +73,17 @@ public class TerrainTile {
         this.groundHeightMap = groundHeightMap;
     }
 
-    @SuppressWarnings("unused") // Used ba angular
     public TerrainTile groundHeightMap(Uint16ArrayEmu groundHeightMap) {
         setGroundHeightMap(groundHeightMap);
         return this;
+    }
+
+    @SuppressWarnings("unused") // Used ba angular
+    public BabylonDecal[] getBabylonDecals() {
+        return babylonDecals;
+    }
+
+    public void setBabylonDecals(BabylonDecal[] babylonDecals) {
+        this.babylonDecals = babylonDecals;
     }
 }

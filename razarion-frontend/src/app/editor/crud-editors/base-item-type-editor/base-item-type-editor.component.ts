@@ -19,7 +19,7 @@ export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemT
   }
 
   getId(): number {
-    throw this.baseItemType!.id;
+    return this.baseItemType!.id;
   }
 
   onBuilderTypeChange(avtive: boolean) {

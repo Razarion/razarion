@@ -2,7 +2,6 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
-import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -25,7 +24,7 @@ import java.util.Map;
  * 17.08.2016.
  */
 @Singleton
-public class Shape3DCrudPersistence extends AbstractCrudPersistence<Shape3DConfig, ColladaEntity> {
+public class Shape3DCrudPersistence extends AbstractConfigCrudPersistence<Shape3DConfig, ColladaEntity> {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
