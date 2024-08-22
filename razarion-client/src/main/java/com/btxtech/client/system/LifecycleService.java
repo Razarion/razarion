@@ -20,7 +20,6 @@ import com.btxtech.uiservice.effects.TrailService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
-import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
@@ -69,8 +68,6 @@ public class LifecycleService {
     private BoxUiService boxUiService;
     @Inject
     private ResourceUiService resourceUiService;
-    @Inject
-    private ProjectileUiService projectileUiService;
     @Inject
     private TrailService trailService;
     @Inject
@@ -174,7 +171,6 @@ public class LifecycleService {
         clientPerformanceTrackerService.stop();
         perfmonService.stop();
         selectionHandler.clearSelection(true);
-        projectileUiService.clear();
         trailService.clear();
         terrainUiService.clear();
         audioService.muteTerrainLoopAudio();

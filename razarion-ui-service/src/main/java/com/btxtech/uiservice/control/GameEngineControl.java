@@ -32,12 +32,10 @@ import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
-import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
-import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.InputService;
@@ -68,10 +66,6 @@ public abstract class GameEngineControl {
     private GameUiControl gameUiControl;
     @Inject
     private SelectionHandler selectionHandler;
-    @Inject
-    private EffectVisualizationService effectVisualizationService;
-    @Inject
-    private ProjectileUiService projectileUiService;
     @Inject
     private UserUiService userUiService;
     @Inject
@@ -237,7 +231,7 @@ public abstract class GameEngineControl {
             gameUiControl.setGameInfo(nativeTickInfo);
             if (nativeTickInfo.removeSyncBaseItemIds != null) {
                 selectionHandler.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
-                effectVisualizationService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
+                // effectVisualizationService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -340,7 +334,7 @@ public abstract class GameEngineControl {
                 baseItemUiService.onProjectileFired((int) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
                 break;
             case PROJECTILE_DETONATION:
-                effectVisualizationService.onProjectileDetonation((int) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
+                //effectVisualizationService.onProjectileDetonation((int) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
                 break;
             case PERFMON_RESPONSE:
                 onPerfmonResponse((Collection<PerfmonStatistic>) controlPackage.getData(0));

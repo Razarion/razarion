@@ -3,7 +3,6 @@ package com.btxtech.uiservice.item;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -25,7 +24,6 @@ import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
-import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.MarkerConfig;
@@ -70,8 +68,6 @@ public class BaseItemUiService {
     private ItemCockpitService itemCockpitService;
     @Inject
     private ModalDialogManager modalDialogManager;
-    @Inject
-    private EffectVisualizationService effectVisualizationService;
     @Inject
     private UserUiService userUiService;
     @Inject
@@ -220,7 +216,7 @@ public class BaseItemUiService {
                 // Demolition
                 if (!isSpawning && isBuildup && !isHealthy) {
                     if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
-                        effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, baseItemType);
+                        // effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, baseItemType);
                     }
                     if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
                         // TODO weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
