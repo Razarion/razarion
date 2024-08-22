@@ -49,6 +49,9 @@ public class WeaponTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ParticleSystemEntity muzzleFlashParticleSystem;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ParticleSystemEntity trailParticleSystem;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private TurretTypeEntity turretType;
 
@@ -60,7 +63,8 @@ public class WeaponTypeEntity {
                 .reloadTime(reloadTime)
                 .projectileSpeed(projectileSpeed)
                 .muzzleFlashParticleSystemConfigId(extractId(muzzleFlashParticleSystem, ParticleSystemEntity::getId))
-                .muzzleFlashAudioItemConfigId(extractId(muzzleFlashAudioLibraryEntity, AudioLibraryEntity::getId));
+                .muzzleFlashAudioItemConfigId(extractId(muzzleFlashAudioLibraryEntity, AudioLibraryEntity::getId))
+                .trailParticleSystemConfigId(extractId(trailParticleSystem, ParticleSystemEntity::getId));
         if (disallowedItemTypes != null && !disallowedItemTypes.isEmpty()) {
             List<Integer> disallowedIds = new ArrayList<>();
             for (BaseItemTypeEntity baseItemTypeEntity : disallowedItemTypes) {
@@ -101,7 +105,7 @@ public class WeaponTypeEntity {
         } else {
             turretType = null;
         }
-
+        trailParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getTrailParticleSystemConfigId());
     }
 
     @Override

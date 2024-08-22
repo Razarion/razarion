@@ -38,6 +38,8 @@ public class WeaponType {
     private Integer muzzleFlashParticleSystemConfigId;
     private TurretType turretType;
     private Integer muzzleFlashAudioItemConfigId;
+    @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
+    private Integer trailParticleSystemConfigId;
 
     public double getRange() {
         return range;
@@ -103,6 +105,14 @@ public class WeaponType {
         this.muzzleFlashParticleSystemConfigId = muzzleFlashParticleSystemConfigId;
     }
 
+    public @Nullable Integer getTrailParticleSystemConfigId() {
+        return trailParticleSystemConfigId;
+    }
+
+    public void setTrailParticleSystemConfigId(@Nullable Integer trailParticleSystemConfigId) {
+        this.trailParticleSystemConfigId = trailParticleSystemConfigId;
+    }
+
     public TurretType getTurretType() {
         return turretType;
     }
@@ -153,6 +163,11 @@ public class WeaponType {
 
     public WeaponType turretType(TurretType turretType) {
         setTurretType(turretType);
+        return this;
+    }
+
+    public WeaponType trailParticleSystemConfigId(Integer trailParticleSystemConfigId) {
+        setTrailParticleSystemConfigId(trailParticleSystemConfigId);
         return this;
     }
 

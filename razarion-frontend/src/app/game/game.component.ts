@@ -165,6 +165,10 @@ export class GameComponent implements OnInit, ScreenCover {
                     getMuzzleFlashParticleSystemConfigId(): number | null {
                       return 2;
                     }
+
+                    getTrailParticleSystemConfigId(): number | null {
+                      return 2;
+                    }
                   }
                 }
 

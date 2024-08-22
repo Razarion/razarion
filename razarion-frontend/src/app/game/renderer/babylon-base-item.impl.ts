@@ -396,6 +396,18 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }, this.rendererService.getScene());
     mesh.material = this.rendererService.projectileMaterial;
 
+    const trailParticleSystemConfigId = GwtHelper.gwtIssueNumber(this.baseItemType.getWeaponType()!.getTrailParticleSystemConfigId());
+    if (trailParticleSystemConfigId || trailParticleSystemConfigId === 0) {
+      let trailParticleSystemConfig = this.babylonModelService.getParticleSystemConfig(trailParticleSystemConfigId);
+      let particleSystem = this.rendererService.createParticleSystem(trailParticleSystemConfig.getThreeJsModelId(),
+        trailParticleSystemConfig.getImageId(),
+        mesh,
+        null,
+        false);
+      particleSystem.disposeOnStop = true;
+      particleSystem.start();
+    }
+
     const frameRate = 1;
     const xSlide = new Animation("Projectile",
       "position",

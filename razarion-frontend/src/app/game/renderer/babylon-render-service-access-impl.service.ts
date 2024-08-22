@@ -819,7 +819,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.interpolationListeners.forEach(interpolationListener => interpolationListener.interpolate(date));
   }
 
-  public createParticleSystem(babylonModelId: number | null, imageId: number | null, emitterPosition: Vector3, destination: Vector3 | null, stretchToDestination: boolean): ParticleSystem {
+  public createParticleSystem(babylonModelId: number | null, imageId: number | null, emitterPosition: AbstractMesh | Vector3, destination: Vector3 | null, stretchToDestination: boolean): ParticleSystem {
     if (!babylonModelId && babylonModelId !== 0) {
       throw new Error("babylonModelId not set");
     }
@@ -833,7 +833,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       particleSystem.particleTexture = new Texture(getImageUrl(correctedImageId));
     }
     if (destination) {
-      const beam = destination.subtract(emitterPosition);
+      const beam = destination.subtract(<Vector3>emitterPosition);
       const delta = 2;
       const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
       const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();

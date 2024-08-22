@@ -407,6 +407,8 @@ export interface WeaponType {
   getMuzzleFlashParticleSystemConfigId(): number | null;
 
   getProjectileSpeed(): number | null;
+
+  getTrailParticleSystemConfigId(): number | null;
 }
 
 export interface HarvesterType {

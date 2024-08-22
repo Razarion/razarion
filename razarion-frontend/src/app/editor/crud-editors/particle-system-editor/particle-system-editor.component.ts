@@ -48,10 +48,10 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
           emittingPosition,
           null,
           false);
+        this.babylonModelId = this.particleSystemConfig.threeJsModelId;
         this.currecntInfo = `${this.particleSystemConfig.internalName} '${this.particleSystemConfig.id}' BablyonModel Id '${this.particleSystemConfig.threeJsModelId}'`;
         this.particleSystem.name = `Editor ${this.currecntInfo}`;
         this.particleSystem.start();
-        this.babylonModelId = this.particleSystemConfig.threeJsModelId;
       }
     }
   }
