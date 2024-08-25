@@ -122,6 +122,10 @@ export class BabylonModelService {
         });
       }).catch(err => {
         console.warn(err);
+        this.babylonMaterialsLoaded = true;
+        if (this.gwtResolver) {
+          this.gwtResolver();
+        }
       });
   }
 

@@ -131,6 +131,7 @@ import { ParticleSystemEditorComponent } from './editor/crud-editors/particle-sy
 import { VertexEditorComponent } from './editor/common/vertex-editor/vertex-editor.component';
 import { BabylonMaterialEditorComponent } from './editor/crud-editors/babylon-material-editor/babylon-material-editor.component';
 import { BabylonMaterialComponent } from './editor/common/babylon-material/babylon-material.component';
+import {ScrollPanelModule} from "primeng/scrollpanel";
 
 @NgModule({
   declarations: [
@@ -259,7 +260,8 @@ import { BabylonMaterialComponent } from './editor/common/babylon-material/babyl
     ProgressSpinnerModule,
     MenuModule,
     KnobModule,
-    BadgeModule
+    BadgeModule,
+    ScrollPanelModule
   ],
   providers: [
     FrontendService, {

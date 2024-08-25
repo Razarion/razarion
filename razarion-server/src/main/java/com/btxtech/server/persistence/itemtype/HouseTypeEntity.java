@@ -18,13 +18,14 @@ public class HouseTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private int space;
 
     public HouseType toHouseType() {
-        return null;
+        return new HouseType().space(space);
     }
 
     public void fromHouseType(HouseType houseType) {
-
+        space = houseType.getSpace();
     }
 
     @Override

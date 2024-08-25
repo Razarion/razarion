@@ -1,4 +1,14 @@
-<p-toast [baseZIndex]="5000">
+<p-toast position="top-right" [baseZIndex]="5000">
+    <ng-template let-message pTemplate="message">
+        <div class="flex flex-column" style="flex: 1" style="width: 22em;">
+            <div class="text-center">
+                <i class="pi pi-exclamation-triangle" style="font-size: 3rem"></i>
+                <h4>{{message.summary}}</h4>
+                <p>{{message.detail}}</p>
+            </div>
+        </div>
+    </ng-template>
+
 </p-toast>
 <router-outlet></router-outlet>
 

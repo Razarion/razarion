@@ -27,16 +27,20 @@ public class HouseType {
     public HouseType() {
     }
 
-    public HouseType(int space) {
-        this.space = space;
-    }
-
-
     public void changeTo(HouseType houseType) {
         space = houseType.space;
     }
 
     public int getSpace() {
         return space;
+    }
+
+    public void setSpace(int space) {
+        this.space = space;
+    }
+
+    public HouseType space(int space) {
+        setSpace(space);
+        return this;
     }
 }

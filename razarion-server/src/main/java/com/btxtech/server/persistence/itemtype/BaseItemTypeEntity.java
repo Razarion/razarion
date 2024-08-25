@@ -58,6 +58,7 @@ public class BaseItemTypeEntity {
     private int price;
     private int buildup;
     private int xpOnKilling;
+    private int consumingHouseSpace;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private I18nBundleEntity i18nName;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -130,10 +131,10 @@ public class BaseItemTypeEntity {
         BaseItemType baseItemType = new BaseItemType()
                 .price(price)
                 .xpOnKilling(xpOnKilling)
+                .consumingHouseSpace(consumingHouseSpace)
                 .dropBoxPossibility(dropBoxPossibility)
                 .explosionAudioItemConfigId(extractId(explosionAudioLibraryEntity, AudioLibraryEntity::getId))
                 .explosionParticleId(extractId(explosionParticleSystem, ParticleSystemEntity::getId));
-        ;
         if (dropBoxItemTypeEntity != null) {
             baseItemType.setDropBoxItemTypeId(dropBoxItemTypeEntity.getId());
         }
@@ -231,6 +232,7 @@ public class BaseItemTypeEntity {
         spawnDurationMillis = baseItemType.getSpawnDurationMillis();
         price = baseItemType.getPrice();
         xpOnKilling = baseItemType.getXpOnKilling();
+        consumingHouseSpace = baseItemType.getConsumingHouseSpace();
         i18nName = I18nBundleEntity.fromI18nStringSafe(baseItemType.getI18nName(), i18nName);
         i18nDescription = I18nBundleEntity.fromI18nStringSafe(baseItemType.getI18nDescription(), i18nDescription);
         dropBoxItemTypeEntity = boxItemTypeCrudPersistence.getEntity(baseItemType.getDropBoxItemTypeId());
