@@ -400,7 +400,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             nativeTickInfo.killedSyncBaseItems = convertAndClearKilled();
             nativeTickInfo.removeSyncBaseItemIds = convertAndClearRemoved();
             if (playerBase != null) {
-                nativeTickInfo.houseSpace = PlayerBaseFull.HOUSE_SPACE;
                 nativeTickInfo.resources = (int) playerBase.getResources();
             }
             sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE, nativeTickInfo);

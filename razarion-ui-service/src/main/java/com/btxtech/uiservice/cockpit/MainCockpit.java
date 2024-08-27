@@ -24,7 +24,7 @@ public interface MainCockpit {
 
     Rectangle getScrollHomeButtonLocation();
 
-    void displayItemCount(int itemCount, int houseSpace);
+    void displayItemCount(int itemCount, int usedHouseSpace, int houseSpace);
 
     void displayEnergy(int consuming, int generating);
 

@@ -159,7 +159,7 @@ public class WeldUiBaseIntegrationTest {
             }
 
             @Override
-            public void displayItemCount(int itemCount, int houseSpace) {
+            public void displayItemCount(int itemCount, int usedHouseSpace, int houseSpace) {
 
             }
 

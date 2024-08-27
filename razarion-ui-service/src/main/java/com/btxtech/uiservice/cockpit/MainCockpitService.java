@@ -70,8 +70,8 @@ public class MainCockpitService {
         inventoryPositionProvider = null;
     }
 
-    public void onItemCountChanged(int itemCount, int houseSpace) {
-        mainCockpit.displayItemCount(itemCount, houseSpace);
+    public void onItemCountChanged(int itemCount, int usedHouseSpace, int houseSpace) {
+        mainCockpit.displayItemCount(itemCount, usedHouseSpace, houseSpace);
     }
 
     public void onEnergyChanged(int consuming, int generating) {

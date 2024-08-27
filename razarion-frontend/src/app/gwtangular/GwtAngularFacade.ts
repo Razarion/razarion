@@ -642,7 +642,7 @@ export interface MainCockpit {
 
   getScrollHomeButtonLocation(): Rectangle;
 
-  displayItemCount(itemCount: number, houseSpace: number): void;
+  displayItemCount(itemCount: number, usedHouseSpace: number, houseSpace: number): void;
 
   displayEnergy(consuming: number, generating: number): void;
 

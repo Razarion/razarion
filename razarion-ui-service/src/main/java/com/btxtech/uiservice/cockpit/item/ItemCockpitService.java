@@ -55,7 +55,6 @@ public class ItemCockpitService {
     private SelectionHandler selectionHandler;
     private ItemCockpitFrontend itemCockpitFrontend;
     private Collection<BuildupItemCockpit> buildupItemCockpits = new ArrayList<>();
-    // TODO private BuildupItemPanel buildupItemPanel;
 
     public void init(ItemCockpitFrontend itemCockpitFrontend) {
         this.itemCockpitFrontend = itemCockpitFrontend;
@@ -256,24 +255,6 @@ public class ItemCockpitService {
             };
         }
         return ownInfoPanel;
-    }
-
-//   TODO private void setupItemContainerPanel(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
-//        if (baseItemType.getItemContainerType() != null) {
-//            itemContainerPanel = instance.select(ItemContainerPanel.class).get();
-//            itemContainerPanel.display(syncBaseItem);
-//            itemCockpitFrontend.setItemContainerPanel(itemContainerPanel);
-//        } else {
-//            itemContainerPanel = null;
-//        }
-//    }
-
-    public Rectangle getBuildButtonLocation(int baseItemTypeId) {
-//  TODO      if (buildupItemPanel == null) {
-//            throw new IllegalStateException("No buildup item panel");
-//        }
-//        return buildupItemPanel.getBuildButtonLocation(baseItemTypeId);
-        throw new UnsupportedOperationException("...TODO...");
     }
 
     // This method is may not called enough. Only called on Level change and houseSpace and usedHouseSpace changed

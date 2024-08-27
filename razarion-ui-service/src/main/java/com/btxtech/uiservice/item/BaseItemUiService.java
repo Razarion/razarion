@@ -130,6 +130,7 @@ public class BaseItemUiService {
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
         int tmpItemCount = 0;
+        int houseSpace = 0;
         int usedHouseSpace = 0;
         boolean radar = false;
         DecimalPosition viewFiledCenter = viewField != null ? viewField.calculateCenter() : null;
@@ -151,6 +152,9 @@ public class BaseItemUiService {
                 if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
                     tmpItemCount++;
                     usedHouseSpace += baseItemType.getConsumingHouseSpace();
+                    if (isBuildup && baseItemType.getHouseType() != null) {
+                        houseSpace += baseItemType.getHouseType().getSpace();
+                    }
                     if (baseItemType.getSpecialType() != null && baseItemType.getSpecialType().isMiniTerrain() && isBuildup && !isSpawning) {
                         radar = true;
                     }
@@ -245,13 +249,21 @@ public class BaseItemUiService {
         if (syncBaseItemSetPositionMonitor != null) {
             syncBaseItemSetPositionMonitor.handleOutOfView(viewFiledCenter);
         }
+        boolean updateNeeded = false;
         if (itemCount != tmpItemCount) {
             itemCount = tmpItemCount;
-            updateItemCountOnSideCockpit();
-            itemCockpitService.onStateChanged();
+            updateNeeded = true;
         }
         if (this.usedHouseSpace != usedHouseSpace) {
             this.usedHouseSpace = usedHouseSpace;
+            updateNeeded = true;
+        }
+        if (this.houseSpace != houseSpace) {
+            this.houseSpace = houseSpace;
+            updateNeeded = true;
+        }
+        if (updateNeeded) {
+            updateItemCountOnSideCockpit();
             itemCockpitService.onStateChanged();
         }
         if (hasRadar != radar) {
@@ -281,7 +293,7 @@ public class BaseItemUiService {
     }
 
     private void updateItemCountOnSideCockpit() {
-        cockpitService.onItemCountChanged(itemCount, getMyTotalHouseSpace());
+        cockpitService.onItemCountChanged(itemCount, usedHouseSpace, getMyTotalHouseSpace());
     }
 
     @SuppressWarnings("unused") // Used in angular
@@ -434,11 +446,6 @@ public class BaseItemUiService {
             resources = nativeTickInfo.resources;
             cockpitService.updateResource(resources);
             itemCockpitService.onResourcesChanged(resources);
-        }
-        if (houseSpace != nativeTickInfo.houseSpace) {
-            houseSpace = nativeTickInfo.houseSpace;
-            itemCockpitService.onStateChanged();
-            updateItemCountOnSideCockpit();
         }
     }
 

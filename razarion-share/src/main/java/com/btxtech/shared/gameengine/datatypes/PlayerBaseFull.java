@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
  * 16.04.2017.
  */
 public class PlayerBaseFull extends PlayerBase {
-    public static final int HOUSE_SPACE = 0;
     private final Collection<SyncBaseItem> items = new ArrayList<>();
     private int usedHouseSpace = 0;
+    private int houseSpace = 0;
     private Integer levelId;
     private Map<Integer, Integer> unlockedItemLimit;
 
@@ -29,11 +29,18 @@ public class PlayerBaseFull extends PlayerBase {
     public void addItem(SyncBaseItem syncBaseItem) {
         items.add(syncBaseItem);
         usedHouseSpace += syncBaseItem.getBaseItemType().getConsumingHouseSpace();
+        if (syncBaseItem.getSyncHouse() != null) {
+            // TODO this is may wrong, syncBaseItem is not buildup
+            houseSpace += syncBaseItem.getSyncHouse().getSpace();
+        }
     }
 
     public void removeItem(SyncBaseItem syncBaseItem) {
         items.remove(syncBaseItem);
         usedHouseSpace -= syncBaseItem.getBaseItemType().getConsumingHouseSpace();
+        if (syncBaseItem.getSyncHouse() != null) {
+            houseSpace -= syncBaseItem.getSyncHouse().getSpace();
+        }
     }
 
     public int getItemCount() {
@@ -57,8 +64,7 @@ public class PlayerBaseFull extends PlayerBase {
     }
 
     public int getHouseSpace() {
-        // TODO no houses yet
-        return HOUSE_SPACE;
+        return houseSpace;
     }
 
     public Integer getLevelId() {

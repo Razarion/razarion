@@ -24,6 +24,7 @@ export class MainCockpitComponent implements MainCockpit {
   xp2LevelUp!: number;
   resources: number = 0;
   itemCount: number = 0;
+  usedHouseSpace: number = 0;
   houseSpace: number = 0;
   consuming: number = 0;
   generating: number = 0;
@@ -69,9 +70,10 @@ export class MainCockpitComponent implements MainCockpit {
     });
   }
 
-  displayItemCount(itemCount: number, houseSpace: number): void {
+  displayItemCount(itemCount: number, usedHouseSpace: number, houseSpace: number): void {
     this.zone.run(() => {
       this.itemCount = itemCount;
+      this.usedHouseSpace = usedHouseSpace;
       this.houseSpace = houseSpace;
     });
   }
