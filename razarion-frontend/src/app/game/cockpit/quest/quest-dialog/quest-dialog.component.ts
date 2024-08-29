@@ -18,7 +18,7 @@ export class QuestDialogComponent implements OnInit {
   constructor(httpClient: HttpClient, private messageService: MessageService, private gwtAngularService: GwtAngularService) {
     this.questControllerClient = new QuestControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
-  
+
   ngOnInit(): void {
     this.questControllerClient.readMyOpenQuests()
       .then(questConfigs => {
@@ -108,8 +108,13 @@ export class QuestDialogComponent implements OnInit {
       let result: string[] = []
       for (const key in questConfig.conditionConfig.comparisonConfig.typeCount) {
         const count = questConfig.conditionConfig.comparisonConfig.typeCount[key];
-        let itemTypeName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(parseInt(key)).getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language);
-        result.push(`${count} ${itemTypeName} ${textSpecific}`);
+        let itemTypeI8nName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(parseInt(key)).getI18nName();
+        if (itemTypeI8nName) {
+          let itemTypeName = itemTypeI8nName.getString(this.gwtAngularService.gwtAngularFacade.language);
+          result.push(`${count} ${itemTypeName} ${textSpecific}`);
+        } else {
+          result.push(`${count} ??? ${textSpecific}`);
+        }
       }
       return result.join(", ");
     } else {

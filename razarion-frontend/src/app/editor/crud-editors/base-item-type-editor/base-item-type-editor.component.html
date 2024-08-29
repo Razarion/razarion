@@ -7,13 +7,24 @@
             </div>
         </div>
         <div class="grid grid-razarion-editor">
+            <span class="col-4">Name</span>
+            <div class="col-8">
+                <i18n [(i18n)]="baseItemType.i18nName"></i18n>
+            </div>
+        </div>
+        <div class="grid grid-razarion-editor">
+            <span class="col-4">Description</span>
+            <div class="col-8">
+                <i18n [(i18n)]="baseItemType.i18nDescription"></i18n>
+            </div>
+        </div>
+        <div class="grid grid-razarion-editor">
             <span class="col-4">Internal name</span>
             <div class="col-8">
                 <input [(ngModel)]="baseItemType.internalName" type="text"
                     class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
             </div>
         </div>
-
         <p-divider align="left">
             <div class="inline-flex align-items-center">
                 <i class="pi pi-video"></i>
