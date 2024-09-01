@@ -132,6 +132,7 @@ import { VertexEditorComponent } from './editor/common/vertex-editor/vertex-edit
 import { BabylonMaterialEditorComponent } from './editor/crud-editors/babylon-material-editor/babylon-material-editor.component';
 import { BabylonMaterialComponent } from './editor/common/babylon-material/babylon-material.component';
 import {ScrollPanelModule} from "primeng/scrollpanel";
+import { I18nComponent } from './editor/common/i18n/i18n.component';
 
 @NgModule({
   declarations: [
@@ -216,7 +217,8 @@ import {ScrollPanelModule} from "primeng/scrollpanel";
     ParticleSystemEditorComponent,
     VertexEditorComponent,
     BabylonMaterialEditorComponent,
-    BabylonMaterialComponent
+    BabylonMaterialComponent,
+    I18nComponent
   ],
   imports: [
     BrowserModule,
