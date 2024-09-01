@@ -13,32 +13,28 @@ public class StartupTerminatedJson {
     private String httpSessionId;
     private Date serverTime;
 
-
     public boolean isSuccessful() {
         return successful;
     }
 
-    public StartupTerminatedJson setSuccessful(boolean successful) {
+    public void setSuccessful(boolean successful) {
         this.successful = successful;
-        return this;
     }
 
     public int getTotalTime() {
         return totalTime;
     }
 
-    public StartupTerminatedJson setTotalTime(int totalTime) {
+    public void setTotalTime(int totalTime) {
         this.totalTime = totalTime;
-        return this;
     }
 
     public String getGameSessionUuid() {
         return gameSessionUuid;
     }
 
-    public StartupTerminatedJson setGameSessionUuid(String gameSessionUuid) {
+    public void setGameSessionUuid(String gameSessionUuid) {
         this.gameSessionUuid = gameSessionUuid;
-        return this;
     }
 
     public String getHttpSessionId() {
@@ -55,5 +51,31 @@ public class StartupTerminatedJson {
 
     public void setServerTime(Date serverTime) {
         this.serverTime = serverTime;
+    }
+
+
+    public StartupTerminatedJson successful(boolean successful) {
+        setSuccessful(successful);
+        return this;
+    }
+
+    public StartupTerminatedJson totalTime(int totalTime) {
+        setTotalTime(totalTime);
+        return this;
+    }
+
+    public StartupTerminatedJson gameSessionUuid(String gameSessionUuid) {
+        setGameSessionUuid(gameSessionUuid);
+        return this;
+    }
+
+    public StartupTerminatedJson httpSessionId(String httpSessionId) {
+        setHttpSessionId(httpSessionId);
+        return this;
+    }
+
+    public StartupTerminatedJson serverTime(Date serverTime) {
+        setServerTime(serverTime);
+        return this;
     }
 }

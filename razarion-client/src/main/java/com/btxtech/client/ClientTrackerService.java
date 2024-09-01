@@ -122,7 +122,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private StartupTerminatedJson createStartupTerminatedJson(long totalTime, boolean success) {
         StartupTerminatedJson startupTerminatedJson = new StartupTerminatedJson();
         startupTerminatedJson.setGameSessionUuid(boot.getGameSessionUuid());
-        startupTerminatedJson.setSuccessful(success).setTotalTime((int) totalTime);
+        startupTerminatedJson.successful(success).totalTime((int) totalTime);
         return startupTerminatedJson;
     }
 

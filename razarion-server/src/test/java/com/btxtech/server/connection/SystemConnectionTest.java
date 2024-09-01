@@ -3,8 +3,7 @@ package com.btxtech.server.connection;
 import com.btxtech.server.ClientArquillianBaseTest;
 import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.server.clienthelper.WebsocketTestHelper;
-import com.btxtech.server.mgmt.OnlineInfo;
-import com.btxtech.shared.rest.BackendController;
+import com.btxtech.server.rest.BackendController;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.rest.FrontendController;
@@ -16,8 +15,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat

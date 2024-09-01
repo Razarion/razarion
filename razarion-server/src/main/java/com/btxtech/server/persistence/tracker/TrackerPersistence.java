@@ -23,8 +23,11 @@ import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Sorts;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Accumulators;
+import com.mongodb.client.model.Aggregates;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -138,23 +141,110 @@ public class TrackerPersistence {
 
 
     public List<StartupTerminatedJson> loadStartupTerminatedJson() {
-        MongoCollection<StartupTerminatedJson> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.STARTUP_TRACKING, StartupTerminatedJson.class);
-        List<StartupTerminatedJson> startupTerminatedJson = new ArrayList<>();
-        Document query = new Document("successful", new Document("$exists", true));
-        dbCollection.find(query)
-                .sort(Sorts.descending("serverTime"))
-                .forEach((Consumer<? super StartupTerminatedJson>) startupTerminatedJson::add);
-        return startupTerminatedJson;
+        List<StartupTerminatedJson> startupTerminatedJsons = new ArrayList<>();
+        List<GroupedStartupTerminatedJson> groupedStartupTerminatedJsons = loadGroupedByGameSessionUuid();
+        groupedStartupTerminatedJsons.forEach(groupedStartupTerminatedJson -> {
+
+            StartupTerminatedJson startupTerminatedJson = findStartupTerminated(groupedStartupTerminatedJson.getDocuments());
+            if (startupTerminatedJson == null) {
+                startupTerminatedJson = new StartupTerminatedJson()
+                        .gameSessionUuid(groupedStartupTerminatedJson.getGameSessionUuid())
+                        .successful(false);
+            }
+
+            startupTerminatedJsons.add(startupTerminatedJson);
+        });
+        return startupTerminatedJsons;
+    }
+
+    private StartupTerminatedJson findStartupTerminated(List<Document> documents) {
+        return documents.stream()
+                .filter(document -> document.containsKey("successful"))
+                .map(document -> new StartupTerminatedJson()
+                        .gameSessionUuid((String)document.get("gameSessionUuid"))
+                        .httpSessionId((String)document.get("httpSessionId"))
+                        .serverTime((Date) document.get("serverTime"))
+                        .successful((Boolean) document.get("successful"))
+                        .totalTime((Integer) document.get("totalTime")))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<StartupTaskJson> loadStartupTaskJson(String gameSessionUuid) {
         MongoCollection<StartupTaskJson> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.STARTUP_TRACKING, StartupTaskJson.class);
         List<StartupTaskJson> startupTaskJsons = new ArrayList<>();
         Document query = new Document("taskEnum", new Document("$exists", true))
-                .append("gameSessionUuid", gameSessionUuid);;
+                .append("gameSessionUuid", gameSessionUuid);
         dbCollection.find(query)
                 .forEach((Consumer<? super StartupTaskJson>) startupTaskJsons::add);
         return startupTaskJsons;
+    }
+
+    public List<GroupedStartupTerminatedJson> loadGroupedByGameSessionUuid() {
+        MongoCollection<Document> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.STARTUP_TRACKING, Document.class);
+        List<GroupedStartupTerminatedJson> groupedResults = new ArrayList<>();
+
+        // Definiere die Aggregationspipeline
+        List<Bson> pipeline = Arrays.asList(
+                Aggregates.group(
+                        "$gameSessionUuid",
+                        Accumulators.sum("count", 1),  // Zählt die Anzahl der Dokumente in jeder Gruppe
+                        Accumulators.push("documents", "$$ROOT")  // Fügt die Dokumente der Gruppe hinzu
+                )
+        );
+
+        // Führe die Aggregation aus und iteriere über die Ergebnisse
+        try (MongoCursor<Document> cursor = dbCollection.aggregate(pipeline).iterator()) {
+            while (cursor.hasNext()) {
+                Document doc = cursor.next();
+                String gameSessionUuid = doc.getString("_id");
+                int count = doc.getInteger("count");
+                List<Document> documents = (List<Document>) doc.get("documents");
+
+                // Hier kannst du die Daten in dein Zielobjekt GroupedStartupTerminatedJson umwandeln
+                GroupedStartupTerminatedJson groupedResult = new GroupedStartupTerminatedJson(gameSessionUuid, count, documents);
+                groupedResults.add(groupedResult);
+            }
+        }
+
+        return groupedResults;
+    }
+
+    class GroupedStartupTerminatedJson {
+        private String gameSessionUuid;
+        private int count;
+        private List<Document> documents;
+
+        public GroupedStartupTerminatedJson(String gameSessionUuid, int count, List<Document> documents) {
+            this.gameSessionUuid = gameSessionUuid;
+            this.count = count;
+            this.documents = documents;
+        }
+
+        // Getter und Setter
+        public String getGameSessionUuid() {
+            return gameSessionUuid;
+        }
+
+        public void setGameSessionUuid(String gameSessionUuid) {
+            this.gameSessionUuid = gameSessionUuid;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public List<Document> getDocuments() {
+            return documents;
+        }
+
+        public void setDocuments(List<Document> documents) {
+            this.documents = documents;
+        }
     }
 
     @Transactional
