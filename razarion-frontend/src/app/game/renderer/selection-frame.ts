@@ -88,6 +88,7 @@ export class SelectionFrame {
     let pickingInfo = this.renderService.setupTerrainPickPoint();
     if (!pickingInfo.hit) {
       console.warn("No pickingInfo in SelectionFrame")
+      return;
     }
     let endTerrainPosition = pickingInfo.pickedPoint!;
 

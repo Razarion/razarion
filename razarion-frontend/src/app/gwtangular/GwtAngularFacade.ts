@@ -775,6 +775,10 @@ export interface ModelDialogPresenter {
   showUseInventoryItemLimitExceeded(baseItemType: BaseItemType): void;
 
   showUseInventoryHouseSpaceExceeded(): void;
+
+  showRegisterDialog(): void;
+
+  showSetUserNameDialog(): void;
 }
 
 // ---------- Editor ----------

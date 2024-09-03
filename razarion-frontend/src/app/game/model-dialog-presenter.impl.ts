@@ -40,6 +40,12 @@ export class ModelDialogPresenterImpl implements ModelDialogPresenter {
         });
     }
 
+    showRegisterDialog(): void {
+    }
+
+    showSetUserNameDialog(): void {
+    }
+
     showBoxPicked(boxContent: BoxContent): void {
         this.zone.run(() => {
             let messgaeLine: string[] = [];

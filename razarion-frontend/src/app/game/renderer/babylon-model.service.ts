@@ -39,7 +39,7 @@ export class BabylonModelService {
   private particleSystemConfigs: Map<number, ParticleSystemConfig> = new Map();
   private particleSystemJson: Map<number, any> = new Map();
   private babylonMaterialsLoaded = false;
-  private gwtResolver: any;
+  private gwtResolver?: () => void;
   private babylonMaterialControllerClient: BabylonMaterialControllerClient;
 
   constructor(private httpClient: HttpClient, private messageService: MessageService) {
@@ -63,11 +63,7 @@ export class BabylonModelService {
         let handleResolve = () => {
           loadingCount--;
           if (loadingCount === 0) {
-            if (this.babylonMaterialsLoaded) {
-              resolve();
-            } else {
-              this.gwtResolver = resolve;
-            }
+            this.handleResolve(resolve)
           }
         }
 
@@ -97,19 +93,24 @@ export class BabylonModelService {
         });
       } catch (error) {
         console.error(error);
-        reject(error);
+        this.handleResolve(() => { reject(error) })
       }
     });
+  }
+
+  private handleResolve(handler: () => void) {
+    if (this.babylonMaterialsLoaded) {
+      handler();
+    } else {
+      this.gwtResolver = handler;
+    }
   }
 
   private loadBabylonMaterials() {
     this.babylonMaterialControllerClient.readAll()
       .then(materials => {
         if (materials.length === 0) {
-          this.babylonMaterialsLoaded = true;
-          if (this.gwtResolver) {
-            this.gwtResolver();
-          }
+          this.handleLoaded();
           return;
         }
 
@@ -122,14 +123,11 @@ export class BabylonModelService {
         });
       }).catch(err => {
         console.warn(err);
-        this.babylonMaterialsLoaded = true;
-        if (this.gwtResolver) {
-          this.gwtResolver();
-        }
+        this.handleLoaded();
       });
   }
 
-  private loadMaterial(materialId: number, materialLoadingControl: { loadingCount: number; }) {
+  private loadMaterial(materialId: number, materialLoadingControl: { loadingCount: number }) {
     this.babylonMaterialControllerClient.getData(materialId)
       .then(data => {
         try {
@@ -139,34 +137,30 @@ export class BabylonModelService {
           } else {
             console.error(`Error parsing material`);
           }
-          materialLoadingControl.loadingCount--;
-          if (materialLoadingControl.loadingCount <= 0) {
-            this.babylonMaterialsLoaded = true;
-            if (this.gwtResolver) {
-              this.gwtResolver();
-            }
-          }
+          this.handleMaterialLoaded(materialLoadingControl);
         } catch (e) {
           console.error(`Error parsing material '${e}'`);
-          materialLoadingControl.loadingCount--;
-          if (materialLoadingControl.loadingCount <= 0) {
-            this.babylonMaterialsLoaded = true;
-            if (this.gwtResolver) {
-              this.gwtResolver();
-            }
-          }
+          this.handleMaterialLoaded(materialLoadingControl);
         }
       })
       .catch(err => {
         console.error(`Error loading Babylon file '${err}'`);
-        materialLoadingControl.loadingCount--;
-        if (materialLoadingControl.loadingCount <= 0) {
-          this.babylonMaterialsLoaded = true;
-          if (this.gwtResolver) {
-            this.gwtResolver();
-          }
-        }
+        this.handleMaterialLoaded(materialLoadingControl);
       })
+  }
+
+  private handleLoaded() {
+    this.babylonMaterialsLoaded = true;
+    if (this.gwtResolver) {
+      this.gwtResolver();
+    }
+  }
+
+  private handleMaterialLoaded(materialLoadingControl: { loadingCount: number }) {
+    materialLoadingControl.loadingCount--;
+    if (materialLoadingControl.loadingCount <= 0) {
+      this.handleLoaded();
+    }
   }
 
   cloneMesh(threeJsModelPackConfigId: number, parent: Node | null): TransformNode {
