@@ -77,7 +77,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = false;
+      let runGwtMock = true;
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
@@ -376,8 +376,8 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.displayXps(5, 20);
         this.mainCockpitComponent.displayLevel(1)
         this.mainCockpitComponent.displayEnergy(2, 10);
-        // this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
-        this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
+        this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+        // this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
         // this.showInventory = true;
         this.fadeOutLoadingCover();
         this.removeLoadingCover();

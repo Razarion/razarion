@@ -106,7 +106,7 @@ export class EditorTerrainTile {
     this.positions!.forEach(position => {
       const xNode = index % (BabylonTerrainTileImpl.NODE_X_COUNT + 1);
       const yNode = Math.floor(index / (BabylonTerrainTileImpl.NODE_Y_COUNT + 1))
-      if(xNode < BabylonTerrainTileImpl.NODE_X_COUNT && yNode < BabylonTerrainTileImpl.NODE_Y_COUNT) {
+      if (xNode < BabylonTerrainTileImpl.NODE_X_COUNT && yNode < BabylonTerrainTileImpl.NODE_Y_COUNT) {
         callback(BabylonTerrainTileImpl.heightToUnit16(position.y));
       }
       index++;
@@ -163,47 +163,69 @@ export class EditorTerrainTile {
     const factor = 10;
     const border = 0.3;
     const effectiveBorder = factor * border;
+
     const canvas = document.createElement('canvas');
     canvas.width = BabylonTerrainTileImpl.NODE_X_COUNT * factor;
     canvas.height = BabylonTerrainTileImpl.NODE_Y_COUNT * factor;
-    const context = canvas.getContext('2d');
-
-    let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE) + 1;
-    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE) + 1;
-    if (context) {
-      for (let y = 0; y < yCount - 1; y++) {
-        for (let x = 0; x < xCount - 1; x++) {
-          const blHeight = this.positions![x + y * xCount].y;
-          const brHeight = this.positions![x + 1 + y * xCount].y;
-          const tlHeight = this.positions![x + (y + 1) * xCount].y;
-          const trHeight = this.positions![x + 1 + (y + 1) * xCount].y;
-          const avgHeight = (blHeight + brHeight + trHeight + tlHeight) / 4.0;
-
-          if (avgHeight < BabylonTerrainTileImpl.WATER_LEVEL) {
-            // return TerrainType.WATER;
-            context.fillStyle = "rgba(0, 0, 255, 0.5)";
-          } else {
-            const maxHeight = Math.max(blHeight, brHeight, trHeight, tlHeight);
-            const minHeight = Math.min(blHeight, brHeight, trHeight, tlHeight);
-            // if (Math.abs(maxHeight - minHeight) < 0.6999998) {
-            if (Math.abs(maxHeight - minHeight) < 0.7) {
-              // return TerrainType.LAND;
-              context.fillStyle = "rgba(0, 255, 0, 0.5)";
-            } else {
-              // return TerrainType.BLOCKED;
-              context.fillStyle = "rgba(255, 0, 0, 0.5)";
-            }
-          }
-          context.fillRect(
-            (y + 1) * factor - effectiveBorder * 2,
-            (x + 1) * factor - effectiveBorder * 2,
-            factor - effectiveBorder * 2,
-            factor - effectiveBorder * 2);
-        }
-      }
-    }
+    this.drawMiniMap(
+      canvas.getContext('2d')!,
+      factor,
+      effectiveBorder,
+      "rgba(0, 0, 255, 0.5)",
+      "rgba(0, 255, 0, 0.5)",
+      "rgba(255, 0, 0, 0.5)");
     const dynamicTexture = new Texture(canvas.toDataURL(), this.renderService.getScene());
     return dynamicTexture;
+  }
+
+  drawMiniMap(context: CanvasRenderingContext2D, factor: number, effectiveBorder: number, waterColor: string, landColor: string, blockedColor: string) {
+    let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE) + 1;
+    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE) + 1; 
+    for (let y = 0; y < yCount - 1; y++) {
+      for (let x = 0; x < xCount - 1; x++) {
+        const blHeight = this.positions![x + y * xCount].y;
+        const brHeight = this.positions![x + 1 + y * xCount].y;
+        const tlHeight = this.positions![x + (y + 1) * xCount].y;
+        const trHeight = this.positions![x + 1 + (y + 1) * xCount].y;
+
+        switch (EditorTerrainTile.setupTerrainType(blHeight, brHeight, trHeight, tlHeight)) {
+          case TerrainType.WATER:
+            context.fillStyle = waterColor;
+            break;
+          case TerrainType.LAND:
+            context.fillStyle = landColor;
+            break;
+          case TerrainType.BLOCKED:
+            context.fillStyle = blockedColor;
+            break;
+          default:
+            context.fillStyle = "rgba(1, 1, 1, 1)";
+        }
+        context.fillRect(
+          (x + 1) * factor - effectiveBorder * 2,
+          (yCount - y + 1) * factor - effectiveBorder * 2,
+          factor - effectiveBorder * 2,
+          factor - effectiveBorder * 2);
+      }
+    }
+  }
+
+  public static setupTerrainType(blHeight: number, brHeight: number, trHeight: number, tlHeight: number): TerrainType {
+    const avgHeight = (blHeight + brHeight + trHeight + tlHeight) / 4.0;
+
+    if (avgHeight < BabylonTerrainTileImpl.WATER_LEVEL) {
+      return TerrainType.WATER;
+    } else {
+      const maxHeight = Math.max(blHeight, brHeight, trHeight, tlHeight);
+      const minHeight = Math.min(blHeight, brHeight, trHeight, tlHeight);
+      // if (Math.abs(maxHeight - minHeight) < 0.6999998) {
+      if (Math.abs(maxHeight - minHeight) < 0.7) {
+        return TerrainType.LAND;
+      } else {
+        return TerrainType.BLOCKED;
+      }
+    }
+
   }
 
   private createTerrainTypeDecalWorker(): Mesh {
@@ -228,7 +250,7 @@ export class EditorTerrainTile {
     const canvas = document.createElement('canvas');
     canvas.width = BabylonTerrainTileImpl.NODE_X_COUNT * factor;
     canvas.height = BabylonTerrainTileImpl.NODE_Y_COUNT * factor;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d')!;
 
     let xCount = BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE;
     let yCount = BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE;
@@ -238,36 +260,34 @@ export class EditorTerrainTile {
 
     let remaining = xCount * yCount;
 
-    if (context) {
-      for (let y = 0; y < yCount; y++) {
-        for (let x = 0; x < xCount; x++) {
-          this.inputeService.getTerrainTypeOnTerrain(GwtInstance.newIndex(x + xNodeOffest, y + yNodeOffest))
-            .then(terrainType => {
-              const terrainTypeString = terrainType.d // Ugly gwt enum hack
+    for (let y = 0; y < yCount; y++) {
+      for (let x = 0; x < xCount; x++) {
+        this.inputeService.getTerrainTypeOnTerrain(GwtInstance.newIndex(x + xNodeOffest, y + yNodeOffest))
+          .then(terrainType => {
+            const terrainTypeString = terrainType.d // Ugly gwt enum hack
 
-              if (TerrainType.WATER == terrainTypeString) {
-                context.fillStyle = "rgba(0, 0, 255, 0.5)";
-              } else if (TerrainType.LAND == terrainTypeString) {
-                context.fillStyle = "rgba(0, 255, 0, 0.5)";
-              } else {
-                context.fillStyle = "rgba(255, 0, 0, 0.5)";
-              }
-              context.fillRect(
-                (y + 1) * factor - effectiveBorder * 2,
-                (x + 1) * factor - effectiveBorder * 2,
-                factor - effectiveBorder * 2,
-                factor - effectiveBorder * 2);
+            if (TerrainType.WATER == terrainTypeString) {
+              context.fillStyle = "rgba(0, 0, 255, 0.5)";
+            } else if (TerrainType.LAND == terrainTypeString) {
+              context.fillStyle = "rgba(0, 255, 0, 0.5)";
+            } else {
+              context.fillStyle = "rgba(255, 0, 0, 0.5)";
+            }
+            context.fillRect(
+              (y + 1) * factor - effectiveBorder * 2,
+              (x + 1) * factor - effectiveBorder * 2,
+              factor - effectiveBorder * 2,
+              factor - effectiveBorder * 2);
 
-              remaining--;
-              if (remaining === 0) {
-                const dynamicTexture = new Texture(canvas.toDataURL(), this.renderService.getScene());
-                decalMaterial.diffuseTexture = dynamicTexture;
-                decalMaterial.diffuseTexture.hasAlpha = true;
-              }
+            remaining--;
+            if (remaining === 0) {
+              const dynamicTexture = new Texture(canvas.toDataURL(), this.renderService.getScene());
+              decalMaterial.diffuseTexture = dynamicTexture;
+              decalMaterial.diffuseTexture.hasAlpha = true;
+            }
 
-            })
-            .catch(error => console.warn(error));
-        }
+          })
+          .catch(error => console.warn(error));
       }
     }
   }

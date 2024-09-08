@@ -12,7 +12,7 @@ import { HttpClient } from "@angular/common/http";
 import { GwtAngularService } from "../../gwtangular/GwtAngularService";
 import { MessageService } from "primeng/api";
 import pako from 'pako';
-import { HttpClient as HttpClientAdapter, RestResponse } from '../../generated/razarion-share';
+import { HttpClient as HttpClientAdapter, RestResponse, TerrainType } from '../../generated/razarion-share';
 import { PlanetConfig } from "../../gwtangular/GwtAngularFacade";
 import { BabylonRenderServiceAccessImpl } from "../../game/renderer/babylon-render-service-access-impl.service";
 import { Nullable, Observer, PointerEventTypes, PointerInfo, Vector3 } from "@babylonjs/core";
@@ -25,12 +25,7 @@ import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { AbstractBrush } from "./brushes/abstract-brush";
 import { FixHeightBrushComponent } from './brushes/fix-height-brush.component';
 import { FlattenBrushComponent } from "./brushes/flattem-brush.component";
-
-export enum UpDownMode {
-  UP = 1,
-  DOWN = 2,
-  OFF = 0
-}
+import { RadarComponent } from 'src/app/game/cockpit/main/radar/radar.component';
 
 @Component({
   selector: 'shape-terrain-editor',
@@ -43,8 +38,8 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private planetConfig: PlanetConfig;
   private editorTerrainTiles: EditorTerrainTile[][] = [];
-  private xCount: number;
-  private yCount: number;
+  private xTileCount: number;
+  private yTileCount: number;
   private terrainEditorControllerClient: TerrainEditorControllerClient;
   lastSavedTimeStamp: string = "";
   lastSavedSize: string = "";
@@ -69,11 +64,11 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
     this.terrainEditorControllerClient = new TerrainEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
 
     this.planetConfig = gwtAngularService.gwtAngularFacade.gameUiControl.getPlanetConfig();
-    this.xCount = Math.ceil(this.planetConfig.getSize().getX() / BabylonTerrainTileImpl.NODE_X_COUNT);
-    this.yCount = Math.ceil(this.planetConfig.getSize().getY() / BabylonTerrainTileImpl.NODE_Y_COUNT);
-    for (let y = 0; y < this.yCount; y++) {
+    this.xTileCount = Math.ceil(this.planetConfig.getSize().getX() / BabylonTerrainTileImpl.NODE_X_COUNT);
+    this.yTileCount = Math.ceil(this.planetConfig.getSize().getY() / BabylonTerrainTileImpl.NODE_Y_COUNT);
+    for (let y = 0; y < this.yTileCount; y++) {
       this.editorTerrainTiles[y] = [];
-      for (let x = 0; x < this.xCount; x++) {
+      for (let x = 0; x < this.xTileCount; x++) {
         this.editorTerrainTiles[y][x] = new EditorTerrainTile(renderService, gwtAngularService.gwtAngularFacade.inputService, GwtInstance.newIndex(x, y));
       }
     }
@@ -133,8 +128,8 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   onWireframeChanged(): void {
-    for (let x = 0; x < this.xCount; x++) {
-      for (let y = 0; y < this.yCount; y++) {
+    for (let x = 0; x < this.xTileCount; x++) {
+      for (let y = 0; y < this.yTileCount; y++) {
         this.editorTerrainTiles[y][x].setWireframe(this.wireframe);
       }
     }
@@ -142,8 +137,8 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   onShowTerrainTypeChanged(): void {
-    for (let x = 0; x < this.xCount; x++) {
-      for (let y = 0; y < this.yCount; y++) {
+    for (let x = 0; x < this.xTileCount; x++) {
+      for (let y = 0; y < this.yTileCount; y++) {
         if (this.editorTerrainTiles[y][x].hasPositions()) {
           if (this.showTerrainType) {
             this.editorTerrainTiles[y][x].showTerrainType();
@@ -156,8 +151,8 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   onShowTerrainTypeWorkerChanged(): void {
-    for (let x = 0; x < this.xCount; x++) {
-      for (let y = 0; y < this.yCount; y++) {
+    for (let x = 0; x < this.xTileCount; x++) {
+      for (let y = 0; y < this.yTileCount; y++) {
         if (this.editorTerrainTiles[y][x].hasPositions()) {
           if (this.showTerrainTypeWorker) {
             this.editorTerrainTiles[y][x].showTerrainTypeWorker();
@@ -216,8 +211,8 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   private onPointerDown(position: Vector3) {
-    for (let x = 0; x < this.xCount; x++) {
-      for (let y = 0; y < this.yCount; y++) {
+    for (let x = 0; x < this.xTileCount; x++) {
+      for (let y = 0; y < this.yTileCount; y++) {
         if (this.editorTerrainTiles[y][x].isInside(position)) {
           this.editorTerrainTiles[y][x].onPointerDown(this.currentBrush!, position);
         }
@@ -226,8 +221,8 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   private onPointerMove(position: Vector3, buttonDown: boolean) {
-    for (let x = 0; x < this.xCount; x++) {
-      for (let y = 0; y < this.yCount; y++) {
+    for (let x = 0; x < this.xTileCount; x++) {
+      for (let y = 0; y < this.yTileCount; y++) {
         if (this.editorTerrainTiles[y][x].isInside(position)) {
           this.editorTerrainTiles[y][x].onPointerMove(this.currentBrush!,
             position,
@@ -244,12 +239,12 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  async save() {
-    const uint16Array = new Uint16Array(this.xCount * this.yCount * BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT);
+  save() {
+    const uint16Array = new Uint16Array(this.xTileCount * this.yTileCount * BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT);
 
     let index = 0;
-    for (let y = 0; y < this.yCount; y++) {
-      for (let x = 0; x < this.xCount; x++) {
+    for (let y = 0; y < this.yTileCount; y++) {
+      for (let x = 0; x < this.xTileCount; x++) {
         let editorTerrainTile = this.editorTerrainTiles[y][x];
         if (editorTerrainTile.hasPositions()) {
           this.editorTerrainTiles[y][x].fillHeights(height => {
@@ -284,6 +279,97 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
       .catch(error => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message })
       });
+  }
+
+  generateMiniMap(canvas: HTMLCanvasElement) {
+    canvas.width = RadarComponent.MINI_MAP_IMAGE_WIDTH;
+    canvas.height = RadarComponent.MINI_MAP_IMAGE_HEIGHT;
+    const context = canvas.getContext('2d')!;
+    context.fillStyle = "rgba(0, 0, 0, 1)";
+    context.fillRect(0, 0, canvas.width, canvas.height)
+    const factor = RadarComponent.MINI_MAP_IMAGE_WIDTH / (this.xTileCount * BabylonTerrainTileImpl.NODE_X_DISTANCE * BabylonTerrainTileImpl.NODE_X_COUNT);
+
+    for (let y = 0; y < this.yTileCount; y++) {
+      for (let x = 0; x < this.xTileCount; x++) {
+        console.info(`Generate tile ${x}:${y} of ${this.xTileCount}:${this.yTileCount}`);
+
+        let editorTerrainTile = this.editorTerrainTiles[y][x];
+        const xNodeTile = x * BabylonTerrainTileImpl.NODE_X_DISTANCE * BabylonTerrainTileImpl.NODE_X_COUNT;
+        const yNodeTile = y * BabylonTerrainTileImpl.NODE_Y_DISTANCE * BabylonTerrainTileImpl.NODE_Y_COUNT;
+        const xCanvas = xNodeTile * factor;
+        const yCanvas = (((this.yTileCount - 1) * BabylonTerrainTileImpl.NODE_Y_DISTANCE * BabylonTerrainTileImpl.NODE_Y_COUNT) - yNodeTile) * factor;
+
+        if (editorTerrainTile.hasPositions()) {
+          context.translate(xCanvas, yCanvas);
+          editorTerrainTile.drawMiniMap(
+            context,
+            factor,
+            0,
+            "rgba(0, 0, 255, 0.5)",
+            "rgba(0, 255, 0, 0.5)",
+            "rgba(255, 0, 0, 0.5)");
+          context.translate(-xCanvas, -yCanvas);
+        } else {
+          if (!this.originalUint16HeightMap) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No original height map loaded' });
+            return;
+          }
+
+          const indexTileNode = (BabylonTerrainTileImpl.NODE_Y_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT) * (y * this.xTileCount + x)
+
+          const originalUint16HeightMap = this.originalUint16HeightMap;
+          const setupTerrainType = function (indexNode: number): TerrainType {
+            const indexAbsolute = indexNode + indexTileNode;
+            if (indexAbsolute >= originalUint16HeightMap.length) {
+              return TerrainType.LAND;
+            }
+            const blHeight = BabylonTerrainTileImpl.uint16ToHeight(originalUint16HeightMap[indexAbsolute]);
+            if (indexAbsolute + 1 >= originalUint16HeightMap.length) {
+              return TerrainType.LAND;
+            }
+            const brHeight = BabylonTerrainTileImpl.uint16ToHeight(originalUint16HeightMap[indexAbsolute + 1]);
+            const indexTop = indexAbsolute + BabylonTerrainTileImpl.NODE_Y_COUNT;
+            if (indexTop >= originalUint16HeightMap.length) {
+              return TerrainType.LAND;
+            }
+            const tlHeight = BabylonTerrainTileImpl.uint16ToHeight(originalUint16HeightMap[indexTop]);
+
+            if (indexTop + 1 >= originalUint16HeightMap.length) {
+              return TerrainType.LAND;
+            }
+            const trHeight = BabylonTerrainTileImpl.uint16ToHeight(originalUint16HeightMap[indexTop + 1]);
+            return EditorTerrainTile.setupTerrainType(blHeight, brHeight, trHeight, tlHeight);
+          }
+          context.translate(xCanvas, yCanvas);
+
+          let indexNode = 0;
+          for (let yNode = 0; yNode < BabylonTerrainTileImpl.NODE_Y_COUNT; yNode++) {
+            for (let xNode = 0; xNode < BabylonTerrainTileImpl.NODE_X_COUNT; xNode++) {
+              switch (setupTerrainType(indexNode)) {
+                case TerrainType.WATER:
+                  context.fillStyle = "rgba(0, 0, 255, 0.5)";
+                  break;
+                case TerrainType.LAND:
+                  context.fillStyle = "rgba(0, 255, 0, 0.5)";
+                  break;
+                case TerrainType.BLOCKED:
+                  context.fillStyle = "rgba(255, 0, 0, 0.5)";
+                  break;
+                default:
+                  context.fillStyle = "rgba(1, 1, 1, 1)";
+              }
+              indexNode++;
+              context.fillRect(
+                xNode * BabylonTerrainTileImpl.NODE_X_DISTANCE * factor,
+                (BabylonTerrainTileImpl.NODE_Y_COUNT - yNode) * BabylonTerrainTileImpl.NODE_Y_DISTANCE * factor,
+                BabylonTerrainTileImpl.NODE_X_DISTANCE * factor,
+                BabylonTerrainTileImpl.NODE_Y_DISTANCE * factor);
+            }
+          }
+          context.translate(-xCanvas, -yCanvas);
+        }
+      }
+    }
   }
 
   restartPlanetWarm() {

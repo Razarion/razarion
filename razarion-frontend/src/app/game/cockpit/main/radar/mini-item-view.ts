@@ -4,7 +4,7 @@ import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-re
 
 export class MiniItemView extends AbstractGameCoordinates {
     private static readonly REDRAW_TIME = 2000;
-    private static readonly ITEM_WIDTH = 2;
+    private static readonly ITEM_WIDTH = 0.4;
     private stopping = false;
 
     constructor(gameUiControl: GameUiControl, private baseItemUiService: BaseItemUiService, renderService: BabylonRenderServiceAccessImpl) {
