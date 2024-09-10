@@ -35,7 +35,7 @@ export class BabylonItemImpl implements BabylonItem {
   private visualizationMarkerDisc: Mesh | null = null;
   private selectActive: boolean = false;
   private hoverActive: boolean = false;
-  private itemCursorTypeHandler: (selectionInfo: SelectionInfo) => void;
+  private readonly itemCursorTypeHandler: (selectionInfo: SelectionInfo) => void;
   private lastNormal: Vector3 | null = null;
 
   constructor(private id: number,

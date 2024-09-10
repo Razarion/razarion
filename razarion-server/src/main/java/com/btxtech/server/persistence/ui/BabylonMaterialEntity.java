@@ -1,4 +1,6 @@
-package com.btxtech.server.persistence;
+package com.btxtech.server.persistence.ui;
+
+import com.btxtech.server.persistence.BaseEntity;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -21,4 +23,8 @@ public class BabylonMaterialEntity extends BaseEntity {
         this.data = data;
     }
 
+    public BabylonMaterialEntity data(byte[] data) {
+        setData(data);
+        return this;
+    }
 }

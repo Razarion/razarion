@@ -565,6 +565,17 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
     }
 
+    if (isNaN(bottomLeft.x) || isNaN(bottomLeft.x)
+      || isNaN(bottomRight.x) || isNaN(bottomRight.z)
+      || isNaN(topRight.x) || isNaN(topRight.z)
+      || isNaN(topLeft.x) || isNaN(topLeft.z)) {
+      console.warn("setupViewField() has NaN");
+      return new ViewField(
+        new Vector3(0, 0, 0),
+        new Vector3(1, 0, 0),
+        new Vector3(1, 0, 1),
+        new Vector3(0, 0, 1));
+    }
     this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
       bottomLeft.x, bottomLeft.z,
       bottomRight.x, bottomRight.z,

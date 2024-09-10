@@ -26,6 +26,7 @@ import Type = ThreeJsModelConfig.Type;
 import { BabylonMaterialControllerClient } from "src/app/generated/razarion-share";
 import { TypescriptGenerator } from "src/app/backend/typescript-generator";
 import { SimpleMaterial } from "@babylonjs/materials";
+import { UiConfigCollectionService } from "../ui-config-collection.service";
 
 @Injectable()
 export class BabylonModelService {
@@ -42,9 +43,12 @@ export class BabylonModelService {
   private gwtResolver?: () => void;
   private babylonMaterialControllerClient: BabylonMaterialControllerClient;
 
-  constructor(private httpClient: HttpClient, private messageService: MessageService) {
+  constructor(private uiConfigCollectionService: UiConfigCollectionService,
+    private httpClient: HttpClient,
+    private messageService: MessageService) {
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
     this.babylonMaterialControllerClient = new BabylonMaterialControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
+    this.loadBabylonMaterials();
   }
 
   init(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[], gwtAngularService: GwtAngularService): Promise<void> {
@@ -53,8 +57,6 @@ export class BabylonModelService {
     this.gwtAngularService = gwtAngularService;
 
     this.threeJsModelConfigs.forEach(threeJsModelConfig => this.threeJsModelConfigMap.set(threeJsModelConfig.getId(), threeJsModelConfig))
-
-    this.loadBabylonMaterials();
 
     return new Promise<void>((resolve, reject) => {
       try {
@@ -107,24 +109,21 @@ export class BabylonModelService {
   }
 
   private loadBabylonMaterials() {
-    this.babylonMaterialControllerClient.readAll()
-      .then(materials => {
-        if (materials.length === 0) {
-          this.handleLoaded();
-          return;
-        }
-
-        const materialLoadingControl = {
-          loadingCount: materials.length
-        }
-
-        materials.forEach(material => {
-          this.loadMaterial(material.id, materialLoadingControl);
-        });
-      }).catch(err => {
-        console.warn(err);
+    this.uiConfigCollectionService.getUiConfigCollection().then(uiConfigCollection => {
+      const materials = uiConfigCollection.babylonMaterials;
+      if (materials.length === 0) {
         this.handleLoaded();
+        return;
+      }
+
+      const materialLoadingControl = {
+        loadingCount: materials.length
+      }
+
+      materials.forEach(material => {
+        this.loadMaterial(material.id, materialLoadingControl);
       });
+    });
   }
 
   private loadMaterial(materialId: number, materialLoadingControl: { loadingCount: number }) {

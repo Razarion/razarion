@@ -1,5 +1,7 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.server.persistence.ui.BabylonMaterialEntity;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;

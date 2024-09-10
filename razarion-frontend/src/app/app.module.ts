@@ -133,6 +133,7 @@ import { BabylonMaterialEditorComponent } from './editor/crud-editors/babylon-ma
 import { BabylonMaterialComponent } from './editor/common/babylon-material/babylon-material.component';
 import {ScrollPanelModule} from "primeng/scrollpanel";
 import { I18nComponent } from './editor/common/i18n/i18n.component';
+import {UiConfigCollectionService} from "./game/ui-config-collection.service";
 
 @NgModule({
   declarations: [
@@ -279,7 +280,8 @@ import { I18nComponent } from './editor/common/i18n/i18n.component';
     ThreeJsWaterRenderService,
     GameMockService,
     BabylonModelService,
-    ActionService
+    ActionService,
+    UiConfigCollectionService
   ],
   bootstrap: [AppComponent]
 })

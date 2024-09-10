@@ -2,7 +2,7 @@ package com.btxtech.server.rest.crud;
 
 import com.btxtech.server.persistence.AbstractEntityCrudPersistence;
 import com.btxtech.server.persistence.BabylonMaterialCrudPersistence;
-import com.btxtech.server.persistence.BabylonMaterialEntity;
+import com.btxtech.server.persistence.ui.BabylonMaterialEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;

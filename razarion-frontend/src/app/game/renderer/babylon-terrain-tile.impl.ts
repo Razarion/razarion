@@ -117,10 +117,12 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(babylonDecal.xPos, babylonDecal.yPos));
         if (pickingInfo && pickingInfo.hit) {
           const decal = MeshBuilder.CreateDecal("Bot ground", this.groundMesh, {
-            position: new Vector3(babylonDecal.xPos, pickingInfo.pickedPoint!.y, babylonDecal.yPos),
-            size: new Vector3(babylonDecal.xSize, babylonDecal.ySize, 10)
+            position: pickingInfo!.pickedPoint!,
+            size: new Vector3(babylonDecal.xSize, babylonDecal.ySize, 10),
+            normal: pickingInfo.getNormal(true)!
           });
           decal.material = material;
+          decal.material.zOffset = -2
           decal.setParent(this.container);
           decal.receiveShadows = true;
           decal.actionManager = actionManager;

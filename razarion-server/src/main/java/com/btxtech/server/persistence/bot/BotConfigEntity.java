@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.bot;
 
 import com.btxtech.server.persistence.BabylonMaterialCrudPersistence;
-import com.btxtech.server.persistence.BabylonMaterialEntity;
+import com.btxtech.server.persistence.ui.BabylonMaterialEntity;
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
