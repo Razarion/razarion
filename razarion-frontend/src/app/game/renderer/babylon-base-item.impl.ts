@@ -24,12 +24,11 @@ import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-
 import { ActionService } from "../action.service";
 import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
 import { GwtInstance } from "../../gwtangular/GwtInstance";
+import { UiConfigCollectionService } from "../ui-config-collection.service";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   // See GWT java PlanetService
   static readonly TICK_TIME_MILLI_SECONDS: number = 100;
-  private readonly PROGRESS_BAR_NODE_MATERIAL_ID = 54; // Put in properties
-  private readonly HEALTH_BAR_NODE_MATERIAL_ID = 55; // Put in properties
   private buildingParticleSystem: ParticleSystem | null = null;
   private harvestingParticleSystem: ParticleSystem | null = null;
   private progressBar: Mesh | undefined;
@@ -50,8 +49,16 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     diplomacy: Diplomacy,
     rendererService: BabylonRenderServiceAccessImpl,
     actionService: ActionService,
-    babylonModelService: BabylonModelService) {
-    super(id, baseItemType, diplomacy, rendererService, babylonModelService, actionService, rendererService.baseItemContainer);
+    babylonModelService: BabylonModelService,
+    uiConfigCollectionService: UiConfigCollectionService) {
+    super(id, 
+      baseItemType, 
+      diplomacy, 
+      rendererService, 
+      babylonModelService, 
+      uiConfigCollectionService, 
+      actionService, 
+      rendererService.baseItemContainer);
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
 
@@ -158,13 +165,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.healthBar.position.y = 0.5 + this.baseItemType.getPhysicalAreaConfig().getRadius() - this.baseItemType.getPhysicalAreaConfig().getRadius() * 0.08;
       this.healthBar.parent = this.getContainer();
       this.healthBar.billboardMode = TransformNode.BILLBOARDMODE_ALL;
-      let nodeMaterial = this.babylonModelService.getNodeMaterial(this.HEALTH_BAR_NODE_MATERIAL_ID);
+      let nodeMaterial = this.babylonModelService.getNodeMaterial(this.uiConfigCollectionService.getHealthBarNodeMaterialId());
       this.healthBar.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
       this.healthInputBlock = <InputBlock>(<NodeMaterial>this.healthBar.material).getBlockByName("health");
       if (this.healthInputBlock) {
         this.healthInputBlock.value = health;
       } else {
-        console.warn(`Health block not found in NodeMaterial ${this.HEALTH_BAR_NODE_MATERIAL_ID}`)
+        console.warn(`'health' block not found in NodeMaterial ${this.uiConfigCollectionService.getHealthBarNodeMaterialId()}`)
       }
     } else if (!this.isSelectOrHove() && this.healthBar) {
       this.healthBar.material!.dispose()
@@ -200,11 +207,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         this.progressBar.position.y = 0.5 + this.baseItemType.getPhysicalAreaConfig().getRadius();
         this.progressBar.parent = this.getContainer();
         this.progressBar.billboardMode = TransformNode.BILLBOARDMODE_ALL;
-        let nodeMaterial = this.babylonModelService.getNodeMaterial(this.PROGRESS_BAR_NODE_MATERIAL_ID);
+        let nodeMaterial = this.babylonModelService.getNodeMaterial(this.uiConfigCollectionService.getProgressBarNodeMaterialId());
         this.progressBar.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
         this.progressInputBlock = <InputBlock>(<NodeMaterial>this.progressBar.material).getBlockByName("progress");
         if (!this.progressInputBlock) {
-          console.warn(`Health block not found in NodeMaterial ${this.HEALTH_BAR_NODE_MATERIAL_ID}`)
+          console.warn(`'progress' block not found in NodeMaterial ${this.uiConfigCollectionService.getProgressBarNodeMaterialId()}`)
         }
       }
     } else {

@@ -1,0 +1,37 @@
+<p-table [value]="dbPropertyConfigs" [scrollable]="true" scrollHeight="1000px">
+    <ng-template pTemplate="body" let-dbPropertyConfig>
+        <tr>
+            <td style="width: 500px;">
+                {{ dbPropertyConfig.key }}
+            </td>
+            <td *ngIf="dbPropertyConfig.dbPropertyType === AUDIO" style="width: 300px;">
+                AUDIO
+            </td>
+            <td *ngIf="dbPropertyConfig.dbPropertyType === BABYLON_MATERIAL" style="width: 300px;">
+                <babylon-material [(babylonMaterialId)]="dbPropertyConfig.intValue"></babylon-material>
+            </td>
+            <td *ngIf="dbPropertyConfig.dbPropertyType === NODE_MATERIAL" style="width: 300px;">
+                <babylon-model [(babylonModelId)]="dbPropertyConfig.intValue"></babylon-model>
+            </td>
+            <td *ngIf="dbPropertyConfig.dbPropertyType === INTEGER" style="width: 300px;">
+                <p-inputNumber inputId="integeronly" [(ngModel)]="dbPropertyConfig.intValue"></p-inputNumber>
+            </td>
+            <td *ngIf="dbPropertyConfig.dbPropertyType === DOUBLE" style="width: 300px;">
+                <p-inputNumber [(ngModel)]="dbPropertyConfig.doubleValue"></p-inputNumber>
+            </td>
+            <td *ngIf="dbPropertyConfig.dbPropertyType === COLOR" style="width: 300px;">
+                COLOR
+            </td>
+            <td *ngIf="dbPropertyConfig.dbPropertyType === IMAGE" style="width: 300px;">
+                <image-item [(imageId)]="dbPropertyConfig.intValue"></image-item>
+            </td>
+            <td *ngIf="dbPropertyConfig.dbPropertyType === UNKNOWN" style="width: 300px;">
+                UNKNOWN
+            </td>
+            <td style="width: 50px;">
+                <p-button icon="pi pi-save" title="Save" (onClick)="onSave(dbPropertyConfig)">
+                </p-button>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

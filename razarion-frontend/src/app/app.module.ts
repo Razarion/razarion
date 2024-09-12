@@ -134,6 +134,7 @@ import { BabylonMaterialComponent } from './editor/common/babylon-material/babyl
 import {ScrollPanelModule} from "primeng/scrollpanel";
 import { I18nComponent } from './editor/common/i18n/i18n.component';
 import {UiConfigCollectionService} from "./game/ui-config-collection.service";
+import { PropertyEditorComponent } from './editor/property-editor/property-editor.component';
 
 @NgModule({
   declarations: [
@@ -219,7 +220,8 @@ import {UiConfigCollectionService} from "./game/ui-config-collection.service";
     VertexEditorComponent,
     BabylonMaterialEditorComponent,
     BabylonMaterialComponent,
-    I18nComponent
+    I18nComponent,
+    PropertyEditorComponent
   ],
   imports: [
     BrowserModule,

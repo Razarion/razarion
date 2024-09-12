@@ -3,6 +3,7 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DbPropertyKey;
+import com.btxtech.shared.datatypes.DbPropertyType;
 import com.btxtech.shared.system.alarm.AlarmService;
 
 import javax.inject.Inject;
@@ -10,7 +11,12 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import static com.btxtech.shared.datatypes.DbPropertyKey.fromKey;
 import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_PROPERTY;
 
 /**
@@ -19,7 +25,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_PROPERTY;
  */
 @Singleton
 public class DbPropertiesService {
-    // private Logger logger = Logger.getLogger(DbPropertiesService.class.getName());
+    private final Logger logger = Logger.getLogger(DbPropertiesService.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -30,6 +36,8 @@ public class DbPropertiesService {
     private Shape3DCrudPersistence shape3DPersistence;
     @Inject
     private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
+    @Inject
+    private BabylonMaterialCrudPersistence babylonMaterialCrudPersistence;
     @Inject
     private AlarmService alarmService;
 
@@ -60,6 +68,16 @@ public class DbPropertiesService {
             return dbPropertiesEntity.getBabylonModel().getId();
         }
         alarmService.riseAlarm(INVALID_PROPERTY, "Babylon model: " + dbPropertyKey);
+        return null;
+    }
+
+    @Transactional
+    public Integer getBabylonMaterialProperty(DbPropertyKey dbPropertyKey) {
+        DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
+        if (dbPropertiesEntity != null && dbPropertiesEntity.getBabylonMaterial() != null) {
+            return dbPropertiesEntity.getBabylonMaterial().getId();
+        }
+        alarmService.riseAlarm(INVALID_PROPERTY, "Babylon materail: " + dbPropertyKey);
         return null;
     }
 
@@ -187,6 +205,21 @@ public class DbPropertiesService {
 
     @Transactional
     @SecurityCheck
+    public void setBabylonMaterialProperty(Integer babylonModelId, DbPropertyKey dbPropertyKey) {
+        DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
+        if (dbPropertiesEntity == null) {
+            dbPropertiesEntity = new DbPropertiesEntity(dbPropertyKey.getKey());
+        }
+        if (babylonModelId != null) {
+            dbPropertiesEntity.setBabylonMaterial(babylonMaterialCrudPersistence.getBaseEntity(babylonModelId));
+        } else {
+            dbPropertiesEntity.setBabylonMaterial(null);
+        }
+        entityManager.merge(dbPropertiesEntity);
+    }
+
+    @Transactional
+    @SecurityCheck
     public void setColorProperty(Color color, DbPropertyKey dbPropertyKey) {
         DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
         if (dbPropertiesEntity == null) {
@@ -198,5 +231,92 @@ public class DbPropertiesService {
 
     private DbPropertiesEntity getProperty(DbPropertyKey dbPropertyKey) {
         return entityManager.find(DbPropertiesEntity.class, dbPropertyKey.getKey());
+    }
+
+    @Transactional
+    public List<DbPropertyConfig> getDbPropertyConfigs() {
+        return Arrays.stream(DbPropertyKey.values())
+                .map(this::getDbPropertyConfig)
+                .collect(Collectors.toList());
+    }
+
+    public DbPropertyConfig getDbPropertyConfig(DbPropertyKey dbPropertyKey) {
+        DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
+        DbPropertyConfig dbPropertyConfig = new DbPropertyConfig()
+                .key(dbPropertyKey.getKey())
+                .dbPropertyType(dbPropertyKey.getDbPropertyType());
+
+        if (dbPropertiesEntity == null) {
+            return dbPropertyConfig;
+        }
+
+        fillDbPropertyConfig(dbPropertyConfig, dbPropertyKey.getDbPropertyType(), dbPropertiesEntity);
+
+        return dbPropertyConfig;
+    }
+
+    private void fillDbPropertyConfig(DbPropertyConfig dbPropertyConfig, DbPropertyType dbPropertyType, DbPropertiesEntity dbPropertiesEntity) {
+        switch (dbPropertyType) {
+            case AUDIO:
+                dbPropertyConfig.setIntValue(dbPropertiesEntity.getAudio() != null ? dbPropertiesEntity.getAudio().getId() : null);
+                break;
+            case BABYLON_MATERIAL:
+                dbPropertyConfig.setIntValue(dbPropertiesEntity.getBabylonMaterial() != null ? dbPropertiesEntity.getBabylonMaterial().getId() : null);
+                break;
+            case NODE_MATERIAL:
+                dbPropertyConfig.setIntValue(dbPropertiesEntity.getBabylonModel() != null ? dbPropertiesEntity.getBabylonModel().getId() : null);
+                break;
+            case INTEGER:
+                dbPropertyConfig.setIntValue(dbPropertiesEntity.getIntValue());
+                break;
+            case DOUBLE:
+                dbPropertyConfig.setDoubleValue(dbPropertiesEntity.getDoubleValue());
+                break;
+            case COLOR:
+                logger.warning("DbPropertiesService COLOR not supported");
+                break;
+            case IMAGE:
+                dbPropertyConfig.setIntValue(dbPropertiesEntity.getImage() != null ? dbPropertiesEntity.getImage().getId() : null);
+                break;
+            case UNKNOWN:
+                logger.warning("DbPropertiesService UNKNOWN not supported");
+                break;
+            default:
+                logger.warning("DbPropertiesService " + dbPropertyType + " not supported");
+        }
+    }
+
+
+    @Transactional
+    public void saveDbPropertyConfig(DbPropertyConfig dbPropertyConfig) {
+        DbPropertyKey dbPropertyKey = fromKey(dbPropertyConfig.getKey());
+        switch (dbPropertyConfig.getDbPropertyType()) {
+            case AUDIO:
+                setAudioIdProperty(dbPropertyConfig.getIntValue(), dbPropertyKey);
+                break;
+            case BABYLON_MATERIAL:
+                setBabylonMaterialProperty(dbPropertyConfig.getIntValue(), dbPropertyKey);
+                break;
+            case NODE_MATERIAL:
+                setBabylonModelProperty(dbPropertyConfig.getIntValue(), dbPropertyKey);
+                break;
+            case INTEGER:
+                setIntProperty(dbPropertyConfig.getIntValue(), dbPropertyKey);
+                break;
+            case DOUBLE:
+                setDoubleProperty(dbPropertyConfig.getDoubleValue(), dbPropertyKey);
+                break;
+            case COLOR:
+                logger.warning("DbPropertiesService COLOR not supported");
+                break;
+            case IMAGE:
+                setImageIdProperty(dbPropertyConfig.getIntValue(), dbPropertyKey);
+                break;
+            case UNKNOWN:
+                logger.warning("DbPropertiesService UNKNOWN not supported");
+                break;
+            default:
+                logger.warning("DbPropertiesService " + dbPropertyConfig.getDbPropertyType() + " not supported");
+        }
     }
 }

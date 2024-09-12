@@ -3,14 +3,23 @@ import { BabylonResourceItem, DecimalPosition, Diplomacy, MarkerConfig, Resource
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { BabylonModelService } from "./babylon-model.service";
 import { ActionService } from "../action.service";
+import { UiConfigCollectionService } from "../ui-config-collection.service";
 
 export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonResourceItem {
   constructor(id: number,
     private resourceItemType: ResourceItemType,
     rendererService: BabylonRenderServiceAccessImpl,
     actionService: ActionService,
-    babylonModelService: BabylonModelService) {
-    super(id, resourceItemType, Diplomacy.RESOURCE, rendererService, babylonModelService, actionService, rendererService.resourceItemContainer);
+    babylonModelService: BabylonModelService,
+    uiConfigCollectionService: UiConfigCollectionService) {
+    super(id,
+      resourceItemType,
+      Diplomacy.RESOURCE,
+      rendererService,
+      babylonModelService,
+      uiConfigCollectionService,
+      actionService,
+      rendererService.resourceItemContainer);
   }
 
   public static createDummy(id: number): BabylonResourceItem {

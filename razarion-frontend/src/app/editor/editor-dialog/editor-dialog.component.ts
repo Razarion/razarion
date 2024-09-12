@@ -27,6 +27,7 @@ import { UserMgmtComponent } from "../user-mgmt/user-mgmt.component";
 import { TerrainEditorComponent } from "../terrain-editor/terrain-editor.component";
 import { ParticleSystemEditorComponent } from "../crud-editors/particle-system-editor/particle-system-editor.component";
 import { BabylonMaterialEditorComponent } from "../crud-editors/babylon-material-editor/babylon-material-editor.component";
+import { PropertyEditorComponent } from "../property-editor/property-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -58,6 +59,11 @@ export class EditorDialogComponent {
     this.gameComponent.addEditorModel(new EditorModel("Level editor", LevelEditorComponent));
   }
 
+  openPropertyEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Properties", PropertyEditorComponent));
+  }
+  
   openConfigurationEditor(collectionName: string) {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new GenericPropertyEditorModel(CollectionSelectorComponent, collectionName));

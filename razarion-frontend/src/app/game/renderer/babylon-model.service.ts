@@ -322,8 +322,8 @@ export class BabylonModelService {
     }
   }
 
-  getNodeMaterial(babylonModelId: number): NodeMaterial {
-    if (babylonModelId === undefined) {
+  getNodeMaterial(babylonModelId: number | null): NodeMaterial {
+    if (babylonModelId === null) {
       throw new Error(`getNodeMaterial(): babylonModelId undefined`);
     }
     babylonModelId = GwtHelper.gwtIssueNumber(babylonModelId);
@@ -422,8 +422,8 @@ export class BabylonModelService {
       })
   }
 
-  getBabylonMaterial(babylonMaterialId: number): Material {
-    if (babylonMaterialId === undefined) {
+  getBabylonMaterial(babylonMaterialId: number | null): Material {
+    if (babylonMaterialId === null) {
       throw new Error(`getBabylonMaterial(): babylonMaterialId undefined`);
     }
     babylonMaterialId = GwtHelper.gwtIssueNumber(babylonMaterialId);

@@ -33,6 +33,7 @@ import { TerrainEditorComponent } from '../editor/terrain-editor/terrain-editor.
 import { GeneratedCrudContainerComponent } from '../editor/crud-editors/crud-container/generated-crud-container.component';
 import { ParticleSystemEditorComponent } from '../editor/crud-editors/particle-system-editor/particle-system-editor.component';
 import { BaseItemTypeEditorComponent } from '../editor/crud-editors/base-item-type-editor/base-item-type-editor.component';
+import { PropertyEditorComponent } from '../editor/property-editor/property-editor.component';
 
 
 @Component({
@@ -77,7 +78,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = true;
+      let runGwtMock = false;
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
@@ -376,7 +377,8 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.displayXps(5, 20);
         this.mainCockpitComponent.displayLevel(1)
         this.mainCockpitComponent.displayEnergy(2, 10);
-        this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+        // this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+        this.addEditorModel(new EditorModel("???", PropertyEditorComponent));
         // this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
         // this.showInventory = true;
         this.fadeOutLoadingCover();

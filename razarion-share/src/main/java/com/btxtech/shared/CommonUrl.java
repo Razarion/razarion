@@ -81,6 +81,7 @@ public class CommonUrl {
     public static final String USER_MGMT_CONTROLLER_PATH = "user-mgmt";
     public static final String FRONTEND_PATH = "frontend";
     public static final String SERVER_TEST_HELPER = "servertesthelper";
+    public static final String PROPERTIES_EDITOR_CONTROLLER = "properties-editor";
     // Cookies
     public static final String LOGIN_COOKIE_NAME = "LoginToken";
     public static final String RAZARION_COOKIE_NAME = "RazarionToken";

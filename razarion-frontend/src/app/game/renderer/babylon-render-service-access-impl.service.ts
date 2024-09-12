@@ -33,6 +33,7 @@ import {
   Engine,
   FreeCamera,
   InputBlock,
+  Material,
   Matrix,
   Mesh,
   MeshBuilder,
@@ -67,6 +68,8 @@ import { LocationVisualization } from "src/app/editor/common/place-config/locati
 import { ActionService } from "../action.service";
 import { BaseItemPlacerPresenterImpl } from "./base-item-placer-presenter.impl";
 import { getImageUrl } from "src/app/common";
+import { UiConfigCollection } from "src/app/generated/razarion-share";
+import { UiConfigCollectionService } from "../ui-config-collection.service";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -139,7 +142,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private directionalLight!: DirectionalLight
   public meshContainers!: MeshContainer[];
   private diplomacyMaterialCache: Map<number, Map<Diplomacy, NodeMaterial>> = new Map<number, Map<Diplomacy, NodeMaterial>>();
-  public readonly itemMarkerMaterialCache: Map<Diplomacy, SimpleMaterial> = new Map<Diplomacy, SimpleMaterial>();
+  public readonly itemMarkerMaterialCache: Map<Diplomacy, NodeMaterial> = new Map<Diplomacy, NodeMaterial>();
   public baseItemContainer!: TransformNode;
   public resourceItemContainer!: TransformNode;
   public boxItemContainer!: TransformNode;
@@ -155,6 +158,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   constructor(private gwtAngularService: GwtAngularService,
     private babylonModelService: BabylonModelService,
+    private uiConfigCollectionService: UiConfigCollectionService,
     private threeJsWaterRenderService: ThreeJsWaterRenderService,
     private actionService: ActionService) {
   }
@@ -296,7 +300,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy),
         this,
         this.actionService,
-        this.babylonModelService);
+        this.babylonModelService,
+        this.uiConfigCollectionService);
     } catch (error) {
       console.error(error);
       return BabylonBaseItemImpl.createDummy(id);
@@ -637,7 +642,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         resourceItemType,
         this,
         this.actionService,
-        this.babylonModelService);
+        this.babylonModelService,
+        this.uiConfigCollectionService);
     } catch (error) {
       console.error(error);
       return BabylonResourceItemImpl.createDummy(id);
@@ -650,7 +656,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         boxItemType,
         this,
         this.actionService,
-        this.babylonModelService);
+        this.babylonModelService,
+        this.uiConfigCollectionService);
     } catch (error) {
       console.error(error);
       return BabylonBoxItemImpl.createDummy(id);

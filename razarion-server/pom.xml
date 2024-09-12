@@ -318,6 +318,7 @@
                         <class>com.btxtech.shared.rest.FrontendController</class>
                         <class>com.btxtech.server.rest.crud.BabylonMaterialController</class>
                         <class>com.btxtech.server.rest.UiConfigCollectionController</class>
+                        <class>com.btxtech.server.rest.DbPropertiesEditorController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

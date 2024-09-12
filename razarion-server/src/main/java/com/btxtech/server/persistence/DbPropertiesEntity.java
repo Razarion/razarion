@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.server.persistence.ui.BabylonMaterialEntity;
 import com.btxtech.shared.datatypes.Color;
 
 import javax.persistence.AttributeOverride;
@@ -34,6 +35,9 @@ public class DbPropertiesEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ThreeJsModelConfigEntity babylonModel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private BabylonMaterialEntity babylonMaterial;
     private Integer intValue;
     private Double doubleValue;
     @AttributeOverrides({
@@ -104,6 +108,14 @@ public class DbPropertiesEntity {
 
     public void setBabylonModel(ThreeJsModelConfigEntity babylonModel) {
         this.babylonModel = babylonModel;
+    }
+
+    public BabylonMaterialEntity getBabylonMaterial() {
+        return babylonMaterial;
+    }
+
+    public void setBabylonMaterial(BabylonMaterialEntity babylonMaterial) {
+        this.babylonMaterial = babylonMaterial;
     }
 
     public Color getColor() {

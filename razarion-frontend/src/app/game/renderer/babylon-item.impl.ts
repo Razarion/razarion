@@ -3,6 +3,7 @@ import {
   AbstractMesh,
   ActionManager,
   ExecuteCodeAction,
+  InputBlock,
   Mesh,
   MeshBuilder,
   NodeMaterial,
@@ -24,6 +25,7 @@ import { SimpleMaterial } from "@babylonjs/materials";
 import { BabylonModelService } from "./babylon-model.service";
 import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
 import { ActionService, SelectionInfo } from "../action.service";
+import { UiConfigCollectionService } from "../ui-config-collection.service";
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
@@ -43,7 +45,8 @@ export class BabylonItemImpl implements BabylonItem {
     protected diplomacy: Diplomacy,
     protected rendererService: BabylonRenderServiceAccessImpl,
     protected babylonModelService: BabylonModelService,
-    private actionService: ActionService,
+    protected uiConfigCollectionService: UiConfigCollectionService,
+    protected actionService: ActionService,
     parent: TransformNode) {
     if (itemType.getThreeJsModelPackConfigId()) {
       this.container = this.babylonModelService.cloneMesh(itemType.getThreeJsModelPackConfigId()!, null);
@@ -272,15 +275,24 @@ export class BabylonItemImpl implements BabylonItem {
   private updateMarkedDisk(): void {
     if (this.isSelectOrHove()) {
       if (!this.diplomacyMarkerDisc) {
-        this.diplomacyMarkerDisc = MeshBuilder.CreateDisc("Base Item Marker", { radius: this.getRadius() + 0.1 });
-        let material = this.rendererService.itemMarkerMaterialCache.get(this.diplomacy);
-        if (!material) {
-          material = new SimpleMaterial(`Base Item Marker ${this.diplomacy}`, this.rendererService.getScene());
-          material.diffuseColor = BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy);
-          this.rendererService.itemMarkerMaterialCache.set(this.diplomacy, material);
+        this.diplomacyMarkerDisc = MeshBuilder.CreatePlane("Item Selection", {
+          size: (this.getRadius() * 2) + 0.3,
+        });
+        let nodeMaterial = this.rendererService.itemMarkerMaterialCache.get(this.diplomacy);
+        if (!nodeMaterial) {
+          nodeMaterial = this.babylonModelService.getNodeMaterial(this.uiConfigCollectionService.getSelectionItemMaterialId());
+          nodeMaterial = nodeMaterial.clone(`${nodeMaterial.name}  ${this.diplomacy}`);
+          nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
+          let diplomacyColor = <InputBlock>nodeMaterial.getBlockByName("diplomacyColor");
+          if (diplomacyColor) {
+            diplomacyColor.value = BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy);
+          } else {
+            console.warn(`'diplomacyColor' block not found in NodeMaterial ${this.uiConfigCollectionService.getSelectionItemMaterialId()}`)
+          }
+          this.rendererService.itemMarkerMaterialCache.set(this.diplomacy, nodeMaterial);
         }
-        this.diplomacyMarkerDisc.material = material;
-        this.diplomacyMarkerDisc.position.y = 0.01;
+        this.diplomacyMarkerDisc.material = nodeMaterial;
+        this.diplomacyMarkerDisc.position.y = 0.2;
         this.diplomacyMarkerDisc.rotation.x = Tools.ToRadians(90);
         this.diplomacyMarkerDisc.parent = this.container;
       }
