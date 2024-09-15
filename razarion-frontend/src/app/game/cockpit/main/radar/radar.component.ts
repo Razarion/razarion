@@ -14,7 +14,7 @@ import { MiniItemView } from './mini-item-view';
 export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
   public static readonly WIDTH = 200;
   public static readonly HEIGHT = 200;
-  public static readonly DEFAULT_ZOOM = 2;
+  public static readonly DEFAULT_ZOOM = 6;
   public static readonly MAX_ZOOM = 10;
   public static readonly MINI_MAP_IMAGE_WIDTH = 1000;
   public static readonly MINI_MAP_IMAGE_HEIGHT = 1000;

@@ -68,18 +68,18 @@ class BrushValues {
     </div>
 
     <div class="field grid align-items-center">
-      <span class="col">Height [m]</span>
+      <span class="col">Size [m]</span>
       <div class="col">
-        <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.height" class="w-full"/>
-        <p-slider [(ngModel)]="activeBrush.value.brushValues.height" [step]="0.1" [min]="-20" [max]="50"></p-slider>
+        <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.diameter" class="w-full"/>
+        <p-slider [(ngModel)]="activeBrush.value.brushValues.diameter" [step]="0.01" [min]="1" [max]="100"></p-slider>
       </div>
     </div>
 
     <div class="field grid align-items-center">
-      <span class="col">Diameter [m]</span>
+      <span class="col">Height [m]</span>
       <div class="col">
-        <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.diameter" class="w-full"/>
-        <p-slider [(ngModel)]="activeBrush.value.brushValues.diameter" [step]="0.01" [min]="1" [max]="100"></p-slider>
+        <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.height" class="w-full"/>
+        <p-slider [(ngModel)]="activeBrush.value.brushValues.height" [step]="0.1" [min]="-20" [max]="50"></p-slider>
       </div>
     </div>
 

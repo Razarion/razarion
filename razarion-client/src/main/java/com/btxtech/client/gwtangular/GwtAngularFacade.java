@@ -30,7 +30,7 @@ public abstract class GwtAngularFacade {
     public GwtAngularBoot gwtAngularBoot;  // Initialized by Angular
     public GameUiControl gameUiControl; // Initialized by GWT
     public String language; // Initialized by GWT
-    public ScreenCover screenCover; // Initialized by GWT
+    public ScreenCover screenCover; // Initialized by Angular
     public ActionServiceListener actionServiceListener; // Initialized by Angular
     public MainCockpit mainCockpit; // Initialized by Angular
     public ItemCockpitFrontend itemCockpitFrontend; // Initialized by Angular
