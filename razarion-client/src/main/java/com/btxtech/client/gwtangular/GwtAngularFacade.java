@@ -27,27 +27,29 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true)
 public abstract class GwtAngularFacade {
+    public abstract void onCrash();
+    // Initialized by Angular called by GWT (GameEngine & UI-Engine event)
     public GwtAngularBoot gwtAngularBoot;  // Initialized by Angular
-    public GameUiControl gameUiControl; // Initialized by GWT
-    public String language; // Initialized by GWT
     public ScreenCover screenCover; // Initialized by Angular
     public ActionServiceListener actionServiceListener; // Initialized by Angular
     public MainCockpit mainCockpit; // Initialized by Angular
     public ItemCockpitFrontend itemCockpitFrontend; // Initialized by Angular
     public QuestCockpit questCockpit; // Initialized by Angular
-    public InGameQuestVisualizationService inGameQuestVisualizationService;  // Initialized by GWT
     public BaseItemPlacerPresenter baseItemPlacerPresenter; // Initialized by Angular
+    public BabylonRenderServiceAccess babylonRenderServiceAccess; // Initialized by Angular
+    public ModelDialogPresenter modelDialogPresenter; // Initialized by Angular
+    // Initialized by GWT called by Angular (user input)
+    public GameUiControl gameUiControl; // Initialized by GWT
+    public String language; // Initialized by GWT
+    public InGameQuestVisualizationService inGameQuestVisualizationService;  // Initialized by GWT
     public EditorFrontendProvider editorFrontendProvider;  // Initialized by GWT
     public StatusProvider statusProvider; // Initialized by GWT
-    public BabylonRenderServiceAccess babylonRenderServiceAccess; // Initialized by Angular
     public InputService inputService; // Initialized by GWT
     public SelectionHandler selectionHandler; // Initialized by GWT
     public TerrainTypeService terrainTypeService; // Initialized by GWT
     public ItemTypeService itemTypeService; // Initialized by GWT
     public ThreeJsModelPackService threeJsModelPackService; // Initialized by GWT
     public BaseItemUiService baseItemUiService ; // Initialized by GWT
-    public ModelDialogPresenter modelDialogPresenter; // Initialized by Angular
     public InventoryTypeService inventoryTypeService; // Initialized by GWT
     public InventoryUiService inventoryUiService; // Initialized by GWT
-    public abstract void onCrash();
 }
