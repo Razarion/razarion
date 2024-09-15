@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 @ApplicationScoped
 public class BaseItemPlacerService {
     @Inject
-    private Instance<BaseItemPlacer> instance;
+    private Provider<BaseItemPlacer> instance;
     private BaseItemPlacer baseItemPlacer;
     private BaseItemPlacerPresenter baseItemPlacerPresenter;
     private Consumer<Collection<DecimalPosition>> executionCallback;

@@ -6,7 +6,7 @@ import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.ExceptionUtil;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +29,7 @@ public abstract class Boot {
     private boolean failed;
     private String gameSessionUuid;
     @Inject
-    private Instance<AbstractStartupTask> taskInstance;
+    private Provider<AbstractStartupTask> taskInstance;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -215,9 +215,10 @@ public abstract class Boot {
     private void setupStartupSeq(StartupSeq startupSeq) {
         startupList.clear();
         for (StartupTaskEnum startupTaskEnum : startupSeq.getAbstractStartupTaskEnum()) {
-            AbstractStartupTask abstractStartupTask = taskInstance.select(startupTaskEnum.getTaskClass()).get();
-            abstractStartupTask.setTaskEnum(startupTaskEnum);
-            startupList.add(abstractStartupTask);
+            // TODO AbstractStartupTask abstractStartupTask = taskInstance.select(startupTaskEnum.getTaskClass()).get();
+            // TODO abstractStartupTask.setTaskEnum(startupTaskEnum);
+            // TODO startupList.add(abstractStartupTask);
+            throw new UnsupportedOperationException("Need to be fixed");
         }
     }
 

@@ -2,11 +2,7 @@ package com.btxtech.server;
 
 import org.jboss.weld.interceptor.util.proxy.TargetInstanceProxy;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -64,155 +60,156 @@ public class SimpleTestEnvironment {
             // ? object = targetInstanceProxy.getTargetInstance();
             clazz = targetInstanceProxy.getTargetClass();
         }
-        Instance instance = new Instance() {
-            @Override
-            public Instance select(Annotation... qualifiers) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Instance select(Class subtype, Annotation... qualifiers) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Instance select(TypeLiteral subtype, Annotation... qualifiers) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public boolean isUnsatisfied() {
-                return false;
-            }
-
-            @Override
-            public boolean isAmbiguous() {
-                return false;
-            }
-
-            @Override
-            public void destroy(Object instance) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Iterator iterator() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Object get() {
-                return getSupplier.get();
-            }
-        };
-
-        try {
-            Field field = clazz.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            Object original = field.get(object);
-            field.set(object, instance);
-            field.setAccessible(false);
-            return new Ejector(fieldName, object, clazz, original);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        Instance instance = new Instance() {
+//            @Override
+//            public Instance select(Annotation... qualifiers) {
+//                throw new UnsupportedOperationException();
+//            }
+//
+//            @Override
+//            public Instance select(Class subtype, Annotation... qualifiers) {
+//                throw new UnsupportedOperationException();
+//            }
+//
+//            @Override
+//            public Instance select(TypeLiteral subtype, Annotation... qualifiers) {
+//                throw new UnsupportedOperationException();
+//            }
+//
+//            @Override
+//            public boolean isUnsatisfied() {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean isAmbiguous() {
+//                return false;
+//            }
+//
+//            @Override
+//            public void destroy(Object instance) {
+//                throw new UnsupportedOperationException();
+//            }
+//
+//            @Override
+//            public Iterator iterator() {
+//                throw new UnsupportedOperationException();
+//            }
+//
+//            @Override
+//            public Object get() {
+//                return getSupplier.get();
+//            }
+//        };
+//
+//        try {
+//            Field field = clazz.getDeclaredField(fieldName);
+//            field.setAccessible(true);
+//            Object original = field.get(object);
+//            field.set(object, instance);
+//            field.setAccessible(false);
+//            return new Ejector(fieldName, object, clazz, original);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+        return null;
     }
 
     public static void injectInstance(String fieldName, Object object, Map<Class, Supplier> selectorSupplier) {
-        Instance instance = new Instance() {
-            @Override
-            public Instance select(Annotation... qualifiers) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Instance select(Class subtype, Annotation... qualifiers) {
-                Supplier getSupplier = selectorSupplier.get(subtype);
-                if (getSupplier == null) {
-                    throw new IllegalArgumentException("No supplier for: " + subtype);
-                }
-                return new Instance() {
-                    @Override
-                    public Instance select(Annotation... qualifiers) {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public Instance select(Class subtype, Annotation... qualifiers) {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public Instance select(TypeLiteral subtype, Annotation... qualifiers) {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public boolean isUnsatisfied() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isAmbiguous() {
-                        return false;
-                    }
-
-                    @Override
-                    public void destroy(Object instance) {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public Iterator iterator() {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public Object get() {
-                        return getSupplier.get();
-                    }
-                };
-            }
-
-            @Override
-            public Instance select(TypeLiteral subtype, Annotation... qualifiers) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public boolean isUnsatisfied() {
-                return false;
-            }
-
-            @Override
-            public boolean isAmbiguous() {
-                return false;
-            }
-
-            @Override
-            public void destroy(Object instance) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Iterator iterator() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Object get() {
-                throw new UnsupportedOperationException();
-            }
-        };
-
-        try {
-            Field field = object.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(object, instance);
-            field.setAccessible(false);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        Instance instance = new Instance() {
+//            @Override
+//            public Instance select(Annotation... qualifiers) {
+//                throw new UnsupportedOperationException();
+//            }
+//
+//            @Override
+//            public Instance select(Class subtype, Annotation... qualifiers) {
+//                Supplier getSupplier = selectorSupplier.get(subtype);
+//                if (getSupplier == null) {
+//                    throw new IllegalArgumentException("No supplier for: " + subtype);
+//                }
+//                return new Instance() {
+//                    @Override
+//                    public Instance select(Annotation... qualifiers) {
+//                        throw new UnsupportedOperationException();
+//                    }
+//
+//                    @Override
+//                    public Instance select(Class subtype, Annotation... qualifiers) {
+//                        throw new UnsupportedOperationException();
+//                    }
+//
+//                    @Override
+//                    public Instance select(TypeLiteral subtype, Annotation... qualifiers) {
+//                        throw new UnsupportedOperationException();
+//                    }
+//
+//                    @Override
+//                    public boolean isUnsatisfied() {
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean isAmbiguous() {
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public void destroy(Object instance) {
+//                        throw new UnsupportedOperationException();
+//                    }
+//
+//                    @Override
+//                    public Iterator iterator() {
+//                        throw new UnsupportedOperationException();
+//                    }
+//
+//                    @Override
+//                    public Object get() {
+//                        return getSupplier.get();
+//                    }
+//                };
+//            }
+//
+//            @Override
+//            public Instance select(TypeLiteral subtype, Annotation... qualifiers) {
+//                throw new UnsupportedOperationException();
+//            }
+//
+//            @Override
+//            public boolean isUnsatisfied() {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean isAmbiguous() {
+//                return false;
+//            }
+//
+//            @Override
+//            public void destroy(Object instance) {
+//                throw new UnsupportedOperationException();
+//            }
+//
+//            @Override
+//            public Iterator iterator() {
+//                throw new UnsupportedOperationException();
+//            }
+//
+//            @Override
+//            public Object get() {
+//                throw new UnsupportedOperationException();
+//            }
+//        };
+//
+//        try {
+//            Field field = object.getClass().getDeclaredField(fieldName);
+//            field.setAccessible(true);
+//            field.set(object, instance);
+//            field.setAccessible(false);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
 //    public SyncBaseItem createSimpleSyncBaseItem(PlayerBase playerBase) {

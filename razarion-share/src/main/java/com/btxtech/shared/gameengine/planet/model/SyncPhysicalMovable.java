@@ -26,7 +26,7 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -44,7 +44,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private static final double ANGLE_SLOW_DOWN = 0.1;
     // private Logger logger = Logger.getLogger(SyncPhysicalMovable.class.getName());
     @Inject
-    private Instance<Path> instancePath;
+    private Provider<Path> instancePath;
     //    @Inject
 //    private DebugHelper debugHelper;
     @Inject

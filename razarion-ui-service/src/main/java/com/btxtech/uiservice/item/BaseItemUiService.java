@@ -33,7 +33,7 @@ import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class BaseItemUiService {
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private Instance<GameUiControl> gameUiControl;
+    private Provider<GameUiControl> gameUiControl;
     @Inject
     private MainCockpitService cockpitService;
     @Inject

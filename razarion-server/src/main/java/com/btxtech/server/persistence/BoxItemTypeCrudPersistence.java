@@ -5,7 +5,7 @@ import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity_;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -18,7 +18,7 @@ public class BoxItemTypeCrudPersistence extends AbstractConfigCrudPersistence<Bo
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
-    private Instance<InventoryItemCrudPersistence> inventoryPersistence;
+    private Provider<InventoryItemCrudPersistence> inventoryPersistence;
     @Inject
     private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
 

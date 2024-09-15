@@ -25,7 +25,7 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.Random;
 import java.util.logging.Level;
@@ -47,9 +47,9 @@ public class BotRunner {
     @Inject
     private BaseItemService baseItemService;
     @Inject
-    private Instance<BotEnragementState> enragementStateInstance;
+    private Provider<BotEnragementState> enragementStateInstance;
     @Inject
-    private Instance<IntruderHandler> intruderHandlerInstance;
+    private Provider<IntruderHandler> intruderHandlerInstance;
     @Inject
     private SimpleExecutorService simpleExecutorService;
     @Inject

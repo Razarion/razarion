@@ -24,7 +24,7 @@ import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -68,9 +68,9 @@ public class UserService {
     @Inject
     private SessionService sessionService;
     @Inject
-    private Instance<ServerGameEngineControl> serverGameEngine;
+    private Provider<ServerGameEngineControl> serverGameEngine;
     @Inject
-    private Instance<HistoryPersistence> historyPersistence;
+    private Provider<HistoryPersistence> historyPersistence;
     @Inject
     private RegisterService registerService;
 

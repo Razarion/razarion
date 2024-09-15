@@ -12,12 +12,11 @@ import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
 
-import javax.enterprise.event.Event;
+import com.btxtech.client.Event;
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-import java.util.List;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_PROPERTY;

@@ -12,10 +12,8 @@
     <name>Razarion Parent</name>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <gwt.version>2.8.2</gwt.version>
-        <gwt.elemental2.version>1.0.0-beta-1</gwt.elemental2.version>
+        <gwt.version>2.11.0</gwt.version>
+        <gwt.elemental2.version>1.2.1</gwt.elemental2.version>
         <gwt.pulgin.version>2.8.2</gwt.pulgin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <errai.version>4.1.3.Final</errai.version>
@@ -72,12 +70,36 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.ltgt.gwt.maven</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <inherited>false</inherited>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>net.ltgt.gwt.maven</groupId>
+                    <artifactId>gwt-maven-plugin</artifactId>
+                    <version>1.0.1</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <sourceLevel>1.8</sourceLevel>
+                        <failOnError>true</failOnError>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
     <modules>
         <module>razarion-client</module>
-        <module>razarion-client-worker</module>
+<!--        <module>razarion-client-worker</module>-->
         <module>razarion-client-common</module>
         <module>razarion-ui-service</module>
-<!--        <module>razarion-nnl-pathing</module>-->
+        <!--        <module>razarion-nnl-pathing</module>-->
         <module>razarion-server</module>
         <module>razarion-unity-converter</module>
         <module>razarion-share</module>

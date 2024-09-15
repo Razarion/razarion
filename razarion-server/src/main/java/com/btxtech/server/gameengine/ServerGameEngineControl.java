@@ -39,7 +39,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
+import com.btxtech.client.Event;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;

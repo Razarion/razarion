@@ -26,8 +26,8 @@ import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +50,15 @@ public class QuestService {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private Instance<AbstractComparison> instance;
+    private Provider<CountComparison> countComparisonProvider;
+    @Inject
+    private Provider<InventoryItemCountComparison> inventoryItemCountComparisonnProvider;
+    @Inject
+    private Provider<BaseItemTypeComparison> baseItemTypeComparisonProvider;
+    @Inject
+    private Provider<BaseItemCountComparison> baseItemCountComparisonProvider;
+    @Inject
+    private Provider<BaseItemPositionComparison> baseItemPositionComparisonProvider;
     @Inject
     private ExceptionHandler exceptionHandler;
     private final Collection<QuestListener> questListeners = new ArrayList<>();
@@ -144,7 +152,7 @@ public class QuestService {
         triggerSyncItem(userId, ConditionTrigger.SYNC_ITEM_KILLED, target);
     }
 
-    public void onSyncBoxItemPicked(int  userId) {
+    public void onSyncBoxItemPicked(int userId) {
         triggerValue(userId, ConditionTrigger.BOX_PICKED, 1.0);
     }
 
@@ -195,7 +203,7 @@ public class QuestService {
             case BOX_PICKED:
             case UNLOCKED:
                 if (comparisonConfig.getCount() != null) {
-                    CountComparison countComparison = instance.select(CountComparison.class).get();
+                    CountComparison countComparison = countComparisonProvider.get();
                     countComparison.init(comparisonConfig.getCount());
                     countComparison.setMinSendDelayEnabled(conditionTrigger == ConditionTrigger.HARVEST);
                     return countComparison;
@@ -204,7 +212,7 @@ public class QuestService {
                 }
             case INVENTORY_ITEM_PLACED:
                 if (comparisonConfig.getCount() != null) {
-                    InventoryItemCountComparison inventoryItemCountComparison = instance.select(InventoryItemCountComparison.class).get();
+                    InventoryItemCountComparison inventoryItemCountComparison = inventoryItemCountComparisonnProvider.get();
                     inventoryItemCountComparison.init(comparisonConfig.getCount());
                     return inventoryItemCountComparison;
                 } else {
@@ -217,11 +225,11 @@ public class QuestService {
                     includeExistingUserId = userId;
                 }
                 if (comparisonConfig.getTypeCount() != null) {
-                    BaseItemTypeComparison syncItemTypeComparison = instance.select(BaseItemTypeComparison.class).get();
+                    BaseItemTypeComparison syncItemTypeComparison = baseItemTypeComparisonProvider.get();
                     syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()), includeExistingUserId, comparisonConfig.toBotIdSet());
                     return syncItemTypeComparison;
                 } else if (comparisonConfig.getCount() != null) {
-                    BaseItemCountComparison baseItemCountComparison = instance.select(BaseItemCountComparison.class).get();
+                    BaseItemCountComparison baseItemCountComparison = baseItemCountComparisonProvider.get();
                     baseItemCountComparison.init(comparisonConfig.getCount(), includeExistingUserId, comparisonConfig.toBotIdSet());
                     return baseItemCountComparison;
                 } else {
@@ -229,7 +237,7 @@ public class QuestService {
                 }
             case SYNC_ITEM_POSITION:
                 if (comparisonConfig.getTypeCount() != null) {
-                    BaseItemPositionComparison baseItemPositionComparison = instance.select(BaseItemPositionComparison.class).get();
+                    BaseItemPositionComparison baseItemPositionComparison = baseItemPositionComparisonProvider.get();
                     baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTimeSeconds(), userId);
                     return baseItemPositionComparison;
                 } else if (comparisonConfig.getCount() != null) {

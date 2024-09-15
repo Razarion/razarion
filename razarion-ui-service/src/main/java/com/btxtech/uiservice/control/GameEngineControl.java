@@ -42,7 +42,7 @@ import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
@@ -79,7 +79,7 @@ public abstract class GameEngineControl {
     @Inject
     private PerfmonService perfmonService;
     @Inject
-    private Instance<InputService> inputServices;
+    private Provider<InputService> inputServices;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
     private Runnable stopCallback;

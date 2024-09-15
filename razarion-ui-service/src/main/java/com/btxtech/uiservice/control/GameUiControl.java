@@ -33,8 +33,8 @@ import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.user.UserUiService;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
+import com.btxtech.client.Event;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ import java.util.logging.Logger;
 public class GameUiControl { // Equivalent worker class is PlanetService
     private final Logger logger = Logger.getLogger(GameUiControl.class.getName());
     @Inject
-    private Instance<Scene> sceneInstance;
+    private Provider<Scene> sceneInstance;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -81,9 +81,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private ModalDialogManager modalDialogManager;
     @Inject
-    private Instance<ScreenCover> screenCover;
+    private Provider<ScreenCover> screenCover;
     @Inject
-    private Instance<AbstractServerSystemConnection> serverSystemConnectionInstance;
+    private Provider<AbstractServerSystemConnection> serverSystemConnectionInstance;
     private ColdGameUiContext coldGameUiContext;
     private int nextSceneNumber;
     private Scene currentScene;

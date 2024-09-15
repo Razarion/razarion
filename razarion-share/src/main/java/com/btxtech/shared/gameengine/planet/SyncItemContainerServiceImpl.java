@@ -26,9 +26,9 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,19 +52,23 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     private static final int CELL_LENGTH = (int) Math.pow(2, CELL_LENGTH_EXPONENT);
     private Logger logger = Logger.getLogger(SyncItemContainerServiceImpl.class.getName());
     @Inject
-    private Instance<SyncItem> syncItemInstance;
+    private Provider<SyncBaseItem> syncBaseItemProvider;
+    @Inject
+    private Provider<SyncResourceItem> syncResourceItemProvider;
+    @Inject
+    private Provider<SyncBoxItem> syncBoxItemProvider;
     @Inject
     @Named(SyncItem.SYNC_PHYSICAL_AREA)
-    private Instance<SyncPhysicalArea> syncPhysicalAreaInstance;
+    private Provider<SyncPhysicalArea> syncPhysicalAreaInstance;
     @Inject
     @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
-    private Instance<SyncPhysicalMovable> syncPhysicalMovableInstance;
+    private Provider<SyncPhysicalMovable> syncPhysicalMovableInstance;
     @Inject
     private TerrainService terrainService;
     @Inject
-    private Instance<GuardingItemService> guardingItemServiceInstanceInstance;
+    private Provider<GuardingItemService> guardingItemServiceInstanceInstance;
     @Inject
-    private Instance<BotService> botServices;
+    private Provider<BotService> botServices;
     private int lastItemId = 1;
     private final HashMap<Integer, SyncItem> items = new HashMap<>();
     private final HashMap<Index, SyncItemContainerCell> cells = new HashMap<>();
@@ -204,21 +208,21 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     public SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position2d, double zRotation) {
-        SyncBaseItem syncBaseItem = syncItemInstance.select(SyncBaseItem.class).get();
+        SyncBaseItem syncBaseItem = syncBaseItemProvider.get();
         SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position2d, zRotation);
         initAndAdd(baseItemType, syncBaseItem, syncPhysicalArea);
         return syncBaseItem;
     }
 
     public SyncBaseItem createSyncBaseItemSlave(BaseItemType baseItemType, int syncItemId, DecimalPosition position2d, double zRotation) {
-        SyncBaseItem syncBaseItem = syncItemInstance.select(SyncBaseItem.class).get();
+        SyncBaseItem syncBaseItem = syncBaseItemProvider.get();
         SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position2d, zRotation);
         initAndAddSlave(baseItemType, syncItemId, syncBaseItem, syncPhysicalArea);
         return syncBaseItem;
     }
 
     SyncResourceItem createSyncResourceItem(ResourceItemType resourceItemType, DecimalPosition position2d, double zRotation) {
-        SyncResourceItem syncResourceItem = syncItemInstance.select(SyncResourceItem.class).get();
+        SyncResourceItem syncResourceItem = syncResourceItemProvider.get();
         SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
         syncPhysicalArea.init(syncResourceItem, resourceItemType.getRadius(), resourceItemType.isFixVerticalNorm(), resourceItemType.getTerrainType(), position2d, zRotation);
         initAndAdd(resourceItemType, syncResourceItem, syncPhysicalArea);
@@ -226,7 +230,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     SyncResourceItem createSyncResourceItemSlave(ResourceItemType resourceItemType, int syncItemId, DecimalPosition position2d, double zRotation) {
-        SyncResourceItem syncResourceItem = syncItemInstance.select(SyncResourceItem.class).get();
+        SyncResourceItem syncResourceItem = syncResourceItemProvider.get();
         SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
         syncPhysicalArea.init(syncResourceItem, resourceItemType.getRadius(), resourceItemType.isFixVerticalNorm(), resourceItemType.getTerrainType(), position2d, zRotation);
         initAndAddSlave(resourceItemType, syncItemId, syncResourceItem, syncPhysicalArea);
@@ -235,7 +239,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
 
 
     SyncBoxItem createSyncBoxItem(BoxItemType boxItemType, DecimalPosition position2d, double zRotation) {
-        SyncBoxItem syncBoxItem = syncItemInstance.select(SyncBoxItem.class).get();
+        SyncBoxItem syncBoxItem = syncBoxItemProvider.get();
         SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
         syncPhysicalArea.init(syncBoxItem, boxItemType.getRadius(), boxItemType.isFixVerticalNorm(), boxItemType.getTerrainType(), position2d, zRotation);
         initAndAdd(boxItemType, syncBoxItem, syncPhysicalArea);
@@ -243,7 +247,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     SyncBoxItem createSyncBoxItemSlave(BoxItemType boxItemType, int syncItemId, DecimalPosition position2d, double zRotation) {
-        SyncBoxItem syncBoxItem = syncItemInstance.select(SyncBoxItem.class).get();
+        SyncBoxItem syncBoxItem = syncBoxItemProvider.get();
         SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
         syncPhysicalArea.init(syncBoxItem, boxItemType.getRadius(), boxItemType.isFixVerticalNorm(), boxItemType.getTerrainType(), position2d, zRotation);
         initAndAddSlave(boxItemType, syncItemId, syncBoxItem, syncPhysicalArea);

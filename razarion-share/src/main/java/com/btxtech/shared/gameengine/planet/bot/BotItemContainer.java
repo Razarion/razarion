@@ -40,7 +40,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,7 +69,7 @@ public class BotItemContainer {
     @Inject
     private BotService botService;
     @Inject
-    private Instance<BotSyncBaseItem> baseItemInstance;
+    private Provider<BotSyncBaseItem> baseItemInstance;
     @Inject
     private ExceptionHandler exceptionHandler;
     private final HashMap<SyncBaseItem, BotSyncBaseItem> botItems = new HashMap<>();

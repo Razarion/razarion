@@ -31,32 +31,21 @@
         </dependency>
         <!-- GWT -->
         <dependency>
-            <groupId>com.google.gwt</groupId>
+            <groupId>org.gwtproject</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${gwt.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-elemental</artifactId>
-            <version>${gwt.version}</version>
+            <groupId>com.google.elemental2</groupId>
+            <artifactId>elemental2-dom</artifactId>
+            <version>${gwt.elemental2.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Errai -->
         <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-ioc</artifactId>
-            <version>${errai.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-jaxrs-client</artifactId>
-            <version>${errai.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-bus</artifactId>
-            <version>${errai.version}</version>
+            <groupId>org.dominokit</groupId>
+            <artifactId>domino-rest-client</artifactId>
+            <version>1.0.2</version>
         </dependency>
     </dependencies>
 </project>

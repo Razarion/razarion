@@ -28,7 +28,7 @@ import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 
 /**
@@ -48,7 +48,7 @@ public class SyncWeapon extends SyncBaseAbility {
     @Inject
     private PathingService pathingService;
     @Inject
-    private Instance<SyncTurret> syncTurretInstance;
+    private Provider<SyncTurret> syncTurretInstance;
     @Inject
     private SyncService syncService;
     private WeaponType weaponType;

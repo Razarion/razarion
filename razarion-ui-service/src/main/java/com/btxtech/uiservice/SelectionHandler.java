@@ -29,9 +29,9 @@ import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
+import com.btxtech.client.Event;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +48,7 @@ public class SelectionHandler {
     @Inject
     private Event<SelectionEvent> selectionEventEventTrigger;
     @Inject
-    private Instance<Group> groupInstance;
+    private Provider<Group> groupInstance;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject

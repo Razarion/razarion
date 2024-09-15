@@ -27,14 +27,12 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsArrayNumber;
-import elemental2.core.Array;
+import elemental2.core.JsArray;
 import elemental2.core.JsObject;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
+import jsinterop.base.JsArrayLike;
 import jsinterop.base.JsPropertyMap;
-import jsinterop.base.JsPropertyMapOfAny;
-import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
-import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,8 +53,8 @@ public class WorkerMarshaller {
     private static final int DATA_OFFSET_4 = 5;
     private static final int DATA_OFFSET_5 = 6;
 
-    public static Array<Object> marshall(GameEngineControlPackage controlPackage) {
-        Array<Object> array = new Array<>();
+    public static JsArrayLike<Object> marshall(GameEngineControlPackage controlPackage) {
+        JsArray<Object> array = new JsArray<>();
         array.setAt(COMMAND_OFFSET, controlPackage.getCommand().name());
         switch (controlPackage.getCommand()) {
             // No data
@@ -164,7 +162,7 @@ public class WorkerMarshaller {
     }
 
     public static GameEngineControlPackage deMarshall(Object javaScriptObject) {
-        Any[] array = Js.castToArray(javaScriptObject);
+        Any[] array = Js.asArray(javaScriptObject);
         GameEngineControlPackage.Command command = GameEngineControlPackage.Command.valueOf(array[COMMAND_OFFSET].asString());
 
         List<Object> data = new ArrayList<>();
@@ -362,33 +360,35 @@ public class WorkerMarshaller {
     }
 
     private static String toJson(Object object) {
-        RestClient.setJacksonMarshallingActive(false); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
+        // RestClient.setJacksonMarshallingActive(false); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         try {
             if (object == null) {
                 return "null";
             } else {
-                return MarshallingWrapper.toJSON(object);
+                // return MarshallingWrapper.toJSON(object);
+                return null;
             }
         } finally {
-            RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
+            // RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         }
     }
 
     private static <T> T fromJson(String json, Class<T> type) {
-        RestClient.setJacksonMarshallingActive(false); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
+        // RestClient.setJacksonMarshallingActive(false); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         try {
             if ("null".equals(json)) {
                 return null;
             } else {
-                return MarshallingWrapper.fromJSON(json, type);
+                // return MarshallingWrapper.fromJSON(json, type);
+                return null;
             }
         } finally {
-            RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
+            // RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         }
     }
 
     private static Object marshallTerrainTile(TerrainTile terrainTile) {
-        Array<Object> array = new Array<>();
+        JsArray<Object> array = new JsArray<>();
         JsArrayInteger indexArray = JavaScriptObject.createArray().cast();
         indexArray.push(terrainTile.getIndex().getX());
         indexArray.push(terrainTile.getIndex().getY());
@@ -402,10 +402,10 @@ public class WorkerMarshaller {
     }
 
     private static Object marshallBabylonDecals(BabylonDecal[] babylonDecals) {
-        Array<JsPropertyMapOfAny> result = new Array<>();
+        JsArray<JsPropertyMap<Object>> result = new JsArray<>();
         if (babylonDecals != null) {
             for (BabylonDecal babylonDecal : babylonDecals) {
-                JsPropertyMapOfAny mapOfBabylonDecal = JsPropertyMap.of();
+                JsPropertyMap<Object> mapOfBabylonDecal = JsPropertyMap.of();
                 mapOfBabylonDecal.set("babylonMaterialId", babylonDecal.babylonMaterialId);
                 mapOfBabylonDecal.set("xPos", babylonDecal.xPos);
                 mapOfBabylonDecal.set("yPos", babylonDecal.yPos);
@@ -418,10 +418,10 @@ public class WorkerMarshaller {
     }
 
     private static Object marshallTerrainTileObjectList(TerrainTileObjectList[] terrainTileObjectLists) {
-        Array<JsPropertyMapOfAny> result = new Array<>();
+        JsArray<JsPropertyMap<Object>> result = new JsArray<>();
         if (terrainTileObjectLists != null) {
             for (TerrainTileObjectList terrainTileObjectList : terrainTileObjectLists) {
-                JsPropertyMapOfAny mapOfTerrainTileObjectList = JsPropertyMap.of();
+                JsPropertyMap<Object> mapOfTerrainTileObjectList = JsPropertyMap.of();
                 mapOfTerrainTileObjectList.set("terrainObjectConfigId", terrainTileObjectList.getTerrainObjectConfigId());
                 mapOfTerrainTileObjectList.set("terrainObjectModels", marshallTerrainObjectModel(terrainTileObjectList.getTerrainObjectModels()));
                 result.push(mapOfTerrainTileObjectList);
@@ -431,10 +431,10 @@ public class WorkerMarshaller {
     }
 
     private static Object marshallTerrainObjectModel(TerrainObjectModel[] terrainObjectModels) {
-        Array<JsPropertyMapOfAny> result = new Array<>();
+        JsArray<JsPropertyMap<Object>> result = new JsArray<>();
         if (terrainObjectModels != null) {
             for (TerrainObjectModel terrainObjectModel : terrainObjectModels) {
-                JsPropertyMapOfAny mapOfTerrainObjectModel = JsPropertyMap.of();
+                JsPropertyMap<Object> mapOfTerrainObjectModel = JsPropertyMap.of();
                 mapOfTerrainObjectModel.set("terrainObjectId", terrainObjectModel.terrainObjectId);
                 mapOfTerrainObjectModel.set("position", vertexToArray(terrainObjectModel.position));
                 mapOfTerrainObjectModel.set("scale", vertexToArray(terrainObjectModel.scale));
@@ -446,7 +446,7 @@ public class WorkerMarshaller {
     }
 
     private static TerrainTile demarshallTerrainTile(Object data) {
-        Any[] array = Js.castToArray(data);
+        Any[] array = Js.asArray(data);
         TerrainTile terrainTile = new TerrainTile();
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
         terrainTile.setGroundConfigId(array[1].asInt()); // GWT DevMode crashes here
@@ -458,7 +458,7 @@ public class WorkerMarshaller {
     }
 
     private static BabylonDecal[] demarshallBabylonDecals(Any any) {
-        JsPropertyMapOfAny[] array = Js.cast(any);
+        JsPropertyMap<Object>[] array = Js.cast(any);
         if (array.length == 0) {
             return null;
         }
@@ -474,7 +474,7 @@ public class WorkerMarshaller {
     }
 
     private static TerrainTileObjectList[] demarshallTerrainTileObjectLists(Any any) {
-        JsPropertyMapOfAny[] array = Js.cast(any);
+        JsPropertyMap<Object>[] array = Js.cast(any);
         if (array.length == 0) {
             return null;
         }
@@ -487,7 +487,7 @@ public class WorkerMarshaller {
     }
 
     private static TerrainObjectModel[] demarshallTerrainObjectModels(Any any) {
-        JsPropertyMapOfAny[] array = Js.cast(any);
+        JsPropertyMap<Object>[] array = Js.cast(any);
         if (array.length == 0) {
             return null;
         }

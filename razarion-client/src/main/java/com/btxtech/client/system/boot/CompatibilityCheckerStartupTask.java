@@ -6,8 +6,8 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.google.gwt.user.client.Window;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
+import com.btxtech.client.Caller;
+import com.btxtech.client.RemoteCallback;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

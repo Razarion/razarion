@@ -3,11 +3,8 @@ package com.btxtech.common.system.logging;
 import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.dto.StackTraceElementLogInfo;
 import com.btxtech.shared.dto.ThrownLogInfo;
-import com.btxtech.shared.rest.LoggingProvider;
-import com.btxtech.shared.utils.ExceptionUtil;
 import com.google.gwt.core.client.GWT;
-import org.jboss.errai.enterprise.client.jaxrs.api.RequestCallback;
-import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
+import elemental2.dom.DomGlobal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +16,12 @@ import java.util.logging.LogRecord;
  */
 public class JsonLogService {
     public static void doLog(LogRecord logRecord) {
-        RestClient.create(LoggingProvider.class, (RequestCallback) response -> {
-        }, (message, throwable) -> {
-            FallbackLog.fallbackXhrLog("Error callback: JSON log failed: " + ExceptionUtil.setupStackTrace(message + "", throwable) + " Original log record: " + FallbackLog.toString(logRecord));
-            return false;
-        }).jsonLogger(toLogRecordInfo(logRecord));
+        DomGlobal.console.error(logRecord);
+//        RestClient.create(LoggingProvider.class, (RequestCallback) response -> {
+//        }, (message, throwable) -> {
+//            FallbackLog.fallbackXhrLog("Error callback: JSON log failed: " + ExceptionUtil.setupStackTrace(message + "", throwable) + " Original log record: " + FallbackLog.toString(logRecord));
+//            return false;
+//        }).jsonLogger(toLogRecordInfo(logRecord));
     }
 
     private static LogRecordInfo toLogRecordInfo(LogRecord logRecord) {

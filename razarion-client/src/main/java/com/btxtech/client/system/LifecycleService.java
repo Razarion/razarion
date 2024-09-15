@@ -26,15 +26,13 @@ import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
-import elemental.client.Browser;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.enterprise.client.jaxrs.api.ResponseException;
+import elemental2.dom.DomGlobal;
+import com.btxtech.client.Caller;
+import com.btxtech.client.RemoteCallback;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
@@ -75,7 +73,7 @@ public class LifecycleService {
     @Inject
     private AudioService audioService;
     @Inject
-    private Instance<ScreenCover> screenCover;
+    private Provider<ScreenCover> screenCover;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -104,7 +102,7 @@ public class LifecycleService {
                 }
             }
         });
-        Browser.getDocument().addEventListener("beforeunload", evt -> beforeUnload = true);
+        DomGlobal.document.addEventListener("beforeunload", evt -> beforeUnload = true);
     }
 
     public void startCold() {
@@ -140,7 +138,7 @@ public class LifecycleService {
                 startWarm();
                 break;
             case PLANET_RESTART_COLD:
-                Browser.getWindow().getLocation().reload();
+                DomGlobal.window.location.reload();
                 break;
             default:
                 throw new IllegalArgumentException("LifecycleService.onLifecyclePacket() Unknown type: " + lifecyclePacket.getType());
@@ -201,13 +199,13 @@ public class LifecycleService {
             }
         }, (message, throwable) -> {
             if (serverRestartCallback != null) {
-                if (throwable instanceof ResponseException) {
-                    ResponseException responseException = (ResponseException) throwable;
-                    if (responseException.getResponse().getStatusCode() == Response.SC_NOT_FOUND) {
-                        serverRestartCallback.accept(ServerState.STARTING);
-                        return false;
-                    }
-                }
+//                if (throwable instanceof ResponseException) {
+//                    ResponseException responseException = (ResponseException) throwable;
+//                    if (responseException.getResponse().getStatusCode() == Response.SC_NOT_FOUND) {
+//                        serverRestartCallback.accept(ServerState.STARTING);
+//                        return false;
+//                    }
+//                }
                 serverRestartCallback.accept(ServerState.SHUTTING_DOWN);
             }
             return false;

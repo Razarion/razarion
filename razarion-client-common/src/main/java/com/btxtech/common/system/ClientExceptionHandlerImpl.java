@@ -2,10 +2,7 @@ package com.btxtech.common.system;
 
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.dom.DomGlobal;
-import org.jboss.errai.bus.client.api.BusErrorCallback;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.enterprise.client.jaxrs.api.ResponseException;
-import org.jboss.errai.ioc.client.api.UncaughtExceptionHandler;
+import com.btxtech.client.ErrorCallback;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.logging.Level;
@@ -29,7 +26,7 @@ public class ClientExceptionHandlerImpl extends ExceptionHandler {
         logger.log(Level.SEVERE, message, t);
     }
 
-    @UncaughtExceptionHandler
+    // TODO @UncaughtExceptionHandler
     public void handleUncaughtException(Throwable t) {
         handleException("UncaughtExceptionHandler caught in ClientExceptionHandlerImpl", t);
     }
@@ -44,31 +41,31 @@ public class ClientExceptionHandlerImpl extends ExceptionHandler {
 
     public ErrorCallback<?> restErrorHandler(String restService) {
         return (message, throwable) -> {
-            handleRestException(restService, message, throwable);
+            // handleRestException(restService, message, throwable);
             return false;
         };
     }
 
-    public BusErrorCallback busErrorCallback(String restService) {
-        return (message, throwable) -> {
-            handleRestException(restService, message, throwable);
-            return false;
-        };
-    }
+//    public BusErrorCallback busErrorCallback(String restService) {
+//        return (message, throwable) -> {
+//            handleRestException(restService, message, throwable);
+//            return false;
+//        };
+//    }
 
     private void handleRestException(String restService, Object message, Throwable throwable) {
         try {
-            if (throwable instanceof ResponseException) {
-                ResponseException responseException = (ResponseException) throwable;
-                if (responseException.getResponse().getStatusCode() == 0) {
-                    if (windowClosing) {
-                        return;
-                    } else {
-                        logger.log(Level.SEVERE, "StatusCode code == 0. " + restService + ": " + message + ". Throwable: " + throwable);
-                        return;
-                    }
-                }
-            }
+//            if (throwable instanceof ResponseException) {
+//                ResponseException responseException = (ResponseException) throwable;
+//                if (responseException.getResponse().getStatusCode() == 0) {
+//                    if (windowClosing) {
+//                        return;
+//                    } else {
+//                        logger.log(Level.SEVERE, "StatusCode code == 0. " + restService + ": " + message + ". Throwable: " + throwable);
+//                        return;
+//                    }
+//                }
+//            }
             logger.log(Level.SEVERE, restService + ": " + message, throwable);
         } catch (Throwable t) {
             handleException(t);

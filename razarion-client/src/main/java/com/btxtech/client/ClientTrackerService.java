@@ -2,10 +2,6 @@ package com.btxtech.client;
 
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.tracking.BrowserWindowTracking;
-import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.MouseButtonTracking;
 import com.btxtech.shared.datatypes.tracking.MouseMoveTracking;
@@ -22,16 +18,14 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.TrackerService;
-import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import com.google.gwt.user.client.Window;
-import elemental.client.Browser;
-import elemental.events.Event;
-import elemental.events.MouseEvent;
-import org.jboss.errai.common.client.api.Caller;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.Event;
+import elemental2.dom.MouseEvent;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -135,9 +129,9 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         detailedTrackingFuture = detailedExecutionService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
 
         // TODO viewService.addViewFieldListeners(this);
-        Browser.getDocument().addEventListener(Event.MOUSEMOVE, this::onMouseMove, true);
-        Browser.getDocument().addEventListener(Event.MOUSEDOWN, this::onMouseButtonDown, true);
-        Browser.getDocument().addEventListener(Event.MOUSEUP, this::onMouseButtonUp, true);
+        DomGlobal.document.addEventListener("mousemove", this::onMouseMove, true);
+        DomGlobal.document.addEventListener("mousedown", this::onMouseButtonDown, true);
+        DomGlobal.document.addEventListener("mouseup", this::onMouseButtonUp, true);
         // TODO clientModalDialogManager.setTrackerCallback(this::trackDialog);
 
         TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId).setGameSessionUuid(boot.getGameSessionUuid());
@@ -181,7 +175,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private void onMouseMove(Event event) {
         try {
             MouseEvent mouseEvent = (MouseEvent) event;
-            MouseMoveTracking mouseMoveTracking = new MouseMoveTracking().setPosition(GwtUtils.correctIndex(mouseEvent.getClientX(), mouseEvent.getClientY()));
+            MouseMoveTracking mouseMoveTracking = new MouseMoveTracking().setPosition(GwtUtils.correctIndex((int) mouseEvent.clientX, (int) mouseEvent.clientY));
             initDetailedTracking(mouseMoveTracking);
             trackingContainer.addMouseMoveTrackings(mouseMoveTracking);
         } catch (Exception e) {
@@ -192,7 +186,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private void onMouseButtonDown(Event event) {
         try {
             MouseEvent mouseEvent = (MouseEvent) event;
-            MouseButtonTracking mouseButtonTracking = new MouseButtonTracking().setButton(mouseEvent.getButton()).setDown(true);
+            MouseButtonTracking mouseButtonTracking = new MouseButtonTracking().setButton(mouseEvent.button).setDown(true);
             initDetailedTracking(mouseButtonTracking);
             trackingContainer.addMouseButtonTrackings(mouseButtonTracking);
         } catch (Exception e) {
@@ -203,7 +197,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private void onMouseButtonUp(Event event) {
         try {
             MouseEvent mouseEvent = (MouseEvent) event;
-            MouseButtonTracking mouseButtonTracking = new MouseButtonTracking().setButton(mouseEvent.getButton()).setDown(false);
+            MouseButtonTracking mouseButtonTracking = new MouseButtonTracking().setButton(mouseEvent.button).setDown(false);
             initDetailedTracking(mouseButtonTracking);
             trackingContainer.addMouseButtonTrackings(mouseButtonTracking);
         } catch (Exception e) {

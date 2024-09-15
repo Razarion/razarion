@@ -6,9 +6,8 @@ import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
-import elemental.events.Event;
-import elemental.events.MessageEvent;
-import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
+import elemental2.dom.Event;
+import elemental2.dom.MessageEvent;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -40,7 +39,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
     private void handleMessage(Event event) {
         try {
             MessageEvent messageEvent = (MessageEvent) event;
-            handleMessage((String) messageEvent.getData());
+            handleMessage((String) messageEvent.data);
         } catch (Throwable throwable) {
             exceptionHandler.handleException("ClientServerGameConnection.handleMessage() failed", throwable);
         }
@@ -53,7 +52,8 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
 
     @Override
     protected String toJson(Object param) {
-        return MarshallingWrapper.toJSON(param);
+        // return MarshallingWrapper.toJSON(param);
+        return null;
     }
 
     @Override
@@ -61,7 +61,8 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
         if (packet.getTheClass() == Void.class) {
             return null;
         } else {
-            return MarshallingWrapper.fromJSON(jsonString, packet.getTheClass());
+            // return MarshallingWrapper.fromJSON(jsonString, packet.getTheClass());
+            return null;
         }
     }
 

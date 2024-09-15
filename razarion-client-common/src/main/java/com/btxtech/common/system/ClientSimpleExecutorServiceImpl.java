@@ -3,7 +3,7 @@ package com.btxtech.common.system;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -14,7 +14,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ClientSimpleExecutorServiceImpl implements SimpleExecutorService {
     @Inject
-    private Instance<ClientSimpleScheduledFutureImpl> instance;
+    private Provider<ClientSimpleScheduledFutureImpl> instance;
 
     @Override
     public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {

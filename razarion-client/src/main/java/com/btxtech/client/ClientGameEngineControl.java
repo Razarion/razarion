@@ -13,8 +13,8 @@ import elemental2.dom.ErrorEvent;
 import elemental2.dom.Worker;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.logging.Logger;
 
 /**
@@ -27,7 +27,7 @@ public class ClientGameEngineControl extends GameEngineControl {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private Instance<LifecycleService> lifecycleService;
+    private Provider<LifecycleService> lifecycleService;
     private Worker worker;
     private DeferredStartup deferredStartup;
     private QueueStatistics queueStatistics;
@@ -53,12 +53,8 @@ public class ClientGameEngineControl extends GameEngineControl {
                 } catch (Throwable t) {
                     exceptionHandler.handleException("ClientGameEngineControl: exception processing package on client. Data: " + data, t);
                 }
-                return null;
             };
-            worker.onerror = event -> {
-                handleErrors((ErrorEvent) event);
-                return null;
-            };
+            worker.onerror = this::handleErrors;
         } catch (Throwable t) {
             this.deferredStartup.failed(t);
             this.deferredStartup = null;

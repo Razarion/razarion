@@ -5,8 +5,8 @@ import com.btxtech.shared.rest.UserServiceProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.user.client.Window;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
+import com.btxtech.client.Caller;
+import com.btxtech.client.RemoteCallback;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

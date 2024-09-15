@@ -4,16 +4,10 @@ import com.btxtech.client.clientI18n.ClientI18nConstants;
 import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.system.LifecycleService;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
-import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.LocaleInfo;
-import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
-import org.jboss.errai.ioc.client.api.AfterInitialization;
-import org.jboss.errai.ioc.client.api.EntryPoint;
-import org.jboss.errai.ui.client.local.spi.TranslationService;
-import org.jboss.errai.ui.shared.api.annotations.Bundle;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -23,8 +17,6 @@ import java.util.logging.Logger;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-@EntryPoint
-@Bundle("clientI18n/ErraiI18nBundle.properties")
 public class Client {
     private final Logger logger = Logger.getLogger(Client.class.getName());
     @Inject
@@ -42,7 +34,6 @@ public class Client {
                 exceptionHandler.handleException("UncaughtExceptionHandler", e);
             }
         });
-        RestClient.setApplicationRoot(CommonUrl.APPLICATION_PATH); // If the html-page is in the faces servlet filter path, the charset is overridden. -> problems with special characters
     }
 
     @PostConstruct
@@ -51,13 +42,12 @@ public class Client {
         try {
             I18nHelper.setLanguage(I18nString.convert(LocaleInfo.getCurrentLocale().getLocaleName()));
             I18nHelper.setConstants(GWT.create(ClientI18nConstants.class));
-            TranslationService.setCurrentLocale(LocaleInfo.getCurrentLocale().getLocaleName());
+            // TranslationService.setCurrentLocale(LocaleInfo.getCurrentLocale().getLocaleName());
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
     }
 
-    @AfterInitialization
     @SuppressWarnings("unused")
     public void afterInitialization() {
         gwtAngularService.init();

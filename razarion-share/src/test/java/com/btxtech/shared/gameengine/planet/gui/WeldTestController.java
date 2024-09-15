@@ -22,7 +22,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
@@ -45,7 +45,7 @@ public class WeldTestController implements Initializable {
     @Inject
     private TerrainService terrainService;
     @Inject
-    private Instance<ScenarioPlaybackController> instance;
+    private Provider<ScenarioPlaybackController> instance;
     @FXML
     private AnchorPane anchorPanel;
     @FXML

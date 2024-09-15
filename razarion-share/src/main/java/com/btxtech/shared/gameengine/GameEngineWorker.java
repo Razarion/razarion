@@ -59,8 +59,8 @@ import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
+import com.btxtech.client.Event;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,9 +101,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Inject
     private TerrainService terrainService;
     @Inject
-    private Instance<AbstractServerGameConnection> connectionInstance;
+    private Provider<AbstractServerGameConnection> connectionInstance;
     @Inject
-    private Instance<WorkerTrackerHandler> workerTrackerHandlerInstance;
+    private Provider<WorkerTrackerHandler> workerTrackerHandlerInstance;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
     private UserContext userContext;

@@ -22,7 +22,7 @@ import com.btxtech.uiservice.system.boot.GwtAngularBoot;
 import com.btxtech.uiservice.terrain.InputService;
 import elemental2.dom.DomGlobal;
 import jsinterop.base.Js;
-import jsinterop.base.JsPropertyMapOfAny;
+import jsinterop.base.JsPropertyMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -67,7 +67,7 @@ public class GwtAngularService {
     private GwtAngularFacade gwtAngularFacade;
 
     public void init() {
-        gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMapOfAny>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
+        gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMap<Object>>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
         gwtAngularFacade.gameUiControl = gameUiControl;
         gwtAngularFacade.language = I18nHelper.getLanguage();
         gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;

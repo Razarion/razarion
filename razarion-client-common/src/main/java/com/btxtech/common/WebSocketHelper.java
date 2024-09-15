@@ -1,6 +1,6 @@
 package com.btxtech.common;
 
-import elemental.client.Browser;
+import elemental2.dom.DomGlobal;
 
 /**
  * Created by Beat
@@ -10,18 +10,18 @@ public interface WebSocketHelper {
 
     static String getUrl(String endpoint) {
         String wsProtocol;
-        if (Browser.getWindow().getLocation().getProtocol().equals("https:")) {
+        if (DomGlobal.window.location.protocol.equals("https:")) {
             wsProtocol = "wss";
         } else {
             wsProtocol = "ws";
         }
         String port;
-        if (Browser.getWindow().getLocation().getPort() == null || Browser.getWindow().getLocation().getPort().trim().isEmpty()) {
+        if (DomGlobal.window.location.port == null || DomGlobal.window.location.port.trim().isEmpty()) {
             port = "";
         } else {
-            port = ":" + Browser.getWindow().getLocation().getPort();
+            port = ":" + DomGlobal.window.location.port;
         }
 
-        return wsProtocol + "://" + Browser.getWindow().getLocation().getHostname() + port + endpoint;
+        return wsProtocol + "://" + DomGlobal.window.location.hostname + port + endpoint;
     }
 }

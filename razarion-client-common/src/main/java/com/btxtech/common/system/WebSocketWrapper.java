@@ -5,10 +5,8 @@ import com.btxtech.common.WebSocketHelper;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
-import elemental.client.Browser;
-import elemental.events.CloseEvent;
-import elemental.events.EventListener;
-import elemental.html.WebSocket;
+import elemental2.dom.EventListener;
+import elemental2.dom.WebSocket;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -22,7 +20,7 @@ import java.util.logging.Logger;
 public class WebSocketWrapper {
     private static final int MAX_RETRIES = 5;
     private static final int MAX_ESTABLISH_CONNECTION_TIMEOUT = 5000;
-    private Logger logger = Logger.getLogger(WebSocketWrapper.class.getName());
+    private final Logger logger = Logger.getLogger(WebSocketWrapper.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -86,8 +84,8 @@ public class WebSocketWrapper {
                 webSocket = null;
                 createNewSocket();
             }, SimpleExecutorService.Type.ESTABLISH_CONNECTION);
-            webSocket = Browser.getWindow().newWebSocket(WebSocketHelper.getUrl(url));
-            webSocket.setOnerror(evt -> {
+            webSocket = new WebSocket(WebSocketHelper.getUrl(url));
+            webSocket.onerror = (evt -> {
                 if (!open) {
                     return;
                 }
@@ -97,26 +95,25 @@ public class WebSocketWrapper {
                     exceptionHandler.handleException(t);
                 }
             });
-            webSocket.setOnclose(evt -> {
+            webSocket.onclose = (closeEvent -> {
                 try {
                     if (timedOut || !open || webSocket == null) {
                         return;
                     }
                     open = false;
                     webSocket = null;
-                    CloseEvent closeEvent = (CloseEvent) evt;
-                    if (closeEvent.getCode() == 1001) {
+                    if (closeEvent.code == 1001) {
                         serverRestartCallback.run();
                     } else {
-                        logger.severe("WebSocketWrapper WebSocket Close. Code: " + closeEvent.getCode() + " Reason: " + closeEvent.getReason() + " WasClean: " + closeEvent.isWasClean());
+                        logger.severe("WebSocketWrapper WebSocket Close. Code: " + closeEvent.code + " Reason: " + closeEvent.reason + " WasClean: " + closeEvent.wasClean);
                         createNewSocket();
                     }
                 } catch (Throwable t) {
                     exceptionHandler.handleException(t);
                 }
             });
-            webSocket.setOnmessage(messageEventCallback);
-            webSocket.setOnopen(evt -> {
+            webSocket.onmessage = (evt -> messageEventCallback.handleEvent(evt));
+            webSocket.onopen = (evt -> {
                 establishConnectionTimer.cancel();
                 establishConnectionTimer = null;
                 if (timedOut) {

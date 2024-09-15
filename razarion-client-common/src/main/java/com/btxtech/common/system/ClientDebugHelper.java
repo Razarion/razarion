@@ -3,7 +3,7 @@ package com.btxtech.common.system;
 import com.btxtech.shared.rest.LoggingProvider;
 import com.btxtech.shared.system.debugtool.DebugHelper;
 import elemental2.dom.DomGlobal;
-import org.jboss.errai.common.client.api.Caller;
+import com.btxtech.client.Caller;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

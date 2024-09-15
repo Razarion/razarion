@@ -14,7 +14,7 @@ import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +34,7 @@ public class TerrainUiService {
     @Inject
     private GameEngineControl gameEngineControl;
     @Inject
-    private Instance<UiTerrainTile> uiTerrainTileInstance;
+    private Provider<UiTerrainTile> uiTerrainTileInstance;
     private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
     private final Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
     private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();

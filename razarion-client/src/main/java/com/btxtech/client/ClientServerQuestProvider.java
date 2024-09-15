@@ -3,7 +3,6 @@ package com.btxtech.client;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.rest.QuestController;
 import com.btxtech.uiservice.ServerQuestProvider;
-import org.jboss.errai.common.client.api.Caller;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

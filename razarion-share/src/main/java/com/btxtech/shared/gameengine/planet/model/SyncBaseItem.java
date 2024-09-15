@@ -45,8 +45,8 @@ import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNativeDecimalPosition;
 
@@ -58,7 +58,21 @@ import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNat
 @Dependent
 public class SyncBaseItem extends SyncItem {
     @Inject
-    private Instance<SyncBaseAbility> instance;
+    private Provider<SyncWeapon> syncWeaponProvider;
+    @Inject
+    private Provider<SyncFactory> syncFactoryProvider;
+    @Inject
+    private Provider<SyncBuilder> syncBuilderProvider;
+    @Inject
+    private Provider<SyncHarvester> syncHarvesterProvider;
+    @Inject
+    private Provider<SyncGenerator> syncGeneratorProvider;
+    @Inject
+    private Provider<SyncConsumer> syncConsumerProvider;
+    @Inject
+    private Provider<SyncItemContainer> syncItemContainerProvider;
+    @Inject
+    private Provider<SyncHouse> syncHouseProvider;
     @Inject
     private BaseItemService baseItemService;
     @Inject
@@ -94,14 +108,14 @@ public class SyncBaseItem extends SyncItem {
         health = baseItemType.getHealth();
 
         if (baseItemType.getWeaponType() != null) {
-            syncWeapon = instance.select(SyncWeapon.class).get();
+            syncWeapon = syncWeaponProvider.get();
             syncWeapon.init(baseItemType.getWeaponType(), this);
         } else {
             syncWeapon = null;
         }
 
         if (baseItemType.getFactoryType() != null) {
-            syncFactory = instance.select(SyncFactory.class).get();
+            syncFactory = syncFactoryProvider.get();
             syncFactory.init(baseItemType.getFactoryType(), this);
             isRazarionEarningOrConsuming = true;
         } else {
@@ -109,7 +123,7 @@ public class SyncBaseItem extends SyncItem {
         }
 
         if (baseItemType.getBuilderType() != null) {
-            syncBuilder = instance.select(SyncBuilder.class).get();
+            syncBuilder = syncBuilderProvider.get();
             syncBuilder.init(baseItemType.getBuilderType(), this);
             isRazarionEarningOrConsuming = true;
         } else {
@@ -117,7 +131,7 @@ public class SyncBaseItem extends SyncItem {
         }
 
         if (baseItemType.getHarvesterType() != null) {
-            syncHarvester = instance.select(SyncHarvester.class).get();
+            syncHarvester = syncHarvesterProvider.get();
             syncHarvester.init(baseItemType.getHarvesterType(), this);
             isRazarionEarningOrConsuming = true;
         } else {
@@ -125,28 +139,28 @@ public class SyncBaseItem extends SyncItem {
         }
 
         if (baseItemType.getGeneratorType() != null) {
-            syncGenerator = instance.select(SyncGenerator.class).get();
+            syncGenerator = syncGeneratorProvider.get();
             syncGenerator.init(baseItemType.getGeneratorType(), this);
         } else {
             syncGenerator = null;
         }
 
         if (baseItemType.getConsumerType() != null) {
-            syncConsumer = instance.select(SyncConsumer.class).get();
+            syncConsumer = syncConsumerProvider.get();
             syncConsumer.init(baseItemType.getConsumerType(), this);
         } else {
             syncConsumer = null;
         }
 
         if (baseItemType.getItemContainerType() != null) {
-            syncItemContainer = instance.select(SyncItemContainer.class).get();
+            syncItemContainer = syncItemContainerProvider.get();
             syncItemContainer.init(baseItemType.getItemContainerType(), this);
         } else {
             syncItemContainer = null;
         }
 
         if (baseItemType.getHouseType() != null) {
-            syncHouse = instance.select(SyncHouse.class).get();
+            syncHouse = syncHouseProvider.get();
             syncHouse.init(baseItemType.getHouseType(), this);
         } else {
             syncHouse = null;

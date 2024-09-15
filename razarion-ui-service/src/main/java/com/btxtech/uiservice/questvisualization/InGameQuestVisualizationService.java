@@ -15,7 +15,7 @@ import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.HashSet;
@@ -41,7 +41,7 @@ public class InGameQuestVisualizationService {
     @Inject
     private BoxUiService boxUiService;
     @Inject
-    private Instance<QuestInGamePlaceVisualization> instanceQuestInGamePlaceVisualization;
+    private Provider<QuestInGamePlaceVisualization> instanceQuestInGamePlaceVisualization;
     private AbstractSyncItemSetPositionMonitor syncItemSetPositionMonitor;
     private QuestInGamePlaceVisualization questInGamePlaceVisualization;
     private QuestConfig quest;

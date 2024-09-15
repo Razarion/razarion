@@ -18,7 +18,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -34,9 +34,9 @@ import java.util.logging.Logger;
 public class ServerLevelQuestService implements QuestListener {
     private final Logger logger = Logger.getLogger(ServerLevelQuestService.class.getName());
     @Inject
-    private Instance<GameUiContextCrudPersistence> gameUiControlConfigPersistence;
+    private Provider<GameUiContextCrudPersistence> gameUiControlConfigPersistence;
     @Inject
-    private Instance<HistoryPersistence> historyPersistence;
+    private Provider<HistoryPersistence> historyPersistence;
     @Inject
     private SessionService sessionService;
     @Inject
@@ -50,7 +50,7 @@ public class ServerLevelQuestService implements QuestListener {
     @Inject
     private ClientSystemConnectionService clientSystemConnectionService;
     @Inject
-    private Instance<ServerGameEngineControl> serverGameEngineControlInstance;
+    private Provider<ServerGameEngineControl> serverGameEngineControlInstance;
     @Inject
     private ServerUnlockService serverUnlockService;
 

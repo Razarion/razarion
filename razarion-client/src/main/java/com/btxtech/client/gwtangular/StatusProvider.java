@@ -6,8 +6,8 @@ import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
+import com.btxtech.client.Caller;
+import com.btxtech.client.RemoteCallback;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

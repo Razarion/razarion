@@ -91,7 +91,8 @@ public class AbstractIntegrationTest {
     }
 
     public <T> T getWeldBean(Class<T> clazz) {
-        return weldContainer.instance().select(clazz).get();
+        // return weldContainer.instance().select(clazz).get();
+        return null;
     }
 
     public TestSimpleExecutorService getTestSimpleExecutorService() {

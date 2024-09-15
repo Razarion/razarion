@@ -27,7 +27,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,7 +49,7 @@ public class ResourceService {
     @Inject
     private GameLogicService gameLogicService;
     @Inject
-    private Instance<ResourceRegion> instance;
+    private Provider<ResourceRegion> instance;
     @Inject
     private ExceptionHandler exceptionHandler;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();

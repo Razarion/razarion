@@ -16,7 +16,7 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.function.Consumer;
 
@@ -40,7 +40,7 @@ public class UserUiService {
     @Inject
     private ModalDialogManager dialogManager;
     @Inject
-    private Instance<GameUiControl> gameUiControlInstance;
+    private Provider<GameUiControl> gameUiControlInstance;
     @Inject
     private SimpleExecutorService simpleExecutorService;
     @Inject

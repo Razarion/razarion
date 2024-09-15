@@ -2,8 +2,6 @@ package com.btxtech.uiservice.cockpit;
 
 import com.btxtech.shared.datatypes.ChatMessage;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;

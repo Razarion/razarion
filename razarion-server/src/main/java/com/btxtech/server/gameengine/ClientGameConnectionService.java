@@ -18,7 +18,7 @@ import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
@@ -36,7 +36,7 @@ public class ClientGameConnectionService {
     @Inject
     private ConnectionTrackingPersistence connectionTrackingPersistence;
     @Inject
-    private Instance<PlanetService> planetServiceInstance;
+    private Provider<PlanetService> planetServiceInstance;
     private final MapCollection<Integer, ClientGameConnection> gameConnections = new MapCollection<>();
     private ObjectMapper mapper = new ObjectMapper();
 

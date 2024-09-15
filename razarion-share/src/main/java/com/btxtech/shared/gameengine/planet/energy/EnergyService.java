@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncConsumer;
 import com.btxtech.shared.gameengine.planet.model.SyncGenerator;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.Set;
 @Singleton
 public class EnergyService {
     @Inject
-    private Instance<BaseEnergy> baseEnergyInstance;
+    private Provider<BaseEnergy> baseEnergyInstance;
     @Inject
     private ExceptionHandler exceptionHandler;
     private final MapCollection<PlayerBase, SyncConsumer> changedSyncConsumers = new MapCollection<>();

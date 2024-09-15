@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <inherits name="com.google.gwt.activity.Activity"/>
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="com.google.gwt.user.theme.clean.Clean"/>
+    <inherits name="com.google.web.bindery.requestfactory.RequestFactory"/>
+    <inherits name='com.btxtech.Razarion-Share'/>
+    <inherits name="com.btxtech.Razarion-Ui-Service"/>
+    <inherits name='com.btxtech.Razarion-Client-Common'/>
+    <inherits name="elemental2.dom.Dom"/>
+    <inherits name="dagger.Dagger"/>
+    <inherits name="org.dominokit.rest.Rest"/>
+
+    <source path=""/>
+
+    <entry-point class="com.btxtech.client.RazarionClient"/>
+
+    <!-- Only support recent browsers -->
+    <set-property name="user.agent" value="gecko1_8,safari"/>
+</module>

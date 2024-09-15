@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -15,7 +14,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Optional;
@@ -30,11 +29,11 @@ import java.util.logging.Logger;
 public class GameLogicService {
     private Logger logger = Logger.getLogger(GameLogicService.class.getName());
     @Inject
-    private Instance<QuestService> questServiceInstance;
+    private Provider<QuestService> questServiceInstance;
     @Inject
-    private Instance<BotService> botServiceInstance;
+    private Provider<BotService> botServiceInstance;
     @Inject
-    private Instance<GuardingItemService> guardingItemServiceInstance;
+    private Provider<GuardingItemService> guardingItemServiceInstance;
     private Optional<GameLogicListener> gameLogicListener = Optional.empty();
 
     public void setGameLogicListener(GameLogicListener gameLogicListener) {

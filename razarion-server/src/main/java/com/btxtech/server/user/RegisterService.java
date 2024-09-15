@@ -19,7 +19,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.mail.Message;
@@ -82,9 +82,9 @@ public class RegisterService {
     @Inject
     private Logger logger;
     @Inject
-    private Instance<HistoryPersistence> historyPersistence;
+    private Provider<HistoryPersistence> historyPersistence;
     @Inject
-    private Instance<UserService> userService;
+    private Provider<UserService> userService;
     @Inject
     private SessionHolder sessionHolder;
     @Inject

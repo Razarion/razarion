@@ -11,7 +11,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 public class BotService {
     private final Logger logger = Logger.getLogger(BotService.class.getName());
     @Inject
-    private Instance<BotRunner> botRunnerInstance;
+    private Provider<BotRunner> botRunnerInstance;
     @Inject
     private ExceptionHandler exceptionHandler;
     private final Collection<BotRunner> botRunners = new ArrayList<>();

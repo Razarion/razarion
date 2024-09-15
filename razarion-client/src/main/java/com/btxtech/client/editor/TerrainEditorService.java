@@ -12,8 +12,8 @@ import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.terrain.UiTerrainTile;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
+import com.btxtech.client.Caller;
+import com.btxtech.client.RemoteCallback;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

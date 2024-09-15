@@ -10,7 +10,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrain
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import java.util.List;
 public class TerrainTileFactory {
     // private Logger logger = Logger.getLogger(TerrainTileFactory.class.getName());
     @Inject
-    private Instance<TerrainTileBuilder> terrainTileBuilderInstance;
+    private Provider<TerrainTileBuilder> terrainTileBuilderInstance;
     @Inject
     private ExceptionHandler exceptionHandler;
 

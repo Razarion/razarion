@@ -59,7 +59,8 @@ public class WeldUiBaseIntegrationTest {
     }
 
     protected <T> T getWeldBean(Class<T> clazz) {
-        return weldContainer.instance().select(clazz).get();
+        // return weldContainer.instance().select(clazz).get();
+        return null;
     }
 
     protected void callOnViewChanged(ViewField viewField) {

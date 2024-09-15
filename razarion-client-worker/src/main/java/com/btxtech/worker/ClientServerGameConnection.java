@@ -7,8 +7,8 @@ import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnect
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
-import elemental.events.Event;
-import elemental.events.MessageEvent;
+import elemental2.dom.Event;
+import elemental2.dom.MessageEvent;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 
 import javax.enterprise.context.Dependent;
@@ -40,7 +40,7 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
     private void handleMessage(Event event) {
         try {
             MessageEvent messageEvent = (MessageEvent) event;
-            handleMessage((String) messageEvent.getData());
+            handleMessage((String) messageEvent.data);
         } catch (Throwable throwable) {
             exceptionHandler.handleException("ClientServerGameConnection.handleMessage() failed", throwable);
         }

@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConf
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
+import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public class BotEnragementState {
     }
 
     @Inject
-    private Instance<BotItemContainer> containerInstance;
+    private Provider<BotItemContainer> containerInstance;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
     private BotEnragementStateConfig currentBotEnragementStateConfig;
     private boolean isEnragementActive;

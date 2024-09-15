@@ -4,7 +4,7 @@ import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.gameengine.WorkerTrackerHandler;
 import com.btxtech.shared.rest.TrackerProvider;
-import org.jboss.errai.common.client.api.Caller;
+import com.btxtech.client.Caller;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

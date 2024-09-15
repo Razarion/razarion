@@ -2,11 +2,12 @@ package com.btxtech.common.system.logging;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.utils.ExceptionUtil;
-import com.google.gwt.xhr.client.XMLHttpRequest;
-import elemental.client.Browser;
-import elemental.js.util.Xhr;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.RequestInit;
 
 import java.util.logging.LogRecord;
+
+import static elemental2.dom.DomGlobal.fetch;
 
 /**
  * Created by Beat
@@ -19,19 +20,13 @@ public class FallbackLog {
     }
 
     public static void fallbackXhrLog(String message) {
-        Xhr.post(CommonUrl.getSimpleLoggingUrl(), message, "text/plain", new Xhr.Callback() {
-            @Override
-            public void onFail(XMLHttpRequest xhr) {
-                if (xhr.getStatus() == 204) {
-                    return;
-                }
-                Browser.getWindow().getConsole().log("Failure log to server: " + message + "|  Status Text: " + xhr.getStatusText() + " Status: " + xhr.getStatus());
-            }
-
-            @Override
-            public void onSuccess(XMLHttpRequest xhr) {
-            }
-        });
+        RequestInit requestInit = RequestInit.create();
+        requestInit.setMethod("POST");
+        fetch(CommonUrl.getSimpleLoggingUrl(), requestInit)
+                .catch_(error -> {
+                    DomGlobal.console.log("Failure log to server: " + message + "| " + error);
+                    return null;
+                });
     }
 
     public static String toString(LogRecord logRecord) {
