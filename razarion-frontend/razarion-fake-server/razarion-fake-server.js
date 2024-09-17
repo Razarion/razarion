@@ -357,6 +357,48 @@ server.on({
   }
 });
 
+server.on({
+  method: 'get',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/ui-config-collection/get")
+  },
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      "babylonMaterials": [],
+      "selectionItemMaterialId": null,
+      "progressBarNodeMaterialId": null,
+      "healthBarNodeMaterialId": null
+    })
+  }
+});
+
+server.on({
+  method: 'get',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/editor/brush/read")
+  },
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify([
+      {
+        "id": 1,
+        "internalName": "Water",
+        "brushJson": "{\"height\":-0.5,\"diameter\":10,\"maxSlopeWidth\":10,\"slope\":6.97,\"random\":0.53,\"internalName\":\"Water\",\"id\":1}"
+      },
+      {
+        "id": 2,
+        "internalName": "Mountain 4m",
+        "brushJson": "{\"height\":4,\"diameter\":10,\"maxSlopeWidth\":10,\"slope\":50.61,\"random\":1.16,\"internalName\":\"Mountain 4m\",\"id\":2}"
+      }
+    ])
+  }
+});
+
 server.start(function () {
   console.info("Razarion fake server is running on port: " + PORT);
 });

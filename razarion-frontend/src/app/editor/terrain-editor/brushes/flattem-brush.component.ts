@@ -25,14 +25,18 @@ export class FlattenBrushComponent extends AbstractBrush {
     return Vector2.Distance(new Vector2(oldPosition.x, oldPosition.z), new Vector2(mousePosition.x, mousePosition.z)) < (this.diameter / 2.0);
   }
 
-  calculateHeight(mousePosition: Vector3, oldPosition: Vector3, avgHeight: number | undefined): number | null {
+  calculateHeight(mousePosition: Vector3, oldPosition: Vector3): number | null {
     const radius = this.diameter / 2.0;
     const distance = Vector2.Distance(new Vector2(oldPosition.x, oldPosition.z), new Vector2(mousePosition.x, mousePosition.z));
     if (distance < radius) {
       const force = (radius - distance) / radius;
-      return (avgHeight! - oldPosition.y) * force + oldPosition.y;
+      return (this.brushContext!.getAvgHeight() - oldPosition.y) * force + oldPosition.y;
     } else {
       return null;
     }
+  }
+
+  isContextDependent(): boolean {
+    return true;
   }
 }

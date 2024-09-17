@@ -21,7 +21,7 @@ import { EditorTerrainTile } from './editor-terrain-tile';
 import { GwtInstance } from 'src/app/gwtangular/GwtInstance';
 import { TerrainEditorControllerClient, TerrainHeightMapControllerClient } from 'src/app/generated/razarion-share';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
-import { AbstractBrush } from "./brushes/abstract-brush";
+import { AbstractBrush, BrushContext } from "./brushes/abstract-brush";
 import { FixHeightBrushComponent } from './brushes/fix-height-brush.component';
 import { FlattenBrushComponent } from "./brushes/flattem-brush.component";
 import { RadarComponent } from 'src/app/game/cockpit/main/radar/radar.component';
@@ -169,7 +169,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
         case PointerEventTypes.POINTERDOWN: {
           let pickingInfo = this.renderService.setupTerrainPickPoint();
           if (pickingInfo && pickingInfo.pickedPoint) {
-            this.onPointerDown(pickingInfo.pickedPoint);
+            this.modelTerrain(pickingInfo.pickedPoint);
           }
           break;
         }
@@ -183,7 +183,9 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
         case PointerEventTypes.POINTERMOVE: {
           let pickingInfo = this.renderService.setupTerrainPickPoint();
           if (pickingInfo && pickingInfo.pickedPoint) {
-            this.onPointerMove(pickingInfo.pickedPoint, (pointerInfo.event.buttons & 0x01) == 0x01);
+            if ((pointerInfo.event.buttons & 0x01) == 0x01) {
+              this.modelTerrain(pickingInfo.pickedPoint);
+            }
           }
           break;
         }
@@ -193,13 +195,14 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   private loadEditorTerrainTiles() {
-    this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService().getDisplayTerrainTiles().forEach(babylonTerrainTile => {
+    this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService().getAllBabylonTerrainTile().forEach(babylonTerrainTile => {
       this.setupEditorTerrainTile((<BabylonTerrainTileImpl>babylonTerrainTile));
     });
   }
 
   private setupEditorTerrainTile(babylonTerrainTile: BabylonTerrainTileImpl) {
     let index = babylonTerrainTile.terrainTile.getIndex();
+    console.info(`setupEditorTerrainTile ${index.getX()}:${index.getY()}`)
     if (babylonTerrainTile.getGroundMesh().material) {
       babylonTerrainTile.getGroundMesh().material!.wireframe = this.wireframe;
     }
@@ -209,26 +212,29 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private onPointerDown(position: Vector3) {
-    for (let x = 0; x < this.xTileCount; x++) {
-      for (let y = 0; y < this.yTileCount; y++) {
-        if (this.editorTerrainTiles[y][x].isInside(position)) {
-          this.editorTerrainTiles[y][x].onPointerDown(this.currentBrush!, position);
-        }
-      }
-    }
-  }
+  private modelTerrain(position: Vector3) {
+    if (this.currentBrush!.isContextDependent()) {
+      let brushContext = new BrushContext(this.currentBrush!);
 
-  private onPointerMove(position: Vector3, buttonDown: boolean) {
+      for (let x = 0; x < this.xTileCount; x++) {
+        for (let y = 0; y < this.yTileCount; y++) {
+          if (this.editorTerrainTiles[y][x].isInside(position)) {
+            this.editorTerrainTiles[y][x].prepareContext(brushContext, position);
+          }
+        }
+      }
+      brushContext.finishPrepare();
+      this.currentBrush!.setBrushContext(brushContext);
+    }
+
     for (let x = 0; x < this.xTileCount; x++) {
       for (let y = 0; y < this.yTileCount; y++) {
         if (this.editorTerrainTiles[y][x].isInside(position)) {
-          this.editorTerrainTiles[y][x].onPointerMove(this.currentBrush!,
-            position,
-            buttonDown);
+          this.editorTerrainTiles[y][x].modelTerrain(this.currentBrush!, position);
         }
       }
     }
+    this.currentBrush!.setBrushContext(null);
   }
 
   deactivate() {

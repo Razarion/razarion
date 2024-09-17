@@ -1,7 +1,7 @@
 import { Index, InputService, TerrainTile } from "../../gwtangular/GwtAngularFacade";
 import { Color3, Mesh, MeshBuilder, StandardMaterial, Texture, Vector3, VertexBuffer, VertexData } from "@babylonjs/core";
 import { BabylonTerrainTileImpl } from 'src/app/game/renderer/babylon-terrain-tile.impl';
-import { AbstractBrush } from "./brushes/abstract-brush";
+import { AbstractBrush, BrushContext } from "./brushes/abstract-brush";
 import { BabylonRenderServiceAccessImpl } from "src/app/game/renderer/babylon-render-service-access-impl.service";
 import { GwtInstance } from "src/app/gwtangular/GwtInstance";
 import { TerrainType } from "src/app/generated/razarion-share";
@@ -42,34 +42,26 @@ export class EditorTerrainTile {
     return true;
   }
 
-  onPointerDown(brush: AbstractBrush, mousePosition: Vector3) {
-    this.modelTerrain(brush, mousePosition);
-  }
-
-
-  onPointerMove(brush: AbstractBrush, mousePosition: Vector3, buttonDown: boolean) {
-    if (buttonDown) {
-      this.modelTerrain(brush, mousePosition);
-    }
-  }
-
-  private modelTerrain(brush: AbstractBrush, mousePosition: Vector3) {
+  prepareContext(brushContext: BrushContext, mousePosition: Vector3) {
     if (!this.positions) {
       return;
     }
-    var count = 0;
-    var heightSum = 0;
+    
     for (let i = 0; i < this.positions.length; i++) {
       let oldPosition = this.positions[i];
       if (!oldPosition) {
         continue;
       }
-      if (brush.isInRadius(mousePosition, oldPosition)) {
-        count++;
-        heightSum += oldPosition.y;
+      if (brushContext.isInRadius(mousePosition, oldPosition)) {
+        brushContext.addHeight(oldPosition.y);
       }
     }
-    var avgHeight = count === 0 ? undefined : heightSum / count;
+  }
+
+  modelTerrain(brush: AbstractBrush, mousePosition: Vector3) {
+    if (!this.positions) {
+      return;
+    }
 
     let changedPosition = [];
     let changed = false;
@@ -78,7 +70,7 @@ export class EditorTerrainTile {
       if (!oldPosition) {
         continue;
       }
-      let newHeight = brush.calculateHeight(mousePosition, oldPosition, avgHeight);
+      let newHeight = brush.calculateHeight(mousePosition, oldPosition);
       if (newHeight || newHeight === 0) {
         this.positions[i].y = newHeight;
         changed = true;
@@ -180,7 +172,7 @@ export class EditorTerrainTile {
 
   drawMiniMap(context: CanvasRenderingContext2D, factor: number, effectiveBorder: number, waterColor: string, landColor: string, blockedColor: string) {
     let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE) + 1;
-    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE) + 1; 
+    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE) + 1;
     for (let y = 0; y < yCount - 1; y++) {
       for (let x = 0; x < xCount - 1; x++) {
         const blHeight = this.positions![x + y * xCount].y;

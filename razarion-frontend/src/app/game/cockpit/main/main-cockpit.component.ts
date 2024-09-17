@@ -20,14 +20,14 @@ export class MainCockpitComponent implements MainCockpit {
   cursorPosition?: string;
   private mouseObservable: Nullable<Observer<PointerInfo>> = null;
   levelNumber!: number;
-  xp!: number;
-  xp2LevelUp!: number;
+  xp: number = 0;
+  xp2LevelUp: number = 0.001; // Prevent strange error in browser console
   resources: number = 0;
   itemCount: number = 0;
   usedHouseSpace: number = 0;
   houseSpace: number = 0;
   consuming: number = 0;
-  generating: number = 0;
+  generating: number = 0.001; // Prevent strange error in browser console
   radarState!: RadarState;
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;

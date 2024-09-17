@@ -173,7 +173,7 @@ export class GameMockService {
         }
 
 
-        getDisplayTerrainTiles(): BabylonTerrainTile[] {
+        getAllBabylonTerrainTile(): BabylonTerrainTile[] {
           return displayMockTerrainTile;
         }
       }

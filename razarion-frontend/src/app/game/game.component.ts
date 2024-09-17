@@ -364,9 +364,10 @@ export class GameComponent implements OnInit, ScreenCover {
               //     outOfViewSize = 1;
               //   });
 
-              // setTimeout(() => {
-              //  this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
-              // }, 2000);
+              setTimeout(() => {
+                //  this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
+                this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+              }, 2000);
             });
           });
         });
@@ -376,9 +377,9 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.showRadar(RadarState.NO_POWER);
         this.mainCockpitComponent.displayXps(5, 20);
         this.mainCockpitComponent.displayLevel(1)
-        this.mainCockpitComponent.displayEnergy(2, 10);
+        this.mainCockpitComponent.displayEnergy(0, 1);
         // this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
-        this.addEditorModel(new EditorModel("???", PropertyEditorComponent));
+        // this.addEditorModel(new EditorModel("???", PropertyEditorComponent));
         // this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
         // this.showInventory = true;
         this.fadeOutLoadingCover();

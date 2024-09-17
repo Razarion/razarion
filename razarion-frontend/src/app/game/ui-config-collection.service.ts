@@ -10,7 +10,7 @@ export class UiConfigCollectionService {
   private uiConfigCollection: UiConfigCollection | null = null;
   private pendingResolves: ((UiConfigCollection: UiConfigCollection) => void)[] = [];
 
-  constructor(private httpClient: HttpClient) {
+  constructor(httpClient: HttpClient) {
     const client = new UiConfigCollectionControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
     client.getUiConfigCollection()
       .then(uiConfigCollection => {
@@ -18,7 +18,7 @@ export class UiConfigCollectionService {
         this.pendingResolves.forEach((resolve: (UiConfigCollection: UiConfigCollection) => void) => resolve(uiConfigCollection));
         this.pendingResolves = [];
       })
-      .catch();
+      .catch(error => console.error(`Can not load UiConfigCollection ${error}`));
   }
 
   getUiConfigCollection(): Promise<UiConfigCollection> {

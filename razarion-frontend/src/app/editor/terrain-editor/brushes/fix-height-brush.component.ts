@@ -157,7 +157,7 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit {
       });
   }
 
-  calculateHeight(mousePosition: Vector3, oldPosition: Vector3, avgHeight: number | undefined): number | null {
+  calculateHeight(mousePosition: Vector3, oldPosition: Vector3): number | null {
     const radius = this.activeBrush.value.brushValues.diameter / 2.0;
     let distance = Vector2.Distance(new Vector2(oldPosition.x, oldPosition.z), new Vector2(mousePosition.x, mousePosition.z));
     if (distance < (radius + this.activeBrush.value.brushValues.maxSlopeWidth)) {

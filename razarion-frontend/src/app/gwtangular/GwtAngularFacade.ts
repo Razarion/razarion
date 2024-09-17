@@ -808,7 +808,7 @@ export interface TerrainEditorService {
 
   save(createdTerrainObjects: TerrainObjectPosition[], updatedTerrainObjects: TerrainObjectPosition[]): Promise<string>;
 
-  getDisplayTerrainTiles(): BabylonTerrainTile[];
+  getAllBabylonTerrainTile(): BabylonTerrainTile[];
 }
 
 

@@ -9,6 +9,7 @@ import com.btxtech.shared.rest.TerrainObjectEditorController;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
 import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.btxtech.uiservice.terrain.UiTerrainTile;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 import org.jboss.errai.common.client.api.Caller;
@@ -62,13 +63,12 @@ public class TerrainEditorService {
     }
 
     @SuppressWarnings("unused") // Called by Angular
-    public BabylonTerrainTile[] getDisplayTerrainTiles() {
+    public BabylonTerrainTile[] getAllBabylonTerrainTile() {
         // initialize terrainUiService
-        return terrainUiService.getDisplayTerrainTiles()
+        return terrainUiService.getAllUiTerrainTiles()
                 .stream()
-                .map(uiTerrainTile -> uiTerrainTile.getBabylonTerrainTile())
-                .collect(Collectors.toList())
-                .toArray(new BabylonTerrainTile[0]);
+                .map(UiTerrainTile::getBabylonTerrainTile)
+                .toArray(BabylonTerrainTile[]::new);
     }
 
 }

@@ -25,13 +25,11 @@ public class UiTerrainTile {
     private TerrainUiService terrainUiService;
     @Inject
     private BabylonRendererService babylonRendererService;
-    private Index index;
     private TerrainTile terrainTile;
     private BabylonTerrainTile babylonTerrainTile;
     private boolean active;
 
     public void init(Index index) {
-        this.index = index;
         terrainUiService.requestTerrainTile(index, this::terrainTileReceived);
     }
 
