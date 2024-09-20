@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.chat;
 
-import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.TestClientSystemConnection;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;

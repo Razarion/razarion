@@ -1,7 +1,7 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.ClientGameConnectionServiceTestHelper;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.TestClientGameConnection;
 import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.gameengine.ServerUnlockService;

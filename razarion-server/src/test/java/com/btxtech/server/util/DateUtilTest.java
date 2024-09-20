@@ -5,8 +5,6 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by Beat
  * 03.05.2017.

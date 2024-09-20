@@ -7,7 +7,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
-
 import java.util.List;
 
 /**

@@ -14,10 +14,8 @@
     <properties>
         <gwt.version>2.11.0</gwt.version>
         <gwt.elemental2.version>1.2.1</gwt.elemental2.version>
-        <gwt.pulgin.version>2.8.2</gwt.pulgin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <errai.version>4.1.3.Final</errai.version>
-        <raz.web-dir>/razarion-server/src/main/webapp/</raz.web-dir>
+        <org.jboss.resteasy.version>6.2.10.Final</org.jboss.resteasy.version>
     </properties>
 
     <dependencyManagement>
@@ -72,6 +70,14 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>19</source>
+                    <target>19</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>net.ltgt.gwt.maven</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>

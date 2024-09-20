@@ -5,13 +5,10 @@ import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import org.junit.Test;
-import org.unitils.reflectionassert.ReflectionAssert;
-import org.unitils.reflectionassert.comparator.impl.ObjectComparatorIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,18 +60,6 @@ import java.util.List;
  * 18.05.2017.
  */
 public class UnitilsTest {
-
-    @Test
-    public void testWithIgnoring() {
-        List<SceneConfig> expectedSceneConfigs = setupTestGraph(1, 11);
-        List<SceneConfig> actualSceneConfigs = setupTestGraph(2, 12);
-
-
-        ObjectComparatorIgnore.add(BotConfig.class, "id");
-        ObjectComparatorIgnore.add(QuestDescriptionConfig.class, "id");
-        ReflectionAssert.assertReflectionEquals(expectedSceneConfigs, actualSceneConfigs);
-    }
-
     private List<SceneConfig> setupTestGraph(int botId, int questId) {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         List<BotConfig> botConfigs = new ArrayList<>();

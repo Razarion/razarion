@@ -8,7 +8,7 @@ import com.btxtech.shared.system.alarm.Alarm;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotAuthorizedException;
 import java.util.List;
 import java.util.stream.Collectors;
 

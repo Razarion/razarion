@@ -1,7 +1,5 @@
 package com.btxtech.server;
 
-import org.jboss.weld.interceptor.util.proxy.TargetInstanceProxy;
-
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -19,14 +17,14 @@ public class SimpleTestEnvironment {
     public static Ejector injectService(String fieldName, Object service, Class theClazz, Object serviceToInject) {
         try {
             Class clazz = theClazz;
-            if (service instanceof TargetInstanceProxy) {
-                // Weld deproxy unproxy
-                // In weld-core maven dependency
-                // Do not put weld-core in prodcode or integration test code. Do not add to Arquillan
-                TargetInstanceProxy targetInstanceProxy = (TargetInstanceProxy) service;
-                // ? object = targetInstanceProxy.getTargetInstance();
-                clazz = targetInstanceProxy.getTargetClass();
-            }
+//            if (service instanceof TargetInstanceProxy) {
+//                // Weld deproxy unproxy
+//                // In weld-core maven dependency
+//                // Do not put weld-core in prodcode or integration test code. Do not add to Arquillan
+//                TargetInstanceProxy targetInstanceProxy = (TargetInstanceProxy) service;
+//                // ? object = targetInstanceProxy.getTargetInstance();
+//                clazz = targetInstanceProxy.getTargetClass();
+//            }
             Field field = clazz.getDeclaredField(fieldName);
             field.setAccessible(true);
             Object originalService = field.get(service);
@@ -52,14 +50,14 @@ public class SimpleTestEnvironment {
 
     public static Ejector injectInstance(String fieldName, Object object, Supplier getSupplier) {
         Class clazz = object.getClass();
-        if (object instanceof TargetInstanceProxy) {
-            // Weld deproxy unproxy
-            // In weld-core maven dependency
-            // Do not put weld-core in prodcode or integration test code. Do not add to Arquillan
-            TargetInstanceProxy targetInstanceProxy = (TargetInstanceProxy) object;
-            // ? object = targetInstanceProxy.getTargetInstance();
-            clazz = targetInstanceProxy.getTargetClass();
-        }
+//        if (object instanceof TargetInstanceProxy) {
+//            // Weld deproxy unproxy
+//            // In weld-core maven dependency
+//            // Do not put weld-core in prodcode or integration test code. Do not add to Arquillan
+//            TargetInstanceProxy targetInstanceProxy = (TargetInstanceProxy) object;
+//            // ? object = targetInstanceProxy.getTargetInstance();
+//            clazz = targetInstanceProxy.getTargetClass();
+//        }
 //        Instance instance = new Instance() {
 //            @Override
 //            public Instance select(Annotation... qualifiers) {

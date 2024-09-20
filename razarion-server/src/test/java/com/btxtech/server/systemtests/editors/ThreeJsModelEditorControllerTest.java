@@ -10,9 +10,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -48,8 +48,8 @@ public class ThreeJsModelEditorControllerTest extends AbstractCrudTest<ThreeJsMo
 
         Assert.assertEquals(204, response.getStatus());
 
-        Response response1 = getDefaultRestConnection().getTarget().proxy(ThreeJsModelController.class).getThreeJsModel(threeJsModelConfig.getId());
-        Assert.assertEquals(200, response1.getStatus());
+        // TODO Response response1 = getDefaultRestConnection().getTarget().proxy(ThreeJsModelController.class).getThreeJsModel(threeJsModelConfig.getId());
+        // TODO Response Assert.assertEquals(200, response1.getStatus());
         Assert.fail("Verify content of response1");
         Assert.fail("Verify all attributes (type etc)");
 

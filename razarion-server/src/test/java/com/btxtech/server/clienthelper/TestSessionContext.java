@@ -1,8 +1,7 @@
 package com.btxtech.server.clienthelper;
 
+import jakarta.ws.rs.core.Cookie;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-
-import javax.ws.rs.core.Cookie;
 
 /**
  * Created by Beat

@@ -1,7 +1,7 @@
 package com.btxtech.server.util.facebook;
 
 import com.btxtech.server.util.SocialUtil;
-import com.google.gson.Gson;
+// import com.google.gson.Gson;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -66,9 +66,10 @@ public interface FacebookUtil {
     }
 
     static FacebookSignedRequest getFacebookSignedRequest(String playLoad) {
-        byte[] payloadBytes = enhancedBase64UrlSafeDecode(playLoad);
-        Gson gson = new Gson();
-        return gson.fromJson(new String(payloadBytes), FacebookSignedRequest.class);
+        // byte[] payloadBytes = enhancedBase64UrlSafeDecode(playLoad);
+        // Gson gson = new Gson();
+        // return gson.fromJson(new String(payloadBytes), FacebookSignedRequest.class);
+        throw new UnsupportedOperationException();
     }
 
     static void checkSignature(String secret, String payload, String base64UrlSafeSignature) {

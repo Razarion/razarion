@@ -13,8 +13,6 @@
     <name>Razarion Unity converter</name>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
         <fasterxml_version>2.8.9</fasterxml_version><!-- Must match version from jersey in CRUD-Tests-->
     </properties>
 

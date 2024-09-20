@@ -2,15 +2,12 @@ package com.btxtech.server.persistence.inventory;
 
 import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
-import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.unitils.reflectionassert.ReflectionAssert;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Created by Beat

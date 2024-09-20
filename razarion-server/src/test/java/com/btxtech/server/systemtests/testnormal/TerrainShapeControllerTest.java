@@ -1,16 +1,16 @@
 package com.btxtech.server.systemtests.testnormal;
 
-import com.btxtech.test.JsonAssert;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.rest.TerrainShapeController;
+import com.btxtech.test.JsonAssert;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotAuthorizedException;
 
 import static org.junit.Assert.fail;
 

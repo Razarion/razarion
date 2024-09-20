@@ -4,7 +4,6 @@ import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.systemtests.framework.AbstractCrudTest;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSplattingConfig;
-import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.rest.GroundEditorController;
 import org.junit.After;
 import org.junit.Before;

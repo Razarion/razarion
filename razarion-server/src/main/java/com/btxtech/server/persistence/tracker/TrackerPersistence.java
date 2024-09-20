@@ -1,6 +1,5 @@
 package com.btxtech.server.persistence.tracker;
 
-import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.persistence.MongoDbService;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
@@ -357,7 +356,6 @@ public class TrackerPersistence {
         for (SessionTrackerEntity sessionTrackerEntity : entityManager.createQuery(userSelect).getResultList()) {
             SessionTracker sessionTracker = sessionTrackerEntity.toSessionTracker();
             sessionTracker.setGameAttempts(readStartupTaskCount(sessionTrackerEntity.getSessionId())).setSuccessGameAttempts(readSuccessStartupTerminatedCount(sessionTrackerEntity.getSessionId()));
-            sessionTracker.setFbAdRazTrack(getFbAdRazTrack(sessionTrackerEntity.getSessionId()));
             sessionTracker.setCreatedHumanPlayerId(readCreatedHumanPlayerId(sessionTrackerEntity.getSessionId()));
             sessionTracker.setUserFromHistory(historyPersistence.readUserFromHistory(sessionTrackerEntity.getSessionId()));
             sessionTracker.setPageHits(getPageHits(sessionTrackerEntity.getSessionId()));
@@ -386,28 +384,6 @@ public class TrackerPersistence {
         return -999;
     }
 
-    private String getFbAdRazTrack(String sessionId) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<PageTrackerEntity> query = criteriaBuilder.createQuery(PageTrackerEntity.class);
-        Root<PageTrackerEntity> root = query.from(PageTrackerEntity.class);
-        CriteriaQuery<PageTrackerEntity> userSelect = query.select(root);
-//     TODO   Predicate sessionPredicate = criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId);
-//        Predicate fbAdRazTrackPredicate = criteriaBuilder.like(root.get(PageTrackerEntity_.params), "%" + FbFacade.URL_PARAM_TRACK_KEY + "%");
-//        query.where(criteriaBuilder.and(sessionPredicate, fbAdRazTrackPredicate));
-        List<PageTrackerEntity> pageTrackerEntities = entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getResultList();
-        if (pageTrackerEntities.isEmpty()) {
-            return null;
-        }
-        PageTrackerEntity pageTrackerEntity = pageTrackerEntities.get(0);
-        int fromIndex = pageTrackerEntity.getParams().indexOf(FbFacade.URL_PARAM_TRACK_KEY);
-        fromIndex = pageTrackerEntity.getParams().indexOf("=", fromIndex);
-        int toIndex = pageTrackerEntity.getParams().indexOf("||", fromIndex);
-        if (toIndex < 0) {
-            toIndex = pageTrackerEntity.getParams().length();
-        }
-        return pageTrackerEntity.getParams().substring(fromIndex + 1, toIndex).trim();
-    }
-
     @Deprecated
     private Integer readCreatedHumanPlayerId(String sessionId) {
         throw new UnsupportedOperationException("...No longer supported...");
@@ -433,7 +409,6 @@ public class TrackerPersistence {
         SessionTrackerEntity sessionTrackerEntity = entityManager.createQuery(userSelect).getSingleResult();
 
         SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp()).setUserAgent(sessionTrackerEntity.getUserAgent()).setReferer(sessionTrackerEntity.getReferer());
-        sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId));
         sessionDetail.setRemoteAddr(sessionTrackerEntity.getRemoteAddr()).setRemoteHost(sessionTrackerEntity.getRemoteHost());
         sessionDetail.setLanguage(sessionTrackerEntity.getLanguage());
         sessionDetail.setAcceptLanguage(sessionTrackerEntity.getAcceptLanguage());

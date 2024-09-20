@@ -83,7 +83,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         finalizeTransporter(transporterExpected, attackerExpected.getId(), builderExpected.getId());
         systemUnderTest.update(transporterExpected);
         // Verify
-        ReflectionAssert.assertReflectionEquals(transporterExpected, systemUnderTest.read(transporterExpected.getId()), ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(transporterExpected, systemUnderTest.read(transporterExpected.getId())/*, ReflectionComparatorMode.LENIENT_ORDER*/);
         // Finalize
         finalizeFactory(factoryExpected, builderExpected.getId(), attackerExpected.getId(), harvesterExpected.getId());
         factoryExpected.getFactoryType().getAbleToBuildIds().sort(Integer::compareTo);
@@ -112,7 +112,7 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
         systemUnderTest.update(transporterExpected);
         // Verify
         Assert.assertEquals(6, systemUnderTest.readAll().size());
-        ReflectionAssert.assertReflectionEquals(transporterExpected, systemUnderTest.read(transporterExpected.getId()), ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(transporterExpected, systemUnderTest.read(transporterExpected.getId())/*, ReflectionComparatorMode.LENIENT_ORDER*/);
         ReflectionAssert.assertReflectionEquals(builderExpected, systemUnderTest.read(builderExpected.getId()));
         ReflectionAssert.assertReflectionEquals(harvesterExpected, systemUnderTest.read(harvesterExpected.getId()));
         ReflectionAssert.assertReflectionEquals(attackerExpected, systemUnderTest.read(attackerExpected.getId()));

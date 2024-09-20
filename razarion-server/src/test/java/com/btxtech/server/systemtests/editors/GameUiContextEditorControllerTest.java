@@ -1,6 +1,5 @@
 package com.btxtech.server.systemtests.editors;
 
-import com.btxtech.test.JsonAssert;
 import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.bot.BotItemConfigEntity;
 import com.btxtech.server.persistence.scene.BotAttackCommandEntity;
@@ -40,6 +39,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.rest.GameUiContextEditorController;
+import com.btxtech.test.JsonAssert;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

@@ -2,18 +2,10 @@ package com.btxtech.server;
 
 import com.btxtech.server.gameengine.ClientGameConnection;
 import com.btxtech.server.user.PlayerSession;
-import com.btxtech.shared.datatypes.UnlockedItemPacket;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Assert;
-import org.unitils.reflectionassert.ReflectionAssert;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Beat

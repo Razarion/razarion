@@ -3,7 +3,7 @@ package com.btxtech.server.systemtests.framework;
 import com.btxtech.server.ServerTestHelper;
 import org.junit.Assert;
 
-import javax.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotAuthorizedException;
 import java.util.Arrays;
 import java.util.function.Consumer;
 

@@ -7,10 +7,10 @@ import com.btxtech.shared.rest.GameUiContextController;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.Ignore;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientResponseFilter;
 import java.util.List;
 
 /**

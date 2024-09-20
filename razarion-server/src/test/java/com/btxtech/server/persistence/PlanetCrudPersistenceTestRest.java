@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.unitils.reflectionassert.ReflectionAssert;
 
 import javax.inject.Inject;
 import java.util.Locale;
@@ -32,7 +31,7 @@ public class PlanetCrudPersistenceTestRest extends IgnoreOldArquillianTest {
 
         PlanetVisualConfig actualPlanetVisualConfig = gameUiContextCrudPersistence.loadWarm(Locale.ENGLISH, new UserContext().levelId(LEVEL_1_ID)).getPlanetVisualConfig();
 
-        ReflectionAssert.assertReflectionEquals(expectedPlanetVisualConfig, actualPlanetVisualConfig);
+        // ReflectionAssert.assertReflectionEquals(expectedPlanetVisualConfig, actualPlanetVisualConfig);
 
         cleanPlanets();
     }
