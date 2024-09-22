@@ -16,6 +16,7 @@
         <gwt.elemental2.version>1.2.1</gwt.elemental2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.jboss.resteasy.version>6.2.10.Final</org.jboss.resteasy.version>
+        <com.google.dagger>2.45</com.google.dagger>
     </properties>
 
     <dependencyManagement>
@@ -71,6 +72,25 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.openrewrite.maven</groupId>
+                <artifactId>rewrite-maven-plugin</artifactId>
+                <version>5.40.2</version>
+                <configuration>
+                    <activeRecipes>
+                        <recipe>com.btxtech.Razarion</recipe>
+                        <!--                        <recipe>org.openrewrite.java.cleanup.FinalizePrivateFields</recipe>-->
+                    </activeRecipes>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.yourorg</groupId>
+                        <artifactId>rewrite-recipe-starter</artifactId>
+                        <version>1.0.1-SNAPSHOT</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -102,7 +122,7 @@
 
     <modules>
         <module>razarion-client</module>
-<!--        <module>razarion-client-worker</module>-->
+        <!--        <module>razarion-client-worker</module>-->
         <module>razarion-client-common</module>
         <module>razarion-ui-service</module>
         <!--        <module>razarion-nnl-pathing</module>-->
