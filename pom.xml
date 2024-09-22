@@ -77,7 +77,7 @@
                 <version>5.40.2</version>
                 <configuration>
                     <activeRecipes>
-                        <recipe>com.btxtech.Razarion</recipe>
+                        <recipe>com.btxtech.razarion.DaggerMigration</recipe>
                         <!--                        <recipe>org.openrewrite.java.cleanup.FinalizePrivateFields</recipe>-->
                     </activeRecipes>
                 </configuration>
